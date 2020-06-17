@@ -1,0 +1,9 @@
+{
+  "comment": "Heroku supports a lot of other stuff here but dokku only supports scripts.dokku",
+  "scripts": {
+    "dokku": {
+      "predeploy": "bash scripts/predeploy.sh",
+      "postdeploy": "bash scripts/postdeploy.sh"
+    }
+  }
+}

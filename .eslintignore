@@ -1,0 +1,5 @@
+bundle.js
+vendors.js
+csrf_ajax.js
+polyfill-orientationchange.js
+modernizr.js

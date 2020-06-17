@@ -1,0 +1,48 @@
+#
+# IMPORTANT NOTE: This .travis.yml file is intended for
+# testing the project template itself. If you want to
+# test a project created from the project template,
+# please rename "project.travis.yml" to ".travis.yml",
+# overwriting this file.  "make setup" will do this
+# for you.
+
+language: python
+
+sudo: false
+
+python:
+  - "3.7"
+
+# Match postgresql version to that in conf/pillar/project.sls
+services:
+  - postgresql
+
+# In general, cache things where they are.
+directories:
+  - $HOME/.cache/pip
+  - $HOME/.npm
+  - $HOME/.nvm
+  - $HOME/.cache/node_modules
+  - $HOME/.cache/venvs
+
+env:
+  - WORKON_HOME=$HOME/.cache/venvs
+
+install:
+  - pip install -U pip wheel
+  - pip install -U 'Django>2.0'
+  - mkdir -p $WORKON_HOME
+  - nvm install 10.16.0
+  - nvm use 10.16.0
+
+script:
+  - django-admin.py startproject --template=https://github.com/caktus/django-project-template/zipball/${TRAVIS_BRANCH} --extension=py,yml --name=Makefile,gulpfile.js,package.json test_template
+  - cd test_template
+  - make setup
+  - make lint
+  - $WORKON_HOME/test_template/bin/python manage.py test --noinput
+  - . $WORKON_HOME/test_template/bin/activate
+  - make docs
+
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log

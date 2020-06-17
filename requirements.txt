@@ -1,0 +1,2 @@
+# Heroku and dokku look for requirements.txt in top directory when deploying
+-r requirements/production.txt
