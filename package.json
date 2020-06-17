@@ -1,0 +1,22 @@
+{
+  "name": "cc-licenses",
+  "version": "1.0.0",
+  "description": ".. EDIT the below links to use the project's github repo path. Or just remove them.",
+  "main": "gulpfile.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/creativecommons/cc-licenses.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/creativecommons/cc-licenses/issues"
+  },
+  "homepage": "https://github.com/creativecommons/cc-licenses#readme"
+}

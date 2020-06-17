@@ -5,16 +5,16 @@
 .. image:: https://requires.io/github/GITHUB_ORG/cc_licenses/requirements.svg?branch=master
 .. image:: https://requires.io/github/GITHUB_ORG/cc_licenses/requirements.svg?branch=develop
 
-Cc_Licenses
-========================
+Creative Commons Licenses
+=========================
 
 Below you will find basic setup and deployment instructions for the cc_licenses
 project. To begin you should have the following applications installed on your
 local development system:
 
-- Python >= 3.7
+- Python >= 3.8
 - NodeJS >= 10.16
-- `pip <http://www.pip-installer.org/>`_ >= 19
+- `pip <http://www.pip-installer.org/>`_ >= 20
 - `virtualenv <http://www.virtualenv.org/>`_ >= 1.10
 - `virtualenvwrapper <http://pypi.python.org/pypi/virtualenvwrapper>`_ >= 3.0
 - Postgres >= 9.3
@@ -51,9 +51,9 @@ adjustments as necessary to your needs.
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
 
-    # Check that you have python3.7 installed
-    $ which python3.7
-    $ mkvirtualenv cc_licenses -p `which python3.7`
+    # Check that you have python3.8 installed
+    $ which python3.8
+    $ mkvirtualenv cc_licenses -p `which python3.8`
     (cc_licenses)$ pip install -r requirements/dev.txt
     (cc_licenses)$ npm install
 

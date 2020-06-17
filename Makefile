@@ -1,5 +1,7 @@
 PROJECT_NAME = cc_licenses
 STATIC_DIR = ./$(PROJECT_NAME)/static
+WORKON_HOME ?= $(HOME)/.virtualenvs
+VENV_DIR ?= $(WORKON_HOME)/$(PROJECT_NAME)
 
 default: lint test
 
@@ -15,7 +17,7 @@ test:
 lint-py:
 	# Check for Python formatting issues
 	# Requires flake8
-	$(WORKON_HOME)/cc_licenses/bin/flake8 .
+	$(VENV_DIR)/bin/flake8 .
 
 lint-js:
 	# Check JS for any problems
@@ -57,16 +59,16 @@ pullmessages:
 	tx pull -af
 
 setup:
-	virtualenv -p `which python3.7` $(WORKON_HOME)/cc_licenses
-	$(WORKON_HOME)/cc_licenses/bin/pip install -U pip wheel
-	$(WORKON_HOME)/cc_licenses/bin/pip install -Ur requirements/dev.txt
-	$(WORKON_HOME)/cc_licenses/bin/pip freeze
+	virtualenv -p `which python3.8` $(VENV_DIR)
+	$(VENV_DIR)/bin/pip install -U pip wheel
+	$(VENV_DIR)/bin/pip install -Ur requirements/dev.txt
+	$(VENV_DIR)/bin/pip freeze
 	npm install
 	npm update
 	cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
 	echo "DJANGO_SETTINGS_MODULE=cc_licenses.settings.local" > .env
 	createdb -E UTF-8 cc_licenses
-	$(WORKON_HOME)/cc_licenses/bin/python manage.py migrate
+	$(VENV_DIR)/bin/python manage.py migrate
 	if [ -e project.travis.yml ] ; then mv project.travis.yml .travis.yml; fi
 	@echo
 	@echo "The cc_licenses project is now setup on your machine."
@@ -77,7 +79,7 @@ setup:
 	@echo "	npm run dev"
 
 update:
-	$(WORKON_HOME)/cc_licenses/bin/pip install -U -r requirements/dev.txt
+	$(VENV_DIR)/bin/pip install -U -r requirements/dev.txt
 	npm install
 	npm update
 
