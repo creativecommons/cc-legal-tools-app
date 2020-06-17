@@ -89,7 +89,7 @@ elif EMAIL_USE_SSL:
 else:
     default_smtp_port = 25
 EMAIL_PORT = os.environ.get('EMAIL_PORT', default_smtp_port)
-EMAIL_SUBJECT_PREFIX = '[Cc_Licenses %s] ' % ENVIRONMENT.title()
+EMAIL_SUBJECT_PREFIX = '[CC-Licenses %s] ' % ENVIRONMENT.title()
 DEFAULT_FROM_EMAIL = 'noreply@%(DOMAIN)s' % os.environ
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
@@ -126,13 +126,3 @@ for backend in TEMPLATES:
 if ENVIRONMENT.upper() == 'LOCAL':
     # Don't send emails from the Vagrant boxes
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
-if 'DOKKU_NGINX_SSL_PORT' in os.environ:
-    # Dokku with SSL
-    # SECURE_SSL_REDIRECT = True
-    # Try HTTP Strict Transport Security (increase time if everything looks okay)
-    # SECURE_HSTS_SECONDS = 1800
-    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_REDIRECT_EXEMPT = ['/.well-known']  # For Let's Encrypt

@@ -5,7 +5,7 @@ Resources
 ---------
 
 This project uses the standard `Django translation mechanisms
-<https://docs.djangoproject.com/en/1.8/topics/i18n/>`_.
+<https://docs.djangoproject.com/en/stable/topics/i18n/>`_.
 
 We use `Transifex <https://www.transifex.com>`_ to make it easy for translators
 to convert the English strings in our interface to proper translated strings in
