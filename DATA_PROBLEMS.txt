@@ -1,0 +1,27 @@
+Problems noticed with license metadata in index.rdf.
+
+(1) There is one occurrence of <dc:isReplacedBy>. Everywhere else it's <dcq:isReplacedBy>.
+I'd guess that the one <dc:isReplacedBy> is a typo and was intended to be <dcq:isReplacedBy>.
+
+(2) The following licenses are referred to but don't exist in index.rdf:
+
+    http://creativecommons.org/licenses/by/2.1/
+    http://creativecommons.org/licenses/by-nc/2.1/
+    http://creativecommons.org/licenses/by-nc-nd/2.1/
+    http://creativecommons.org/licenses/by-nc-sa/2.1/
+    http://creativecommons.org/licenses/by-nd/2.1/
+    http://creativecommons.org/licenses/by-sa/2.1/
+
+Each of those is linked to as the <dc:source> of the corresponding au, es, and jp licenses
+(e.g. http://creativecommons.org/licenses/by-nc/2.1/au/ etc).
+
+The following licenses are also referred to but don't exist:
+
+    http://creativecommons.org/licenses/nc/2.0/
+    http://creativecommons.org/licenses/nc-sa/2.0
+    http://creativecommons.org/licenses/nd-nc/2.0/
+    http://creativecommons.org/licenses/by-nd-nc/2.0/
+    http://creativecommons.org/licenses/nd/2.0/
+    http://creativecommons.org/licenses/sa/2.0/
+
+These are refered to from the corresponding jp licenses (only).
