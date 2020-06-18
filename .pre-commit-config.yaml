@@ -10,7 +10,6 @@ repos:
         exclude: '^deploy/'
       - id: check-added-large-files
       - id: check-json
-      - id: flake8
   - repo: https://github.com/psf/black
     rev: 19.10b0
     hooks:
@@ -21,30 +20,23 @@ repos:
       - id: reorder-python-imports
   - repo: local
     hooks:
-      - id: yarn-test
-        name: 'Run JS tests'
-        entry: yarn run test
-        language: system
-        pass_filenames: false
-        types: ["file", "javascript"]
-
       - id: missing-migrations
         name: 'Missing migrations'
-        entry: python manage.py makemigrations --check
+        entry: cd cc_licenses && python manage.py makemigrations --check
         language: system
         pass_filenames: false
         types: ["file", "python"]
 
       - id: python-test
         name: 'Run Django tests'
-        entry: coverage run manage.py test --noinput --keepdb
+        entry: cd cc_licenses && coverage run manage.py test --noinput --keepdb
         language: system
         pass_filenames: false
         types: ["file", "python"]
 
       - id: coverage
         name: 'Confirm test coverage'
-        entry: coverage report -m --fail-under 92
+        entry: cd cc_licenses && coverage report -m --fail-under 92
         language: system
         pass_filenames: false
         types: ["file", "python"]
