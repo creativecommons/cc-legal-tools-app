@@ -1,5 +1,4 @@
-asgiref==3.2.9
-Django==3.0.7
-psycopg2-binary==2.8.5
-pytz==2020.1
+Django==2.2.13  # rq.filter: >=2.2,<2.3
+psycopg2-binary==2.7.7
+pytz==2018.9
 sqlparse==0.3.1
