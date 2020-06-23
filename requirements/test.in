@@ -1,5 +1,5 @@
 # Requirements for running tests, automated or otherwise
--r base.txt
+-r dev.in
 
 coverage==4.5.2
-pre-commit==1.20.0
+factory-boy

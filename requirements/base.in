@@ -5,7 +5,6 @@
 Django==2.2.13  # rq.filter: >=2.2.7,<2.3
 
 dealer==2.0.5
-django-dotenv==1.4.2
 dj-database-url==0.5.0
 
 # Pillow? Why?

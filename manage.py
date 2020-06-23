@@ -2,12 +2,9 @@
 import os
 import sys
 
-from cc_licenses import load_env
-
-load_env.load_env()
 
 if __name__ == "__main__":
-    if 'DATABASE_URL' in os.environ:
+    if "DATABASE_URL" in os.environ:
         # Dokku or similar
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cc_licenses.settings.deploy")
     else:
