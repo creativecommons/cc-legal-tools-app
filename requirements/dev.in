@@ -4,6 +4,9 @@ django-debug-toolbar==2.0
 coverage==4.5.4
 flake8==3.7.8
 
+# for testing
+factory-boy
+
 # For translation
 transifex-client
 

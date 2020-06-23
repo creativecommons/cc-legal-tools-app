@@ -54,7 +54,7 @@ class LegalCode(models.Model):
         max_length=200,
         help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
     )
-    language = models.ForeignKey(Language, null=True, on_delete=models.CASCADE,)
+    language = models.ForeignKey(Language, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.url
@@ -164,4 +164,4 @@ class LicenseLogo(models.Model):
     image = models.FileField()
 
     def __str__(self):
-        return self.image
+        return self.image.url

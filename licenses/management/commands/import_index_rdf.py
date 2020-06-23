@@ -172,7 +172,9 @@ class Command(BaseCommand):
         elt = license_element.find("dc:isReplacedBy", namespaces)
         if elt is not None:
             print(
-                "WARNING: This license is using <dc:isReplacedBy>. It probably should be <dcq:isReplacedBy> and that's how we are treating it."
+                "WARNING: This license is using <dc:isReplacedBy>. "
+                "It probably should be <dcq:isReplacedBy> and that's "
+                "how we are treating it."
             )
             url = elt.attrib[namespaced("rdf", "resource")]
             license_element.remove(elt)
@@ -282,7 +284,6 @@ class Command(BaseCommand):
 
         # titles
         for title_element in license_element.findall("dc:title", namespaces):
-            name = title_element.text
             # attribute "xml:lang" is almost always present - but missing every now and then.
             lang_key = namespaced("xml", "lang")
             if lang_key in title_element.attrib:
@@ -340,7 +341,9 @@ def get_element_text(parent: ET.Element, tagname: str, default_value=NO_DEFAULT)
         return default_value
 
 
-def get_element_attribute(parent: ET.Element, tag: str, attrname:str, default_value=NO_DEFAULT) -> str:
+def get_element_attribute(
+    parent: ET.Element, tag: str, attrname: str, default_value=NO_DEFAULT
+) -> str:
     """
     Find the child of 'parent' with tag name 'tagname' and return the value
     of its attribute 'attrname'. If the tag is not found and a

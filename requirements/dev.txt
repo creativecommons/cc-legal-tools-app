@@ -16,6 +16,8 @@ django-dotenv==1.4.2      # via -r requirements/base.in
 django==2.2.13            # via -r requirements/base.in, django-debug-toolbar
 docutils==0.14            # via sphinx
 entrypoints==0.3          # via flake8
+factory-boy==2.12.0       # via -r requirements/dev.in
+faker==4.1.1              # via factory-boy
 flake8==3.7.8             # via -r requirements/dev.in
 gitdb==4.0.5              # via gitpython
 gitpython==3.1.3          # via transifex-client
@@ -30,18 +32,19 @@ pycodestyle==2.5.0        # via flake8
 pyflakes==2.1.1           # via flake8
 pygments==2.2.0           # via sphinx
 pyparsing==2.4.7          # via packaging
+python-dateutil==2.8.1    # via faker
 python-slugify==4.0.0     # via transifex-client
 pytz==2020.1              # via babel, django
 requests==2.23.0          # via requires.io, sphinx, transifex-client
 requires.io==0.2.6        # via -r requirements/dev.in
-six==1.15.0               # via packaging, sphinx, transifex-client
+six==1.15.0               # via packaging, python-dateutil, sphinx, transifex-client
 smmap==3.0.4              # via gitdb
 snowballstemmer==1.2.1    # via sphinx
 sphinx-rtd-theme==0.2.4   # via -r requirements/dev.in
 sphinx==1.7.2             # via -r requirements/dev.in
 sphinxcontrib-websupport==1.2.2  # via sphinx
 sqlparse==0.3.1           # via django, django-debug-toolbar
-text-unidecode==1.3       # via python-slugify
+text-unidecode==1.3       # via faker, python-slugify
 transifex-client==0.13.10  # via -r requirements/dev.in
 urllib3==1.25.9           # via requests, transifex-client
 whitenoise==4.1.4         # via -r requirements/base.in
