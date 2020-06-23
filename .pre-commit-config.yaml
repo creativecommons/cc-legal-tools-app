@@ -1,0 +1,42 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        exclude: '^deploy/'
+      - id: check-added-large-files
+      - id: check-json
+  - repo: https://github.com/psf/black
+    rev: 19.10b0
+    hooks:
+      - id: black
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v1.8.0
+    hooks:
+      - id: reorder-python-imports
+  - repo: local
+    hooks:
+      - id: missing-migrations
+        name: 'Missing migrations'
+        entry: cd cc_licenses && python manage.py makemigrations --check
+        language: system
+        pass_filenames: false
+        types: ["file", "python"]
+
+      - id: python-test
+        name: 'Run Django tests'
+        entry: cd cc_licenses && coverage run manage.py test --noinput --keepdb
+        language: system
+        pass_filenames: false
+        types: ["file", "python"]
+
+      - id: coverage
+        name: 'Confirm test coverage'
+        entry: cd cc_licenses && coverage report -m --fail-under 92
+        language: system
+        pass_filenames: false
+        types: ["file", "python"]
