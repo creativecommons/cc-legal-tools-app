@@ -6,3 +6,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Django
+__pycache__/
