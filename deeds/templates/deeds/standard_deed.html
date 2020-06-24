@@ -1,27 +1,27 @@
 {% extends "deeds/deed.html" %}
 
-{% block title -%}
-  Creative Commons &mdash; {{ license.title(target_lang) }}
-  &mdash; CC {{license.license_code.upper() }} {{ license.version }} {{ jurisdiction.upper() }}
-{%- endblock %}
+{% block title %}
+  Creative Commons &mdash; {{ license.translated_title }}
+  &mdash; CC {{license.license_code.upper }} {{ license.version }} {{ jurisdiction.upper }}
+{% endblock title %}
 
 {% block page_top %}
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- {{ license.rdf|safe }} -->
-{% endblock %}
+{% endblock page_top %}
 
 {% block license_name %}
   <span class="cc-license-title" property="dc:title dct:title">{{ license_title }}</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
-    (CC {{ license.license_code.upper() }} {{ license.version }}{%- if jurisdiction %} {{ jurisdiction.upper() }}{% endif %})
+    (CC {{ license.license_code.upper }} {{ license.version }}{% if jurisdiction %} {{ jurisdiction.upper }}{% endif %})
   </span>
-{% endblock %}
+{% endblock license_name %}
 
 {% block body %}
   <div id="deed-rights"
        dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}" class="row">
-    {% if license.deprecated %}
+    {% if license.deprecated_on %}
       <div id="deed-newer" style="text-align:center">
         <h3>{% trans %}Creative Commons has <a href="http://creativecommons.org/retiredlicenses">retired this legal tool</a> and does not recommend that it be applied to works.{% endtrans %}</h3>
       </div>
@@ -45,7 +45,7 @@
         {% trans %}<strong>Share</strong>  &mdash; copy and redistribute the material in any medium or format{% endtrans %}
         </li>
 
-        {% if not 'nd' in license.license_code %}
+        {% if license.permits_derivative_works %}
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
@@ -53,7 +53,7 @@
           </li>
         {% endif %}
 
-        {% if "http://creativecommons.org/ns#CommercialUse" not in license.prohibits %}
+        {% if not license.prohibits_commercial_use %}
           <li class="license commercial">
             {% trans %}for any purpose, even commercially.{% endtrans %}
           </li>
@@ -107,11 +107,11 @@
                    readonly="readonly" onclick="this.select()"
                    onfocus="document.getElementById('work-attribution').select();"/>
             <input id="license-code" type="hidden"
-                   value="CC {{ license.license_code.upper() }} {{ license.version }}" />
+                   value="CC {{ license.license_code.upper }} {{ license.version }}" />
             <input id="license-url" type="hidden"
                    value="{{ license.uri }}" />
             <a href="" id="attribution_help" class="helpLink">
-              <img src="{{ request.staticdirect('images/information.png') }}"
+              <img src="images/information.png"
                    alt="{% trans %}Information{% endtrans %}" />
             </a>
           </p>
@@ -190,7 +190,7 @@
 {% endblock %}
 
 {% block help_panels %}
-  {{ super() }}
+  {{ block.super }}
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">
@@ -205,7 +205,7 @@
     <div class="bd">
       <p>{% trans %}The applicable mediation rules will be designated in the copyright notice published with the work, or if none then in the request for mediation.  Unless otherwise designated in a copyright notice attached to the work, the UNCITRAL Arbitration Rules apply to any arbitration.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/Intergovernmental_Organizations#What_should_I_know_before_I_use_a_work_licensed_under_the_IGO_3.0_ported_licenses.3F">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -213,7 +213,7 @@
     <div class="bd">
       <p>{% trans %}If supplied, you must provide the name of the creator and attribution parties, a copyright notice, a license notice, a disclaimer notice, and a link to the material. CC licenses prior to Version 4.0 also require you to provide the title of the material if supplied, and may have other slight differences.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/License_Versions#Detailed_attribution_comparison_chart">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -221,9 +221,9 @@
     <div class="bd">
       <p>{% trans %}In 4.0, you must indicate if you modified the material and retain an indication of previous modifications. In 3.0 and earlier license versions, the indication of changes is only required if you create a derivative.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/Best_practices_for_attribution#This_is_a_good_attribution_for_material_you_modified_slightly">
-        {%- trans %}Marking guide{% endtrans %}</a>.</p>
+        {% trans %}Marking guide{% endtrans %}</a>.</p>
       <p><a href="http://wiki.creativecommons.org/License_Versions#Modifications_and_adaptations_must_be_marked_as_such ">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -231,7 +231,7 @@
     <div class="bd">
       <p>{% trans %}You may also use a license listed as compatible at <a href="https://creativecommons.org/compatiblelicenses">https://creativecommons.org/compatiblelicenses</a>{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/FAQ#If_I_derive_or_adapt_material_offered_under_a_Creative_Commons_license.2C_which_CC_license.28s.29_can_I_use.3F">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -239,7 +239,7 @@
     <div class="bd">
       <p>{% trans %}A commercial use is one primarily intended for commercial advantage or monetary compensation.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#Does_my_use_violate_the_NonCommercial_clause_of_the_licenses.3F">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -247,7 +247,7 @@
     <div class="bd">
       <p>{% trans %}Merely changing the format never creates a derivative.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#When_is_my_use_considered_an_adaptation.3F">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -255,7 +255,7 @@
     <div class="bd">
       <p>{% trans %}The license prohibits application of effective technological measures, defined with reference to Article 11 of the WIPO Copyright Treaty.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/License_Versions#Application_of_effective_technological_measures_by_users_of_CC-licensed_works_prohibited">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -263,7 +263,7 @@
     <div class="bd">
       <p>{% trans %}The rights of users under exceptions and limitations, such as fair use and fair dealing, are not affected by the CC licenses.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_exceptions_and_limitations_to_copyright.2C_such_as_fair_dealing_and_fair_use.3F">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
 
@@ -271,7 +271,7 @@
     <div class="bd">
       <p>{% trans %}You may need to get additional permissions before using the material as you intend.{% endtrans %}</p>
       <p><a href="http://wiki.creativecommons.org/Considerations_for_licensors_and_licensees">
-        {%- trans %}More info{% endtrans %}</a>.</p>
+        {% trans %}More info{% endtrans %}</a>.</p>
     </div>
   </div>
-{% endblock %}
+{% endblock help_panels %}

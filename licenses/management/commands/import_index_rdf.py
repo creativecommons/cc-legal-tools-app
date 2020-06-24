@@ -244,7 +244,7 @@ class Command(BaseCommand):
         # Create the License object
         license = License.objects.create(
             about=license_url,
-            identifier=get_element_text(license_element, "dc:identifier"),
+            license_code=get_element_text(license_element, "dc:identifier"),
             version=get_element_text(license_element, "dcq:hasVersion", ""),
             source=source_license,
             jurisdiction=jurisdiction,

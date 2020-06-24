@@ -1,0 +1,204 @@
+{% extends "macros_templates/pdtool_deed.html" %}
+
+{% block page_top %}
+  <!-- RDF code here for backwards compatibility.  Please use the
+       license's RDFa instead. -->
+  <!-- {{ license.rdf|safe }} -->
+{% endblock %}
+
+{% block license_name %}
+  <span property="dc:title dct:title" style="display:inline !important;">{{ license_title }}</span>
+  (<span property="dc:identifier dct:identifier" style="display:inline !important;">CC0 1.0</span>)<br>
+  {% trans %}Public Domain Dedication{% endtrans %}
+{% endblock %}
+
+{% block body %}
+  <div id="deed-rights" 
+       dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}" class="row">
+
+    <div class="col-sm-offset-2 col-sm-8">
+      <h3 style="text-align: center">{% trans %}No Copyright{% endtrans %}</h3>
+
+      <ul class="license-properties">
+        <li class="license nolaw">
+          <p id="nolaw-text" style="margin-bottom:1em;">
+            {% trans %}The person who associated a work with this deed has <b>dedicated</b> the work to the public domain by waiving all of his or her rights to the work worldwide under copyright law, including all related and neighboring rights, to the extent allowed by law.{% endtrans %}
+          </p>
+          <p>
+            {% trans %}You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission. See <b>Other Information</b> below.{% endtrans %}
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <div id="libre" class="col-sm-2">
+      <a href="http://freedomdefined.org/" class="screen-only">
+        <img src="/images/deed/FreeCulturalWorks_seal_x2.jpg" style="border: 0;"
+             alt="{% trans %}This license is acceptable for Free Cultural Works.{% endtrans %}" />
+      </a>
+      <a href="http://freedomdefined.org/" class="print-only">
+        <img src="/images/deed/seal.png" style="border: 0" alt="" />
+      </a>
+    </div>
+
+    <div class="col-sm-10 col-sm-offset-1">
+      <hr>
+    </div>
+
+    <div class="col-sm-offset-2 col-sm-8">
+      <h3 style="text-align: center">{% trans %}Other Information{% endtrans %}</h3>
+      <ul class="license-properties">
+        <li>
+          {% trans %}In no way are the patent or trademark rights of any person affected by CC0, nor are the rights that other persons may have in the work or in how the work is used, such as <a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F" class="helpLink" id="publicity_rights">publicity or privacy</a> rights.{% endtrans %}
+        </li>
+
+        <li>
+          {% trans %}Unless expressly stated otherwise, the person who associated a work with this deed makes no warranties about the work, and disclaims liability for all uses of the work, to the fullest extent permitted by applicable law.{% endtrans %}
+        </li>
+
+        <li>
+          {% trans %}When using or citing the work, you should not imply <a href="" class="helpLink" id="endorsement">endorsement</a> by the author or the affirmer.{% endtrans %}
+        </li>
+      </ul>
+    </div>
+
+
+
+    <ul class="license-properties">
+
+      <li class="license" style="display:none" id="work-details-block">
+        <div>
+          <ul>
+            <li class="license usage-guidelines" style="display:none;">
+              <a href="#" id="usage_guidelines">Non-binding use guidelines</a>
+              apply to this work.
+            </li>
+
+            <li style="padding-bottom: 0.5em; display:none;" id="work-details-title">
+              <strong>Work Details</strong>
+            </li>
+            <li style="display:none">
+              <span class="work-details-item-title">
+                {% trans %}Work:{% endtrans %}
+              </span>
+              <span id="meta_title" class="work-details-item-value"></span>
+            </li>
+            <li style="display:none">
+              <span class="work-details-item-title">
+                {% trans %}<a href="" class="inline-help helpLink" id="who_is_affirmer">Affirmer</a>{% endtrans %}
+              </span>
+              <span id="meta_affirmer" class="work-details-item-value"></span>
+            </li>
+
+            <li id="work-attribution-container" style="margin-top: 25px; display:none;">
+              <strong>
+                {% trans %}You can <a href="" class="helpLink" id="citation_help">cite</a> this work with this HTML:{% endtrans %}
+              </strong>
+              <br />
+              <input id="work-attribution" value="" />
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+
+  <div id="deed-understanding">
+
+    <div id="help_publicity_rights">
+      <div class="hd">{% trans %}Other Rights{% endtrans %}</div>
+      <div class="bd">
+        <p>
+          {% trans %}The use of a work free of known copyright restrictions may be otherwise regulated or limited. The work or its use may be subject to personal data protection laws, publicity, image, or privacy rights that allow a person to control how their voice, image or likeness is used, or other restrictions or limitations under applicable law.{% endtrans %}
+        </p>
+
+        <p>
+          <a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F">{% trans %}Learn more{% endtrans %}</a>.
+        </p>
+      </div>
+    </div>
+
+    <div id="help_endorsement">
+      <div class="hd">{% trans %}Endorsement{% endtrans %}</div>
+      <div class="bd">
+        <p>
+          {% trans %}In some jurisdictions, wrongfully implying that an author, publisher or anyone else endorses your use of a work may be unlawful.{% endtrans %}
+        </p>
+
+        <p>
+          <a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_I_need_to_be_aware_of_anything_else_when_providing_attribution_or_credit.3F">{% trans %}Learn more{% endtrans %}</a>.
+        </p>
+      </div>
+    </div>
+
+    <div id="help_citation_help">
+      <div class="hd">{% trans %}Citation{% endtrans %}</div>
+      <div class="bd">
+        <p>
+          {% trans %}Copy and paste the HTML provided into your webpage to easily cite this work.{% endtrans %}
+        </p>
+        <p>
+          <a href="http://wiki.creativecommons.org/CC0_FAQ#Do_I_have_to_attribute_the_person_who_applied_CC0_to_their_work.3F">{% trans %}Learn more{% endtrans %}</a>
+        </p>
+      </div>
+    </div>
+
+   <div id="help_who_is_affirmer">
+     <div class="hd">
+       {% trans %}Who is the affirmer?{% endtrans %}
+     </div>
+     <div class="bd">
+       <p>
+         {% trans %}The affirmer is the person who surrendered rights to the work worldwide using CC0, to the extent allowable by law. It may be the original author of the work or another person who may have had some copyright or related or neighboring legal rights in the work.{% endtrans %}
+       </p>
+     </div>
+   </div>
+
+
+  </div>
+
+  <span id='referrer-metadata-container'/>
+
+  <span rel="cc:permits" resource="http://creativecommons.org/ns#Reproduction"></span>
+  <span rel="cc:permits" resource="http://creativecommons.org/ns#DerivativeWorks"></span>
+  <span rel="cc:permits" resource="http://creativecommons.org/ns#Distribution"></span>
+{% endblock body %}
+
+{% block legalcode_block %}
+  <!--- hidden disclaimer text -->
+  <div id="help_disclaimer_popup" class="help_panel">
+    <div class="hd">
+      {% trans %}Disclaimer{% endtrans %}
+    </div>
+
+    <div class="bd">
+      {% trans %}<p> The Commons Deed is not a legal instrument. It is simply a handy reference for understanding the CC0 Legal Code, a human-readable expression of some of its key terms. Think of it as the user-friendly interface to the CC0 Legal Code beneath. This Deed itself has no legal value, and its contents do not appear in CC0. </p> <p> Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this Commons Deed does not create an attorney-client relationship. </p> <p> Creative Commons has not verified the copyright status of any work to which CC0 has been applied. CC makes no warranties about any work or its copyright status in any jurisdiction, and disclaims all liability for all uses of any work. </p>{% endtrans %}
+    </div>
+  </div>
+
+  <div id="deed-disclaimer">
+    <span class="summary">
+      {% trans %}This is a human-readable summary of the <a href="./legalcode">Legal Code (read the full text)</a>.{% endtrans %}
+    </span>
+
+    <span class="disclaimer">
+      <a href="#" id="disclaimer_popup" class="helpLink">
+        {% trans %}Disclaimer{% endtrans %}
+      </a>
+    </span>
+  </div>
+{% endblock legalcode_block %}
+
+{% block use_this_license %}
+  {% trans %}
+        <a href="http://wiki.creativecommons.org/FAQ">Learn more</a> about CC licensing, or <a id="get_this" href="https://creativecommons.org/choose/zero/">use the license</a> for your own material.
+  {% endtrans %}
+{% endblock use_this_license %}
+
+{% block license_logos %}
+<span class="cc-license-icons">
+  <span id="cc-logo" class="icon"><img alt="cc logo" src="/images/deed/cc_icon_white_x2.png"></span>
+  <span class="icon"><img alt="cc pd" src="/images/deed/zero_white_x2.png"></span>
+</span>
+{% endblock license_logos %}

@@ -1,0 +1,56 @@
+{% extends "macros_templates/deed.html" %}
+
+{% block title -%}
+  Creative Commons &mdash;
+  {% trans %}Copyright-Only Dedication (based on United States law) 
+or Public Domain Certification{% endtrans %}
+{%- endblock title %}
+
+{% block legalcode_block %}{% endblock %}
+
+{% block page_top %}
+  <!-- RDF code here for backwards compatibility.  Please use the
+       license's RDFa instead. -->
+  <!-- {{ license.rdf|safe }} -->
+{% endblock %}
+
+{% block license_name %}
+  <span property="dc:title" style="display: inline;"
+        datatype="">{% trans %}Copyright-Only Dedication<a href="#" class="helpLink" id="use_zero">*</a>
+  (based on United States law)<br />
+  or Public Domain Certification{% endtrans %}</span>
+{% endblock %}
+
+{% block body %}
+  <div id="librepd">
+    <a href="http://freedomdefined.org/">
+      <img src="/images/deed/seal.png" style="border: 0" 
+           alt="{% trans %}This license is acceptable for Free Cultural Works.{% endtrans %}" />
+    </a>
+  </div>
+
+  {% if license.deprecated %}
+    <div id="deed-newer" style="text-align:center">
+      <h3>{% trans %}Creative Commons has <a href="http://creativecommons.org/retiredlicenses">retired this legal tool</a> and does not recommend that it be applied to works.{% endtrans %}</h3>
+    </div>
+  {% endif %}
+
+  {% trans %}        <p>The person or persons who have associated work with this document (the "Dedicator" or "Certifier") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the "Work") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a "dedicator" below.</p>
+
+        <p>A certifier has taken reasonable steps to verify the copyright status of this work. Certifier recognizes that his good faith efforts may not shield him from liability if in fact the work certified is not in the public domain.</p>
+
+        <p>Dedicator makes this dedication for the benefit of the public at large and to the detriment of the Dedicator's heirs and successors. Dedicator intends this dedication to be an overt act of relinquishment in perpetuity of all present and future rights under copyright law, whether vested or contingent, in the Work. Dedicator understands that such relinquishment of all rights includes the relinquishment of all rights to enforce (by lawsuit or otherwise) those copyrights in the Work.</p>
+
+        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>{% endtrans %}
+
+  <div id="help_use_zero">
+    <div class="hd">CC0 for Public Domain Dedication</div>
+    <div class="bd">
+      {% trans %}This tool is based on United States law and may not be applicable outside the US. For dedicating new works to the public domain, we recommend <a href="/choose/zero/">CC0</a>.{% endtrans %}
+    </div>
+  </div>
+
+  <span rel="cc:permits" resource="http://creativecommons.org/ns#Reproduction"></span>
+  <span rel="cc:permits" resource="http://creativecommons.org/ns#DerivativeWorks"></span>
+  <span rel="cc:permits" resource="http://creativecommons.org/ns#Distribution"></span>
+{% endblock %}

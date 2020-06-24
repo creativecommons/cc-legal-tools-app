@@ -116,7 +116,7 @@ def _clear_test_template_context():
 
 def render_template(request, locale, template_path, context):
     """
-    Render a template with the request in the response.
+    Render a Jinja template with the request in the response.
 
     Also stores data for unit testing purposes if appropriate.
     """
@@ -165,7 +165,7 @@ def _get_xpath_attribute(etree, path, attribute):
     """
     try:
         return etree.xpath(path)[0].attrib[attribute]
-    except IndexError, KeyError:
+    except (IndexError, KeyError):
         return None
 
 

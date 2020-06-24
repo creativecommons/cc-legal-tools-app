@@ -1,5 +1,3 @@
-from django.db import models
-
 """
 Every license can be identified by a URL, e.g. "http://creativecommons.org/licenses/by-nc-sa/4.0/"
 or "http://creativecommons.org/licenses/by-nc-nd/2.0/tw/".  In the RDF, this is the rdf:about
@@ -11,6 +9,8 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
+from django.db import models
+from django.utils import translation
 
 
 class Creator(models.Model):
@@ -24,6 +24,8 @@ class Jurisdiction(models.Model):
     url = models.URLField(
         max_length=200, help_text="E.g. http://creativecommons.org/international/at/",
     )
+    # FIXME: Where to get data on jurisdictions' default languages?
+    default_language = models.ForeignKey("Language", null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.url
@@ -66,7 +68,7 @@ class License(models.Model):
         help_text="The license's unique identifier, e.g. 'http://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
     )
-    identifier = models.CharField(
+    license_code = models.CharField(
         max_length=40,
         help_text="shorthand representation for which class of licenses this falls into.  E.g. 'by-nc-sa', or 'MIT'",
     )
@@ -148,6 +150,12 @@ class License(models.Model):
 
     def __str__(self):
         return self.about
+
+    def translated_title(self, language_code=None):
+        if not language_code:
+            language_code = translation.get_language()
+        translated_license_name = self.names.get(language__code=language_code)
+        return translated_license_name.name
 
 
 class TranslatedLicenseName(models.Model):
