@@ -55,7 +55,6 @@ necessary requirements::
     $ which python3.8
     $ mkvirtualenv cc_licenses -p `which python3.8`
     (cc_licenses)$ pip install -r requirements/dev.txt
-    (cc_licenses)$ npm install
 
 Next, we'll set up our local environment variables. We use `django-dotenv
 <https://github.com/jpadilla/django-dotenv>`_ to help with this. It reads environment variables
@@ -79,15 +78,15 @@ that currently exists.  (That one is for testing the template itself.)::
 Development
 -----------
 
-You should be able to run the development server via the configured `dev` script::
+You should be able to run the development server via::
 
-    (cc_licenses)$ npm run dev
+    (cc_licenses)$ python manage.py runserver
 
 Or, on a custom port and address::
 
-    (cc_licenses)$ npm run dev -- --address=0.0.0.0 --port=8020
+    (cc_licenses)$ python manage.py runserver 0.0.0.0:8001
 
-Any changes made to Python, Javascript or Less files will be detected and rebuilt transparently as
+Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
 
 Deployment

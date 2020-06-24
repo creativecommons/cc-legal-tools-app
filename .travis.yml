@@ -12,9 +12,6 @@ services:
 cache:
   directories:
     - $HOME/.cache/pip
-    - $HOME/.npm
-    - $HOME/.nvm
-    - $HOME/.cache/node_modules
     - $HOME/.cache/venvs
 
 env:
@@ -22,10 +19,7 @@ env:
 
 install:
   - pip install -U pip wheel
-  - pip install -U -r requirements/dev.txt
-  - nvm install 10.16.0
-  - nvm use 10.16
-  - npm install
+  - pip install -U -r requirements/test.txt
 
 before_script:
   - createdb --encoding=UTF-8 cc_licenses --username=postgres --owner=`whoami`
@@ -42,4 +36,3 @@ script:
   - coverage report -m --fail-under 80
   - flake8 .
   - make docs
-  - npm test
