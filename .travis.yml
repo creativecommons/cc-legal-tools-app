@@ -19,7 +19,7 @@ env:
 
 install:
   - pip install -U pip wheel
-  - pip install -U -r requirements/test.txt
+  - pip install -U -r requirements/dev.txt
 
 before_script:
   - createdb --encoding=UTF-8 cc_licenses --username=postgres --owner=`whoami`

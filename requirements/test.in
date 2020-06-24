@@ -1,5 +1,0 @@
-# Requirements for running tests, automated or otherwise
--r dev.in
-
-coverage==4.5.2
-factory-boy
