@@ -19,11 +19,6 @@ lint-py:
 	# Requires flake8
 	$(VENV_DIR)/bin/flake8 .
 
-lint-js:
-	# Check JS for any problems
-	# Requires jshint
-	./node_modules/.bin/eslint -c .eslintrc '${STATIC_DIR}' --ext js,jsx
-
 lint: lint-py lint-js
 
 # Generate a random string of desired length
