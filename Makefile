@@ -19,7 +19,7 @@ lint-py:
 	# Requires flake8
 	$(VENV_DIR)/bin/flake8 .
 
-lint: lint-py lint-js
+lint: lint-py
 
 # Generate a random string of desired length
 generate-secret: length = 32

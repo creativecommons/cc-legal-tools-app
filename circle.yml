@@ -7,10 +7,6 @@ dependencies:
   override:
     - pip install -U pip
     - pip install -r requirements/dev.txt
-    - nvm install 4.2
-    - nvm use 4.2
-    - npm install
-    - npm install -g jshint
 test:
   override:
     - make -k
