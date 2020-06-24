@@ -7,6 +7,7 @@ dependencies:
   override:
     - pip install -U pip
     - pip install -r requirements/dev.txt
+    - pip install -U -r requirements/test.txt
 test:
   override:
     - make -k
