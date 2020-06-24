@@ -36,4 +36,3 @@ script:
   - coverage report -m --fail-under 80
   - flake8 .
   - make docs
-  - npm test
