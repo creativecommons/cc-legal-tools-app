@@ -7,7 +7,7 @@ Overview
 Cc_Licenses is deployed on the following stack.
 
 - OS: Ubuntu 18.04 LTS or 20.04 LTS
-- Python: 3.8+
+- Python: 3.7 (or higher)
 - Database: Postgres 10+
 - Application Server: Gunicorn
 - Frontend Server: Nginx
@@ -52,10 +52,10 @@ I'm trying to use.
 Environment
 ...........
 
-Create a virtual environment using Python 3.8::
+Create a virtual environment using Python 3.7::
 
     $ python3 --version
-    Python 3.8.2
+    Python 3.7.7
     $ python3 -m venv /somepath/cc-licenses-venv
 
 Activate the venv::
