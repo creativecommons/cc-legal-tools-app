@@ -45,7 +45,6 @@ if 'DATABASE_URL' in os.environ:
     # https://warehouse.python.org/project/whitenoise/
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-    WEBSERVER_ROOT = os.path.join(PROJECT_ROOT, 'www')
 else:
     SECRET_KEY = os.environ['SECRET_KEY']
 
@@ -55,13 +54,10 @@ else:
     DATABASES['default']['PORT'] = os.environ.get('DB_PORT', '')
     DATABASES['default']['PASSWORD'] = os.environ.get('DB_PASSWORD', '')
 
-    WEBSERVER_ROOT = '/var/www/cc_licenses/'
 
-PUBLIC_ROOT = os.path.join(WEBSERVER_ROOT, 'public')
+STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(ROOT_DIR, 'static'))
 
-STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(PUBLIC_ROOT, 'static'))
-
-MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(PUBLIC_ROOT, 'media'))
+MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(ROOT_DIR, 'media'))
 
 CACHES = {
     'default': {

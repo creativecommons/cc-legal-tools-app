@@ -12,6 +12,16 @@ Cc_Licenses is deployed on the following stack.
 - Application Server: Gunicorn
 - Frontend Server: Nginx
 
+Domain and SSL certificate
+--------------------------
+
+(I put this first because you might have to wait for someone else
+to do it, so you might as well start it as early as possible.)
+
+Just a reminder that you'll need a domain name that resolves to
+the IP address of your web server, and a corresponding SSL
+certificate if you want to serve pages over SSL.
+
 Deploying
 ---------
 
@@ -20,7 +30,7 @@ this is left as an exercise for the reader.
 
 If you haven't before, clone the repo::
 
-    $ git@github.com:creativecommons/cc-licenses.git
+    $ git clone git@github.com:creativecommons/cc-licenses.git
 
 Change to the new directory for the rest of these steps::
 
@@ -158,11 +168,11 @@ We generally build this into our deploy process.
 
 3. Run database migrations:
 
-    $ python manage.py migrate
+    $ python manage.py migrate --noinput
 
 4. Collect all static files to STATIC_ROOT:
 
-    $ python manage.py collectstatic
+    $ python manage.py collectstatic --noinput
 
 Run Django
 ..........
