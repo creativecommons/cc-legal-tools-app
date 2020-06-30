@@ -9,6 +9,12 @@ from django.utils.encoding import force_text
 
 from i18n import DEFAULT_CSV_FILE, CSV_HEADERS
 
+# MO_PATH = pkg_resources.resource_filename(
+#     'cc.i18n', 'mo')
+
+CACHED_APPLICABLE_LANGS = {}
+CACHED_WELL_TRANSLATED_LANGS = {}
+
 
 def get_locale_dir(locale_name):
     localedir = settings.LOCALE_PATHS[0]
@@ -20,33 +26,29 @@ def locales_with_directories():
     Return list of locale names under our locale dir.
     """
     dir = settings.LOCALE_PATHS[0]
-    return [
-        item
-        for item in os.listdir(dir)
-        if os.path.isdir(os.path.join(dir, item))
-    ]
+    return [item for item in os.listdir(dir) if os.path.isdir(os.path.join(dir, item))]
 
 
 LANGUAGE_JURISDICTION_MAPPING = {}
 JURISDICTION_CURRENCY_LOOKUP = {
-    "jp" : "jp",
-    "at" : "eu",
-    "be" : "eu",
-    "cy" : "eu",
-    "ee" : "eu",
-    "fi" : "eu",
-    "fr" : "eu",
-    "de" : "eu",
-    "gr" : "eu",
-    "ie" : "eu",
-    "it" : "eu",
-    "lu" : "eu",
-    "mt" : "eu",
-    "nl" : "eu",
-    "pt" : "eu",
-    "sk" : "eu",
-    "si" : "eu",
-    "es" : "eu",
+    "jp": "jp",
+    "at": "eu",
+    "be": "eu",
+    "cy": "eu",
+    "ee": "eu",
+    "fi": "eu",
+    "fr": "eu",
+    "de": "eu",
+    "gr": "eu",
+    "ie": "eu",
+    "it": "eu",
+    "lu": "eu",
+    "mt": "eu",
+    "nl": "eu",
+    "pt": "eu",
+    "sk": "eu",
+    "si": "eu",
+    "es": "eu",
 }
 
 
@@ -60,12 +62,14 @@ def currency_symbol_from_request_form(req_form):
         return ""
 
 
-def get_locale_text_orientation(locale):
+def get_locale_text_orientation(locale_identifier: str) -> str:
     """
     Find out whether the locale is ltr or rtl
     """
-    l = Locale.parse(locale)
-    return 'ltr' if l.character_order == 'left-to-right' else 'rtl'
+    locale = Locale.parse(locale_identifier)
+    if not locale:
+        raise ValueError("No locale found with identifier %r" % locale_identifier)
+    return "ltr" if locale.character_order == "left-to-right" else "rtl"
 
 
 _ACTIVE_LANGUAGES = None
@@ -80,64 +84,68 @@ def active_languages():
 
     for each available language."""
     from django.conf import settings
+
     return settings.LANGUAGES  # ?? FIXME ??
 
-    global _ACTIVE_LANGUAGES
-    if _ACTIVE_LANGUAGES:
-        return _ACTIVE_LANGUAGES
+    # global _ACTIVE_LANGUAGES
+    # if _ACTIVE_LANGUAGES:
+    #     return _ACTIVE_LANGUAGES
+    #
+    # # get a list of avaialable translations
+    # domain = base.queryUtility(ITranslationDomain, ccorg_i18n_setup.I18N_DOMAIN)
+    # lang_codes = set(domain.getCatalogsInfo().keys())
+    #
+    # # determine the intersection of available translations and
+    # # launched jurisdiction locales
+    # launched_locales = set()
+    # jurisdictions = cclicense_functions.get_valid_jurisdictions()
+    #
+    # for jurisdiction in jurisdictions:
+    #     query_string = (
+    #         "PREFIX dc: <http://purl.org/dc/elements/1.1/> "
+    #         "SELECT ?lang WHERE {"
+    #         "  <%s> dc:language ?lang}"
+    #     ) % jurisdiction
+    #
+    #     query = RDF.Query(str(query_string), query_language="sparql")
+    #     this_juri_locales = set(
+    #         [
+    #             locale_to_lower_upper(str(result["lang"]))
+    #             for result in query.execute(rdf_helper.JURI_MODEL)
+    #         ]
+    #     )
+    #
+    #     # Append those locales that are applicable to this domain
+    #     launched_locales.update(lang_codes.intersection(this_juri_locales))
+    #
+    # # XXX: Have to hack in Esperanto here because it's technically an
+    # # "Unported" language but there is no unported RDF jurisdiction in
+    # # jurisdictions.rdf..
+    # launched_locales.add("eo")
+    #
+    # # make our sequence have a predictable order
+    # launched_locales = list(launched_locales)
+    #
+    # # this loop is long hand for clarity; it's only done once, so
+    # # the additional performance cost should be negligible
+    # result = []
+    # for code in launched_locales:
+    #
+    #     if code == "test":
+    #         continue
+    #
+    #     gettext = ugettext_for_locale(negotiate_locale(code))
+    #     name = gettext(mappers.LANG_MAP[code])
+    #     result.append(dict(code=code, name=name))
+    #
+    # result = sorted(result, key=lambda lang: lang["name"].lower())
+    #
+    # _ACTIVE_LANGUAGES = result
+    #
+    # return result
 
-    # get a list of avaialable translations
-    domain = base.queryUtility(ITranslationDomain, ccorg_i18n_setup.I18N_DOMAIN)
-    lang_codes = set(domain.getCatalogsInfo().keys())
 
-    # determine the intersection of available translations and
-    # launched jurisdiction locales
-    launched_locales = set()
-    jurisdictions = cclicense_functions.get_valid_jurisdictions()
-
-    for jurisdiction in jurisdictions:
-        query_string = (
-            'PREFIX dc: <http://purl.org/dc/elements/1.1/> '
-            'SELECT ?lang WHERE {'
-            '  <%s> dc:language ?lang}') % jurisdiction
-
-        query = RDF.Query(
-            str(query_string),
-            query_language='sparql')
-        this_juri_locales = set(
-            [locale_to_lower_upper(str(result['lang']))
-             for result in query.execute(rdf_helper.JURI_MODEL)])
-
-        # Append those locales that are applicable to this domain
-        launched_locales.update(lang_codes.intersection(this_juri_locales))
-
-    # XXX: Have to hack in Esperanto here because it's technically an
-    # "Unported" language but there is no unported RDF jurisdiction in
-    # jurisdictions.rdf..
-    launched_locales.add('eo')
-
-    # make our sequence have a predictable order
-    launched_locales = list(launched_locales)
-
-    # this loop is long hand for clarity; it's only done once, so
-    # the additional performance cost should be negligible
-    result = []
-    for code in launched_locales:
-
-        if code == 'test': continue
-
-        gettext = ugettext_for_locale(negotiate_locale(code))
-        name = gettext(mappers.LANG_MAP[code])
-        result.append(dict(code=code, name=name))
-
-    result = sorted(result, key=lambda lang: lang['name'].lower())
-
-    _ACTIVE_LANGUAGES = result
-
-    return result
-
-
-def rtl_context_stuff(locale):
+def rtl_context_stuff(locale_identifier):
     """
     This is to accomodate the old templating stuff, which requires:
      - text_orientation
@@ -147,31 +155,31 @@ def rtl_context_stuff(locale):
     We could probably adjust the templates to just use
     text_orientation but maybe we'll do that later.
     """
-    text_orientation = get_locale_text_orientation(locale)
+    text_orientation = get_locale_text_orientation(locale_identifier)
 
     # 'rtl' if the request locale is represented right-to-left;
     # otherwise an empty string.
-    is_rtl = text_orientation == 'rtl'
+    is_rtl = text_orientation == "rtl"
 
     # Return the appropriate alignment for the request locale:
     # 'text-align:right' or 'text-align:left'.
-    if text_orientation == 'rtl':
-        is_rtl_align = 'text-align: right'
+    if text_orientation == "rtl":
+        is_rtl_align = "text-align: right"
     else:
-        is_rtl_align = 'text-align: left'
+        is_rtl_align = "text-align: left"
 
-    return {'get_ltr_rtl': text_orientation,
-            'is_rtl': is_rtl,
-            'is_rtl_align': is_rtl_align}
-
-
-CACHED_APPLICABLE_LANGS = {}
-CACHED_WELL_TRANSLATED_LANGS = {}
+    return {
+        "get_ltr_rtl": text_orientation,
+        "is_rtl": is_rtl,
+        "is_rtl_align": is_rtl_align,
+    }
 
 
-def get_well_translated_langs(threshold=settings.TRANSLATION_THRESHOLD,
-                              trans_file=DEFAULT_CSV_FILE,
-                              append_english=True):
+def get_well_translated_langs(
+    threshold=settings.TRANSLATION_THRESHOLD,
+    trans_file=DEFAULT_CSV_FILE,
+    append_english=True,
+):
     """
     Get an alphebatized and name-rendered list of all languages above
     a certain threshold of translation.
@@ -201,13 +209,17 @@ def get_well_translated_langs(threshold=settings.TRANSLATION_THRESHOLD,
 
     trans_stats = get_all_trans_stats(trans_file)
 
-    qualified_langs = set([
-        lang for lang, data in trans_stats.items()
-        if data['percent_trans'] >= threshold])
+    qualified_langs = set(
+        [
+            lang
+            for lang, data in trans_stats.items()
+            if data["percent_trans"] >= threshold
+        ]
+    )
 
     # Add english if necessary.
-    if not 'en' in qualified_langs and append_english:
-        qualified_langs.add('en')
+    if "en" not in qualified_langs and append_english:
+        qualified_langs.add("en")
 
     # this loop is long hand for clarity; it's only done once, so
     # the additional performance cost should be negligible
@@ -220,7 +232,7 @@ def get_well_translated_langs(threshold=settings.TRANSLATION_THRESHOLD,
             name = gettext(mappers.LANG_MAP[code])
             result.append(dict(code=code, name=name))
 
-    result = sorted(result, key=lambda lang: lang['name'].lower())
+    result = sorted(result, key=lambda lang: lang["name"].lower())
 
     CACHED_WELL_TRANSLATED_LANGS[cache_key] = result
 
@@ -231,6 +243,7 @@ def ugettext_for_locale(locale):
     def _wrapped_ugettext(message):
         with translation.override(locale):
             return force_text(message)
+
     return _wrapped_ugettext
 
 
@@ -262,25 +275,27 @@ def get_all_trans_stats(trans_file=DEFAULT_CSV_FILE):
 
     if not os.path.exists(trans_file):
         raise IOError(
-            f"No such CSV file {trans_file}.  Maybe run `python manage.py transstats`?")
+            f"No such CSV file {trans_file}.  Maybe run `python manage.py transstats`?"
+        )
 
-    reader = csv.DictReader(open(trans_file, 'r'), CSV_HEADERS)
+    reader = csv.DictReader(open(trans_file, "r"), CSV_HEADERS)
     stats = {}
 
     # record statistics
     for line in reader:
-        num_messages = int(line['num_messages'])
-        num_trans = int(line['num_trans'])
-        num_fuzzy = int(line['num_fuzzy'])
+        num_messages = int(line["num_messages"])
+        num_trans = int(line["num_trans"])
+        num_fuzzy = int(line["num_fuzzy"])
         num_untrans = num_messages - num_trans - num_fuzzy
-        percent_trans = int(line['percent_trans'])
+        percent_trans = int(line["percent_trans"])
 
-        stats[line['lang']] = {
-            'num_messages': num_messages,
-            'num_trans': num_trans,
-            'num_fuzzy': num_fuzzy,
-            'num_untrans': num_untrans,
-            'percent_trans': percent_trans}
+        stats[line["lang"]] = {
+            "num_messages": num_messages,
+            "num_trans": num_trans,
+            "num_fuzzy": num_fuzzy,
+            "num_untrans": num_untrans,
+            "percent_trans": percent_trans,
+        }
 
     # cache and return
     CACHED_TRANS_STATS[trans_file] = stats
@@ -296,10 +311,10 @@ def render_template(request, locale, template_path, context):
     # template = TEMPLATE_ENV.get_template(template_path)
     template = get_template(template_path)
 
-    context['request'] = request
-    context['locale'] = locale
-    if not 'gettext' in context:
-       context['gettext'] = ugettext_for_locale(locale)
+    context["request"] = request
+    context["locale"] = locale
+    if "gettext" not in context:
+        context["gettext"] = ugettext_for_locale(locale)
 
     rendered = template.render(context)
 
@@ -310,11 +325,52 @@ def locale_to_lower_upper(locale):
     """
     Take a locale, regardless of style, and format it like "en_US"
     """
-    if '-' in locale:
-        lang, country = locale.split('-', 1)
-        return '%s_%s' % (lang.lower(), country.upper())
-    elif '_' in locale:
-        lang, country = locale.split('_', 1)
-        return '%s_%s' % (lang.lower(), country.upper())
+    if "-" in locale:
+        lang, country = locale.split("-", 1)
+        return "%s_%s" % (lang.lower(), country.upper())
+    elif "_" in locale:
+        lang, country = locale.split("_", 1)
+        return "%s_%s" % (lang.lower(), country.upper())
     else:
         return locale.lower()
+
+
+def negotiate_locale(locale):
+    """
+    Choose the appropriate locale, using fallbacks, given the
+    'requested' locale.
+
+    Actually just a wrapper function for applicable_langs().
+    """
+    return applicable_langs(locale)[0]
+
+
+def applicable_langs(locale):
+    """
+    Return all available languages "applicable" to a requested locale.
+    """
+    cache_key = (locale,)
+    if cache_key in CACHED_APPLICABLE_LANGS:
+        return CACHED_APPLICABLE_LANGS[cache_key]
+
+    mo_path = settings.LOCALE_PATHS[0]
+
+    applicable_langs = []
+    if os.path.exists(os.path.join(mo_path, locale)):
+        applicable_langs.append(locale)
+
+    if "_" in locale:
+        root_lang = locale.split("_")[0]
+        if os.path.exists(os.path.join(mo_path, root_lang)):
+            applicable_langs.append(root_lang)
+
+    if "en" not in applicable_langs:
+        applicable_langs.append("en")
+
+    # Don't cache silly languages that only fallback to en anyway, to
+    # (semi-)prevent caching infinite amounts of BS
+    if not locale == "en" and len(applicable_langs) == 1:
+        return applicable_langs
+
+    CACHED_APPLICABLE_LANGS[cache_key] = applicable_langs
+    return applicable_langs

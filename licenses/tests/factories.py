@@ -66,6 +66,7 @@ class LicenseFactory(factory.DjangoModelFactory):
     prohibits_commercial_use = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_high_income_nation_use = factory.fuzzy.FuzzyChoice([False, True])
     jurisdiction = factory.SubFactory(JurisdictionFactory)
+    creator = factory.SubFactory(CreatorFactory, url="http://creativecommons.org")
 
     @post_generation
     def post(obj, create, extracted, **kwargs):

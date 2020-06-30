@@ -4,7 +4,7 @@ from deeds.views import license_deed_view
 
 
 """
-Example deeds at 
+Example deeds at
 
 https://creativecommons.org/licenses/by/4.0/
 https://creativecommons.org/licenses/by/4.0/deed.it

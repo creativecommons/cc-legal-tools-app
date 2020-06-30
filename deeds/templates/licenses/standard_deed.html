@@ -96,7 +96,7 @@
     <h3 style="text-align: center">{% blocktrans %}Under the following terms:{% endblocktrans %}</h3>
 
     <ul dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}" class="license-properties col-md-offset-2 col-md-8">
-      {% if conditions.by %}
+      {% if license.requires_attribution %}
       <li class="license by">
           <p>
             <strong>{% blocktrans %}Attribution{% endblocktrans %}</strong> &mdash; <span rel="cc:requires"
@@ -115,7 +115,7 @@
             <input id="license-code" type="hidden"
                    value="CC {{ license.license_code.upper }} {{ license.version }}" />
             <input id="license-url" type="hidden"
-                   value="{{ license.uri }}" />
+                   value="{{ license.about }}" />
             <a href="" id="attribution_help" class="helpLink">
               <img src="{% static 'images/information.png' %}"
                    alt="{% blocktrans %}Information{% endblocktrans %}" />
@@ -123,7 +123,7 @@
           </p>
         </li>
       {% endif %}
-      {% if conditions.nc %}
+      {% if license.prohibits_commercial_use %}
       <li class="license nc"
           rel="cc:prohibits"
           resource="http://creativecommons.org/ns#CommercialUse">
@@ -133,7 +133,7 @@
           </p>
       </li>
       {% endif %}
-      {% if conditions.nd %}
+      {% if not license.permits_derivative_works %}
       <li class="license nd">
           <p>
             <strong>{% blocktrans %}NoDerivatives{% endblocktrans %}</strong> &mdash; {% blocktrans %}If you <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
@@ -141,7 +141,7 @@
           </p>
       </li>
       {% endif %}
-      {% if conditions.sa %}
+      {% if license.requires_share_alike %}
       <li class="license sa"
           rel="cc:requires"
           resource="http://creativecommons.org/ns#ShareAlike">
@@ -185,7 +185,7 @@
       <div class="row">
       <div id="deed-newer" class="col-md-offset-2 col-md-8 alert alert-warning" tal:condition="">
         <p>
-          {% blocktrans with current_version_url=license.current_version.uri %}A <a href="{{ current_version_url }}">new version</a> of this license is available. You should use it for new works, and you may want to relicense existing works under it. No works are <em>automatically</em> put under the new license, however.{% endblocktrans %}
+          {% blocktrans with current_version_url=license.is_replaced_by.about %}A <a href="{{ current_version_url }}">new version</a> of this license is available. You should use it for new works, and you may want to relicense existing works under it. No works are <em>automatically</em> put under the new license, however.{% endblocktrans %}
         </p>
       </div>
       </div>

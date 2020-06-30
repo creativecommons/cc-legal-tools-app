@@ -19,6 +19,7 @@
 
 -->
 	    
+{% load i18n static %}
 <!DOCTYPE html>{% load i18n %}
 <html lang="en-US" prefix="og: http://ogp.me/ns#" class="no-js">
 <head>
@@ -30,37 +31,9 @@
 
     <link rel="alternate" type="application/rss+xml" title="Creative Commons &raquo; Feed" href="https://creativecommons.org/feed/" />
     <link rel="alternate" type="application/rss+xml" title="Creative Commons &raquo; Comments Feed" href="https://creativecommons.org/comments/feed/" />
-    <link rel='stylesheet' id='twentysixteen-jetpack-css'  href='https://creativecommons.org/wp-content/plugins/jetpack/modules/theme-tools/compat/twentysixteen.css?ver=4.0.3' type='text/css' media='all' />
-    <link rel='stylesheet' id='cc-donate-css'  href='https://creativecommons.org/wp-content/plugins/cc-donate/css/cc-donate.css?ver=4.5.2' type='text/css' media='all' />
-    <link rel='stylesheet' id='parent-style-css'  href='https://creativecommons.org/wp-content/themes/twentysixteen/style.css?ver=4.5.2' type='text/css' media='all' />
-    <link rel="stylesheet" id="cc-fontello-css" href="https://ccstatic.org/ccwww2016/fonts/fontello/css/cc-fontello.css" type="text/css" media="all">
-    <link rel='stylesheet' id='cc-style-css'  href='https://creativecommons.org/wp-content/themes/cc/css/app.css?ver=20160608' type='text/css' media='all' />
-    <link rel='stylesheet' id='cc-style-css'  href='https://ccstatic.org/ccwww2016/css/static.css' type='text/css' media='all' />
-    <link rel='stylesheet' id='twentysixteen-style-css'  href='https://creativecommons.org/wp-content/themes/cc/style.css?ver=4.5.2' type='text/css' media='all' />
-    <!--[if lt IE 10]>
-    <link rel='stylesheet' id='twentysixteen-ie-css'  href='https://creativecommons.org/wp-content/themes/twentysixteen/css/ie.css?ver=20160412' type='text/css' media='all' />
-    <![endif]-->
-    <!--[if lt IE 9]>
-    <link rel='stylesheet' id='twentysixteen-ie8-css'  href='https://creativecommons.org/wp-content/themes/twentysixteen/css/ie8.css?ver=20160412' type='text/css' media='all' />
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel='stylesheet' id='twentysixteen-ie7-css'  href='https://creativecommons.org/wp-content/themes/twentysixteen/css/ie7.css?ver=20160412' type='text/css' media='all' />
-    <![endif]-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js" integrity="sha256-SOuLUArmo4YXtXONKz+uxIGSKneCJG4x0nVcA0pFzV0=" crossorigin="anonymous"></script>
-    <!--[if lt IE 9]>
-    <script type='text/javascript' src='https://creativecommons.org/wp-content/themes/twentysixteen/js/html5.js?ver=3.7.3'></script>
-    <![endif]-->
-
     <link rel="icon" href="https://creativecommons.org/wp-content/uploads/2016/05/cc-site-icon-300x300.png" sizes="192x192" />
     <link rel="apple-touch-icon-precomposed" href="https://creativecommons.org/wp-content/uploads/2016/05/cc-site-icon-300x300.png" />
     <meta name="msapplication-TileImage" content="https://creativecommons.org/wp-content/uploads/2016/05/cc-site-icon-300x300.png" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
-
-      {% if is_rtl %}
-    <link rel="stylesheet" type="text/css"
-          href="/wp-content/themes/creativecommons.org/engine-rtl.css" />
-  {% endif %}
 
   <script type="text/javascript"
       src="{% static 'includes/license-results.js' %}" >

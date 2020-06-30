@@ -2,7 +2,7 @@ from distutils.version import StrictVersion
 import re
 import urllib.parse
 from functools import wraps
-from typing import List, Optional
+from typing import Iterable
 
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render
@@ -12,9 +12,8 @@ from i18n.utils import (
     get_well_translated_langs,
     locale_to_lower_upper,
     rtl_context_stuff,
-    render_template,
+    render_template, negotiate_locale,
 )
-from deeds.locale_negotiation import negotiate_locale
 from licenses import FREEDOM_COLORS
 from licenses.models import License, TranslatedLicenseName
 
@@ -64,7 +63,7 @@ DEED_TEMPLATE_MAPPING = {
 
 
 # For removing the deed.foo section of a deed url
-REMOVE_DEED_URL_RE = re.compile("^(.*?/)(?:deed)?(?:\..*)?$")
+REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def license_deed_view(
@@ -92,13 +91,18 @@ def license_deed_view(
     license = License.objects.filter(**license_kwargs).first()
 
     if not license:
-        license_versions = catch_license_versions_from_request(
-            license_code=license_code, jurisdiction=jurisdiction, target_lang=target_lang
+        print("License not found, checking close matches")
+        licenses = catch_license_versions_from_request(
+            license_code=license_code,
+            jurisdiction=jurisdiction,
+            target_lang=target_lang,
         )
+        print("Found %d versions" % len(licenses))
 
-        if license_versions:
+        if licenses:
             # If we can't get it, but others of that code exist, give
             # a special 404.
+            print("404 but license catcher page")
             return license_catcher(request, license_code, target_lang, jurisdiction)
         else:
             # Otherwise, give the normal 404.
@@ -143,10 +147,6 @@ def license_deed_view(
         # don't have one for that language, use default
         license_title = license.translated_title()
 
-    conditions = {}
-    for code in license.license_code.split("-"):
-        conditions[code] = 1
-
     # Find out all the active languages
     active_languages = get_well_translated_langs()
     negotiated_locale = negotiate_locale(target_lang)
@@ -182,7 +182,6 @@ def license_deed_view(
         "multi_language": multi_language,
         "legalcodes": legalcodes,
         "color": color,
-        "conditions": conditions,
         "active_languages": active_languages,
         "target_lang": target_lang,
         "jurisdiction": kwargs["jurisdiction"],
@@ -193,35 +192,25 @@ def license_deed_view(
     return HttpResponse(render_template(request, target_lang, main_template, context))
 
 
-def sort_licenses(x: License, y: License) -> int:
+def sort_licenses(x: License) -> int:
     """
     Sort function for licenses (use as key in `sort` and `sorted`).
     Sorts by version, ascending.
     """
-    x_version = StrictVersion(x.version)
-    y_version = StrictVersion(y.version)
-
-    if x_version > y_version:
-        return 1
-    elif x_version == y_version:
-        return 0
-    else:
-        return -1
+    return StrictVersion(x.version)
 
 
 ALL_POSSIBLE_VERSIONS_CACHE = {}
 
 
-def all_possible_license_versions(
-    search_args: dict
-) -> List[str]:
+def all_possible_license_versions(search_args: dict) -> Iterable[License]:
     """
     Given a license code and optional jurisdiction, determine all
     possible license versions available.
     'jurisdiction' should be a short code and not a jurisdiction URI.
 
     Returns:
-     A list of URIs.
+     An iterable of License objects
     """
     code = search_args.get("code", None)
     jurisdiction = search_args.get("jurisdiction", None)
@@ -239,35 +228,30 @@ def all_possible_license_versions(
             "jurisdiction__url"
         ] = f"http://creativecommons.org/international/{jurisdiction}/"
     if target_lang:
-        license_kwargs[
-            "legalcodes__language__code"
-        ] = target_lang
+        license_kwargs["legalcodes__language__code"] = target_lang
 
-    license_results = [
-        license.about
-        for license in sorted(
-            License.objects.filter(**license_kwargs), key=sort_licenses
-        )
-    ]
+    license_results = sorted(
+        License.objects.filter(**license_kwargs), key=sort_licenses
+    )
     ALL_POSSIBLE_VERSIONS_CACHE[cache_key] = license_results
     return license_results
 
 
 def catch_license_versions_from_request(
     *, license_code: str, jurisdiction: str, target_lang: str
-) -> List[str]:
+) -> Iterable[License]:
     """
     If we're a view that tries to figure out what alternate licenses
     might exist from the user's request, this utility helps look for
     those.
 
-    Returns a list of license URLs.
+    Returns an iterable of License objects.
     """
 
-    license_versions = []
+    licenses = []
     # Most wide search is by code. Lines below this insert more specific
     # searches before this one if we have the information to do those searches.
-    searches = [{"code": license_code,}]
+    searches = [{"code": license_code}]
     if license_code == "by-nc-nd":
         # Some older licenses have nc, nd in the opposite order
         searches.append({"code": "by-nd-nc"})
@@ -283,11 +267,11 @@ def catch_license_versions_from_request(
             searches.insert(0, dict(search, target_lang=target_lang))
 
     for search_args in searches:
-        license_versions += all_possible_license_versions(search_args)
-        if license_versions:
+        licenses += all_possible_license_versions(search_args)
+        if licenses:
             break
 
-    return license_versions
+    return licenses
 
 
 def get_license(view):
@@ -318,53 +302,53 @@ def get_license(view):
     return new_view_func
 
 
-@get_license
-def license_rdf_view(request, license):
-    rdf_response = Response(file(license_rdf_filename(license.uri)).read())
-    rdf_response.headers["Content-Type"] = "application/rdf+xml; charset=UTF-8"
-    return rdf_response
-
-
-@get_license
-def license_legalcode_view(request, license):
-    return Response("license legalcode")
-
-
-@get_license
-def license_legalcode_plain_view(request, license):
-    parser = etree.HTMLParser()
-    legalcode = etree.fromstring(fetch_https(license.uri + "legalcode"), parser)
-
-    # remove the CSS <link> tags
-    for tag in legalcode.iter("link"):
-        tag.getparent().remove(tag)
-
-    # remove the img tags
-    for tag in legalcode.iter("img"):
-        tag.getparent().remove(tag)
-
-    # remove anchors
-    for tag in legalcode.iter("a"):
-        tag.getparent().remove(tag)
-
-    # remove //p[@id="header"]
-    header_selector = CSSSelector("#header")
-    for p in header_selector(legalcode):
-        p.getparent().remove(p)
-
-    # add our base CSS into the mix
-    etree.SubElement(
-        legalcode.find("head"),
-        "link",
-        {
-            "rel": "stylesheet",
-            "type": "text/css",
-            "href": "https://yui.yahooapis.com/2.6.0/build/fonts/fonts-min.css",
-        },
-    )
-
-    # return the serialized document
-    return HttpResponse(etree.tostring(legalcode))
+# @get_license
+# def license_rdf_view(request, license):
+#     rdf_response = Response(file(license_rdf_filename(license.about)).read())
+#     rdf_response.headers["Content-Type"] = "application/rdf+xml; charset=UTF-8"
+#     return rdf_response
+#
+#
+# @get_license
+# def license_legalcode_view(request, license):
+#     return Response("license legalcode")
+#
+#
+# @get_license
+# def license_legalcode_plain_view(request, license):
+#     parser = etree.HTMLParser()
+#     legalcode = etree.fromstring(fetch_https(license.about + "legalcode"), parser)
+#
+#     # remove the CSS <link> tags
+#     for tag in legalcode.iter("link"):
+#         tag.getparent().remove(tag)
+#
+#     # remove the img tags
+#     for tag in legalcode.iter("img"):
+#         tag.getparent().remove(tag)
+#
+#     # remove anchors
+#     for tag in legalcode.iter("a"):
+#         tag.getparent().remove(tag)
+#
+#     # remove //p[@id="header"]
+#     header_selector = CSSSelector("#header")
+#     for p in header_selector(legalcode):
+#         p.getparent().remove(p)
+#
+#     # add our base CSS into the mix
+#     etree.SubElement(
+#         legalcode.find("head"),
+#         "link",
+#         {
+#             "rel": "stylesheet",
+#             "type": "text/css",
+#             "href": "https://yui.yahooapis.com/2.6.0/build/fonts/fonts-min.css",
+#         },
+#     )
+#
+#     # return the serialized document
+#     return HttpResponse(etree.tostring(legalcode))
 
 
 # This function could probably use a better name, but I can't think of
@@ -376,32 +360,39 @@ def license_catcher(
     If someone chooses something like /licenses/by/ (fails to select a
     version, etc) help point them to the available licenses.
     """
-    license_versions = catch_license_versions_from_request(
+    licenses = catch_license_versions_from_request(
         license_code=license_code, jurisdiction=jurisdiction, target_lang=target_lang,
     )
+    # Returns an iterable of License objects
 
-    if not license_versions:
+    if not licenses:
         return HttpResponseNotFound()
 
     context = {
         "request": request,
-        "license_versions": reversed(license_versions),
-        "license_class": license_versions[0].license_class,
+        "license_versions": reversed(licenses),
+        "license_class": licenses[0].license_class,
         "page_style": "bare",
-        "target_lang": target_lang,
     }
-    context.update(rtl_context_stuff(target_lang))
-
-    # This is a helper page, but it's still for not-found situations.
-    # 404!
-    with translation.override(target_lang):
+    if target_lang:
+        context["target_lang"] = target_lang
+        context.update(rtl_context_stuff(target_lang))
+        with translation.override(target_lang):
+            # This is a helper page, but it's still for not-found situations.
+            # 404!
+            return render(
+                request, "catalog_pages/license_catcher.html", context, status=404,
+            )
+    else:
+        # This is a helper page, but it's still for not-found situations.
+        # 404!
         return render(
             request, "catalog_pages/license_catcher.html", context, status=404,
         )
-
-
-def moved_permanently_redirect(request):
-    """
-    General method for redirecting to something that's moved permanently
-    """
-    return exc.HTTPMovedPermanently(location=request.matchdict["redirect_to"])
+#
+#
+# def moved_permanently_redirect(request):
+#     """
+#     General method for redirecting to something that's moved permanently
+#     """
+#     return exc.HTTPMovedPermanently(location=request.matchdict["redirect_to"])
