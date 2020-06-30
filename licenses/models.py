@@ -9,8 +9,12 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
+import urllib
+
 from django.db import models
 from django.utils import translation
+
+from licenses import FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MAX
 
 
 class Creator(models.Model):
@@ -26,6 +30,14 @@ class Jurisdiction(models.Model):
     )
     # FIXME: Where to get data on jurisdictions' default languages?
     default_language = models.ForeignKey("Language", null=True, on_delete=models.CASCADE)
+
+    @property
+    def code(self):
+        pieces = urllib.parse.urlsplit(self.url).path.strip('/').split('/')
+        try:
+            return pieces[1]
+        except IndexError:
+            return ""
 
     def __str__(self):
         return self.url
@@ -153,9 +165,31 @@ class License(models.Model):
 
     def translated_title(self, language_code=None):
         if not language_code:
+            # Use current language
             language_code = translation.get_language()
         translated_license_name = self.names.get(language__code=language_code)
         return translated_license_name.name
+
+    def legalcodes_for_language(self, target_lang: str):
+        """Returns queryset of LegalCode"""
+        return self.legalcodes.filter(language__code=target_lang)
+
+    @property
+    def level_of_freedom(self):
+        if self.license_code in ("devnations", "sampling"):
+            return FREEDOM_LEVEL_MIN
+        elif (
+            self.license_code.find("sampling") > -1
+            or self.license_code.find("nc") > -1
+            or self.license_code.find("nd") > -1
+        ):
+            return FREEDOM_LEVEL_MID
+        else:
+            return FREEDOM_LEVEL_MAX
+
+    @property
+    def superseded(self):
+        return self.is_replaced_by is not None
 
 
 class TranslatedLicenseName(models.Model):

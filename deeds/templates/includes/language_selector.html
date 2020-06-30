@@ -1,0 +1,19 @@
+{% load i18n %}
+<div id="language-selector-block" class="container">
+  <div class="language-selector-inner">
+    <span dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}">
+      {% blocktrans %}This page is available in the following languages:{% endblocktrans %}
+    </span>
+
+    <img class="language-icon" src="/images/language_icon_x2.png" alt="Languages" />
+
+    <select>
+      {% for lang in active_languages %}
+      <option value="{{ lang.code}}"{% if target_lang == lang.code %} selected="selected"{% endif %}>
+        {{ lang.name }}
+      </option>
+      {% endfor %}
+    </select>
+
+  </div>
+</div>

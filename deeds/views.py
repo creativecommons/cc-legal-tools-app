@@ -1,11 +1,10 @@
 from distutils.version import StrictVersion
 import re
-import urllib
+import urllib.parse
 from functools import wraps
 from typing import List, Optional
 
-import requests
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import translation
 
@@ -25,8 +24,11 @@ from deeds import util
 #
 # from cc.i18n.util import locale_to_lower_upper
 # from deeds.util import locale_to_lower_upper, locale_to_lower_lower, get_well_translated_langs, negotiate_locale
-from deeds.util import locale_to_lower_upper, locale_to_lower_lower
-from licenses.models import Language, License, Jurisdiction
+# from deeds.util import locale_to_lower_upper, get_well_translated_langs, negotiate_locale
+from deeds.util import get_well_translated_langs
+from deeds.locale_negotiation import negotiate_locale
+from licenses import FREEDOM_COLORS
+from licenses.models import License, TranslatedLicenseName
 
 
 # def fetch_https(uri):
@@ -61,7 +63,6 @@ from licenses.models import Language, License, Jurisdiction
 #             "locale": target_lang,
 #         }
 #     )
-
 
 DEED_TEMPLATE_MAPPING = {
     "sampling": "licenses/sampling_deed.html",
@@ -102,11 +103,6 @@ def license_deed_view(
 
     license = License.objects.filter(**license_kwargs).first()
 
-    # FIXME: Do we need the logic from here?
-    # license = by_code(
-    #     request.matchdict['code'],
-    #     jurisdiction=request.matchdict.get('jurisdiction'),
-    #     version=request.matchdict.get('version'))
     if not license:
         license_versions = catch_license_versions_from_request(
             license_code, version, target_lang, jurisdiction
@@ -115,26 +111,18 @@ def license_deed_view(
         if license_versions:
             # If we can't get it, but others of that code exist, give
             # a special 404.
-            return license_catcher(request)
+            return license_catcher(request, target_lang, jurisdiction)
         else:
             # Otherwise, give the normal 404.
-            return exc.HTTPNotFound()
+            print("good old not found")
+            return HttpResponseNotFound()
 
     ####################
     # Everything else ;)
     ####################
     # "color" of the license; the color reflects the relative amount
     # of freedom.
-    if license.license_code in ("devnations", "sampling"):
-        color = "red"
-    elif (
-        license.license_code.find("sampling") > -1
-        or license.license_code.find("nc") > -1
-        or license.license_code.find("nd") > -1
-    ):
-        color = "yellow"
-    else:
-        color = "green"
+    color = FREEDOM_COLORS[license.level_of_freedom]
 
     # Get the language this view will be displayed in.
     #  - First checks to see if the routing matchdict specifies the language
@@ -143,7 +131,7 @@ def license_deed_view(
     #  - Otherwise it's english!
     if target_lang:
         pass
-    elif license.jurisdiction.default_language:
+    elif license.jurisdiction and license.jurisdiction.default_language:
         target_lang = locale_to_lower_upper(license.jurisdiction.default_language.code)
     else:
         target_lang = "en"
@@ -151,22 +139,17 @@ def license_deed_view(
     # True if the legalcode for this license is available in
     # multiple languages (or a single language with a language code different
     # than that of the jurisdiction).
-    #
-    # Stored in the RDF, we'll just check license.legalcodes() :)
-    legalcodes = license.legalcodes(target_lang)
-    if len(legalcodes) > 1 or list(legalcodes)[0][2] is not None:
+    legalcodes = license.legalcodes_for_language(target_lang)
+    if len(legalcodes) > 1:  #or list(legalcodes)[0][2] is not None:
         multi_language = True
-        legalcodes = sorted(legalcodes, key=lambda lc: lc[2])
+        legalcodes = sorted(legalcodes, key=lambda lc: lc[2])  # FIXME: What is this supposed to be sorting by?
     else:
         multi_language = False
 
-    # Use the lower-dash style for all RDF-related locale stuff
-    rdf_style_target_lang = locale_to_lower_lower(target_lang)
-
     license_title = None
     try:
-        license_title = license.translated_title(rdf_style_target_lang)
-    except KeyError:
+        license_title = license.translated_title(target_lang)
+    except TranslatedLicenseName.DoesNotExist:
         # don't have one for that language, use default
         license_title = license.translated_title()
 
@@ -183,7 +166,7 @@ def license_deed_view(
     if target_lang != negotiated_locale:
         base_url = REMOVE_DEED_URL_RE.match(request.path_info).groups()[0]
         redirect_to = base_url + "deed." + negotiated_locale
-        return exc.HTTPFound(location=redirect_to)
+        return HttpResponseRedirect(redirect_to=redirect_to)
 
     main_template = DEED_TEMPLATE_MAPPING.get(
         license.license_code, "licenses/standard_deed.html"
@@ -191,20 +174,21 @@ def license_deed_view(
 
     # We're not using reverse() here because the chooser isn't part
     # of this project.
+    kwargs = {
+        "license_code": license.license_code,
+        "jurisdiction": license.jurisdiction and license.jurisdiction.url or "",
+        "version": license.version,
+        "lang": target_lang,
+    }
+
     get_this = (
-        "/choose/results-one?license_code=%s&amp;jurisdiction=%s&amp;version=%s&amp;lang=%s"
-        % (
-            urllib.quote(license.license_code),
-            license.jurisdiction.code,
-            license.version,
-            target_lang,
-        )
+        "/choose/results-one?%s" % urllib.parse.urlencode(kwargs)
     )
 
     context = {
         "request": request,
         "license_code": license.license_code,
-        "license_code_quoted": urllib.quote(license.license_code),
+        "license_code_quoted": urllib.parse.quote(license.license_code),
         "license_title": license_title,
         "license": license,
         "multi_language": multi_language,
@@ -213,7 +197,7 @@ def license_deed_view(
         "conditions": conditions,
         "active_languages": active_languages,
         "target_lang": target_lang,
-        "jurisdiction": license.jurisdiction.code,
+        "jurisdiction": kwargs["jurisdiction"],
         "get_this": get_this,
     }
     context.update(util.rtl_context_stuff(target_lang))
@@ -379,7 +363,7 @@ def license_legalcode_plain_view(request, license):
     )
 
     # return the serialized document
-    return Response(etree.tostring(legalcode))
+    return HttpResponse(etree.tostring(legalcode))
 
 
 # This function could probably use a better name, but I can't think of
@@ -394,7 +378,7 @@ def license_catcher(request, target_lang: str, jurisdiction: str) -> HttpRespons
     license_versions = util.catch_license_versions_from_request(request)
 
     if not license_versions:
-        return exc.HTTPNotFound()
+        return HttpResponseNotFound()
 
     context = {
         "request": request,

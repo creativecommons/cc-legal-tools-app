@@ -1,5 +1,7 @@
 import factory
 import factory.fuzzy
+from django.utils import translation
+from factory import post_generation
 
 from licenses.models import (
     License,
@@ -63,6 +65,12 @@ class LicenseFactory(factory.DjangoModelFactory):
     requires_source_code = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_commercial_use = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_high_income_nation_use = factory.fuzzy.FuzzyChoice([False, True])
+    jurisdiction = factory.SubFactory(JurisdictionFactory)
+
+    @post_generation
+    def post(obj, create, extracted, **kwargs):
+        if not obj.names.count():
+            TranslatedLicenseNameFactory(license=obj, language__code=translation.get_language())
 
 
 class LicenseLogoFactory(factory.DjangoModelFactory):

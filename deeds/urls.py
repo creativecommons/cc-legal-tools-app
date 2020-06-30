@@ -77,21 +77,21 @@ urlpatterns = [
     path(
         "<code:license_code>/<version:version>/deed.<lang:target_lang>",
         license_deed_view,
-        "license_deed_lang",
+        name="license_deed_lang",
     ),
     path(
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
         license_deed_view,
-        "license_deed_jurisdiction",
+        name="license_deed_jurisdiction",
     ),
     path(
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed",
         license_deed_view,
-        "license_deed_jurisdiction_explicit",
+        name="license_deed_jurisdiction_explicit",
     ),
     path(
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
         license_deed_view,
-        "license_deed_lang_jurisdiction",
+        name="license_deed_lang_jurisdiction",
     ),
 ]
