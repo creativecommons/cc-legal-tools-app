@@ -6,11 +6,7 @@ machine:
 dependencies:
   override:
     - pip install -U pip
-    - pip install -r requirements/dev.txt
-    - nvm install 4.2
-    - nvm use 4.2
-    - npm install
-    - npm install -g jshint
+    - pip install -U -r requirements/dev.txt
 test:
   override:
     - make -k
