@@ -67,22 +67,9 @@ register_converter(LangConverter, "lang")
 
 urlpatterns = [
     path(
-        "<code:license_code>/<version:version>/", license_deed_view, name="license_deed"
-    ),
-    path(
-        "<code:license_code>/<version:version>/deed",
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
         license_deed_view,
-        name="license_deed_explicit",
-    ),
-    path(
-        "<code:license_code>/<version:version>/deed.<lang:target_lang>",
-        license_deed_view,
-        name="license_deed_lang",
-    ),
-    path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
-        license_deed_view,
-        name="license_deed_jurisdiction",
+        name="license_deed_lang_jurisdiction",
     ),
     path(
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed",
@@ -90,8 +77,21 @@ urlpatterns = [
         name="license_deed_jurisdiction_explicit",
     ),
     path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
+        "<code:license_code>/<version:version>/deed.<lang:target_lang>",
         license_deed_view,
-        name="license_deed_lang_jurisdiction",
+        name="license_deed_lang",
+    ),
+    path(
+        "<code:license_code>/<version:version>/deed",
+        license_deed_view,
+        name="license_deed_explicit",
+    ),
+    path(
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
+        license_deed_view,
+        name="license_deed_jurisdiction",
+    ),
+    path(
+        "<code:license_code>/<version:version>/", license_deed_view, name="license_deed"
     ),
 ]

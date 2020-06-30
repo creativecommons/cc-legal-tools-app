@@ -1,11 +1,22 @@
-{% load i18n %}
+{% load i18n static %}
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
     <div class="cc-footer">
       <div class="column cc-footer-main">
         <div class="cc-footer-logo">
-          <a href="https://creativecommons.org/" class="custom-logo-link" rel="home" itemprop="url"><img width="980" height="240" src="https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_.png" class="custom-logo" alt="cc.logo.white" itemprop="logo" srcset="https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_.png 980w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-300x73.png 300w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-768x188.png 768w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-140x34.png 140w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-50x12.png 50w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-270x66.png 270w, https://creativecommons.org/wp-content/uploads/2016/06/cc.logo_.white_-245x60.png 245w" sizes="(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 1362px) 62vw, 840px" /></a>
+          <a href="https://creativecommons.org/" class="custom-logo-link" rel="home" itemprop="url">
+            <img width="980" height="240"
+                src="{% static '/images/cc.logo_.white_.png' %}"
+                class="custom-logo" alt="cc.logo.white" itemprop="logo"
+                srcset="{% static '/images/cc.logo_.white_.png' %} %} 980w,
+                {% static '/images/cc.logo_.white_-300x73.png' %} 300w,
+                {% static '/images/cc.logo_.white_-768x188.png' %} 768w,
+                {% static '/images/cc.logo_.white_-140x34.png' %} 140w,
+                {% static '/images/cc.logo_.white_-50x12.png' %} 50w,
+                {% static '/images/cc.logo_.white_-270x66.png' %} 270w,
+                {% static '/images/cc.logo_.white_-245x60.png' %} 245w"
+                sizes="(max-width: 709px) 85vw, (max-width: 909px) 67vw, (max-width: 1362px) 62vw, 840px" /></a>
         </div>
 
         <div class="cc-footer-links">

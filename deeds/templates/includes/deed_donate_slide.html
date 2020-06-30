@@ -1,9 +1,9 @@
-{% load i18n %}
+{% load i18n static %}
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
     <div class="slide-close"></div>
-    <img src="/images/deed/logo-cc-heart-white.png" class="slide-logo" alt="" width="100" height="88" />
+    <img src="{% static '/images/deed/logo-cc-heart-white.png' %}" class="slide-logo" alt="" width="100" height="88" />
     <p class="desktop-only">{% blocktrans %}This content is freely available under simple legal terms because of Creative Commons, a non-profit that survives on donations. If you love this content, and love that it's free for everyone, please consider a donation to support our work.{% endblocktrans %}</p>
     <p class="mobile-only">{% blocktrans %}When you share, everyone wins.{% endblocktrans %}</p>
     <div class="donate-box">

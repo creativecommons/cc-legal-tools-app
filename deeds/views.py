@@ -8,24 +8,12 @@ from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import translation
 
-from deeds import util
-
-# from lxml import etree
-# from lxml.cssselect import CSSSelector
-# from webob import Response, exc
-#
-# from cc.engine.decorators import get_license
-# from cc.engine import util
-# from cc.i18n import ccorg_i18n_setup
-# from cc.i18n.util import (
-#     get_well_translated_langs, negotiate_locale, locale_to_lower_lower)
-# from cc.license import by_code
-# from cc.licenserdf.tools.license import license_rdf_filename
-#
-# from cc.i18n.util import locale_to_lower_upper
-# from deeds.util import locale_to_lower_upper, locale_to_lower_lower, get_well_translated_langs, negotiate_locale
-# from deeds.util import locale_to_lower_upper, get_well_translated_langs, negotiate_locale
-from deeds.util import get_well_translated_langs
+from i18n.utils import (
+    get_well_translated_langs,
+    locale_to_lower_upper,
+    rtl_context_stuff,
+    render_template,
+)
 from deeds.locale_negotiation import negotiate_locale
 from licenses import FREEDOM_COLORS
 from licenses.models import License, TranslatedLicenseName
@@ -95,7 +83,7 @@ def license_deed_view(
     }
 
     if target_lang:
-        license_kwargs["language__code"] = target_lang
+        license_kwargs["legalcodes__language__code"] = target_lang
     if jurisdiction:
         license_kwargs[
             "jurisdiction__url"
@@ -105,16 +93,16 @@ def license_deed_view(
 
     if not license:
         license_versions = catch_license_versions_from_request(
-            license_code, version, target_lang, jurisdiction
+            license_code=license_code, jurisdiction=jurisdiction, target_lang=target_lang
         )
 
         if license_versions:
             # If we can't get it, but others of that code exist, give
             # a special 404.
-            return license_catcher(request, target_lang, jurisdiction)
+            return license_catcher(request, license_code, target_lang, jurisdiction)
         else:
             # Otherwise, give the normal 404.
-            print("good old not found")
+            print("no license found")
             return HttpResponseNotFound()
 
     ####################
@@ -140,9 +128,11 @@ def license_deed_view(
     # multiple languages (or a single language with a language code different
     # than that of the jurisdiction).
     legalcodes = license.legalcodes_for_language(target_lang)
-    if len(legalcodes) > 1:  #or list(legalcodes)[0][2] is not None:
+    if len(legalcodes) > 1:  # or list(legalcodes)[0][2] is not None:
         multi_language = True
-        legalcodes = sorted(legalcodes, key=lambda lc: lc[2])  # FIXME: What is this supposed to be sorting by?
+        legalcodes = sorted(
+            legalcodes, key=lambda lc: lc[2]
+        )  # FIXME: What is this supposed to be sorting by?
     else:
         multi_language = False
 
@@ -181,9 +171,7 @@ def license_deed_view(
         "lang": target_lang,
     }
 
-    get_this = (
-        "/choose/results-one?%s" % urllib.parse.urlencode(kwargs)
-    )
+    get_this = "/choose/results-one?%s" % urllib.parse.urlencode(kwargs)
 
     context = {
         "request": request,
@@ -200,16 +188,14 @@ def license_deed_view(
         "jurisdiction": kwargs["jurisdiction"],
         "get_this": get_this,
     }
-    context.update(util.rtl_context_stuff(target_lang))
+    context.update(rtl_context_stuff(target_lang))
 
-    return HttpResponse(
-        util.render_template(request, target_lang, main_template, context)
-    )
+    return HttpResponse(render_template(request, target_lang, main_template, context))
 
 
 def sort_licenses(x: License, y: License) -> int:
     """
-    Sort function for licenses.
+    Sort function for licenses (use as key in `sort` and `sorted`).
     Sorts by version, ascending.
     """
     x_version = StrictVersion(x.version)
@@ -227,7 +213,7 @@ ALL_POSSIBLE_VERSIONS_CACHE = {}
 
 
 def all_possible_license_versions(
-    code: str, jurisdiction: Optional[str] = None
+    search_args: dict
 ) -> List[str]:
     """
     Given a license code and optional jurisdiction, determine all
@@ -237,6 +223,10 @@ def all_possible_license_versions(
     Returns:
      A list of URIs.
     """
+    code = search_args.get("code", None)
+    jurisdiction = search_args.get("jurisdiction", None)
+    target_lang = search_args.get("target_lang", None)
+
     cache_key = (code, jurisdiction)
     if cache_key in ALL_POSSIBLE_VERSIONS_CACHE:
         return ALL_POSSIBLE_VERSIONS_CACHE[cache_key]
@@ -248,6 +238,10 @@ def all_possible_license_versions(
         license_kwargs[
             "jurisdiction__url"
         ] = f"http://creativecommons.org/international/{jurisdiction}/"
+    if target_lang:
+        license_kwargs[
+            "legalcodes__language__code"
+        ] = target_lang
 
     license_results = [
         license.about
@@ -260,7 +254,7 @@ def all_possible_license_versions(
 
 
 def catch_license_versions_from_request(
-    license_code: str, version: str, target_lang: str, jurisdiction: str
+    *, license_code: str, jurisdiction: str, target_lang: str
 ) -> List[str]:
     """
     If we're a view that tries to figure out what alternate licenses
@@ -271,18 +265,25 @@ def catch_license_versions_from_request(
     """
 
     license_versions = []
-    searches = [[license_code]]
+    # Most wide search is by code. Lines below this insert more specific
+    # searches before this one if we have the information to do those searches.
+    searches = [{"code": license_code,}]
+    if license_code == "by-nc-nd":
+        # Some older licenses have nc, nd in the opposite order
+        searches.append({"code": "by-nd-nc"})
     if jurisdiction:
         # Look to see if there are other licenses of that code, possibly of
         # that jurisdiction.  Otherwise, we'll just look it up by code.  Also,
         # if by jurisdiction fails, by code will be the fallback.
-        searches.insert(0, [license_code, jurisdiction])
+        for search in list(searches):
+            searches.insert(0, dict(search, jurisdiction=jurisdiction))
+    if target_lang:
+        # Start by looking for this specific language.
+        for search in list(searches):
+            searches.insert(0, dict(search, target_lang=target_lang))
 
     for search_args in searches:
-        license_versions += all_possible_license_versions(*search_args)
-        if license_code == "by-nc-nd":
-            other_search = ["by-nd-nc"] + search_args[1:]
-            license_versions += all_possible_license_versions(*other_search)
+        license_versions += all_possible_license_versions(search_args)
         if license_versions:
             break
 
@@ -368,14 +369,16 @@ def license_legalcode_plain_view(request, license):
 
 # This function could probably use a better name, but I can't think of
 # one!
-def license_catcher(request, target_lang: str, jurisdiction: str) -> HttpResponse:
+def license_catcher(
+    request, license_code: str, target_lang: str, jurisdiction: str
+) -> HttpResponse:
     """
     If someone chooses something like /licenses/by/ (fails to select a
     version, etc) help point them to the available licenses.
     """
-    target_lang = util.get_target_lang_from_request(request)
-
-    license_versions = util.catch_license_versions_from_request(request)
+    license_versions = catch_license_versions_from_request(
+        license_code=license_code, jurisdiction=jurisdiction, target_lang=target_lang,
+    )
 
     if not license_versions:
         return HttpResponseNotFound()
@@ -387,16 +390,13 @@ def license_catcher(request, target_lang: str, jurisdiction: str) -> HttpRespons
         "page_style": "bare",
         "target_lang": target_lang,
     }
-    context.update(util.rtl_context_stuff(target_lang))
+    context.update(rtl_context_stuff(target_lang))
 
     # This is a helper page, but it's still for not-found situations.
     # 404!
     with translation.override(target_lang):
         return render(
-            request,
-            "catalog_pages/license_catcher.html",
-            context,
-            status=404,
+            request, "catalog_pages/license_catcher.html", context, status=404,
         )
 
 

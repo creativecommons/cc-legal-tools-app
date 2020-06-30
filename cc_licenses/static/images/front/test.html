@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+<title>Untitled</title>
+<style type="text/css">
+body {
+	background:#ccc;
+	margin:0;
+	padding:0;
+}
+
+#container {
+		margin-left:50px;
+		margin-right:50px;
+		background:white;
+		border-left:1px solid #8EA48E; 
+		border-right:1px solid #8EA48E; 
+		border-bottom:1px solid #8EA48E;
+		margin-top:0px;	
+		}
+
+		#page-body {
+		width:100%;
+		float:left;
+		margin:0px;
+		padding:0px;
+		}
+
+#browse {
+	width:25%;
+	float:left;
+}
+
+#boxes {
+	width:74%;
+	float:left;
+	text-align:center;
+}
+
+#boxes-publish {
+	width:49%;
+	float:left;
+	text-align:center;
+	cursor: pointer;
+	cursor: hand;
+}	
+
+#boxes-download {
+	width:49%;
+	float:left;
+	text-align:center;
+	cursor: pointer;
+	cursor: hand;
+}	
+
+.boxpad {
+	width:90%;
+	background:#F0E5B7 url("icons-back.gif") 0% 0% repeat-x; 
+	border:2px solid #ccc;
+	text-align:center;	
+}
+
+.buttons {
+	background:url(button-back.gif) 0% 0% repeat-x;
+}
+
+.cat {font-size: 20px; color: rgb(217, 83, 30); font-family: Arial,Helvetica,sans-serif; font-weight: normal; margin-bottom: 0px;padding-bottom:0px;text-decoration:none;
+}
+
+p.buttons {
+	font-size:11px; 
+	color:#666;
+	font-family:verdana;
+	margin-top:0px;
+	margin-bottom:20px;
+	padding-top:4px;
+    cursor: pointer;
+    cursor: hand;
+}
+
+</style>
+</head>
+<body>
+<div id="container">
+
+<div id="page-body">
+
+<div id="browse">
+<div style="padding:0px 10px;">
+
+<p class="buttons" onclick="document.location='/audio/';" title="Audio">
+<span style="float:left;margin:6px 10px 10px 10px;display:block;height:30px;"><img src="icon-audio.gif" width="15" height="15" alt="Audio" /></span> 
+<a href="/audio/" class="cat">Audio</a><br />
+music, sounds, speeches...
+</p>
+
+<p class="buttons" onclick="document.location='/images/';" title="Images">
+<span style="float:left;margin:6px 10px 10px 10px;display:block;height:30px;"><img src="icon-images.gif" width="16" height="18" alt="Images" /></span> 
+<a href="/images/" class="cat">Images</a><br />
+photos, illustrations, designs...
+</p>
+
+<p class="buttons" onclick="document.location='/video/';" title="Video">
+<span style="float:left;margin:6px 10px 10px 10px;display:block;height:30px;"><img src="icon-video.gif" width="17" height="21" alt="Video" /></span> 
+<a href="/video/" class="cat">Video</a><br />
+movies, animations, footage...
+</p>
+
+<p class="buttons" onclick="document.location='/text/';" title="Text">
+<span style="float:left;margin:6px 10px 10px 10px;display:block;height:30px;"><img src="icon-text.gif" width="16" height="25" alt="Text" /></span> 
+<a href="/education/" class="cat">Text</a><br />
+books, blogs, essays...
+</p>
+
+<p class="buttons" onclick="document.location='/education/';" title="Education">
+<span style="float:left;margin:6px 6px 10px 8px;display:block;height:50px;"><img src="icon-education.gif" width="23" height="14" alt="Education" /></span> 
+<a href="/education/" class="cat">Education</a><br />
+lesson plans, course packets, textbooks...
+</p>
+
+
+
+</div>
+</div>
+
+<div id="boxes">
+<div style="padding-left:20px;">
+	<div id="boxes-download" onclick="document.location='/download/';" title="Download"><div class="boxpad"><a href="/download/"><img src="download.gif" width="219" height="220" alt="Download" border="0" /></a></div></div>
+	<div id="boxes-publish"  onclick="document.location='/publish/';" title="Publish"><div class="boxpad"><a href="/publish/"><img src="publish.gif" width="219" height="220" alt="Publish" border="0" /></a></div></div>
+</div>
+</div>
+
+</div>
+
+<br clear="all" />
+</div>
+</body>
+</html>
+
+

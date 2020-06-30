@@ -27,15 +27,17 @@
       </div>
     {% endif %}
 
-    {% with c=license.jurisdiction.code %}
-      {% if c != '' and c != 'es' and c != 'igo' %}
-        <a href="/worldwide/{{ license.jurisdiction.code }}/">
-          <img src="/images/international/{{ license.jurisdiction.code }}.png"
-               alt="{{ license.jurisdiction.code }}"
-               style="border: 1px solid #C0C0C0"/>
-        </a>
-      {% endif %}
-    {% endwith %}
+    {% if license.jurisdiction %}
+      {% with c=license.jurisdiction.code imageurl="/images/international/{{ license.jurisdiction.code }}.png" %}
+        {% if c != '' and c != 'es' and c != 'igo' %}
+          <a href="/worldwide/{{ license.jurisdiction.code }}/">
+            <img src="{% static imageurl %}"
+                 alt="{{ license.jurisdiction.code }}"
+                 style="border: 1px solid #C0C0C0"/>
+          </a>
+        {% endif %}
+      {% endwith %}
+    {% endif %}
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -71,11 +73,11 @@
       {% if c == 'by' or c == 'by-sa' %}
         <div id="libre" class="col-sm-2">
           <a href="http://freedomdefined.org/" class="screen-only">
-            <img src="/images/deed/FreeCulturalWorks_seal_x2.jpg" style="border: 0"
+            <img src="{% static '/images/deed/FreeCulturalWorks_seal_x2.jpg' %}" style="border: 0"
                  alt="{% blocktrans %}This license is acceptable for Free Cultural Works.{% endblocktrans %}" />
           </a>
           <a href="http://freedomdefined.org/" class="print-only">
-            <img src="/images/deed/seal.png" style="border: 0" alt="" />
+            <img src="{% static '/images/deed/seal.png' %}" style="border: 0" alt="" />
           </a>
         </div>
       {% endif %}
@@ -115,7 +117,7 @@
             <input id="license-url" type="hidden"
                    value="{{ license.uri }}" />
             <a href="" id="attribution_help" class="helpLink">
-              <img src="images/information.png"
+              <img src="{% static 'images/information.png' %}"
                    alt="{% blocktrans %}Information{% endblocktrans %}" />
             </a>
           </p>

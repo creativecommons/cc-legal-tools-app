@@ -7,6 +7,7 @@ from licenses.models import License
 # Conditions under which we expect to see these strings in a deed page.
 # The lambda is called with a License object
 strings_to_lambdas = {
+    "INVALID_VARIABLE": lambda l: False,  # Should never appear
     "You are free to:": lambda l: True,
     "You do not have to comply with the license for elements of the material in the public domain": lambda l: True,
     "The licensor cannot revoke these freedoms as long as you follow the license terms.": lambda l: True,
@@ -67,7 +68,9 @@ class LicenseDeedViewTest(TestCase):
             with self.subTest(license.license_code + license.version + s):
                 self.assertNotContains(rsp, s)
 
-    def test_cc_licenses(self):
+    def test_text_in_deeds(self):
+        # Test that each deed view includes the expected strings and not the unexpected strings
+        # for its license.
         for license_code in license_codes:
             with self.subTest(license_code):
                 version = 3.0
@@ -82,7 +85,7 @@ class LicenseDeedViewTest(TestCase):
                 )
                 self.validate(rsp, license)
 
-    def test_superseded(self):
+    def test_deed_for_superseded_license(self):
         license_code = "by-nc-sa"
         version = "2.0"  # No 4.0 licenses have been superseded
         license = License.objects.exclude(is_replaced_by=None).get(
@@ -94,70 +97,4 @@ class LicenseDeedViewTest(TestCase):
         )
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.validate(rsp, license)
-
-    def test_license_deed_by_sa(self):
-        # Providing just code and version
-        # attribution, share-alike
-        license_code = "by-sa"
-        version = "3.0"
-        url = reverse(
-            viewname="license_deed",
-            kwargs={"license_code": license_code, "version": version},
-        )
-        rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-        license = License.objects.get(
-            license_code=license_code, version=version, jurisdiction=None
-        )
-        self.assertTrue(license.permits_derivative_works)
-
-        self.validate(rsp, license)
-
-    def test_license_deed_by_nc(self):
-        # Providing just code and version
-        # attribution, non-commercial only
-        license_code = "by-nc"
-        version = "3.0"
-        url = reverse(
-            viewname="license_deed",
-            kwargs={"license_code": license_code, "version": version},
-        )
-        rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-        license = License.objects.get(
-            license_code=license_code, version=version, jurisdiction=None
-        )
-        self.assertTrue(license.permits_derivative_works)
-        self.validate(rsp, license)
-
-    def test_license_deed_by_nc_sa(self):
-        # Providing just code and version
-        # attribution, non-commercial, share-alike
-        license_code = "by-nc-sa"
-        url = reverse(
-            viewname="license_deed",
-            kwargs={"license_code": license_code, "version": "3.0"},
-        )
-        rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-        license = License.objects.get(
-            license_code=license_code, version="3.0", jurisdiction=None
-        )
-        self.assertTrue(license.permits_derivative_works)
-        self.validate(rsp, license)
-
-    def test_license_deed_by_nc_nd(self):
-        # Providing just code and version
-        # attribution, non-commercial only, no derivatives
-        license_code = "by-nc-nd"
-        url = reverse(
-            viewname="license_deed",
-            kwargs={"license_code": license_code, "version": "3.0"},
-        )
-        rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-        license = License.objects.get(
-            license_code=license_code, version="3.0", jurisdiction=None
-        )
         self.validate(rsp, license)

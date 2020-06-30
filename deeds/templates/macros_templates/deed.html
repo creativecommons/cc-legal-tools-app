@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">{% load i18n static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+{% load i18n static %}
 <html xmlns="http://www.w3.org/1999/xhtml"
 xmlns:cc="http://creativecommons.org/ns#"
 xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -20,7 +21,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
 
 </head>
 
-<body typeof="cc:License" about="http://creativecommons.org/licenses/by/4.0/" class="license {{ get_ltr_rtl }}">
+<body typeof="cc:License" about="{{ license.url }}" class="license {{ get_ltr_rtl }}">
   {% block page_top %}{% endblock %}
   <div id="page" class="site">
     <div class="site-inner">
@@ -49,7 +50,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
             <div id="deed" class="row" dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}">
               <div id="deed-head" class="row">
                 <div class="print-only icon cc-logo-print">
-                  <img alt="cc logo" src="/images/deed/cc-logo.jpg">
+                  <img alt="cc logo" src="{%  static "/images/deed/cc-logo.jpg" %}">
                 </div>
                 <div id="cc-link">
                   <a rel="dc:creator dct:creator" href="/">
@@ -61,11 +62,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
                 <div id="deed-license">
                   <h2>
                     <span class="cc-license-icons">
-                      <span id="cc-logo" class="icon"><img alt="cc logo" src="/images/deed/cc_icon_white_x2.png"></span>
-                      {% if conditions.by %}<span id="cc-attribution" class="icon"><img src="/images/deed/attribution_icon_white_x2.png"></span>{% endif %}
-                      {% if conditions.nc %}<span id="cc-icon-nc" class="icon"><img src="/images/deed/nc_white_x2.png"></span>{% endif %}
-                      {% if conditions.nd %}<span id="cc-icon-nd" class="icon"><img src="/images/deed/nd_white_x2.png"></span>{% endif %}
-                      {% if conditions.sa %}<span id="cc-icon-sa" class="icon"><img src="/images/deed/sa_white_x2.png"></span>{% endif %}
+                      <span id="cc-logo" class="icon"><img alt="cc logo" src="{% static "/images/deed/cc_icon_white_x2.png" %}"></span>
+                      {% if conditions.by %}<span id="cc-attribution" class="icon"><img src="{% static "/images/deed/attribution_icon_white_x2.png" %}"></span>{% endif %}
+                      {% if conditions.nc %}<span id="cc-icon-nc" class="icon"><img src="{% static "/images/deed/nc_white_x2.png" %}"></span>{% endif %}
+                      {% if conditions.nd %}<span id="cc-icon-nd" class="icon"><img src="{% static "/images/deed/nd_white_x2.png" %}"></span>{% endif %}
+                      {% if conditions.sa %}<span id="cc-icon-sa" class="icon"><img src="{% static "/images/deed/sa_white_x2.png" %}"></span>{% endif %}
                     </span>
 
                     {% block license_name %}{% endblock %}
@@ -95,7 +96,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
                   </div>
                 </div>
 
-                <div id="deed-main-content" class="row {{ license.jurisdiction.code }}">
+                <div id="deed-main-content" class="row {% if license.jurisdiction %}{{ license.jurisdiction.code }}{% endif %}">
                   {% block body %}{% endblock %}
                 </div>
               </div>
@@ -113,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
                 <noscript>
                   <div id="deed-donate-footer">
                     <div class="footer-trigger">
-                      <img src="/images/deed/cc_heart_x2.png" class="footer-logo" alt="" width="133" height="117" />
+                      <img src="{% static '/images/deed/cc_heart_x2.png' %}" class="footer-logo" alt="" width="133" height="117" />
                       <div class="footer-trigger-content">
                         <p>{% blocktrans %}This content is freely available under simple legal terms because of Creative Commons, a non-profit that survives on donations. If you love this content, and love that it's free for everyone, please consider a donation to support our work.{% endblocktrans %}</p>
                         <a href="https://us.netdonor.net/page/6650/donate/1?ea.tracking.id=license-footer"><button>Make a Donation</button></a>
