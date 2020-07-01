@@ -14,11 +14,6 @@ ENVIRONMENT = os.environ['ENVIRONMENT']
 
 DEBUG = False
 
-
-if 'MEDIA_ROOT' in os.environ:
-    MEDIA_ROOT = os.getenv('MEDIA_ROOT')
-
-
 if 'DATABASE_URL' in os.environ:
     # Dokku
     SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
@@ -50,7 +45,6 @@ if 'DATABASE_URL' in os.environ:
     # https://warehouse.python.org/project/whitenoise/
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-    WEBSERVER_ROOT = os.path.join(PROJECT_ROOT, 'www')
 else:
     SECRET_KEY = os.environ['SECRET_KEY']
 
@@ -60,13 +54,10 @@ else:
     DATABASES['default']['PORT'] = os.environ.get('DB_PORT', '')
     DATABASES['default']['PASSWORD'] = os.environ.get('DB_PASSWORD', '')
 
-    WEBSERVER_ROOT = '/var/www/cc_licenses/'
 
-PUBLIC_ROOT = os.path.join(WEBSERVER_ROOT, 'public')
+STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(ROOT_DIR, 'static'))
 
-STATIC_ROOT = os.path.join(PUBLIC_ROOT, 'static')
-
-MEDIA_ROOT = os.path.join(PUBLIC_ROOT, 'media')
+MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(ROOT_DIR, 'media'))
 
 CACHES = {
     'default': {
@@ -89,8 +80,8 @@ elif EMAIL_USE_SSL:
 else:
     default_smtp_port = 25
 EMAIL_PORT = os.environ.get('EMAIL_PORT', default_smtp_port)
-EMAIL_SUBJECT_PREFIX = '[CC-Licenses %s] ' % ENVIRONMENT.title()
-DEFAULT_FROM_EMAIL = 'noreply@%(DOMAIN)s' % os.environ
+EMAIL_SUBJECT_PREFIX = os.getenv("EMAIL_SUBJECT_PREFIX", '[CC-Licenses %s] ' % ENVIRONMENT.title())
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", 'noreply@%(DOMAIN)s' % os.environ)
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 CSRF_COOKIE_SECURE = True

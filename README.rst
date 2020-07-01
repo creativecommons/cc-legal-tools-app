@@ -12,7 +12,7 @@ Below you will find basic setup and deployment instructions for the cc_licenses
 project. To begin you should have the following applications installed on your
 local development system:
 
-- Python >= 3.8
+- Python >= 3.7
 - NodeJS >= 10.16
 - `pip <http://www.pip-installer.org/>`_ >= 20
 - `virtualenv <http://www.virtualenv.org/>`_ >= 1.10
@@ -51,9 +51,9 @@ adjustments as necessary to your needs.
 To setup your local environment you should create a virtualenv and install the
 necessary requirements::
 
-    # Check that you have python3.8 installed
-    $ which python3.8
-    $ mkvirtualenv cc_licenses -p `which python3.8`
+    # Check that you have python3.7 installed
+    $ which python3.7
+    $ mkvirtualenv cc_licenses -p `which python3.7`
     (cc_licenses)$ pip install -r requirements/dev.txt
 
 Next, we'll set up our local environment variables. We use `django-dotenv
