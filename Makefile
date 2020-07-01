@@ -52,7 +52,7 @@ pullmessages:
 	tx pull -af
 
 setup:
-	virtualenv -p `which python3.8` $(VENV_DIR)
+	if [ "${VIRTUAL_ENV}" = "" ] ; then echo "Please create and activate a python 3.7 virtual environment, then try again"; false; fi
 	pip install -U pip wheel
 	pip install -Ur requirements/dev.txt
 	pip freeze

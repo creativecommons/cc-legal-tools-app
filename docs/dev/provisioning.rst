@@ -277,6 +277,10 @@ Again, change the all-caps parts appropriately::
       # add_header Strict-Transport-Security max-age=31536000;
     }
 
+Finally, reload or restart nginx::
+
+    $ sudo systemctl reload nginx
+
 Troubleshooting
 ---------------
 
