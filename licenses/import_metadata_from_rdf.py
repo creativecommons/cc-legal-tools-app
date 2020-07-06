@@ -216,11 +216,11 @@ class MetadataImporter:
 
         # Find licenses with references to other licenses that still need to be updated
         for license in self.licenses.values():
-            if license.source_url:
+            if getattr(license, "source_url", False):
                 license.source = self.licenses[license.source_url]
-            if license.is_replace_by_url:
-                license.is_replaced_by = self.licenses[license.is_replace_by_url]
-            if license.is_based_on_url:
+            if getattr(license, "is_replaced_by_url", False):
+                license.is_replaced_by = self.licenses[license.is_replaced_by_url]
+            if getattr(license, "is_based_on_url", False):
                 license.is_based_on = self.licenses[license.is_based_on_url]
         License.objects.bulk_update(
             self.licenses.values(), ["source", "is_replaced_by", "is_based_on"]
@@ -240,7 +240,7 @@ class MetadataImporter:
         through_model = License.legal_codes.through
         through_models = []
         for license in self.licenses.values():
-            for legal_code in license.legal_codes_to_add:
+            for legal_code in getattr(license, "legal_codes_to_add", []):
                 through_models.append(
                     through_model(license=license, legalcode=legal_code)
                 )
@@ -385,7 +385,7 @@ class MetadataImporter:
         )
         # Save the URLs so we can find the licenses later and fix the fields
         license.source_url = source_url
-        license.is_replace_by_url = replacement_url
+        license.is_replaced_by_url = replacement_url
         license.is_based_on_url = is_based_on_url
         # And the legal codes
         license.legal_codes_to_add = []

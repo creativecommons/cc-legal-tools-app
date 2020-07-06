@@ -7,10 +7,15 @@ import datetime
 
 from django.test import TestCase
 
+from licenses.import_metadata_from_rdf import MetadataImporter
 from licenses.models import License, TranslatedLicenseName, LicenseLogo, LegalCode
 
 
 class MetadataTest(TestCase):
+    def test_repeated_import(self):
+        # It should be safe to import the data again, just a no-op
+        MetadataImporter().import_metadata(open("index.rdf", "rb"))
+
     def test_mit_license(self):
         license = License.objects.get(identifier="MIT")
         self.assertIsNone(license.creator)
