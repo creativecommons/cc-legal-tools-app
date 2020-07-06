@@ -21,7 +21,7 @@ class Creator(models.Model):
     url = models.URLField(max_length=200, help_text="E.g. http://creativecommons.org",)
 
     def __str__(self):
-        return self.url
+        return f"Creator<{self.url}>"
 
 
 class Jurisdiction(models.Model):
@@ -42,7 +42,7 @@ class Jurisdiction(models.Model):
             return ""
 
     def __str__(self):
-        return self.url
+        return f"Jurisdiction<{self.url}>"
 
 
 class LicenseClass(models.Model):
@@ -52,7 +52,7 @@ class LicenseClass(models.Model):
     )
 
     def __str__(self):
-        return self.url
+        return f"LicenseClass<{self.url}>"
 
 
 class Language(models.Model):
@@ -62,7 +62,7 @@ class Language(models.Model):
     )
 
     def __str__(self):
-        return self.code
+        return f"Language<{self.code}>"
 
 
 class LegalCode(models.Model):
@@ -70,10 +70,10 @@ class LegalCode(models.Model):
         max_length=200,
         help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
     )
-    language = models.ForeignKey(Language, null=True, on_delete=models.CASCADE)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.url
+        return f"LegalCode<{self.language}, {self.url}>"
 
 
 class License(models.Model):
@@ -89,7 +89,7 @@ class License(models.Model):
     version = models.CharField(
         max_length=3, help_text="E.g. '4.0'. Not required.", blank=True, default=""
     )
-    legalcodes = models.ManyToManyField(
+    legal_codes = models.ManyToManyField(
         LegalCode,
         blank=True,
         help_text="legal codes related to this license? not sure what these are though",
@@ -163,7 +163,7 @@ class License(models.Model):
     prohibits_high_income_nation_use = models.BooleanField()
 
     def __str__(self):
-        return self.about
+        return f"License<{self.about}>"
 
     def set_permissions_and_prohibitions_from_license_code(self):
         if self.creator and self.creator.url == "http://creativecommons.org":
@@ -207,11 +207,11 @@ class License(models.Model):
 
 class TranslatedLicenseName(models.Model):
     license = models.ForeignKey(License, related_name="names", on_delete=models.CASCADE)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE, null=True)
+    language = models.ForeignKey(Language, on_delete=models.CASCADE)
     name = models.CharField(max_length=250, help_text="Translated name of license")
 
     def __str__(self):
-        return self.name
+        return f"TranslatedLicenseName<{self.language}, {self.license}>"
 
 
 class LicenseLogo(models.Model):
@@ -219,4 +219,4 @@ class LicenseLogo(models.Model):
     image = models.FileField()
 
     def __str__(self):
-        return self.image.url
+        return f"LicenseLogo<{self.image.url}>"

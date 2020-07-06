@@ -1,7 +1,6 @@
+# This makefile assumes you're activated your virtual environment first.
 PROJECT_NAME = cc_licenses
 STATIC_DIR = ./$(PROJECT_NAME)/static
-WORKON_HOME ?= $(HOME)/.virtualenvs
-VENV_DIR ?= $(WORKON_HOME)/$(PROJECT_NAME)
 
 default: lint test
 
@@ -11,7 +10,7 @@ test:
 	python manage.py makemigrations --dry-run | grep 'No changes detected' || \
 		(echo 'There are changes which require migrations.' && exit 1)
 	coverage run manage.py test --noinput
-	coverage report -m --fail-under 80
+	coverage report -m --fail-under 98
 
 lint-py:
 	# Check for Python formatting issues
@@ -52,14 +51,14 @@ pullmessages:
 	tx pull -af
 
 setup:
-	virtualenv -p `which python3.8` $(VENV_DIR)
-	$(VENV_DIR)/bin/pip install -U pip wheel
-	$(VENV_DIR)/bin/pip install -Ur requirements/dev.txt
-	$(VENV_DIR)/bin/pip freeze
+	if [ "${VIRTUAL_ENV}" = "" ] ; then echo "Please create and activate a python 3.7 virtual environment, then try again"; false; fi
+	pip install -U pip wheel
+	pip install -Ur requirements/dev.txt
+	pip freeze
 	cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
 	echo "DJANGO_SETTINGS_MODULE=cc_licenses.settings.local" > .env
 	createdb -E UTF-8 cc_licenses
-	$(VENV_DIR)/bin/python manage.py migrate
+	python manage.py migrate
 	if [ -e project.travis.yml ] ; then mv project.travis.yml .travis.yml; fi
 	@echo
 	@echo "The cc_licenses project is now setup on your machine."
@@ -70,7 +69,7 @@ setup:
 	@echo "	python manage.py runserver"
 
 update:
-	$(VENV_DIR)/bin/pip install -U -r requirements/dev.txt
+	pip install -U -r requirements/dev.txt
 
 # Build documentation
 docs:
