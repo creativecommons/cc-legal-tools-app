@@ -39,6 +39,7 @@ class LegalCodeFactory(factory.DjangoModelFactory):
         model = LegalCode
 
     url = factory.Faker("url")
+    language = factory.SubFactory(LanguageFactory)
 
 
 class LicenseClassFactory(factory.DjangoModelFactory):
