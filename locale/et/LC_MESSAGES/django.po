@@ -1,106 +1,967 @@
-# English translations for cc-licenses.
-# Copyright (C) 2020 ORGANIZATION
-# This file is distributed under the same license as the cc-licenses
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-# 
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cc-licenses VERSION\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-29 09:53-0400\n"
-"PO-Revision-Date: 2020-06-29 12:54+0000\n"
-"Language-Team: Estonian (https://www.transifex.com/creativecommons/teams/11342/et/)\n"
+"POT-Creation-Date: 2020-07-06 10:53-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
-"Language: et\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: cc_licenses/templates/404.html:3
 msgid "Page Not Found"
 msgstr ""
 
-#: deeds/templates/deeds/devnations_deed.html:19
-#: deeds/templates/deeds/publicdomain_deed.html:34
-#: deeds/templates/deeds/sampling_deed.html:15
-#: deeds/templates/deeds/standard_deed.html:26
-msgid ""
-"Creative Commons has <a "
-"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
-"tool</a> and does not recommend that it be applied to works."
+#: deeds/mappers.py:6
+msgid "Argentina"
+msgstr "Argentiina"
+
+#: deeds/mappers.py:7
+msgid "Austria"
+msgstr "Austria"
+
+#: deeds/mappers.py:8
+msgid "Australia"
+msgstr "Austraalia"
+
+#: deeds/mappers.py:9
+msgid "Belgium"
+msgstr "Belgia"
+
+#: deeds/mappers.py:10
+msgid "Bulgaria"
+msgstr "Bulgaaria"
+
+#: deeds/mappers.py:11
+msgid "Brazil"
+msgstr "Brasiilia"
+
+#: deeds/mappers.py:12
+msgid "Canada"
+msgstr "Kanada"
+
+#: deeds/mappers.py:13
+msgid "Switzerland"
+msgstr "Šveits"
+
+#: deeds/mappers.py:14
+msgid "Chile"
+msgstr "Tšiili"
+
+#: deeds/mappers.py:15
+msgid "China Mainland"
+msgstr "Mandri-Hiina"
+
+#: deeds/mappers.py:16
+msgid "Colombia"
+msgstr "Colombia"
+
+#: deeds/mappers.py:17
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+#: deeds/mappers.py:18
+msgid "Czech Republic"
+msgstr "Tšehhi"
+
+#: deeds/mappers.py:19
+msgid "Germany"
+msgstr "Saksamaa"
+
+#: deeds/mappers.py:20
+msgid "Denmark"
+msgstr "Taani"
+
+#: deeds/mappers.py:21
+msgid "Ecuador"
+msgstr "Ecuador"
+
+#: deeds/mappers.py:22
+msgid "Estonia"
+msgstr "Eesti"
+
+#: deeds/mappers.py:23
+msgid "Egypt"
+msgstr "Egiptus"
+
+#: deeds/mappers.py:24
+msgid "Spain"
+msgstr "Hispaania"
+
+#: deeds/mappers.py:25
+msgid "Catalonia"
+msgstr "Kataloonia"
+
+#: deeds/mappers.py:26
+msgid "Finland"
+msgstr "Soome"
+
+#: deeds/mappers.py:27
+msgid "France"
+msgstr "Prantsusmaa"
+
+#: deeds/mappers.py:28
+msgid "Greece"
+msgstr "Kreeka"
+
+#: deeds/mappers.py:29
+msgid "Guatemala"
+msgstr "Guatemala"
+
+#: deeds/mappers.py:30
+msgid "Hong Kong"
+msgstr "Hongkong"
+
+#: deeds/mappers.py:31
+msgid "Croatia"
+msgstr "Horvaatia"
+
+#: deeds/mappers.py:32
+msgid "Hungary"
+msgstr "Ungari"
+
+#: deeds/mappers.py:33
+msgid "Ireland"
+msgstr "Iirimaa"
+
+#: deeds/mappers.py:34
+msgid "Israel"
+msgstr "Iisrael"
+
+#: deeds/mappers.py:35
+msgid "IGO"
 msgstr ""
 
-#: deeds/templates/deeds/devnations_deed.html:23
-#: deeds/templates/deeds/sampling_deed.html:20
-msgid "You are free:"
-msgstr ""
+#: deeds/mappers.py:36
+msgid "India"
+msgstr "India"
 
-#: deeds/templates/deeds/devnations_deed.html:28
-msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
-msgstr ""
+#: deeds/mappers.py:37
+msgid "Italy"
+msgstr "Itaalia"
 
-#: deeds/templates/deeds/devnations_deed.html:33
-msgid "<strong>to Remix</strong> — to adapt the work"
-msgstr ""
+#: deeds/mappers.py:38
+msgid "Jordan"
+msgstr "Jordaania"
 
-#: deeds/templates/deeds/devnations_deed.html:40
-#: deeds/templates/deeds/sampling_deed.html:41
-msgid "Under the following conditions:"
-msgstr ""
+#: deeds/mappers.py:39
+msgid "Japan"
+msgstr "Jaapan"
 
-#: deeds/templates/deeds/devnations_deed.html:53
-#: deeds/templates/deeds/standard_deed.html:96
+#: deeds/mappers.py:40
+msgid "South Korea"
+msgstr "Lõuna-Korea"
+
+#: deeds/mappers.py:41
+msgid "Luxembourg"
+msgstr "Luksemburg"
+
+#: deeds/mappers.py:42
+msgid "Macedonia"
+msgstr "Põhja-Makedoonia"
+
+#: deeds/mappers.py:43
+msgid "Malta"
+msgstr "Malta"
+
+#: deeds/mappers.py:44
+msgid "Mexico"
+msgstr "Mehhiko"
+
+#: deeds/mappers.py:45
+msgid "Malaysia"
+msgstr "Malaisia"
+
+#: deeds/mappers.py:46
+msgid "Nigeria"
+msgstr "Nigeeria"
+
+#: deeds/mappers.py:47
+msgid "Netherlands"
+msgstr "Holland"
+
+#: deeds/mappers.py:48
+msgid "Norway"
+msgstr "Norra"
+
+#: deeds/mappers.py:49
+msgid "New Zealand"
+msgstr "Uus-Meremaa"
+
+#: deeds/mappers.py:50
+msgid "Peru"
+msgstr "Peruu"
+
+#: deeds/mappers.py:51
+msgid "Philippines"
+msgstr "Filipiinid"
+
+#: deeds/mappers.py:52
+msgid "Poland"
+msgstr "Poola"
+
+#: deeds/mappers.py:53
+msgid "Puerto Rico"
+msgstr "Puerto Rico"
+
+#: deeds/mappers.py:54
+msgid "Portugal"
+msgstr "Portugal"
+
+#: deeds/mappers.py:55
+msgid "Romania"
+msgstr "Rumeenia"
+
+#: deeds/mappers.py:56
+msgid "Serbia"
+msgstr "Serbia"
+
+#: deeds/mappers.py:57
+msgid "UK: Scotland"
+msgstr "Šotimaa"
+
+#: deeds/mappers.py:58
+msgid "Sweden"
+msgstr "Rootsi"
+
+#: deeds/mappers.py:59
+msgid "Singapore"
+msgstr "Singapur"
+
+#: deeds/mappers.py:60
+msgid "Slovenia"
+msgstr "Sloveenia"
+
+#: deeds/mappers.py:61
+msgid "Slovak Republic"
+msgstr "Slovakkia"
+
+#: deeds/mappers.py:62
+msgid "Thailand"
+msgstr "Tai"
+
+#: deeds/mappers.py:63
+msgid "Taiwan"
+msgstr "Taiwan"
+
+#: deeds/mappers.py:64
+msgid "Ukraine"
+msgstr "Ukraina"
+
+#: deeds/mappers.py:65
+msgid "Uganda"
+msgstr "Uganda"
+
+#: deeds/mappers.py:66
+msgid "UK: England & Wales"
+msgstr "Inglismaa ja Wales"
+
+#: deeds/mappers.py:67
+msgid "United States"
+msgstr "Ameerika Ühendriigid"
+
+#: deeds/mappers.py:68
+msgid "Venezuela"
+msgstr "Venezuela"
+
+#: deeds/mappers.py:69
+msgid "Vietnam"
+msgstr "Vietnam"
+
+#: deeds/mappers.py:70
+msgid "South Africa"
+msgstr "Lõuna-Aafrika Vabariik"
+
+#: deeds/mappers.py:74
+msgid "Afrikaans"
+msgstr "Afrikaani"
+
+#: deeds/mappers.py:75
+msgid "Arabic"
+msgstr "Araabia"
+
+#: deeds/mappers.py:76
+msgid "Assamese"
+msgstr "Assami"
+
+#: deeds/mappers.py:77
+msgid "Asturian"
+msgstr "Astuuria"
+
+#: deeds/mappers.py:78
+msgid "Azerbaijani"
+msgstr "Aserbaidžaani"
+
+#: deeds/mappers.py:79
+msgid "Belarusian"
+msgstr "Valgevene"
+
+#: deeds/mappers.py:80
+msgid "Bulgarian"
+msgstr "Bulgaaria"
+
+#: deeds/mappers.py:81
+msgid "Bengali"
+msgstr "Bengali"
+
+#: deeds/mappers.py:82
+msgid "Catalan"
+msgstr "Katalaani"
+
+#: deeds/mappers.py:83
+msgid "Czech"
+msgstr "Tšehhi"
+
+#: deeds/mappers.py:84
+msgid "Danish"
+msgstr "Taani"
+
+#: deeds/mappers.py:85
+msgid "German"
+msgstr "Saksa"
+
+#: deeds/mappers.py:86
+msgid "Greek"
+msgstr "Kreeka"
+
+#: deeds/mappers.py:87
+msgid "English"
+msgstr "Inglise"
+
+#: deeds/mappers.py:88
+msgid "English (CA)"
+msgstr "Inglise (CA)"
+
+#: deeds/mappers.py:89
+msgid "English (GB)"
+msgstr "Inglise (GB)"
+
+#: deeds/mappers.py:90
+msgid "English (Hong Kong)"
+msgstr "Inglise (Hongkong)"
+
+#: deeds/mappers.py:91
+msgid "English (Singapore)"
+msgstr "Inglise (Singapur)"
+
+#: deeds/mappers.py:92
+msgid "English (US)"
+msgstr "Inglise (US)"
+
+#: deeds/mappers.py:93
+msgid "Esperanto"
+msgstr "Esperanto"
+
+#: deeds/mappers.py:94
+msgid "Spanish"
+msgstr "Hispaania"
+
+#: deeds/mappers.py:95
+msgid "Spanish (AR)"
+msgstr "Hispaania (AR)"
+
+#: deeds/mappers.py:96
+msgid "Spanish (CL)"
+msgstr "Hispaania (CL)"
+
+#: deeds/mappers.py:97
+msgid "Spanish (CO)"
+msgstr "Hispaania (CO)"
+
+#: deeds/mappers.py:98
+msgid "Spanish (Ecuador)"
+msgstr "Hispaania (Ecuador)"
+
+#: deeds/mappers.py:99
+msgid "Spanish (Spain)"
+msgstr "Hispaania (Hispaania)"
+
+#: deeds/mappers.py:100
+msgid "Spanish (Guatemala)"
+msgstr "Hispaania (Guatemala)"
+
+#: deeds/mappers.py:101
+msgid "Spanish (MX)"
+msgstr "Hispaania (MX)"
+
+#: deeds/mappers.py:102
+msgid "Spanish (PE)"
+msgstr "Hispaania (PE)"
+
+#: deeds/mappers.py:103
+msgid "Estonian"
+msgstr "Eesti"
+
+#: deeds/mappers.py:104
+msgid "Basque"
+msgstr "Baski"
+
+#: deeds/mappers.py:105
+msgid "Persian"
+msgstr "Pärsia"
+
+#: deeds/mappers.py:106
+msgid "Finnish"
+msgstr "Soome"
+
+#: deeds/mappers.py:107
+msgid "French"
+msgstr "Prantsuse"
+
+#: deeds/mappers.py:108
+msgid "French (CA)"
+msgstr "Prantsuse (CA)"
+
+#: deeds/mappers.py:109
+msgid "Irish"
+msgstr "Iiri"
+
+#: deeds/mappers.py:110
+msgid "Galician"
+msgstr "Galeegi"
+
+#: deeds/mappers.py:111
+msgid "Hebrew"
+msgstr "Heebrea"
+
+#: deeds/mappers.py:112
+msgid "Hindi"
+msgstr "Hindi"
+
+#: deeds/mappers.py:113
+msgid "Croatian"
+msgstr "Horvaatia"
+
+#: deeds/mappers.py:114
+msgid "Hungarian"
+msgstr "Ungari"
+
+#: deeds/mappers.py:115
+msgid "Armenian"
+msgstr "Armeenia"
+
+#: deeds/mappers.py:116
+msgid "Indonesian"
+msgstr "Indoneesia"
+
+#: deeds/mappers.py:117
+msgid "Icelandic"
+msgstr "Islandi"
+
+#: deeds/mappers.py:118
+msgid "Italian"
+msgstr "Itaalia"
+
+#: deeds/mappers.py:119
+msgid "Japanese"
+msgstr "Jaapani"
+
+#: deeds/mappers.py:120
+msgid "Georgian"
+msgstr "Gruusia"
+
+#: deeds/mappers.py:121
+msgid "Kazakh"
+msgstr "Kasahhi"
+
+#: deeds/mappers.py:122
+msgid "Korean"
+msgstr "Korea"
+
+#: deeds/mappers.py:123
+msgid "Lithuanian"
+msgstr "Leedu"
+
+#: deeds/mappers.py:124
+msgid "Latvian"
+msgstr "Läti"
+
+#: deeds/mappers.py:125
+msgid "Macedonian"
+msgstr "Makedoonia"
+
+#: deeds/mappers.py:126
+msgid "Malayalam"
+msgstr "Malajalami"
+
+#: deeds/mappers.py:127
+msgid "Mongolian"
+msgstr "Mongoolia"
+
+#: deeds/mappers.py:128
+msgid "Malay"
+msgstr "Malai"
+
+#: deeds/mappers.py:129
+msgid "Dutch"
+msgstr "Hollandi"
+
+#: deeds/mappers.py:130
+msgid "Norwegian"
+msgstr "Norra"
+
+#: deeds/mappers.py:131
+msgid "Northern Sotho"
+msgstr "Põhjasotho"
+
+#: deeds/mappers.py:132
+msgid "Aranese"
+msgstr "Arani"
+
+#: deeds/mappers.py:133
+msgid "Polish"
+msgstr "Poola"
+
+#: deeds/mappers.py:134
+msgid "Portuguese"
+msgstr "Portugali"
+
+#: deeds/mappers.py:135
+msgid "Portuguese (BR)"
+msgstr "Portugali (BR)"
+
+#: deeds/mappers.py:137
+msgid "Romanian"
+msgstr "Rumeenia"
+
+#: deeds/mappers.py:138
+msgid "Russian"
+msgstr "Vene"
+
+#: deeds/mappers.py:139
+msgid "Sinhala"
+msgstr "Singali"
+
+#: deeds/mappers.py:140
+msgid "Slovenian"
+msgstr "Sloveenia"
+
+#: deeds/mappers.py:141
+msgid "Serbian"
+msgstr "Serbia"
+
+#: deeds/mappers.py:142
+msgid "Serbian (Latin)"
+msgstr "Serbia (Ladina)"
+
+#: deeds/mappers.py:143
+msgid "Sotho"
+msgstr "Sotho"
+
+#: deeds/mappers.py:144
+msgid "Swedish"
+msgstr "Rootsi"
+
+#: deeds/mappers.py:145
+msgid "Tamil"
+msgstr "Tamili"
+
+#: deeds/mappers.py:146
+msgid "Telugu"
+msgstr "Telugu"
+
+#: deeds/mappers.py:147
+msgid "Thai"
+msgstr "Tai"
+
+#: deeds/mappers.py:148
+msgid "Turkish"
+msgstr "Türgi"
+
+#: deeds/mappers.py:149
+msgid "Ukranian"
+msgstr "Ukraina"
+
+#: deeds/mappers.py:150
+msgid "Urdu"
+msgstr "Urdu"
+
+#: deeds/mappers.py:151
+msgid "Vietnamese"
+msgstr "Vietnami"
+
+#: deeds/mappers.py:152 deeds/mappers.py:153
+msgid "Chinese"
+msgstr "Hiina"
+
+#: deeds/mappers.py:154
+msgid "Chinese (Hong Kong)"
+msgstr "Hiina (Hongkong)"
+
+#: deeds/mappers.py:155
+msgid "Chinese (Taiwan)"
+msgstr "Hiina (Taiwani)"
+
+#: deeds/mappers.py:156
+msgid "Zulu"
+msgstr "Suulu"
+
+#: deeds/mappers.py:160
+msgid "GPL"
+msgstr "GPL"
+
+#: deeds/mappers.py:161
+msgid "LGPL"
+msgstr "LGPL"
+
+#: deeds/mappers.py:162 deeds/mappers.py:182
+#: deeds/templates/licenses/devnations_deed.html:53
+#: deeds/templates/licenses/standard_deed.html:102
 msgid "Attribution"
+msgstr "Autorile viitamine"
+
+#: deeds/mappers.py:163
+msgid "Attribution-NonCommercial"
+msgstr "Autorile viitamine + Mitteäriline eesmärk"
+
+#: deeds/mappers.py:164
+msgid "Attribution-NonCommercial-NoDerivs"
+msgstr "Autorile viitamine + Mitteäriline eesmärk + Tuletatud teoste keeld"
+
+#: deeds/mappers.py:165
+msgid "Attribution-NonCommercial-ShareAlike"
+msgstr ""
+"Autorile viitamine + Mitteäriline eesmärk + Jagamine samadel tingimustel"
+
+#: deeds/mappers.py:166
+msgid "Attribution-NoDerivs"
+msgstr "Autorile viitamine + Tuletatud teoste keeld"
+
+#: deeds/mappers.py:167
+msgid "Attribution-NoDerivs-NonCommercial"
+msgstr "Autorile viitamine + Mitteäriline eesmärk + Tuletatud teoste keeld"
+
+#: deeds/mappers.py:168
+msgid "Attribution-ShareAlike"
+msgstr "Autorile viitamine + Jagamine samadel tingimustel"
+
+#: deeds/mappers.py:169
+msgid "Public Domain Mark"
+msgstr "Avaliku omandi märge"
+
+#: deeds/mappers.py:170 deeds/templates/licenses/standard_deed.html:131
+msgid "NonCommercial"
+msgstr "Mitteäriline eesmärk"
+
+#: deeds/mappers.py:171
+msgid "NonCommercial-ShareAlike"
+msgstr "Mitteäriline eesmärk + Jagamine samadel tingimustel "
+
+#: deeds/mappers.py:172
+msgid "NonCommercial Sampling Plus"
 msgstr ""
 
-#: deeds/templates/deeds/devnations_deed.html:55
-#: deeds/templates/deeds/sampling_deed.html:45
+#: deeds/mappers.py:173
+msgid "NoDerivs"
+msgstr "Tuletatud teoste keeld "
+
+#: deeds/mappers.py:174
+msgid "NoDerivs-NonCommercial"
+msgstr "Mitteäriline eesmärk + Tuletatud teoste keeld"
+
+#: deeds/mappers.py:175
+msgid "Public Domain"
+msgstr "Avalik omand"
+
+#: deeds/mappers.py:176 deeds/templates/licenses/standard_deed.html:149
+msgid "ShareAlike"
+msgstr "Jagamine samadel tingimustel "
+
+#: deeds/mappers.py:177
+msgid "Sampling"
+msgstr "Valikkasutus"
+
+#: deeds/mappers.py:178
+msgid "Sampling Plus"
+msgstr ""
+
+#: deeds/mappers.py:183
+msgid "Noncommercial"
+msgstr "Mitteäriline eesmärk"
+
+#: deeds/mappers.py:184
+msgid "No Derivative Works"
+msgstr "Tuletatud teoste keeld"
+
+#: deeds/mappers.py:185
+msgid "Share Alike"
+msgstr "Jagamine samadel tingimustel"
+
+#: deeds/mappers.py:190 deeds/templates/licenses/devnations_deed.html:55
+#: deeds/templates/licenses/sampling_deed.html:45
 msgid ""
 "You must attribute the work in the manner specified by the author or "
 "licensor (but not in any way that suggests that they endorse you or your use"
 " of the work)."
 msgstr ""
+"Te peate viitama teose autorile samal kujul, nagu seda on teinud autor või "
+"litsentsiandja (kajastades kasutatud teose autori nime, kui see on teosel "
+"näidatud, teose nimetust, avaldamisallikat jms). Te ei tohi viidata teose "
+"autorile viisil, mis võib tekitada väärarusaama, et autor või litsentsiandja"
+" tõstavad teid või teie poolt teose kasutamist esile."
 
-#: deeds/templates/deeds/devnations_deed.html:60
-#: deeds/templates/deeds/sampling_deed.html:59
+#: deeds/mappers.py:194 deeds/templates/licenses/sampling_deed.html:53
+msgid ""
+"You may not use this work to advertise for or promote anything but the work "
+"you create from it."
+msgstr ""
+
+#: deeds/mappers.py:196 deeds/templates/licenses/sampling_deed.html:49
+msgid "You may not use this work for commercial purposes."
+msgstr "Te ei või kasutada teost ärilistel eesmärkidel."
+
+#: deeds/mappers.py:197
+msgid "You may not alter, transform, or build upon this work."
+msgstr ""
+"Te ei või teost muuta, ümber kujundada ega selle alusel luua tuletatud "
+"teoseid."
+
+#: deeds/mappers.py:199 deeds/templates/licenses/sampling_deed.html:66
+msgid ""
+"You may not perform, display, or distribute copies of this whole work for "
+"any purpose."
+msgstr ""
+
+#: deeds/mappers.py:202
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same or similar license to this one."
+msgstr ""
+"Kui te muudate või töötlete kõnesolevat teost või loote selle teose alusel "
+"tuletatud teose, siis te võite levitada tuletatud teost üksnes sama või "
+"samalaadse litsentsi alusel."
+
+#: deeds/mappers.py:206
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same, similar or a compatible license."
+msgstr ""
+"Kui te muudate või töötlete kõnesolevat teost või loote selle teose alusel "
+"tuletatud teose, siis te võite levitada tuletatud teost üksnes sama, "
+"samalaadse või ühilduva litsentsi alusel."
+
+#: deeds/templates/catalog_pages/license_catcher.html:3
+#: deeds/templates/licenses/pdmark_deed.html:188
+#: deeds/templates/macros_templates/partner.html:26
+msgid "Creative Commons"
+msgstr "Creative Commons"
+
+#: deeds/templates/includes/cc_site_footer.html:25
+#: deeds/templates/includes/cc_site_header.html:40
+msgid "Contact"
+msgstr "Kontakt"
+
+#: deeds/templates/includes/cc_site_footer.html:26
+msgid "Privacy"
+msgstr "Andmekaitse"
+
+#: deeds/templates/includes/cc_site_footer.html:27
+msgid "Policies"
+msgstr "Põhimõtted"
+
+#: deeds/templates/includes/cc_site_footer.html:28
+msgid "Terms"
+msgstr "Tingimused"
+
+#: deeds/templates/includes/cc_site_footer.html:35
+msgid "We'd love to hear from you!"
+msgstr "Võtame meeleldi vastu sinu küsimusi!"
+
+#: deeds/templates/includes/cc_site_footer.html:44
+msgid "Frequently Asked Questions"
+msgstr "Korduma kippuvad küsimused"
+
+#: deeds/templates/includes/cc_site_header.html:11
+msgid "Menu"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:16
+#: deeds/templates/includes/cc_site_header.html:27
+msgid "Share your work"
+msgstr "Jaga enda teost"
+
+#: deeds/templates/includes/cc_site_header.html:17
+#: deeds/templates/includes/cc_site_header.html:28
+msgid "Use &#038; remix"
+msgstr "Kasuta ja töötle"
+
+#: deeds/templates/includes/cc_site_header.html:18
+#: deeds/templates/includes/cc_site_header.html:29
+msgid "What We do"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:19
+#: deeds/templates/includes/cc_site_header.html:30
+msgid "Blog"
+msgstr "Blogi"
+
+#: deeds/templates/includes/cc_site_header.html:20
+#: deeds/templates/includes/cc_site_header.html:37
+msgid "Global Network"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:21
+msgid "Search the Commons"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:36
+msgid "Search for CC images"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:38
+msgid "Newsletters"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:39
+msgid "Store"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:46
+msgid "Facebook"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:47
+msgid "Twitter"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:48
+msgid "Mail"
+msgstr ""
+
+#: deeds/templates/includes/deed_donate_slide.html:7
+#: deeds/templates/macros_templates/deed.html:119
+#: deeds/templates/macros_templates/pdtool_deed.html:92
+msgid ""
+"This content is freely available under simple legal terms because of "
+"Creative Commons, a non-profit that survives on donations. If you love this "
+"content, and love that it's free for everyone, please consider a donation to"
+" support our work."
+msgstr ""
+"See sisu on lihtsate õiguslike tingimuste all vabalt saadaval, sest "
+"mittetulunduslik organisatsioon Creative Commons tegutseb annetuste varal. "
+"Kui sulle meeldib see sisu ja et see on kõigi jaoks vaba, siis palun kaalu "
+"meie töö toetamist annetusega."
+
+#: deeds/templates/includes/deed_donate_slide.html:8
+msgid "When you share, everyone wins."
+msgstr "Kõik võidavad, kui jagad toetust."
+
+#: deeds/templates/includes/deed_donate_slide.html:14
+msgid "Contribute today to Creative Commons"
+msgstr "Anneta juba täna Creative Commonsile"
+
+#: deeds/templates/includes/deed_donate_slide.html:35
+msgid "Amount"
+msgstr "Summa"
+
+#: deeds/templates/includes/deed_donate_slide.html:42
+msgid "Donate Now"
+msgstr "Anneta nüüd"
+
+#: deeds/templates/includes/language_selector.html:5
+#: deeds/templates/includes/translations.html:4
+msgid "This page is available in the following languages:"
+msgstr "See lehekülg on kättesaadav järgmistes keeltes: "
+
+#: deeds/templates/licenses/devnations_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:15
+#: deeds/templates/licenses/standard_deed.html:26
+msgid ""
+"Creative Commons has <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
+"tool</a> and does not recommend that it be applied to works."
+msgstr ""
+"Creative Commons on <a "
+"href=\"http://creativecommons.org/retiredlicenses\">selle juriidilise "
+"dokumendi maha kandnud</a> ja ei soovita seda uute teoste juures kasutada."
+
+#: deeds/templates/licenses/devnations_deed.html:23
+#: deeds/templates/licenses/sampling_deed.html:20
+msgid "You are free:"
+msgstr "Teil on järgmised õigused:"
+
+#: deeds/templates/licenses/devnations_deed.html:28
+msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
+msgstr ""
+"<strong>Õigus jagada</strong> — õigus teost kopeerida (reprodutseerida), "
+"levitada, esitada ja üldsusele suunata."
+
+#: deeds/templates/licenses/devnations_deed.html:33
+msgid "<strong>to Remix</strong> — to adapt the work"
+msgstr ""
+"<strong>Õigus töödelda</strong> — õigus teha teosest kohandusi "
+"(adaptsioone), töötlusi (aranžeeringuid) ja teisi töötlusi, sh tuletatud "
+"teoseid."
+
+#: deeds/templates/licenses/devnations_deed.html:40
+#: deeds/templates/licenses/sampling_deed.html:41
+msgid "Under the following conditions:"
+msgstr "Need õigused on teil järgmistel tingimustel:"
+
+#: deeds/templates/licenses/devnations_deed.html:60
+#: deeds/templates/licenses/sampling_deed.html:59
 msgid ""
 "For any reuse or distribution, you must make clear to others the license "
 "terms of this work. The best way to do this is with a link to this web page."
 msgstr ""
+"Teose mis tahes kasutamise või levitamise korral tuleb teha teistele "
+"isikutele selgeks käesoleva teose litsentsitingimused. Parim viis selleks on"
+" lisada link käesolevale veebilehele."
 
-#: deeds/templates/deeds/devnations_deed.html:61
+#: deeds/templates/licenses/devnations_deed.html:61
 msgid ""
 "Any of the above conditions can be <a href=\"#\" id=\"waived\" "
 "class=\"helpLink\">waived</a> if you get permission from the copyright "
 "holder."
 msgstr ""
+"Mis tahes eeltoodud tingimusest saate Te <a href=\"#\" id=\"waived\" "
+"class=\"helpLink\">loobuda</a>, kui Te saate sellele teosele autoriõiguste "
+"omajalt vastava loa."
 
-#: deeds/templates/deeds/devnations_deed.html:69
-#: deeds/templates/deeds/sampling_deed.html:76
+#: deeds/templates/licenses/devnations_deed.html:69
+#: deeds/templates/licenses/sampling_deed.html:76
 msgid ""
 "Your fair dealing or <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
 " id=\"fair_use\" class=\"helpLink\">fair use</a> rights, or other applicable"
 " copyright exceptions and limitations;"
 msgstr ""
+"teose <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">vaba kasutamisega seotud õigusi</a>, mis"
+" tulenevad autoriõiguse seadusest;"
 
-#: deeds/templates/deeds/devnations_deed.html:72
-#: deeds/templates/deeds/sampling_deed.html:79
+#: deeds/templates/licenses/devnations_deed.html:72
+#: deeds/templates/licenses/sampling_deed.html:79
 msgid ""
 "Rights other persons may have either in the work itself or in how the work "
 "is used, such as <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity</a> or privacy rights."
 msgstr ""
+"õigusi, mis teistel isikutel võivad olla teose suhtes või teose kasutamise "
+"suhtes, näiteks teose <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">avalikustamisega</a> seotud "
+"õigused või muud autoriõiguse seadusest tulenevad õigused."
 
-#: deeds/templates/deeds/pdmark_deed.html:18
-#: deeds/templates/deeds/zero_deed.html:20
+#: deeds/templates/licenses/pdmark_deed.html:18
+#: deeds/templates/licenses/zero_deed.html:20
 msgid "No Copyright"
-msgstr ""
+msgstr "Autoriõiguse kaitse puudub"
 
-#: deeds/templates/deeds/pdmark_deed.html:21
+#: deeds/templates/licenses/pdmark_deed.html:21
 msgid ""
 "<p id=\"nolaw-text\"> This work has been <b>identified</b> as being free of "
 "known restrictions under copyright law, including all related and "
@@ -108,19 +969,28 @@ msgid ""
 "perform the work, even for commercial purposes, all without asking "
 "permission. See <b>Other Information</b> below. </p>"
 msgstr ""
+"<p id=\"nolaw-text\"> Selle teose juures on <b>kindlaks tehtud</b>, et see "
+"on vaba kõigist teadaolevatest autoriõiguse piirangutest, ka piirangutest, "
+"mis tulenevad autoriõigusega kaasnevatest õigustest ja naaberõigustest. </p>"
+" <p> <br /> Tohid teost kopeerida, muuta, levitada ja esitada, ka ärilisel "
+"eesmärgil ning seda kõike luba küsimata. Vaata allpool <b>täiendavat "
+"teavet</b>.</p>"
 
-#: deeds/templates/deeds/pdmark_deed.html:31
-#: deeds/templates/deeds/zero_deed.html:49
+#: deeds/templates/licenses/pdmark_deed.html:31
+#: deeds/templates/licenses/zero_deed.html:49
 msgid "Other Information"
-msgstr ""
+msgstr "Täiendav teave"
 
-#: deeds/templates/deeds/pdmark_deed.html:34
+#: deeds/templates/licenses/pdmark_deed.html:34
 msgid ""
 "The work may not be free of known copyright restrictions in all <a href=\"\""
 " class=\"helpLink\" id=\"all_jurisdictions\">jurisdictions</a>."
 msgstr ""
+"Teos ei pruugi olla teadaolevatest autoriõiguse piirangutest vaba kõigis <a "
+"href=\"\" class=\"helpLink\" "
+"id=\"all_jurisdictions\">jurisdiktsioonides</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:37
+#: deeds/templates/licenses/pdmark_deed.html:37
 msgid ""
 "Persons may have other rights in or related to the work, such as patent or "
 "trademark rights, and others may have rights in how the work is used, such "
@@ -128,101 +998,123 @@ msgid ""
 "href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"Isikutel võivad olla selle seose suhtes muud õigused, näiteks patendi- või "
+"kaubamärgiõigused, ning teistel võivad olla õigused, mis tulenevad sellest, "
+"kuidas teost kasutatakse, näiteks <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">reklaami- või "
+"andmekaitseõigused</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:40
+#: deeds/templates/licenses/pdmark_deed.html:40
 msgid ""
 "In some jurisdictions <a href=\"\" class=\"helpLink\" "
 "id=\"moral_rights\">moral rights</a> of the author may persist beyond the "
 "term of copyright. These rights may include the right to be identified as "
 "the author and the right to object to derogatory treatments."
 msgstr ""
+"Mõnes jurisdiktsioonis võivad autori <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">isiklikud õigused</a> pärast autoriõiguse kehtivuse "
+"lõppu säilida. Nende õiguste hulka võivad kuuluda näiteks õigus autorsusele "
+"ning õigus autori au ja väärikuse kaitsele."
 
-#: deeds/templates/deeds/pdmark_deed.html:43
+#: deeds/templates/licenses/pdmark_deed.html:43
 msgid ""
 "Unless expressly stated otherwise, the person who identified the work makes "
 "no warranties about the work, and disclaims liability for all uses of the "
 "work, to the fullest extent permitted by applicable law."
 msgstr ""
+"Kui selgesõnaliselt ei ole öeldud teisiti, siis isik, kes teose kindlaks "
+"tegi, ei anna teose kohta tagatisi ning ütleb kohaldatava seaduse järgi "
+"suurimas lubatavas ulatuses lahti vastutusest, mis tuleneb teose igasugusest"
+" kasutusest."
 
-#: deeds/templates/deeds/pdmark_deed.html:46
+#: deeds/templates/licenses/pdmark_deed.html:46
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "person who identified the work."
 msgstr ""
+"Kui teost kasutad või tsiteerid, siis ei tohiks jääda mulje, et sul on "
+"selleks autori või teose kindlaks teinud isiku <a href=\"\" "
+"class=\"helpLink\" id=\"endorsement\">heakskiit</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:74
-#: deeds/templates/deeds/zero_deed.html:82
+#: deeds/templates/licenses/pdmark_deed.html:74
+#: deeds/templates/licenses/zero_deed.html:82
 msgid "Work:"
-msgstr ""
+msgstr "Teos:"
 
-#: deeds/templates/deeds/pdmark_deed.html:79
+#: deeds/templates/licenses/pdmark_deed.html:79
 msgid "Author:"
-msgstr ""
+msgstr "Autor:"
 
-#: deeds/templates/deeds/pdmark_deed.html:83
+#: deeds/templates/licenses/pdmark_deed.html:83
 msgid "Identified by:"
 msgstr ""
 
-#: deeds/templates/deeds/pdmark_deed.html:89
-#: deeds/templates/deeds/zero_deed.html:95
+#: deeds/templates/licenses/pdmark_deed.html:89
+#: deeds/templates/licenses/zero_deed.html:95
 msgid ""
 "You can <a href=\"\" class=\"helpLink\" id=\"citation_help\">cite</a> this "
 "work with this HTML:"
 msgstr ""
 
-#: deeds/templates/deeds/pdmark_deed.html:114
-#: deeds/templates/deeds/zero_deed.html:123
+#: deeds/templates/licenses/pdmark_deed.html:114
+#: deeds/templates/licenses/zero_deed.html:123
 msgid "Endorsement"
-msgstr ""
+msgstr "Heakskiit"
 
-#: deeds/templates/deeds/pdmark_deed.html:118
-#: deeds/templates/deeds/zero_deed.html:126
+#: deeds/templates/licenses/pdmark_deed.html:118
+#: deeds/templates/licenses/zero_deed.html:126
 msgid ""
 "In some jurisdictions, wrongfully implying that an author, publisher or "
 "anyone else endorses your use of a work may be unlawful."
 msgstr ""
+"Väita ebaõigesti, et autor, avaldaja või keegi teine kiidab heaks, et teost "
+"kasutad, võib olla mõnes jurisdiktsioonis seadusevastane."
 
-#: deeds/templates/deeds/pdmark_deed.html:121
-#: deeds/templates/deeds/pdmark_deed.html:135
-#: deeds/templates/deeds/pdmark_deed.html:149
-#: deeds/templates/deeds/pdmark_deed.html:162
-#: deeds/templates/deeds/pdmark_deed.html:173
-#: deeds/templates/deeds/zero_deed.html:117
-#: deeds/templates/deeds/zero_deed.html:130
-#: deeds/templates/deeds/zero_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:121
+#: deeds/templates/licenses/pdmark_deed.html:135
+#: deeds/templates/licenses/pdmark_deed.html:149
+#: deeds/templates/licenses/pdmark_deed.html:162
+#: deeds/templates/licenses/pdmark_deed.html:173
+#: deeds/templates/licenses/zero_deed.html:117
+#: deeds/templates/licenses/zero_deed.html:130
+#: deeds/templates/licenses/zero_deed.html:142
 msgid "Learn more"
-msgstr ""
+msgstr "Uuri veel"
 
-#: deeds/templates/deeds/pdmark_deed.html:128
-#: deeds/templates/deeds/zero_deed.html:136
+#: deeds/templates/licenses/pdmark_deed.html:128
+#: deeds/templates/licenses/zero_deed.html:136
 msgid "Citation"
 msgstr ""
 
-#: deeds/templates/deeds/pdmark_deed.html:132
-#: deeds/templates/deeds/zero_deed.html:139
+#: deeds/templates/licenses/pdmark_deed.html:132
+#: deeds/templates/licenses/zero_deed.html:139
 msgid ""
 "Copy and paste the HTML provided into your webpage to easily cite this work."
-msgstr ""
+msgstr "Sellele teosele viitamiseks kopeerige see HTML oma kodulehele."
 
-#: deeds/templates/deeds/pdmark_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:142
 msgid "Moral Rights"
-msgstr ""
+msgstr "Isiklikud õigused"
 
-#: deeds/templates/deeds/pdmark_deed.html:146
+#: deeds/templates/licenses/pdmark_deed.html:146
 msgid ""
 "Copyright laws in most jurisdictions around the world grant creators \"moral"
 " rights\" which may provide some redress if use of a work is considered "
 "\"derogatory\"."
 msgstr ""
+"Enamikus jurisdiktsioonides annavad autoriõiguse seadused autorile isiklikud"
+" õigused, mis muu hulgas võivad võimaldada nõuda hüvitist, kui teose "
+"kasutust peetakse au ja väärikust kahjustavaks."
 
-#: deeds/templates/deeds/pdmark_deed.html:155
-#: deeds/templates/deeds/zero_deed.html:110
+#: deeds/templates/licenses/pdmark_deed.html:155
+#: deeds/templates/licenses/zero_deed.html:110
 msgid "Other Rights"
-msgstr ""
+msgstr "Muud õigused"
 
-#: deeds/templates/deeds/pdmark_deed.html:159
-#: deeds/templates/deeds/zero_deed.html:113
+#: deeds/templates/licenses/pdmark_deed.html:159
+#: deeds/templates/licenses/zero_deed.html:113
 msgid ""
 "The use of a work free of known copyright restrictions may be otherwise "
 "regulated or limited. The work or its use may be subject to personal data "
@@ -230,33 +1122,37 @@ msgid ""
 "control how their voice, image or likeness is used, or other restrictions or"
 " limitations under applicable law."
 msgstr ""
+"Teadaolevatest autoriõiguse piirangutest vaba teose kasutamine võib olla "
+"muul moel reguleeritud või piiratud. Teose või selle kasutuse suhtes võivad "
+"kohalduda isikuandmete kaitse seadused, reklaami-, kuvandi- või eraelulised "
+"õigused, mis lubavad isikul määrata, kuidas tema väljaütlemisi, kuvandit või"
+" sellega sarnanevat kasutatakse, ning muud kohaldatavast seadusest tulenevad"
+" piirangud ja kitsendused."
 
-#: deeds/templates/deeds/pdmark_deed.html:167
+#: deeds/templates/licenses/pdmark_deed.html:167
 msgid "Term of Copyright"
-msgstr ""
+msgstr "Autoriõiguse kehtivus"
 
-#: deeds/templates/deeds/pdmark_deed.html:170
+#: deeds/templates/licenses/pdmark_deed.html:170
 msgid ""
 "Copyright terms vary jurisdiction to jurisdiction. A work free of copyright "
 "restrictions in one jurisdiction may not be similarly free in other "
 "jurisdictions."
 msgstr ""
+"Autoriõiguse kehtivus erineb jurisdiktsioonides. Ühes jurisdiktsioonis "
+"autoriõiguse piirangutest vaba teos ei pruugi olla sarnaselt vaba teistes "
+"jurisdiktsioonides."
 
-#: deeds/templates/deeds/pdmark_deed.html:188
-#: deeds/templates/macros_templates/partner.html:26
-msgid "Creative Commons"
-msgstr ""
-
-#: deeds/templates/deeds/pdmark_deed.html:196
-#: deeds/templates/deeds/pdmark_deed.html:198
-#: deeds/templates/deeds/zero_deed.html:172
-#: deeds/templates/deeds/zero_deed.html:187
-#: deeds/templates/macros_templates/deed.html:116
-#: deeds/templates/macros_templates/deed.html:163
+#: deeds/templates/licenses/pdmark_deed.html:196
+#: deeds/templates/licenses/pdmark_deed.html:198
+#: deeds/templates/licenses/zero_deed.html:172
+#: deeds/templates/licenses/zero_deed.html:187
+#: deeds/templates/macros_templates/deed.html:94
+#: deeds/templates/macros_templates/deed.html:141
 msgid "Disclaimer"
-msgstr ""
+msgstr "Creative Commonsi teatis"
 
-#: deeds/templates/deeds/pdmark_deed.html:200
+#: deeds/templates/licenses/pdmark_deed.html:200
 msgid ""
 "<p> The Public Domain Mark is not a legal instrument. </p> <p> Creative "
 "Commons is not a law firm and does not provide legal services or advice. "
@@ -266,8 +1162,16 @@ msgid ""
 "applied. CC makes no warranties about any work or its copyright status in "
 "any jurisdiction, and disclaims all liability for all uses of any work. </p>"
 msgstr ""
+"<p>Avaliku omandi märge ei ole juriidiline dokument.</p> <p> Creative "
+"Commons ei ole õigusbüroo ega paku juriidilisi teenuseid. Selle avaliku "
+"omandi märke levitamise või näitamisega ega sellele linkimisega ei kaasne "
+"juristi ja kliendi suhet. </p> <p> Creative Commons ei ole teoste "
+"autoriõiguslikku seisundit üle kontrollinud. See puudutab kõiki teoseid, "
+"millele see märge on lisatud. CC ei anna üheski jurisdiktsioonis tagatisi "
+"teose ega selle autoriõigusliku seisundi kohta ning ütleb lahti igasugusest "
+"vastutusest, mis tuleneb mis tahes teose igasugusest kasutamisest.</p>"
 
-#: deeds/templates/deeds/pdmark_deed.html:207
+#: deeds/templates/licenses/pdmark_deed.html:207
 #, python-format
 msgid ""
 "\n"
@@ -275,26 +1179,26 @@ msgid ""
 "  "
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:5
+#: deeds/templates/licenses/publicdomain_deed.html:5
 msgid ""
 "Copyright-Only Dedication (based on United States law)\n"
 "or Public Domain Certification"
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:19
 msgid ""
 "Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
 "  (based on United States law)<br />\n"
 "  or Public Domain Certification"
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:28
-#: deeds/templates/deeds/standard_deed.html:72
-#: deeds/templates/deeds/zero_deed.html:37
+#: deeds/templates/licenses/publicdomain_deed.html:28
+#: deeds/templates/licenses/standard_deed.html:77
+#: deeds/templates/licenses/zero_deed.html:37
 msgid "This license is acceptable for Free Cultural Works."
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:38
+#: deeds/templates/licenses/publicdomain_deed.html:38
 msgid ""
 "        <p>The person or persons who have associated work with this document (the \"Dedicator\" or \"Certifier\") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the \"Work\") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a \"dedicator\" below.</p>\n"
 "\n"
@@ -305,83 +1209,74 @@ msgid ""
 "        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>"
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:49
+#: deeds/templates/licenses/publicdomain_deed.html:49
 msgid ""
 "This tool is based on United States law and may not be applicable outside "
 "the US. For dedicating new works to the public domain, we recommend <a "
 "href=\"/choose/zero/\">CC0</a>."
 msgstr ""
 
-#: deeds/templates/deeds/sampling_deed.html:24
+#: deeds/templates/licenses/sampling_deed.html:24
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "noncommercial purposes."
 msgstr ""
 
-#: deeds/templates/deeds/sampling_deed.html:28
+#: deeds/templates/licenses/sampling_deed.html:28
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "commercial or noncommercial purposes."
 msgstr ""
 
-#: deeds/templates/deeds/sampling_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:34
 msgid ""
 "To perform, display, and distribute copies of this whole work for "
 "noncommercial purposes (e.g., file-sharing or noncommercial webcasting)."
 msgstr ""
 
-#: deeds/templates/deeds/sampling_deed.html:49
-msgid "You may not use this work for commercial purposes."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:53
-msgid ""
-"You may not use this work to advertise for or promote anything but the work "
-"you create from it."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:63
+#: deeds/templates/licenses/sampling_deed.html:63
 msgid ""
 "For any reuse, you must make clear to others the license terms of this work."
 msgstr ""
+"Teose mis tahes kasutamise või levitamise korral tuleb teha teistele "
+"isikutele selgeks käesoleva teose litsentsitingimused."
 
-#: deeds/templates/deeds/sampling_deed.html:66
-msgid ""
-"You may not perform, display, or distribute copies of this whole work for "
-"any purpose."
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:40
+#: deeds/templates/licenses/standard_deed.html:44
 msgid "You are free to:"
-msgstr ""
+msgstr "Tohid:"
 
-#: deeds/templates/deeds/standard_deed.html:45
+#: deeds/templates/licenses/standard_deed.html:49
 msgid ""
 "<strong>Share</strong>  &mdash; copy and redistribute the material in any "
 "medium or format"
 msgstr ""
+"<strong>Jagada</strong>  &mdash; kopeeri ja levita materjali edasi mille "
+"tahes vahendusel ja mis tahes vormis"
 
-#: deeds/templates/deeds/standard_deed.html:52
+#: deeds/templates/licenses/standard_deed.html:56
 msgid ""
 "<strong>Adapt</strong>  &mdash; remix, transform, and build upon the "
 "material"
 msgstr ""
+"<strong>Kohandada</strong>  &mdash; töötle, kujunda ümber ja arenda edasi"
 
-#: deeds/templates/deeds/standard_deed.html:58
+#: deeds/templates/licenses/standard_deed.html:62
 msgid "for any purpose, even commercially."
-msgstr ""
+msgstr "mis tahes eesmärgil, ka äriliselt."
 
-#: deeds/templates/deeds/standard_deed.html:83
+#: deeds/templates/licenses/standard_deed.html:89
 msgid ""
 "The licensor cannot revoke these freedoms as long as you follow the license "
 "terms."
 msgstr ""
+"Litsentsiandja ei saa neid vabadusi tagasi võtta, kui järgid litsentsi "
+"tingimusi."
 
-#: deeds/templates/deeds/standard_deed.html:90
+#: deeds/templates/licenses/standard_deed.html:96
 msgid "Under the following terms:"
-msgstr ""
+msgstr "Järgmistel tingimustel:"
 
-#: deeds/templates/deeds/standard_deed.html:97
+#: deeds/templates/licenses/standard_deed.html:103
 msgid ""
 "You must give <a href=\"#\" id=\"appropriate_credit_popup\" "
 "class=\"helpLink\">appropriate credit</a></span>, provide a link to the "
@@ -391,79 +1286,95 @@ msgid ""
 "made</a></span>.  You may do so in any reasonable manner, but not in any way"
 " that suggests the licensor endorses you or your use."
 msgstr ""
+"Pead materjali sobival viisil <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">autorile omistama</a></span>, tooma ära litsentsi lingi "
+"ja märkima ära, <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\">kas on tehtud "
+"muudatusi</a></span>. Sobib, kui teed seda mõistlikul viisil, kuid seejuures"
+" ei tohi jääda muljet, et litsentsiandja tõstab esile sind või seda, et sina"
+" materjali kasutad."
 
-#: deeds/templates/deeds/standard_deed.html:103
+#: deeds/templates/licenses/standard_deed.html:109
 msgid "Attribute this work:"
 msgstr ""
 
-#: deeds/templates/deeds/standard_deed.html:115
+#: deeds/templates/licenses/standard_deed.html:121
 msgid "Information"
-msgstr ""
+msgstr "Informatsioon"
 
-#: deeds/templates/deeds/standard_deed.html:125
-msgid "NonCommercial"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:125
+#: deeds/templates/licenses/standard_deed.html:131
 msgid ""
 "You may not use the material for <a href=\"#\" "
 "id=\"commercial_purposes_popup\" class=\"helpLink\">commercial purposes</a>."
 msgstr ""
+"Sa ei tohi kasutada materjali <a href=\"#\" id=\"commercial_purposes_popup\""
+" class=\"helpLink\">ärilisel eesmärgil</a>."
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid "NoDerivatives"
-msgstr ""
+msgstr "Tuletatud teoste keeld"
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid ""
 "If you <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
 "class=\"helpLink\">remix, transform, or build upon</a> the material, you may"
 " not distribute the modified material."
 msgstr ""
+"Kui <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">töötled, kujundad ümber või arendad materjali edasi</a>, "
+"siis pole sul õigust muudetud materjali levitada."
 
-#: deeds/templates/deeds/standard_deed.html:143
-msgid "ShareAlike"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:143
+#: deeds/templates/licenses/standard_deed.html:149
 msgid ""
 "If you remix, transform, or build upon the material, you must distribute "
 "your contributions under the <a href=\"#\" id=\"same_license_popup\" "
 "class=\"helpLink\">same license</a> as the original."
 msgstr ""
+"Kui töötled, kujundad ümber või arendad materjali edasi, siis pead oma töö "
+"levitamiseks kasutama <a href=\"#\" id=\"same_license_popup\" "
+"class=\"helpLink\">sama litsentsi</a>, mille all on algupärand."
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid "No additional restrictions"
-msgstr ""
+msgstr "Lisapiirangute keeld"
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid ""
 "You may not apply legal terms or <a href=\"#\" "
 "id=\"technological_measures_popup\" class=\"helpLink\">technological "
 "measures</a> that legally restrict others from doing anything the license "
 "permits."
 msgstr ""
+"Sa ei tohi rakendada õiguslikke tingimusi ega <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">tehnilisi "
+"kaitsemeetmeid</a>, mis piiravad õiguslikult teistel litsentsis lubatu "
+"tegemist."
 
-#: deeds/templates/deeds/standard_deed.html:161
+#: deeds/templates/licenses/standard_deed.html:167
 msgid "Notices:"
-msgstr ""
+msgstr "Märkused:"
 
-#: deeds/templates/deeds/standard_deed.html:166
+#: deeds/templates/licenses/standard_deed.html:172
 msgid ""
 "When the Licensor is an intergovernmental organization, disputes will be "
 "resolved by <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
 "class=\"helpLink\">mediation and arbitration</a> unless otherwise agreed."
 msgstr ""
 
-#: deeds/templates/deeds/standard_deed.html:171
+#: deeds/templates/licenses/standard_deed.html:177
 msgid ""
 "You do not have to comply with the license for elements of the material in "
 "the public domain or where your use is permitted by an applicable <a "
 "href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">exception"
 " or limitation</a>."
 msgstr ""
+"Sa ei pea täitma litsentsi tingimusi materjali teatud elementide suhtes, kui"
+" need elemendid on avalikus omandis või kui sobivat kasutust lubab "
+"kohaldatav <a href=\"#\" id=\"exception_or_limitation_popup\" "
+"class=\"helpLink\">erand või kitsendus</a>."
 
-#: deeds/templates/deeds/standard_deed.html:174
+#: deeds/templates/licenses/standard_deed.html:180
 msgid ""
 "No warranties are given. The license may not give you all of the permissions"
 " necessary for your intended use. For example, other rights such as <a "
@@ -471,12 +1382,30 @@ msgid ""
 "class=\"helpLink\">publicity, privacy, or moral rights</a> may limit how you"
 " use the material."
 msgstr ""
+"Tagatisi ei anta. Litsents ei pruugi anda kõiki õigusi, mis on vajalikud, et"
+" kasutada materjali soovitud viisil. Näiteks muud õigused nagu <a href=\"#\""
+" id=\"publicity_privacy_or_moral_rights_popup\" "
+"class=\"helpLink\">reklaami-, andmekaitse- või isiklikud õigused</a> võivad "
+"piirata kasutamist soovitud viisil."
 
-#: deeds/templates/deeds/standard_deed.html:197
-msgid "What does \"Attribute this work\" mean?"
+#: deeds/templates/licenses/standard_deed.html:188
+#, python-format
+msgid ""
+"A <a href=\"%(current_version_url)s\">new version</a> of this license is "
+"available. You should use it for new works, and you may want to relicense "
+"existing works under it. No works are <em>automatically</em> put under the "
+"new license, however."
 msgstr ""
+"Saadaval on selle litsentsi <a href=\"%(current_version_url)s\">uus "
+"versioon</a>. Seda tuleks kasutada uute teoste juures. Samuti võid varasemad"
+" teosed selle alusel uuesti litsentsida. <em>Automaatselt</em> siiski ühtegi"
+" teost uue litsentsi alla üle ei viida."
 
-#: deeds/templates/deeds/standard_deed.html:200
+#: deeds/templates/licenses/standard_deed.html:203
+msgid "What does \"Attribute this work\" mean?"
+msgstr "Mida \"Attribute this work\" tähendab?"
+
+#: deeds/templates/licenses/standard_deed.html:206
 msgid ""
 "The page you came from contained embedded licensing metadata, including how "
 "the creator wishes to be attributed for re-use. You can use the HTML here to"
@@ -484,7 +1413,7 @@ msgid ""
 "others can find the original work as well."
 msgstr ""
 
-#: deeds/templates/deeds/standard_deed.html:206
+#: deeds/templates/licenses/standard_deed.html:212
 msgid ""
 "The applicable mediation rules will be designated in the copyright notice "
 "published with the work, or if none then in the request for mediation.  "
@@ -492,19 +1421,19 @@ msgid ""
 "UNCITRAL Arbitration Rules apply to any arbitration."
 msgstr ""
 
-#: deeds/templates/deeds/standard_deed.html:208
-#: deeds/templates/deeds/standard_deed.html:216
-#: deeds/templates/deeds/standard_deed.html:226
-#: deeds/templates/deeds/standard_deed.html:234
-#: deeds/templates/deeds/standard_deed.html:242
-#: deeds/templates/deeds/standard_deed.html:250
-#: deeds/templates/deeds/standard_deed.html:258
-#: deeds/templates/deeds/standard_deed.html:266
-#: deeds/templates/deeds/standard_deed.html:274
+#: deeds/templates/licenses/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:280
 msgid "More info"
-msgstr ""
+msgstr "Lisateave"
 
-#: deeds/templates/deeds/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:220
 msgid ""
 "If supplied, you must provide the name of the creator and attribution "
 "parties, a copyright notice, a license notice, a disclaimer notice, and a "
@@ -512,71 +1441,96 @@ msgid ""
 "provide the title of the material if supplied, and may have other slight "
 "differences."
 msgstr ""
+"Kui materjal on varustatud autorinime ja teiste viidatavate osapoolte "
+"nimedega, autoriõiguse teatise, litsentsi teatise ja lahtiütluse teatisega "
+"ning lingiga materjalile, siis pead need ära tooma. Versioonist 4.0 vanemad "
+"CC-litsentsid nõuavad ka pealkirja äratoomist, kui materjal on sellega "
+"varustatud. Vanematel litsentsidel võib olla ka muid väikseid erinevusi."
 
-#: deeds/templates/deeds/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:228
 msgid ""
 "In 4.0, you must indicate if you modified the material and retain an "
 "indication of previous modifications. In 3.0 and earlier license versions, "
 "the indication of changes is only required if you create a derivative."
 msgstr ""
+"Versioonis 4.0 pead ära märkima, kas muutsid materjali, samuti pead "
+"säilitama äramärkimise varasemate muudatuste kohta. Versioon 3.0 ja "
+"litsentsi varasemad versioonid nõuavad muudatuste äramärkmist ainult siis, "
+"kui teed tuletatud teose."
 
-#: deeds/templates/deeds/standard_deed.html:224
+#: deeds/templates/licenses/standard_deed.html:230
 msgid "Marking guide"
-msgstr ""
+msgstr "Äramärkimise juhis"
 
-#: deeds/templates/deeds/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:238
 msgid ""
 "You may also use a license listed as compatible at <a "
 "href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
 msgstr ""
+"Tohid kasutada ka litsentsi, mis on loetletud ühilduvana asukohas <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>."
 
-#: deeds/templates/deeds/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:246
 msgid ""
 "A commercial use is one primarily intended for commercial advantage or "
 "monetary compensation."
 msgstr ""
+"Kasutus on äriline, kui sellega taotletakse eelkõige ärilist eelist või "
+"rahalist hüvitist."
 
-#: deeds/templates/deeds/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:254
 msgid "Merely changing the format never creates a derivative."
-msgstr ""
+msgstr "Vaid vormingu muutmisega ei kaasne kunagi tuletatud teose loomine."
 
-#: deeds/templates/deeds/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:262
 msgid ""
 "The license prohibits application of effective technological measures, "
 "defined with reference to Article 11 of the WIPO Copyright Treaty."
 msgstr ""
+"Litsents keelab rakendada tõhusaid tehnilisi kaitsemeetmeid, mis on "
+"määratletud WIPO autoriõiguse leppe artiklis 11."
 
-#: deeds/templates/deeds/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:270
 msgid ""
 "The rights of users under exceptions and limitations, such as fair use and "
 "fair dealing, are not affected by the CC licenses."
 msgstr ""
+"CC-litsentsid ei mõjuta kasutajate õigusi, mis tulenevad eranditest ja "
+"kitsendustest nagu õigustatud kasutus."
 
-#: deeds/templates/deeds/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:278
 msgid ""
 "You may need to get additional permissions before using the material as you "
 "intend."
 msgstr ""
+"Võimalik, et sul tuleb hankida lisaload, enne kui kasutad materjali soovitud"
+" viisil."
 
-#: deeds/templates/deeds/zero_deed.html:12
+#: deeds/templates/licenses/zero_deed.html:12
 msgid "Public Domain Dedication"
-msgstr ""
+msgstr "Avalikku omandisse andmine"
 
-#: deeds/templates/deeds/zero_deed.html:25
+#: deeds/templates/licenses/zero_deed.html:25
 msgid ""
 "The person who associated a work with this deed has <b>dedicated</b> the "
 "work to the public domain by waiving all of his or her rights to the work "
 "worldwide under copyright law, including all related and neighboring rights,"
 " to the extent allowed by law."
 msgstr ""
+"Isik, kes sidus teose selle litsentsiga, on <b>andnud</b> teose avalikku "
+"omandisse, loobudes üleilmselt kõigist õigustest, mis tulenevad "
+"autoriõigusest, sealhulgas autoriõigusega kaasnevatest õigustest ja "
+"naaberõigustest."
 
-#: deeds/templates/deeds/zero_deed.html:28
+#: deeds/templates/licenses/zero_deed.html:28
 msgid ""
 "You can copy, modify, distribute and perform the work, even for commercial "
 "purposes, all without asking permission. See <b>Other Information</b> below."
 msgstr ""
+"Tohid teost kopeerida, muuta, levitada ja esitada, ka ärilisel eesmärgil "
+"ning seda kõike luba küsimata. Vaata allpool <b>täiendavat teavet</b>."
 
-#: deeds/templates/deeds/zero_deed.html:52
+#: deeds/templates/licenses/zero_deed.html:52
 msgid ""
 "In no way are the patent or trademark rights of any person affected by CC0, "
 "nor are the rights that other persons may have in the work or in how the "
@@ -584,30 +1538,43 @@ msgid ""
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"Litsents CC0 ei mõjuta kuidagi patendi- ega kaubamärgiõigusi ega ka muid "
+"õigusi, mis teistel isikutel võivad olla selle teose suhtes või selle "
+"kasutamisest tulenevalt, näiteks <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">reklaami- või "
+"andmekaitseõigusi</a>."
 
-#: deeds/templates/deeds/zero_deed.html:56
+#: deeds/templates/licenses/zero_deed.html:56
 msgid ""
 "Unless expressly stated otherwise, the person who associated a work with "
 "this deed makes no warranties about the work, and disclaims liability for "
 "all uses of the work, to the fullest extent permitted by applicable law."
 msgstr ""
+"Kui selgesõnaliselt ei ole öeldud teisiti, siis isik, kes sidus teose selle "
+"litsentsiga, ei anna teose kohta tagatisi ning ütleb kohaldatava seaduse "
+"järgi suurimas lubatavas ulatuses lahti vastutusest, mis tuleneb teose "
+"igasugusest kasutusest."
 
-#: deeds/templates/deeds/zero_deed.html:60
+#: deeds/templates/licenses/zero_deed.html:60
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "affirmer."
 msgstr ""
+"Kui teost kasutad või tsiteerid, siis ei tohiks jääda mulje, et sul on "
+"selleks autori või loaandja <a href=\"\" class=\"helpLink\" "
+"id=\"endorsement\">heakskiit</a>."
 
-#: deeds/templates/deeds/zero_deed.html:88
+#: deeds/templates/licenses/zero_deed.html:88
 msgid "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Affirmer</a>"
 msgstr ""
 
-#: deeds/templates/deeds/zero_deed.html:149
+#: deeds/templates/licenses/zero_deed.html:149
 msgid "Who is the affirmer?"
 msgstr ""
 
-#: deeds/templates/deeds/zero_deed.html:153
+#: deeds/templates/licenses/zero_deed.html:153
 msgid ""
 "The affirmer is the person who surrendered rights to the work worldwide "
 "using CC0, to the extent allowable by law. It may be the original author of "
@@ -615,7 +1582,7 @@ msgid ""
 "neighboring legal rights in the work."
 msgstr ""
 
-#: deeds/templates/deeds/zero_deed.html:176
+#: deeds/templates/licenses/zero_deed.html:176
 msgid ""
 "<p> The Commons Deed is not a legal instrument. It is simply a handy "
 "reference for understanding the CC0 Legal Code, a human-readable expression "
@@ -629,76 +1596,87 @@ msgid ""
 "copyright status in any jurisdiction, and disclaims all liability for all "
 "uses of any work. </p>"
 msgstr ""
+"<p> Lühikokkuvõte (Commons Deed) pole juriidiline dokument. See on vaid "
+"käepärane osutusmaterjal, mis aitab mõista litsentsi CC0 teksti, ja kus on "
+"toodud lihtsasti loetaval kujul litsentsi mõned peamised tingimused. Seda "
+"võib pidada kasutajasõbralikuks sissejuhatuseks, mida võib lugeda enne "
+"litsentsi CC0 teksti lugemist. Kokkuvõttel endal pole õiguslikku tähendust "
+"ja selle sisu ei ole litsentsi CC0 osa.</p> <p> Creative Commons ei ole "
+"õigusbüroo ega paku juriidilisi teenuseid. Selle dokumendi või litsentsi "
+"enda levitamise või näitamisega ega neile linkimisega ei kaasne juristi ja "
+"kliendi suhet. </p> <p> Creative Commons ei ole teoste autoriõiguslikku "
+"seisundit üle kontrollinud. See puudutab kõiki teoseid, millele on lisatud "
+"litsents CC0. CC ei anna üheski jurisdiktsioonis tagatisi teose ega selle "
+"autoriõigusliku seisundi kohta ning ütleb lahti igasugusest vastutusest, mis"
+" tuleneb mis tahes teose kasutamisest.</p>"
 
-#: deeds/templates/deeds/zero_deed.html:182
+#: deeds/templates/licenses/zero_deed.html:182
 msgid ""
 "This is a human-readable summary of the <a href=\"./legalcode\">Legal Code "
 "(read the full text)</a>."
 msgstr ""
+"See on <a href=\"./legalcode\">litsentsi teksti (loe täisteksti)</a> "
+"lihtsasti loetav kokkuvõte."
 
-#: deeds/templates/deeds/zero_deed.html:194
+#: deeds/templates/licenses/zero_deed.html:194
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"https://creativecommons.org/choose/zero/\">use the license</a> for your own material.\n"
 "  "
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:50
-#: deeds/templates/macros_templates/engine.html:77
+#: deeds/templates/macros_templates/deed.html:28
+#: deeds/templates/macros_templates/engine.html:50
 #: deeds/templates/macros_templates/pdtool_deed.html:31
 msgid "Skip to content"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:60
+#: deeds/templates/macros_templates/deed.html:38
 #: deeds/templates/macros_templates/pdtool_deed.html:40
 msgid "Help us build a vibrant, collaborative global commons"
-msgstr ""
+msgstr "Aita meil ehitada elujõulist ja koostööl põhinevat ühist hüve."
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Donate"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Now"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:82
+#: deeds/templates/macros_templates/deed.html:60
 #: deeds/templates/macros_templates/pdtool_deed.html:62
 msgid "Creative Commons License Deed"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:104
+#: deeds/templates/macros_templates/deed.html:82
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the license, "
 "which is available in the following languages:"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:111
+#: deeds/templates/macros_templates/deed.html:89
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the <a "
 "href=\"legalcode\" class=\"fulltext\">license</a>."
 msgstr ""
+"See on <a href=\"legalcode\" class=\"fulltext\">litsentsi</a> lihtsasti "
+"loetav kokkuvõte, mis ei asenda litsentsi."
 
-#: deeds/templates/macros_templates/deed.html:130
+#: deeds/templates/macros_templates/deed.html:108
 #, python-format
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
 "            "
 msgstr ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Loe veel</a> CC-litsentimisest või <a id=\"get_this\" href=\"%(get_this)s\">kasuta litsentsi</a> enda materjali juures.\n"
+"            "
 
-#: deeds/templates/macros_templates/deed.html:141
-#: deeds/templates/macros_templates/pdtool_deed.html:92
-msgid ""
-"This content is freely available under simple legal terms because of "
-"Creative Commons, a non-profit that survives on donations. If you love this "
-"content, and love that it's free for everyone, please consider a donation to"
-" support our work."
-msgstr ""
-
-#: deeds/templates/macros_templates/deed.html:166
+#: deeds/templates/macros_templates/deed.html:144
 msgid ""
 "<p>\n"
 "              The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href=\"legalcode\" class=\"fulltext\">Please click here to see the full License</a>.\n"
@@ -713,27 +1691,34 @@ msgid ""
 "              </p>"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:180
+#: deeds/templates/macros_templates/deed.html:158
 msgid ""
 "This deed highlights only some of the key features and terms of the actual "
 "license. It is not a license and has no legal value. You should carefully "
 "review all of the terms and conditions of the actual license before using "
 "the licensed material."
 msgstr ""
+"Selles dokumendis on esile tõstetud litsentsi mõned tähtsamad tunnusjooned "
+"ja tingimused. See ei ole litsents ja sellel ei ole õiguslikku tähendust. "
+"Enne litsentsi alla kuuluva materjali kasutamist peaksid tegeliku litsentsi "
+"kõik tingimused hoolega üle vaatama."
 
-#: deeds/templates/macros_templates/deed.html:182
+#: deeds/templates/macros_templates/deed.html:160
 msgid ""
 "Creative Commons is not a law firm and does not provide legal services. "
 "Distributing, displaying, or linking to this deed or the license that it "
 "summarizes does not create a lawyer-client or any other relationship."
 msgstr ""
+"Creative Commons ei ole õigusbüroo ega paku juriidilisi teenuseid. Selle "
+"dokumendi või litsentsi enda levitamise või näitamisega ega neile "
+"linkimisega ei kaasne juristi ja kliendi suhet ega muusugust suhet."
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "expand child menu"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "collapse child menu"
 msgstr ""

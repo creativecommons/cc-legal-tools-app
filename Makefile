@@ -16,7 +16,7 @@ test:
 lint-py:
 	# Check for Python formatting issues
 	# Requires flake8
-	$(VENV_DIR)/bin/flake8 .
+	flake8 .
 
 lint: lint-py
 

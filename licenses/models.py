@@ -11,7 +11,6 @@ Some licenses ahve a dcq:isReplacedBy element.
 """
 import urllib
 
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import translation
 
@@ -165,29 +164,6 @@ class License(models.Model):
 
     def __str__(self):
         return self.about
-
-    # def save(self, *args, **kwargs):
-    #     self.validate()
-    #     super().save(*args, **kwargs)
-    #
-    # def validate(self):
-    #     if self.creator and self.creator.url == "http://creativecommons.org":
-    #         if "nd" in self.license_code and self.permits_derivative_works:
-    #             raise ValidationError(
-    #                 f"Inconsistent: 'nd' in license code {self.license_code} but .permits_derivative_works is True"
-    #             )
-    #         if "nd" not in self.license_code and not self.permits_derivative_works:
-    #             raise ValidationError(
-    #                 f"Inconsistent: No 'nd' in license code {self.license_code} but .permits_derivative_works is False"
-    #             )
-    #         if "sa" in self.license_code and not self.requires_share_alike:
-    #             raise ValidationError(
-    #                 f"Inconsistent: 'sa' in license code {self.license_code} but .requires_share_alike is False"
-    #             )
-    #         if "sa" not in self.license_code and self.requires_share_alike:
-    #             raise ValidationError(
-    #                 f"Inconsistent: No 'sa' in license code {self.license_code} but .requires_share_alike is True"
-    #             )
 
     def set_permissions_and_prohibitions_from_license_code(self):
         if self.creator and self.creator.url == "http://creativecommons.org":

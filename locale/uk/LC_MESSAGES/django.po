@@ -1,106 +1,966 @@
-# English translations for cc-licenses.
-# Copyright (C) 2020 ORGANIZATION
-# This file is distributed under the same license as the cc-licenses
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-# 
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cc-licenses VERSION\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-29 09:53-0400\n"
-"PO-Revision-Date: 2020-06-29 12:54+0000\n"
-"Language-Team: Ukrainian (https://www.transifex.com/creativecommons/teams/11342/uk/)\n"
+"POT-Creation-Date: 2020-07-06 10:53-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
-"Language: uk\n"
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #: cc_licenses/templates/404.html:3
 msgid "Page Not Found"
 msgstr ""
 
-#: deeds/templates/deeds/devnations_deed.html:19
-#: deeds/templates/deeds/publicdomain_deed.html:34
-#: deeds/templates/deeds/sampling_deed.html:15
-#: deeds/templates/deeds/standard_deed.html:26
-msgid ""
-"Creative Commons has <a "
-"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
-"tool</a> and does not recommend that it be applied to works."
-msgstr ""
+#: deeds/mappers.py:6
+msgid "Argentina"
+msgstr "Аргентина"
 
-#: deeds/templates/deeds/devnations_deed.html:23
-#: deeds/templates/deeds/sampling_deed.html:20
-msgid "You are free:"
-msgstr ""
+#: deeds/mappers.py:7
+msgid "Austria"
+msgstr "Австрія"
 
-#: deeds/templates/deeds/devnations_deed.html:28
-msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
-msgstr ""
+#: deeds/mappers.py:8
+msgid "Australia"
+msgstr "Австралія"
 
-#: deeds/templates/deeds/devnations_deed.html:33
-msgid "<strong>to Remix</strong> — to adapt the work"
-msgstr ""
+#: deeds/mappers.py:9
+msgid "Belgium"
+msgstr "Бельгія"
 
-#: deeds/templates/deeds/devnations_deed.html:40
-#: deeds/templates/deeds/sampling_deed.html:41
-msgid "Under the following conditions:"
-msgstr ""
+#: deeds/mappers.py:10
+msgid "Bulgaria"
+msgstr "Болгарія"
 
-#: deeds/templates/deeds/devnations_deed.html:53
-#: deeds/templates/deeds/standard_deed.html:96
+#: deeds/mappers.py:11
+msgid "Brazil"
+msgstr "Бразилія"
+
+#: deeds/mappers.py:12
+msgid "Canada"
+msgstr "Канада"
+
+#: deeds/mappers.py:13
+msgid "Switzerland"
+msgstr "Швейцарія"
+
+#: deeds/mappers.py:14
+msgid "Chile"
+msgstr "Чилі"
+
+#: deeds/mappers.py:15
+msgid "China Mainland"
+msgstr "Континентальний Китай"
+
+#: deeds/mappers.py:16
+msgid "Colombia"
+msgstr "Колумбія"
+
+#: deeds/mappers.py:17
+msgid "Costa Rica"
+msgstr "Коста-Ріка"
+
+#: deeds/mappers.py:18
+msgid "Czech Republic"
+msgstr "Чеська Республіка"
+
+#: deeds/mappers.py:19
+msgid "Germany"
+msgstr "Німеччина"
+
+#: deeds/mappers.py:20
+msgid "Denmark"
+msgstr "Данія"
+
+#: deeds/mappers.py:21
+msgid "Ecuador"
+msgstr "Еквадор"
+
+#: deeds/mappers.py:22
+msgid "Estonia"
+msgstr "Естонія"
+
+#: deeds/mappers.py:23
+msgid "Egypt"
+msgstr "Єгипет"
+
+#: deeds/mappers.py:24
+msgid "Spain"
+msgstr "Іспанія"
+
+#: deeds/mappers.py:25
+msgid "Catalonia"
+msgstr "Каталонія"
+
+#: deeds/mappers.py:26
+msgid "Finland"
+msgstr "Фінляндія"
+
+#: deeds/mappers.py:27
+msgid "France"
+msgstr "Франція"
+
+#: deeds/mappers.py:28
+msgid "Greece"
+msgstr "Греція"
+
+#: deeds/mappers.py:29
+msgid "Guatemala"
+msgstr "Гватемала"
+
+#: deeds/mappers.py:30
+msgid "Hong Kong"
+msgstr "Гонконг"
+
+#: deeds/mappers.py:31
+msgid "Croatia"
+msgstr "Хорватія"
+
+#: deeds/mappers.py:32
+msgid "Hungary"
+msgstr "Угорщина"
+
+#: deeds/mappers.py:33
+msgid "Ireland"
+msgstr "Ірландія"
+
+#: deeds/mappers.py:34
+msgid "Israel"
+msgstr "Ізраїль"
+
+#: deeds/mappers.py:35
+msgid "IGO"
+msgstr "міжурядова організація"
+
+#: deeds/mappers.py:36
+msgid "India"
+msgstr "Індія"
+
+#: deeds/mappers.py:37
+msgid "Italy"
+msgstr "Італія"
+
+#: deeds/mappers.py:38
+msgid "Jordan"
+msgstr "Йорданія"
+
+#: deeds/mappers.py:39
+msgid "Japan"
+msgstr "Японія"
+
+#: deeds/mappers.py:40
+msgid "South Korea"
+msgstr "Південна Корея"
+
+#: deeds/mappers.py:41
+msgid "Luxembourg"
+msgstr "Люксембург"
+
+#: deeds/mappers.py:42
+msgid "Macedonia"
+msgstr "Македонія"
+
+#: deeds/mappers.py:43
+msgid "Malta"
+msgstr "Мальта"
+
+#: deeds/mappers.py:44
+msgid "Mexico"
+msgstr "Мексика"
+
+#: deeds/mappers.py:45
+msgid "Malaysia"
+msgstr "Малайзія"
+
+#: deeds/mappers.py:46
+msgid "Nigeria"
+msgstr "Нігерія"
+
+#: deeds/mappers.py:47
+msgid "Netherlands"
+msgstr "Нідерланди"
+
+#: deeds/mappers.py:48
+msgid "Norway"
+msgstr "Норвегія"
+
+#: deeds/mappers.py:49
+msgid "New Zealand"
+msgstr "Нова Зеландія"
+
+#: deeds/mappers.py:50
+msgid "Peru"
+msgstr "Перу"
+
+#: deeds/mappers.py:51
+msgid "Philippines"
+msgstr "Філіппіни"
+
+#: deeds/mappers.py:52
+msgid "Poland"
+msgstr "Польща"
+
+#: deeds/mappers.py:53
+msgid "Puerto Rico"
+msgstr "Пуерто-Рико"
+
+#: deeds/mappers.py:54
+msgid "Portugal"
+msgstr "Португвлія"
+
+#: deeds/mappers.py:55
+msgid "Romania"
+msgstr "Румунія"
+
+#: deeds/mappers.py:56
+msgid "Serbia"
+msgstr "Сербія"
+
+#: deeds/mappers.py:57
+msgid "UK: Scotland"
+msgstr "Великобританія: Шотландія"
+
+#: deeds/mappers.py:58
+msgid "Sweden"
+msgstr "Швеція"
+
+#: deeds/mappers.py:59
+msgid "Singapore"
+msgstr "Сінгапур"
+
+#: deeds/mappers.py:60
+msgid "Slovenia"
+msgstr "Словенія"
+
+#: deeds/mappers.py:61
+msgid "Slovak Republic"
+msgstr "Словацька Республіка"
+
+#: deeds/mappers.py:62
+msgid "Thailand"
+msgstr "Таїланд"
+
+#: deeds/mappers.py:63
+msgid "Taiwan"
+msgstr "Тайвань"
+
+#: deeds/mappers.py:64
+msgid "Ukraine"
+msgstr "Україна"
+
+#: deeds/mappers.py:65
+msgid "Uganda"
+msgstr "Уганда"
+
+#: deeds/mappers.py:66
+msgid "UK: England & Wales"
+msgstr "Великобританія: Англія та Уельс"
+
+#: deeds/mappers.py:67
+msgid "United States"
+msgstr "Сполучені Штати"
+
+#: deeds/mappers.py:68
+msgid "Venezuela"
+msgstr "Венесуела"
+
+#: deeds/mappers.py:69
+msgid "Vietnam"
+msgstr "В'єтнам"
+
+#: deeds/mappers.py:70
+msgid "South Africa"
+msgstr "Південна Африка"
+
+#: deeds/mappers.py:74
+msgid "Afrikaans"
+msgstr "африкаанс"
+
+#: deeds/mappers.py:75
+msgid "Arabic"
+msgstr "арабська"
+
+#: deeds/mappers.py:76
+msgid "Assamese"
+msgstr "асамська"
+
+#: deeds/mappers.py:77
+msgid "Asturian"
+msgstr "астурійська"
+
+#: deeds/mappers.py:78
+msgid "Azerbaijani"
+msgstr "азейбарджанська"
+
+#: deeds/mappers.py:79
+msgid "Belarusian"
+msgstr "білоруська"
+
+#: deeds/mappers.py:80
+msgid "Bulgarian"
+msgstr "болгарська"
+
+#: deeds/mappers.py:81
+msgid "Bengali"
+msgstr "бенгальська"
+
+#: deeds/mappers.py:82
+msgid "Catalan"
+msgstr "каталонська"
+
+#: deeds/mappers.py:83
+msgid "Czech"
+msgstr "чеська"
+
+#: deeds/mappers.py:84
+msgid "Danish"
+msgstr "датська"
+
+#: deeds/mappers.py:85
+msgid "German"
+msgstr "німецька"
+
+#: deeds/mappers.py:86
+msgid "Greek"
+msgstr "грецька"
+
+#: deeds/mappers.py:87
+msgid "English"
+msgstr "англійська"
+
+#: deeds/mappers.py:88
+msgid "English (CA)"
+msgstr "англійська (Канада)"
+
+#: deeds/mappers.py:89
+msgid "English (GB)"
+msgstr "англійська (Великобританія)"
+
+#: deeds/mappers.py:90
+msgid "English (Hong Kong)"
+msgstr "англійська (Гонконг)"
+
+#: deeds/mappers.py:91
+msgid "English (Singapore)"
+msgstr "англійська (Сінгапур)"
+
+#: deeds/mappers.py:92
+msgid "English (US)"
+msgstr "англійська (США)"
+
+#: deeds/mappers.py:93
+msgid "Esperanto"
+msgstr "есперанто"
+
+#: deeds/mappers.py:94
+msgid "Spanish"
+msgstr "іспанська"
+
+#: deeds/mappers.py:95
+msgid "Spanish (AR)"
+msgstr "іспанська (Аргентина)"
+
+#: deeds/mappers.py:96
+msgid "Spanish (CL)"
+msgstr "іспанська (Чилі)"
+
+#: deeds/mappers.py:97
+msgid "Spanish (CO)"
+msgstr "іспанська (Колумбія)"
+
+#: deeds/mappers.py:98
+msgid "Spanish (Ecuador)"
+msgstr "іспанська (Еквадор)"
+
+#: deeds/mappers.py:99
+msgid "Spanish (Spain)"
+msgstr "іспанська (Іспанія)"
+
+#: deeds/mappers.py:100
+msgid "Spanish (Guatemala)"
+msgstr "іспанська (Гватемала)"
+
+#: deeds/mappers.py:101
+msgid "Spanish (MX)"
+msgstr "іспанська (Мексика)"
+
+#: deeds/mappers.py:102
+msgid "Spanish (PE)"
+msgstr "іспанська (Перу)"
+
+#: deeds/mappers.py:103
+msgid "Estonian"
+msgstr "естонська"
+
+#: deeds/mappers.py:104
+msgid "Basque"
+msgstr "баскська"
+
+#: deeds/mappers.py:105
+msgid "Persian"
+msgstr "фарсі"
+
+#: deeds/mappers.py:106
+msgid "Finnish"
+msgstr "фінська"
+
+#: deeds/mappers.py:107
+msgid "French"
+msgstr "французька"
+
+#: deeds/mappers.py:108
+msgid "French (CA)"
+msgstr "французька (Канада)"
+
+#: deeds/mappers.py:109
+msgid "Irish"
+msgstr "ірландська"
+
+#: deeds/mappers.py:110
+msgid "Galician"
+msgstr "галісійська"
+
+#: deeds/mappers.py:111
+msgid "Hebrew"
+msgstr "іврит"
+
+#: deeds/mappers.py:112
+msgid "Hindi"
+msgstr "хінді"
+
+#: deeds/mappers.py:113
+msgid "Croatian"
+msgstr "хорватська"
+
+#: deeds/mappers.py:114
+msgid "Hungarian"
+msgstr "угорська"
+
+#: deeds/mappers.py:115
+msgid "Armenian"
+msgstr "вірменська"
+
+#: deeds/mappers.py:116
+msgid "Indonesian"
+msgstr "індонезійська"
+
+#: deeds/mappers.py:117
+msgid "Icelandic"
+msgstr "ісландська"
+
+#: deeds/mappers.py:118
+msgid "Italian"
+msgstr "італійська"
+
+#: deeds/mappers.py:119
+msgid "Japanese"
+msgstr "японська"
+
+#: deeds/mappers.py:120
+msgid "Georgian"
+msgstr "грузинська"
+
+#: deeds/mappers.py:121
+msgid "Kazakh"
+msgstr "казахська"
+
+#: deeds/mappers.py:122
+msgid "Korean"
+msgstr "корейська"
+
+#: deeds/mappers.py:123
+msgid "Lithuanian"
+msgstr "литовська"
+
+#: deeds/mappers.py:124
+msgid "Latvian"
+msgstr "латвійська"
+
+#: deeds/mappers.py:125
+msgid "Macedonian"
+msgstr "македонська"
+
+#: deeds/mappers.py:126
+msgid "Malayalam"
+msgstr "малаялам"
+
+#: deeds/mappers.py:127
+msgid "Mongolian"
+msgstr "монгольська"
+
+#: deeds/mappers.py:128
+msgid "Malay"
+msgstr "малайська"
+
+#: deeds/mappers.py:129
+msgid "Dutch"
+msgstr "нідерландська"
+
+#: deeds/mappers.py:130
+msgid "Norwegian"
+msgstr "норвезька"
+
+#: deeds/mappers.py:131
+msgid "Northern Sotho"
+msgstr "північна сото (сепеді)"
+
+#: deeds/mappers.py:132
+msgid "Aranese"
+msgstr "аранська"
+
+#: deeds/mappers.py:133
+msgid "Polish"
+msgstr "польська"
+
+#: deeds/mappers.py:134
+msgid "Portuguese"
+msgstr "португальська"
+
+#: deeds/mappers.py:135
+msgid "Portuguese (BR)"
+msgstr "португальська (Бразилія)"
+
+#: deeds/mappers.py:137
+msgid "Romanian"
+msgstr "румунська"
+
+#: deeds/mappers.py:138
+msgid "Russian"
+msgstr "російська"
+
+#: deeds/mappers.py:139
+msgid "Sinhala"
+msgstr "сінгальська"
+
+#: deeds/mappers.py:140
+msgid "Slovenian"
+msgstr "словенська"
+
+#: deeds/mappers.py:141
+msgid "Serbian"
+msgstr "сербська"
+
+#: deeds/mappers.py:142
+msgid "Serbian (Latin)"
+msgstr "сербська (латиниця)"
+
+#: deeds/mappers.py:143
+msgid "Sotho"
+msgstr "сесото"
+
+#: deeds/mappers.py:144
+msgid "Swedish"
+msgstr "шведська"
+
+#: deeds/mappers.py:145
+msgid "Tamil"
+msgstr "тамільська"
+
+#: deeds/mappers.py:146
+msgid "Telugu"
+msgstr "телуґу"
+
+#: deeds/mappers.py:147
+msgid "Thai"
+msgstr "тайська"
+
+#: deeds/mappers.py:148
+msgid "Turkish"
+msgstr "турецька"
+
+#: deeds/mappers.py:149
+msgid "Ukranian"
+msgstr "українська"
+
+#: deeds/mappers.py:150
+msgid "Urdu"
+msgstr "урду"
+
+#: deeds/mappers.py:151
+msgid "Vietnamese"
+msgstr "в'єтнамська"
+
+#: deeds/mappers.py:152 deeds/mappers.py:153
+msgid "Chinese"
+msgstr "китайська"
+
+#: deeds/mappers.py:154
+msgid "Chinese (Hong Kong)"
+msgstr "китайська (Гонконг)"
+
+#: deeds/mappers.py:155
+msgid "Chinese (Taiwan)"
+msgstr "китайська (Тайвань)"
+
+#: deeds/mappers.py:156
+msgid "Zulu"
+msgstr "зулуська"
+
+#: deeds/mappers.py:160
+msgid "GPL"
+msgstr "GPL"
+
+#: deeds/mappers.py:161
+msgid "LGPL"
+msgstr "LGPL"
+
+#: deeds/mappers.py:162 deeds/mappers.py:182
+#: deeds/templates/licenses/devnations_deed.html:53
+#: deeds/templates/licenses/standard_deed.html:102
 msgid "Attribution"
-msgstr ""
+msgstr "Зазначення Авторства"
 
-#: deeds/templates/deeds/devnations_deed.html:55
-#: deeds/templates/deeds/sampling_deed.html:45
+#: deeds/mappers.py:163
+msgid "Attribution-NonCommercial"
+msgstr "Із Зазначенням Авторства — Некомерційна"
+
+#: deeds/mappers.py:164
+msgid "Attribution-NonCommercial-NoDerivs"
+msgstr "Із Зазначенням Авторства — Некомерційна — Без Похідних"
+
+#: deeds/mappers.py:165
+msgid "Attribution-NonCommercial-ShareAlike"
+msgstr ""
+"Із Зазначенням Авторства — Некомерційна — Поширення На Тих Самих Умовах"
+
+#: deeds/mappers.py:166
+msgid "Attribution-NoDerivs"
+msgstr "Із Зазначенням Авторства — Без Похідних"
+
+#: deeds/mappers.py:167
+msgid "Attribution-NoDerivs-NonCommercial"
+msgstr "Із Зазначенням Авторства — Без Похідних — Некомерційна"
+
+#: deeds/mappers.py:168
+msgid "Attribution-ShareAlike"
+msgstr "Із Зазначенням Авторства — Поширення На Тих Самих Умовах"
+
+#: deeds/mappers.py:169
+msgid "Public Domain Mark"
+msgstr "Позначення Суспільного Надбання"
+
+#: deeds/mappers.py:170 deeds/templates/licenses/standard_deed.html:131
+msgid "NonCommercial"
+msgstr "Некомерційна"
+
+#: deeds/mappers.py:171
+msgid "NonCommercial-ShareAlike"
+msgstr "Некомерційна — Поширення На Тих Самих Умовах"
+
+#: deeds/mappers.py:172
+msgid "NonCommercial Sampling Plus"
+msgstr "Некомерційна Використання Частин Твору"
+
+#: deeds/mappers.py:173
+msgid "NoDerivs"
+msgstr "Без Похідних"
+
+#: deeds/mappers.py:174
+msgid "NoDerivs-NonCommercial"
+msgstr "Без Похідних — Некомерційна"
+
+#: deeds/mappers.py:175
+msgid "Public Domain"
+msgstr "Суспільне надбання"
+
+#: deeds/mappers.py:176 deeds/templates/licenses/standard_deed.html:149
+msgid "ShareAlike"
+msgstr "Поширення На Тих Самих Умовах"
+
+#: deeds/mappers.py:177
+msgid "Sampling"
+msgstr "Використання Частин Твору (Семплінг)"
+
+#: deeds/mappers.py:178
+msgid "Sampling Plus"
+msgstr "Sampling Plus (розширене використання частин твору)"
+
+#: deeds/mappers.py:183
+msgid "Noncommercial"
+msgstr "Некомерційна"
+
+#: deeds/mappers.py:184
+msgid "No Derivative Works"
+msgstr "Без Похідних Творів"
+
+#: deeds/mappers.py:185
+msgid "Share Alike"
+msgstr "Поширення На Тих Самих Умовах"
+
+#: deeds/mappers.py:190 deeds/templates/licenses/devnations_deed.html:55
+#: deeds/templates/licenses/sampling_deed.html:45
 msgid ""
 "You must attribute the work in the manner specified by the author or "
 "licensor (but not in any way that suggests that they endorse you or your use"
 " of the work)."
 msgstr ""
+"Ви маєте зазначити авторство твору так, як це вказано автором чи ліцензіаром"
+" (але таким чином щоб не створювалось уявлення, що вони підтримують чи "
+"схвалюють Вас або використання Вами твору)."
 
-#: deeds/templates/deeds/devnations_deed.html:60
-#: deeds/templates/deeds/sampling_deed.html:59
+#: deeds/mappers.py:194 deeds/templates/licenses/sampling_deed.html:53
+msgid ""
+"You may not use this work to advertise for or promote anything but the work "
+"you create from it."
+msgstr ""
+"Ви не можете використовувати цей твір для реклами або просування будь-чого "
+"окрім твору, що ви створите на основі цього твору."
+
+#: deeds/mappers.py:196 deeds/templates/licenses/sampling_deed.html:49
+msgid "You may not use this work for commercial purposes."
+msgstr "Ви не можете використовувати цей твір в комерційних цілях."
+
+#: deeds/mappers.py:197
+msgid "You may not alter, transform, or build upon this work."
+msgstr ""
+"Ви не можете змінювати цей твір, або створювати на його основі власний твір."
+
+#: deeds/mappers.py:199 deeds/templates/licenses/sampling_deed.html:66
+msgid ""
+"You may not perform, display, or distribute copies of this whole work for "
+"any purpose."
+msgstr ""
+"Ви ні в яких цілях не можете виконувати, демонструвати, або розповсюджувати "
+"копії цього твору в повному обсязі."
+
+#: deeds/mappers.py:202
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same or similar license to this one."
+msgstr ""
+"Якщо Ви змінюєте або берете за основу цей твір, Ви можете розповсюджувати "
+"похідний твір тільки на умовах такої ж або подібної ліцензії."
+
+#: deeds/mappers.py:206
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same, similar or a compatible license."
+msgstr ""
+"Якщо Ви змінюєте або берете за основу даний твір, Ви можете розповсюджувати "
+"похідний твір тільки на умовах цієї, подібної або сумісної ліцензії."
+
+#: deeds/templates/catalog_pages/license_catcher.html:3
+#: deeds/templates/licenses/pdmark_deed.html:188
+#: deeds/templates/macros_templates/partner.html:26
+msgid "Creative Commons"
+msgstr "Creative Commons"
+
+#: deeds/templates/includes/cc_site_footer.html:25
+#: deeds/templates/includes/cc_site_header.html:40
+msgid "Contact"
+msgstr "Контакти"
+
+#: deeds/templates/includes/cc_site_footer.html:26
+msgid "Privacy"
+msgstr "Приватність"
+
+#: deeds/templates/includes/cc_site_footer.html:27
+msgid "Policies"
+msgstr "Принципи"
+
+#: deeds/templates/includes/cc_site_footer.html:28
+msgid "Terms"
+msgstr "Умови"
+
+#: deeds/templates/includes/cc_site_footer.html:35
+msgid "We'd love to hear from you!"
+msgstr "Будемо раді якщо ви зконтактуєте з нами!"
+
+#: deeds/templates/includes/cc_site_footer.html:44
+msgid "Frequently Asked Questions"
+msgstr "FAQ"
+
+#: deeds/templates/includes/cc_site_header.html:11
+msgid "Menu"
+msgstr "Меню"
+
+#: deeds/templates/includes/cc_site_header.html:16
+#: deeds/templates/includes/cc_site_header.html:27
+msgid "Share your work"
+msgstr "Поділіться своїм твором"
+
+#: deeds/templates/includes/cc_site_header.html:17
+#: deeds/templates/includes/cc_site_header.html:28
+msgid "Use &#038; remix"
+msgstr "Використовувати &#038; реміксувати"
+
+#: deeds/templates/includes/cc_site_header.html:18
+#: deeds/templates/includes/cc_site_header.html:29
+msgid "What We do"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:19
+#: deeds/templates/includes/cc_site_header.html:30
+msgid "Blog"
+msgstr "Блог"
+
+#: deeds/templates/includes/cc_site_header.html:20
+#: deeds/templates/includes/cc_site_header.html:37
+msgid "Global Network"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:21
+msgid "Search the Commons"
+msgstr "Шукати в Спільнотах"
+
+#: deeds/templates/includes/cc_site_header.html:36
+msgid "Search for CC images"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:38
+msgid "Newsletters"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:39
+msgid "Store"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:46
+msgid "Facebook"
+msgstr "Facebook"
+
+#: deeds/templates/includes/cc_site_header.html:47
+msgid "Twitter"
+msgstr "Twitter"
+
+#: deeds/templates/includes/cc_site_header.html:48
+msgid "Mail"
+msgstr "Пошта"
+
+#: deeds/templates/includes/deed_donate_slide.html:7
+#: deeds/templates/macros_templates/deed.html:119
+#: deeds/templates/macros_templates/pdtool_deed.html:92
+msgid ""
+"This content is freely available under simple legal terms because of "
+"Creative Commons, a non-profit that survives on donations. If you love this "
+"content, and love that it's free for everyone, please consider a donation to"
+" support our work."
+msgstr ""
+"Цей контент вільно доступний на простих правових умовах завдяки Creative "
+"Commons, некомерційній організації, котра існує на пожертви. Якщо вам "
+"подобається цей контент, і те, що його використання є вільним для кожного, "
+"будь ласка розгляньте можливість зробити пожертву щоб підтримати нашу "
+"роботу."
+
+#: deeds/templates/includes/deed_donate_slide.html:8
+msgid "When you share, everyone wins."
+msgstr "Коли ви ділитесь, користь отримують всі."
+
+#: deeds/templates/includes/deed_donate_slide.html:14
+msgid "Contribute today to Creative Commons"
+msgstr "Допоможіть Creative Commons сьогодні!"
+
+#: deeds/templates/includes/deed_donate_slide.html:35
+msgid "Amount"
+msgstr "Розмір"
+
+#: deeds/templates/includes/deed_donate_slide.html:42
+msgid "Donate Now"
+msgstr "Внесіть Пожертву Зараз"
+
+#: deeds/templates/includes/language_selector.html:5
+#: deeds/templates/includes/translations.html:4
+msgid "This page is available in the following languages:"
+msgstr "Ця сторінка доступна наступними мовами:"
+
+#: deeds/templates/licenses/devnations_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:15
+#: deeds/templates/licenses/standard_deed.html:26
+msgid ""
+"Creative Commons has <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
+"tool</a> and does not recommend that it be applied to works."
+msgstr ""
+"Creative Commons <a "
+"href=\"http://creativecommons.org/retiredlicenses\">перестала "
+"використовувати цей юридичний інструмент</a>і не рекомендує застосовувати "
+"його для творів."
+
+#: deeds/templates/licenses/devnations_deed.html:23
+#: deeds/templates/licenses/sampling_deed.html:20
+msgid "You are free:"
+msgstr "Ви можете вільно:"
+
+#: deeds/templates/licenses/devnations_deed.html:28
+msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
+msgstr ""
+"<strong>Поширювати</strong> — копіювати, розповсюджувати і передавати твір"
+
+#: deeds/templates/licenses/devnations_deed.html:33
+msgid "<strong>to Remix</strong> — to adapt the work"
+msgstr ""
+"<strong>Змінювати</strong> — вносити зміни до твору, створювати на його "
+"основі похідні твори"
+
+#: deeds/templates/licenses/devnations_deed.html:40
+#: deeds/templates/licenses/sampling_deed.html:41
+msgid "Under the following conditions:"
+msgstr "На наступних умовах:"
+
+#: deeds/templates/licenses/devnations_deed.html:60
+#: deeds/templates/licenses/sampling_deed.html:59
 msgid ""
 "For any reuse or distribution, you must make clear to others the license "
 "terms of this work. The best way to do this is with a link to this web page."
 msgstr ""
+"Для будь-якого повторного використання ви повинні чітко вказати іншим на "
+"ліцензійні умови, пов'язані з цим твором. Найкращим способом зробити це є "
+"посилання на цю сторінку."
 
-#: deeds/templates/deeds/devnations_deed.html:61
+#: deeds/templates/licenses/devnations_deed.html:61
 msgid ""
 "Any of the above conditions can be <a href=\"#\" id=\"waived\" "
 "class=\"helpLink\">waived</a> if you get permission from the copyright "
 "holder."
 msgstr ""
+"Будь-яка з перелічених вище умов може бути <a href=\"#\" id=\"waived\" "
+"class=\"helpLink\">скасована</a> якщо ви отримаєте на це дозвіл від "
+"правоволодільця."
 
-#: deeds/templates/deeds/devnations_deed.html:69
-#: deeds/templates/deeds/sampling_deed.html:76
+#: deeds/templates/licenses/devnations_deed.html:69
+#: deeds/templates/licenses/sampling_deed.html:76
 msgid ""
 "Your fair dealing or <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
 " id=\"fair_use\" class=\"helpLink\">fair use</a> rights, or other applicable"
 " copyright exceptions and limitations;"
 msgstr ""
+"Ваші права на <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">добросовісне використання</a> або інші "
+"вийнятки і обмеження авторського права;"
 
-#: deeds/templates/deeds/devnations_deed.html:72
-#: deeds/templates/deeds/sampling_deed.html:79
+#: deeds/templates/licenses/devnations_deed.html:72
+#: deeds/templates/licenses/sampling_deed.html:79
 msgid ""
 "Rights other persons may have either in the work itself or in how the work "
 "is used, such as <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity</a> or privacy rights."
 msgstr ""
+"Права інших осіб можуть зачіпатися цим твором або тим, як він "
+"використовується, наприклад права на <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">зображення особи</a> чи на "
+"приватне життя."
 
-#: deeds/templates/deeds/pdmark_deed.html:18
-#: deeds/templates/deeds/zero_deed.html:20
+#: deeds/templates/licenses/pdmark_deed.html:18
+#: deeds/templates/licenses/zero_deed.html:20
 msgid "No Copyright"
-msgstr ""
+msgstr "Немає авторського права"
 
-#: deeds/templates/deeds/pdmark_deed.html:21
+#: deeds/templates/licenses/pdmark_deed.html:21
 msgid ""
 "<p id=\"nolaw-text\"> This work has been <b>identified</b> as being free of "
 "known restrictions under copyright law, including all related and "
@@ -108,19 +968,26 @@ msgid ""
 "perform the work, even for commercial purposes, all without asking "
 "permission. See <b>Other Information</b> below. </p>"
 msgstr ""
+"<p id=\"nolaw-text\"> Цей твір було <b>позначено</b> як вільний від охорони "
+"авторським правом, а також сіміжними правами. </p> <p> <br /> Ви можете, не "
+"запитуючи дозволу, вільно відтворювати, змінювати, розповсюджувати і "
+"виконувати цей твір, навіть в комерційних цілях. Подивіться <b>Додаткову "
+"Інформацію</b> нижче. </p>"
 
-#: deeds/templates/deeds/pdmark_deed.html:31
-#: deeds/templates/deeds/zero_deed.html:49
+#: deeds/templates/licenses/pdmark_deed.html:31
+#: deeds/templates/licenses/zero_deed.html:49
 msgid "Other Information"
-msgstr ""
+msgstr "Додаткова Інформація"
 
-#: deeds/templates/deeds/pdmark_deed.html:34
+#: deeds/templates/licenses/pdmark_deed.html:34
 msgid ""
 "The work may not be free of known copyright restrictions in all <a href=\"\""
 " class=\"helpLink\" id=\"all_jurisdictions\">jurisdictions</a>."
 msgstr ""
+"Можливо твір не є вільним від авторськоправової охорони у всіх <a href=\"\" "
+"class=\"helpLink\" id=\"all_jurisdictions\">країнах</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:37
+#: deeds/templates/licenses/pdmark_deed.html:37
 msgid ""
 "Persons may have other rights in or related to the work, such as patent or "
 "trademark rights, and others may have rights in how the work is used, such "
@@ -128,101 +995,128 @@ msgid ""
 "href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"Хтось може мати інші права на твір чи пов'язані з твором, такі як патентні "
+"права чи права на торговельну марку, також інші особи можуть мати права, які"
+" стосуються того, як твір використовується, наприклад права<a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">на зображення особи чи на "
+"приватне життя</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:40
+#: deeds/templates/licenses/pdmark_deed.html:40
 msgid ""
 "In some jurisdictions <a href=\"\" class=\"helpLink\" "
 "id=\"moral_rights\">moral rights</a> of the author may persist beyond the "
 "term of copyright. These rights may include the right to be identified as "
 "the author and the right to object to derogatory treatments."
 msgstr ""
+"В деяких країнах<a href=\"\" class=\"helpLink\" id=\"moral_rights\">особисті"
+" немайнові права</a> автора можуть залишатися чинними навіть після "
+"закінчення строку дії авторського права. До цих прав можуть належати право "
+"бути визнаним автором і право протидіяти спотворенню і перекрученню твору."
 
-#: deeds/templates/deeds/pdmark_deed.html:43
+#: deeds/templates/licenses/pdmark_deed.html:43
 msgid ""
 "Unless expressly stated otherwise, the person who identified the work makes "
 "no warranties about the work, and disclaims liability for all uses of the "
 "work, to the fullest extent permitted by applicable law."
 msgstr ""
+"У разі, якщо окремо не обумовлено інше, особа, котра позначила твір, не "
+"надає жодних гарантій щодо твору, і, у тій мірі, в якій це можливо за "
+"законом, відмовляється нести відповідальність у зв'язку з будь-яким "
+"використанням твору."
 
-#: deeds/templates/deeds/pdmark_deed.html:46
+#: deeds/templates/licenses/pdmark_deed.html:46
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "person who identified the work."
 msgstr ""
+"Коли ви використовуєте або цитуєте твір, ви не повинні вказувати на <a "
+"href=\"\" class=\"helpLink\" id=\"endorsement\">підтримку чи схвалення</a> "
+"від автора або особи, котра позначила твір."
 
-#: deeds/templates/deeds/pdmark_deed.html:74
-#: deeds/templates/deeds/zero_deed.html:82
+#: deeds/templates/licenses/pdmark_deed.html:74
+#: deeds/templates/licenses/zero_deed.html:82
 msgid "Work:"
-msgstr ""
+msgstr "Твір:"
 
-#: deeds/templates/deeds/pdmark_deed.html:79
+#: deeds/templates/licenses/pdmark_deed.html:79
 msgid "Author:"
-msgstr ""
+msgstr "Автор:"
 
-#: deeds/templates/deeds/pdmark_deed.html:83
+#: deeds/templates/licenses/pdmark_deed.html:83
 msgid "Identified by:"
-msgstr ""
+msgstr "Позначено:"
 
-#: deeds/templates/deeds/pdmark_deed.html:89
-#: deeds/templates/deeds/zero_deed.html:95
+#: deeds/templates/licenses/pdmark_deed.html:89
+#: deeds/templates/licenses/zero_deed.html:95
 msgid ""
 "You can <a href=\"\" class=\"helpLink\" id=\"citation_help\">cite</a> this "
 "work with this HTML:"
 msgstr ""
+"Ви можете <a href=\"\" class=\"helpLink\" id=\"citation_help\">цитувати</a> "
+"цей твір за допомогою наступного HTML-коду:"
 
-#: deeds/templates/deeds/pdmark_deed.html:114
-#: deeds/templates/deeds/zero_deed.html:123
+#: deeds/templates/licenses/pdmark_deed.html:114
+#: deeds/templates/licenses/zero_deed.html:123
 msgid "Endorsement"
-msgstr ""
+msgstr "Підтримка чи схвалення"
 
-#: deeds/templates/deeds/pdmark_deed.html:118
-#: deeds/templates/deeds/zero_deed.html:126
+#: deeds/templates/licenses/pdmark_deed.html:118
+#: deeds/templates/licenses/zero_deed.html:126
 msgid ""
 "In some jurisdictions, wrongfully implying that an author, publisher or "
 "anyone else endorses your use of a work may be unlawful."
 msgstr ""
+"В деяких країнах помилкове стверджування, що автор, видавець або ще хтось "
+"інший підтримує чи схвалює використання вами твору, може бути протизаконним."
 
-#: deeds/templates/deeds/pdmark_deed.html:121
-#: deeds/templates/deeds/pdmark_deed.html:135
-#: deeds/templates/deeds/pdmark_deed.html:149
-#: deeds/templates/deeds/pdmark_deed.html:162
-#: deeds/templates/deeds/pdmark_deed.html:173
-#: deeds/templates/deeds/zero_deed.html:117
-#: deeds/templates/deeds/zero_deed.html:130
-#: deeds/templates/deeds/zero_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:121
+#: deeds/templates/licenses/pdmark_deed.html:135
+#: deeds/templates/licenses/pdmark_deed.html:149
+#: deeds/templates/licenses/pdmark_deed.html:162
+#: deeds/templates/licenses/pdmark_deed.html:173
+#: deeds/templates/licenses/zero_deed.html:117
+#: deeds/templates/licenses/zero_deed.html:130
+#: deeds/templates/licenses/zero_deed.html:142
 msgid "Learn more"
-msgstr ""
+msgstr "Дізнатися більше"
 
-#: deeds/templates/deeds/pdmark_deed.html:128
-#: deeds/templates/deeds/zero_deed.html:136
+#: deeds/templates/licenses/pdmark_deed.html:128
+#: deeds/templates/licenses/zero_deed.html:136
 msgid "Citation"
-msgstr ""
+msgstr "Цитування"
 
-#: deeds/templates/deeds/pdmark_deed.html:132
-#: deeds/templates/deeds/zero_deed.html:139
+#: deeds/templates/licenses/pdmark_deed.html:132
+#: deeds/templates/licenses/zero_deed.html:139
 msgid ""
 "Copy and paste the HTML provided into your webpage to easily cite this work."
 msgstr ""
+"Скопіюйте і вставте наведений HTML-код на вашу сторінку щоб просто "
+"процитувати цей твір."
 
-#: deeds/templates/deeds/pdmark_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:142
 msgid "Moral Rights"
-msgstr ""
+msgstr "Особисті Немайнові Права"
 
-#: deeds/templates/deeds/pdmark_deed.html:146
+#: deeds/templates/licenses/pdmark_deed.html:146
 msgid ""
 "Copyright laws in most jurisdictions around the world grant creators \"moral"
 " rights\" which may provide some redress if use of a work is considered "
 "\"derogatory\"."
 msgstr ""
+"Закони про авторське право в більшості країн світу визнають за творцями "
+"\"особисті немайнові права\", засновуючись на яких суд може прийняти рішення"
+" про відшкодування збитків якщо використання твору буде визнано таким, що "
+"\"перекручує чи спотворює\" його."
 
-#: deeds/templates/deeds/pdmark_deed.html:155
-#: deeds/templates/deeds/zero_deed.html:110
+#: deeds/templates/licenses/pdmark_deed.html:155
+#: deeds/templates/licenses/zero_deed.html:110
 msgid "Other Rights"
-msgstr ""
+msgstr "Інші Права"
 
-#: deeds/templates/deeds/pdmark_deed.html:159
-#: deeds/templates/deeds/zero_deed.html:113
+#: deeds/templates/licenses/pdmark_deed.html:159
+#: deeds/templates/licenses/zero_deed.html:113
 msgid ""
 "The use of a work free of known copyright restrictions may be otherwise "
 "regulated or limited. The work or its use may be subject to personal data "
@@ -230,33 +1124,37 @@ msgid ""
 "control how their voice, image or likeness is used, or other restrictions or"
 " limitations under applicable law."
 msgstr ""
+"Використання твору, вільного від авторськоправового захисту, може "
+"регулюватись або бути обмеженим іншими законами. Твір або його використання "
+"може бути об'єктом законів про захист персональних даних, зображення особи "
+"або приватного життя, котрі дозволяють особі контролювати те, як "
+"використовуються її голос, зображення або образ, або ж інших заборон і "
+"обмежень згідно застосовного законодавства."
 
-#: deeds/templates/deeds/pdmark_deed.html:167
+#: deeds/templates/licenses/pdmark_deed.html:167
 msgid "Term of Copyright"
-msgstr ""
+msgstr "Строк чинності авторського права"
 
-#: deeds/templates/deeds/pdmark_deed.html:170
+#: deeds/templates/licenses/pdmark_deed.html:170
 msgid ""
 "Copyright terms vary jurisdiction to jurisdiction. A work free of copyright "
 "restrictions in one jurisdiction may not be similarly free in other "
 "jurisdictions."
 msgstr ""
+"Строки чинності авторського права можуть бути різними в різних країнах. "
+"Твір, вільний від авторськоправової охорони в одній державі, може не бути "
+"вільним від неї в іншій."
 
-#: deeds/templates/deeds/pdmark_deed.html:188
-#: deeds/templates/macros_templates/partner.html:26
-msgid "Creative Commons"
-msgstr ""
-
-#: deeds/templates/deeds/pdmark_deed.html:196
-#: deeds/templates/deeds/pdmark_deed.html:198
-#: deeds/templates/deeds/zero_deed.html:172
-#: deeds/templates/deeds/zero_deed.html:187
-#: deeds/templates/macros_templates/deed.html:116
-#: deeds/templates/macros_templates/deed.html:163
+#: deeds/templates/licenses/pdmark_deed.html:196
+#: deeds/templates/licenses/pdmark_deed.html:198
+#: deeds/templates/licenses/zero_deed.html:172
+#: deeds/templates/licenses/zero_deed.html:187
+#: deeds/templates/macros_templates/deed.html:94
+#: deeds/templates/macros_templates/deed.html:141
 msgid "Disclaimer"
-msgstr ""
+msgstr "Відмова від відповідальності"
 
-#: deeds/templates/deeds/pdmark_deed.html:200
+#: deeds/templates/licenses/pdmark_deed.html:200
 msgid ""
 "<p> The Public Domain Mark is not a legal instrument. </p> <p> Creative "
 "Commons is not a law firm and does not provide legal services or advice. "
@@ -266,8 +1164,16 @@ msgid ""
 "applied. CC makes no warranties about any work or its copyright status in "
 "any jurisdiction, and disclaims all liability for all uses of any work. </p>"
 msgstr ""
+"<p> Позначення Суспільного Надбання не є правовим інструментом. </p> <p> "
+"Creative Commons не є юридичною компанією і не недає юридичних послуг чи "
+"консультацій. Розповсюдження, показ або посилання на це Позначення "
+"Суспільного Надбання не створює відносин з приводу надання юридичних послуг."
+" </p> <p> Creative Commons не перевіряла дійсний правовий статус творів, до "
+"яких застосовано це позначення. CC не надає гарантій стосовно будь-якого "
+"твору чи стану його авторськоправової охорони в будь-якій країні, і не несе "
+"жодної відповідальності у зв'язку з будь-яким використанням твору. </p> "
 
-#: deeds/templates/deeds/pdmark_deed.html:207
+#: deeds/templates/licenses/pdmark_deed.html:207
 #, python-format
 msgid ""
 "\n"
@@ -275,26 +1181,29 @@ msgid ""
 "  "
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:5
+#: deeds/templates/licenses/publicdomain_deed.html:5
 msgid ""
 "Copyright-Only Dedication (based on United States law)\n"
 "or Public Domain Certification"
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:19
 msgid ""
 "Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
 "  (based on United States law)<br />\n"
 "  or Public Domain Certification"
 msgstr ""
+"Відмова від своїх прав на користь суспільства \n"
+"<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a> (засновано на законодавстві США)\n"
+"або Позначення Суспільного Надбання"
 
-#: deeds/templates/deeds/publicdomain_deed.html:28
-#: deeds/templates/deeds/standard_deed.html:72
-#: deeds/templates/deeds/zero_deed.html:37
+#: deeds/templates/licenses/publicdomain_deed.html:28
+#: deeds/templates/licenses/standard_deed.html:77
+#: deeds/templates/licenses/zero_deed.html:37
 msgid "This license is acceptable for Free Cultural Works."
-msgstr ""
+msgstr "Ця ліцензія є прийнятною для Творів Вільної Культури."
 
-#: deeds/templates/deeds/publicdomain_deed.html:38
+#: deeds/templates/licenses/publicdomain_deed.html:38
 msgid ""
 "        <p>The person or persons who have associated work with this document (the \"Dedicator\" or \"Certifier\") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the \"Work\") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a \"dedicator\" below.</p>\n"
 "\n"
@@ -304,84 +1213,88 @@ msgid ""
 "\n"
 "        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>"
 msgstr ""
+"        <p>Особа або особи, котрі зв'язали твір з цим документом (\"Відчуджувач\" або \"Посвідчувач\") цим або (a) посвідчує, що, наскільки йому відомо, вказаний авторський твір знаходиться в суспільному надбанні в країні, де він вперше був опублікований, або (b) відмовляється від свого авторського права на цей твір (\"Твір\") tі передає його до суспільного надбання. Посвідчувач, крім того, надає право отримання прибутку із вказаного твору і для цих цілей вважається нижче \"Відчуджувачем\".</p>\n"
+"\n"
+"        <p>Посвідчувач доклав розумних зусиль щоб перевірити наявність авторського права на цей твір. Посвідчувач усвідомлює, що його добросовісність, може не захистити його від відповідальності якщо насправді твір не знаходиться в суспільному надбанні.</p>\n"
+"\n"
+"        <p>Відчуджувач робить цю відмову заради суспільної користі і на шкоду спадкоємцям Відчуджувача. Відчуджувач навмисно передає свої права у формі акту безстрокової відмови від всіх своїх наявних чи таких, що можуть виникнути у майбутньому, авторських прав на Твір, як безумовних, так і умовних. Відчуджувач усвідомлює, що така відмова від всіх прав включає в себе в тому числі і відмову від права вимагати дотримання (у судовому порядку або іншим чином) авторських прав на Твір.</p>\n"
+"\n"
+"        <p>Відчуджувач усвідомлює, що після передання в суспільне надбання Твір може вільно відтворюватися, розповсюджуватися, передаватися, змінюватися, братися за основу чи іншим шляхом використовуватися будь-ким у будь-яких цілях, комерційних або некомерційних, і в будь-який спосіб, включаючи методи, що на момент передання твору у суспільне надбання ще не були винайдені..</p>"
 
-#: deeds/templates/deeds/publicdomain_deed.html:49
+#: deeds/templates/licenses/publicdomain_deed.html:49
 msgid ""
 "This tool is based on United States law and may not be applicable outside "
 "the US. For dedicating new works to the public domain, we recommend <a "
 "href=\"/choose/zero/\">CC0</a>."
 msgstr ""
+"Цей інструмент засновано на законодавстві Сполучених Штатів і він може бути "
+"непридатним за межами США. Для передачі творів до суспільного надбання ми "
+"рекомендуємо використовувати <a href=\"/choose/zero/\">CC0</a>."
 
-#: deeds/templates/deeds/sampling_deed.html:24
+#: deeds/templates/licenses/sampling_deed.html:24
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "noncommercial purposes."
-msgstr ""
+msgstr "Творчо змінювати цей твір в некомерційних цілях."
 
-#: deeds/templates/deeds/sampling_deed.html:28
+#: deeds/templates/licenses/sampling_deed.html:28
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "commercial or noncommercial purposes."
-msgstr ""
+msgstr "Творчо змінювати цей твір у комерційних чи некомерційних цілях."
 
-#: deeds/templates/deeds/sampling_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:34
 msgid ""
 "To perform, display, and distribute copies of this whole work for "
 "noncommercial purposes (e.g., file-sharing or noncommercial webcasting)."
 msgstr ""
+"Виконувати, демонструвати і розповсюджувати копії цього твору в "
+"некомерційних цілях (наприклад, для сфайлообміну або некомерційного мовлення"
+" через веб)."
 
-#: deeds/templates/deeds/sampling_deed.html:49
-msgid "You may not use this work for commercial purposes."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:53
-msgid ""
-"You may not use this work to advertise for or promote anything but the work "
-"you create from it."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:63
+#: deeds/templates/licenses/sampling_deed.html:63
 msgid ""
 "For any reuse, you must make clear to others the license terms of this work."
 msgstr ""
+"Для будь-якого повторного використання ви повинні ясно сповістити інших про "
+"умови ліцензування цього твору."
 
-#: deeds/templates/deeds/sampling_deed.html:66
-msgid ""
-"You may not perform, display, or distribute copies of this whole work for "
-"any purpose."
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:40
+#: deeds/templates/licenses/standard_deed.html:44
 msgid "You are free to:"
-msgstr ""
+msgstr "Ви можете вільно:"
 
-#: deeds/templates/deeds/standard_deed.html:45
+#: deeds/templates/licenses/standard_deed.html:49
 msgid ""
 "<strong>Share</strong>  &mdash; copy and redistribute the material in any "
 "medium or format"
 msgstr ""
+"<strong>Поширювати</strong> &mdash; копіювати і розповсюджувати матеріал у "
+"будь-якому вигляді чи форматі"
 
-#: deeds/templates/deeds/standard_deed.html:52
+#: deeds/templates/licenses/standard_deed.html:56
 msgid ""
 "<strong>Adapt</strong>  &mdash; remix, transform, and build upon the "
 "material"
 msgstr ""
+"<strong>Змінювати</strong> &mdash; реміксувати, трансформувати, і брати "
+"матеріал за основу"
 
-#: deeds/templates/deeds/standard_deed.html:58
+#: deeds/templates/licenses/standard_deed.html:62
 msgid "for any purpose, even commercially."
-msgstr ""
+msgstr "для будь-яких цілей, навіть комерційних."
 
-#: deeds/templates/deeds/standard_deed.html:83
+#: deeds/templates/licenses/standard_deed.html:89
 msgid ""
 "The licensor cannot revoke these freedoms as long as you follow the license "
 "terms."
 msgstr ""
+"Ліцензіар не може відкликати ці дозволи поки ви дотримуєтесь умов ліцензії."
 
-#: deeds/templates/deeds/standard_deed.html:90
+#: deeds/templates/licenses/standard_deed.html:96
 msgid "Under the following terms:"
-msgstr ""
+msgstr "На наступних умовах:"
 
-#: deeds/templates/deeds/standard_deed.html:97
+#: deeds/templates/licenses/standard_deed.html:103
 msgid ""
 "You must give <a href=\"#\" id=\"appropriate_credit_popup\" "
 "class=\"helpLink\">appropriate credit</a></span>, provide a link to the "
@@ -391,79 +1304,100 @@ msgid ""
 "made</a></span>.  You may do so in any reasonable manner, but not in any way"
 " that suggests the licensor endorses you or your use."
 msgstr ""
+"Ви маєте <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">вказати автора</a></span>, розмістити посилання на "
+"ліцензію та <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\">вказати чи було внесено "
+"зміни до твору</a></span>. Ви можете зробити це у будь-який розумний спосіб,"
+" але так, щоб не створювати враження стосовно того, що ліцензіар підтримує "
+"чи схвалює вас або ваше використання твору."
 
-#: deeds/templates/deeds/standard_deed.html:103
+#: deeds/templates/licenses/standard_deed.html:109
 msgid "Attribute this work:"
-msgstr ""
+msgstr "Зазначення авторства цього твору:"
 
-#: deeds/templates/deeds/standard_deed.html:115
+#: deeds/templates/licenses/standard_deed.html:121
 msgid "Information"
-msgstr ""
+msgstr "Інформація"
 
-#: deeds/templates/deeds/standard_deed.html:125
-msgid "NonCommercial"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:125
+#: deeds/templates/licenses/standard_deed.html:131
 msgid ""
 "You may not use the material for <a href=\"#\" "
 "id=\"commercial_purposes_popup\" class=\"helpLink\">commercial purposes</a>."
 msgstr ""
+"Ви не можете використовувати матеріал для <a href=\"#\" "
+"id=\"commercial_purposes_popup\" class=\"helpLink\">комерційних цілей</a>."
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid "NoDerivatives"
-msgstr ""
+msgstr "Без Похідних"
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid ""
 "If you <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
 "class=\"helpLink\">remix, transform, or build upon</a> the material, you may"
 " not distribute the modified material."
 msgstr ""
+"Якщо ви <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">реміксуєте, трансформуєте матеріал, засновуєте свій твір "
+"на</a> матеріалі, ви не можете розповсюджувати модифікований матеріал."
 
-#: deeds/templates/deeds/standard_deed.html:143
-msgid "ShareAlike"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:143
+#: deeds/templates/licenses/standard_deed.html:149
 msgid ""
 "If you remix, transform, or build upon the material, you must distribute "
 "your contributions under the <a href=\"#\" id=\"same_license_popup\" "
 "class=\"helpLink\">same license</a> as the original."
 msgstr ""
+"Якщо ви реміксуєте, трансформуєте матеріал, засновуєте свій твір на "
+"матеріалі, ви повинні розповсюджувати свої твори на умовах <a href=\"#\" "
+"id=\"same_license_popup\" class=\"helpLink\">тієї ж ліцензії,</a> що й "
+"оригінал."
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid "No additional restrictions"
-msgstr ""
+msgstr "Без додаткових обмежень"
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid ""
 "You may not apply legal terms or <a href=\"#\" "
 "id=\"technological_measures_popup\" class=\"helpLink\">technological "
 "measures</a> that legally restrict others from doing anything the license "
 "permits."
 msgstr ""
+"Ви не можете висувати додаткові умови або застосовувати <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">технологічні засоби "
+"захисту,</a> що обмежують права інших на дії дозволені ліцензією."
 
-#: deeds/templates/deeds/standard_deed.html:161
+#: deeds/templates/licenses/standard_deed.html:167
 msgid "Notices:"
-msgstr ""
+msgstr "Повідомлення:"
 
-#: deeds/templates/deeds/standard_deed.html:166
+#: deeds/templates/licenses/standard_deed.html:172
 msgid ""
 "When the Licensor is an intergovernmental organization, disputes will be "
 "resolved by <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
 "class=\"helpLink\">mediation and arbitration</a> unless otherwise agreed."
 msgstr ""
+"У разі якщо Ліцензіар є міжурядовою організацією, спори будуть вірішуватися "
+"шляхом <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">медіації та арбітражу</a> якщо інше не було погоджено "
+"окремо."
 
-#: deeds/templates/deeds/standard_deed.html:171
+#: deeds/templates/licenses/standard_deed.html:177
 msgid ""
 "You do not have to comply with the license for elements of the material in "
 "the public domain or where your use is permitted by an applicable <a "
 "href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">exception"
 " or limitation</a>."
 msgstr ""
+"Ви можете не дотримуватись умов ліцензії в частині, що стосується частин "
+"матеріалу, котрі знаходяться у суспільному надбанні, або коли ваше "
+"використання дозволене застосовними <a href=\"#\" "
+"id=\"exception_or_limitation_popup\" class=\"helpLink\">виключеннями та "
+"обмеженнями авторського права</a>."
 
-#: deeds/templates/deeds/standard_deed.html:174
+#: deeds/templates/licenses/standard_deed.html:180
 msgid ""
 "No warranties are given. The license may not give you all of the permissions"
 " necessary for your intended use. For example, other rights such as <a "
@@ -471,40 +1405,69 @@ msgid ""
 "class=\"helpLink\">publicity, privacy, or moral rights</a> may limit how you"
 " use the material."
 msgstr ""
+"Не надається жодних гарантій. Ліцензія може не надавати всіх необхідних "
+"дозволів, необхідних для вашого використання матеріалу. Наприклад, інші "
+"права, такі як <a href=\"#\" id=\"publicity_privacy_or_moral_rights_popup\" "
+"class=\"helpLink\">право на зображення особи, на приватне життя або особисті"
+" немайнові права</a> можуть обмежувати ваші можливості використовувати "
+"матеріал."
 
-#: deeds/templates/deeds/standard_deed.html:197
-msgid "What does \"Attribute this work\" mean?"
+#: deeds/templates/licenses/standard_deed.html:188
+#, python-format
+msgid ""
+"A <a href=\"%(current_version_url)s\">new version</a> of this license is "
+"available. You should use it for new works, and you may want to relicense "
+"existing works under it. No works are <em>automatically</em> put under the "
+"new license, however."
 msgstr ""
+"Доступна <a href=\"%(current_version_url)s\">нова версія</a> цієї ліцензії. "
+"Вам слід використовувати її для нових творів, можливо ви також захочете "
+"переліцензувати за нею вже існуючі твори. Майте на увазі, що твори не "
+"переходять під нову ліцензію <em>автоматично</em>."
 
-#: deeds/templates/deeds/standard_deed.html:200
+#: deeds/templates/licenses/standard_deed.html:203
+msgid "What does \"Attribute this work\" mean?"
+msgstr "Що означає \"Зазначення авторства цього твору\"?"
+
+#: deeds/templates/licenses/standard_deed.html:206
 msgid ""
 "The page you came from contained embedded licensing metadata, including how "
 "the creator wishes to be attributed for re-use. You can use the HTML here to"
 " cite the work. Doing so will also include metadata on your page so that "
 "others can find the original work as well."
 msgstr ""
+"Сторінка, з якої ви прийшли, міститі вбудовані метадані ліцензії, що "
+"включають інформацію відносно того, як творець хотів би бути згаданим при "
+"повторному використанні. Ви можете використовувати цей HTML-код для "
+"цитування твору. Це дозволить включити метадані до вашої сторінки і дасть "
+"іншим можливість знайти оригінал твору."
 
-#: deeds/templates/deeds/standard_deed.html:206
+#: deeds/templates/licenses/standard_deed.html:212
 msgid ""
 "The applicable mediation rules will be designated in the copyright notice "
 "published with the work, or if none then in the request for mediation.  "
 "Unless otherwise designated in a copyright notice attached to the work, the "
 "UNCITRAL Arbitration Rules apply to any arbitration."
 msgstr ""
+"Застосовні правила медіації будуть визначені в застереженні про авторське "
+"право, опублікованому з твором, або, якщо цього не було зроблено, то у "
+"запиті про медіацію. У разі якщо інше не було зазначено у застереженні про "
+"авторське право, розповсюдженому з твором, будуть застосовуватісь Правила "
+"арбітражу UNCITRAL."
 
-#: deeds/templates/deeds/standard_deed.html:208
-#: deeds/templates/deeds/standard_deed.html:216
-#: deeds/templates/deeds/standard_deed.html:226
-#: deeds/templates/deeds/standard_deed.html:234
-#: deeds/templates/deeds/standard_deed.html:242
-#: deeds/templates/deeds/standard_deed.html:250
-#: deeds/templates/deeds/standard_deed.html:258
-#: deeds/templates/deeds/standard_deed.html:266
-#: deeds/templates/deeds/standard_deed.html:274
+#: deeds/templates/licenses/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:280
 msgid "More info"
-msgstr ""
+msgstr "Докладніше"
 
-#: deeds/templates/deeds/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:220
 msgid ""
 "If supplied, you must provide the name of the creator and attribution "
 "parties, a copyright notice, a license notice, a disclaimer notice, and a "
@@ -512,71 +1475,99 @@ msgid ""
 "provide the title of the material if supplied, and may have other slight "
 "differences."
 msgstr ""
+"Якщо їх повідомлено, ви маєте вказати ім'я творця і авторство, застереження "
+"про авторське право, вказівку на ліцензію, застереження про відмову від "
+"відповідальності, та посилання на матеріал. Більш ранні, ніж Версія 4.0, "
+"версії ліцензій CC також вимагають від вас вказувати назву матеріалу, якщо "
+"вона наявна, та можуть мати інші невеликі відмінності."
 
-#: deeds/templates/deeds/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:228
 msgid ""
 "In 4.0, you must indicate if you modified the material and retain an "
 "indication of previous modifications. In 3.0 and earlier license versions, "
 "the indication of changes is only required if you create a derivative."
 msgstr ""
+"В 4.0, ви маєте зазначити чи ви вносили зміни до матеріалу і зберігати "
+"зазначення попередніх модифікацій. В 3.0 і попередніх версіях ліцензії "
+"вказівка про внесені зміни була необхідною тільки у разі створення похідного"
+" твору."
 
-#: deeds/templates/deeds/standard_deed.html:224
+#: deeds/templates/licenses/standard_deed.html:230
 msgid "Marking guide"
-msgstr ""
+msgstr "Інструкція стосовно позначення"
 
-#: deeds/templates/deeds/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:238
 msgid ""
 "You may also use a license listed as compatible at <a "
 "href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
 msgstr ""
+"Ви також можете використати ліцензію, що визначена як сумісна на <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
 
-#: deeds/templates/deeds/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:246
 msgid ""
 "A commercial use is one primarily intended for commercial advantage or "
 "monetary compensation."
 msgstr ""
+"Комерційним вважається використання головним чином спрямоване на  отримання "
+"комерційних вигод чи грошових коштів."
 
-#: deeds/templates/deeds/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:254
 msgid "Merely changing the format never creates a derivative."
 msgstr ""
+"Зміна формату сама по собі не призводить до створення похідного твору."
 
-#: deeds/templates/deeds/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:262
 msgid ""
 "The license prohibits application of effective technological measures, "
 "defined with reference to Article 11 of the WIPO Copyright Treaty."
 msgstr ""
+"Ліцензія забороняє застосування засобів технічного захисту, визначених з "
+"урахуванням положень Статті 11 Угоди ВОІВ про авторське право."
 
-#: deeds/templates/deeds/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:270
 msgid ""
 "The rights of users under exceptions and limitations, such as fair use and "
 "fair dealing, are not affected by the CC licenses."
 msgstr ""
+"Права користувачів, встановлені винятками і обмеженнями авторського права, "
+"такі як право на добросовісне і чесне використання, не обмежуються "
+"ліцензіями СС."
 
-#: deeds/templates/deeds/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:278
 msgid ""
 "You may need to get additional permissions before using the material as you "
 "intend."
 msgstr ""
+"Можливо вам потрібно буде отримати додаткові дозволи перед використанням "
+"матеріалу у бажаний вами спосіб."
 
-#: deeds/templates/deeds/zero_deed.html:12
+#: deeds/templates/licenses/zero_deed.html:12
 msgid "Public Domain Dedication"
-msgstr ""
+msgstr "Передання до  Суспільного Надбання"
 
-#: deeds/templates/deeds/zero_deed.html:25
+#: deeds/templates/licenses/zero_deed.html:25
 msgid ""
 "The person who associated a work with this deed has <b>dedicated</b> the "
 "work to the public domain by waiving all of his or her rights to the work "
 "worldwide under copyright law, including all related and neighboring rights,"
 " to the extent allowed by law."
 msgstr ""
+"Особа, котра приєдала до твору цей короткий виклад <b>передала</b> твір в "
+"суспільне надбання шляхом відмови від всіх її прав на твір по всьому світу, "
+"котра вона мала за законами про авторське право, включаючи всі суміжні "
+"права, в тій мірі, в якій це можливо за законом."
 
-#: deeds/templates/deeds/zero_deed.html:28
+#: deeds/templates/licenses/zero_deed.html:28
 msgid ""
 "You can copy, modify, distribute and perform the work, even for commercial "
 "purposes, all without asking permission. See <b>Other Information</b> below."
 msgstr ""
+"Ви можете копіювати, змінювати, розповсюджувати і виконувати твір, навіть в "
+"комерційних цілях, не запитуючи дозволу. Дивіться <b>Інша інформація</b> "
+"нижче."
 
-#: deeds/templates/deeds/zero_deed.html:52
+#: deeds/templates/licenses/zero_deed.html:52
 msgid ""
 "In no way are the patent or trademark rights of any person affected by CC0, "
 "nor are the rights that other persons may have in the work or in how the "
@@ -584,38 +1575,57 @@ msgid ""
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"Ні в якому разі патентні права або права на торговельні марки жодної особи "
+"не зачіпаються СС0, так само, як і права котрі інші особи можуть мати "
+"стосовно даного твору, такі як <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">права на зображення особи чи "
+"приватне життя</a>."
 
-#: deeds/templates/deeds/zero_deed.html:56
+#: deeds/templates/licenses/zero_deed.html:56
 msgid ""
 "Unless expressly stated otherwise, the person who associated a work with "
 "this deed makes no warranties about the work, and disclaims liability for "
 "all uses of the work, to the fullest extent permitted by applicable law."
 msgstr ""
+"У разі, якщо окремо не обумовлено інше, особа, котра пов'язала твір з цим "
+"коротким викладом, не надає жодних гарантій щодо твору, і, у тій мірі, в "
+"якій це можливо за законом, відмовляється нести відповідальність за будь-яке"
+" використання твору."
 
-#: deeds/templates/deeds/zero_deed.html:60
+#: deeds/templates/licenses/zero_deed.html:60
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "affirmer."
 msgstr ""
+"Коли ви використовуєте або цитуєте твір, ви не повинні вказувати на <a "
+"href=\"\" class=\"helpLink\" id=\"endorsement\">підтримку чи схвалення</a> "
+"від автора або особи, котра підтвердила статус твору."
 
-#: deeds/templates/deeds/zero_deed.html:88
+#: deeds/templates/licenses/zero_deed.html:88
 msgid "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Affirmer</a>"
 msgstr ""
+"<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Той, хто "
+"підтверджує</a>"
 
-#: deeds/templates/deeds/zero_deed.html:149
+#: deeds/templates/licenses/zero_deed.html:149
 msgid "Who is the affirmer?"
-msgstr ""
+msgstr "Хто підтверджує?"
 
-#: deeds/templates/deeds/zero_deed.html:153
+#: deeds/templates/licenses/zero_deed.html:153
 msgid ""
 "The affirmer is the person who surrendered rights to the work worldwide "
 "using CC0, to the extent allowable by law. It may be the original author of "
 "the work or another person who may have had some copyright or related or "
 "neighboring legal rights in the work."
 msgstr ""
+"Особа, що підтверджує статус твору - це особа, що, в мірі дозволеній "
+"законом, відмовилися від всіх прав на твір за допомогою СС0. Це може бути "
+"автор твору чи інша особа, що може мати певні авторські або суміжні права на"
+" твір."
 
-#: deeds/templates/deeds/zero_deed.html:176
+#: deeds/templates/licenses/zero_deed.html:176
 msgid ""
 "<p> The Commons Deed is not a legal instrument. It is simply a handy "
 "reference for understanding the CC0 Legal Code, a human-readable expression "
@@ -629,76 +1639,89 @@ msgid ""
 "copyright status in any jurisdiction, and disclaims all liability for all "
 "uses of any work. </p>"
 msgstr ""
+"<p> \"Короткий Виклад\" (The Commons Deed) не є юридичним інструментом. Це "
+"всього лише зручний засіб для розуміння повного Юридичного Тексту СС0, "
+"викладені зрозумілою пересічній людині мовою формулювання деяких ключових "
+"умов. Це свого роду зручний інтерфейс Юридичного Тексту СС0. Цей Виклад сам "
+"по собі не має юридичної сили, і його текст не є власне текстом СС0.</p> "
+"<p>Creative Commons не є юридичною фірмою і не надає юридичні послуги. "
+"Розповсюдження, демонстрування, посилання на цей Короткий Виклад не утворює "
+"відносин стосовно надання юридичних послуг.</p> <p> Creative Commons не "
+"перевіряє правовий статус творів, до яких застосовується СС0. CC не надає "
+"жодних гарантій стосовно будь-якого твору або чинності авторського права на "
+"нього в будь-якій країні, і не несе відповідальності за будь-яке "
+"використання будь-якого твору. </p>"
 
-#: deeds/templates/deeds/zero_deed.html:182
+#: deeds/templates/licenses/zero_deed.html:182
 msgid ""
 "This is a human-readable summary of the <a href=\"./legalcode\">Legal Code "
 "(read the full text)</a>."
 msgstr ""
+"Це написаний зрозумілою мовою короткий виклад <a "
+"href=\"./legalcode\">юридичного тексту (прочитати повний текст)</a>."
 
-#: deeds/templates/deeds/zero_deed.html:194
+#: deeds/templates/licenses/zero_deed.html:194
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"https://creativecommons.org/choose/zero/\">use the license</a> for your own material.\n"
 "  "
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:50
-#: deeds/templates/macros_templates/engine.html:77
+#: deeds/templates/macros_templates/deed.html:28
+#: deeds/templates/macros_templates/engine.html:50
 #: deeds/templates/macros_templates/pdtool_deed.html:31
 msgid "Skip to content"
-msgstr ""
+msgstr "Перейти до змісту"
 
-#: deeds/templates/macros_templates/deed.html:60
+#: deeds/templates/macros_templates/deed.html:38
 #: deeds/templates/macros_templates/pdtool_deed.html:40
 msgid "Help us build a vibrant, collaborative global commons"
 msgstr ""
+"Допоможіть нам будувати різноманітні, націлені на співпрацю глобальні "
+"спільноти"
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Donate"
-msgstr ""
+msgstr "Пожертвувати"
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Now"
-msgstr ""
+msgstr "Зараз"
 
-#: deeds/templates/macros_templates/deed.html:82
+#: deeds/templates/macros_templates/deed.html:60
 #: deeds/templates/macros_templates/pdtool_deed.html:62
 msgid "Creative Commons License Deed"
-msgstr ""
+msgstr "Короткий Виклад Ліцензії Creative Commons"
 
-#: deeds/templates/macros_templates/deed.html:104
+#: deeds/templates/macros_templates/deed.html:82
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the license, "
 "which is available in the following languages:"
 msgstr ""
+"Це написаний зрозумілою пересічній людині мовою короткий виклад (і не "
+"замінник) ліцензії, що доступний наступними мовами:"
 
-#: deeds/templates/macros_templates/deed.html:111
+#: deeds/templates/macros_templates/deed.html:89
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the <a "
 "href=\"legalcode\" class=\"fulltext\">license</a>."
 msgstr ""
+"Це спрощений виклад (а не замінник) <a href=\"legalcode\" "
+"class=\"fulltext\">ліцензії</a>."
 
-#: deeds/templates/macros_templates/deed.html:130
+#: deeds/templates/macros_templates/deed.html:108
 #, python-format
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
 "            "
 msgstr ""
+"\n"
+"<a href=\"http://wiki.creativecommons.org/FAQ\">Дізнайтеся більше</a> про ліцензії CC або <a id=\"get_this\" href=\"%(get_this)s\">використовуйте цю ліцензію</a> для своїх власних творів."
 
-#: deeds/templates/macros_templates/deed.html:141
-#: deeds/templates/macros_templates/pdtool_deed.html:92
-msgid ""
-"This content is freely available under simple legal terms because of "
-"Creative Commons, a non-profit that survives on donations. If you love this "
-"content, and love that it's free for everyone, please consider a donation to"
-" support our work."
-msgstr ""
-
-#: deeds/templates/macros_templates/deed.html:166
+#: deeds/templates/macros_templates/deed.html:144
 msgid ""
 "<p>\n"
 "              The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href=\"legalcode\" class=\"fulltext\">Please click here to see the full License</a>.\n"
@@ -712,32 +1735,50 @@ msgid ""
 "              The Product licensed under Creative Commons License is provided by the person who applied the License.  Creative Commons and Creative Commons Japan make no warranties regarding the title of the licensor.  Please read <a href=\"http://creativecommons.jp/faq/\">here</a> for information regarding the application of licenses and exploitation of the Product licensed under Creative Commons licenses.\n"
 "              </p>"
 msgstr ""
+"<p>\n"
+"              Короткий Виклад не є ліцензією. Це всього лише зручний засіб для розуміння Юридичного Тексту (повної Ліцензії), викладені зрозумілою пересічній людині мовою формулювання деяких ключових умов. Цей Виклад сам по собі не має юридичної сили і його текст не є власне текстом Ліцензії.  Умови ліцензії викладено в Юридичному Тексті.  <a href=\"legalcode\" class=\"fulltext\">Будь ласка натисніть тут щоб побачити повний текст Ліцензії</a>.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              Creative Commons і Creative Commons Японія не є юридичними фірмами і розповсюдження, демонстрування, посилання на Короткий Виклад не є пропозицією юридичної допомоги або юридичних послуг. Creative Commons і Creative Commons Японія не є стороною Ліцензії, вказаної в цьому Короткому Викладі, і не несуть відповідальності за збитки спричинені будь-яким використанням Короткого Викладу і Ліцензії.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              Продукт, ліцензований на умовах Ліцензії Creative Commons, надається особою, котра застосувала Ліцензію.  Creative Commons і Creative Commons Japan не гарантують наявності у ліцензіара необхідних прав.  Будь ласка ознайомтеся з інформацією <a href=\"http://creativecommons.jp/faq/\">тут</a> стосовно застосування ліцензій і використання Продукту, ліцензованого на умовах ліцензій Creative Commons.\n"
+"              </p>"
 
-#: deeds/templates/macros_templates/deed.html:180
+#: deeds/templates/macros_templates/deed.html:158
 msgid ""
 "This deed highlights only some of the key features and terms of the actual "
 "license. It is not a license and has no legal value. You should carefully "
 "review all of the terms and conditions of the actual license before using "
 "the licensed material."
 msgstr ""
+"Цей короткий виклад підкреслює лише деякі ключові умови ліцензії. Він не є "
+"ліцензією і не має юридичного значення. Вам слід уважно ознайомитися з усіма"
+" умовами власне ліцензії перед використанням ліцензованого матеріалу."
 
-#: deeds/templates/macros_templates/deed.html:182
+#: deeds/templates/macros_templates/deed.html:160
 msgid ""
 "Creative Commons is not a law firm and does not provide legal services. "
 "Distributing, displaying, or linking to this deed or the license that it "
 "summarizes does not create a lawyer-client or any other relationship."
 msgstr ""
+"Creative Commons не є юридичною фірмою і не надає юридичних послуг. "
+"Розповсюдження, показ, або посилання на цей короткий виклад або на ліцензію,"
+" якої він стосується, не породжує відносик клієнт-юрист або будь-яких інших "
+"подібних відносин."
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "expand child menu"
-msgstr ""
+msgstr "розкрити похідне меню"
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "collapse child menu"
-msgstr ""
+msgstr "закрити похідне меню"
 
 #: deeds/templates/macros_templates/pdtool_deed.html:27
 msgid "hide-banner"
-msgstr ""
+msgstr "hide-banner"

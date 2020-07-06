@@ -1,106 +1,959 @@
-# English translations for cc-licenses.
-# Copyright (C) 2020 ORGANIZATION
-# This file is distributed under the same license as the cc-licenses
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-# 
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cc-licenses VERSION\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-29 09:53-0400\n"
-"PO-Revision-Date: 2020-06-29 12:54+0000\n"
-"Language-Team: Croatian (https://www.transifex.com/creativecommons/teams/11342/hr/)\n"
+"POT-Creation-Date: 2020-07-06 10:53-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
-"Language: hr\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: cc_licenses/templates/404.html:3
 msgid "Page Not Found"
 msgstr ""
 
-#: deeds/templates/deeds/devnations_deed.html:19
-#: deeds/templates/deeds/publicdomain_deed.html:34
-#: deeds/templates/deeds/sampling_deed.html:15
-#: deeds/templates/deeds/standard_deed.html:26
-msgid ""
-"Creative Commons has <a "
-"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
-"tool</a> and does not recommend that it be applied to works."
-msgstr ""
+#: deeds/mappers.py:6
+msgid "Argentina"
+msgstr "Argentina"
 
-#: deeds/templates/deeds/devnations_deed.html:23
-#: deeds/templates/deeds/sampling_deed.html:20
-msgid "You are free:"
-msgstr ""
+#: deeds/mappers.py:7
+msgid "Austria"
+msgstr "Austrija"
 
-#: deeds/templates/deeds/devnations_deed.html:28
-msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
-msgstr ""
+#: deeds/mappers.py:8
+msgid "Australia"
+msgstr "Australija"
 
-#: deeds/templates/deeds/devnations_deed.html:33
-msgid "<strong>to Remix</strong> — to adapt the work"
-msgstr ""
+#: deeds/mappers.py:9
+msgid "Belgium"
+msgstr "Belgija"
 
-#: deeds/templates/deeds/devnations_deed.html:40
-#: deeds/templates/deeds/sampling_deed.html:41
-msgid "Under the following conditions:"
-msgstr ""
+#: deeds/mappers.py:10
+msgid "Bulgaria"
+msgstr "Bugarska"
 
-#: deeds/templates/deeds/devnations_deed.html:53
-#: deeds/templates/deeds/standard_deed.html:96
+#: deeds/mappers.py:11
+msgid "Brazil"
+msgstr "Brazil"
+
+#: deeds/mappers.py:12
+msgid "Canada"
+msgstr "Kanada"
+
+#: deeds/mappers.py:13
+msgid "Switzerland"
+msgstr "Švicarska"
+
+#: deeds/mappers.py:14
+msgid "Chile"
+msgstr "Čile"
+
+#: deeds/mappers.py:15
+msgid "China Mainland"
+msgstr "Kina"
+
+#: deeds/mappers.py:16
+msgid "Colombia"
+msgstr "Kolumbija"
+
+#: deeds/mappers.py:17
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+#: deeds/mappers.py:18
+msgid "Czech Republic"
+msgstr "Češka"
+
+#: deeds/mappers.py:19
+msgid "Germany"
+msgstr "Njemačka"
+
+#: deeds/mappers.py:20
+msgid "Denmark"
+msgstr "Danska"
+
+#: deeds/mappers.py:21
+msgid "Ecuador"
+msgstr "Ekvador"
+
+#: deeds/mappers.py:22
+msgid "Estonia"
+msgstr "Estonija"
+
+#: deeds/mappers.py:23
+msgid "Egypt"
+msgstr "Egipt"
+
+#: deeds/mappers.py:24
+msgid "Spain"
+msgstr "Španjolska"
+
+#: deeds/mappers.py:25
+msgid "Catalonia"
+msgstr "Katalonija"
+
+#: deeds/mappers.py:26
+msgid "Finland"
+msgstr "Finska"
+
+#: deeds/mappers.py:27
+msgid "France"
+msgstr "Francuska"
+
+#: deeds/mappers.py:28
+msgid "Greece"
+msgstr "Grčka"
+
+#: deeds/mappers.py:29
+msgid "Guatemala"
+msgstr "Guatemala"
+
+#: deeds/mappers.py:30
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+#: deeds/mappers.py:31
+msgid "Croatia"
+msgstr "Hrvatska"
+
+#: deeds/mappers.py:32
+msgid "Hungary"
+msgstr "Mađarska"
+
+#: deeds/mappers.py:33
+msgid "Ireland"
+msgstr "Irska"
+
+#: deeds/mappers.py:34
+msgid "Israel"
+msgstr "Izrael"
+
+#: deeds/mappers.py:35
+msgid "IGO"
+msgstr "međuvladina organizacija"
+
+#: deeds/mappers.py:36
+msgid "India"
+msgstr "Indija"
+
+#: deeds/mappers.py:37
+msgid "Italy"
+msgstr "Italija"
+
+#: deeds/mappers.py:38
+msgid "Jordan"
+msgstr "Jordan"
+
+#: deeds/mappers.py:39
+msgid "Japan"
+msgstr "Japan"
+
+#: deeds/mappers.py:40
+msgid "South Korea"
+msgstr "Južna Koreja"
+
+#: deeds/mappers.py:41
+msgid "Luxembourg"
+msgstr "Luksemburg"
+
+#: deeds/mappers.py:42
+msgid "Macedonia"
+msgstr "Makedonija"
+
+#: deeds/mappers.py:43
+msgid "Malta"
+msgstr "Malta"
+
+#: deeds/mappers.py:44
+msgid "Mexico"
+msgstr "Meksiko"
+
+#: deeds/mappers.py:45
+msgid "Malaysia"
+msgstr "Malezija"
+
+#: deeds/mappers.py:46
+msgid "Nigeria"
+msgstr "Nigerija"
+
+#: deeds/mappers.py:47
+msgid "Netherlands"
+msgstr "Nizozemska"
+
+#: deeds/mappers.py:48
+msgid "Norway"
+msgstr "Norveška"
+
+#: deeds/mappers.py:49
+msgid "New Zealand"
+msgstr "Novi Zeland"
+
+#: deeds/mappers.py:50
+msgid "Peru"
+msgstr "Peru"
+
+#: deeds/mappers.py:51
+msgid "Philippines"
+msgstr "Filipini"
+
+#: deeds/mappers.py:52
+msgid "Poland"
+msgstr "Poljska"
+
+#: deeds/mappers.py:53
+msgid "Puerto Rico"
+msgstr "Puerto Rico"
+
+#: deeds/mappers.py:54
+msgid "Portugal"
+msgstr "Portugal"
+
+#: deeds/mappers.py:55
+msgid "Romania"
+msgstr "Rumunjska"
+
+#: deeds/mappers.py:56
+msgid "Serbia"
+msgstr "Srbija"
+
+#: deeds/mappers.py:57
+msgid "UK: Scotland"
+msgstr "VB: Škotska"
+
+#: deeds/mappers.py:58
+msgid "Sweden"
+msgstr "Švedska"
+
+#: deeds/mappers.py:59
+msgid "Singapore"
+msgstr "Singapur"
+
+#: deeds/mappers.py:60
+msgid "Slovenia"
+msgstr "Slovenija"
+
+#: deeds/mappers.py:61
+msgid "Slovak Republic"
+msgstr "Slovačka"
+
+#: deeds/mappers.py:62
+msgid "Thailand"
+msgstr "Tajland"
+
+#: deeds/mappers.py:63
+msgid "Taiwan"
+msgstr "Tajvan"
+
+#: deeds/mappers.py:64
+msgid "Ukraine"
+msgstr "Ukajina"
+
+#: deeds/mappers.py:65
+msgid "Uganda"
+msgstr "Uganda"
+
+#: deeds/mappers.py:66
+msgid "UK: England & Wales"
+msgstr "VB: Engleska i Wales"
+
+#: deeds/mappers.py:67
+msgid "United States"
+msgstr "SAD"
+
+#: deeds/mappers.py:68
+msgid "Venezuela"
+msgstr "Venecuela"
+
+#: deeds/mappers.py:69
+msgid "Vietnam"
+msgstr "Vijetnam"
+
+#: deeds/mappers.py:70
+msgid "South Africa"
+msgstr "Južna Afrika"
+
+#: deeds/mappers.py:74
+msgid "Afrikaans"
+msgstr "afrikans"
+
+#: deeds/mappers.py:75
+msgid "Arabic"
+msgstr "arapski"
+
+#: deeds/mappers.py:76
+msgid "Assamese"
+msgstr "asamski"
+
+#: deeds/mappers.py:77
+msgid "Asturian"
+msgstr "asturijski"
+
+#: deeds/mappers.py:78
+msgid "Azerbaijani"
+msgstr "azerbejdžanski"
+
+#: deeds/mappers.py:79
+msgid "Belarusian"
+msgstr "bjeloruski"
+
+#: deeds/mappers.py:80
+msgid "Bulgarian"
+msgstr "bugarska"
+
+#: deeds/mappers.py:81
+msgid "Bengali"
+msgstr "bengalski"
+
+#: deeds/mappers.py:82
+msgid "Catalan"
+msgstr "katalonski"
+
+#: deeds/mappers.py:83
+msgid "Czech"
+msgstr "češki"
+
+#: deeds/mappers.py:84
+msgid "Danish"
+msgstr "danski"
+
+#: deeds/mappers.py:85
+msgid "German"
+msgstr "njemački"
+
+#: deeds/mappers.py:86
+msgid "Greek"
+msgstr "grčki"
+
+#: deeds/mappers.py:87
+msgid "English"
+msgstr "engleski"
+
+#: deeds/mappers.py:88
+msgid "English (CA)"
+msgstr "engleski (Kanada)"
+
+#: deeds/mappers.py:89
+msgid "English (GB)"
+msgstr "engleski (Velika Britanija)"
+
+#: deeds/mappers.py:90
+msgid "English (Hong Kong)"
+msgstr "English (Hong Kong)"
+
+#: deeds/mappers.py:91
+msgid "English (Singapore)"
+msgstr "English (Singapore)"
+
+#: deeds/mappers.py:92
+msgid "English (US)"
+msgstr "engleski (SAD)"
+
+#: deeds/mappers.py:93
+msgid "Esperanto"
+msgstr "esperanto"
+
+#: deeds/mappers.py:94
+msgid "Spanish"
+msgstr "španjolski"
+
+#: deeds/mappers.py:95
+msgid "Spanish (AR)"
+msgstr "španjolski (AR)"
+
+#: deeds/mappers.py:96
+msgid "Spanish (CL)"
+msgstr "španjolski (CL)"
+
+#: deeds/mappers.py:97
+msgid "Spanish (CO)"
+msgstr "španjolski (CO)"
+
+#: deeds/mappers.py:98
+msgid "Spanish (Ecuador)"
+msgstr "španjolski (Ekvador)"
+
+#: deeds/mappers.py:99
+msgid "Spanish (Spain)"
+msgstr "španjolski (Španjolska)"
+
+#: deeds/mappers.py:100
+msgid "Spanish (Guatemala)"
+msgstr "Spanish (Guatemala)"
+
+#: deeds/mappers.py:101
+msgid "Spanish (MX)"
+msgstr "španjolski (Meksiko)"
+
+#: deeds/mappers.py:102
+msgid "Spanish (PE)"
+msgstr "španjolski (Peru)"
+
+#: deeds/mappers.py:103
+msgid "Estonian"
+msgstr "estonski"
+
+#: deeds/mappers.py:104
+msgid "Basque"
+msgstr "baskijski"
+
+#: deeds/mappers.py:105
+msgid "Persian"
+msgstr "Perzija"
+
+#: deeds/mappers.py:106
+msgid "Finnish"
+msgstr "finski"
+
+#: deeds/mappers.py:107
+msgid "French"
+msgstr "francuski"
+
+#: deeds/mappers.py:108
+msgid "French (CA)"
+msgstr "francuski (Kanada)"
+
+#: deeds/mappers.py:109
+msgid "Irish"
+msgstr "irski"
+
+#: deeds/mappers.py:110
+msgid "Galician"
+msgstr "galicijski"
+
+#: deeds/mappers.py:111
+msgid "Hebrew"
+msgstr "hebrejski"
+
+#: deeds/mappers.py:112
+msgid "Hindi"
+msgstr "hindi"
+
+#: deeds/mappers.py:113
+msgid "Croatian"
+msgstr "hrvatski"
+
+#: deeds/mappers.py:114
+msgid "Hungarian"
+msgstr "mađarski"
+
+#: deeds/mappers.py:115
+msgid "Armenian"
+msgstr "armenski"
+
+#: deeds/mappers.py:116
+msgid "Indonesian"
+msgstr "indonezijski"
+
+#: deeds/mappers.py:117
+msgid "Icelandic"
+msgstr "islandski"
+
+#: deeds/mappers.py:118
+msgid "Italian"
+msgstr "talijanski"
+
+#: deeds/mappers.py:119
+msgid "Japanese"
+msgstr "japanski"
+
+#: deeds/mappers.py:120
+msgid "Georgian"
+msgstr "gruzijski"
+
+#: deeds/mappers.py:121
+msgid "Kazakh"
+msgstr "kazački"
+
+#: deeds/mappers.py:122
+msgid "Korean"
+msgstr "korejski"
+
+#: deeds/mappers.py:123
+msgid "Lithuanian"
+msgstr "litvanski"
+
+#: deeds/mappers.py:124
+msgid "Latvian"
+msgstr "latvijski"
+
+#: deeds/mappers.py:125
+msgid "Macedonian"
+msgstr "makedonski"
+
+#: deeds/mappers.py:126
+msgid "Malayalam"
+msgstr "malajalamski"
+
+#: deeds/mappers.py:127
+msgid "Mongolian"
+msgstr "mongolski"
+
+#: deeds/mappers.py:128
+msgid "Malay"
+msgstr "malajski"
+
+#: deeds/mappers.py:129
+msgid "Dutch"
+msgstr "nizozemski"
+
+#: deeds/mappers.py:130
+msgid "Norwegian"
+msgstr "norveški"
+
+#: deeds/mappers.py:131
+msgid "Northern Sotho"
+msgstr "sjeverni sotho"
+
+#: deeds/mappers.py:132
+msgid "Aranese"
+msgstr "aranski"
+
+#: deeds/mappers.py:133
+msgid "Polish"
+msgstr "poljski"
+
+#: deeds/mappers.py:134
+msgid "Portuguese"
+msgstr "portugalski"
+
+#: deeds/mappers.py:135
+msgid "Portuguese (BR)"
+msgstr "portugalski (BR)"
+
+#: deeds/mappers.py:137
+msgid "Romanian"
+msgstr "rumunjski"
+
+#: deeds/mappers.py:138
+msgid "Russian"
+msgstr "ruski"
+
+#: deeds/mappers.py:139
+msgid "Sinhala"
+msgstr "sinhalski"
+
+#: deeds/mappers.py:140
+msgid "Slovenian"
+msgstr "slovenski"
+
+#: deeds/mappers.py:141
+msgid "Serbian"
+msgstr "srpski"
+
+#: deeds/mappers.py:142
+msgid "Serbian (Latin)"
+msgstr "srpski (latinica)"
+
+#: deeds/mappers.py:143
+msgid "Sotho"
+msgstr "soto"
+
+#: deeds/mappers.py:144
+msgid "Swedish"
+msgstr "švedski"
+
+#: deeds/mappers.py:145
+msgid "Tamil"
+msgstr "tamilski"
+
+#: deeds/mappers.py:146
+msgid "Telugu"
+msgstr "teluški"
+
+#: deeds/mappers.py:147
+msgid "Thai"
+msgstr "tajlandski"
+
+#: deeds/mappers.py:148
+msgid "Turkish"
+msgstr "turski"
+
+#: deeds/mappers.py:149
+msgid "Ukranian"
+msgstr "ukrajinski"
+
+#: deeds/mappers.py:150
+msgid "Urdu"
+msgstr "urdu"
+
+#: deeds/mappers.py:151
+msgid "Vietnamese"
+msgstr "vijetnamski"
+
+#: deeds/mappers.py:152 deeds/mappers.py:153
+msgid "Chinese"
+msgstr "kineski"
+
+#: deeds/mappers.py:154
+msgid "Chinese (Hong Kong)"
+msgstr "Chinese (Hong Kong)"
+
+#: deeds/mappers.py:155
+msgid "Chinese (Taiwan)"
+msgstr "kineski (tajvanski)"
+
+#: deeds/mappers.py:156
+msgid "Zulu"
+msgstr "zulu"
+
+#: deeds/mappers.py:160
+msgid "GPL"
+msgstr "GPL"
+
+#: deeds/mappers.py:161
+msgid "LGPL"
+msgstr "LGPL"
+
+#: deeds/mappers.py:162 deeds/mappers.py:182
+#: deeds/templates/licenses/devnations_deed.html:53
+#: deeds/templates/licenses/standard_deed.html:102
 msgid "Attribution"
-msgstr ""
+msgstr "Imenovanje"
 
-#: deeds/templates/deeds/devnations_deed.html:55
-#: deeds/templates/deeds/sampling_deed.html:45
+#: deeds/mappers.py:163
+msgid "Attribution-NonCommercial"
+msgstr "Imenovanje-Nekomercijalno"
+
+#: deeds/mappers.py:164
+msgid "Attribution-NonCommercial-NoDerivs"
+msgstr "Imenovanje-Nekomercijalno-Bez prerada"
+
+#: deeds/mappers.py:165
+msgid "Attribution-NonCommercial-ShareAlike"
+msgstr "Imenovanje-Nekomercijalno-Dijeli pod istim uvjetima"
+
+#: deeds/mappers.py:166
+msgid "Attribution-NoDerivs"
+msgstr "Imenovanje-Bez prerada"
+
+#: deeds/mappers.py:167
+msgid "Attribution-NoDerivs-NonCommercial"
+msgstr "Imenovanje-Bez prerada-Nekomercijalno"
+
+#: deeds/mappers.py:168
+msgid "Attribution-ShareAlike"
+msgstr "Imenovanje-Dijeli pod istim uvjetima"
+
+#: deeds/mappers.py:169
+msgid "Public Domain Mark"
+msgstr "Oznaka javnog dobra"
+
+#: deeds/mappers.py:170 deeds/templates/licenses/standard_deed.html:131
+msgid "NonCommercial"
+msgstr "Nekomercijalno"
+
+#: deeds/mappers.py:171
+msgid "NonCommercial-ShareAlike"
+msgstr "Nekomercijalno-Dijeli pod istim uvjetima"
+
+#: deeds/mappers.py:172
+msgid "NonCommercial Sampling Plus"
+msgstr "Nekompercijalno sempliranje plus"
+
+#: deeds/mappers.py:173
+msgid "NoDerivs"
+msgstr "Bez prerada"
+
+#: deeds/mappers.py:174
+msgid "NoDerivs-NonCommercial"
+msgstr "Bez prerada-nekomercijalno"
+
+#: deeds/mappers.py:175
+msgid "Public Domain"
+msgstr "Javno dobro"
+
+#: deeds/mappers.py:176 deeds/templates/licenses/standard_deed.html:149
+msgid "ShareAlike"
+msgstr "Dijeli pod istim uvjetima"
+
+#: deeds/mappers.py:177
+msgid "Sampling"
+msgstr "Sempliranje"
+
+#: deeds/mappers.py:178
+msgid "Sampling Plus"
+msgstr "Sempliranje plus"
+
+#: deeds/mappers.py:183
+msgid "Noncommercial"
+msgstr "Nekomercijalno"
+
+#: deeds/mappers.py:184
+msgid "No Derivative Works"
+msgstr "Bez prerada"
+
+#: deeds/mappers.py:185
+msgid "Share Alike"
+msgstr "Dijeli pod istim uvjetima"
+
+#: deeds/mappers.py:190 deeds/templates/licenses/devnations_deed.html:55
+#: deeds/templates/licenses/sampling_deed.html:45
 msgid ""
 "You must attribute the work in the manner specified by the author or "
 "licensor (but not in any way that suggests that they endorse you or your use"
 " of the work)."
 msgstr ""
+"Morate priznati i označiti autorstvo djela na način kako je to specificirao "
+"autor ili davatelj licence (ali ne način koji bi sugerirao da Vi ili Vaše "
+"korištenje njegova djela imate njegovu izravnu podršku)."
 
-#: deeds/templates/deeds/devnations_deed.html:60
-#: deeds/templates/deeds/sampling_deed.html:59
+#: deeds/mappers.py:194 deeds/templates/licenses/sampling_deed.html:53
+msgid ""
+"You may not use this work to advertise for or promote anything but the work "
+"you create from it."
+msgstr ""
+"Ovim djelom ne smijete reklamirati ili promovirati bilo što osim vlastitog "
+"djela koje ste stvorili iz njega."
+
+#: deeds/mappers.py:196 deeds/templates/licenses/sampling_deed.html:49
+msgid "You may not use this work for commercial purposes."
+msgstr "Ovo djelo ne smijete koristiti u komercijalne svrhe."
+
+#: deeds/mappers.py:197
+msgid "You may not alter, transform, or build upon this work."
+msgstr "Ne smijete mijenjati, preoblikovati ili prerađivati ovo djelo."
+
+#: deeds/mappers.py:199 deeds/templates/licenses/sampling_deed.html:66
+msgid ""
+"You may not perform, display, or distribute copies of this whole work for "
+"any purpose."
+msgstr ""
+"Ne smijete izvoditi, izlagati ili distribuirati kopije cjeline ovog djela ni"
+" u koju svrhu."
+
+#: deeds/mappers.py:202
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same or similar license to this one."
+msgstr ""
+"Ako ovo djelo izmijenite, preoblikujete ili koristite kao predložak, preradu"
+" možete distribuirati samo pod licencom koja je ista ili slična ovoj."
+
+#: deeds/mappers.py:206
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same, similar or a compatible license."
+msgstr ""
+"Ako ovo djelo izmijenite, preoblikujete ili koristite kao predložak, "
+"novonastalo djelo možete distribuirati pod istom, sličnom ili kompatibilnom "
+"licencom."
+
+#: deeds/templates/catalog_pages/license_catcher.html:3
+#: deeds/templates/licenses/pdmark_deed.html:188
+#: deeds/templates/macros_templates/partner.html:26
+msgid "Creative Commons"
+msgstr "Creative Commons"
+
+#: deeds/templates/includes/cc_site_footer.html:25
+#: deeds/templates/includes/cc_site_header.html:40
+msgid "Contact"
+msgstr "Kontakt"
+
+#: deeds/templates/includes/cc_site_footer.html:26
+msgid "Privacy"
+msgstr "Privatnost"
+
+#: deeds/templates/includes/cc_site_footer.html:27
+msgid "Policies"
+msgstr "Pravila"
+
+#: deeds/templates/includes/cc_site_footer.html:28
+msgid "Terms"
+msgstr "Odredbe"
+
+#: deeds/templates/includes/cc_site_footer.html:35
+msgid "We'd love to hear from you!"
+msgstr "Voljeli bismo vas čuti!"
+
+#: deeds/templates/includes/cc_site_footer.html:44
+msgid "Frequently Asked Questions"
+msgstr "Često postavljana pitanja"
+
+#: deeds/templates/includes/cc_site_header.html:11
+msgid "Menu"
+msgstr "Izbornik"
+
+#: deeds/templates/includes/cc_site_header.html:16
+#: deeds/templates/includes/cc_site_header.html:27
+msgid "Share your work"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:17
+#: deeds/templates/includes/cc_site_header.html:28
+msgid "Use &#038; remix"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:18
+#: deeds/templates/includes/cc_site_header.html:29
+msgid "What We do"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:19
+#: deeds/templates/includes/cc_site_header.html:30
+msgid "Blog"
+msgstr "Blog"
+
+#: deeds/templates/includes/cc_site_header.html:20
+#: deeds/templates/includes/cc_site_header.html:37
+msgid "Global Network"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:21
+msgid "Search the Commons"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:36
+msgid "Search for CC images"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:38
+msgid "Newsletters"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:39
+msgid "Store"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:46
+msgid "Facebook"
+msgstr "Facebook"
+
+#: deeds/templates/includes/cc_site_header.html:47
+msgid "Twitter"
+msgstr "Twitter"
+
+#: deeds/templates/includes/cc_site_header.html:48
+msgid "Mail"
+msgstr "Pošta"
+
+#: deeds/templates/includes/deed_donate_slide.html:7
+#: deeds/templates/macros_templates/deed.html:119
+#: deeds/templates/macros_templates/pdtool_deed.html:92
+msgid ""
+"This content is freely available under simple legal terms because of "
+"Creative Commons, a non-profit that survives on donations. If you love this "
+"content, and love that it's free for everyone, please consider a donation to"
+" support our work."
+msgstr ""
+"Ovaj sadržaj je slobodno dostupan pod jednostavnim pravnim uvjetima zbog "
+"Creative Commonsa, neprofitne organizacije čije djelovanje ovisi o "
+"donacijama. Ako Vam se sviđa ovaj sadržaj, i ako Vam se sviđa da je slobodan"
+" za sve, razmotrite da donacijom podržite naš rad."
+
+#: deeds/templates/includes/deed_donate_slide.html:8
+msgid "When you share, everyone wins."
+msgstr ""
+
+#: deeds/templates/includes/deed_donate_slide.html:14
+msgid "Contribute today to Creative Commons"
+msgstr ""
+
+#: deeds/templates/includes/deed_donate_slide.html:35
+msgid "Amount"
+msgstr "Iznos"
+
+#: deeds/templates/includes/deed_donate_slide.html:42
+msgid "Donate Now"
+msgstr "Donirajte"
+
+#: deeds/templates/includes/language_selector.html:5
+#: deeds/templates/includes/translations.html:4
+msgid "This page is available in the following languages:"
+msgstr "Ova stranica je dostupna na sljedećim jezicima:"
+
+#: deeds/templates/licenses/devnations_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:15
+#: deeds/templates/licenses/standard_deed.html:26
+msgid ""
+"Creative Commons has <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
+"tool</a> and does not recommend that it be applied to works."
+msgstr ""
+"Creative Commons je <a "
+"href=\"http://creativecommons.org/retiredlicenses\">upokojio taj pravni "
+"instrument</a> i ne preporuča da ga se koristi za djela."
+
+#: deeds/templates/licenses/devnations_deed.html:23
+#: deeds/templates/licenses/sampling_deed.html:20
+msgid "You are free:"
+msgstr "Slobodno smijete:"
+
+#: deeds/templates/licenses/devnations_deed.html:28
+msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
+msgstr ""
+"<strong>dijeliti</strong> — umnožavati, distribuirati i javnosti priopćavati"
+" djelo"
+
+#: deeds/templates/licenses/devnations_deed.html:33
+msgid "<strong>to Remix</strong> — to adapt the work"
+msgstr "<strong>remiksirati</strong> — prerađivati djelo"
+
+#: deeds/templates/licenses/devnations_deed.html:40
+#: deeds/templates/licenses/sampling_deed.html:41
+msgid "Under the following conditions:"
+msgstr "Pod sljedećim uvjetima:"
+
+#: deeds/templates/licenses/devnations_deed.html:60
+#: deeds/templates/licenses/sampling_deed.html:59
 msgid ""
 "For any reuse or distribution, you must make clear to others the license "
 "terms of this work. The best way to do this is with a link to this web page."
 msgstr ""
+"U slučaju da koristite ili distribuirate djelo morate drugima jasno dati do "
+"znanja licencne uvjete ovog djela. Najbolji način da to učinite jest linkom "
+"na ovu internetsku stranicu."
 
-#: deeds/templates/deeds/devnations_deed.html:61
+#: deeds/templates/licenses/devnations_deed.html:61
 msgid ""
 "Any of the above conditions can be <a href=\"#\" id=\"waived\" "
 "class=\"helpLink\">waived</a> if you get permission from the copyright "
 "holder."
 msgstr ""
+"Svaki od prethodnih uvjeta nositelj prava Vam može <a href=\"#\" "
+"id=\"waived\" class=\"helpLink\">ustupiti</a> izričitim dopuštenjem."
 
-#: deeds/templates/deeds/devnations_deed.html:69
-#: deeds/templates/deeds/sampling_deed.html:76
+#: deeds/templates/licenses/devnations_deed.html:69
+#: deeds/templates/licenses/sampling_deed.html:76
 msgid ""
 "Your fair dealing or <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
 " id=\"fair_use\" class=\"helpLink\">fair use</a> rights, or other applicable"
 " copyright exceptions and limitations;"
 msgstr ""
+"Vaša prava koja proizlaze iz <a "
+"href=\"http://wiki.creativecommons.org/Hr:FAQ#Utje.C4.8Du_li_Creative_Commons_licence_na_ograni.C4.8Denja_autorskog_prava_predvi.C4.91ena_zakonom_o_autorskom_pravu_i_srodnim_pravima.3F\""
+" id=\"fair_use\" class=\"helpLink\">ograničenja autorskog prava </a>;"
 
-#: deeds/templates/deeds/devnations_deed.html:72
-#: deeds/templates/deeds/sampling_deed.html:79
+#: deeds/templates/licenses/devnations_deed.html:72
+#: deeds/templates/licenses/sampling_deed.html:79
 msgid ""
 "Rights other persons may have either in the work itself or in how the work "
 "is used, such as <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity</a> or privacy rights."
 msgstr ""
+"Prava nad djelom ili nad njegovim korištenjima kojima možda raspolažu druge "
+"osobe kao što su <a "
+"href=\"http://wiki.creativecommons.org/Hr:FAQ#Kada_je_pravo_nad_objavljivanjem_osobne_fotografije_relevantno.3F\">pravo"
+" nad objavljivanjem osobne fotografije</a> ili pravo privatnosti."
 
-#: deeds/templates/deeds/pdmark_deed.html:18
-#: deeds/templates/deeds/zero_deed.html:20
+#: deeds/templates/licenses/pdmark_deed.html:18
+#: deeds/templates/licenses/zero_deed.html:20
 msgid "No Copyright"
-msgstr ""
+msgstr "Nema autorskih ni srodnih prava"
 
-#: deeds/templates/deeds/pdmark_deed.html:21
+#: deeds/templates/licenses/pdmark_deed.html:21
 msgid ""
 "<p id=\"nolaw-text\"> This work has been <b>identified</b> as being free of "
 "known restrictions under copyright law, including all related and "
@@ -108,19 +961,24 @@ msgid ""
 "perform the work, even for commercial purposes, all without asking "
 "permission. See <b>Other Information</b> below. </p>"
 msgstr ""
+"<p id=\"nolaw-text\"> Ovo djelo je <b>identificirano</b> kao djelo koje je "
+"prema svim saznanjima slobodno od ograničenja autorskog prava, uključujući i"
+" svih srodnih prava. Vidi niže pod <b>Druge informacije</b>. </p>"
 
-#: deeds/templates/deeds/pdmark_deed.html:31
-#: deeds/templates/deeds/zero_deed.html:49
+#: deeds/templates/licenses/pdmark_deed.html:31
+#: deeds/templates/licenses/zero_deed.html:49
 msgid "Other Information"
-msgstr ""
+msgstr "Druge informacije"
 
-#: deeds/templates/deeds/pdmark_deed.html:34
+#: deeds/templates/licenses/pdmark_deed.html:34
 msgid ""
 "The work may not be free of known copyright restrictions in all <a href=\"\""
 " class=\"helpLink\" id=\"all_jurisdictions\">jurisdictions</a>."
 msgstr ""
+"Djelo možda nije slobodno autorskopravnih ograničanja u svim <a href=\"\" "
+"class=\"helpLink\" id=\"all_jurisdictions\">pravnim sustavima</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:37
+#: deeds/templates/licenses/pdmark_deed.html:37
 msgid ""
 "Persons may have other rights in or related to the work, such as patent or "
 "trademark rights, and others may have rights in how the work is used, such "
@@ -128,101 +986,128 @@ msgid ""
 "href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"Neke osobe možda polažu druga prava na djelo, kao što je patentno pravo ili "
+"pravo žiga, a neke druge osobe pak možda polažu prava u pogledu korištenja "
+"djela kao što su  <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">prava nad objavljivanjem osobnih"
+" zapisa ili pravo privatnosti</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:40
+#: deeds/templates/licenses/pdmark_deed.html:40
 msgid ""
 "In some jurisdictions <a href=\"\" class=\"helpLink\" "
 "id=\"moral_rights\">moral rights</a> of the author may persist beyond the "
 "term of copyright. These rights may include the right to be identified as "
 "the author and the right to object to derogatory treatments."
 msgstr ""
+"U nekim pravnim sustavima <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">moralna pravao</a> autora nastavljaju važiti nakon "
+"isteka roka autorskopravne zaštite. U ta prava mogu ulaziti pravo autora da "
+"ga se prizna i označi kao autora djela te pravo na poštivanje autorskog "
+"djela i časti i ugleda autora."
 
-#: deeds/templates/deeds/pdmark_deed.html:43
+#: deeds/templates/licenses/pdmark_deed.html:43
 msgid ""
 "Unless expressly stated otherwise, the person who identified the work makes "
 "no warranties about the work, and disclaims liability for all uses of the "
 "work, to the fullest extent permitted by applicable law."
 msgstr ""
+"Osim ako izričito nije drukčije navedeno, osoba koja je identificirala djelo"
+" kao javno dobro ne daje nikakva jamstva u pogledu djela i odriče se svake "
+"odgovornosti za bilo kakvo korištenje djela - u najvećoj mjeri u kojoj to "
+"dopušta mjerodavni zakon. "
 
-#: deeds/templates/deeds/pdmark_deed.html:46
+#: deeds/templates/licenses/pdmark_deed.html:46
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "person who identified the work."
 msgstr ""
+"Kada koristite ili navodite djelo, ne biste trebali implicirati da Vas autor"
+" ili osoba koja je identificirala djelo <a href=\"\" class=\"helpLink\" "
+"id=\"endorsement\">izravno podržavaju</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:74
-#: deeds/templates/deeds/zero_deed.html:82
+#: deeds/templates/licenses/pdmark_deed.html:74
+#: deeds/templates/licenses/zero_deed.html:82
 msgid "Work:"
-msgstr ""
+msgstr "Djelo:"
 
-#: deeds/templates/deeds/pdmark_deed.html:79
+#: deeds/templates/licenses/pdmark_deed.html:79
 msgid "Author:"
-msgstr ""
+msgstr "Autor:"
 
-#: deeds/templates/deeds/pdmark_deed.html:83
+#: deeds/templates/licenses/pdmark_deed.html:83
 msgid "Identified by:"
-msgstr ""
+msgstr "Djelo identificirao/-la:"
 
-#: deeds/templates/deeds/pdmark_deed.html:89
-#: deeds/templates/deeds/zero_deed.html:95
+#: deeds/templates/licenses/pdmark_deed.html:89
+#: deeds/templates/licenses/zero_deed.html:95
 msgid ""
 "You can <a href=\"\" class=\"helpLink\" id=\"citation_help\">cite</a> this "
 "work with this HTML:"
 msgstr ""
+"Ovo djelo možete <a href=\"\" class=\"helpLink\" "
+"id=\"citation_help\">citirati</a> koristeći sljedeći HTML kod:"
 
-#: deeds/templates/deeds/pdmark_deed.html:114
-#: deeds/templates/deeds/zero_deed.html:123
+#: deeds/templates/licenses/pdmark_deed.html:114
+#: deeds/templates/licenses/zero_deed.html:123
 msgid "Endorsement"
-msgstr ""
+msgstr "Izravna podrška"
 
-#: deeds/templates/deeds/pdmark_deed.html:118
-#: deeds/templates/deeds/zero_deed.html:126
+#: deeds/templates/licenses/pdmark_deed.html:118
+#: deeds/templates/licenses/zero_deed.html:126
 msgid ""
 "In some jurisdictions, wrongfully implying that an author, publisher or "
 "anyone else endorses your use of a work may be unlawful."
 msgstr ""
+"U nekim pravnim sustavima neistinito tvrditi da autor, izdavač ili netko "
+"drugi izravno podržava Vaše korištenje djela može biti nezakonito."
 
-#: deeds/templates/deeds/pdmark_deed.html:121
-#: deeds/templates/deeds/pdmark_deed.html:135
-#: deeds/templates/deeds/pdmark_deed.html:149
-#: deeds/templates/deeds/pdmark_deed.html:162
-#: deeds/templates/deeds/pdmark_deed.html:173
-#: deeds/templates/deeds/zero_deed.html:117
-#: deeds/templates/deeds/zero_deed.html:130
-#: deeds/templates/deeds/zero_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:121
+#: deeds/templates/licenses/pdmark_deed.html:135
+#: deeds/templates/licenses/pdmark_deed.html:149
+#: deeds/templates/licenses/pdmark_deed.html:162
+#: deeds/templates/licenses/pdmark_deed.html:173
+#: deeds/templates/licenses/zero_deed.html:117
+#: deeds/templates/licenses/zero_deed.html:130
+#: deeds/templates/licenses/zero_deed.html:142
 msgid "Learn more"
-msgstr ""
+msgstr "Saznajte više"
 
-#: deeds/templates/deeds/pdmark_deed.html:128
-#: deeds/templates/deeds/zero_deed.html:136
+#: deeds/templates/licenses/pdmark_deed.html:128
+#: deeds/templates/licenses/zero_deed.html:136
 msgid "Citation"
-msgstr ""
+msgstr "Navođenje djela"
 
-#: deeds/templates/deeds/pdmark_deed.html:132
-#: deeds/templates/deeds/zero_deed.html:139
+#: deeds/templates/licenses/pdmark_deed.html:132
+#: deeds/templates/licenses/zero_deed.html:139
 msgid ""
 "Copy and paste the HTML provided into your webpage to easily cite this work."
 msgstr ""
+"Kako biste mogli lako navesti ovo djelo, kopirajte ponuđeni HTML kod i "
+"unesite ga na Vašu internetsku stranicu."
 
-#: deeds/templates/deeds/pdmark_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:142
 msgid "Moral Rights"
-msgstr ""
+msgstr "Moralna prava"
 
-#: deeds/templates/deeds/pdmark_deed.html:146
+#: deeds/templates/licenses/pdmark_deed.html:146
 msgid ""
 "Copyright laws in most jurisdictions around the world grant creators \"moral"
 " rights\" which may provide some redress if use of a work is considered "
 "\"derogatory\"."
 msgstr ""
+"Zakoni o autorskom i srodnim pravima u mnogim pravim sustavima diljem "
+"svijeta stvarateljima daju \"moralna prava\" koja nude mogućnost zaštite u "
+"slučaju da se smatra da neko korištenje djela ugrožava čast ili ugled."
 
-#: deeds/templates/deeds/pdmark_deed.html:155
-#: deeds/templates/deeds/zero_deed.html:110
+#: deeds/templates/licenses/pdmark_deed.html:155
+#: deeds/templates/licenses/zero_deed.html:110
 msgid "Other Rights"
-msgstr ""
+msgstr "Druga prava"
 
-#: deeds/templates/deeds/pdmark_deed.html:159
-#: deeds/templates/deeds/zero_deed.html:113
+#: deeds/templates/licenses/pdmark_deed.html:159
+#: deeds/templates/licenses/zero_deed.html:113
 msgid ""
 "The use of a work free of known copyright restrictions may be otherwise "
 "regulated or limited. The work or its use may be subject to personal data "
@@ -230,33 +1115,38 @@ msgid ""
 "control how their voice, image or likeness is used, or other restrictions or"
 " limitations under applicable law."
 msgstr ""
+"Korištenje djela koje nije pod zaštitom autorskog ili srodnih prava može "
+"biti regulirano ili ograničeno drugim odredbama. Djelo ili njegovo "
+"korištenje može biti predmetom zaštite zakona o osobnim podacima, prava nad "
+"objavljivanjem osobne fotografije, pravima lika ili pravima privatnosti koje"
+" osobama daju kontrolu nad korištenjem njihovog glasa, slike ili lika, kao "
+"što može biti predmetom i drugih zakonskih ograničenja."
 
-#: deeds/templates/deeds/pdmark_deed.html:167
+#: deeds/templates/licenses/pdmark_deed.html:167
 msgid "Term of Copyright"
-msgstr ""
+msgstr "Trajanje autorskog prava"
 
-#: deeds/templates/deeds/pdmark_deed.html:170
+#: deeds/templates/licenses/pdmark_deed.html:170
 msgid ""
 "Copyright terms vary jurisdiction to jurisdiction. A work free of copyright "
 "restrictions in one jurisdiction may not be similarly free in other "
 "jurisdictions."
 msgstr ""
+"Trajanje autorskog i srodnih prava varira od pravnog sustava do pravnog "
+"sustava, od zemlje do zemlje. Djelo koje je slobodno od ograničenja "
+"autorskog i srodnih prava u jednom pravnom sustavu možda nije isto tako "
+"slobodno u drugim pravnim sustavima."
 
-#: deeds/templates/deeds/pdmark_deed.html:188
-#: deeds/templates/macros_templates/partner.html:26
-msgid "Creative Commons"
-msgstr ""
-
-#: deeds/templates/deeds/pdmark_deed.html:196
-#: deeds/templates/deeds/pdmark_deed.html:198
-#: deeds/templates/deeds/zero_deed.html:172
-#: deeds/templates/deeds/zero_deed.html:187
-#: deeds/templates/macros_templates/deed.html:116
-#: deeds/templates/macros_templates/deed.html:163
+#: deeds/templates/licenses/pdmark_deed.html:196
+#: deeds/templates/licenses/pdmark_deed.html:198
+#: deeds/templates/licenses/zero_deed.html:172
+#: deeds/templates/licenses/zero_deed.html:187
+#: deeds/templates/macros_templates/deed.html:94
+#: deeds/templates/macros_templates/deed.html:141
 msgid "Disclaimer"
-msgstr ""
+msgstr "Upozorenje"
 
-#: deeds/templates/deeds/pdmark_deed.html:200
+#: deeds/templates/licenses/pdmark_deed.html:200
 msgid ""
 "<p> The Public Domain Mark is not a legal instrument. </p> <p> Creative "
 "Commons is not a law firm and does not provide legal services or advice. "
@@ -266,8 +1156,16 @@ msgid ""
 "applied. CC makes no warranties about any work or its copyright status in "
 "any jurisdiction, and disclaims all liability for all uses of any work. </p>"
 msgstr ""
+"<p> Oznaka javnog dobra nije pravni instrument. </p> <p>Creative Commons "
+"nije odvjetnički ured i ne pruža pravne usluge. Distribuiranje Commons "
+"Deeda, njegovo, prikazivanje ili postavljanje linka na njega ne konstituira "
+"odnos pravnog zastupanja.</p> <p> Creative Commons ne provjerava "
+"autorskopravni status bilo kojeg djela na koje je stavljena ova oznaka. CC "
+"ne daje nikakva jamstva u pogledu djela ili njegovog autorskopravnog statusa"
+" u bilo kojem pravnom sustavu i odriče se svake odgovornosti vezane uz bilo "
+"kakvo korištenje djela.</p>"
 
-#: deeds/templates/deeds/pdmark_deed.html:207
+#: deeds/templates/licenses/pdmark_deed.html:207
 #, python-format
 msgid ""
 "\n"
@@ -275,26 +1173,29 @@ msgid ""
 "  "
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:5
+#: deeds/templates/licenses/publicdomain_deed.html:5
 msgid ""
 "Copyright-Only Dedication (based on United States law)\n"
 "or Public Domain Certification"
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:19
 msgid ""
 "Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
 "  (based on United States law)<br />\n"
 "  or Public Domain Certification"
 msgstr ""
+"Prenošenje u javno dobro<a href=\"#\" class=\"helpLink\" "
+"id=\"use_zero\">*</a> (temeljeno na zakonu Sjedinjenih Američkih Država) ili"
+" Potvrda o javnom dobru "
 
-#: deeds/templates/deeds/publicdomain_deed.html:28
-#: deeds/templates/deeds/standard_deed.html:72
-#: deeds/templates/deeds/zero_deed.html:37
+#: deeds/templates/licenses/publicdomain_deed.html:28
+#: deeds/templates/licenses/standard_deed.html:77
+#: deeds/templates/licenses/zero_deed.html:37
 msgid "This license is acceptable for Free Cultural Works."
-msgstr ""
+msgstr "Ova licenca ulazi u definiciju Slobodnih kulturni djela."
 
-#: deeds/templates/deeds/publicdomain_deed.html:38
+#: deeds/templates/licenses/publicdomain_deed.html:38
 msgid ""
 "        <p>The person or persons who have associated work with this document (the \"Dedicator\" or \"Certifier\") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the \"Work\") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a \"dedicator\" below.</p>\n"
 "\n"
@@ -304,84 +1205,92 @@ msgid ""
 "\n"
 "        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>"
 msgstr ""
+"<p>Osoba ili osobe koje su svoje djelo vezale uz ovaj dokument (“Prenositelj” ili \"Potvrditelj\") ovime ili a) potvrđuje da je, prema njenom najboljem saznanju, ovdje naznačeno autorsko djelo prešlo u javna dobra one zemlje gdje je izvorno objavljeno ili b) prenosi autorsko pravo, koje prenositelj ima na autorsko djelo kako je niže određeno (\"Djelo\"), u javno dobro. Nadalje, potvrditelj prenosi u javno dobro sve interese koje bi mogao polagati na autorsko pravo u djelu i, za svrhe ove licence, on se u daljnjem tekstu uzima kao \"Prenositelj\".</p>\n"
+"\n"
+"<p>Potvrditelj je poduzeo razumni napor da potvrdi status autorskog prava nad ovim djelom. Potvrditelj prihvaća da ga taj napor, poduzet u dobroj volji, ne štiti od odgovornosti ako djelo u potvrdi nije u javnoj domeni.</p>\n"
+"\n"
+"<p>Prenositelj pristupa ovoj predaji u korist javnosti, a na uštrb Prenositeljevih nasljednika i pravnih sljednika. Prenositeljeva je namjera da ova predaja bude otvoren čin trajnog ustupanja svih sadašnjih i budućih prava na Djelo. Prenositelj prima na znanje da takvo ustupanje svih prava uključuje odricanje od svih prava na mjere provedbe (pravnom parnicom ili na neki drugi način) tih autorskih prava na djelo.</p>\n"
+"\n"
+"<p>Prenositelj prihvaća da djelo, jednom kada se ono nađe u javnim dobrima, svatko može slobodno reproducirati, distrubirati, emitirati, koristiti, mijenjati, razvijati ili drukčije iskoristiti u bilo koju svrhu, komercijalnu ili nekomercijalnu, i na bilo koji način, uključujući i metodama koje još nisu izumljene ili zamišljene.</p>"
 
-#: deeds/templates/deeds/publicdomain_deed.html:49
+#: deeds/templates/licenses/publicdomain_deed.html:49
 msgid ""
 "This tool is based on United States law and may not be applicable outside "
 "the US. For dedicating new works to the public domain, we recommend <a "
 "href=\"/choose/zero/\">CC0</a>."
 msgstr ""
+"Ovaj pravni instrument se temelji na pravnom sustavu Sjedinjenih Američkih "
+"Država i može ne se koristiti u drugim zemljama. Za prenošenje novih djela u"
+" javno dobro preporučamo <a href=\"/choose/zero/\">CC0</a>."
 
-#: deeds/templates/deeds/sampling_deed.html:24
+#: deeds/templates/licenses/sampling_deed.html:24
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "noncommercial purposes."
 msgstr ""
+"Koristiti djelo za stvaranje semplova, mash-upova ili drugih prerada u "
+"nekomercijalne svrhe."
 
-#: deeds/templates/deeds/sampling_deed.html:28
+#: deeds/templates/licenses/sampling_deed.html:28
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "commercial or noncommercial purposes."
 msgstr ""
+"Koristiti djelo za stvaranje semplova, mash-upova ili drugih prerada u "
+"komercijalne ili nekomercijalne svrhe."
 
-#: deeds/templates/deeds/sampling_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:34
 msgid ""
 "To perform, display, and distribute copies of this whole work for "
 "noncommercial purposes (e.g., file-sharing or noncommercial webcasting)."
 msgstr ""
+"Izvoditi, izlagati i distribuirati kopije cjeline ovog djela u "
+"nekomercijalne svrhe (pr. file-sharing ili nekomercijalni web-casting)."
 
-#: deeds/templates/deeds/sampling_deed.html:49
-msgid "You may not use this work for commercial purposes."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:53
-msgid ""
-"You may not use this work to advertise for or promote anything but the work "
-"you create from it."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:63
+#: deeds/templates/licenses/sampling_deed.html:63
 msgid ""
 "For any reuse, you must make clear to others the license terms of this work."
 msgstr ""
+"Za svako daljnje korištenje morate drugima jasno dati do znanja licencne "
+"uvjete ovog djela."
 
-#: deeds/templates/deeds/sampling_deed.html:66
-msgid ""
-"You may not perform, display, or distribute copies of this whole work for "
-"any purpose."
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:40
+#: deeds/templates/licenses/standard_deed.html:44
 msgid "You are free to:"
-msgstr ""
+msgstr "Slobodno možete:"
 
-#: deeds/templates/deeds/standard_deed.html:45
+#: deeds/templates/licenses/standard_deed.html:49
 msgid ""
 "<strong>Share</strong>  &mdash; copy and redistribute the material in any "
 "medium or format"
 msgstr ""
+"<strong>Dijelite dalje</strong>  &mdash; možete umnažati i redistribuirati "
+"materijal u bilo kojem mediju ili formatu"
 
-#: deeds/templates/deeds/standard_deed.html:52
+#: deeds/templates/licenses/standard_deed.html:56
 msgid ""
 "<strong>Adapt</strong>  &mdash; remix, transform, and build upon the "
 "material"
 msgstr ""
+"<strong>Stvarajte prerade</strong>  &mdash; možete remiksirati, mijenjati i "
+"prerađivati djelo"
 
-#: deeds/templates/deeds/standard_deed.html:58
+#: deeds/templates/licenses/standard_deed.html:62
 msgid "for any purpose, even commercially."
-msgstr ""
+msgstr "u bilo koju svrhu, pa i komercijalnu."
 
-#: deeds/templates/deeds/standard_deed.html:83
+#: deeds/templates/licenses/standard_deed.html:89
 msgid ""
 "The licensor cannot revoke these freedoms as long as you follow the license "
 "terms."
 msgstr ""
+"Davatelj licence ne može opozvati slobode korištenja koje Vam je ponudio "
+"dokle god se pridržavate uvjeta licence."
 
-#: deeds/templates/deeds/standard_deed.html:90
+#: deeds/templates/licenses/standard_deed.html:96
 msgid "Under the following terms:"
-msgstr ""
+msgstr "Pod sljedećim uvjetima:"
 
-#: deeds/templates/deeds/standard_deed.html:97
+#: deeds/templates/licenses/standard_deed.html:103
 msgid ""
 "You must give <a href=\"#\" id=\"appropriate_credit_popup\" "
 "class=\"helpLink\">appropriate credit</a></span>, provide a link to the "
@@ -391,79 +1300,99 @@ msgid ""
 "made</a></span>.  You may do so in any reasonable manner, but not in any way"
 " that suggests the licensor endorses you or your use."
 msgstr ""
+"Morate <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">adekvatno navesti autora</a></span>, uvrstiti link na "
+"licencu i <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\">naznačiti eventualne "
+"izmjene</a></span>. Možete to učiniti na bilo koji razuman način, ali ne "
+"smijete sugerirati da davatelj licence izravno podupire Vas ili Vaše "
+"korištenje djela."
 
-#: deeds/templates/deeds/standard_deed.html:103
+#: deeds/templates/licenses/standard_deed.html:109
 msgid "Attribute this work:"
-msgstr ""
+msgstr "Navedite autora ovog djela:"
 
-#: deeds/templates/deeds/standard_deed.html:115
+#: deeds/templates/licenses/standard_deed.html:121
 msgid "Information"
-msgstr ""
+msgstr "Informacije"
 
-#: deeds/templates/deeds/standard_deed.html:125
-msgid "NonCommercial"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:125
+#: deeds/templates/licenses/standard_deed.html:131
 msgid ""
 "You may not use the material for <a href=\"#\" "
 "id=\"commercial_purposes_popup\" class=\"helpLink\">commercial purposes</a>."
 msgstr ""
+"Ne smijete koristiti materijal u <a href=\"#\" "
+"id=\"commercial_purposes_popup\" class=\"helpLink\">komercijalne svrhe</a>."
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid "NoDerivatives"
-msgstr ""
+msgstr "NemaDerivata"
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid ""
 "If you <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
 "class=\"helpLink\">remix, transform, or build upon</a> the material, you may"
 " not distribute the modified material."
 msgstr ""
+"Ako <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">remiksirate, mijenjati ili prerađujete</a> materijal, ne "
+"smijete distribuirati taj prerađeni materijal."
 
-#: deeds/templates/deeds/standard_deed.html:143
-msgid "ShareAlike"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:143
+#: deeds/templates/licenses/standard_deed.html:149
 msgid ""
 "If you remix, transform, or build upon the material, you must distribute "
 "your contributions under the <a href=\"#\" id=\"same_license_popup\" "
 "class=\"helpLink\">same license</a> as the original."
 msgstr ""
+"Ako remiksirate, mijenjate ili prerađujete materijal, Vaše prerade morate "
+"distribuirati pod  <a href=\"#\" id=\"same_license_popup\" "
+"class=\"helpLink\">istom licencom</a> pod kojom je bio izvornik."
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid "No additional restrictions"
-msgstr ""
+msgstr "Bez daljnjih ograničenja"
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid ""
 "You may not apply legal terms or <a href=\"#\" "
 "id=\"technological_measures_popup\" class=\"helpLink\">technological "
 "measures</a> that legally restrict others from doing anything the license "
 "permits."
 msgstr ""
+"Ne smijete dodavati pravne uvjete ili <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">tehnološke mjere "
+"zaštite</a> koji će druge pravno ograničiti da čine ono što im licenca "
+"dopušta."
 
-#: deeds/templates/deeds/standard_deed.html:161
+#: deeds/templates/licenses/standard_deed.html:167
 msgid "Notices:"
-msgstr ""
+msgstr "Upozorenja:"
 
-#: deeds/templates/deeds/standard_deed.html:166
+#: deeds/templates/licenses/standard_deed.html:172
 msgid ""
 "When the Licensor is an intergovernmental organization, disputes will be "
 "resolved by <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
 "class=\"helpLink\">mediation and arbitration</a> unless otherwise agreed."
 msgstr ""
+"Kada je davatelj licence međuvladina organizacija, pravni sporovi rješavat "
+"će se  <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">mirenjem i arbitriranjem</a>, osim ako nije dogotovoreno "
+"drugačije."
 
-#: deeds/templates/deeds/standard_deed.html:171
+#: deeds/templates/licenses/standard_deed.html:177
 msgid ""
 "You do not have to comply with the license for elements of the material in "
 "the public domain or where your use is permitted by an applicable <a "
 "href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">exception"
 " or limitation</a>."
 msgstr ""
+"Ne morate se pridržavati licence kada je riječ o elementima djela koji su "
+"javno dobro ili gdje je Vaše iskorištavanje djela dopušteno zakonskim <a "
+"href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">iznimkama"
+" i ograničenjima autorskog prava</a>."
 
-#: deeds/templates/deeds/standard_deed.html:174
+#: deeds/templates/licenses/standard_deed.html:180
 msgid ""
 "No warranties are given. The license may not give you all of the permissions"
 " necessary for your intended use. For example, other rights such as <a "
@@ -471,40 +1400,65 @@ msgid ""
 "class=\"helpLink\">publicity, privacy, or moral rights</a> may limit how you"
 " use the material."
 msgstr ""
+"Nema jamstava. Licenca Vam možda ne daje sva potrebna dopuštena za Vašu "
+"željeno korištenje djela. Primjerice, druga prava <a href=\"#\" "
+"id=\"publicity_privacy_or_moral_rights_popup\" class=\"helpLink\">poput "
+"prava nad objavljivanjem osobne fotografije, pravo privatnosti ili moralno "
+"pravo</a? može ograničiti kako smijete koristiti materija."
 
-#: deeds/templates/deeds/standard_deed.html:197
-msgid "What does \"Attribute this work\" mean?"
+#: deeds/templates/licenses/standard_deed.html:188
+#, python-format
+msgid ""
+"A <a href=\"%(current_version_url)s\">new version</a> of this license is "
+"available. You should use it for new works, and you may want to relicense "
+"existing works under it. No works are <em>automatically</em> put under the "
+"new license, however."
 msgstr ""
+"Dostupna je <a href=\"%(current_version_url)s\">nova verzija</a> ove "
+"licence. Nju biste trebali koristiti za nova djela, a možete njome iznova "
+"licencirati i postojeća djela. Međutim, nijedno djelo ne prelazi "
+"<em>automatski</em> na novu licencu."
 
-#: deeds/templates/deeds/standard_deed.html:200
+#: deeds/templates/licenses/standard_deed.html:203
+msgid "What does \"Attribute this work\" mean?"
+msgstr "Što znači \"Označavanje autorstva\"?"
+
+#: deeds/templates/licenses/standard_deed.html:206
 msgid ""
 "The page you came from contained embedded licensing metadata, including how "
 "the creator wishes to be attributed for re-use. You can use the HTML here to"
 " cite the work. Doing so will also include metadata on your page so that "
 "others can find the original work as well."
 msgstr ""
+"Stranica s koje ste došli sadržavala je umetnute licencne metapodatke, između ostalog i kako autor želi biti imenovan u daljnjem korištenju djela. Ovdje možete preuzeti HTML kod koji navodi izvorno djelo. Time ćete uklopiti metapodatke u vašu stranicu i omogućiti drugima da pronađu izvorno djelo.\n"
+"#-#-#-#-#\n"
+"Stranica s koje ste došli sadržavala je umetnute licencne metapodatke, između ostalog i kako autor želi biti imenovan u daljnjem korištenju djela. Ovdje možete preuzeti HTML kod koji navodi izvorno djelo. Time ćete uklopiti metapodatke u vašu stranicu i omogućiti drugima da pronađu izvorno djelo."
 
-#: deeds/templates/deeds/standard_deed.html:206
+#: deeds/templates/licenses/standard_deed.html:212
 msgid ""
 "The applicable mediation rules will be designated in the copyright notice "
 "published with the work, or if none then in the request for mediation.  "
 "Unless otherwise designated in a copyright notice attached to the work, the "
 "UNCITRAL Arbitration Rules apply to any arbitration."
 msgstr ""
+"Važeća pravila mirenja mogu se odrediti u autorskopravnom upozorenju koje "
+"dolazi uz djelo. A ako ga nema, onda u zahtjevu za mirenjem. Ako nije "
+"drugačije naznačeno u autorskopravnom upozorenju, za svaku arbitražu važe "
+"UNCITRAL-ova Arbitracijska pravila."
 
-#: deeds/templates/deeds/standard_deed.html:208
-#: deeds/templates/deeds/standard_deed.html:216
-#: deeds/templates/deeds/standard_deed.html:226
-#: deeds/templates/deeds/standard_deed.html:234
-#: deeds/templates/deeds/standard_deed.html:242
-#: deeds/templates/deeds/standard_deed.html:250
-#: deeds/templates/deeds/standard_deed.html:258
-#: deeds/templates/deeds/standard_deed.html:266
-#: deeds/templates/deeds/standard_deed.html:274
+#: deeds/templates/licenses/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:280
 msgid "More info"
-msgstr ""
+msgstr "Više informacija"
 
-#: deeds/templates/deeds/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:220
 msgid ""
 "If supplied, you must provide the name of the creator and attribution "
 "parties, a copyright notice, a license notice, a disclaimer notice, and a "
@@ -512,71 +1466,96 @@ msgid ""
 "provide the title of the material if supplied, and may have other slight "
 "differences."
 msgstr ""
+"Ako je naznačeno, morate ponuditi ime autora i atribucijskih stranaka, "
+"obavijest o autorskim pravima, obavijest o licenci, obavijest o odricanju od"
+" odgovornosti i link s materijalima. Ranije verzije CC od verzije 4.0. "
+"licenci traže da navedete naslov materijala i imaju nešto drugačije "
+"atribucijske zahtjeve."
 
-#: deeds/templates/deeds/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:228
 msgid ""
 "In 4.0, you must indicate if you modified the material and retain an "
 "indication of previous modifications. In 3.0 and earlier license versions, "
 "the indication of changes is only required if you create a derivative."
 msgstr ""
+"U verziji 4.0 morate naznačiti ako ste sami mijenjali materija i zadržati "
+"naznaku prethodnih izmjena. U verziji 3.0 i ranijim verzijama, naznaka "
+"napravljene izmjene nužna je samo u slučajevima prerade djela."
 
-#: deeds/templates/deeds/standard_deed.html:224
+#: deeds/templates/licenses/standard_deed.html:230
 msgid "Marking guide"
-msgstr ""
+msgstr "Vodič za obilježavanje"
 
-#: deeds/templates/deeds/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:238
 msgid ""
 "You may also use a license listed as compatible at <a "
 "href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
 msgstr ""
+"Možete također koristiti licencu koja je navedena na adresi: <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
 
-#: deeds/templates/deeds/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:246
 msgid ""
 "A commercial use is one primarily intended for commercial advantage or "
 "monetary compensation."
 msgstr ""
+"Komercijalno iskorištavanje djela prije svega ide za stjecanjem komercijalne"
+" koristi ili novčane naknade."
 
-#: deeds/templates/deeds/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:254
 msgid "Merely changing the format never creates a derivative."
-msgstr ""
+msgstr "Samo promjena formata nikada ne stvara preradu."
 
-#: deeds/templates/deeds/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:262
 msgid ""
 "The license prohibits application of effective technological measures, "
 "defined with reference to Article 11 of the WIPO Copyright Treaty."
 msgstr ""
+"Licenca zabranjuje primjenu tehnoloških mjera kako su definirane u Članu 11."
+" Ugovora o autorskom pravu Svjetske organizacije za intelektualno vlasništvo"
+" (WIPO)."
 
-#: deeds/templates/deeds/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:270
 msgid ""
 "The rights of users under exceptions and limitations, such as fair use and "
 "fair dealing, are not affected by the CC licenses."
 msgstr ""
+"CC licence ne utječu na prava korisnika u okviru iznimki ili ograničenja "
+"autorskog prava."
 
-#: deeds/templates/deeds/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:278
 msgid ""
 "You may need to get additional permissions before using the material as you "
 "intend."
 msgstr ""
+"Možda morate dobiti dodatna dopuštenja prije no što smijete koristiti "
+"materijal na željeni način."
 
-#: deeds/templates/deeds/zero_deed.html:12
+#: deeds/templates/licenses/zero_deed.html:12
 msgid "Public Domain Dedication"
-msgstr ""
+msgstr "Prenošenje u javno dobro"
 
-#: deeds/templates/deeds/zero_deed.html:25
+#: deeds/templates/licenses/zero_deed.html:25
 msgid ""
 "The person who associated a work with this deed has <b>dedicated</b> the "
 "work to the public domain by waiving all of his or her rights to the work "
 "worldwide under copyright law, including all related and neighboring rights,"
 " to the extent allowed by law."
 msgstr ""
+"Osoba koja je uz djelo vezala ovaj dokument <b>prenijela</b> je djelo u "
+"javno dobro ustupivši globalno sva svoja prava na djelo određena zakonom o "
+"autorskom i srodnim pravima - u mjeri u kojoj to zakon dopušta. "
 
-#: deeds/templates/deeds/zero_deed.html:28
+#: deeds/templates/licenses/zero_deed.html:28
 msgid ""
 "You can copy, modify, distribute and perform the work, even for commercial "
 "purposes, all without asking permission. See <b>Other Information</b> below."
 msgstr ""
+"Slobodno smijete umnažati, prerađivati i izvoditi djelo, pa i u komercijalne"
+" svrhe, a da ne morate tražiti dopuštenje. Vidi niže pod <b>Druge "
+"informacije</b>."
 
-#: deeds/templates/deeds/zero_deed.html:52
+#: deeds/templates/licenses/zero_deed.html:52
 msgid ""
 "In no way are the patent or trademark rights of any person affected by CC0, "
 "nor are the rights that other persons may have in the work or in how the "
@@ -584,38 +1563,56 @@ msgid ""
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"CC0 ni na koji način ne utječe na patentno pravo ili pravo zaštičene marke, "
+"niti na prava koja druge osobe imaju u djelu i kako će se djelo koristiti, "
+"kao što su  <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">pravo nad objavljivanjem osobne "
+"fotografije ili pravo privatnosti</a>."
 
-#: deeds/templates/deeds/zero_deed.html:56
+#: deeds/templates/licenses/zero_deed.html:56
 msgid ""
 "Unless expressly stated otherwise, the person who associated a work with "
 "this deed makes no warranties about the work, and disclaims liability for "
 "all uses of the work, to the fullest extent permitted by applicable law."
 msgstr ""
+"Osim ako izričito nije drukčije navedeno, osoba koja je uz djelo stavila "
+"ovaj dokument ne daje nikakva jamstva u pogledu djela i odriče se svake "
+"odgovornosti za svako korištenje djela - u najvećoj mjeri u kojoj to dopušta"
+" mjerodavni zakon."
 
-#: deeds/templates/deeds/zero_deed.html:60
+#: deeds/templates/licenses/zero_deed.html:60
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "affirmer."
 msgstr ""
+"Kada koristite ili navodite djelo, ne biste trebali implicirati da Vas autor"
+" ili potvrditelj <a href=\"\" class=\"helpLink\" id=\"endorsement\">izravno "
+"podržavaju</a>."
 
-#: deeds/templates/deeds/zero_deed.html:88
+#: deeds/templates/licenses/zero_deed.html:88
 msgid "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Affirmer</a>"
 msgstr ""
+"<a href=\"\" class=\"inline-help helpLink\" "
+"id=\"who_is_affirmer\">Potvrditelj</a>"
 
-#: deeds/templates/deeds/zero_deed.html:149
+#: deeds/templates/licenses/zero_deed.html:149
 msgid "Who is the affirmer?"
-msgstr ""
+msgstr "Tko je potvrditelj?"
 
-#: deeds/templates/deeds/zero_deed.html:153
+#: deeds/templates/licenses/zero_deed.html:153
 msgid ""
 "The affirmer is the person who surrendered rights to the work worldwide "
 "using CC0, to the extent allowable by law. It may be the original author of "
 "the work or another person who may have had some copyright or related or "
 "neighboring legal rights in the work."
 msgstr ""
+"Potvrditelj je osoba koja se odrekla globalno prava na djelo koristeći CC0 u"
+" mjeri u kojoj to zakon dopušta. Riječ je o izvornom autoru djela ili nekoj "
+"drugoj osobi koja je možda imala neko autorsko ili srodna prava u djelu."
 
-#: deeds/templates/deeds/zero_deed.html:176
+#: deeds/templates/licenses/zero_deed.html:176
 msgid ""
 "<p> The Commons Deed is not a legal instrument. It is simply a handy "
 "reference for understanding the CC0 Legal Code, a human-readable expression "
@@ -629,76 +1626,88 @@ msgid ""
 "copyright status in any jurisdiction, and disclaims all liability for all "
 "uses of any work. </p>"
 msgstr ""
+"<p> Commons Deed nije pravni dokument. On je samo praktična referenca za "
+"razumijevanje Pravnog teksta licence CC0 - svima razumljiv iskaz njegovih "
+"ključnih pojmova. Možete ga smatrati pojednostavljenim objašnjenjem Pravnog "
+"teksta koji se nalazi u pozadini. Sam Commons Deed nema pravni značaj i "
+"njegov se sadržaj ne pojavljuje u CC0.</p>  <p>Creative Commons nije "
+"odvjetnički ured i ne pruža pravne usluge. Distribuiranje Commons Deeda, "
+"njegovo prikazivanje ili postavljanje linka na njega ne konstituira odnos "
+"pravnog zastupanja.</p> <p> Creative Commons ne provjerava autorskopravni "
+"status bilo kojeg djela koji se stavlja pod CC0. CC ne daje nikakva jamstva "
+"u pogledu djela ili njegovog autorskopravnog statusa u bilo kojem pravnom "
+"sustavu i odriče se svake odgovornosti vezane uz bilo kakvo korištenje "
+"djela.</p>"
 
-#: deeds/templates/deeds/zero_deed.html:182
+#: deeds/templates/licenses/zero_deed.html:182
 msgid ""
 "This is a human-readable summary of the <a href=\"./legalcode\">Legal Code "
 "(read the full text)</a>."
 msgstr ""
+"Ovo je svima razumljiv sažetak <a href=\"./legalcode\"> Pravnog teksta "
+"licence (pročitajte ga u cijelosti)</a>."
 
-#: deeds/templates/deeds/zero_deed.html:194
+#: deeds/templates/licenses/zero_deed.html:194
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"https://creativecommons.org/choose/zero/\">use the license</a> for your own material.\n"
 "  "
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:50
-#: deeds/templates/macros_templates/engine.html:77
+#: deeds/templates/macros_templates/deed.html:28
+#: deeds/templates/macros_templates/engine.html:50
 #: deeds/templates/macros_templates/pdtool_deed.html:31
 msgid "Skip to content"
-msgstr ""
+msgstr "Preskočite na sadržaj"
 
-#: deeds/templates/macros_templates/deed.html:60
+#: deeds/templates/macros_templates/deed.html:38
 #: deeds/templates/macros_templates/pdtool_deed.html:40
 msgid "Help us build a vibrant, collaborative global commons"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Donate"
-msgstr ""
+msgstr "Donirajte"
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Now"
-msgstr ""
+msgstr "Sada"
 
-#: deeds/templates/macros_templates/deed.html:82
+#: deeds/templates/macros_templates/deed.html:60
 #: deeds/templates/macros_templates/pdtool_deed.html:62
 msgid "Creative Commons License Deed"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:104
+#: deeds/templates/macros_templates/deed.html:82
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the license, "
 "which is available in the following languages:"
 msgstr ""
+"Ovo je svima razumljiv sažetak, a ne zamjena za licencu koja je dostupna na "
+"sljedećim jezicima:"
 
-#: deeds/templates/macros_templates/deed.html:111
+#: deeds/templates/macros_templates/deed.html:89
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the <a "
 "href=\"legalcode\" class=\"fulltext\">license</a>."
 msgstr ""
+"Ovo je svima razumljiv sažetak (a ne zamjena za)  <a href=\"legalcode\" "
+"class=\"fulltext\">licencu</a>."
 
-#: deeds/templates/macros_templates/deed.html:130
+#: deeds/templates/macros_templates/deed.html:108
 #, python-format
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
 "            "
 msgstr ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Saznajte više</a> o CC licenciranju ili <a id=\"get_this\" href=\"%(get_this)s\">primijenite licencu</a> na vlastiti materijal.\n"
+"            "
 
-#: deeds/templates/macros_templates/deed.html:141
-#: deeds/templates/macros_templates/pdtool_deed.html:92
-msgid ""
-"This content is freely available under simple legal terms because of "
-"Creative Commons, a non-profit that survives on donations. If you love this "
-"content, and love that it's free for everyone, please consider a donation to"
-" support our work."
-msgstr ""
-
-#: deeds/templates/macros_templates/deed.html:166
+#: deeds/templates/macros_templates/deed.html:144
 msgid ""
 "<p>\n"
 "              The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href=\"legalcode\" class=\"fulltext\">Please click here to see the full License</a>.\n"
@@ -713,27 +1722,34 @@ msgid ""
 "              </p>"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:180
+#: deeds/templates/macros_templates/deed.html:158
 msgid ""
 "This deed highlights only some of the key features and terms of the actual "
 "license. It is not a license and has no legal value. You should carefully "
 "review all of the terms and conditions of the actual license before using "
 "the licensed material."
 msgstr ""
+"Ovaj Commons deed izdvaja neke od ključnih odredbi i uvjeta prave licence. "
+"Sam Commons deed nije licenca i nema pravni značaj. Prije korištenja "
+"licenciranog materijala trebali biste pažljivo razmotriti sve odredbe i "
+"uvjete prave licence."
 
-#: deeds/templates/macros_templates/deed.html:182
+#: deeds/templates/macros_templates/deed.html:160
 msgid ""
 "Creative Commons is not a law firm and does not provide legal services. "
 "Distributing, displaying, or linking to this deed or the license that it "
 "summarizes does not create a lawyer-client or any other relationship."
 msgstr ""
+"Creative Commons nije odvjednički ured. Distribuiranje Commons Deeda ili "
+"licence koju sažimlje, njihovo prikazivanje ili postavljanje linka na njih "
+"ne čini odnos pravnog zastupanja ili bilo kakav drugi odnos."
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "expand child menu"
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "collapse child menu"
 msgstr ""

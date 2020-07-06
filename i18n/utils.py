@@ -11,6 +11,8 @@ from i18n import DEFAULT_CSV_FILE, CSV_HEADERS
 
 # MO_PATH = pkg_resources.resource_filename(
 #     'cc.i18n', 'mo')
+from licenses import mappers
+
 
 CACHED_APPLICABLE_LANGS = {}
 CACHED_WELL_TRANSLATED_LANGS = {}
@@ -200,8 +202,6 @@ def get_well_translated_langs(
       for each available language.
       An unsorted set of all qualified language codes
     """
-    from deeds import mappers
-
     cache_key = (threshold, trans_file, append_english)
 
     if cache_key in CACHED_WELL_TRANSLATED_LANGS:

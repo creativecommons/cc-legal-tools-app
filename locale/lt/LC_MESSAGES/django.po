@@ -1,106 +1,962 @@
-# English translations for cc-licenses.
-# Copyright (C) 2020 ORGANIZATION
-# This file is distributed under the same license as the cc-licenses
-# project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
-# 
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: cc-licenses VERSION\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-29 09:53-0400\n"
-"PO-Revision-Date: 2020-06-29 12:54+0000\n"
-"Language-Team: Lithuanian (https://www.transifex.com/creativecommons/teams/11342/lt/)\n"
+"POT-Creation-Date: 2020-07-06 10:53-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.5.3\n"
-"Language: lt\n"
 "Plural-Forms: nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);\n"
 
 #: cc_licenses/templates/404.html:3
 msgid "Page Not Found"
 msgstr ""
 
-#: deeds/templates/deeds/devnations_deed.html:19
-#: deeds/templates/deeds/publicdomain_deed.html:34
-#: deeds/templates/deeds/sampling_deed.html:15
-#: deeds/templates/deeds/standard_deed.html:26
-msgid ""
-"Creative Commons has <a "
-"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
-"tool</a> and does not recommend that it be applied to works."
-msgstr ""
+#: deeds/mappers.py:6
+msgid "Argentina"
+msgstr "Argentina"
 
-#: deeds/templates/deeds/devnations_deed.html:23
-#: deeds/templates/deeds/sampling_deed.html:20
-msgid "You are free:"
-msgstr ""
+#: deeds/mappers.py:7
+msgid "Austria"
+msgstr "Austrija"
 
-#: deeds/templates/deeds/devnations_deed.html:28
-msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
-msgstr ""
+#: deeds/mappers.py:8
+msgid "Australia"
+msgstr "Australija"
 
-#: deeds/templates/deeds/devnations_deed.html:33
-msgid "<strong>to Remix</strong> — to adapt the work"
-msgstr ""
+#: deeds/mappers.py:9
+msgid "Belgium"
+msgstr "Belgija"
 
-#: deeds/templates/deeds/devnations_deed.html:40
-#: deeds/templates/deeds/sampling_deed.html:41
-msgid "Under the following conditions:"
-msgstr ""
+#: deeds/mappers.py:10
+msgid "Bulgaria"
+msgstr "Bulgarija"
 
-#: deeds/templates/deeds/devnations_deed.html:53
-#: deeds/templates/deeds/standard_deed.html:96
+#: deeds/mappers.py:11
+msgid "Brazil"
+msgstr "Brazilija"
+
+#: deeds/mappers.py:12
+msgid "Canada"
+msgstr "Kanada"
+
+#: deeds/mappers.py:13
+msgid "Switzerland"
+msgstr "Šveicarija"
+
+#: deeds/mappers.py:14
+msgid "Chile"
+msgstr "Čilė"
+
+#: deeds/mappers.py:15
+msgid "China Mainland"
+msgstr "Kinija (žemyninė dalis)"
+
+#: deeds/mappers.py:16
+msgid "Colombia"
+msgstr "Kolumbija"
+
+#: deeds/mappers.py:17
+msgid "Costa Rica"
+msgstr "Kosta Rika"
+
+#: deeds/mappers.py:18
+msgid "Czech Republic"
+msgstr "Čekija"
+
+#: deeds/mappers.py:19
+msgid "Germany"
+msgstr "Vokietija"
+
+#: deeds/mappers.py:20
+msgid "Denmark"
+msgstr "Danija"
+
+#: deeds/mappers.py:21
+msgid "Ecuador"
+msgstr "Ekvadoras"
+
+#: deeds/mappers.py:22
+msgid "Estonia"
+msgstr "Estija"
+
+#: deeds/mappers.py:23
+msgid "Egypt"
+msgstr "Egiptas"
+
+#: deeds/mappers.py:24
+msgid "Spain"
+msgstr "Ispanija"
+
+#: deeds/mappers.py:25
+msgid "Catalonia"
+msgstr "Katalonija"
+
+#: deeds/mappers.py:26
+msgid "Finland"
+msgstr "Suomija"
+
+#: deeds/mappers.py:27
+msgid "France"
+msgstr "Prancūzija"
+
+#: deeds/mappers.py:28
+msgid "Greece"
+msgstr "Graikija"
+
+#: deeds/mappers.py:29
+msgid "Guatemala"
+msgstr "Gvatemala"
+
+#: deeds/mappers.py:30
+msgid "Hong Kong"
+msgstr "Honkongas"
+
+#: deeds/mappers.py:31
+msgid "Croatia"
+msgstr "Kroatija"
+
+#: deeds/mappers.py:32
+msgid "Hungary"
+msgstr "Vengrija"
+
+#: deeds/mappers.py:33
+msgid "Ireland"
+msgstr "Airija"
+
+#: deeds/mappers.py:34
+msgid "Israel"
+msgstr "Izraelis"
+
+#: deeds/mappers.py:35
+msgid "IGO"
+msgstr "TVO"
+
+#: deeds/mappers.py:36
+msgid "India"
+msgstr "Indija"
+
+#: deeds/mappers.py:37
+msgid "Italy"
+msgstr "Italija"
+
+#: deeds/mappers.py:38
+msgid "Jordan"
+msgstr "Jordanija"
+
+#: deeds/mappers.py:39
+msgid "Japan"
+msgstr "Japonija"
+
+#: deeds/mappers.py:40
+msgid "South Korea"
+msgstr "Pietų Korėja"
+
+#: deeds/mappers.py:41
+msgid "Luxembourg"
+msgstr "Liuksemburgas"
+
+#: deeds/mappers.py:42
+msgid "Macedonia"
+msgstr "Makedonija"
+
+#: deeds/mappers.py:43
+msgid "Malta"
+msgstr "Malta"
+
+#: deeds/mappers.py:44
+msgid "Mexico"
+msgstr "Meksika"
+
+#: deeds/mappers.py:45
+msgid "Malaysia"
+msgstr "Malaizija"
+
+#: deeds/mappers.py:46
+msgid "Nigeria"
+msgstr "Nigerija"
+
+#: deeds/mappers.py:47
+msgid "Netherlands"
+msgstr "Nyderlandai"
+
+#: deeds/mappers.py:48
+msgid "Norway"
+msgstr "Norvegija"
+
+#: deeds/mappers.py:49
+msgid "New Zealand"
+msgstr "Naujoji Zelandija"
+
+#: deeds/mappers.py:50
+msgid "Peru"
+msgstr "Peru"
+
+#: deeds/mappers.py:51
+msgid "Philippines"
+msgstr "Filipinai"
+
+#: deeds/mappers.py:52
+msgid "Poland"
+msgstr "Lenkija"
+
+#: deeds/mappers.py:53
+msgid "Puerto Rico"
+msgstr "Puerto Rikas"
+
+#: deeds/mappers.py:54
+msgid "Portugal"
+msgstr "Portugalija"
+
+#: deeds/mappers.py:55
+msgid "Romania"
+msgstr "Rumunija"
+
+#: deeds/mappers.py:56
+msgid "Serbia"
+msgstr "Serbija"
+
+#: deeds/mappers.py:57
+msgid "UK: Scotland"
+msgstr "Jungtinė Karalystė: Škotija"
+
+#: deeds/mappers.py:58
+msgid "Sweden"
+msgstr "Švedija"
+
+#: deeds/mappers.py:59
+msgid "Singapore"
+msgstr "Singapūras"
+
+#: deeds/mappers.py:60
+msgid "Slovenia"
+msgstr "Slovėnija"
+
+#: deeds/mappers.py:61
+msgid "Slovak Republic"
+msgstr "Slovakija"
+
+#: deeds/mappers.py:62
+msgid "Thailand"
+msgstr "Tailandas"
+
+#: deeds/mappers.py:63
+msgid "Taiwan"
+msgstr "Taivanas"
+
+#: deeds/mappers.py:64
+msgid "Ukraine"
+msgstr "Ukraina"
+
+#: deeds/mappers.py:65
+msgid "Uganda"
+msgstr "Uganda"
+
+#: deeds/mappers.py:66
+msgid "UK: England & Wales"
+msgstr "Jungtinė Karalystė: Anglija ir Velsas"
+
+#: deeds/mappers.py:67
+msgid "United States"
+msgstr "Jungtinės Valstijos"
+
+#: deeds/mappers.py:68
+msgid "Venezuela"
+msgstr "Venesuela"
+
+#: deeds/mappers.py:69
+msgid "Vietnam"
+msgstr "Vietnamas"
+
+#: deeds/mappers.py:70
+msgid "South Africa"
+msgstr "Pietų Afrikos Respublika"
+
+#: deeds/mappers.py:74
+msgid "Afrikaans"
+msgstr "Afrikanų"
+
+#: deeds/mappers.py:75
+msgid "Arabic"
+msgstr "Arabų"
+
+#: deeds/mappers.py:76
+msgid "Assamese"
+msgstr "Asamų"
+
+#: deeds/mappers.py:77
+msgid "Asturian"
+msgstr "Astūrų"
+
+#: deeds/mappers.py:78
+msgid "Azerbaijani"
+msgstr "Azerbaidžaniečių"
+
+#: deeds/mappers.py:79
+msgid "Belarusian"
+msgstr "Baltarusių"
+
+#: deeds/mappers.py:80
+msgid "Bulgarian"
+msgstr "Bulgarų"
+
+#: deeds/mappers.py:81
+msgid "Bengali"
+msgstr "Bengalų"
+
+#: deeds/mappers.py:82
+msgid "Catalan"
+msgstr "Katalonų "
+
+#: deeds/mappers.py:83
+msgid "Czech"
+msgstr "Čekų"
+
+#: deeds/mappers.py:84
+msgid "Danish"
+msgstr "Danų"
+
+#: deeds/mappers.py:85
+msgid "German"
+msgstr "Vokiečių"
+
+#: deeds/mappers.py:86
+msgid "Greek"
+msgstr "Graikų"
+
+#: deeds/mappers.py:87
+msgid "English"
+msgstr "Anglų"
+
+#: deeds/mappers.py:88
+msgid "English (CA)"
+msgstr "Anglų (Kanada)"
+
+#: deeds/mappers.py:89
+msgid "English (GB)"
+msgstr "Anglų (Jungtinė Karalystė)"
+
+#: deeds/mappers.py:90
+msgid "English (Hong Kong)"
+msgstr "Anglų (Honkongas)"
+
+#: deeds/mappers.py:91
+msgid "English (Singapore)"
+msgstr "Anglų (Singapūras)"
+
+#: deeds/mappers.py:92
+msgid "English (US)"
+msgstr "Anglų (JAV)"
+
+#: deeds/mappers.py:93
+msgid "Esperanto"
+msgstr "Esperanto"
+
+#: deeds/mappers.py:94
+msgid "Spanish"
+msgstr "Ispanų"
+
+#: deeds/mappers.py:95
+msgid "Spanish (AR)"
+msgstr "Ispanų (Argentina)"
+
+#: deeds/mappers.py:96
+msgid "Spanish (CL)"
+msgstr "Ispanų (Čilė)"
+
+#: deeds/mappers.py:97
+msgid "Spanish (CO)"
+msgstr "Ispanų (Kolumbija)"
+
+#: deeds/mappers.py:98
+msgid "Spanish (Ecuador)"
+msgstr "Ispanų (Ekvadoras)"
+
+#: deeds/mappers.py:99
+msgid "Spanish (Spain)"
+msgstr "Ispanų (Ispanija)"
+
+#: deeds/mappers.py:100
+msgid "Spanish (Guatemala)"
+msgstr "Ispanų (Gvatemala)"
+
+#: deeds/mappers.py:101
+msgid "Spanish (MX)"
+msgstr "Ispanų (Meksika)"
+
+#: deeds/mappers.py:102
+msgid "Spanish (PE)"
+msgstr "Ispanų (Peru)"
+
+#: deeds/mappers.py:103
+msgid "Estonian"
+msgstr "Estų"
+
+#: deeds/mappers.py:104
+msgid "Basque"
+msgstr "Baskų"
+
+#: deeds/mappers.py:105
+msgid "Persian"
+msgstr "Persų"
+
+#: deeds/mappers.py:106
+msgid "Finnish"
+msgstr "Suomių"
+
+#: deeds/mappers.py:107
+msgid "French"
+msgstr "Prancūzų"
+
+#: deeds/mappers.py:108
+msgid "French (CA)"
+msgstr "Prancūzų (Kanada)"
+
+#: deeds/mappers.py:109
+msgid "Irish"
+msgstr "Airių"
+
+#: deeds/mappers.py:110
+msgid "Galician"
+msgstr "Galisų"
+
+#: deeds/mappers.py:111
+msgid "Hebrew"
+msgstr "Hebrajų"
+
+#: deeds/mappers.py:112
+msgid "Hindi"
+msgstr "Hindi"
+
+#: deeds/mappers.py:113
+msgid "Croatian"
+msgstr "Kroatų"
+
+#: deeds/mappers.py:114
+msgid "Hungarian"
+msgstr "Vengrų"
+
+#: deeds/mappers.py:115
+msgid "Armenian"
+msgstr "Armėnų"
+
+#: deeds/mappers.py:116
+msgid "Indonesian"
+msgstr "Indoneziečių"
+
+#: deeds/mappers.py:117
+msgid "Icelandic"
+msgstr "Islandų"
+
+#: deeds/mappers.py:118
+msgid "Italian"
+msgstr "Italų"
+
+#: deeds/mappers.py:119
+msgid "Japanese"
+msgstr "Japonų"
+
+#: deeds/mappers.py:120
+msgid "Georgian"
+msgstr "Gruzinų"
+
+#: deeds/mappers.py:121
+msgid "Kazakh"
+msgstr "Kazachų"
+
+#: deeds/mappers.py:122
+msgid "Korean"
+msgstr "Korėjiečių"
+
+#: deeds/mappers.py:123
+msgid "Lithuanian"
+msgstr "Lietuvių"
+
+#: deeds/mappers.py:124
+msgid "Latvian"
+msgstr "Latvių"
+
+#: deeds/mappers.py:125
+msgid "Macedonian"
+msgstr "Makedonų"
+
+#: deeds/mappers.py:126
+msgid "Malayalam"
+msgstr "Malajalių"
+
+#: deeds/mappers.py:127
+msgid "Mongolian"
+msgstr "Mongolų"
+
+#: deeds/mappers.py:128
+msgid "Malay"
+msgstr "Malajiečių"
+
+#: deeds/mappers.py:129
+msgid "Dutch"
+msgstr "Olandų"
+
+#: deeds/mappers.py:130
+msgid "Norwegian"
+msgstr "Norvegų"
+
+#: deeds/mappers.py:131
+msgid "Northern Sotho"
+msgstr "Šiaurės Soto"
+
+#: deeds/mappers.py:132
+msgid "Aranese"
+msgstr "Aranų"
+
+#: deeds/mappers.py:133
+msgid "Polish"
+msgstr "Lenkų"
+
+#: deeds/mappers.py:134
+msgid "Portuguese"
+msgstr "Portugalų"
+
+#: deeds/mappers.py:135
+msgid "Portuguese (BR)"
+msgstr "Portugalų (Brazilija)"
+
+#: deeds/mappers.py:137
+msgid "Romanian"
+msgstr "Rumunų"
+
+#: deeds/mappers.py:138
+msgid "Russian"
+msgstr "Rusų"
+
+#: deeds/mappers.py:139
+msgid "Sinhala"
+msgstr "Sinhalų"
+
+#: deeds/mappers.py:140
+msgid "Slovenian"
+msgstr "Slovėnų"
+
+#: deeds/mappers.py:141
+msgid "Serbian"
+msgstr "Serbų"
+
+#: deeds/mappers.py:142
+msgid "Serbian (Latin)"
+msgstr "Serbų (lotynų)"
+
+#: deeds/mappers.py:143
+msgid "Sotho"
+msgstr "Soto"
+
+#: deeds/mappers.py:144
+msgid "Swedish"
+msgstr "Švedų"
+
+#: deeds/mappers.py:145
+msgid "Tamil"
+msgstr "Tamilų"
+
+#: deeds/mappers.py:146
+msgid "Telugu"
+msgstr "Telugų"
+
+#: deeds/mappers.py:147
+msgid "Thai"
+msgstr "Tajų"
+
+#: deeds/mappers.py:148
+msgid "Turkish"
+msgstr "Turkų"
+
+#: deeds/mappers.py:149
+msgid "Ukranian"
+msgstr "Ukrainiečių"
+
+#: deeds/mappers.py:150
+msgid "Urdu"
+msgstr "Urdų"
+
+#: deeds/mappers.py:151
+msgid "Vietnamese"
+msgstr "Vietnamiečių"
+
+#: deeds/mappers.py:152 deeds/mappers.py:153
+msgid "Chinese"
+msgstr "Kinų"
+
+#: deeds/mappers.py:154
+msgid "Chinese (Hong Kong)"
+msgstr "Kinų (Honkongas)"
+
+#: deeds/mappers.py:155
+msgid "Chinese (Taiwan)"
+msgstr "Kinų (Taivanas)"
+
+#: deeds/mappers.py:156
+msgid "Zulu"
+msgstr "Zulu"
+
+#: deeds/mappers.py:160
+msgid "GPL"
+msgstr "BVL"
+
+#: deeds/mappers.py:161
+msgid "LGPL"
+msgstr "LBVL"
+
+#: deeds/mappers.py:162 deeds/mappers.py:182
+#: deeds/templates/licenses/devnations_deed.html:53
+#: deeds/templates/licenses/standard_deed.html:102
 msgid "Attribution"
-msgstr ""
+msgstr "Priskyrimas"
 
-#: deeds/templates/deeds/devnations_deed.html:55
-#: deeds/templates/deeds/sampling_deed.html:45
+#: deeds/mappers.py:163
+msgid "Attribution-NonCommercial"
+msgstr "Priskyrimas - Nekomercinis naudojimas"
+
+#: deeds/mappers.py:164
+msgid "Attribution-NonCommercial-NoDerivs"
+msgstr "Priskyrimas - Nekomercinis naudojimas - Jokių išvestinių kūrinių"
+
+#: deeds/mappers.py:165
+msgid "Attribution-NonCommercial-ShareAlike"
+msgstr "Priskyrimas - Nekomercinis naudojimas - Analogiškas platinimas "
+
+#: deeds/mappers.py:166
+msgid "Attribution-NoDerivs"
+msgstr "Priskyrimas - Jokių išvestinių kūrinių"
+
+#: deeds/mappers.py:167
+msgid "Attribution-NoDerivs-NonCommercial"
+msgstr "Priskyrimas - Jokių išvestinių kūrinių - Nekomercinis naudojimas"
+
+#: deeds/mappers.py:168
+msgid "Attribution-ShareAlike"
+msgstr "Priskyrimas - Analogiškas platinimas"
+
+#: deeds/mappers.py:169
+msgid "Public Domain Mark"
+msgstr "Viešosios srities žymuo"
+
+#: deeds/mappers.py:170 deeds/templates/licenses/standard_deed.html:131
+msgid "NonCommercial"
+msgstr "Nekomercinis"
+
+#: deeds/mappers.py:171
+msgid "NonCommercial-ShareAlike"
+msgstr "Nekomercinis naudojimas - Analogiškas platinimas"
+
+#: deeds/mappers.py:172
+msgid "NonCommercial Sampling Plus"
+msgstr "Nekomercinio naudojimo mėginių atranka (sampling) Plius"
+
+#: deeds/mappers.py:173
+msgid "NoDerivs"
+msgstr "Jokių išvestinių kūrinių"
+
+#: deeds/mappers.py:174
+msgid "NoDerivs-NonCommercial"
+msgstr "Jokių išvestinių kūrinių - Nekomercinis naudojimas"
+
+#: deeds/mappers.py:175
+msgid "Public Domain"
+msgstr "Viešoji sritis"
+
+#: deeds/mappers.py:176 deeds/templates/licenses/standard_deed.html:149
+msgid "ShareAlike"
+msgstr "Analogiškas platinimas"
+
+#: deeds/mappers.py:177
+msgid "Sampling"
+msgstr "Mėginių atranka (sampling)"
+
+#: deeds/mappers.py:178
+msgid "Sampling Plus"
+msgstr "Mėginių atranka (sampling) Plus"
+
+#: deeds/mappers.py:183
+msgid "Noncommercial"
+msgstr "Nekomercinis"
+
+#: deeds/mappers.py:184
+msgid "No Derivative Works"
+msgstr "Jokių išvestinių kūrinių"
+
+#: deeds/mappers.py:185
+msgid "Share Alike"
+msgstr "Analogiškas platinimas"
+
+#: deeds/mappers.py:190 deeds/templates/licenses/devnations_deed.html:55
+#: deeds/templates/licenses/sampling_deed.html:45
 msgid ""
 "You must attribute the work in the manner specified by the author or "
 "licensor (but not in any way that suggests that they endorse you or your use"
 " of the work)."
 msgstr ""
+"Jūs privalote nurodyti kūrinio autorystę kaip to reikalauja autorius ar "
+"licencijos davėjas (bet nesudarant įspūdžio, jog jie kaip nors Jus remia ar "
+"pritaria tam, kaip jūs panaudojote kūrinį)."
 
-#: deeds/templates/deeds/devnations_deed.html:60
-#: deeds/templates/deeds/sampling_deed.html:59
+#: deeds/mappers.py:194 deeds/templates/licenses/sampling_deed.html:53
+msgid ""
+"You may not use this work to advertise for or promote anything but the work "
+"you create from it."
+msgstr ""
+"Negalite naudoti šio objekto niekam reklamuoti ar remti, išskyrus tik tą "
+"objektą, kurį Jūs pats iš jo sukūrėte."
+
+#: deeds/mappers.py:196 deeds/templates/licenses/sampling_deed.html:49
+msgid "You may not use this work for commercial purposes."
+msgstr "Šio objekto komerciniais tikslais naudoti negalite."
+
+#: deeds/mappers.py:197
+msgid "You may not alter, transform, or build upon this work."
+msgstr "Jūs negalite šio objekto keisti, perdirbti ar kurti jo pagrindu."
+
+#: deeds/mappers.py:199 deeds/templates/licenses/sampling_deed.html:66
+msgid ""
+"You may not perform, display, or distribute copies of this whole work for "
+"any purpose."
+msgstr ""
+"Jums nesuteikta teisė atlikti, rodyti ar platinti šį objektą ar jo kopijas "
+"jokiais tikslais."
+
+#: deeds/mappers.py:202
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same or similar license to this one."
+msgstr ""
+"Jei pakeisite, perdirbsite šį objektą ar kursite jo pagrindu, savo naujai "
+"sukurtą objektą galėsite platinti tik pagal tokią pačią ar panašią į šią "
+"licenciją."
+
+#: deeds/mappers.py:206
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same, similar or a compatible license."
+msgstr ""
+"Jei pakeisite, perdirbsite šį objektą ar kursite jo pagrindu, savo naujai "
+"sukurtą objektą galėsite platinti tik pagal tokią pačią, panašią licenciją "
+"arba su šia licenciją suderintą licenciją."
+
+#: deeds/templates/catalog_pages/license_catcher.html:3
+#: deeds/templates/licenses/pdmark_deed.html:188
+#: deeds/templates/macros_templates/partner.html:26
+msgid "Creative Commons"
+msgstr "Creative Commons"
+
+#: deeds/templates/includes/cc_site_footer.html:25
+#: deeds/templates/includes/cc_site_header.html:40
+msgid "Contact"
+msgstr "Susisiekite"
+
+#: deeds/templates/includes/cc_site_footer.html:26
+msgid "Privacy"
+msgstr "Privatumas"
+
+#: deeds/templates/includes/cc_site_footer.html:27
+msgid "Policies"
+msgstr "Politika"
+
+#: deeds/templates/includes/cc_site_footer.html:28
+msgid "Terms"
+msgstr "Sąlygos"
+
+#: deeds/templates/includes/cc_site_footer.html:35
+msgid "We'd love to hear from you!"
+msgstr "Džiaugsimės, jei susisieksite!"
+
+#: deeds/templates/includes/cc_site_footer.html:44
+msgid "Frequently Asked Questions"
+msgstr "Dažnai užduodami klausimai"
+
+#: deeds/templates/includes/cc_site_header.html:11
+msgid "Menu"
+msgstr "Meniu"
+
+#: deeds/templates/includes/cc_site_header.html:16
+#: deeds/templates/includes/cc_site_header.html:27
+msgid "Share your work"
+msgstr "Dalinkitės savo kūryba"
+
+#: deeds/templates/includes/cc_site_header.html:17
+#: deeds/templates/includes/cc_site_header.html:28
+msgid "Use &#038; remix"
+msgstr "Naudokite &#038; pakeiskite"
+
+#: deeds/templates/includes/cc_site_header.html:18
+#: deeds/templates/includes/cc_site_header.html:29
+msgid "What We do"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:19
+#: deeds/templates/includes/cc_site_header.html:30
+msgid "Blog"
+msgstr "Blogas"
+
+#: deeds/templates/includes/cc_site_header.html:20
+#: deeds/templates/includes/cc_site_header.html:37
+msgid "Global Network"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:21
+msgid "Search the Commons"
+msgstr "Ieškokite Bendrijose"
+
+#: deeds/templates/includes/cc_site_header.html:36
+msgid "Search for CC images"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:38
+msgid "Newsletters"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:39
+msgid "Store"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:46
+msgid "Facebook"
+msgstr "Facebook"
+
+#: deeds/templates/includes/cc_site_header.html:47
+msgid "Twitter"
+msgstr "Twitter"
+
+#: deeds/templates/includes/cc_site_header.html:48
+msgid "Mail"
+msgstr "Paštas"
+
+#: deeds/templates/includes/deed_donate_slide.html:7
+#: deeds/templates/macros_templates/deed.html:119
+#: deeds/templates/macros_templates/pdtool_deed.html:92
+msgid ""
+"This content is freely available under simple legal terms because of "
+"Creative Commons, a non-profit that survives on donations. If you love this "
+"content, and love that it's free for everyone, please consider a donation to"
+" support our work."
+msgstr ""
+"Šis turinys yra laisvai prieinamas vadovaujantis paprastomis teisinėmis "
+"taisyklėmis dėl Creative Commons, ne pelno siekiančios organizacijos, "
+"veikiančios dėl aukojamų lėšų. Jei Jums patinka šis turinys, ir patinka tai,"
+" kad jis laisvai prieinamas visiems, apsvarstykite paramą mūsų darbui."
+
+#: deeds/templates/includes/deed_donate_slide.html:8
+msgid "When you share, everyone wins."
+msgstr "Kai dalijatės, laimi visi."
+
+#: deeds/templates/includes/deed_donate_slide.html:14
+msgid "Contribute today to Creative Commons"
+msgstr "Prisidėkite prie Creative Commons šiandien"
+
+#: deeds/templates/includes/deed_donate_slide.html:35
+msgid "Amount"
+msgstr "Suma"
+
+#: deeds/templates/includes/deed_donate_slide.html:42
+msgid "Donate Now"
+msgstr "Paaukokite dabar"
+
+#: deeds/templates/includes/language_selector.html:5
+#: deeds/templates/includes/translations.html:4
+msgid "This page is available in the following languages:"
+msgstr "Šis puslapis yra prienamas šiomis kalbomis:"
+
+#: deeds/templates/licenses/devnations_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:15
+#: deeds/templates/licenses/standard_deed.html:26
+msgid ""
+"Creative Commons has <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
+"tool</a> and does not recommend that it be applied to works."
+msgstr ""
+"Creative Commons <a "
+"href=\"http://creativecommons.org/retiredlicenses\">atsisakė šio teisinio "
+"įrankio</a> ir nerekomenduoja jo taikyti."
+
+#: deeds/templates/licenses/devnations_deed.html:23
+#: deeds/templates/licenses/sampling_deed.html:20
+msgid "You are free:"
+msgstr "Jūs galite:"
+
+#: deeds/templates/licenses/devnations_deed.html:28
+msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
+msgstr "<strong>Dalintis</strong> - kopijuoti, platinti ir skelbti šį objektą"
+
+#: deeds/templates/licenses/devnations_deed.html:33
+msgid "<strong>to Remix</strong> — to adapt the work"
+msgstr ""
+"<strong>Remiksuoti</strong> — pritaikyti kūrinį, atlikti jo pakeitimus"
+
+#: deeds/templates/licenses/devnations_deed.html:40
+#: deeds/templates/licenses/sampling_deed.html:41
+msgid "Under the following conditions:"
+msgstr "Laikydamasis šių sąlygų:"
+
+#: deeds/templates/licenses/devnations_deed.html:60
+#: deeds/templates/licenses/sampling_deed.html:59
 msgid ""
 "For any reuse or distribution, you must make clear to others the license "
 "terms of this work. The best way to do this is with a link to this web page."
 msgstr ""
+"Pakartotinio naudojimo ar platinimo atveju privalote aiškiai nurodyti "
+"kitiems šio objekto licencijos sąlygas. Geriausias būdas tai atlikti - "
+"pateikti nuorodą į šį puslapį."
 
-#: deeds/templates/deeds/devnations_deed.html:61
+#: deeds/templates/licenses/devnations_deed.html:61
 msgid ""
 "Any of the above conditions can be <a href=\"#\" id=\"waived\" "
 "class=\"helpLink\">waived</a> if you get permission from the copyright "
 "holder."
 msgstr ""
+"Bet kuri iš aukščiau nurodytų apribojimų gali būti <a href=\"#\" "
+"id=\"waived\" class=\"helpLink\">nesilaikoma</a>, jei gausite tam autorių "
+"teisių turėtojo leidimą."
 
-#: deeds/templates/deeds/devnations_deed.html:69
-#: deeds/templates/deeds/sampling_deed.html:76
+#: deeds/templates/licenses/devnations_deed.html:69
+#: deeds/templates/licenses/sampling_deed.html:76
 msgid ""
 "Your fair dealing or <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
 " id=\"fair_use\" class=\"helpLink\">fair use</a> rights, or other applicable"
 " copyright exceptions and limitations;"
 msgstr ""
+"Sąžiningos verslo praktikos ar <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">sąžiningo naudojimo (angl. fair use)</a>"
+" teisės, arba kt. taikytinos autorių teisių išimtys ir apribojimai;"
 
-#: deeds/templates/deeds/devnations_deed.html:72
-#: deeds/templates/deeds/sampling_deed.html:79
+#: deeds/templates/licenses/devnations_deed.html:72
+#: deeds/templates/licenses/sampling_deed.html:79
 msgid ""
 "Rights other persons may have either in the work itself or in how the work "
 "is used, such as <a "
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity</a> or privacy rights."
 msgstr ""
+"Teisės į objektą ar jo panaudojimo būdus, kurias gali turėti kiti asmenys, "
+"pvz., <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">teisė viešumo</a> ar teisė į "
+"privatų gyvenimą."
 
-#: deeds/templates/deeds/pdmark_deed.html:18
-#: deeds/templates/deeds/zero_deed.html:20
+#: deeds/templates/licenses/pdmark_deed.html:18
+#: deeds/templates/licenses/zero_deed.html:20
 msgid "No Copyright"
-msgstr ""
+msgstr "Autorių teisės negalioja"
 
-#: deeds/templates/deeds/pdmark_deed.html:21
+#: deeds/templates/licenses/pdmark_deed.html:21
 msgid ""
 "<p id=\"nolaw-text\"> This work has been <b>identified</b> as being free of "
 "known restrictions under copyright law, including all related and "
@@ -108,19 +964,26 @@ msgid ""
 "perform the work, even for commercial purposes, all without asking "
 "permission. See <b>Other Information</b> below. </p>"
 msgstr ""
+"<p id=\"nolaw-text\"> Šis objektas buvo <b>įvardintas</b> kaip nesaugomas "
+"jokių autorių teisių pagal galiojančius teisės aktus, įskaitant ir visas "
+"susijusias bei gretutines teises. </p> <p> <br /> Jūs galite kopijuoti, "
+"pakeisti, platinti ir atlikti šį objektą, net ir komerciniais tikslais, "
+"neatsiklausdami leidimo. Žiūrėkite <b>kitą informaciją</b> žemiau."
 
-#: deeds/templates/deeds/pdmark_deed.html:31
-#: deeds/templates/deeds/zero_deed.html:49
+#: deeds/templates/licenses/pdmark_deed.html:31
+#: deeds/templates/licenses/zero_deed.html:49
 msgid "Other Information"
-msgstr ""
+msgstr "Kita informacija"
 
-#: deeds/templates/deeds/pdmark_deed.html:34
+#: deeds/templates/licenses/pdmark_deed.html:34
 msgid ""
 "The work may not be free of known copyright restrictions in all <a href=\"\""
 " class=\"helpLink\" id=\"all_jurisdictions\">jurisdictions</a>."
 msgstr ""
+"Šis kūrinys gali turėti autorių teisių apribojimų kai kuriose <a href=\"\" "
+"class=\"helpLink\" id=\"all_jurisdictions\">jurisdikcijose</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:37
+#: deeds/templates/licenses/pdmark_deed.html:37
 msgid ""
 "Persons may have other rights in or related to the work, such as patent or "
 "trademark rights, and others may have rights in how the work is used, such "
@@ -128,101 +991,127 @@ msgid ""
 "href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"Kas nors gali turėti kitas teises į objektą, arba susijusias su objektu "
+"teises, pavyzdžiui, patento ar prekių ženklo savininko teises, ir kiti "
+"asmenys gali turėti su objekto panaudojimu susijusias teises, pavyzdžiui <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">teisę viešinti ar teisę į "
+"privatų gyvenimą</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:40
+#: deeds/templates/licenses/pdmark_deed.html:40
 msgid ""
 "In some jurisdictions <a href=\"\" class=\"helpLink\" "
 "id=\"moral_rights\">moral rights</a> of the author may persist beyond the "
 "term of copyright. These rights may include the right to be identified as "
 "the author and the right to object to derogatory treatments."
 msgstr ""
+"Kai kuriose jurisdikcijose autoriaus <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">neturtinės teisės</a> lieka galioti, nors autoriaus "
+"turtinių teisių galiojimo terminas jau yra pasibaigęs. Tokios teisės apima "
+"teisę reikalauti pripažinti autorystę ir teisę į kūrinio neliečiamybę."
 
-#: deeds/templates/deeds/pdmark_deed.html:43
+#: deeds/templates/licenses/pdmark_deed.html:43
 msgid ""
 "Unless expressly stated otherwise, the person who identified the work makes "
 "no warranties about the work, and disclaims liability for all uses of the "
 "work, to the fullest extent permitted by applicable law."
 msgstr ""
+"Jei nėra tiesiogiai nurodyta kitaip, asmuo, kuris identifikavo šį objektą, "
+"visa teisės leidžiama apimtimi neduoda dėl jo garantijų ir neprisiima "
+"atsakomybės už jokį objekto panaudojimą."
 
-#: deeds/templates/deeds/pdmark_deed.html:46
+#: deeds/templates/licenses/pdmark_deed.html:46
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "person who identified the work."
 msgstr ""
+"Naudodami ar cituodami darbą, neturite sudaryti įspūdžio, kad autorius ar "
+"identifikavęs asmuo tam <a href=\"\" class=\"helpLink\" "
+"id=\"endorsement\">pritaria</a>."
 
-#: deeds/templates/deeds/pdmark_deed.html:74
-#: deeds/templates/deeds/zero_deed.html:82
+#: deeds/templates/licenses/pdmark_deed.html:74
+#: deeds/templates/licenses/zero_deed.html:82
 msgid "Work:"
-msgstr ""
+msgstr "Objektas:"
 
-#: deeds/templates/deeds/pdmark_deed.html:79
+#: deeds/templates/licenses/pdmark_deed.html:79
 msgid "Author:"
-msgstr ""
+msgstr "Autorius:"
 
-#: deeds/templates/deeds/pdmark_deed.html:83
+#: deeds/templates/licenses/pdmark_deed.html:83
 msgid "Identified by:"
-msgstr ""
+msgstr "Nurodęs asmuo:"
 
-#: deeds/templates/deeds/pdmark_deed.html:89
-#: deeds/templates/deeds/zero_deed.html:95
+#: deeds/templates/licenses/pdmark_deed.html:89
+#: deeds/templates/licenses/zero_deed.html:95
 msgid ""
 "You can <a href=\"\" class=\"helpLink\" id=\"citation_help\">cite</a> this "
 "work with this HTML:"
 msgstr ""
+"Galite <a href=\"\" class=\"helpLink\" id=\"citation_help\">cituoti</a> šį "
+"objektą naudodamiesi šiuo HTML kodu:"
 
-#: deeds/templates/deeds/pdmark_deed.html:114
-#: deeds/templates/deeds/zero_deed.html:123
+#: deeds/templates/licenses/pdmark_deed.html:114
+#: deeds/templates/licenses/zero_deed.html:123
 msgid "Endorsement"
-msgstr ""
+msgstr "Pritarimas"
 
-#: deeds/templates/deeds/pdmark_deed.html:118
-#: deeds/templates/deeds/zero_deed.html:126
+#: deeds/templates/licenses/pdmark_deed.html:118
+#: deeds/templates/licenses/zero_deed.html:126
 msgid ""
 "In some jurisdictions, wrongfully implying that an author, publisher or "
 "anyone else endorses your use of a work may be unlawful."
 msgstr ""
+"Kai kuriose jurisdikcijose klaidingo įspūdžio, kad autorius, leidėjas ar "
+"kitas asmuo pritaria darbo panaudojimui, sudarymas gali būti laikomas "
+"neteisėtais veiksmais."
 
-#: deeds/templates/deeds/pdmark_deed.html:121
-#: deeds/templates/deeds/pdmark_deed.html:135
-#: deeds/templates/deeds/pdmark_deed.html:149
-#: deeds/templates/deeds/pdmark_deed.html:162
-#: deeds/templates/deeds/pdmark_deed.html:173
-#: deeds/templates/deeds/zero_deed.html:117
-#: deeds/templates/deeds/zero_deed.html:130
-#: deeds/templates/deeds/zero_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:121
+#: deeds/templates/licenses/pdmark_deed.html:135
+#: deeds/templates/licenses/pdmark_deed.html:149
+#: deeds/templates/licenses/pdmark_deed.html:162
+#: deeds/templates/licenses/pdmark_deed.html:173
+#: deeds/templates/licenses/zero_deed.html:117
+#: deeds/templates/licenses/zero_deed.html:130
+#: deeds/templates/licenses/zero_deed.html:142
 msgid "Learn more"
-msgstr ""
+msgstr "Sužinoti daugiau"
 
-#: deeds/templates/deeds/pdmark_deed.html:128
-#: deeds/templates/deeds/zero_deed.html:136
+#: deeds/templates/licenses/pdmark_deed.html:128
+#: deeds/templates/licenses/zero_deed.html:136
 msgid "Citation"
-msgstr ""
+msgstr "Citavimas"
 
-#: deeds/templates/deeds/pdmark_deed.html:132
-#: deeds/templates/deeds/zero_deed.html:139
+#: deeds/templates/licenses/pdmark_deed.html:132
+#: deeds/templates/licenses/zero_deed.html:139
 msgid ""
 "Copy and paste the HTML provided into your webpage to easily cite this work."
 msgstr ""
+"Nukopijuokite ir įterpkite šį HTML kodą į savo svetainę patogiam darbo "
+"citavimui."
 
-#: deeds/templates/deeds/pdmark_deed.html:142
+#: deeds/templates/licenses/pdmark_deed.html:142
 msgid "Moral Rights"
-msgstr ""
+msgstr "Neturinės teisės"
 
-#: deeds/templates/deeds/pdmark_deed.html:146
+#: deeds/templates/licenses/pdmark_deed.html:146
 msgid ""
 "Copyright laws in most jurisdictions around the world grant creators \"moral"
 " rights\" which may provide some redress if use of a work is considered "
 "\"derogatory\"."
 msgstr ""
+"Autorių teises reglamentuojantys įstatymai daugelyje pasaulio jurisdikcijų "
+"suteikia kūrėjams \"neturines teises\", kurios gali lemti teisę į žalos "
+"atlyginimą, jei kūrinio panaudojimas laikomas \"žeminančiu\"."
 
-#: deeds/templates/deeds/pdmark_deed.html:155
-#: deeds/templates/deeds/zero_deed.html:110
+#: deeds/templates/licenses/pdmark_deed.html:155
+#: deeds/templates/licenses/zero_deed.html:110
 msgid "Other Rights"
-msgstr ""
+msgstr "Kitos teisės"
 
-#: deeds/templates/deeds/pdmark_deed.html:159
-#: deeds/templates/deeds/zero_deed.html:113
+#: deeds/templates/licenses/pdmark_deed.html:159
+#: deeds/templates/licenses/zero_deed.html:113
 msgid ""
 "The use of a work free of known copyright restrictions may be otherwise "
 "regulated or limited. The work or its use may be subject to personal data "
@@ -230,33 +1119,38 @@ msgid ""
 "control how their voice, image or likeness is used, or other restrictions or"
 " limitations under applicable law."
 msgstr ""
+"Objekto, nesaugomo žinomų autorių teisių, panaudojimas gali būti "
+"reglamentuojamas ar ribojamas dėl kitų priežasčių. Objektui ar jo "
+"panaudojimui gali būti taikomi asmens duomenų teisinės apsaugos įstatymai, "
+"viešumo, teisės į atvaizą, privataus gyvenimo teisinis reguliavimas, "
+"suteikiantis teisę asmeniui kontroliuoti, kaip jo balsas, atvaizdas ar "
+"panašumas į jį yra panaudojami, arba gali būti taikomi kiti suvaržymai ar "
+"apribojimai pagal taikytinus įstatymus."
 
-#: deeds/templates/deeds/pdmark_deed.html:167
+#: deeds/templates/licenses/pdmark_deed.html:167
 msgid "Term of Copyright"
-msgstr ""
+msgstr "Autorių teisių galiojimo terminas"
 
-#: deeds/templates/deeds/pdmark_deed.html:170
+#: deeds/templates/licenses/pdmark_deed.html:170
 msgid ""
 "Copyright terms vary jurisdiction to jurisdiction. A work free of copyright "
 "restrictions in one jurisdiction may not be similarly free in other "
 "jurisdictions."
 msgstr ""
+"Autorių teisių galiojimo terminai skirtingose jurisdikcijose gali būti "
+"skirtingi. Objektas, kuriam netaikoma autorių teisių apsauga vienoje "
+"jurisdikcijoje, kitoje jurisdikcijoje gali būti tebesaugomas."
 
-#: deeds/templates/deeds/pdmark_deed.html:188
-#: deeds/templates/macros_templates/partner.html:26
-msgid "Creative Commons"
-msgstr ""
-
-#: deeds/templates/deeds/pdmark_deed.html:196
-#: deeds/templates/deeds/pdmark_deed.html:198
-#: deeds/templates/deeds/zero_deed.html:172
-#: deeds/templates/deeds/zero_deed.html:187
-#: deeds/templates/macros_templates/deed.html:116
-#: deeds/templates/macros_templates/deed.html:163
+#: deeds/templates/licenses/pdmark_deed.html:196
+#: deeds/templates/licenses/pdmark_deed.html:198
+#: deeds/templates/licenses/zero_deed.html:172
+#: deeds/templates/licenses/zero_deed.html:187
+#: deeds/templates/macros_templates/deed.html:94
+#: deeds/templates/macros_templates/deed.html:141
 msgid "Disclaimer"
-msgstr ""
+msgstr "Atsakomybės apribojimas"
 
-#: deeds/templates/deeds/pdmark_deed.html:200
+#: deeds/templates/licenses/pdmark_deed.html:200
 msgid ""
 "<p> The Public Domain Mark is not a legal instrument. </p> <p> Creative "
 "Commons is not a law firm and does not provide legal services or advice. "
@@ -266,8 +1160,17 @@ msgid ""
 "applied. CC makes no warranties about any work or its copyright status in "
 "any jurisdiction, and disclaims all liability for all uses of any work. </p>"
 msgstr ""
+"<p> Viešosios srities žymuo nėra teisinė priemonė. </p> <p> Creative Commons"
+" nėra teisines paslaugas teikianti įmonė ir neteikia teisinių paslaugų ar "
+"konsultacijų. Šio Viešosios srities žymens platinimas, demonstravimas nei "
+"nuorodų į jį teikimas nesukuria santykio tarp teisines paslaugas teikiančio "
+"asmens ir kliento. </p> <p> Creative Commons netikrino jokio objekto, kuriam"
+" pritaikytas šis žymuo, autorių teisių statuso. CC neteikia jokių garantijų "
+"dėl jokio objekto ar jam taikytinų autorių teisių statuso jokioje "
+"jurisdikcijoje, ir neprisiima jokios atsakomybės dėl bet kokio objekto "
+"panaudojimo. </p>"
 
-#: deeds/templates/deeds/pdmark_deed.html:207
+#: deeds/templates/licenses/pdmark_deed.html:207
 #, python-format
 msgid ""
 "\n"
@@ -275,26 +1178,29 @@ msgid ""
 "  "
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:5
+#: deeds/templates/licenses/publicdomain_deed.html:5
 msgid ""
 "Copyright-Only Dedication (based on United States law)\n"
 "or Public Domain Certification"
 msgstr ""
 
-#: deeds/templates/deeds/publicdomain_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:19
 msgid ""
 "Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
 "  (based on United States law)<br />\n"
 "  or Public Domain Certification"
 msgstr ""
+"Tik autorių teisių dedikacija <a href=\"#\" class=\"helpLink\" "
+"id=\"use_zero\">*</a> (pagal Jungtinių Valstijų įstatymus) <br /> arba "
+"Viešosios srities ženklinimą."
 
-#: deeds/templates/deeds/publicdomain_deed.html:28
-#: deeds/templates/deeds/standard_deed.html:72
-#: deeds/templates/deeds/zero_deed.html:37
+#: deeds/templates/licenses/publicdomain_deed.html:28
+#: deeds/templates/licenses/standard_deed.html:77
+#: deeds/templates/licenses/zero_deed.html:37
 msgid "This license is acceptable for Free Cultural Works."
-msgstr ""
+msgstr "Ši licencija tinkama „Laisvosios kultūros“ objektams."
 
-#: deeds/templates/deeds/publicdomain_deed.html:38
+#: deeds/templates/licenses/publicdomain_deed.html:38
 msgid ""
 "        <p>The person or persons who have associated work with this document (the \"Dedicator\" or \"Certifier\") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the \"Work\") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a \"dedicator\" below.</p>\n"
 "\n"
@@ -304,84 +1210,92 @@ msgid ""
 "\n"
 "        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>"
 msgstr ""
+"<p>Asmuo ar asmenys, susieję objektą su šiuo dokumentu (\"Priskiriantysis\" arba \"Patvirtinantysis\") šiuo arba (a) patvirtina, kad, kiek jam žinoma, nurodytas autorinis kūrinys šalyje, kur jis paskelbtas, yra viešojoje srityje, arba (b) perleidžia visas ir bet kokias Priskiriančiųjų turimas autorių teises į žemiau nurodytą autorinį kūrinį (\"Kūrinys\") viešajai sričiai. Be to, Patvirtinantysis atsisako bet kokių reikalavimų į susijusius objektus, ir šiais tikslais žemiau yra įvardijamas kaip \"priskiriantysis\".</p>\n"
+"\n"
+"<p>Patvirtinantysis ėmėsi tinkamų priemonių, kad patikrintų šiam kūriniui taikomų autorių teisių statusą. Patvirtinantysis supranta, kad jo sąžiningos pastangos gali būti nepakankamos apsaugoti nuo teisinės atsakomybės, jei iš tiesų tvirtinamas kūrinys pasirodytų nesąs viešojoje srityje.</p>\n"
+"\n"
+"<p>Priskiriantysis atlieka šį priskyrimą plačiosios visuomenės labui ir savo įpėdinių bei teisių perėmėjų nenaudai. Priskiriantysis laiko šį priskyrimą aiškiai išreikštu neterminuotu visų esamų ir būsimų, įvardintų ir neįvardintų teisių į Kūrinį, suteikiamų autorių teisės, atsisakymo patvirtinimu. Priskiriantysis supranta, kad toks visų teisių atsisakymas apima ir priverstinio teisių įgyvendinimo (teikiant ieškinį ar kitu būdu) atsisakymą.</p>\n"
+"\n"
+"<p>Priskiriančiajam žinoma, kad, kai Kūrinys atsidurs viešojoje srityje, jis gali būti laisvai atkuriamas, platinamas, perduodamas, naudojamas, keičiamas, gali būti kuriama jo pagrindu bei jis gali būti kitaip naudojamas bet kokių asmenų bet kokiems tikslams, tiek komerciniams, tiek ir nekomerciniams, ir bet kokiais būdais, įskaitant tokius, kurie šiuo metu dar nėra išrasti ar sukurti.<p>"
 
-#: deeds/templates/deeds/publicdomain_deed.html:49
+#: deeds/templates/licenses/publicdomain_deed.html:49
 msgid ""
 "This tool is based on United States law and may not be applicable outside "
 "the US. For dedicating new works to the public domain, we recommend <a "
 "href=\"/choose/zero/\">CC0</a>."
 msgstr ""
+"Šis įrankis remiasi Jungtinių Valstijų įstatymais ir gali netikti naudojimui"
+" už JAV ribų. Naujai sukurtų objektų priskyrimui viešajai sričiai "
+"rekomenduojame naudoti <a href=\"/choose/zero/\">CC0</a>."
 
-#: deeds/templates/deeds/sampling_deed.html:24
+#: deeds/templates/licenses/sampling_deed.html:24
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "noncommercial purposes."
 msgstr ""
+"Imti pavyzdžius (angl. sample), miksuoti (angl. mash-up) ar kitaip "
+"kūrybiškai perdirbti šį objektą nekomerciniais tikslais."
 
-#: deeds/templates/deeds/sampling_deed.html:28
+#: deeds/templates/licenses/sampling_deed.html:28
 msgid ""
 "To sample, mash-up, or otherwise creatively transform this work for "
 "commercial or noncommercial purposes."
 msgstr ""
+"Imti pavyzdžius (angl. sample), miksuoti (angl. mash-up) ar kitaip "
+"kūrybiškai perdirbti šį objektą ir komerciniais, ir nekomerciniais tikslais."
 
-#: deeds/templates/deeds/sampling_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:34
 msgid ""
 "To perform, display, and distribute copies of this whole work for "
 "noncommercial purposes (e.g., file-sharing or noncommercial webcasting)."
 msgstr ""
+"Atlikti, rodyti ar platinti šį objektą ar jo vientiso kopijas nekomerciniais"
+" tikslais (pvz. failų dalijimuisi ar nekomercinei interneto transliacijai)."
 
-#: deeds/templates/deeds/sampling_deed.html:49
-msgid "You may not use this work for commercial purposes."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:53
-msgid ""
-"You may not use this work to advertise for or promote anything but the work "
-"you create from it."
-msgstr ""
-
-#: deeds/templates/deeds/sampling_deed.html:63
+#: deeds/templates/licenses/sampling_deed.html:63
 msgid ""
 "For any reuse, you must make clear to others the license terms of this work."
 msgstr ""
+"Norėdami pakartotinai panaudoti, turite nurodyti šio objekto licencijavimo "
+"sąlygas."
 
-#: deeds/templates/deeds/sampling_deed.html:66
-msgid ""
-"You may not perform, display, or distribute copies of this whole work for "
-"any purpose."
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:40
+#: deeds/templates/licenses/standard_deed.html:44
 msgid "You are free to:"
-msgstr ""
+msgstr "Jūs galite:"
 
-#: deeds/templates/deeds/standard_deed.html:45
+#: deeds/templates/licenses/standard_deed.html:49
 msgid ""
 "<strong>Share</strong>  &mdash; copy and redistribute the material in any "
 "medium or format"
 msgstr ""
+"<strong>Dalintis</strong> &mdash; kopijuoti ir platinti medžiagą bet "
+"kokiomis priemonėmis ir formatais."
 
-#: deeds/templates/deeds/standard_deed.html:52
+#: deeds/templates/licenses/standard_deed.html:56
 msgid ""
 "<strong>Adapt</strong>  &mdash; remix, transform, and build upon the "
 "material"
 msgstr ""
+"<strong>Adaptuoti</strong> &mdash; remiksuoti, perdirbti ar kurti šios "
+"medžiagos pagrindu"
 
-#: deeds/templates/deeds/standard_deed.html:58
+#: deeds/templates/licenses/standard_deed.html:62
 msgid "for any purpose, even commercially."
-msgstr ""
+msgstr "bet kokiais tikslais, net ir komerciniais."
 
-#: deeds/templates/deeds/standard_deed.html:83
+#: deeds/templates/licenses/standard_deed.html:89
 msgid ""
 "The licensor cannot revoke these freedoms as long as you follow the license "
 "terms."
 msgstr ""
+"Licenciaras negali atšaukti šių laisvių, jei Jūs laikysitės licencijos "
+"sąlygų."
 
-#: deeds/templates/deeds/standard_deed.html:90
+#: deeds/templates/licenses/standard_deed.html:96
 msgid "Under the following terms:"
-msgstr ""
+msgstr "Šiomis sąlygomis:"
 
-#: deeds/templates/deeds/standard_deed.html:97
+#: deeds/templates/licenses/standard_deed.html:103
 msgid ""
 "You must give <a href=\"#\" id=\"appropriate_credit_popup\" "
 "class=\"helpLink\">appropriate credit</a></span>, provide a link to the "
@@ -391,79 +1305,98 @@ msgid ""
 "made</a></span>.  You may do so in any reasonable manner, but not in any way"
 " that suggests the licensor endorses you or your use."
 msgstr ""
+"Privalote nurodyti <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">autorystę</a></span>, įdėti nuorodą į licenciją bei <span"
+" rel=\"cc:requires\" resource=\"http://creativecommons.org/ns#Notice\"><a "
+"href=\"#\" id=\"indicate_changes_popup\" class=\"helpLink\">nurodyti, ar "
+"atlikote pakeitimų</a></span>. Galite tai daryti bet kokiu protingumo "
+"kriterijus atitinkančiu būdu, tačiau ne tokiu būdu, kuris sudarytų įspūdį, "
+"kad licenciaras pritaria Jūsų veiksmams ar tam, kaip panaudotoje objektą."
 
-#: deeds/templates/deeds/standard_deed.html:103
+#: deeds/templates/licenses/standard_deed.html:109
 msgid "Attribute this work:"
-msgstr ""
+msgstr "Priskirti šį kūrinį:"
 
-#: deeds/templates/deeds/standard_deed.html:115
+#: deeds/templates/licenses/standard_deed.html:121
 msgid "Information"
-msgstr ""
+msgstr "Informacija"
 
-#: deeds/templates/deeds/standard_deed.html:125
-msgid "NonCommercial"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:125
+#: deeds/templates/licenses/standard_deed.html:131
 msgid ""
 "You may not use the material for <a href=\"#\" "
 "id=\"commercial_purposes_popup\" class=\"helpLink\">commercial purposes</a>."
 msgstr ""
+"Negalite naudoti medžiagos <a href=\"#\" id=\"commercial_purposes_popup\" "
+"class=\"helpLink\">komerciniais tikslais</a>."
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid "NoDerivatives"
-msgstr ""
+msgstr "Jokių išvestinių kūrinių"
 
-#: deeds/templates/deeds/standard_deed.html:133
+#: deeds/templates/licenses/standard_deed.html:139
 msgid ""
 "If you <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
 "class=\"helpLink\">remix, transform, or build upon</a> the material, you may"
 " not distribute the modified material."
 msgstr ""
+"Jei <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">remiksuojate, perdirbate ar kuriate šios medžiagos "
+"pagrindu</a>, negalite platinti atlikus pakeitimus gautos medžiagos."
 
-#: deeds/templates/deeds/standard_deed.html:143
-msgid "ShareAlike"
-msgstr ""
-
-#: deeds/templates/deeds/standard_deed.html:143
+#: deeds/templates/licenses/standard_deed.html:149
 msgid ""
 "If you remix, transform, or build upon the material, you must distribute "
 "your contributions under the <a href=\"#\" id=\"same_license_popup\" "
 "class=\"helpLink\">same license</a> as the original."
 msgstr ""
+"Jei remiksuojate, perdirbate ar kuriate šios medžiagos pagrindu, tokios "
+"veiklos rezultatus privalote platinti panaudodami <a href=\"#\" "
+"id=\"same_license_popup\" class=\"helpLink\">tą pačią licenciją</a>, kuri "
+"naudota originalui."
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid "No additional restrictions"
-msgstr ""
+msgstr "Jokių papildomų apribojimų"
 
-#: deeds/templates/deeds/standard_deed.html:154
+#: deeds/templates/licenses/standard_deed.html:160
 msgid ""
 "You may not apply legal terms or <a href=\"#\" "
 "id=\"technological_measures_popup\" class=\"helpLink\">technological "
 "measures</a> that legally restrict others from doing anything the license "
 "permits."
 msgstr ""
+"Negalite taikyti teisinių priemonių nei <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">technologinių "
+"priemonių</a>, kurios teisiškai apribotų kitų galimybes daryti tai, ką "
+"licencija leidžia."
 
-#: deeds/templates/deeds/standard_deed.html:161
+#: deeds/templates/licenses/standard_deed.html:167
 msgid "Notices:"
-msgstr ""
+msgstr "Pranešimai:"
 
-#: deeds/templates/deeds/standard_deed.html:166
+#: deeds/templates/licenses/standard_deed.html:172
 msgid ""
 "When the Licensor is an intergovernmental organization, disputes will be "
 "resolved by <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
 "class=\"helpLink\">mediation and arbitration</a> unless otherwise agreed."
 msgstr ""
+"Kai Licenciaras tarpvyriausybinė organizacija, ginčai bus sprendžiami <a "
+"href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">mediacija ir arbitražu</a>, nebent būtų susitarta kitaip."
 
-#: deeds/templates/deeds/standard_deed.html:171
+#: deeds/templates/licenses/standard_deed.html:177
 msgid ""
 "You do not have to comply with the license for elements of the material in "
 "the public domain or where your use is permitted by an applicable <a "
 "href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">exception"
 " or limitation</a>."
 msgstr ""
+"Neprivalote laikytis licencijos salygų tokių šios medžiagos sudedamųjų dalių"
+" atžvilgiu, kurios yra viešojoje srityje, arba jei panaudojimą leidžia "
+"taikytina<a href=\"#\" id=\"exception_or_limitation_popup\" "
+"class=\"helpLink\">teisių išimtis ar apribojimas</a>."
 
-#: deeds/templates/deeds/standard_deed.html:174
+#: deeds/templates/licenses/standard_deed.html:180
 msgid ""
 "No warranties are given. The license may not give you all of the permissions"
 " necessary for your intended use. For example, other rights such as <a "
@@ -471,40 +1404,67 @@ msgid ""
 "class=\"helpLink\">publicity, privacy, or moral rights</a> may limit how you"
 " use the material."
 msgstr ""
+"Nesuteikiama jokių garantijų. Licencija nebūtinai suteikia visus Jūsų "
+"norimam panaudojimui reikiamus leidimus. Pavyzdžiui, tai, kaip galite "
+"panaudoti šią medžiagą, gali riboti <a href=\"#\" "
+"id=\"publicity_privacy_or_moral_rights_popup\" class=\"helpLink\">viešinimo,"
+" privataus gyvenimo ar neturinės teisės</a>."
 
-#: deeds/templates/deeds/standard_deed.html:197
-msgid "What does \"Attribute this work\" mean?"
+#: deeds/templates/licenses/standard_deed.html:188
+#, python-format
+msgid ""
+"A <a href=\"%(current_version_url)s\">new version</a> of this license is "
+"available. You should use it for new works, and you may want to relicense "
+"existing works under it. No works are <em>automatically</em> put under the "
+"new license, however."
 msgstr ""
+"Prieinama <a href=\"%(current_version_url)s\">nauja</a> šios licencijos "
+"versija. Ją turėtumėte naudoti naujai sukurtiems darbams, ir taip pat galite"
+" pakeisti jau darbų licencijas į šią. Tačiau jokių objektų licencijos nėra "
+"<em>automatiškai</em> pakeičiamos naujomis."
 
-#: deeds/templates/deeds/standard_deed.html:200
+#: deeds/templates/licenses/standard_deed.html:203
+msgid "What does \"Attribute this work\" mean?"
+msgstr "Ką reiškia „Priskirti šį objektą“?"
+
+#: deeds/templates/licenses/standard_deed.html:206
 msgid ""
 "The page you came from contained embedded licensing metadata, including how "
 "the creator wishes to be attributed for re-use. You can use the HTML here to"
 " cite the work. Doing so will also include metadata on your page so that "
 "others can find the original work as well."
 msgstr ""
+"Puslapyje, iš kurio atėjote, yra įterpti licencijavimo metaduomenys, "
+"įskaitant, kaip kūrėjas pageidauja būti nurodytas pakartotinai naudojant "
+"kūrybą. Norėdami cituoti darbą, Jūs galite panaudoti čia pateikiamą HTML "
+"kodą. Tai įterps metaduomenis Jūsų puslapyje, kad ir kiti galėtų rasti darbo"
+" originalą."
 
-#: deeds/templates/deeds/standard_deed.html:206
+#: deeds/templates/licenses/standard_deed.html:212
 msgid ""
 "The applicable mediation rules will be designated in the copyright notice "
 "published with the work, or if none then in the request for mediation.  "
 "Unless otherwise designated in a copyright notice attached to the work, the "
 "UNCITRAL Arbitration Rules apply to any arbitration."
 msgstr ""
+"Taikytinos mediacijos taisyklės bus numatytos įspėjime apie autorių teisių, "
+"paskelbtame su kūriniu, arba, tokio nesant, prašyme spręsti ginčą su "
+"tarpininko pagalba. Jei įspėjime apie autorių teises nėra nurodyta kitaip, "
+"bet kokiai arbitražo procedūrai taikomos UNCITRAL arbitražo taisyklės."
 
-#: deeds/templates/deeds/standard_deed.html:208
-#: deeds/templates/deeds/standard_deed.html:216
-#: deeds/templates/deeds/standard_deed.html:226
-#: deeds/templates/deeds/standard_deed.html:234
-#: deeds/templates/deeds/standard_deed.html:242
-#: deeds/templates/deeds/standard_deed.html:250
-#: deeds/templates/deeds/standard_deed.html:258
-#: deeds/templates/deeds/standard_deed.html:266
-#: deeds/templates/deeds/standard_deed.html:274
+#: deeds/templates/licenses/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:280
 msgid "More info"
-msgstr ""
+msgstr "Daugiau informacijos"
 
-#: deeds/templates/deeds/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:220
 msgid ""
 "If supplied, you must provide the name of the creator and attribution "
 "parties, a copyright notice, a license notice, a disclaimer notice, and a "
@@ -512,71 +1472,98 @@ msgid ""
 "provide the title of the material if supplied, and may have other slight "
 "differences."
 msgstr ""
+"Jei buvo pateikti, privalote nurodyti kūrėjo ir priskiriančiųjų asmenų "
+"vardus/pavardes, pranešimus apie autorių teises, taikytiną licenciją, "
+"atsakomybės apribojimą ir nuorodą į medžiagą. Su ankstesnėmis už 4.0 versiją"
+" CC licencijomis taip pat privaloma nurodyti medžiagos pavadinimą, jei jis "
+"buvo nurodytas, taip pat gali būti ir kitų nežymių skirtumų."
 
-#: deeds/templates/deeds/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:228
 msgid ""
 "In 4.0, you must indicate if you modified the material and retain an "
 "indication of previous modifications. In 3.0 and earlier license versions, "
 "the indication of changes is only required if you create a derivative."
 msgstr ""
+"4.0 versijoje turite nurodyti, jei atlikote medžiagos pakeitimus, ir "
+"išsaugoti nuorodas į ankstesnius pakeitimus. 3.0 ir ankstesnėse licencijos "
+"versijose nurodyti apie atliktus pakeitimus reikia tik tuo atveju, jei "
+"kuriate išvestinį kūrinį."
 
-#: deeds/templates/deeds/standard_deed.html:224
+#: deeds/templates/licenses/standard_deed.html:230
 msgid "Marking guide"
-msgstr ""
+msgstr "Ženklinimo vadovas"
 
-#: deeds/templates/deeds/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:238
 msgid ""
 "You may also use a license listed as compatible at <a "
 "href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
 msgstr ""
+"Taip pat galite naudoti licenciją iš suderinamų licencijų sąrašo čia: <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
 
-#: deeds/templates/deeds/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:246
 msgid ""
 "A commercial use is one primarily intended for commercial advantage or "
 "monetary compensation."
 msgstr ""
+"Komercinis naudojimas yra toks, kuriuo visų pirma siekiama komencinės naudos"
+" ar piniginės grąžos."
 
-#: deeds/templates/deeds/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:254
 msgid "Merely changing the format never creates a derivative."
-msgstr ""
+msgstr "Pakeitus tik formatą, išvestinis kūrinys niekada nėra nesukuriamas."
 
-#: deeds/templates/deeds/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:262
 msgid ""
 "The license prohibits application of effective technological measures, "
 "defined with reference to Article 11 of the WIPO Copyright Treaty."
 msgstr ""
+"Ši licencija draudžia taikyti veiksmingas techninės apsaugos priemones, kaip"
+" jos apibrėžiamos PINO autorių teisių sutarties 11 straipsnyje."
 
-#: deeds/templates/deeds/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:270
 msgid ""
 "The rights of users under exceptions and limitations, such as fair use and "
 "fair dealing, are not affected by the CC licenses."
 msgstr ""
+"Įstatyminėse išimtyse ir apribojimuose numatytų naudotojų teisių, "
+"pavyzdžiui, sąžiningo naudojimo (angl. fair use; fair dealing), CC "
+"licencijos neįtakoja."
 
-#: deeds/templates/deeds/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:278
 msgid ""
 "You may need to get additional permissions before using the material as you "
 "intend."
 msgstr ""
+"Prieš panaudojant šią medžiagą Jūsų pageidaujamu būdu, Jums gali tekti gauti"
+" papildomus leidimus."
 
-#: deeds/templates/deeds/zero_deed.html:12
+#: deeds/templates/licenses/zero_deed.html:12
 msgid "Public Domain Dedication"
-msgstr ""
+msgstr "Priskyrimas Viešajai sričiai"
 
-#: deeds/templates/deeds/zero_deed.html:25
+#: deeds/templates/licenses/zero_deed.html:25
 msgid ""
 "The person who associated a work with this deed has <b>dedicated</b> the "
 "work to the public domain by waiving all of his or her rights to the work "
 "worldwide under copyright law, including all related and neighboring rights,"
 " to the extent allowed by law."
 msgstr ""
+"Asmuo, susiejęs objektą su šiuo dokumentu, <b>priskyrė</b> šį objektą "
+"viešajai sričiai, pasauliniu mastu maksimalia teisės leidžiama apimtimi "
+"atsisakydamas visų savo autorių teisių į šį objektą, įskaitant ir visas "
+"susijusias bei gretutines teises."
 
-#: deeds/templates/deeds/zero_deed.html:28
+#: deeds/templates/licenses/zero_deed.html:28
 msgid ""
 "You can copy, modify, distribute and perform the work, even for commercial "
 "purposes, all without asking permission. See <b>Other Information</b> below."
 msgstr ""
+"Jūs galite kopijuoti, keisti, platinti ir atlikti šį objektą, įskaitant ir "
+"komerciniais tikslais, neatsiklausdami leidimo. Žiūrėkite <b>Kitą "
+"informaciją</b> žemiau."
 
-#: deeds/templates/deeds/zero_deed.html:52
+#: deeds/templates/licenses/zero_deed.html:52
 msgid ""
 "In no way are the patent or trademark rights of any person affected by CC0, "
 "nor are the rights that other persons may have in the work or in how the "
@@ -584,38 +1571,55 @@ msgid ""
 "href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
 " class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
 msgstr ""
+"Jokių asmenų turimos teisės į prekių ženklus ar patentus nėra niekaip "
+"įtakojamos CC0, taip pat nėra įtakojamos kitų asmenų teisės į objektą ar jo "
+"panaudojimą, pavyzdžiui, teisės į <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">viešinimą ar privatų "
+"gyvenimą</a>."
 
-#: deeds/templates/deeds/zero_deed.html:56
+#: deeds/templates/licenses/zero_deed.html:56
 msgid ""
 "Unless expressly stated otherwise, the person who associated a work with "
 "this deed makes no warranties about the work, and disclaims liability for "
 "all uses of the work, to the fullest extent permitted by applicable law."
 msgstr ""
+"Jei nėra tiesiogiai nurodyta kitaip, asmuo, susiejęs objektą su šią "
+"sutartimi, visa teisės leidžiama apimtimi neduoda dėl jo garantijų ir "
+"neprisiima atsakomybės už jokį objekto panaudojimą. "
 
-#: deeds/templates/deeds/zero_deed.html:60
+#: deeds/templates/licenses/zero_deed.html:60
 msgid ""
 "When using or citing the work, you should not imply <a href=\"\" "
 "class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
 "affirmer."
 msgstr ""
+"Naudodami ar cituodami objektą, neturite sudaryti įspūdžio, kad autorius ar "
+"patvirtinęs asmuo tam <a href=\"\" class=\"helpLink\" "
+"id=\"endorsement\">pritaria</a>."
 
-#: deeds/templates/deeds/zero_deed.html:88
+#: deeds/templates/licenses/zero_deed.html:88
 msgid "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Affirmer</a>"
 msgstr ""
+"<a href=\"\" class=\"inline-help helpLink\" "
+"id=\"who_is_affirmer\">Patvirtinama</a>"
 
-#: deeds/templates/deeds/zero_deed.html:149
+#: deeds/templates/licenses/zero_deed.html:149
 msgid "Who is the affirmer?"
-msgstr ""
+msgstr "Kas yra patvirtinęs asmuo?"
 
-#: deeds/templates/deeds/zero_deed.html:153
+#: deeds/templates/licenses/zero_deed.html:153
 msgid ""
 "The affirmer is the person who surrendered rights to the work worldwide "
 "using CC0, to the extent allowable by law. It may be the original author of "
 "the work or another person who may have had some copyright or related or "
 "neighboring legal rights in the work."
 msgstr ""
+"Patvirtinęs asmuo - tai asmuo, kuris pasaulio mastu atsisakė teisių į "
+"objektą naudodamas CC0. Tai gali būti jo autorius ar kitas asmuo, kuris "
+"turėjo dalį autorių teisių ar susijusių, ar gretutinių teisių į objektą."
 
-#: deeds/templates/deeds/zero_deed.html:176
+#: deeds/templates/licenses/zero_deed.html:176
 msgid ""
 "<p> The Commons Deed is not a legal instrument. It is simply a handy "
 "reference for understanding the CC0 Legal Code, a human-readable expression "
@@ -629,76 +1633,88 @@ msgid ""
 "copyright status in any jurisdiction, and disclaims all liability for all "
 "uses of any work. </p>"
 msgstr ""
+"<p> Bendrijų sutartis nėra teisinė priemonė. Tai tiesiog naudingos nuorodos,"
+" padedančios suprasti CC0 Teisinių sąlygų sąvadą, t.y. žmonui suprantama kai"
+" kurių esminių jo sąlygų išraiška. Šis Sutartis pati savaime neturi jokios "
+"teisinės galios ir jos turinys nėra įtrauktas į CC0. </p> <p> Creative "
+"Commons nėra teisines paslaugas teikianti įmonė ir neteikia teisinių "
+"paslaugų ar konsultacijų. Šios Bendrijų sutarties platinimas, demonstravimas"
+" ar nuorodų į ją teikimas nesukuria santykio tarp teisines paslaugas "
+"teikiančio asmens ir kliento. </p> <p> Creative Commons netikrino jokio "
+"objekto, kuriam buvo pritaikyta CC0 , autorių teisių statuso. CC neteikia "
+"jokių garantijų dėl jokio objekto ar jo autorių teisių statuso jokioje "
+"jurisdikcijoje ir neprisiima jokios atsakomybės dėl bet kokio objekto "
+"panaudojimo. </p>"
 
-#: deeds/templates/deeds/zero_deed.html:182
+#: deeds/templates/licenses/zero_deed.html:182
 msgid ""
 "This is a human-readable summary of the <a href=\"./legalcode\">Legal Code "
 "(read the full text)</a>."
 msgstr ""
+"Tai - žmogui suprantama <a href=\"./legalcode\">Teisinių sąlygų sąvado "
+"(skaitykite visą tekstą)</a>santrauka."
 
-#: deeds/templates/deeds/zero_deed.html:194
+#: deeds/templates/licenses/zero_deed.html:194
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"https://creativecommons.org/choose/zero/\">use the license</a> for your own material.\n"
 "  "
 msgstr ""
 
-#: deeds/templates/macros_templates/deed.html:50
-#: deeds/templates/macros_templates/engine.html:77
+#: deeds/templates/macros_templates/deed.html:28
+#: deeds/templates/macros_templates/engine.html:50
 #: deeds/templates/macros_templates/pdtool_deed.html:31
 msgid "Skip to content"
-msgstr ""
+msgstr "Praleisti, eiti į turinį"
 
-#: deeds/templates/macros_templates/deed.html:60
+#: deeds/templates/macros_templates/deed.html:38
 #: deeds/templates/macros_templates/pdtool_deed.html:40
 msgid "Help us build a vibrant, collaborative global commons"
 msgstr ""
+"Padėkite mums sukurti gyvybingas, bendradarbiaujančias pasaulines bendrijas"
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Donate"
-msgstr ""
+msgstr "Paaukoti"
 
-#: deeds/templates/macros_templates/deed.html:61
+#: deeds/templates/macros_templates/deed.html:39
 #: deeds/templates/macros_templates/pdtool_deed.html:41
 msgid "Now"
-msgstr ""
+msgstr "Dabar"
 
-#: deeds/templates/macros_templates/deed.html:82
+#: deeds/templates/macros_templates/deed.html:60
 #: deeds/templates/macros_templates/pdtool_deed.html:62
 msgid "Creative Commons License Deed"
-msgstr ""
+msgstr "Creative Commons licencijos teisinis dokumentas"
 
-#: deeds/templates/macros_templates/deed.html:104
+#: deeds/templates/macros_templates/deed.html:82
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the license, "
 "which is available in the following languages:"
 msgstr ""
+"Čia yra žmonėms suprantama licencijos santrumpa (o ne jos pakaitalas), "
+"prieinama šiomis kalbomis:"
 
-#: deeds/templates/macros_templates/deed.html:111
+#: deeds/templates/macros_templates/deed.html:89
 msgid ""
 "This is a human-readable summary of (and not a substitute for) the <a "
 "href=\"legalcode\" class=\"fulltext\">license</a>."
 msgstr ""
+"Čia yra žmonėms suprantama <a href=\"legalcode\" "
+"class=\"fulltext\">licencijos</a> santrauka (bet ne pakaitalas)."
 
-#: deeds/templates/macros_templates/deed.html:130
+#: deeds/templates/macros_templates/deed.html:108
 #, python-format
 msgid ""
 "\n"
 "        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
 "            "
 msgstr ""
+"\n"
+"<a href=\"http://wiki.creativecommons.org/FAQ\">Sužinokite daugiau </a> apie CC licencijų taikymą arba <a id=\"get_this\" href=\"%(get_this)s\"> panaudokite licenciją </a> Jūsų turimai medžiagai."
 
-#: deeds/templates/macros_templates/deed.html:141
-#: deeds/templates/macros_templates/pdtool_deed.html:92
-msgid ""
-"This content is freely available under simple legal terms because of "
-"Creative Commons, a non-profit that survives on donations. If you love this "
-"content, and love that it's free for everyone, please consider a donation to"
-" support our work."
-msgstr ""
-
-#: deeds/templates/macros_templates/deed.html:166
+#: deeds/templates/macros_templates/deed.html:144
 msgid ""
 "<p>\n"
 "              The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href=\"legalcode\" class=\"fulltext\">Please click here to see the full License</a>.\n"
@@ -712,32 +1728,52 @@ msgid ""
 "              The Product licensed under Creative Commons License is provided by the person who applied the License.  Creative Commons and Creative Commons Japan make no warranties regarding the title of the licensor.  Please read <a href=\"http://creativecommons.jp/faq/\">here</a> for information regarding the application of licenses and exploitation of the Product licensed under Creative Commons licenses.\n"
 "              </p>"
 msgstr ""
+"<p>\n"
+"Bendrijų sutartis nėra licencija. Tai viso labo naudingos nuorodos, skirtos lengviau suprasti Teisinių sąlygų sąvadą (pilną Licencijos tekstą) - žmogui suprantamas jo pagrindinių sąlygų aprašymas. Pati ši sutartis teisinės galios neturi, ir jos tekstas nėra įtrauktas į Teisinių sąlygų sąvadą. Tikrosios Licencijos sąlygos dėstomos Teisinių sąlygų sąvade. <a href=\"legalcode\" class=\"fulltext\">Spauskite čia norėdami peržiūrėti visą Licencijos tekstą</a>.\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"Creative Commons nėra teisines paslaugas teikianti įmonė, o Bendrijų sutarties platinimas, demonstravimas nei nuorodų į ją teikimas nereiškia teisinių konsultacijų teikimo nei jokių kitų teisinių paslaugų teikimo. Creative Commons nėra Licencijos, kurią atspindi ši sutartis, šalimi, ir neprisiima jokios atsakomybės dėl nuostolių, kylančių iš Bendrijų sutarties ar jos perteikiamos Licencijos naudojimo.\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"Pagal Licenciją licencijuojamą Objektą pateikė tas asmuo, kuris pritaikė Licenciją. Creative Commons nei dėl nuosavybės teisių, nei dėl licenciaro garantijų neteikia. Norėdami daugiau sužinoti apie Creative Commons licencijas ar jais ženklinamų Objektų naudojimą, <a href=\"http://creativecommons.jp/faq/\">skaitykite čia</a>.\n"
+"</p>"
 
-#: deeds/templates/macros_templates/deed.html:180
+#: deeds/templates/macros_templates/deed.html:158
 msgid ""
 "This deed highlights only some of the key features and terms of the actual "
 "license. It is not a license and has no legal value. You should carefully "
 "review all of the terms and conditions of the actual license before using "
 "the licensed material."
 msgstr ""
+"Ši sutartis perteikia tik dalį esminių tikrosios licencijos funkcijų ir "
+"sąlygų. Ji nėra licencija ir teisinės galios neturi. Prieš naudodami "
+"licencijuojamą turinį, turėtumėte atidžiai peržiūrėti visas tikrosios "
+"licencijos nuostatas."
 
-#: deeds/templates/macros_templates/deed.html:182
+#: deeds/templates/macros_templates/deed.html:160
 msgid ""
 "Creative Commons is not a law firm and does not provide legal services. "
 "Distributing, displaying, or linking to this deed or the license that it "
 "summarizes does not create a lawyer-client or any other relationship."
 msgstr ""
+"Creative Commons nėra teisines paslaugas teikianti įmonė ir teisinių "
+"konsultacijų neteikia. Nei šios sutarties ar licencijos, kurią ji "
+"apibendrina, platinimas, demonstravimas, nei nuorodų į jas kūrimas nesukuria"
+" nei santykių tarp teisines paslaugas teikiančio asmens ir jo kliento, nei "
+"jokių kitų santykių."
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "expand child menu"
-msgstr ""
+msgstr "išskleisti detalų meniu"
 
-#: deeds/templates/macros_templates/deed.html:190
+#: deeds/templates/macros_templates/deed.html:168
 #: deeds/templates/macros_templates/pdtool_deed.html:118
 msgid "collapse child menu"
-msgstr ""
+msgstr "suskleisti detalų meniu"
 
 #: deeds/templates/macros_templates/pdtool_deed.html:27
 msgid "hide-banner"
-msgstr ""
+msgstr "slėptukas"
