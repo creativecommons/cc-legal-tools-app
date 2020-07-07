@@ -8,11 +8,56 @@
     <meta name="description" content="{% block meta-description %}{% endblock %}">
     <meta name="author" content="{% block meta-author %}{% endblock %}">
     <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
-    <link rel="stylesheet" href="https://unpkg.com/@creativecommons/vocabulary/css/vocabulary.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/css/vocabulary.css">
 </head>
 <body>
+    {% include 'includes/header.html' %}
+    {% include 'includes/breadcrumbs.html' %}
+    {% include 'includes/locale.html' %}
+    {% include 'includes/menu-sidebar.html' %}
     <div class="container">
         {% block content %}Creative Commons Licenses{% endblock %}
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
+    {% block extra_js %}
+    <script>
+        /**
+         * Get the fully-qualified URL of a Vocabulary asset.
+         *
+         * @param {string} version - the Vocabulary version in which to locate the asset
+         * @param {string} path - the path of the asset being patched
+         * @return {string} the fully qualified URL of the asset
+         */
+        const getFullyQualifiedUrl = (version, path) => {
+        //   let baseUrl = 'https://unpkg.com/@creativecommons/vocabulary'
+          // If you prefer jsDelivr instead, use
+          let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary'
+          return `${baseUrl}@${version}/${path}`
+        }
+      
+        /**
+         * Create an invisible container and place the asset into the DOM.
+         *
+         * This function is intended to be used to patch SVG assets that are later
+         * referenced inside `<use>` tags in `<svg>` tags. It can also be used to force
+         * an image to be downloaded to speed up its loading when referenced again.
+         *
+         * @param {string} path - the path of the asset being patched
+         * @param {string} version - the Vocabulary version in which to locate the asset
+         */
+        const patchAssetIntoDom = (path, version = 'latest') => {
+          fetch(getFullyQualifiedUrl(version, path)).then(response => {
+            return response.text()
+          }).then(data => {
+            // Render SVG in the page
+            const logo = document.querySelector('#cc-logo')
+            logo.innerHTML = data;
+          })
+        }
+      
+        patchAssetIntoDom('assets/logos/cc/logomark.svg');
+      </script>
+    {% endblock %}
 </body>
 </html>
+
