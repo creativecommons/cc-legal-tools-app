@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+  <p><b>Temporary homepage</b></p>
+
+  <p>Some deeds to look at:</p>
+  <ul>
+  {% for code, licenses_of_code in licenses_by_code.items %}
+    <li>{{ code }}
+      <ul>
+        {% for version, licenses_of_version in licenses_of_code.items %}
+          <li>{{ version }}
+            <ul>
+              {% for jurisdiction, licenses_of_jurisdiction in licenses_of_version.items %}
+                <li>Jurisdiction: {% if jurisdiction %}{{ jurisdiction.url }}{% else %}None{% endif %}
+                  <ul>
+                    {% if jurisdiction %}
+                      {% for license in licenses_of_jurisdiction %}
+                        <li><a href="{% url 'license_deed_jurisdiction_explicit' license_code=code version=version jurisdiction=jurisdiction.code %}">{{ license }}</a></li>
+                      {% endfor %}
+                    {% elif version %}
+                      {% for license in licenses_of_jurisdiction %}
+                        <li><a href="{% url 'license_deed_explicit' license_code=code version=version %}">{{ license }}</a></li>
+                      {% endfor %}
+                    {% endif %}
+                  </ul>
+                </li>
+              {% endfor %}
+            </ul>
+          </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+  </ul>
+
+{##}
+{#  <ul>#}
+{#    <li>BY#}
+{#      <a href="{% url 'license_deed_lang' 'by' '2.0' 'en-us' %}">2.0</a>#}
+{#      <a href="{% url 'license_deed_lang' 'by' '3.0' 'en-us' %}">3.0</a>#}
+{#      <a href="{% url 'license_deed_lang' 'by' '4.0' 'en-us' %}">4.0</a>#}
+{#    </li>#}
+{#    <li>BY-SA#}
+{#      <a href="{% url 'license_deed_lang' 'by-sa' '2.0' 'en-us' %}">2.0</a>#}
+{#      <a href="{% url 'license_deed_lang' 'by-sa' '3.0' 'fr-ca' %}">3.0</a>#}
+{#      <a href="{% url 'license_deed_lang' 'by-sa' '4.0' 'en-us' %}">4.0</a>#}
+{#    </li>#}
+{#    <li>BY-NC-ND#}
+{#      <a href="{% url 'license_deed_lang' 'by-nc-nd' '2.0' 'en-us' %}">2.0</a>#}
+{#      <a href="{% url 'license_deed_lang' 'by-nc-nd' '3.0' 'en-us' %}">3.0</a>#}
+{#      <a href="{% url 'license_deed_lang' 'by-nc-nd' '4.0' 'en' %}">4.0</a>#}
+{#    </li>#}
+{#  </ul>#}
+{% endblock content %}

@@ -10,7 +10,7 @@ from django.http import (
     HttpResponseRedirect,
     HttpRequest,
 )
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import translation
 
 from i18n.utils import (
@@ -21,7 +21,7 @@ from i18n.utils import (
     negotiate_locale,
 )
 from licenses import FREEDOM_COLORS
-from licenses.models import License, TranslatedLicenseName
+from licenses.models import License, TranslatedLicenseName, Jurisdiction
 
 
 # def fetch_https(uri):
@@ -84,6 +84,7 @@ def license_deed_view(
     Can be called with various combinations of arguments.
     See urls.py in this same directory.
     """
+    # print(f"license_deed_view({license_code}, {version}, {target_lang}, {jurisdiction})")
     ##########################
     # Try and get the license.
     ##########################
@@ -94,11 +95,13 @@ def license_deed_view(
     }
 
     if target_lang:
-        license_kwargs["legalcodes__language__code"] = target_lang
+        license_kwargs["legal_codes__language__code"] = target_lang
     if jurisdiction:
-        license_kwargs[
-            "jurisdiction__url"
-        ] = f"http://creativecommons.org/international/{jurisdiction}/"
+        jurisdiction_object = get_object_or_404(
+            Jurisdiction,
+            url=f"http://creativecommons.org/international/{jurisdiction}/",
+        )
+        license_kwargs["jurisdiction"] = jurisdiction_object
 
     license = License.objects.filter(**license_kwargs).first()
 
@@ -139,6 +142,8 @@ def license_deed_view(
         target_lang = locale_to_lower_upper(license.jurisdiction.default_language.code)
     else:
         target_lang = "en"
+
+    # print(license.id)
 
     # True if the legalcode for this license is available in
     # multiple languages (or a single language with a language code different
@@ -240,7 +245,7 @@ def all_possible_license_versions(search_args: dict) -> List[License]:
             "jurisdiction__url"
         ] = f"http://creativecommons.org/international/{jurisdiction}/"
     if target_lang:
-        license_kwargs["legalcodes__language__code"] = target_lang
+        license_kwargs["legal_codes__language__code"] = target_lang
 
     license_results = sorted(
         License.objects.filter(**license_kwargs), key=sort_licenses
@@ -352,3 +357,26 @@ def license_catcher(
         return render(
             request, "catalog_pages/license_catcher.html", context, status=404,
         )
+
+
+def home(request):
+    # Make a nested set of dictionaries organizing the English licenses by
+    # license code, version, and jurisdiction. See the home.html template
+    # for how it's used.
+    licenses_by_code = {}
+    for license in License.objects.filter(
+        legal_codes__language__code__startswith="en"
+    ).select_related("jurisdiction"):
+        licenses_by_code.setdefault(license.license_code, {})
+        licenses_by_code[license.license_code].setdefault(license.version, {})
+        licenses_by_code[license.license_code][license.version].setdefault(
+            license.jurisdiction, []
+        )
+        licenses_by_code[license.license_code][license.version][
+            license.jurisdiction
+        ].append(license)
+
+    context = {
+        "licenses_by_code": licenses_by_code,
+    }
+    return render(request, "home.html", context)

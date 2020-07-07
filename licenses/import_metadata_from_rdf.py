@@ -32,7 +32,7 @@ NO_DEFAULT = object()  # Marker meaning don't allow use of a default value.
 # If something has no language listed, that generally means it's English.
 # We want to set an actual language code on it so that once this data has
 # been imported, we don't have to treat English as a special default.
-DEFAULT_LANGUAGE_CODE = "en-us"
+DEFAULT_LANGUAGE_CODE = "en"
 
 # Namespaces in the RDF
 namespaces = {
@@ -68,7 +68,7 @@ JURISDICTION_CACHE = {}  # Map URL to Jurisdiction objects (mostly unsaved)
 LANGUAGE_CACHE = {}  # Map URL to Language objects (mostly unsaved)
 LEGAL_CODE_CACHE = {}  # Map URL to LegalCode objects (mostly unsaved)
 LICENSE_CLASS_CACHE = {}  # Map URL to LicenseClass objects (mostly unsaved)
-TRANSLATED_LICENSE_NAMES = []  # List of unsaved TranslatedLicenseName objects
+TRANSLATED_LICENSE_NAME_CACHE = {}  # Map of unsaved TranslatedLicenseName objects. key=license_about|lang_code.
 LICENSE_LOGOS = []  # List of unsaved LicenseLogo objects
 
 
@@ -109,6 +109,17 @@ def get_license_class_for_url(url):
     return get_instance_with_caching(LicenseClass, LICENSE_CLASS_CACHE, "url", url)
 
 
+def get_translated_license_name(license, language, name):
+    key = f"{license.about}|{language.code}"
+    if key not in TRANSLATED_LICENSE_NAME_CACHE:
+        TRANSLATED_LICENSE_NAME_CACHE[key] = TranslatedLicenseName(
+            license=license,
+            language=language,
+            name=name
+        )
+    return TRANSLATED_LICENSE_NAME_CACHE[key]
+
+
 def do_bulk_create(objects):
     """
     Given a list of instances of the same model, bulk_create
@@ -124,7 +135,7 @@ def do_bulk_create(objects):
 class MetadataImporter:
     def import_metadata(self, readable):
         global CREATOR_CACHE, JURISDICTION_CACHE, LANGUAGE_CACHE, LEGAL_CODE_CACHE, \
-            LICENSE_CLASS_CACHE, TRANSLATED_LICENSE_NAMES, LICENSE_LOGOS, \
+            LICENSE_CLASS_CACHE, TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, \
             LEGAL_CODES_TO_ADD_TO_LICENSES
 
         print("Populating database with license data.")
@@ -165,6 +176,9 @@ class MetadataImporter:
         LANGUAGE_CACHE = {lang.code: lang for lang in Language.objects.all()}
         LEGAL_CODE_CACHE = {lg.url: lg for lg in LegalCode.objects.all()}
         LICENSE_CLASS_CACHE = {lc.url: lc for lc in LicenseClass.objects.all()}
+
+        for tln in TranslatedLicenseName.objects.select_related("license", "language"):
+            TRANSLATED_LICENSE_NAME_CACHE[f"{tln.license.about}|{tln.language.code}"] = tln
 
         print("Reading RDF")
 
@@ -228,10 +242,11 @@ class MetadataImporter:
 
         # Update TranslatedLicenseName objects with the saved license and language objects
         # before saving them
-        for tln in TRANSLATED_LICENSE_NAMES:
-            tln.language = tln.language
-            tln.license = tln.license
-        do_bulk_create(TRANSLATED_LICENSE_NAMES)
+        for tln in TRANSLATED_LICENSE_NAME_CACHE.values():
+            if not tln.pk:  # pragma: no cover (only really used if we're restarting after a partial import)
+                tln.language = tln.language
+                tln.license = tln.license
+        do_bulk_create(TRANSLATED_LICENSE_NAME_CACHE.values())
 
         for logo in LICENSE_LOGOS:
             logo.license = logo.license
@@ -358,7 +373,7 @@ class MetadataImporter:
         # Create the License object
         license = License(
             about=license_url,
-            identifier=get_element_text(license_element, "dc:identifier"),
+            license_code=get_element_text(license_element, "dc:identifier"),
             version=get_element_text(license_element, "dcq:hasVersion", ""),
             jurisdiction=jurisdiction,
             creator=creator,
@@ -415,11 +430,7 @@ class MetadataImporter:
             else:
                 lang_code = DEFAULT_LANGUAGE_CODE
             language = get_language_for_code(lang_code)
-            TRANSLATED_LICENSE_NAMES.append(
-                TranslatedLicenseName(
-                    license=license, language=language, name=title_element.text,
-                )
-            )
+            get_translated_license_name(license, language, title_element.text)
             license_element.remove(title_element)
 
         # logos

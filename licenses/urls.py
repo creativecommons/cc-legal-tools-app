@@ -15,7 +15,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
 
 
 class LicenseCodeConverter:
-    regex = r"[-a-z+]+"
+    regex = r"(?i)[-a-z0-9+]+"
 
     def to_python(self, value):
         return value

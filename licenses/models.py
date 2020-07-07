@@ -18,7 +18,7 @@ from licenses import FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MAX
 
 
 class Creator(models.Model):
-    url = models.URLField(max_length=200, help_text="E.g. http://creativecommons.org",)
+    url = models.URLField(unique=True, max_length=200, help_text="E.g. http://creativecommons.org")
 
     def __str__(self):
         return f"Creator<{self.url}>"
@@ -26,6 +26,7 @@ class Creator(models.Model):
 
 class Jurisdiction(models.Model):
     url = models.URLField(
+        unique=True,
         max_length=200, help_text="E.g. http://creativecommons.org/international/at/",
     )
     # FIXME: Where to get data on jurisdictions' default languages?
@@ -48,6 +49,7 @@ class Jurisdiction(models.Model):
 class LicenseClass(models.Model):
     # <cc:licenseClass rdf:resource="http://creativecommons.org/license/"/>
     url = models.URLField(
+        unique=True,
         max_length=200, help_text="E.g. http://creativecommons.org/license/",
     )
 
@@ -57,6 +59,7 @@ class LicenseClass(models.Model):
 
 class Language(models.Model):
     code = models.CharField(
+        unique=True,
         max_length=7,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
@@ -71,6 +74,11 @@ class LegalCode(models.Model):
         help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
     )
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [
+            ("url", "language"),
+        ]
 
     def __str__(self):
         return f"LegalCode<{self.language}, {self.url}>"
@@ -185,7 +193,7 @@ class License(models.Model):
 
     def legalcodes_for_language(self, target_lang: str):
         """Returns queryset of LegalCode"""
-        return self.legalcodes.filter(language__code=target_lang)
+        return self.legal_codes.filter(language__code=target_lang)
 
     @property
     def level_of_freedom(self):
@@ -209,6 +217,11 @@ class TranslatedLicenseName(models.Model):
     license = models.ForeignKey(License, related_name="names", on_delete=models.CASCADE)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     name = models.CharField(max_length=250, help_text="Translated name of license")
+
+    class Meta:
+        unique_together = [
+            ("license", "language"),
+        ]
 
     def __str__(self):
         return f"TranslatedLicenseName<{self.language}, {self.license}>"

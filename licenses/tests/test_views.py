@@ -3,6 +3,7 @@ from django.urls import reverse
 
 # Conditions under which we expect to see these strings in a deed page.
 # The lambda is called with a License object
+from licenses.models import License, Jurisdiction, Creator
 from licenses.tests.factories import LicenseFactory
 
 
@@ -80,12 +81,16 @@ class LicenseDeedViewTest(TestCase):
         for license_code in license_codes:
             with self.subTest(license_code):
                 version = "3.0"
+                license = License.objects.filter(
+                    license_code=license_code, version=version
+                ).exclude(jurisdiction=None).first()
                 url = reverse(
-                    viewname="license_deed",
-                    kwargs={"license_code": license_code, "version": version},
-                )
-                license = LicenseFactory(
-                    license_code=license_code, version=version, jurisdiction=None,
+                    viewname="license_deed_jurisdiction_explicit",
+                    kwargs={
+                        "license_code": license_code,
+                        "version": version,
+                        "jurisdiction": license.jurisdiction.code
+                    },
                 )
                 rsp = self.client.get(url)
                 self.validate(rsp, license)
@@ -94,15 +99,17 @@ class LicenseDeedViewTest(TestCase):
         license_code = "by-nc-sa"
         version = "2.0"  # No 4.0 licenses have been superseded
 
-        new_license = LicenseFactory(
+        new_license = License.objects.filter(
             license_code=license_code,
             version="3.0",
-        )
-        license = LicenseFactory(
+        ).first()
+        license = License.objects.filter(
             license_code=license_code,
             version=version,
-            is_replaced_by=new_license,
-        )
+        ).first()
+        license.is_replaced_by = new_license
+        license.save()
+
         url = reverse(
             viewname="license_deed",
             kwargs={"license_code": license_code, "version": version},
@@ -112,10 +119,13 @@ class LicenseDeedViewTest(TestCase):
 
     def test_jurisdictions(self):
         for code in ["es", "igo"]:
+            creator = Creator.objects.first()
+            jurisdiction = Jurisdiction.objects.get(url=f"http://creativecommons.org/international/{code}/")
             with self.subTest(code):
                 license = LicenseFactory(
+                    creator=creator,
                     license_code="by-nd-sa",
-                    jurisdiction__url=f"http://creativecommons.org/international/{code}/",
+                    jurisdiction=jurisdiction,
                     version="3.7",
                     requires_share_alike=True,
                     permits_distribution=False,

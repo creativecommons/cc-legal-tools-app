@@ -72,7 +72,8 @@ class LicenseFactory(factory.DjangoModelFactory):
     @post_generation
     def post(obj, create, extracted, **kwargs):
         if not obj.names.count():
-            TranslatedLicenseNameFactory(license=obj, language__code=translation.get_language())
+            language = Language.objects.get(code=translation.get_language())
+            TranslatedLicenseNameFactory(license=obj, language=language)
 
 
 class LicenseLogoFactory(factory.DjangoModelFactory):
