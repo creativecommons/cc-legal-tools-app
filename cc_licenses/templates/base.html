@@ -8,16 +8,19 @@
     <meta name="description" content="{% block meta-description %}{% endblock %}">
     <meta name="author" content="{% block meta-author %}{% endblock %}">
     <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/css/vocabulary.css">
 </head>
 <body>
     {% include 'includes/header.html' %}
     <main>
-        <div class="breadcrumbs-locale padding-large">
+        <div class="level padding-large">
             {% include 'includes/breadcrumbs.html' %}
             {% include 'includes/locale.html' %}
         </div>
-        {% include 'includes/menu-sidebar.html' %}
+        <section>
+            {% block content %}{% endblock %}
+        </section>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
@@ -63,25 +66,5 @@
 </body>
 </html>
 
-<style>
-    body {
-        background-color: rgb(245, 245, 245);
-    }
-
-    .breadcrumbs-locale {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-    }
-
-    .breadcrumbs-locale > nav {
-        flex-grow: 1;
-    }
-
-    .breadcrumbs-locale > div {
-        flex-grow: 1;
-    }
-
-</style>
+<style>body {background-color: rgb(245, 245, 245);}</style>
 
