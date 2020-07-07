@@ -1,10 +1,13 @@
-from django.test import TestCase
+from unittest import mock
+
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 # Conditions under which we expect to see these strings in a deed page.
 # The lambda is called with a License object
 from licenses.models import License, Jurisdiction, Creator
 from licenses.tests.factories import LicenseFactory
+from licenses.views import all_possible_license_versions
 
 
 strings_to_lambdas = {
@@ -62,6 +65,91 @@ for bits in range(8):  # We'll enumerate the variations
     license_codes.append("-".join(parts))
 
 
+class HomeViewTest(TestCase):
+    def test_home_view(self):
+        url = reverse("home")
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("home.html")
+
+
+class AllPossibleLicenseVersionsTest(TestCase):
+    # all_possible_license_versions is a search function
+    # that returns a list of License objects
+    def test_no_match(self):
+        result = all_possible_license_versions({})
+        self.assertEqual(0, len(result))
+
+    def test_code(self):
+        args = {
+            "code": "by-sa",
+        }
+        result = all_possible_license_versions(args)
+        expected = list(License.objects.filter(license_code="by-sa"))
+        self.assertCountEqual(expected, result)
+
+    def test_jurisdiction(self):
+        args = {
+            "jurisdiction": "uk"
+        }
+        result = all_possible_license_versions(args)
+        expected = list(License.objects.filter(jurisdiction__url__endswith="/uk/"))
+        self.assertCountEqual(expected, result)
+
+    def test_lang(self):
+        args = {
+            "target_lang": "fr"
+        }
+        result = all_possible_license_versions(args)
+        expected = list(License.objects.filter(legal_codes__language__code="fr"))
+        self.assertCountEqual(expected, result)
+
+    def test_code_and_jurisdiction(self):
+        args = {
+            "code": "by-sa",
+            "jurisdiction": "uk"
+        }
+        result = all_possible_license_versions(args)
+        expected = list(License.objects.filter(license_code="by-sa", jurisdiction__url__endswith="/uk/"))
+        self.assertCountEqual(expected, result)
+
+
+# There's no URL for this view, so set one up for testing.
+@override_settings(ROOT_URLCONF="licenses.tests.urls")
+class LicenseCatcherViewTest(TestCase):
+    def test_404_if_no_matches(self):
+        url = reverse(
+            "license_catcher",
+            kwargs={
+                "license_code": "nonesuch",
+                "jurisdiction": "xxx",
+                "target_lang": "klg",
+            },
+        )
+        rsp = self.client.get(url)
+        self.assertEqual(404, rsp.status_code)
+
+    def test_code(self):
+        url = reverse(
+            "license_catcher",
+            kwargs={
+                "license_code": "by-nc",
+                "jurisdiction": "",
+                "target_lang": ""
+            },
+        )
+        print(url)
+        # Pick an arbitrary license for our mock search to return
+        licenses_to_use = list(License.objects.filter(license_code="by-nc")[:2])
+        with mock.patch("licenses.views.catch_license_versions_from_request") as mock_catcher:
+            mock_catcher.return_value = licenses_to_use
+            rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed(rsp, "catalog_pages/license_catcher.html")
+        context = rsp.context
+        self.assertEqual(reversed(licenses_to_use), context["license_versions"])
+
+
 class LicenseDeedViewTest(TestCase):
     def validate(self, rsp, license):
         self.assertEqual(200, rsp.status_code)
@@ -81,15 +169,17 @@ class LicenseDeedViewTest(TestCase):
         for license_code in license_codes:
             with self.subTest(license_code):
                 version = "3.0"
-                license = License.objects.filter(
-                    license_code=license_code, version=version
-                ).exclude(jurisdiction=None).first()
+                license = (
+                    License.objects.filter(license_code=license_code, version=version)
+                    .exclude(jurisdiction=None)
+                    .first()
+                )
                 url = reverse(
                     viewname="license_deed_jurisdiction_explicit",
                     kwargs={
                         "license_code": license_code,
                         "version": version,
-                        "jurisdiction": license.jurisdiction.code
+                        "jurisdiction": license.jurisdiction.code,
                     },
                 )
                 rsp = self.client.get(url)
@@ -100,12 +190,10 @@ class LicenseDeedViewTest(TestCase):
         version = "2.0"  # No 4.0 licenses have been superseded
 
         new_license = License.objects.filter(
-            license_code=license_code,
-            version="3.0",
+            license_code=license_code, version="3.0",
         ).first()
         license = License.objects.filter(
-            license_code=license_code,
-            version=version,
+            license_code=license_code, version=version,
         ).first()
         license.is_replaced_by = new_license
         license.save()
@@ -120,7 +208,9 @@ class LicenseDeedViewTest(TestCase):
     def test_jurisdictions(self):
         for code in ["es", "igo"]:
             creator = Creator.objects.first()
-            jurisdiction = Jurisdiction.objects.get(url=f"http://creativecommons.org/international/{code}/")
+            jurisdiction = Jurisdiction.objects.get(
+                url=f"http://creativecommons.org/international/{code}/"
+            )
             with self.subTest(code):
                 license = LicenseFactory(
                     creator=creator,

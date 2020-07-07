@@ -1,11 +1,11 @@
 import csv
 import os
 
-from babel import Locale
+from babel import Locale, UnknownLocaleError
 from django.conf import settings
-from django.template.loader import get_template
 from django.utils import translation
 from django.utils.encoding import force_text
+from django.utils.translation import ugettext
 
 from i18n import DEFAULT_CSV_FILE, CSV_HEADERS
 
@@ -18,17 +18,17 @@ CACHED_APPLICABLE_LANGS = {}
 CACHED_WELL_TRANSLATED_LANGS = {}
 
 
-def get_locale_dir(locale_name):
-    localedir = settings.LOCALE_PATHS[0]
-    return os.path.join(localedir, locale_name, "LC_MESSAGES")
-
-
-def locales_with_directories():
-    """
-    Return list of locale names under our locale dir.
-    """
-    dir = settings.LOCALE_PATHS[0]
-    return [item for item in os.listdir(dir) if os.path.isdir(os.path.join(dir, item))]
+# def get_locale_dir(locale_name):
+#     localedir = settings.LOCALE_PATHS[0]
+#     return os.path.join(localedir, locale_name, "LC_MESSAGES")
+#
+#
+# def locales_with_directories():
+#     """
+#     Return list of locale names under our locale dir.
+#     """
+#     dir = settings.LOCALE_PATHS[0]
+#     return [item for item in os.listdir(dir) if os.path.isdir(os.path.join(dir, item))]
 
 
 LANGUAGE_JURISDICTION_MAPPING = {}
@@ -54,97 +54,15 @@ JURISDICTION_CURRENCY_LOOKUP = {
 }
 
 
-def currency_symbol_from_request_form(req_form):
-    """Returns 'jp', 'eu', or '' depending on what
-    currency symbol should be used for the nc logo."""
-
-    try:
-        return JURISDICTION_CURRENCY_LOOKUP[req_form["field_jurisdiction"]]
-    except KeyError:
-        return ""
-
-
 def get_locale_text_orientation(locale_identifier: str) -> str:
     """
     Find out whether the locale is ltr or rtl
     """
-    locale = Locale.parse(locale_identifier)
-    if not locale:
+    try:
+        locale = Locale.parse(locale_identifier)
+    except UnknownLocaleError:
         raise ValueError("No locale found with identifier %r" % locale_identifier)
     return "ltr" if locale.character_order == "left-to-right" else "rtl"
-
-
-_ACTIVE_LANGUAGES = None
-
-
-def active_languages():
-    """Return a sequence of dicts, where each element consists of the
-    following keys:
-
-    * code: the language code
-    * name: the translated name of this language
-
-    for each available language."""
-    from django.conf import settings
-
-    return settings.LANGUAGES  # ?? FIXME ??
-
-    # global _ACTIVE_LANGUAGES
-    # if _ACTIVE_LANGUAGES:
-    #     return _ACTIVE_LANGUAGES
-    #
-    # # get a list of avaialable translations
-    # domain = base.queryUtility(ITranslationDomain, ccorg_i18n_setup.I18N_DOMAIN)
-    # lang_codes = set(domain.getCatalogsInfo().keys())
-    #
-    # # determine the intersection of available translations and
-    # # launched jurisdiction locales
-    # launched_locales = set()
-    # jurisdictions = cclicense_functions.get_valid_jurisdictions()
-    #
-    # for jurisdiction in jurisdictions:
-    #     query_string = (
-    #         "PREFIX dc: <http://purl.org/dc/elements/1.1/> "
-    #         "SELECT ?lang WHERE {"
-    #         "  <%s> dc:language ?lang}"
-    #     ) % jurisdiction
-    #
-    #     query = RDF.Query(str(query_string), query_language="sparql")
-    #     this_juri_locales = set(
-    #         [
-    #             locale_to_lower_upper(str(result["lang"]))
-    #             for result in query.execute(rdf_helper.JURI_MODEL)
-    #         ]
-    #     )
-    #
-    #     # Append those locales that are applicable to this domain
-    #     launched_locales.update(lang_codes.intersection(this_juri_locales))
-    #
-    # # XXX: Have to hack in Esperanto here because it's technically an
-    # # "Unported" language but there is no unported RDF jurisdiction in
-    # # jurisdictions.rdf..
-    # launched_locales.add("eo")
-    #
-    # # make our sequence have a predictable order
-    # launched_locales = list(launched_locales)
-    #
-    # # this loop is long hand for clarity; it's only done once, so
-    # # the additional performance cost should be negligible
-    # result = []
-    # for code in launched_locales:
-    #
-    #     if code == "test":
-    #         continue
-    #
-    #     gettext = ugettext_for_locale(negotiate_locale(code))
-    #     name = gettext(mappers.LANG_MAP[code])
-    #     result.append(dict(code=code, name=name))
-    #
-    # result = sorted(result, key=lambda lang: lang["name"].lower())
-    #
-    # _ACTIVE_LANGUAGES = result
-    #
-    # return result
 
 
 def rtl_context_stuff(locale_identifier):
@@ -226,9 +144,10 @@ def get_well_translated_langs(
     result = []
 
     for code in qualified_langs:
+        # Come up with names for languages in their own languages
         gettext = ugettext_for_locale(code)
         if code in mappers.LANG_MAP:
-            # we have a translation for this name...
+            # we (should) have a translation for this name...
             name = gettext(mappers.LANG_MAP[code])
             result.append(dict(code=code, name=name))
 
@@ -242,7 +161,7 @@ def get_well_translated_langs(
 def ugettext_for_locale(locale):
     def _wrapped_ugettext(message):
         with translation.override(locale):
-            return force_text(message)
+            return force_text(ugettext(message))
 
     return _wrapped_ugettext
 
@@ -302,25 +221,6 @@ def get_all_trans_stats(trans_file=DEFAULT_CSV_FILE):
     return stats
 
 
-def render_template(request, locale, template_path, context):
-    """
-    Render a Django template with the request in the response.
-
-    Also stores data for unit testing purposes if appropriate.
-    """
-    # template = TEMPLATE_ENV.get_template(template_path)
-    template = get_template(template_path)
-
-    context["request"] = request
-    context["locale"] = locale
-    if "gettext" not in context:
-        context["gettext"] = ugettext_for_locale(locale)
-
-    rendered = template.render(context)
-
-    return rendered
-
-
 def locale_to_lower_upper(locale):
     """
     Take a locale, regardless of style, and format it like "en_US"
@@ -333,16 +233,6 @@ def locale_to_lower_upper(locale):
         return "%s_%s" % (lang.lower(), country.upper())
     else:
         return locale.lower()
-
-
-def negotiate_locale(locale):
-    """
-    Choose the appropriate locale, using fallbacks, given the
-    'requested' locale.
-
-    Actually just a wrapper function for applicable_langs().
-    """
-    return applicable_langs(locale)[0]
 
 
 def applicable_langs(locale):
@@ -370,6 +260,7 @@ def applicable_langs(locale):
     # Don't cache silly languages that only fallback to en anyway, to
     # (semi-)prevent caching infinite amounts of BS
     if not locale == "en" and len(applicable_langs) == 1:
+        print("Not caching result")
         return applicable_langs
 
     CACHED_APPLICABLE_LANGS[cache_key] = applicable_langs

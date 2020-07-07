@@ -17,8 +17,8 @@ from i18n.utils import (
     get_well_translated_langs,
     locale_to_lower_upper,
     rtl_context_stuff,
-    render_template,
-    negotiate_locale,
+    ugettext_for_locale,
+    applicable_langs,
 )
 from licenses import FREEDOM_COLORS
 from licenses.models import License, TranslatedLicenseName, Jurisdiction
@@ -117,11 +117,9 @@ def license_deed_view(
         if licenses:
             # If we can't get it, but others of that code exist, give
             # a special 404.
-            print("404 but license catcher page")
             return license_catcher(request, license_code, target_lang, jurisdiction)
         else:
             # Otherwise, give the normal 404.
-            print("no license found")
             return HttpResponseNotFound()
 
     ####################
@@ -157,7 +155,6 @@ def license_deed_view(
     else:
         multi_language = False
 
-    license_title = None
     try:
         license_title = license.translated_title(target_lang)
     except TranslatedLicenseName.DoesNotExist:
@@ -166,7 +163,7 @@ def license_deed_view(
 
     # Find out all the active languages
     active_languages = get_well_translated_langs()
-    negotiated_locale = negotiate_locale(target_lang)
+    negotiated_locale = applicable_langs(target_lang)[0]
 
     # If negotiating the locale says that this isn't a valid language,
     # let's fall back to something that is.
@@ -188,6 +185,7 @@ def license_deed_view(
         "lang": target_lang,
     }
 
+    # Build a link to the chooser
     get_this = "/choose/results-one?%s" % urllib.parse.urlencode(kwargs)
 
     context = {
@@ -203,10 +201,12 @@ def license_deed_view(
         "target_lang": target_lang,
         "jurisdiction": kwargs["jurisdiction"],
         "get_this": get_this,
+        "locale": target_lang,
+        "gettext": ugettext_for_locale(target_lang)
     }
     context.update(rtl_context_stuff(target_lang))
 
-    return HttpResponse(render_template(request, target_lang, main_template, context))
+    return render(request, main_template, context)
 
 
 def sort_licenses(x: License) -> StrictVersion:
@@ -291,32 +291,32 @@ def catch_license_versions_from_request(
     return licenses
 
 
-def get_license(view) -> Callable[..., HttpResponse]:
-    """
-    View decorator to look up a license from the view parms
-    and pass it in.  license_code, jurisdiction, and version
-    must all be in the URL.
-    """
-
-    @wraps(view)
-    def new_view_func(request: HttpRequest, *args, **kwargs):
-        try:
-            license = License.objects.get(
-                license_code=kwargs["license_code"],
-                jurisdiction__code=kwargs["jurisdiction"],
-                version=kwargs["version"],
-            )
-        except License.DoesNotExist:
-            return HttpResponseNotFound()
-        else:
-            kwargs["license"] = license
-            del kwargs["license_code"]
-            del kwargs["jurisdiction"]
-            del kwargs["version"]
-
-        return view(request, *args, **kwargs)
-
-    return new_view_func
+# def get_license(view) -> Callable[..., HttpResponse]:
+#     """
+#     View *decorator* to look up a license from the view parms
+#     and pass it in.  license_code, jurisdiction, and version
+#     must all be in the URL.
+#     """
+#
+#     @wraps(view)
+#     def new_view_func(request: HttpRequest, *args, **kwargs):
+#         try:
+#             license = License.objects.get(
+#                 license_code=kwargs["license_code"],
+#                 jurisdiction__code=kwargs["jurisdiction"],
+#                 version=kwargs["version"],
+#             )
+#         except License.DoesNotExist:
+#             return HttpResponseNotFound()
+#         else:
+#             kwargs["license"] = license
+#             del kwargs["license_code"]
+#             del kwargs["jurisdiction"]
+#             del kwargs["version"]
+#
+#         return view(request, *args, **kwargs)
+#
+#     return new_view_func
 
 
 # This function could probably use a better name, but I can't think of
@@ -334,6 +334,7 @@ def license_catcher(
     # Returns an iterable of License objects
 
     if not licenses:
+        print("NO licenses found, returning 404")
         return HttpResponseNotFound()
 
     context = {

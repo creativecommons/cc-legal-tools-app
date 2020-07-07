@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from licenses import FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MAX
 from licenses.models import (
     Language,
     LegalCode,
@@ -22,6 +23,12 @@ class JurisdictionModelTest(TestCase):
     def test_str(self):
         record = Jurisdiction.objects.first()
         self.assertEqual(str(record), f"Jurisdiction<{record.url}>")
+
+    def test_code(self):
+        record = Jurisdiction.objects.create(url="http://creativecommons.org/international/silly/")
+        self.assertEqual("silly", record.code)
+        record = Jurisdiction.objects.create(url="http://example.com/foo")
+        self.assertEqual("", record.code)
 
 
 class LanguageModelTest(TestCase):
@@ -54,6 +61,14 @@ class LicenseModelTest(TestCase):
     def test_str(self):
         license = License.objects.first()
         self.assertEqual(str(license), f"License<{license.about}>")
+
+    def test_level_of_freedom(self):
+        self.assertEqual(FREEDOM_LEVEL_MIN, License.objects.get(license_code="devnations").level_of_freedom)
+        self.assertEqual(FREEDOM_LEVEL_MIN, License.objects.filter(license_code="sampling").first().level_of_freedom)
+        self.assertEqual(FREEDOM_LEVEL_MID, License.objects.filter(license_code="sampling+").first().level_of_freedom)
+        self.assertEqual(FREEDOM_LEVEL_MID, License.objects.filter(license_code="by-nc").first().level_of_freedom)
+        self.assertEqual(FREEDOM_LEVEL_MID, License.objects.filter(license_code="by-nd").first().level_of_freedom)
+        self.assertEqual(FREEDOM_LEVEL_MAX, License.objects.filter(license_code="by-sa").first().level_of_freedom)
 
 
 class TranslatedLicenseNameModelTest(TestCase):

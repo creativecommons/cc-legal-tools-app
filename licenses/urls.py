@@ -28,7 +28,7 @@ register_converter(LicenseCodeConverter, "code")
 
 
 class JurisdictionConverter:
-    regex = r"[a-zA-Z_-]+"
+    regex = r"[a-zA-Z_-]*"
 
     def to_python(self, value):
         return value
@@ -54,7 +54,7 @@ register_converter(VersionConverter, "version")
 
 
 class LangConverter:
-    regex = r"[a-zA-Z_-]+"
+    regex = r"[a-zA-Z_-]*"
 
     def to_python(self, value):
         return value

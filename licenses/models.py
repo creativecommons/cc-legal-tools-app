@@ -173,13 +173,6 @@ class License(models.Model):
     def __str__(self):
         return f"License<{self.about}>"
 
-    def set_permissions_and_prohibitions_from_license_code(self):
-        if self.creator and self.creator.url == "http://creativecommons.org":
-            self.requires_share_alike = "sa" in self.license_code
-            self.permits_derivative_works = "nd" not in self.license_code
-        else:
-            raise ValueError("set_permissions_and_prohibitions_from_license_code should only be called on CC licenses")
-
     def rdf(self):
         """Generate RDF for this license?"""
         return "RDF Generation Not Implemented"  # FIXME if needed
