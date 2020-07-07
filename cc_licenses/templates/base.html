@@ -12,12 +12,14 @@
 </head>
 <body>
     {% include 'includes/header.html' %}
-    {% include 'includes/breadcrumbs.html' %}
-    {% include 'includes/locale.html' %}
-    {% include 'includes/menu-sidebar.html' %}
-    <div class="container">
-        {% block content %}Creative Commons Licenses{% endblock %}
-    </div>
+    <main>
+        <div class="breadcrumbs-locale padding-large">
+            {% include 'includes/breadcrumbs.html' %}
+            {% include 'includes/locale.html' %}
+        </div>
+        {% include 'includes/menu-sidebar.html' %}
+    </main>
+
     <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
     {% block extra_js %}
     <script>
@@ -60,4 +62,26 @@
     {% endblock %}
 </body>
 </html>
+
+<style>
+    body {
+        background-color: rgb(245, 245, 245);
+    }
+
+    .breadcrumbs-locale {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .breadcrumbs-locale > nav {
+        flex-grow: 1;
+    }
+
+    .breadcrumbs-locale > div {
+        flex-grow: 1;
+    }
+
+</style>
 
