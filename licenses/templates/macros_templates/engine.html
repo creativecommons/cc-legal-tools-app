@@ -1,0 +1,135 @@
+<!--
+
+            .=~\              
+ +--__--__-'|-~'--__.         
+            | ''     \        
+            C         |       
+            |      --'        
+            |  l----`         
+   _  ._____|    |_____.  _   
+  C_'-|     `----'     |-'_3  
+  C .-|___          ___|-. 3  
+   ~     |/\ //\ //\|     ~   
+         | \\/ \\/ \|         
+      .__L___________L_. /~\  
+  /~\_|                |_| |  
+  | |-|                |-| |  
+  | | '~~~~~~~~~~~~~~~~' `-'  
+  '~'                         
+
+-->
+	    
+{% load i18n static %}
+<!DOCTYPE html>{% load i18n %}
+<html lang="en-US" prefix="og: http://ogp.me/ns#" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="profile" href="http://gmpg.org/xfn/11">
+    <script>(function(html){html.className = html.className.replace(/\bno-js\b/,'js')})(document.documentElement);</script>
+    <title>{% block title %}Page Title{% endblock %}</title>
+
+    <link rel="alternate" type="application/rss+xml" title="Creative Commons &raquo; Feed" href="https://creativecommons.org/feed/" />
+    <link rel="alternate" type="application/rss+xml" title="Creative Commons &raquo; Comments Feed" href="https://creativecommons.org/comments/feed/" />
+    <link rel="icon" href="https://creativecommons.org/wp-content/uploads/2016/05/cc-site-icon-300x300.png" sizes="192x192" />
+    <link rel="apple-touch-icon-precomposed" href="https://creativecommons.org/wp-content/uploads/2016/05/cc-site-icon-300x300.png" />
+    <meta name="msapplication-TileImage" content="https://creativecommons.org/wp-content/uploads/2016/05/cc-site-icon-300x300.png" />
+
+  <script type="text/javascript"
+      src="{% static 'includes/license-results.js' %}" >
+  </script>
+
+  {% block headers %}{% endblock %}
+
+
+</head>
+
+<body class="page page-static page-parent page-template-default wp-custom-logo group-blog">
+    <div id="page" class="site">
+        <div class="site-inner">
+            <a class="skip-link screen-reader-text" href="#content">{% blocktrans %}Skip to content{% endblocktrans %}</a>
+
+            {% include "includes/cc_site_header.html" %}
+
+            <div id="content" class="site-content">
+
+                <!-- header-below -->
+
+                <aside id="header-below" class="widget-area">
+                    <section id="text-3" class="widget-1 widget-first widget-last widget-odd widget widget_text">
+                        <div class="textwidget">
+                            <div id="donation-bar-wrapper" class="donation-bar-wrapper">
+                              <div id="donation-bar-inner" class="donation-bar-inner">
+                                <p class="donate-text">Help us build a vibrant, collaborative global commons</p>
+                                <div class="donate-action">
+                                    <a href="https://us.netdonor.net/page/6650/donate/1?ea.tracking.id=chooser" class="button donate arrow">Donate<span class="hide-on-mobile"> Now</span></a>
+                                </div>
+                            </div>
+                        </div></div>
+                    </section>
+                </aside><!-- .sidebar .widget-area -->
+                <!-- END header-below -->
+
+                <div id="primary" class="content-area">
+                    <div id="wrapper-main" class="wrapper-main">
+
+                        <main id="main" class="site-main" role="main">
+                            <article class="static-page page type-page status-publish hentry">
+
+			          <div dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}" 
+         id="main" role="main">
+              <h1 dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}">
+                {% block page_header_title %}{% endblock %}
+              </h1>
+
+            {% if page_style == "bare" %}
+              {# No wrapping needed :) #}
+            {% elif page_style == "2cols" %}
+              <div class="sixteen columns">
+            {% else %}
+              <div class="twelve columns alpha">
+            {% endif %}
+
+            <div dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}"
+                 id="content">
+              <div style="border: 1px solid darkred; border-radius: 5px; padding: 12px; margin: 12px auto;">
+                Creative Commons has updated its
+                  <a href="https://creativecommons.org/terms/">Master&nbsp;Terms&nbsp;of&nbsp;Service</a> and
+                  <a href="https://creativecommons.org/privacy/">Master&nbsp;Privacy&nbsp;Policy</a>,
+                  effective November 7, 2017.
+                  <em><strong>Before continuing on our websites or using our services, please review.</strong></em>
+              </div>
+              {% block body %}{% endblock %}
+            </div>
+
+            {% if page_style == "bare" %}
+              {# Again... no wrapping needed :) #}
+            {% elif page_style == "2cols" %}
+              </div> <!--! end of "sixteen columns" -->
+            {% else %}
+              </div> <!--! end of "twelve columns alpha" -->
+                <div dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}">
+                  {% block sidebar %}{% endblock %}
+                </div> <!--! end of sidebar -->
+            {% endif %}
+                            </article><!-- #post-## -->
+                        </main><!-- .site-main -->
+                    </div>
+                </div><!-- .content-area -->
+            </div><!-- .site-content -->
+
+            {% include "includes/cc_site_footer.html" %}
+        </div><!-- .site-inner -->
+    </div><!-- .site -->
+
+    {% block scripts %}{% endblock %}
+    
+    <div style="display:none">
+    </div>
+    <script type='text/javascript'>
+        /* <![CDATA[ */
+        var screenReaderText = {"expand":"expand child menu","collapse":"collapse child menu"};
+        /* ]]> */
+    </script>
+</body>
+</html>

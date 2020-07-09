@@ -9,7 +9,7 @@ test:
 	# Requires coverage
 	python manage.py makemigrations --dry-run | grep 'No changes detected' || \
 		(echo 'There are changes which require migrations.' && exit 1)
-	coverage run manage.py test --noinput
+	coverage run manage.py test --noinput -v 2
 	coverage report -m --fail-under 98
 
 lint-py:
@@ -36,10 +36,9 @@ production-deploy-key: conf/keys/production.pub.ssh
 # Translation helpers
 makemessages:
 	# Extract English messages from our source code
-	python manage.py makemessages --ignore 'conf/*' --ignore 'docs/*' --ignore 'requirements/*' \
-		--no-location --no-obsolete -l en
+	python manage.py makemessages
 
-compilemessages:
+compile_messages:
 	# Compile PO files into the MO files that Django will use at runtime
 	python manage.py compilemessages
 

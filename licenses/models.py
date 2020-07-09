@@ -1,5 +1,3 @@
-from django.db import models
-
 """
 Every license can be identified by a URL, e.g. "http://creativecommons.org/licenses/by-nc-sa/4.0/"
 or "http://creativecommons.org/licenses/by-nc-nd/2.0/tw/".  In the RDF, this is the rdf:about
@@ -11,10 +9,16 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
+import urllib
+
+from django.db import models
+from django.utils import translation
+
+from licenses import FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MAX
 
 
 class Creator(models.Model):
-    url = models.URLField(max_length=200, help_text="E.g. http://creativecommons.org",)
+    url = models.URLField(unique=True, max_length=200, help_text="E.g. http://creativecommons.org")
 
     def __str__(self):
         return f"Creator<{self.url}>"
@@ -22,8 +26,21 @@ class Creator(models.Model):
 
 class Jurisdiction(models.Model):
     url = models.URLField(
+        unique=True,
         max_length=200, help_text="E.g. http://creativecommons.org/international/at/",
     )
+    # FIXME: Where to get data on jurisdictions' default languages?
+    default_language = models.ForeignKey(
+        "Language", null=True, on_delete=models.CASCADE
+    )
+
+    @property
+    def code(self):
+        pieces = urllib.parse.urlsplit(self.url).path.strip("/").split("/")
+        try:
+            return pieces[1]
+        except IndexError:
+            return ""
 
     def __str__(self):
         return f"Jurisdiction<{self.url}>"
@@ -32,6 +49,7 @@ class Jurisdiction(models.Model):
 class LicenseClass(models.Model):
     # <cc:licenseClass rdf:resource="http://creativecommons.org/license/"/>
     url = models.URLField(
+        unique=True,
         max_length=200, help_text="E.g. http://creativecommons.org/license/",
     )
 
@@ -41,6 +59,7 @@ class LicenseClass(models.Model):
 
 class Language(models.Model):
     code = models.CharField(
+        unique=True,
         max_length=7,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
@@ -56,6 +75,11 @@ class LegalCode(models.Model):
     )
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
 
+    class Meta:
+        unique_together = [
+            ("url", "language"),
+        ]
+
     def __str__(self):
         return f"LegalCode<{self.language}, {self.url}>"
 
@@ -66,7 +90,7 @@ class License(models.Model):
         help_text="The license's unique identifier, e.g. 'http://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
     )
-    identifier = models.CharField(
+    license_code = models.CharField(
         max_length=40,
         help_text="shorthand representation for which class of licenses this falls into.  E.g. 'by-nc-sa', or 'MIT'",
     )
@@ -149,11 +173,55 @@ class License(models.Model):
     def __str__(self):
         return f"License<{self.about}>"
 
+    def set_permissions_and_prohibitions_from_license_code(self):
+        if self.creator and self.creator.url == "http://creativecommons.org":
+            self.requires_share_alike = "sa" in self.license_code
+            self.permits_derivative_works = "nd" not in self.license_code
+        else:
+            raise ValueError("set_permissions_and_prohibitions_from_license_code should only be called on CC licenses")
+
+    def rdf(self):
+        """Generate RDF for this license?"""
+        return "RDF Generation Not Implemented"  # FIXME if needed
+
+    def translated_title(self, language_code=None):
+        if not language_code:
+            # Use current language
+            language_code = translation.get_language()
+        translated_license_name = self.names.get(language__code=language_code)
+        return translated_license_name.name
+
+    def legalcodes_for_language(self, target_lang: str):
+        """Returns queryset of LegalCode"""
+        return self.legal_codes.filter(language__code=target_lang)
+
+    @property
+    def level_of_freedom(self):
+        if self.license_code in ("devnations", "sampling"):
+            return FREEDOM_LEVEL_MIN
+        elif (
+            self.license_code.find("sampling") > -1
+            or self.license_code.find("nc") > -1
+            or self.license_code.find("nd") > -1
+        ):
+            return FREEDOM_LEVEL_MID
+        else:
+            return FREEDOM_LEVEL_MAX
+
+    @property
+    def superseded(self):
+        return self.is_replaced_by is not None
+
 
 class TranslatedLicenseName(models.Model):
     license = models.ForeignKey(License, related_name="names", on_delete=models.CASCADE)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)
     name = models.CharField(max_length=250, help_text="Translated name of license")
+
+    class Meta:
+        unique_together = [
+            ("license", "language"),
+        ]
 
     def __str__(self):
         return f"TranslatedLicenseName<{self.language}, {self.license}>"

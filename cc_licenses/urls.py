@@ -17,10 +17,17 @@ from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import TemplateView
+
+from licenses.views import home
+
 
 urlpatterns = [
+<<<<<<< HEAD
     url(r'^', include('licenses.urls')),
+=======
+    url(r'^$', home, name="home"),
+    url(r'', include("licenses.urls")),
+>>>>>>> f1ab95cb6c68cf930362b1f580996ce2df3e4b2c
     url(r'^admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

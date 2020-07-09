@@ -1,0 +1,50 @@
+{% load i18n static %}
+
+<div id="deed-donate-slide" style="display: none;">
+  <div class="slide-trigger">
+    <div class="slide-close"></div>
+    <img src="{% static '/images/deed/logo-cc-heart-white.png' %}" class="slide-logo" alt="" width="100" height="88" />
+    <p class="desktop-only">{% blocktrans %}This content is freely available under simple legal terms because of Creative Commons, a non-profit that survives on donations. If you love this content, and love that it's free for everyone, please consider a donation to support our work.{% endblocktrans %}</p>
+    <p class="mobile-only">{% blocktrans %}When you share, everyone wins.{% endblocktrans %}</p>
+    <div class="donate-box">
+      <div class="widget-inner">
+        <div class="gform_wrapper" id="gform_wrapper_10">
+          <form method="get" id="gform_10" action="https://us.netdonor.net/page/6650/donate/1" class="deed-donate-form">
+            <div id="field_10_1" class="gfield field_sublabel_below field_description_below">
+              <label class="gfield_label">{% blocktrans %}Contribute today to Creative Commons{% endblocktrans %}</label>
+              <div class="ginput_container ginput_container_radio">
+                <ul class="gfield_radio" id="input_10_1">
+                  <li class="gchoice_10_1_0">
+                    <input name="transaction.donationAmt" type="radio" value="5" id="choice_10_1_0" tabindex="1">
+                    <label for="choice_10_1_0" id="label_10_1_0">$5</label>
+                  </li>
+                  <li class="gchoice_10_1_1">
+                    <input name="transaction.donationAmt" type="radio" value="15" checked="checked" id="choice_10_1_1" tabindex="2">
+                    <label for="choice_10_1_1" id="label_10_1_1">$15</label>
+                  </li>
+                  <li class="gchoice_10_1_2">
+                    <input name="transaction.donationAmt" type="radio" value="25" id="choice_10_1_2" tabindex="3">
+                    <label for="choice_10_1_2" id="label_10_1_2">$25</label>
+                  </li>
+                  <li class="gchoice_10_1_3">
+                    <input name="transaction.donationAmt" type="radio" value="50" id="choice_10_1_3" tabindex="4">
+                    <label for="choice_10_1_3" id="label_10_1_3">$50</label>
+                  </li>
+                  <li class="gchoice_10_1_4">
+                    <input name="transaction.donationAmt" type="radio" value="gf_other_choice" id="choice_10_1_4" tabindex="5" onfocus="$(this).next('input').focus();">
+                    <input name="transaction.donationAmt.other" type="text" id="input_10_1_other" tabindex="5" style="max-width: 80%" placeholder="{% blocktrans %}Amount{% endblocktrans %}" aria-label="{% blocktrans %}Amount{% endblocktrans %}">
+                  </li>
+                </ul>
+
+                <input type="hidden" name="type" value="One Time">
+                <input type="hidden" name="ea.tracking.id" value="deed-overlay">
+
+                <input type="submit" id="gform_submit_button_10" class="gform_button button" value="{% blocktrans %}Donate Now{% endblocktrans %}" tabindex="6">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

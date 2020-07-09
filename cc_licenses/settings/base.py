@@ -27,7 +27,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     'licenses',
+    'i18n',
 ]
 
 MIDDLEWARE = [
@@ -192,3 +194,6 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = 'DENY'
+
+# Percent translated that languages should be at or above
+TRANSLATION_THRESHOLD = 80

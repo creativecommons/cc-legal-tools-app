@@ -15,9 +15,10 @@ class MetadataTest(TestCase):
     def test_repeated_import(self):
         # It should be safe to import the data again, just a no-op
         MetadataImporter().import_metadata(open("index.rdf", "rb"))
+        print("Done 'importing' the data again")
 
     def test_mit_license(self):
-        license = License.objects.get(identifier="MIT")
+        license = License.objects.get(license_code="MIT")
         self.assertIsNone(license.creator)
         self.assertEqual("http://creativecommons.org/license/software", license.license_class.url)
 
@@ -33,7 +34,7 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
 
     def test_bsd(self):
-        license = License.objects.get(identifier="BSD")
+        license = License.objects.get(license_code="BSD")
         self.assertIsNone(license.creator)
         self.assertEqual("http://creativecommons.org/license/software", license.license_class.url)
 
@@ -49,7 +50,7 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
 
     def test_40_by_nc_nd(self):
-        license = License.objects.get(version="4.0", identifier="by-nc-nd")
+        license = License.objects.get(version="4.0", license_code="by-nc-nd")
         self.assertEqual("http://creativecommons.org", license.creator.url)
         self.assertEqual("http://creativecommons.org/license/", license.license_class.url)
 
@@ -68,7 +69,7 @@ class MetadataTest(TestCase):
         self.assertEqual(1, len(legalcodes))
         legalcode = legalcodes[0]
         self.assertEqual(legalcode.url, "http://creativecommons.org/licenses/by-nc-nd/4.0/legalcode")
-        self.assertEqual(legalcode.language.code, "en-us")
+        self.assertEqual(legalcode.language.code, "en")
 
         tname = TranslatedLicenseName.objects.get(
             license=license,
@@ -77,7 +78,7 @@ class MetadataTest(TestCase):
         self.assertEqual("Attribuzione - Non commerciale - Non opere derivate 4.0 Internazionale", tname.name)
 
     def test_40_by_sa(self):
-        license = License.objects.get(version="4.0", identifier="by-sa")
+        license = License.objects.get(version="4.0", license_code="by-sa")
         self.assertEqual("http://creativecommons.org", license.creator.url)
         self.assertEqual("http://creativecommons.org/license/", license.license_class.url)
 
@@ -160,7 +161,8 @@ class MetadataTest(TestCase):
             # Here's a Legalcode that did not have a language in the RDF
             legal_code = LegalCode.objects.get(url="http://creativecommons.org/publicdomain/zero/1.0/legalcode")
             # It should be using English
-            self.assertEqual("en-us", legal_code.language.code)
+            self.assertEqual("en", legal_code.language.code)
         with self.subTest("title"):
-            title = TranslatedLicenseName.objects.get(name="BSD License")
-            self.assertEqual("en-us", title.language.code)
+            bsd_license = License.objects.get(about="http://creativecommons.org/licenses/BSD/")
+            title = TranslatedLicenseName.objects.get(license=bsd_license, name="BSD License")
+            self.assertEqual("en", title.language.code)

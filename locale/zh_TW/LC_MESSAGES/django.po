@@ -1,0 +1,1617 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-06 10:53-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: cc_licenses/templates/404.html:3
+msgid "Page Not Found"
+msgstr ""
+
+#: deeds/mappers.py:6
+msgid "Argentina"
+msgstr "阿根廷"
+
+#: deeds/mappers.py:7
+msgid "Austria"
+msgstr "奧地利"
+
+#: deeds/mappers.py:8
+msgid "Australia"
+msgstr "澳大利亞"
+
+#: deeds/mappers.py:9
+msgid "Belgium"
+msgstr "比利時"
+
+#: deeds/mappers.py:10
+msgid "Bulgaria"
+msgstr "保加利亞"
+
+#: deeds/mappers.py:11
+msgid "Brazil"
+msgstr "巴西"
+
+#: deeds/mappers.py:12
+msgid "Canada"
+msgstr "加拿大"
+
+#: deeds/mappers.py:13
+msgid "Switzerland"
+msgstr "瑞士"
+
+#: deeds/mappers.py:14
+msgid "Chile"
+msgstr "智利"
+
+#: deeds/mappers.py:15
+msgid "China Mainland"
+msgstr "中國大陸"
+
+#: deeds/mappers.py:16
+msgid "Colombia"
+msgstr "哥倫比亞"
+
+#: deeds/mappers.py:17
+msgid "Costa Rica"
+msgstr "哥斯大黎加"
+
+#: deeds/mappers.py:18
+msgid "Czech Republic"
+msgstr "捷克"
+
+#: deeds/mappers.py:19
+msgid "Germany"
+msgstr "德國"
+
+#: deeds/mappers.py:20
+msgid "Denmark"
+msgstr "丹麥"
+
+#: deeds/mappers.py:21
+msgid "Ecuador"
+msgstr "厄瓜多爾"
+
+#: deeds/mappers.py:22
+msgid "Estonia"
+msgstr "愛沙尼亞"
+
+#: deeds/mappers.py:23
+msgid "Egypt"
+msgstr "埃及"
+
+#: deeds/mappers.py:24
+msgid "Spain"
+msgstr "西班牙"
+
+#: deeds/mappers.py:25
+msgid "Catalonia"
+msgstr "加泰隆尼亞"
+
+#: deeds/mappers.py:26
+msgid "Finland"
+msgstr "芬蘭"
+
+#: deeds/mappers.py:27
+msgid "France"
+msgstr "法國"
+
+#: deeds/mappers.py:28
+msgid "Greece"
+msgstr "希臘"
+
+#: deeds/mappers.py:29
+msgid "Guatemala"
+msgstr "瓜地馬拉"
+
+#: deeds/mappers.py:30
+msgid "Hong Kong"
+msgstr "香港"
+
+#: deeds/mappers.py:31
+msgid "Croatia"
+msgstr "克羅埃西亞"
+
+#: deeds/mappers.py:32
+msgid "Hungary"
+msgstr "匈牙利"
+
+#: deeds/mappers.py:33
+msgid "Ireland"
+msgstr "愛爾蘭"
+
+#: deeds/mappers.py:34
+msgid "Israel"
+msgstr "以色列"
+
+#: deeds/mappers.py:35
+msgid "IGO"
+msgstr "國際政府組織"
+
+#: deeds/mappers.py:36
+msgid "India"
+msgstr "印度"
+
+#: deeds/mappers.py:37
+msgid "Italy"
+msgstr "義大利"
+
+#: deeds/mappers.py:38
+msgid "Jordan"
+msgstr "約旦"
+
+#: deeds/mappers.py:39
+msgid "Japan"
+msgstr "日本"
+
+#: deeds/mappers.py:40
+msgid "South Korea"
+msgstr "南韓"
+
+#: deeds/mappers.py:41
+msgid "Luxembourg"
+msgstr "盧森堡"
+
+#: deeds/mappers.py:42
+msgid "Macedonia"
+msgstr "馬其頓"
+
+#: deeds/mappers.py:43
+msgid "Malta"
+msgstr "馬爾他"
+
+#: deeds/mappers.py:44
+msgid "Mexico"
+msgstr "墨西哥"
+
+#: deeds/mappers.py:45
+msgid "Malaysia"
+msgstr "馬來西亞"
+
+#: deeds/mappers.py:46
+msgid "Nigeria"
+msgstr "奈及利亞"
+
+#: deeds/mappers.py:47
+msgid "Netherlands"
+msgstr "荷蘭"
+
+#: deeds/mappers.py:48
+msgid "Norway"
+msgstr "挪威"
+
+#: deeds/mappers.py:49
+msgid "New Zealand"
+msgstr "紐西蘭"
+
+#: deeds/mappers.py:50
+msgid "Peru"
+msgstr "秘魯"
+
+#: deeds/mappers.py:51
+msgid "Philippines"
+msgstr "菲律賓"
+
+#: deeds/mappers.py:52
+msgid "Poland"
+msgstr "波蘭"
+
+#: deeds/mappers.py:53
+msgid "Puerto Rico"
+msgstr "波多黎各"
+
+#: deeds/mappers.py:54
+msgid "Portugal"
+msgstr "葡萄牙"
+
+#: deeds/mappers.py:55
+msgid "Romania"
+msgstr "羅馬尼亞"
+
+#: deeds/mappers.py:56
+msgid "Serbia"
+msgstr "塞爾維亞"
+
+#: deeds/mappers.py:57
+msgid "UK: Scotland"
+msgstr "英國: 蘇格蘭"
+
+#: deeds/mappers.py:58
+msgid "Sweden"
+msgstr "瑞典"
+
+#: deeds/mappers.py:59
+msgid "Singapore"
+msgstr "新加坡"
+
+#: deeds/mappers.py:60
+msgid "Slovenia"
+msgstr "斯洛維尼亞"
+
+#: deeds/mappers.py:61
+msgid "Slovak Republic"
+msgstr "斯洛伐克"
+
+#: deeds/mappers.py:62
+msgid "Thailand"
+msgstr "泰國"
+
+#: deeds/mappers.py:63
+msgid "Taiwan"
+msgstr "台灣"
+
+#: deeds/mappers.py:64
+msgid "Ukraine"
+msgstr "烏克蘭"
+
+#: deeds/mappers.py:65
+msgid "Uganda"
+msgstr "烏干達"
+
+#: deeds/mappers.py:66
+msgid "UK: England & Wales"
+msgstr "英國: 英格蘭及威爾斯"
+
+#: deeds/mappers.py:67
+msgid "United States"
+msgstr "美國"
+
+#: deeds/mappers.py:68
+msgid "Venezuela"
+msgstr "委內瑞拉"
+
+#: deeds/mappers.py:69
+msgid "Vietnam"
+msgstr "越南"
+
+#: deeds/mappers.py:70
+msgid "South Africa"
+msgstr "南非"
+
+#: deeds/mappers.py:74
+msgid "Afrikaans"
+msgstr "南非洲公用荷蘭語"
+
+#: deeds/mappers.py:75
+msgid "Arabic"
+msgstr "阿拉伯語"
+
+#: deeds/mappers.py:76
+msgid "Assamese"
+msgstr "阿薩姆語"
+
+#: deeds/mappers.py:77
+msgid "Asturian"
+msgstr "阿斯圖裡亞斯語"
+
+#: deeds/mappers.py:78
+msgid "Azerbaijani"
+msgstr "阿塞拜疆語"
+
+#: deeds/mappers.py:79
+msgid "Belarusian"
+msgstr "白俄羅斯語"
+
+#: deeds/mappers.py:80
+msgid "Bulgarian"
+msgstr "保加利亞語"
+
+#: deeds/mappers.py:81
+msgid "Bengali"
+msgstr "孟加拉語"
+
+#: deeds/mappers.py:82
+msgid "Catalan"
+msgstr "嘉泰羅尼亞語"
+
+#: deeds/mappers.py:83
+msgid "Czech"
+msgstr "捷克"
+
+#: deeds/mappers.py:84
+msgid "Danish"
+msgstr "丹麥語"
+
+#: deeds/mappers.py:85
+msgid "German"
+msgstr "德語"
+
+#: deeds/mappers.py:86
+msgid "Greek"
+msgstr "希臘"
+
+#: deeds/mappers.py:87
+msgid "English"
+msgstr "英語"
+
+#: deeds/mappers.py:88
+msgid "English (CA)"
+msgstr "英語 (加拿大)"
+
+#: deeds/mappers.py:89
+msgid "English (GB)"
+msgstr "英語 (英國)"
+
+#: deeds/mappers.py:90
+msgid "English (Hong Kong)"
+msgstr "英文 (香港)"
+
+#: deeds/mappers.py:91
+msgid "English (Singapore)"
+msgstr "英語 (新加坡)"
+
+#: deeds/mappers.py:92
+msgid "English (US)"
+msgstr "英語 (美國)"
+
+#: deeds/mappers.py:93
+msgid "Esperanto"
+msgstr "世界語"
+
+#: deeds/mappers.py:94
+msgid "Spanish"
+msgstr "西班牙語"
+
+#: deeds/mappers.py:95
+msgid "Spanish (AR)"
+msgstr "西班牙語 (阿根廷)"
+
+#: deeds/mappers.py:96
+msgid "Spanish (CL)"
+msgstr "西班牙語 (智利)"
+
+#: deeds/mappers.py:97
+msgid "Spanish (CO)"
+msgstr "西班牙語（哥倫比亞）"
+
+#: deeds/mappers.py:98
+msgid "Spanish (Ecuador)"
+msgstr "西班牙語 (厄瓜多爾)"
+
+#: deeds/mappers.py:99
+msgid "Spanish (Spain)"
+msgstr "西班牙語 (西班牙)"
+
+#: deeds/mappers.py:100
+msgid "Spanish (Guatemala)"
+msgstr "西班牙語 (瓜地馬拉)"
+
+#: deeds/mappers.py:101
+msgid "Spanish (MX)"
+msgstr "西班牙語 (墨西哥)"
+
+#: deeds/mappers.py:102
+msgid "Spanish (PE)"
+msgstr "西班牙語 (秘魯)"
+
+#: deeds/mappers.py:103
+msgid "Estonian"
+msgstr "愛沙尼亞語"
+
+#: deeds/mappers.py:104
+msgid "Basque"
+msgstr "巴斯克語"
+
+#: deeds/mappers.py:105
+msgid "Persian"
+msgstr "波斯語"
+
+#: deeds/mappers.py:106
+msgid "Finnish"
+msgstr "芬蘭語"
+
+#: deeds/mappers.py:107
+msgid "French"
+msgstr "法語"
+
+#: deeds/mappers.py:108
+msgid "French (CA)"
+msgstr "法語 (加拿大)"
+
+#: deeds/mappers.py:109
+msgid "Irish"
+msgstr "愛爾蘭語"
+
+#: deeds/mappers.py:110
+msgid "Galician"
+msgstr "加利西亞語"
+
+#: deeds/mappers.py:111
+msgid "Hebrew"
+msgstr "希伯來語"
+
+#: deeds/mappers.py:112
+msgid "Hindi"
+msgstr "印度語"
+
+#: deeds/mappers.py:113
+msgid "Croatian"
+msgstr "克羅埃西亞語"
+
+#: deeds/mappers.py:114
+msgid "Hungarian"
+msgstr "匈牙利語"
+
+#: deeds/mappers.py:115
+msgid "Armenian"
+msgstr "亞美尼亞語"
+
+#: deeds/mappers.py:116
+msgid "Indonesian"
+msgstr "印度尼西亞語"
+
+#: deeds/mappers.py:117
+msgid "Icelandic"
+msgstr "冰島語"
+
+#: deeds/mappers.py:118
+msgid "Italian"
+msgstr "義大利語"
+
+#: deeds/mappers.py:119
+msgid "Japanese"
+msgstr "日本語"
+
+#: deeds/mappers.py:120
+msgid "Georgian"
+msgstr "喬治亞語"
+
+#: deeds/mappers.py:121
+msgid "Kazakh"
+msgstr "哈薩克"
+
+#: deeds/mappers.py:122
+msgid "Korean"
+msgstr "韓國語"
+
+#: deeds/mappers.py:123
+msgid "Lithuanian"
+msgstr "立陶宛語"
+
+#: deeds/mappers.py:124
+msgid "Latvian"
+msgstr "拉脫維亞語"
+
+#: deeds/mappers.py:125
+msgid "Macedonian"
+msgstr "馬其頓語"
+
+#: deeds/mappers.py:126
+msgid "Malayalam"
+msgstr "馬來亞語"
+
+#: deeds/mappers.py:127
+msgid "Mongolian"
+msgstr "蒙古語"
+
+#: deeds/mappers.py:128
+msgid "Malay"
+msgstr "馬來語"
+
+#: deeds/mappers.py:129
+msgid "Dutch"
+msgstr "荷蘭語"
+
+#: deeds/mappers.py:130
+msgid "Norwegian"
+msgstr "挪威語"
+
+#: deeds/mappers.py:131
+msgid "Northern Sotho"
+msgstr "北索托語"
+
+#: deeds/mappers.py:132
+msgid "Aranese"
+msgstr "亞拉尼斯語"
+
+#: deeds/mappers.py:133
+msgid "Polish"
+msgstr "波蘭語"
+
+#: deeds/mappers.py:134
+msgid "Portuguese"
+msgstr "葡萄牙文"
+
+#: deeds/mappers.py:135
+msgid "Portuguese (BR)"
+msgstr "葡萄牙文 (巴西)"
+
+#: deeds/mappers.py:137
+msgid "Romanian"
+msgstr "羅馬尼亞語"
+
+#: deeds/mappers.py:138
+msgid "Russian"
+msgstr "俄語"
+
+#: deeds/mappers.py:139
+msgid "Sinhala"
+msgstr "僧伽羅語"
+
+#: deeds/mappers.py:140
+msgid "Slovenian"
+msgstr "斯洛維尼亞語"
+
+#: deeds/mappers.py:141
+msgid "Serbian"
+msgstr "塞爾維亞語"
+
+#: deeds/mappers.py:142
+msgid "Serbian (Latin)"
+msgstr "賽爾維亞語"
+
+#: deeds/mappers.py:143
+msgid "Sotho"
+msgstr "索托語"
+
+#: deeds/mappers.py:144
+msgid "Swedish"
+msgstr "瑞典語"
+
+#: deeds/mappers.py:145
+msgid "Tamil"
+msgstr "坦米爾語"
+
+#: deeds/mappers.py:146
+msgid "Telugu"
+msgstr "泰盧固語"
+
+#: deeds/mappers.py:147
+msgid "Thai"
+msgstr "泰文"
+
+#: deeds/mappers.py:148
+msgid "Turkish"
+msgstr "土耳其語"
+
+#: deeds/mappers.py:149
+msgid "Ukranian"
+msgstr "烏克蘭語"
+
+#: deeds/mappers.py:150
+msgid "Urdu"
+msgstr "烏爾都語"
+
+#: deeds/mappers.py:151
+msgid "Vietnamese"
+msgstr "越南語"
+
+#: deeds/mappers.py:152 deeds/mappers.py:153
+msgid "Chinese"
+msgstr "華語"
+
+#: deeds/mappers.py:154
+msgid "Chinese (Hong Kong)"
+msgstr "華語 (香港)"
+
+#: deeds/mappers.py:155
+msgid "Chinese (Taiwan)"
+msgstr "華語 (台灣)"
+
+#: deeds/mappers.py:156
+msgid "Zulu"
+msgstr "祖魯語"
+
+#: deeds/mappers.py:160
+msgid "GPL"
+msgstr "通用公共授權條款 (GPL)"
+
+#: deeds/mappers.py:161
+msgid "LGPL"
+msgstr "較寬鬆通用公共授權條款 (LGPL)"
+
+#: deeds/mappers.py:162 deeds/mappers.py:182
+#: deeds/templates/licenses/devnations_deed.html:53
+#: deeds/templates/licenses/standard_deed.html:102
+msgid "Attribution"
+msgstr "姓名標示"
+
+#: deeds/mappers.py:163
+msgid "Attribution-NonCommercial"
+msgstr "姓名標示-非商業性"
+
+#: deeds/mappers.py:164
+msgid "Attribution-NonCommercial-NoDerivs"
+msgstr "姓名標示-非商業性-禁止改作"
+
+#: deeds/mappers.py:165
+msgid "Attribution-NonCommercial-ShareAlike"
+msgstr "姓名標示-非商業性-相同方式分享"
+
+#: deeds/mappers.py:166
+msgid "Attribution-NoDerivs"
+msgstr "姓名標示-禁止改作"
+
+#: deeds/mappers.py:167
+msgid "Attribution-NoDerivs-NonCommercial"
+msgstr "姓名標示-禁止改作-非商業性"
+
+#: deeds/mappers.py:168
+msgid "Attribution-ShareAlike"
+msgstr "姓名標示-相同方式分享"
+
+#: deeds/mappers.py:169
+msgid "Public Domain Mark"
+msgstr "公眾領域標章"
+
+#: deeds/mappers.py:170 deeds/templates/licenses/standard_deed.html:131
+msgid "NonCommercial"
+msgstr "非商業性"
+
+#: deeds/mappers.py:171
+msgid "NonCommercial-ShareAlike"
+msgstr "非商業性-相同方式分享"
+
+#: deeds/mappers.py:172
+msgid "NonCommercial Sampling Plus"
+msgstr "非商業性特別取樣"
+
+#: deeds/mappers.py:173
+msgid "NoDerivs"
+msgstr "禁止改作"
+
+#: deeds/mappers.py:174
+msgid "NoDerivs-NonCommercial"
+msgstr "禁止改作-非商業性"
+
+#: deeds/mappers.py:175
+msgid "Public Domain"
+msgstr "公眾領域"
+
+#: deeds/mappers.py:176 deeds/templates/licenses/standard_deed.html:149
+msgid "ShareAlike"
+msgstr "相同方式分享"
+
+#: deeds/mappers.py:177
+msgid "Sampling"
+msgstr "取樣"
+
+#: deeds/mappers.py:178
+msgid "Sampling Plus"
+msgstr "特別取樣"
+
+#: deeds/mappers.py:183
+msgid "Noncommercial"
+msgstr "非商業性"
+
+#: deeds/mappers.py:184
+msgid "No Derivative Works"
+msgstr "禁止改作"
+
+#: deeds/mappers.py:185
+msgid "Share Alike"
+msgstr "相同方式分享"
+
+#: deeds/mappers.py:190 deeds/templates/licenses/devnations_deed.html:55
+#: deeds/templates/licenses/sampling_deed.html:45
+msgid ""
+"You must attribute the work in the manner specified by the author or "
+"licensor (but not in any way that suggests that they endorse you or your use"
+" of the work)."
+msgstr "你必須按照著作人或授權人所指定的方式，表彰其姓名（但不得以任何方式暗示其為你或你使用本著作的方式背書）。"
+
+#: deeds/mappers.py:194 deeds/templates/licenses/sampling_deed.html:53
+msgid ""
+"You may not use this work to advertise for or promote anything but the work "
+"you create from it."
+msgstr "不得使用本著作進行廣告或推銷。但為本著作之衍生著作所為者，不在此限。"
+
+#: deeds/mappers.py:196 deeds/templates/licenses/sampling_deed.html:49
+msgid "You may not use this work for commercial purposes."
+msgstr "不得將本著作進行商業目的之使用。"
+
+#: deeds/mappers.py:197
+msgid "You may not alter, transform, or build upon this work."
+msgstr "不得變更、轉換或修改本著作。"
+
+#: deeds/mappers.py:199 deeds/templates/licenses/sampling_deed.html:66
+msgid ""
+"You may not perform, display, or distribute copies of this whole work for "
+"any purpose."
+msgstr "不得為任何目的演出、展示或散佈本著作之重製物。"
+
+#: deeds/mappers.py:202
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same or similar license to this one."
+msgstr "若對本著作進行變更、轉換或修改，僅得依本授權條款或類似之授權條款散布該衍生作品。"
+
+#: deeds/mappers.py:206
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same, similar or a compatible license."
+msgstr "若對本著作進行變更、轉換或修改，僅在採用與本著作相同、相似或相容之授權條款下，方得散布本著作之衍生著作。"
+
+#: deeds/templates/catalog_pages/license_catcher.html:3
+#: deeds/templates/licenses/pdmark_deed.html:188
+#: deeds/templates/macros_templates/partner.html:26
+msgid "Creative Commons"
+msgstr "創用 CC"
+
+#: deeds/templates/includes/cc_site_footer.html:25
+#: deeds/templates/includes/cc_site_header.html:40
+msgid "Contact"
+msgstr "連絡我們"
+
+#: deeds/templates/includes/cc_site_footer.html:26
+msgid "Privacy"
+msgstr "隱私權聲明"
+
+#: deeds/templates/includes/cc_site_footer.html:27
+msgid "Policies"
+msgstr "使用規範"
+
+#: deeds/templates/includes/cc_site_footer.html:28
+msgid "Terms"
+msgstr "條款"
+
+#: deeds/templates/includes/cc_site_footer.html:35
+msgid "We'd love to hear from you!"
+msgstr "我們很期待聽到你的消息！"
+
+#: deeds/templates/includes/cc_site_footer.html:44
+msgid "Frequently Asked Questions"
+msgstr "常見問題集"
+
+#: deeds/templates/includes/cc_site_header.html:11
+msgid "Menu"
+msgstr "選單"
+
+#: deeds/templates/includes/cc_site_header.html:16
+#: deeds/templates/includes/cc_site_header.html:27
+msgid "Share your work"
+msgstr "分享你的作品"
+
+#: deeds/templates/includes/cc_site_header.html:17
+#: deeds/templates/includes/cc_site_header.html:28
+msgid "Use &#038; remix"
+msgstr "使用與混搭"
+
+#: deeds/templates/includes/cc_site_header.html:18
+#: deeds/templates/includes/cc_site_header.html:29
+msgid "What We do"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:19
+#: deeds/templates/includes/cc_site_header.html:30
+msgid "Blog"
+msgstr "網誌"
+
+#: deeds/templates/includes/cc_site_header.html:20
+#: deeds/templates/includes/cc_site_header.html:37
+msgid "Global Network"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:21
+msgid "Search the Commons"
+msgstr "搜尋創用 CC 素材"
+
+#: deeds/templates/includes/cc_site_header.html:36
+msgid "Search for CC images"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:38
+msgid "Newsletters"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:39
+msgid "Store"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:46
+msgid "Facebook"
+msgstr "Facebook"
+
+#: deeds/templates/includes/cc_site_header.html:47
+msgid "Twitter"
+msgstr "Twitter"
+
+#: deeds/templates/includes/cc_site_header.html:48
+msgid "Mail"
+msgstr "信箱"
+
+#: deeds/templates/includes/deed_donate_slide.html:7
+#: deeds/templates/macros_templates/deed.html:119
+#: deeds/templates/macros_templates/pdtool_deed.html:92
+msgid ""
+"This content is freely available under simple legal terms because of "
+"Creative Commons, a non-profit that survives on donations. If you love this "
+"content, and love that it's free for everyone, please consider a donation to"
+" support our work."
+msgstr ""
+"本內容得以簡要法律文字進行自由提供，歸功於Creative "
+"Commons，這是一個依靠捐款來運作的非營利組織。如果您認同此內容，並認同每一個人都可自由地使用它，請考慮透過捐款來支持我們的工作。"
+
+#: deeds/templates/includes/deed_donate_slide.html:8
+msgid "When you share, everyone wins."
+msgstr "一人分享、眾人得利。"
+
+#: deeds/templates/includes/deed_donate_slide.html:14
+msgid "Contribute today to Creative Commons"
+msgstr "今天開始就貢獻到創用 CC 吧"
+
+#: deeds/templates/includes/deed_donate_slide.html:35
+msgid "Amount"
+msgstr "數量"
+
+#: deeds/templates/includes/deed_donate_slide.html:42
+msgid "Donate Now"
+msgstr "現在捐款"
+
+#: deeds/templates/includes/language_selector.html:5
+#: deeds/templates/includes/translations.html:4
+msgid "This page is available in the following languages:"
+msgstr "本頁面也有下列各語言的版本："
+
+#: deeds/templates/licenses/devnations_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:15
+#: deeds/templates/licenses/standard_deed.html:26
+msgid ""
+"Creative Commons has <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
+"tool</a> and does not recommend that it be applied to works."
+msgstr ""
+"創用CC已 <a href=\"http://creativecommons.org/retiredlicenses\">棄用這個授權工具</a> "
+"，並且不建議你在新作品中使用它。"
+
+#: deeds/templates/licenses/devnations_deed.html:23
+#: deeds/templates/licenses/sampling_deed.html:20
+msgid "You are free:"
+msgstr "你可自由："
+
+#: deeds/templates/licenses/devnations_deed.html:28
+msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
+msgstr "<strong>分享</strong> — 重製、散布及傳輸本著作"
+
+#: deeds/templates/licenses/devnations_deed.html:33
+msgid "<strong>to Remix</strong> — to adapt the work"
+msgstr "<strong>重混</strong> — 修改本著作"
+
+#: deeds/templates/licenses/devnations_deed.html:40
+#: deeds/templates/licenses/sampling_deed.html:41
+msgid "Under the following conditions:"
+msgstr "惟需遵照下列條件："
+
+#: deeds/templates/licenses/devnations_deed.html:60
+#: deeds/templates/licenses/sampling_deed.html:59
+msgid ""
+"For any reuse or distribution, you must make clear to others the license "
+"terms of this work. The best way to do this is with a link to this web page."
+msgstr "為了再使用或散布之目的，你必須向他人清楚說明本著作所適用的授權條款。提供本網頁連結是最好的方式。"
+
+#: deeds/templates/licenses/devnations_deed.html:61
+msgid ""
+"Any of the above conditions can be <a href=\"#\" id=\"waived\" "
+"class=\"helpLink\">waived</a> if you get permission from the copyright "
+"holder."
+msgstr "若你得到著作權人的同意，上述任何條件都可獲<a href=\"#\" id=\"waived\" class=\"helpLink\">免除</a>。"
+
+#: deeds/templates/licenses/devnations_deed.html:69
+#: deeds/templates/licenses/sampling_deed.html:76
+msgid ""
+"Your fair dealing or <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">fair use</a> rights, or other applicable"
+" copyright exceptions and limitations;"
+msgstr ""
+"你<a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">合理使用的權利</a>；"
+
+#: deeds/templates/licenses/devnations_deed.html:72
+#: deeds/templates/licenses/sampling_deed.html:79
+msgid ""
+"Rights other persons may have either in the work itself or in how the work "
+"is used, such as <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity</a> or privacy rights."
+msgstr ""
+"其他人可能對該著作本身或該著作如何被使用所擁有的權利，例如<a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">形象權</a>或隱私權。"
+
+#: deeds/templates/licenses/pdmark_deed.html:18
+#: deeds/templates/licenses/zero_deed.html:20
+msgid "No Copyright"
+msgstr "無著作權"
+
+#: deeds/templates/licenses/pdmark_deed.html:21
+msgid ""
+"<p id=\"nolaw-text\"> This work has been <b>identified</b> as being free of "
+"known restrictions under copyright law, including all related and "
+"neighboring rights. </p> <p> <br /> You can copy, modify, distribute and "
+"perform the work, even for commercial purposes, all without asking "
+"permission. See <b>Other Information</b> below. </p>"
+msgstr ""
+"<p id=\"nolaw-text\"> 此作品已<b>被辨識</b>為無已知的著作權利限制，亦不受所有相關和鄰接權利的限制。</p> <p> <br"
+" /> 你可以複製、修改、發布或展示此作品，亦可進行商業利用，完全不需要經過額外許可。請參考下面的<b>其他資訊</b>。</p>"
+
+#: deeds/templates/licenses/pdmark_deed.html:31
+#: deeds/templates/licenses/zero_deed.html:49
+msgid "Other Information"
+msgstr "其他資訊"
+
+#: deeds/templates/licenses/pdmark_deed.html:34
+msgid ""
+"The work may not be free of known copyright restrictions in all <a href=\"\""
+" class=\"helpLink\" id=\"all_jurisdictions\">jurisdictions</a>."
+msgstr ""
+"此作並非於全 <a href=\"\" class=\"helpLink\" "
+"id=\"all_jurisdictions\">司法管轄權</a>下都不受著作權保護。"
+
+#: deeds/templates/licenses/pdmark_deed.html:37
+msgid ""
+"Persons may have other rights in or related to the work, such as patent or "
+"trademark rights, and others may have rights in how the work is used, such "
+"as <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
+msgstr ""
+"此作品上可能存有其他相關之權利，例如專利權或商標權。在作品的使用上，亦可能牽涉到他人之權利，例如 <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">形象權或隱私權</a> 權利。 "
+
+#: deeds/templates/licenses/pdmark_deed.html:40
+msgid ""
+"In some jurisdictions <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">moral rights</a> of the author may persist beyond the "
+"term of copyright. These rights may include the right to be identified as "
+"the author and the right to object to derogatory treatments."
+msgstr "在某些司法管轄下，作者的人格權，包括作者的姓名表示權以及拒絕不合理對待的權利等，可能在著作財產權保護期滿之後繼續存在。"
+
+#: deeds/templates/licenses/pdmark_deed.html:43
+msgid ""
+"Unless expressly stated otherwise, the person who identified the work makes "
+"no warranties about the work, and disclaims liability for all uses of the "
+"work, to the fullest extent permitted by applicable law."
+msgstr "除非另有明示聲明，辨識人對作品並不負擔保，對於此作品之所有使用亦不承擔責任，此免責聲明在法律允許的範圍內做最大程度的適用。"
+
+#: deeds/templates/licenses/pdmark_deed.html:46
+msgid ""
+"When using or citing the work, you should not imply <a href=\"\" "
+"class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
+"person who identified the work."
+msgstr "當使用或引用該著作時，不得暗喻作者或指認該著作之人，為你的行為背書。"
+
+#: deeds/templates/licenses/pdmark_deed.html:74
+#: deeds/templates/licenses/zero_deed.html:82
+msgid "Work:"
+msgstr "作品："
+
+#: deeds/templates/licenses/pdmark_deed.html:79
+msgid "Author:"
+msgstr "創作者："
+
+#: deeds/templates/licenses/pdmark_deed.html:83
+msgid "Identified by:"
+msgstr "辨識者:"
+
+#: deeds/templates/licenses/pdmark_deed.html:89
+#: deeds/templates/licenses/zero_deed.html:95
+msgid ""
+"You can <a href=\"\" class=\"helpLink\" id=\"citation_help\">cite</a> this "
+"work with this HTML:"
+msgstr "你可以使用此HTML<a href=\"\" class=\"helpLink\" id=\"citation_help\">引用</a> 此作:"
+
+#: deeds/templates/licenses/pdmark_deed.html:114
+#: deeds/templates/licenses/zero_deed.html:123
+msgid "Endorsement"
+msgstr "背書"
+
+#: deeds/templates/licenses/pdmark_deed.html:118
+#: deeds/templates/licenses/zero_deed.html:126
+msgid ""
+"In some jurisdictions, wrongfully implying that an author, publisher or "
+"anyone else endorses your use of a work may be unlawful."
+msgstr "在某些司法官轄區，故意/惡意地暗示某作者，出版者或任何人，為你使用此作品的行為背書，可能是非法的。"
+
+#: deeds/templates/licenses/pdmark_deed.html:121
+#: deeds/templates/licenses/pdmark_deed.html:135
+#: deeds/templates/licenses/pdmark_deed.html:149
+#: deeds/templates/licenses/pdmark_deed.html:162
+#: deeds/templates/licenses/pdmark_deed.html:173
+#: deeds/templates/licenses/zero_deed.html:117
+#: deeds/templates/licenses/zero_deed.html:130
+#: deeds/templates/licenses/zero_deed.html:142
+msgid "Learn more"
+msgstr "瞭解更多資訊"
+
+#: deeds/templates/licenses/pdmark_deed.html:128
+#: deeds/templates/licenses/zero_deed.html:136
+msgid "Citation"
+msgstr "引用"
+
+#: deeds/templates/licenses/pdmark_deed.html:132
+#: deeds/templates/licenses/zero_deed.html:139
+msgid ""
+"Copy and paste the HTML provided into your webpage to easily cite this work."
+msgstr "複製並貼上此處的HTML碼至你的網頁以便利此著作的引用。"
+
+#: deeds/templates/licenses/pdmark_deed.html:142
+msgid "Moral Rights"
+msgstr "著作人格權"
+
+#: deeds/templates/licenses/pdmark_deed.html:146
+msgid ""
+"Copyright laws in most jurisdictions around the world grant creators \"moral"
+" rights\" which may provide some redress if use of a work is considered "
+"\"derogatory\"."
+msgstr "多數司法管轄區的著作權法均賦予創作人\"著作人格權\"的保護，若著作的使用被視為對人格的侵害時，此權利便可提供一些矯正與救濟。"
+
+#: deeds/templates/licenses/pdmark_deed.html:155
+#: deeds/templates/licenses/zero_deed.html:110
+msgid "Other Rights"
+msgstr "其他權利"
+
+#: deeds/templates/licenses/pdmark_deed.html:159
+#: deeds/templates/licenses/zero_deed.html:113
+msgid ""
+"The use of a work free of known copyright restrictions may be otherwise "
+"regulated or limited. The work or its use may be subject to personal data "
+"protection laws, publicity, image, or privacy rights that allow a person to "
+"control how their voice, image or likeness is used, or other restrictions or"
+" limitations under applicable law."
+msgstr ""
+"使用無已知著作權利限制的作品仍可能受到其他權利規範或法令限制。作品或其使用可能涉及個人資料保護法，形象權、影像權、或隱私權等規範，在這些權利的規範下，人們可控制他們的聲音、影像或其他相類物如何被利用，又或者現行法令亦可能直接明定其他的拘束或限制。"
+
+#: deeds/templates/licenses/pdmark_deed.html:167
+msgid "Term of Copyright"
+msgstr "著作權條款"
+
+#: deeds/templates/licenses/pdmark_deed.html:170
+msgid ""
+"Copyright terms vary jurisdiction to jurisdiction. A work free of copyright "
+"restrictions in one jurisdiction may not be similarly free in other "
+"jurisdictions."
+msgstr "著作權法的規定依不同司法管轄區域而改變。在某個區域下已不受著作權利限制的作品，不代表在其他區域裡，亦同樣地不受限制。"
+
+#: deeds/templates/licenses/pdmark_deed.html:196
+#: deeds/templates/licenses/pdmark_deed.html:198
+#: deeds/templates/licenses/zero_deed.html:172
+#: deeds/templates/licenses/zero_deed.html:187
+#: deeds/templates/macros_templates/deed.html:94
+#: deeds/templates/macros_templates/deed.html:141
+msgid "Disclaimer"
+msgstr "免責聲明"
+
+#: deeds/templates/licenses/pdmark_deed.html:200
+msgid ""
+"<p> The Public Domain Mark is not a legal instrument. </p> <p> Creative "
+"Commons is not a law firm and does not provide legal services or advice. "
+"Distributing, displaying, or linking to this Public Domain Mark does not "
+"create an attorney-client relationship. </p> <p> Creative Commons has not "
+"verified the copyright status of any work to which this mark has been "
+"applied. CC makes no warranties about any work or its copyright status in "
+"any jurisdiction, and disclaims all liability for all uses of any work. </p>"
+msgstr ""
+"<p>公眾領域標章並非一份法律文件。</p><p>創用CC不是法律事務所，亦不提供法律服務與建議。散布、展示或連結到本公眾領域標章並不產生律師和客戶的關係。</p><p>創用CC並未對適用公眾領域標章之作品，進行著作權利狀態的驗證。創用CC對任何著作或其著作權利狀態在各個司法管轄領域下的認定，不負擔保之責，並免除所有使用行為於任何作品上產生的所有責任。</p>"
+
+#: deeds/templates/licenses/pdmark_deed.html:207
+#, python-format
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
+"  "
+msgstr ""
+
+#: deeds/templates/licenses/publicdomain_deed.html:5
+msgid ""
+"Copyright-Only Dedication (based on United States law)\n"
+"or Public Domain Certification"
+msgstr ""
+
+#: deeds/templates/licenses/publicdomain_deed.html:19
+msgid ""
+"Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
+"  (based on United States law)<br />\n"
+"  or Public Domain Certification"
+msgstr ""
+"Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
+"  (基於美國法)<br />\n"
+"  或是公眾領域認證"
+
+#: deeds/templates/licenses/publicdomain_deed.html:28
+#: deeds/templates/licenses/standard_deed.html:77
+#: deeds/templates/licenses/zero_deed.html:37
+msgid "This license is acceptable for Free Cultural Works."
+msgstr "此授權條款適合自由文化作品。"
+
+#: deeds/templates/licenses/publicdomain_deed.html:38
+msgid ""
+"        <p>The person or persons who have associated work with this document (the \"Dedicator\" or \"Certifier\") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the \"Work\") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a \"dedicator\" below.</p>\n"
+"\n"
+"        <p>A certifier has taken reasonable steps to verify the copyright status of this work. Certifier recognizes that his good faith efforts may not shield him from liability if in fact the work certified is not in the public domain.</p>\n"
+"\n"
+"        <p>Dedicator makes this dedication for the benefit of the public at large and to the detriment of the Dedicator's heirs and successors. Dedicator intends this dedication to be an overt act of relinquishment in perpetuity of all present and future rights under copyright law, whether vested or contingent, in the Work. Dedicator understands that such relinquishment of all rights includes the relinquishment of all rights to enforce (by lawsuit or otherwise) those copyrights in the Work.</p>\n"
+"\n"
+"        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>"
+msgstr ""
+"將其著作與本文件結合者（下稱「貢獻者」(Dedicator) 或「認證者」(Certifier)）特此： (a) 保證，該著作歸屬其所發表國家之公眾領域，或 (b) 將其就該著作（下稱「本著作」）所擁有之著作權，貢獻至公眾領域。此外，認證者貢獻其就本著作之相關著作 (associated work) 可能擁有之任何著作權利益，且就此目的，以下以「貢獻者」稱之。\n"
+"\n"
+"認證者已採取合理步驟，確認該著作之著作權狀態。認證者認知到，若該受認證之著作事實上並非歸屬公眾領域時，其善意之努力無法使其免責。\n"
+"\n"
+"貢獻者係為公眾之最大利益及其繼承人之損害進行此貢獻。貢獻者願依此貢獻聲明公開表示永久拋棄本著作現有及未來，既得 (vested) 或附帶 (contingent) 之著作權。貢獻者瞭解，拋棄全部著作權包括拋棄實施本著作著作權（透過訴訟或其他方式）之所有權利。\n"
+"\n"
+"貢獻者認知到，一旦本著作歸屬於公眾領域，任何人即得為任何目的，無論商業或非商業，以任何方式，包括尚未被發明或想像之方法，自由地重製、散布、傳輸、使用、修改、改作或以其他方式利用本著作。"
+
+#: deeds/templates/licenses/publicdomain_deed.html:49
+msgid ""
+"This tool is based on United States law and may not be applicable outside "
+"the US. For dedicating new works to the public domain, we recommend <a "
+"href=\"/choose/zero/\">CC0</a>."
+msgstr "此工具基於美國法，可能不適用於美國以外。若要貢獻新作品於公眾領域，我們建議<a href=\"/choose/zero/\">CC0</a> 。"
+
+#: deeds/templates/licenses/sampling_deed.html:24
+msgid ""
+"To sample, mash-up, or otherwise creatively transform this work for "
+"noncommercial purposes."
+msgstr "取樣，混合，或對本著作基於非商業目的進行其他創意的改作。"
+
+#: deeds/templates/licenses/sampling_deed.html:28
+msgid ""
+"To sample, mash-up, or otherwise creatively transform this work for "
+"commercial or noncommercial purposes."
+msgstr "取樣，混合，或為商業或非商業目的以其他方式有創造性地改變本著作。"
+
+#: deeds/templates/licenses/sampling_deed.html:34
+msgid ""
+"To perform, display, and distribute copies of this whole work for "
+"noncommercial purposes (e.g., file-sharing or noncommercial webcasting)."
+msgstr "為非商業目的而演出、展示及散布整部著作的重製物（例如，檔案分享或非商業性的網路播送）。"
+
+#: deeds/templates/licenses/sampling_deed.html:63
+msgid ""
+"For any reuse, you must make clear to others the license terms of this work."
+msgstr "為再使用本著作，你必須向他人清楚說明本著作所適用的授權條款。"
+
+#: deeds/templates/licenses/standard_deed.html:44
+msgid "You are free to:"
+msgstr "你可自由："
+
+#: deeds/templates/licenses/standard_deed.html:49
+msgid ""
+"<strong>Share</strong>  &mdash; copy and redistribute the material in any "
+"medium or format"
+msgstr "<strong>分享</strong> &mdash; 以任何媒介或格式重製及散布本素材"
+
+#: deeds/templates/licenses/standard_deed.html:56
+msgid ""
+"<strong>Adapt</strong>  &mdash; remix, transform, and build upon the "
+"material"
+msgstr "<strong>修改</strong> &mdash; 重混、轉換本素材、及依本素材建立新素材"
+
+#: deeds/templates/licenses/standard_deed.html:62
+msgid "for any purpose, even commercially."
+msgstr "且為任何目的，包含商業性質之使用。"
+
+#: deeds/templates/licenses/standard_deed.html:89
+msgid ""
+"The licensor cannot revoke these freedoms as long as you follow the license "
+"terms."
+msgstr "只要你遵守授權條款規定，授權人不能撤回你使用本素材的自由。"
+
+#: deeds/templates/licenses/standard_deed.html:96
+msgid "Under the following terms:"
+msgstr "惟需遵照下列條件:"
+
+#: deeds/templates/licenses/standard_deed.html:103
+msgid ""
+"You must give <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">appropriate credit</a></span>, provide a link to the "
+"license, and <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\">indicate if changes were "
+"made</a></span>.  You may do so in any reasonable manner, but not in any way"
+" that suggests the licensor endorses you or your use."
+msgstr ""
+"你必須給予 <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">適當表彰</a>、提供指向本授權條款的連結，以及 <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" "
+"class=\"helpLink\">指出（本作品的原始版本）是否已被變更</a></span>。你可以任何合理方式為前述表彰，但不得以任何方式暗示授權人為你或你的使用方式背書。"
+
+#: deeds/templates/licenses/standard_deed.html:109
+msgid "Attribute this work:"
+msgstr "標示這份著作："
+
+#: deeds/templates/licenses/standard_deed.html:121
+msgid "Information"
+msgstr "資訊"
+
+#: deeds/templates/licenses/standard_deed.html:131
+msgid ""
+"You may not use the material for <a href=\"#\" "
+"id=\"commercial_purposes_popup\" class=\"helpLink\">commercial purposes</a>."
+msgstr ""
+"你不得將本素材進行<a href=\"#\" id=\"commercial_purposes_popup\" "
+"class=\"helpLink\">商業目的</a>之使用。"
+
+#: deeds/templates/licenses/standard_deed.html:139
+msgid "NoDerivatives"
+msgstr "禁止改作"
+
+#: deeds/templates/licenses/standard_deed.html:139
+msgid ""
+"If you <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">remix, transform, or build upon</a> the material, you may"
+" not distribute the modified material."
+msgstr ""
+"若你<a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">重混、轉換本素材，或依本素材建立新素材</a>，則你不得散布改作後的素材。"
+
+#: deeds/templates/licenses/standard_deed.html:149
+msgid ""
+"If you remix, transform, or build upon the material, you must distribute "
+"your contributions under the <a href=\"#\" id=\"same_license_popup\" "
+"class=\"helpLink\">same license</a> as the original."
+msgstr ""
+"若你重混、轉換本素材，或依本素材建立新素材，你必須依<a href=\"#\" id=\"same_license_popup\" "
+"class=\"helpLink\">本素材的授權條款</a>來散布你的貢獻物。"
+
+#: deeds/templates/licenses/standard_deed.html:160
+msgid "No additional restrictions"
+msgstr "不得增加額外限制"
+
+#: deeds/templates/licenses/standard_deed.html:160
+msgid ""
+"You may not apply legal terms or <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">technological "
+"measures</a> that legally restrict others from doing anything the license "
+"permits."
+msgstr ""
+"你不能增設法律條款或<a href=\"#\" id=\"technological_measures_popup\" "
+"class=\"helpLink\">科技措施</a>，來限制別人依授權條款本已許可的作為。"
+
+#: deeds/templates/licenses/standard_deed.html:167
+msgid "Notices:"
+msgstr "聲明"
+
+#: deeds/templates/licenses/standard_deed.html:172
+msgid ""
+"When the Licensor is an intergovernmental organization, disputes will be "
+"resolved by <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">mediation and arbitration</a> unless otherwise agreed."
+msgstr ""
+"假如授權人是跨政府組織，爭端將會透過<a href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">調解或是仲裁程序</a>來解決，不過若爭端各方同意採用其他不同解決方式的話，則依照所同意的方式來解決。"
+
+#: deeds/templates/licenses/standard_deed.html:177
+msgid ""
+"You do not have to comply with the license for elements of the material in "
+"the public domain or where your use is permitted by an applicable <a "
+"href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">exception"
+" or limitation</a>."
+msgstr ""
+"當你使用本素材中屬於公眾領域的元素，或當法律有<a href=\"#\" id=\"exception_or_limitation_popup\" "
+"class=\"helpLink\">例外或限制條款</a>允許你的使用，則你不需要遵守本授權條款。"
+
+#: deeds/templates/licenses/standard_deed.html:180
+msgid ""
+"No warranties are given. The license may not give you all of the permissions"
+" necessary for your intended use. For example, other rights such as <a "
+"href=\"#\" id=\"publicity_privacy_or_moral_rights_popup\" "
+"class=\"helpLink\">publicity, privacy, or moral rights</a> may limit how you"
+" use the material."
+msgstr ""
+"未提供保證。本授權條款未必能完全提供，你預期用途所需要的所有許可。例如：<a href=\"#\" "
+"id=\"publicity_privacy_or_moral_rights_popup\" "
+"class=\"helpLink\">形象權，隱私權、著作人格權</a>等其他權利，可能限制你如何使用本素材。"
+
+#: deeds/templates/licenses/standard_deed.html:188
+#, python-format
+msgid ""
+"A <a href=\"%(current_version_url)s\">new version</a> of this license is "
+"available. You should use it for new works, and you may want to relicense "
+"existing works under it. No works are <em>automatically</em> put under the "
+"new license, however."
+msgstr ""
+"本授權條款有<a "
+"href=\"%(current_version_url)s\">新的版本</a>。你的新著作應使用本授權條款之新版本，且你可依據該新版授權條款重新授權現有著作。然而，新版授權條款並不會<em>自動地</em>套用於任何著作上。"
+
+#: deeds/templates/licenses/standard_deed.html:203
+msgid "What does \"Attribute this work\" mean?"
+msgstr "所謂的「姓名標示」是什麼意思？"
+
+#: deeds/templates/licenses/standard_deed.html:206
+msgid ""
+"The page you came from contained embedded licensing metadata, including how "
+"the creator wishes to be attributed for re-use. You can use the HTML here to"
+" cite the work. Doing so will also include metadata on your page so that "
+"others can find the original work as well."
+msgstr ""
+"引領你前來此處的網頁中嵌入了含授權資訊的後設資料，包括原作者想以什麼方式為人表彰等。你可以使用此處提供的 HTML "
+"來引用此作品、並表彰出處。這麼一來，你的網頁上也會有授權後設資料，方便他人尋得原始作品。"
+
+#: deeds/templates/licenses/standard_deed.html:212
+msgid ""
+"The applicable mediation rules will be designated in the copyright notice "
+"published with the work, or if none then in the request for mediation.  "
+"Unless otherwise designated in a copyright notice attached to the work, the "
+"UNCITRAL Arbitration Rules apply to any arbitration."
+msgstr ""
+"適用的調解規則將會在隨著作一同發布的著作權聲明中加以指定，而在沒有任何調解規則被指定的情況下，著作權聲明中就不會有相關的指定要求文字。《聯合國國際貿易法委員會仲裁規則》適用於所有的仲裁案件，不過若是附隨於著作的著作權聲明中有另外指定規則的話，另外指定規則將優先適用。"
+
+#: deeds/templates/licenses/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:280
+msgid "More info"
+msgstr "更多資訊"
+
+#: deeds/templates/licenses/standard_deed.html:220
+msgid ""
+"If supplied, you must provide the name of the creator and attribution "
+"parties, a copyright notice, a license notice, a disclaimer notice, and a "
+"link to the material. CC licenses prior to Version 4.0 also require you to "
+"provide the title of the material if supplied, and may have other slight "
+"differences."
+msgstr ""
+"若是適用本創用CC授權條款的話，你必須提供創作者及所有貢獻者的姓名、著作權聲明、授權聲明、免責聲明以及指向本作品的連結。而在4.0版以前的創用CC授權條款，也要求你在作品有標題的情況下必須提供作品標題，不過這樣的要求在各版本的授權條款可能會有些微的不同。"
+
+#: deeds/templates/licenses/standard_deed.html:228
+msgid ""
+"In 4.0, you must indicate if you modified the material and retain an "
+"indication of previous modifications. In 3.0 and earlier license versions, "
+"the indication of changes is only required if you create a derivative."
+msgstr ""
+"在4.0版，你必須表明你是否修改本授權作品以及保留之前修改過的地方的表記。在3.0版以及之前的授權條款版本，只有當你創作衍生作品時才須有修改的表記。"
+
+#: deeds/templates/licenses/standard_deed.html:230
+msgid "Marking guide"
+msgstr "標記指南"
+
+#: deeds/templates/licenses/standard_deed.html:238
+msgid ""
+"You may also use a license listed as compatible at <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
+msgstr ""
+"你同樣可使用<a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>所列為相容的授權條款"
+
+#: deeds/templates/licenses/standard_deed.html:246
+msgid ""
+"A commercial use is one primarily intended for commercial advantage or "
+"monetary compensation."
+msgstr "商業性使用是一種主要為了商業利益或金錢報酬的使用方式。"
+
+#: deeds/templates/licenses/standard_deed.html:254
+msgid "Merely changing the format never creates a derivative."
+msgstr "僅改變格式不算是創作衍生作品。"
+
+#: deeds/templates/licenses/standard_deed.html:262
+msgid ""
+"The license prohibits application of effective technological measures, "
+"defined with reference to Article 11 of the WIPO Copyright Treaty."
+msgstr ""
+"本授權條款禁止有效科技措施的實施，前述科技措施定義係參照世界智慧財產權組織著作權條約 (WIPO Copyright Treaty) 第11條。"
+
+#: deeds/templates/licenses/standard_deed.html:270
+msgid ""
+"The rights of users under exceptions and limitations, such as fair use and "
+"fair dealing, are not affected by the CC licenses."
+msgstr "使用者依據著作權保護的限制或例外所得主張的權利，如合理使用權，不會受到CC授權條款的影響"
+
+#: deeds/templates/licenses/standard_deed.html:278
+msgid ""
+"You may need to get additional permissions before using the material as you "
+"intend."
+msgstr "在依你所想來使用本授權作品之前你可能需要獲得額外許可"
+
+#: deeds/templates/licenses/zero_deed.html:12
+msgid "Public Domain Dedication"
+msgstr "公眾領域貢獻宣告"
+
+#: deeds/templates/licenses/zero_deed.html:25
+msgid ""
+"The person who associated a work with this deed has <b>dedicated</b> the "
+"work to the public domain by waiving all of his or her rights to the work "
+"worldwide under copyright law, including all related and neighboring rights,"
+" to the extent allowed by law."
+msgstr ""
+"以著作結合本標章之人，代表在法律許可的範圍內，拋棄該著作依著作權法所享有之權利，包括所有相關與鄰接的法律權利，並宣告將該著作<b>貢獻</b>至公眾領域。"
+
+#: deeds/templates/licenses/zero_deed.html:28
+msgid ""
+"You can copy, modify, distribute and perform the work, even for commercial "
+"purposes, all without asking permission. See <b>Other Information</b> below."
+msgstr "你可以複製、修改、發布或展示此作品，亦可進行商業利用，完全不需要經過許可，請參考下面的其他資訊。"
+
+#: deeds/templates/licenses/zero_deed.html:52
+msgid ""
+"In no way are the patent or trademark rights of any person affected by CC0, "
+"nor are the rights that other persons may have in the work or in how the "
+"work is used, such as <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
+msgstr ""
+"公眾領域貢獻宣告(CC0)在任何情況下均不影響任何人的專利權或商標權，亦不影響他人對該著作可能享有的權利，及對該著作的使用方式，例如<a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">形象權或隱私權</a>。"
+
+#: deeds/templates/licenses/zero_deed.html:56
+msgid ""
+"Unless expressly stated otherwise, the person who associated a work with "
+"this deed makes no warranties about the work, and disclaims liability for "
+"all uses of the work, to the fullest extent permitted by applicable law."
+msgstr "除非另有明示聲明，以著作結合本標章之人，對著作並不負擔保，對於此著作之所有使用亦不承擔責任，此免責聲明在法律允許的範圍內做最大程度的適用。"
+
+#: deeds/templates/licenses/zero_deed.html:60
+msgid ""
+"When using or citing the work, you should not imply <a href=\"\" "
+"class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
+"affirmer."
+msgstr ""
+"當使用或引用該著作時，不得暗喻作者或指認該著作之人，為你的行為<a href=\"\" class=\"helpLink\" "
+"id=\"endorsement\">背書</a>。"
+
+#: deeds/templates/licenses/zero_deed.html:88
+msgid "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Affirmer</a>"
+msgstr "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">宣告者</a>"
+
+#: deeds/templates/licenses/zero_deed.html:149
+msgid "Who is the affirmer?"
+msgstr "誰是「宣告者」？"
+
+#: deeds/templates/licenses/zero_deed.html:153
+msgid ""
+"The affirmer is the person who surrendered rights to the work worldwide "
+"using CC0, to the extent allowable by law. It may be the original author of "
+"the work or another person who may have had some copyright or related or "
+"neighboring legal rights in the work."
+msgstr ""
+"宣告者 (affirmer) "
+"是在法律適用的最大範圍內，使用CC0全球性拋棄其著作權利之人。其可能是著作之原始作者，或其他對該著作擁有著作權或相關鄰接權利之人。"
+
+#: deeds/templates/licenses/zero_deed.html:176
+msgid ""
+"<p> The Commons Deed is not a legal instrument. It is simply a handy "
+"reference for understanding the CC0 Legal Code, a human-readable expression "
+"of some of its key terms. Think of it as the user-friendly interface to the "
+"CC0 Legal Code beneath. This Deed itself has no legal value, and its "
+"contents do not appear in CC0. </p> <p> Creative Commons is not a law firm "
+"and does not provide legal services. Distributing, displaying, or linking to"
+" this Commons Deed does not create an attorney-client relationship. </p> <p>"
+" Creative Commons has not verified the copyright status of any work to which"
+" CC0 has been applied. CC makes no warranties about any work or its "
+"copyright status in any jurisdiction, and disclaims all liability for all "
+"uses of any work. </p>"
+msgstr ""
+"<p>本共享標章並非一份法律文件。它只是一份瞭解CC0法律條款的參考文件，提供其中某些關鍵用語的簡要說明。請把此共享標章看作是CC0法律條款的使用者友善界面。此標章本身不具法律價值，且其內容並不出現在CC0中。<p>創用CC不是法律事務所，亦不提供法律服務。散布、展示或連結到本共享標章並不產生律師和客戶的關係。</p>\n"
+"<p> 創用CC並未對適用CC0宣告之作品，進行著作權利狀態的驗證。創用CC對任何作品或其著作權利狀態在各個司法管轄領域下的認定，不負擔保之責，並免除所有使用行為於任何作品上產生的所有責任。</p>"
+
+#: deeds/templates/licenses/zero_deed.html:182
+msgid ""
+"This is a human-readable summary of the <a href=\"./legalcode\">Legal Code "
+"(read the full text)</a>."
+msgstr "這是一份讓一般人易於了解的法律條款摘要，你可參考 <a href=\"./legalcode\">完整的法律條款</a>。"
+
+#: deeds/templates/licenses/zero_deed.html:194
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"https://creativecommons.org/choose/zero/\">use the license</a> for your own material.\n"
+"  "
+msgstr ""
+
+#: deeds/templates/macros_templates/deed.html:28
+#: deeds/templates/macros_templates/engine.html:50
+#: deeds/templates/macros_templates/pdtool_deed.html:31
+msgid "Skip to content"
+msgstr "跳到內容"
+
+#: deeds/templates/macros_templates/deed.html:38
+#: deeds/templates/macros_templates/pdtool_deed.html:40
+msgid "Help us build a vibrant, collaborative global commons"
+msgstr "全球一起協作，讓創用 CC 發光發熱吧！"
+
+#: deeds/templates/macros_templates/deed.html:39
+#: deeds/templates/macros_templates/pdtool_deed.html:41
+msgid "Donate"
+msgstr "捐贈"
+
+#: deeds/templates/macros_templates/deed.html:39
+#: deeds/templates/macros_templates/pdtool_deed.html:41
+msgid "Now"
+msgstr "現在"
+
+#: deeds/templates/macros_templates/deed.html:60
+#: deeds/templates/macros_templates/pdtool_deed.html:62
+msgid "Creative Commons License Deed"
+msgstr "創用 CC 授權條款標章"
+
+#: deeds/templates/macros_templates/deed.html:82
+msgid ""
+"This is a human-readable summary of (and not a substitute for) the license, "
+"which is available in the following languages:"
+msgstr "這是一份易於了解的摘要(並非授權條款的替代內容)，且有下列不同語言的譯本："
+
+#: deeds/templates/macros_templates/deed.html:89
+msgid ""
+"This is a human-readable summary of (and not a substitute for) the <a "
+"href=\"legalcode\" class=\"fulltext\">license</a>."
+msgstr "這是一份易於了解的摘要 ( 並非<a href=\"legalcode\" class=\"fulltext\">授權條款</a>的替代內容 ) 。"
+
+#: deeds/templates/macros_templates/deed.html:108
+#, python-format
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
+"            "
+msgstr ""
+"\n"
+"<a href=\"http://wiki.creativecommons.org/FAQ\">進一步了解</a>創用 CC 授權，或<a id=\"get_this\" href=\"%(get_this)s\">使用此授權款</a>在你的素材上。"
+
+#: deeds/templates/macros_templates/deed.html:144
+msgid ""
+"<p>\n"
+"              The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href=\"legalcode\" class=\"fulltext\">Please click here to see the full License</a>.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              Creative Commons and Creative Commons Japan are not law firms, and distributing of or displaying of, or linking to the Commons Deed does not constitute an offer of legal advice or any other legal services. Creative Commons and Creative Commons Japan are not a party to the License underlying this Commons Deed, and disclaim liablity for damages resulting from any use of the Commons Deed and the underlying License.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              The Product licensed under Creative Commons License is provided by the person who applied the License.  Creative Commons and Creative Commons Japan make no warranties regarding the title of the licensor.  Please read <a href=\"http://creativecommons.jp/faq/\">here</a> for information regarding the application of licenses and exploitation of the Product licensed under Creative Commons licenses.\n"
+"              </p>"
+msgstr ""
+"<p>\n"
+"授權標章 (Commons Deed) 並非授權條款，僅是讓一般人容易了解法律條款 (Legal Code，即完整的授權條款) 的參考文件、以易於理解的方式表達條款中某些關鍵字。授權標章本身不具法律價值，其內容亦不會出現在實際的授權條款中。<a href=\"legalcode\" class=\"fulltext\">請按此處察看完整的授權條款</a>。\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"Creative Commons 及日本 Creative Commons 不是法律事務所；散布、展示或連結到授權標章不構成法律意見的要約或任何其他法律服務。 Creative Commons 及日本 Creative Commons 不是授權標章底下的授權條款的一方當事人，並免責於因任何使用授權標章及其底下授權條款所產生的損害。\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"依據創用 CC 授權條款所授權的產品係由適用於此授權條款之人所提供； Creative Commons 及日本 Creative Commons 並不擔保授權人有合法之權利。關於授權條款之適用，以及使用依據創用 CC 授權條款所授權之產品的資訊，請閱讀<a href=\"http://creativecommons.jp/faq/\">此處</a>。\n"
+"</p>"
+
+#: deeds/templates/macros_templates/deed.html:158
+msgid ""
+"This deed highlights only some of the key features and terms of the actual "
+"license. It is not a license and has no legal value. You should carefully "
+"review all of the terms and conditions of the actual license before using "
+"the licensed material."
+msgstr ""
+"本授權標章僅強調實際授權條款的部分重要特點及條款，並非一份授權條款且沒有法律效力。在使用本授權作品前你應該仔細閱讀實際授權條款的所有條款及條件。"
+
+#: deeds/templates/macros_templates/deed.html:160
+msgid ""
+"Creative Commons is not a law firm and does not provide legal services. "
+"Distributing, displaying, or linking to this deed or the license that it "
+"summarizes does not create a lawyer-client or any other relationship."
+msgstr ""
+"Creative Commons不是法律事務所，亦不提供法律服務。散布，展示或連結到本授權標章或摘要過的本授權條款並不產生律師和客戶或其他的關係。"
+
+#: deeds/templates/macros_templates/deed.html:168
+#: deeds/templates/macros_templates/pdtool_deed.html:118
+msgid "expand child menu"
+msgstr "展開子選單"
+
+#: deeds/templates/macros_templates/deed.html:168
+#: deeds/templates/macros_templates/pdtool_deed.html:118
+msgid "collapse child menu"
+msgstr "收合子選單"
+
+#: deeds/templates/macros_templates/pdtool_deed.html:27
+msgid "hide-banner"
+msgstr "隱藏 banner"

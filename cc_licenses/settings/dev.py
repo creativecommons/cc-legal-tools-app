@@ -6,9 +6,9 @@ from cc_licenses.settings.base import *  # noqa
 
 DEBUG = True
 
-INSTALLED_APPS += (
+INSTALLED_APPS += [
     'debug_toolbar',
-)
+]
 MIDDLEWARE += (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
@@ -34,3 +34,6 @@ if 'test' in sys.argv:
     )
 
     LOGGING['root']['handlers'] = []
+
+# Make it obvious if there are unresolved variables in templates
+TEMPLATES[0]['OPTIONS']['string_if_invalid'] = "INVALID_VARIABLE(%s)"
