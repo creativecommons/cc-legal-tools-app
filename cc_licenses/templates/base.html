@@ -1,27 +1,36 @@
 {% load static from staticfiles %}
 <!DOCTYPE html>
 <html lang="en" class="no-js">
-<head>
+<head about="{% block about %} {% endblock %}">
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{% block meta-description %}{% endblock %}">
     <meta name="author" content="{% block meta-author %}{% endblock %}">
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
     <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/css/vocabulary.css">
 </head>
-<body>
+<body typeoff="cc:License">
     {% include 'includes/header.html' %}
     <main>
-        <div class="level padding-large">
+        <div class="level padding-horizontal-large padding-vertical-normal">
+            {% include 'includes/skiplink.html' %}
             {% include 'includes/breadcrumbs.html' %}
             {% include 'includes/locale.html' %}
         </div>
-        <section>
+        <section id="content" class="padding-horizontal-larger">
+            <div class="columns padding-vertical-normal">
+              <div class="column is-three-quarters">{% block note %}{% endblock %}</div>
+              <div class="column">
+                <button id="next-btn" class="button tiny is-pulled-right" data-href="{% block next_href %}/{% endblock %}">{% block next_text %}Next{% endblock %}</button>
+              </div>
+            </div>
             {% block content %}{% endblock %}
         </section>
     </main>
+    {% include 'includes/footer.html' %}
 
     <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
     {% block extra_js %}
@@ -56,14 +65,29 @@
           }).then(data => {
             // Render SVG in the page
             const logo = document.querySelector('#cc-logo')
+            const footerLogo = document.querySelector('#cc-footer-logo')
             logo.innerHTML = data;
+            footerLogo.innerHTML = data;
           })
         }
 
         patchAssetIntoDom('assets/logos/cc/logomark.svg');
+
+        /** Next Button On Click Event Listener **/
+        document.getElementById("next-btn").addEventListener("click", function (e) {
+          /** 
+           * On click redirect the user to page they are trying to visit
+           * which is stored in the data-href.  
+           **/
+          return window.location.href = this.dataset.href
+        })
       </script>
     {% endblock %}
 </body>
 </html>
 
-<style>body {background-color: rgb(245, 245, 245);}</style>
+<style>
+body {
+  background-color: rgb(245, 245, 245);
+}
+</style>

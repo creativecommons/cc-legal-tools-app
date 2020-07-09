@@ -1,50 +1,17 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+{% extends "base.html" %}
 {% load i18n static %}
-<html xmlns="http://www.w3.org/1999/xhtml"
-xmlns:cc="http://creativecommons.org/ns#"
-xmlns:dc="http://purl.org/dc/elements/1.1/"
-xmlns:dct="http://purl.org/dc/terms/"
-xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
 
-<head about="{{ license.about }}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
-  <title>
-    {% block title %}
-      Creative Commons &mdash; {{ license.translated_title }}
-    {% endblock %}
-  </title>
+{% block about %}{{ license.about }}{% endblock %}
+{% block title %} Creative Commons &mdash; {{ license.translated_title }} {% endblock %}
 
-  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+{# Note Next Link #}
+{% block note %}{% endblock %}
+{% block next_text %}See the legal code{% endblock %}
+{% block next_href %}/{% endblock %}
 
-  {% block headers %}{% endblock %}
 
-</head>
-
-<body typeof="cc:License" about="{{ license.about }}" class="license {{ get_ltr_rtl }}">
-  {% block page_top %}{% endblock %}
-  <div id="page" class="site">
-    <div class="site-inner">
-      <a class="skip-link screen-reader-text" href="#content">{% blocktrans %}Skip to content{% endblocktrans %}</a>
-
-      {% include "includes/cc_site_header.html" %}
-
-      <div id="content" class="site-content">
-        <aside id="header-below" class="widget-area">
-          <section id="text-15" class="widget-1 widget-first widget-last widget-odd widget widget_text">
-            <div class="textwidget">
-              <div id="donation-bar-wrapper" class="donation-bar-wrapper">
-                <div id="donation-bar-inner" class="donation-bar-inner">
-                  <p class="donate-text">{% blocktrans %}Help us build a vibrant, collaborative global commons{% endblocktrans %}</p>
-                  <div class="donate-action"><a href="https://us.netdonor.net/page/6650/donate/1?ea.tracking.id=deed-top" class="button donate arrow">{% blocktrans %}Donate{% endblocktrans %}<span class="hide-on-mobile"> {% blocktrans %}Now{% endblocktrans %}</span></a></div>
-                </div>
-              </div>
-            </div>
-          </section>
-        </aside>
-
-        {% include "includes/language_selector.html" %}
-
+{% block content %}
+{% endblock %}
         <div id="primary" class="content-area">
           <main id="main" class="site-main container" role="main">
             <div id="deed" class="row" dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}">
@@ -163,10 +130,3 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
       </div>
     {% endblock %}
   </div>
-
-  /* <![CDATA[ */
-  var screenReaderText = {"expand":"{% blocktrans %}expand child menu{% endblocktrans %}","collapse":"{% blocktrans %}collapse child menu{% endblocktrans %}"};
-  /* ]]> */
-
-</body>
-</html>
