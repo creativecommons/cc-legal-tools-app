@@ -1,7 +1,7 @@
 from django.urls import path
 from django.urls import register_converter
 
-from licenses.views import license_deed_view
+from licenses.views import license_deed_view, license_detail
 
 
 """
@@ -95,4 +95,7 @@ urlpatterns = [
     path(
         "<code:license_code>/<version:version>/", license_deed_view, name="license_deed"
     ),
+    path(
+        "license/", license_detail, name="license_detail"
+    )
 ]

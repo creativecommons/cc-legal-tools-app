@@ -381,3 +381,6 @@ def home(request):
         "licenses_by_code": licenses_by_code,
     }
     return render(request, "home.html", context)
+
+def license_detail(request):
+    return render(request, "licenses/licenses_detail.html")

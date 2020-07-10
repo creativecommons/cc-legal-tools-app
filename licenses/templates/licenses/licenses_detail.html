@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block content %}
+  <div class="columns">
+    {% include 'includes/menu-sidebar.html' %}
+    <div class="column">
+      {% include 'includes/about_cc_and_license.html' %}
+    </div>
+  </div>
+{% endblock %}
