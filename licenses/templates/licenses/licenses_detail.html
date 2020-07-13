@@ -2,7 +2,9 @@
 {% load i18n static %}
 
 {# Note Next Link #}
-{% block note %}Version 4.0 &#8226; See the <a href="#">errata page</a> for any corrections and the date of change &#8226 Translation published 2020/XX/XX{% endblock %}
+{% block note %}
+  Version 4.0 &#8226; See the <a href="#">errata page</a> for any corrections and the date of change &#8226 Translation published 2020/XX/XX
+{% endblock %}
 {% block next_text %}See the deed{% endblock %}
 {% block next_href %}/{% endblock %}
 
@@ -10,8 +12,10 @@
   <div class="columns">
     {% include 'includes/menu-sidebar.html' %}
     <div class="column">
+      {% include 'includes/licenses_header.html' %}
       {% include 'includes/about_cc_and_license.html' %}
       {% include 'includes/use_of_licenses.html' %}
+      {% include 'includes/about_cc.html' %}
     </div>
   </div>
 {% endblock %}
