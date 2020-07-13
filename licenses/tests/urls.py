@@ -9,4 +9,12 @@ urlpatterns = [
         license_catcher,
         name="license_catcher"
     ),
+    path(
+        "<code:license_code>/<jurisdiction:jurisdiction>/",
+        license_catcher,
+        name="license_catcher_without_language",
+        kwargs={
+            "target_lang": ""
+        }
+    ),
 ]

@@ -11,7 +11,7 @@ def import_license_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("licenses", "0002_auto_20200706_1354"),
+        ("licenses", "0001_initial"),
     ]
 
     operations = [migrations.RunPython(import_license_data, migrations.RunPython.noop)]

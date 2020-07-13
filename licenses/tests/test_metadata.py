@@ -108,7 +108,7 @@ class MetadataTest(TestCase):
         )
         self.assertEqual("http://creativecommons.org", license.creator.url)
         self.assertEqual("http://creativecommons.org/license/", license.license_class.url)
-        self.assertTrue(license.jurisdiction.url.endswith("/es/"))
+        self.assertEqual("es", license.jurisdiction.code)
         self.assertTrue(license.requires_attribution)
         self.assertTrue(license.requires_notice)
         self.assertTrue(license.permits_reproduction)

@@ -9,48 +9,48 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
-import urllib
-
 from django.db import models
 from django.utils import translation
 
-from licenses import FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MAX
+from licenses import (
+    FREEDOM_LEVEL_MIN,
+    FREEDOM_LEVEL_MID,
+    FREEDOM_LEVEL_MAX,
+)
 
 
 class Creator(models.Model):
-    url = models.URLField(unique=True, max_length=200, help_text="E.g. http://creativecommons.org")
+    url = models.URLField(
+        unique=True, max_length=200, help_text="E.g. http://creativecommons.org"
+    )
 
     def __str__(self):
         return f"Creator<{self.url}>"
 
 
 class Jurisdiction(models.Model):
-    url = models.URLField(
-        unique=True,
-        max_length=200, help_text="E.g. http://creativecommons.org/international/at/",
-    )
-    # FIXME: Where to get data on jurisdictions' default languages?
+    code = models.CharField(max_length=9, unique=True, blank=False)
+
+    @property
+    def about(self):
+        # Not using "https:" deliberately because this is the "official"
+        # name of the jurisdiction in the RDF.
+        return f"http://creativecommons.org/international/{self.code}/"
+
     default_language = models.ForeignKey(
         "Language", null=True, on_delete=models.CASCADE
     )
 
-    @property
-    def code(self):
-        pieces = urllib.parse.urlsplit(self.url).path.strip("/").split("/")
-        try:
-            return pieces[1]
-        except IndexError:
-            return ""
-
     def __str__(self):
-        return f"Jurisdiction<{self.url}>"
+        return f"Jurisdiction<{self.code}>"
 
 
 class LicenseClass(models.Model):
     # <cc:licenseClass rdf:resource="http://creativecommons.org/license/"/>
     url = models.URLField(
         unique=True,
-        max_length=200, help_text="E.g. http://creativecommons.org/license/",
+        max_length=200,
+        help_text="E.g. http://creativecommons.org/license/",
     )
 
     def __str__(self):
@@ -92,7 +92,8 @@ class License(models.Model):
     )
     license_code = models.CharField(
         max_length=40,
-        help_text="shorthand representation for which class of licenses this falls into.  E.g. 'by-nc-sa', or 'MIT'",
+        help_text="shorthand representation for which class of licenses this falls into.  "
+        "E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+', 'devnations', ...",
     )
     version = models.CharField(
         max_length=3, help_text="E.g. '4.0'. Not required.", blank=True, default=""

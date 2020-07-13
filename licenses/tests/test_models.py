@@ -22,13 +22,11 @@ class CreatorModelTest(TestCase):
 class JurisdictionModelTest(TestCase):
     def test_str(self):
         record = Jurisdiction.objects.first()
-        self.assertEqual(str(record), f"Jurisdiction<{record.url}>")
+        self.assertEqual(str(record), f"Jurisdiction<{record.code}>")
 
-    def test_code(self):
-        record = Jurisdiction.objects.create(url="http://creativecommons.org/international/silly/")
-        self.assertEqual("silly", record.code)
-        record = Jurisdiction.objects.create(url="http://example.com/foo")
-        self.assertEqual("", record.code)
+    def test_about(self):
+        record = Jurisdiction.objects.create(code="silly")
+        self.assertEqual("http://creativecommons.org/international/silly/", record.about)
 
 
 class LanguageModelTest(TestCase):

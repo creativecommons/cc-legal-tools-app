@@ -1,8 +1,7 @@
 from distutils.version import StrictVersion
 import re
 import urllib.parse
-from functools import wraps
-from typing import List, Callable
+from typing import List
 
 from django.http import (
     HttpResponse,
@@ -99,7 +98,7 @@ def license_deed_view(
     if jurisdiction:
         jurisdiction_object = get_object_or_404(
             Jurisdiction,
-            url=f"http://creativecommons.org/international/{jurisdiction}/",
+            code=jurisdiction,
         )
         license_kwargs["jurisdiction"] = jurisdiction_object
 
@@ -180,7 +179,7 @@ def license_deed_view(
     # of this project.
     kwargs = {
         "license_code": license.license_code,
-        "jurisdiction": license.jurisdiction and license.jurisdiction.url or "",
+        "jurisdiction": license.jurisdiction and license.jurisdiction.about or "",
         "version": license.version,
         "lang": target_lang,
     }
@@ -233,7 +232,7 @@ def all_possible_license_versions(search_args: dict) -> List[License]:
     jurisdiction = search_args.get("jurisdiction", None)
     target_lang = search_args.get("target_lang", None)
 
-    cache_key = (code, jurisdiction)
+    cache_key = (code, jurisdiction, target_lang)
     if cache_key in ALL_POSSIBLE_VERSIONS_CACHE:
         return ALL_POSSIBLE_VERSIONS_CACHE[cache_key]
 
@@ -241,15 +240,15 @@ def all_possible_license_versions(search_args: dict) -> List[License]:
         "license_code": code,
     }
     if jurisdiction:
-        license_kwargs[
-            "jurisdiction__url"
-        ] = f"http://creativecommons.org/international/{jurisdiction}/"
+        license_kwargs["jurisdiction__code"] = jurisdiction
     if target_lang:
         license_kwargs["legal_codes__language__code"] = target_lang
 
+    print(license_kwargs)
     license_results = sorted(
         License.objects.filter(**license_kwargs), key=sort_licenses
     )
+    print(f"len(results) = {len(license_results)}")
     ALL_POSSIBLE_VERSIONS_CACHE[cache_key] = license_results
     return license_results
 
@@ -271,6 +270,12 @@ def catch_license_versions_from_request(
     searches = [{"code": license_code}]
     if license_code == "by-nc-nd":
         # Some older licenses have nc, nd in the opposite order
+        # Adding this search might seem pointless because we stop as soon as one of our
+        # searches finds any licenses, and there will be "by-nc-nd" licenses
+        # found by the previously added search. However, in the code below
+        # this, we will add more criteria to both these searches and insert
+        # them before these, opening the possibility that there will be
+        # by-nd-nc licenses that match and not by-nc-nd licenses.
         searches.append({"code": "by-nd-nc"})
     if jurisdiction:
         # Look to see if there are other licenses of that code, possibly of
@@ -283,8 +288,11 @@ def catch_license_versions_from_request(
         for search in list(searches):
             searches.insert(0, dict(search, target_lang=target_lang))
 
+    print(searches)
     for search_args in searches:
+        print(f"Searching with {search_args}")
         licenses += all_possible_license_versions(search_args)
+        print(f"len(licenses)={len(licenses)}")
         if licenses:
             break
 
@@ -334,12 +342,11 @@ def license_catcher(
     # Returns an iterable of License objects
 
     if not licenses:
-        print("NO licenses found, returning 404")
         return HttpResponseNotFound()
 
     context = {
         "request": request,
-        "license_versions": reversed(licenses),
+        "license_versions": list(reversed(licenses)),
         "license_class": licenses[0].license_class,
         "page_style": "bare",
     }
