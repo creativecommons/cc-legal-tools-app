@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load i18n static %}
 
+{# Note Next Link #}
+{% block note %}Version 4.0 &#8226; See the <a href="#">errata page</a> for any corrections and the date of change &#8226 Translation published 2020/XX/XX{% endblock %}
+{% block next_text %}See the deed{% endblock %}
+{% block next_href %}/{% endblock %}
+
 {% block content %}
   <div class="columns">
     {% include 'includes/menu-sidebar.html' %}
@@ -9,4 +14,47 @@
       {% include 'includes/use_of_licenses.html' %}
     </div>
   </div>
+{% endblock %}
+
+{% block extra-js%}
+  <script>
+    /*
+      Show/Hide Functionality for expand/collapse sections in use_of_licenses.html
+    */
+    let arrowArray = Array.from(document.getElementsByClassName("angle-down"))
+    arrowArray.forEach(function(arrow) {
+      arrow.addEventListener("click", handleArrowClicked);
+    });
+ 
+    function handleArrowClicked() {
+      // screen reader should now promote the user to hide the respective <p> tag
+      // that is being shown
+      if (this.dataset.consideration === "1" && this.dataset.direction === "down") {
+        this.firstChild.innerHTML = "Hide Considerations for Licensors"
+      } else if (this.dataset.consideration !== "1" && this.dataset.direction === "down") {
+        this.firstChild.innerHTML = "Hide Considerations for the Public"
+      } else if (this.dataset.consideration === "1" && this.dataset.direction === "up") {
+        this.firstChild.innerHTML = "Show Considerations for Licensors"
+      } else {
+        this.firstChild.innerHTML = "Show Considerations for the Public"
+      }
+
+      if (this.dataset.direction === "down") {
+        // toggle icon to up arrow icon
+        this.classList.remove("angle-down")
+        this.classList.add("angle-up")
+        this.dataset.direction = "up"
+              // remove "is-hidden" from <p> tag to show the content of the div
+      this.parentNode.parentNode.nextSibling.nextSibling.classList.remove("is-hidden");
+      } else {
+        // toggle icon to up arrow icon
+        this.classList.add("angle-down")
+        this.classList.remove("angle-up")
+        this.dataset.direction = "down"
+              // remove "is-hidden" from <p> tag to show the content of the div
+      this.parentNode.parentNode.nextSibling.nextSibling.classList.add("is-hidden");
+      }
+    };
+
+  </script>
 {% endblock %}
