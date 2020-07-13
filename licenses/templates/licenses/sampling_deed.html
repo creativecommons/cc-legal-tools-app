@@ -1,5 +1,19 @@
-{% extends "macros_templates/deed.html" %}{% load i18n %}
+{% extends "base.html" %}
+{% load i18n %}
 
+{# Note Next Link #}
+{% block next_text %}See the legal code{% endblock %}
+{% block next_href %}/{% endblock %}
+
+{% block content %}
+  <div class="container">
+    {% include 'includes/red_alert.html' %}
+    {% include 'includes/sampling_deed_body.html' %}
+    {% include 'includes/related_links.html' %}
+  </div>
+{% endblock %}
+
+<!-- 
 {% block license_name %}
   <span property="dc:title"
         style="display: inline;">{{ license_title }}</span>
@@ -29,11 +43,11 @@
         </li>
       {% endif %}
 
-      {% if license.license_code in ('nc-sampling+', 'sampling+') %}
+      {# {% if license.license_code in ('nc-sampling+', 'sampling+') %} #}
         <li class="license samplingplus">
           {% blocktrans %}To perform, display, and distribute copies of this whole work for noncommercial purposes (e.g., file-sharing or noncommercial webcasting).{% endblocktrans %}
         </li>
-      {% endif %}
+      {# {% endif %} #}
     </ul>
 
   </div>
@@ -54,18 +68,18 @@
         </li>
       {% endif %}
 
-      {% if license.license_code in ['nc-sampling+', 'sampling+'] %}
+      {# {% if license.license_code in ['nc-sampling+', 'sampling+'] %} #}
         <li>
           {% blocktrans %}For any reuse or distribution, you must make clear to others the license terms of this work. The best way to do this is with a link to this web page.{% endblocktrans %}
         </li>
-      {% else %}
+     {# {% else %} #}
         <li>
           {% blocktrans %}For any reuse, you must make clear to others the license terms of this work.{% endblocktrans %}
         </li>
         <li>
           {% blocktrans %}You may not perform, display, or distribute copies of this whole work for any purpose.{% endblocktrans %}
         </li>
-      {% endif %}
+      {# {% endif %} #}
 
       <li>
         In no way are any of the following rights affected by
@@ -84,4 +98,4 @@
   </div>
 
   <span id="referrer-metadata-container" />
-{% endblock %}
+{% endblock %} -->

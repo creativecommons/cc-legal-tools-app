@@ -384,3 +384,6 @@ def home(request):
 
 def license_detail(request):
     return render(request, "licenses/licenses_detail.html")
+
+def sampling_detail(request):
+    return render(request, "licenses/sampling_deed.html")
