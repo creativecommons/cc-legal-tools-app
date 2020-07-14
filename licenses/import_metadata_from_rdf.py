@@ -214,8 +214,6 @@ class MetadataImporter:
         do_bulk_create(JURISDICTION_CACHE.values())
         do_bulk_create(LICENSE_CLASS_CACHE.values())
 
-        assert Jurisdiction.objects.get(code="fr").default_language
-
         # update some objects on the licenses
         for license in self.licenses.values():
             if (
