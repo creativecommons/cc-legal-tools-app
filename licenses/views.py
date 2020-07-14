@@ -32,7 +32,8 @@ def home(request):
     licenses_by_code = {}
     for license in License.objects.filter(
         legal_codes__language__code__startswith="en"
-    ).select_related("jurisdiction"):
+    ).order_by("license_code", "-version", "jurisdiction__code"
+    ).select_related("jurisdiction").prefetch_related("names"):
         licenses_by_code.setdefault(license.license_code, {})
         licenses_by_code[license.license_code].setdefault(license.version, {})
         licenses_by_code[license.license_code][license.version].setdefault(
