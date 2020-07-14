@@ -1,6 +1,7 @@
 from django.urls import path
 from django.urls import register_converter
 
+from i18n import LANGUAGE_CODE_REGEX
 from licenses.views import (
     license_deed_view_code_version_english,
     license_deed_view_code_version_language,
@@ -95,7 +96,7 @@ class LangConverter:
     (Why underscores? Because of en_GB being used some places.)
     """
 
-    regex = r"[a-zA-Z_-]*"
+    regex = LANGUAGE_CODE_REGEX
 
     def to_python(self, value):
         return value

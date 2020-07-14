@@ -20,23 +20,24 @@ from licenses import (
     FREEDOM_LEVEL_MAX,
 )
 
+MAX_LANGUAGE_CODE_LENGTH = 8
+
 
 class LegalCode(models.Model):
     url = models.URLField(
         max_length=200,
         help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
+        unique=True,
     )
     license = models.ForeignKey("licenses.License", on_delete=models.CASCADE, related_name="legal_codes")
     language_code = models.CharField(
-        max_length=7,
+        max_length=MAX_LANGUAGE_CODE_LENGTH,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
+    raw_html = models.TextField(blank=True, default="")  # Might be temporary
 
     class Meta:
-        unique_together = [
-            ("url", "language_code"),
-            ("license", "language_code"),
-        ]
+        ordering = ["url"]
 
     def __str__(self):
         return f"LegalCode<{self.language_code}, {self.url}>"
@@ -112,6 +113,9 @@ class License(models.Model):
 
     prohibits_commercial_use = models.BooleanField()
     prohibits_high_income_nation_use = models.BooleanField()
+
+    class Meta:
+        ordering = ["-version", "license_code", "jurisdiction_code"]
 
     def __str__(self):
         return f"License<{self.about}>"
@@ -201,7 +205,7 @@ class License(models.Model):
 class TranslatedLicenseName(models.Model):
     license = models.ForeignKey(License, related_name="names", on_delete=models.CASCADE)
     language_code = models.CharField(
-        max_length=7,
+        max_length=MAX_LANGUAGE_CODE_LENGTH,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
     name = models.CharField(max_length=250, help_text="Translated name of license")

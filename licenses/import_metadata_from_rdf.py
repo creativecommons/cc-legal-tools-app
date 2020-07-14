@@ -16,14 +16,10 @@ import datetime
 import xml.etree.ElementTree as ET
 from typing import Optional
 
-from licenses import MISSING_LICENSES
+from django.db import models
+
 from i18n import DEFAULT_LANGUAGE_CODE
-from licenses.models import (
-    License,
-    TranslatedLicenseName,
-    LicenseLogo,
-    LegalCode,
-)
+from licenses import MISSING_LICENSES
 from licenses.utils import get_code_from_jurisdiction_url
 
 
@@ -67,26 +63,6 @@ def get_instance_with_caching(model, cache, argname, value, **extra_kwargs):
     return cache[value]
 
 
-def get_legal_code_for_url(url, language_code, license):
-    return get_instance_with_caching(
-        LegalCode,
-        LEGAL_CODE_CACHE,
-        "url",
-        url,
-        language_code=language_code,
-        license=license,
-    )
-
-
-def get_translated_license_name(license, language_code, name):
-    key = f"{license.about}|{language_code}"
-    if key not in TRANSLATED_LICENSE_NAME_CACHE:
-        TRANSLATED_LICENSE_NAME_CACHE[key] = TranslatedLicenseName(
-            license=license, language_code=language_code, name=name
-        )
-    return TRANSLATED_LICENSE_NAME_CACHE[key]
-
-
 def do_bulk_create(objects):
     """
     Given a list of instances of the same model, bulk_create
@@ -100,6 +76,30 @@ def do_bulk_create(objects):
 
 
 class MetadataImporter:
+    def __init__(self, LegalCode, License, LicenseLogo, TranslatedLicenseName):
+        self.LegalCode = LegalCode
+        self.License = License
+        self.LicenseLogo = LicenseLogo
+        self.TranslatedLicenseName = TranslatedLicenseName
+
+    def get_legal_code_for_url(self, url, language_code, license):
+        return get_instance_with_caching(
+            self.LegalCode,
+            LEGAL_CODE_CACHE,
+            "url",
+            url,
+            language_code=language_code,
+            license=license,
+        )
+
+    def get_translated_license_name(self, license, language_code, name):
+        key = f"{license.about}|{language_code}"
+        if key not in TRANSLATED_LICENSE_NAME_CACHE:
+            TRANSLATED_LICENSE_NAME_CACHE[key] = self.TranslatedLicenseName(
+                license=license, language_code=language_code, name=name
+            )
+        return TRANSLATED_LICENSE_NAME_CACHE[key]
+
     def import_metadata(self, readable):
         global LEGAL_CODE_CACHE, TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, LEGAL_CODES_TO_ADD_TO_LICENSES
 
@@ -121,7 +121,7 @@ class MetadataImporter:
         }
         # Populate self.licenses with License objects that already exist in the database
         self.licenses = {  # Maps urls to License objects
-            license.about: license for license in License.objects.all()
+            license.about: license for license in self.License.objects.all()
         }
 
         print(
@@ -136,9 +136,9 @@ class MetadataImporter:
         )
 
         # Populate the caches with whatever's in the database already
-        LEGAL_CODE_CACHE = {lg.url: lg for lg in LegalCode.objects.all()}
+        LEGAL_CODE_CACHE = {lg.url: lg for lg in self.LegalCode.objects.all()}
 
-        for tln in TranslatedLicenseName.objects.select_related("license"):
+        for tln in self.TranslatedLicenseName.objects.select_related("license"):
             TRANSLATED_LICENSE_NAME_CACHE[
                 f"{tln.license.about}|{tln.language_code}"
             ] = tln
@@ -172,7 +172,7 @@ class MetadataImporter:
                 license.is_replaced_by = self.licenses[license.is_replaced_by_url]
             if getattr(license, "is_based_on_url", False):
                 license.is_based_on = self.licenses[license.is_based_on_url]
-        License.objects.bulk_update(
+        self.License.objects.bulk_update(
             self.licenses.values(), ["source", "is_replaced_by", "is_based_on"]
         )
 
@@ -189,7 +189,7 @@ class MetadataImporter:
             logo.license = logo.license
         do_bulk_create(LICENSE_LOGOS)
 
-    def get_license_object(self, license_url: str) -> Optional[License]:
+    def get_license_object(self, license_url: str) -> Optional[models.Model]:
         """
         Return the License model object for the given URL, creating it and adding to
         the database if necessary. license_elements is a dictionary mapping license
@@ -291,7 +291,7 @@ class MetadataImporter:
             license_element.remove(prohibition)
 
         # Create the License object
-        license = License(
+        license = self.License(
             about=license_url,
             license_code=get_element_text(license_element, "dc:identifier"),
             version=get_element_text(license_element, "dcq:hasVersion", ""),
@@ -368,7 +368,7 @@ class MetadataImporter:
                         f"WARNING: code_url={code_url} but about to use language {language_code}"
                     )
 
-            get_legal_code_for_url(
+            self.get_legal_code_for_url(
                 code_url, language_code=language_code, license=license,
             )
             license_element.remove(legal_code_element)
@@ -381,13 +381,13 @@ class MetadataImporter:
                 lang_code = title_element.attrib[lang_key]
             else:
                 lang_code = DEFAULT_LANGUAGE_CODE
-            get_translated_license_name(license, lang_code, title_element.text)
+            self.get_translated_license_name(license, lang_code, title_element.text)
             license_element.remove(title_element)
 
         # logos
         for logo_element in license_element.findall("foaf:logo", namespaces):
             logo_url = logo_element.attrib[namespaced("rdf", "resource")]
-            LICENSE_LOGOS.append(LicenseLogo(image=logo_url, license=license))
+            LICENSE_LOGOS.append(self.LicenseLogo(image=logo_url, license=license))
             license_element.remove(logo_element)
 
         if len(list(license_element)):  # pragma: no cover
