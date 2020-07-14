@@ -26,14 +26,13 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def home(request):
-    # Make a nested set of dictionaries organizing the English licenses by
+    # Make a nested set of dictionaries organizing the license deeds by
     # license code, version, and jurisdiction. See the home.html template
     # for how it's used.
     licenses_by_code = {}
-    for license in License.objects.filter(
-        legal_codes__language__code__startswith="en"
-    ).order_by("license_code", "-version", "jurisdiction__code"
-    ).select_related("jurisdiction").prefetch_related("names"):
+    for license in License.objects.order_by(
+        "license_code", "-version", "jurisdiction__code"
+    ).select_related("jurisdiction"):
         licenses_by_code.setdefault(license.license_code, {})
         licenses_by_code[license.license_code].setdefault(license.version, {})
         licenses_by_code[license.license_code][license.version].setdefault(
