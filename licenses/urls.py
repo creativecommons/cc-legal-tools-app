@@ -1,10 +1,14 @@
-from django.urls import path, register_converter
+from django.urls import path
+from django.urls import register_converter
 
 from licenses.views import (
     license_deed_view_code_version_english,
     license_deed_view_code_version_language,
     license_deed_view_code_version_jurisdiction_language,
     license_deed_view_code_version_jurisdiction,
+    license_detail,
+    sampling_detail,
+    deed_detail,
 )
 
 
@@ -131,6 +135,15 @@ register_converter(LangConverter, "lang")
 
 # DEEDS
 urlpatterns = [
+    path(
+        "license/", license_detail, name="license_detail"
+    ),
+    path(
+        "sampling/", sampling_detail, name="sampling_detail"
+    ),
+    path(
+        "deed/", deed_detail, name="deed_detail"
+    ),
     path(
         "<code:license_code>/<version:version>",
         license_deed_view_code_version_english,

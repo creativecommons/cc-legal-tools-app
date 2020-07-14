@@ -23,7 +23,7 @@ from licenses.views import home
 
 urlpatterns = [
     url(r'^$', home, name="home"),
-    url(r'', include("licenses.urls")),
+    url(r'licenses/', include("licenses.urls")),
     url(r'^admin/', admin.site.urls),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

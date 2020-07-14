@@ -1,0 +1,22 @@
+{# disclaimer.html is an identical component to about_cc_and_license and about_cc #}
+{# refactor this code and use "with" template tag in licenses_detail.html to pass header and text to these templates #}
+{# if this content will be modified through the django admin in the future #}
+
+<div id="disclaimer-info-section" class="padding-bigger">
+  <h4 class="padding-bottom-normal is-vcentered"><i class="info icon padding-right-normal"></i>Disclaimer</h4>
+  <p class="has-text-black padding-left-big">
+    This deed highlights only some of the key features and terms of the actual license. It is not a license and 
+    has no legal value. You should carefully review all of the terms and conditions of the actual license before 
+    using the licensed material.
+  </p>
+  <p class="has-text-black padding-left-big padding-top-normal">
+    Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this 
+    deed or the license that it summarizes does not create a lawyer-client or any other relationship.
+  </p>
+</div>
+
+<style>
+  #disclaimer-info-section {
+    background-color: rgb(5, 181, 218);
+  }
+</style>

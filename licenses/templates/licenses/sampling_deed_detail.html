@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{# Note Next Link #}
+{% block next_text %}See the legal code{% endblock %}
+{% block next_href %}/licenses/deed/{% endblock %}
+
+{% block content %}
+  <div class="container">
+    {% include 'includes/red_alert.html' %}
+    {% include 'includes/sampling_deed_body.html' %}
+    {% include 'includes/related_links.html' %}
+  </div>
+{% endblock %}

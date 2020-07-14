@@ -1,7 +1,8 @@
 import re
 import urllib.parse
+
 from django.shortcuts import render, get_object_or_404
-from django.utils.translation import override
+from django.utils import translation
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import rtl_context_stuff
@@ -69,7 +70,7 @@ def license_deed_view(request, license, target_lang):
         ),
     }
     context.update(rtl_context_stuff(target_lang))
-    with override(target_lang):
+    with translation.override(target_lang):
         return render(request, template, context)
 
 
@@ -118,3 +119,16 @@ def license_deed_view_code_version_english(request, license_code, version):
     return license_deed_view_code_version_language(
         request, license_code, version, target_lang
     )
+
+
+# ################# 4.0 Styled Pages ########################
+def license_detail(request):
+    return render(request, "licenses/licenses_detail.html")
+
+
+def sampling_detail(request):
+    return render(request, "licenses/sampling_deed_detail.html")
+
+
+def deed_detail(request):
+    return render(request, "licenses/deed_detail.html")

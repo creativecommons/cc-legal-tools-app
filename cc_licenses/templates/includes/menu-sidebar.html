@@ -1,0 +1,23 @@
+<!-- <style>
+  .sidebar-container {
+    max-width: 276px;
+  }
+</style> -->
+<div class="column is-one-quarter sidebar-container">
+  <aside class="menu sidebar-menu">
+    <p class="has-text-black">Creative Commons</p>
+    <ul class="menu-list">
+      <li>
+        {# replace with license long title #}
+        <a class="link has-text-black">Attribution-NonCommercial-ShareAlike 4.0 International</a>
+        <ul>
+          {# replace with list of section links for the license legal code #}
+          {% for i in "x"|ljust:"4" %}
+          <li><span class="body-bigger padding-right-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 1 - Definitions</a></li>
+          <li><span class="body-bigger padding-right-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 2 - Scope</a></li>
+          {% endfor %}
+        </ul>
+      </li>
+    </ul>
+  </aside>
+</div>
