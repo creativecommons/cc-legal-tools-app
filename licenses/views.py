@@ -1,62 +1,15 @@
-from distutils.version import StrictVersion
 import re
 import urllib.parse
-from typing import List
-
-from django.http import (
-    HttpResponse,
-    HttpResponseNotFound,
-    HttpResponseRedirect,
-    HttpRequest,
-)
 from django.shortcuts import render, get_object_or_404
-from django.utils import translation
+from django.utils.translation import override
 
-from i18n.utils import (
-    get_well_translated_langs,
-    locale_to_lower_upper,
-    rtl_context_stuff,
-    ugettext_for_locale,
-    applicable_langs,
-)
-from licenses import FREEDOM_COLORS
-from licenses.models import License, TranslatedLicenseName, Jurisdiction
+from i18n import DEFAULT_LANGUAGE_CODE
+from i18n.utils import rtl_context_stuff
+from licenses.models import License, Jurisdiction
 
-
-# def fetch_https(uri):
-#     https_uri = re.sub(r'^http://', 'https://', uri)
-#     return requests.get(https_uri).text
-#
-# def licenses_view(request):
-#     target_lang = util.get_target_lang_from_request(request)
-#
-#     context = {
-#         'active_languages': get_well_translated_langs(),
-#         'page_style': "bare"}
-#     context.update(util.rtl_context_stuff(target_lang))
-#
-#     # Don't cache the response for internationalization reasons
-#     response = render(
-#         request,
-#         'catalog_pages/licenses-index.html',
-#         context
-#     )
-#     response.headers.add('Cache-Control', 'no-cache')
-#     return response
-#
-#
-# def publicdomain_view(request):
-#     target_lang = util.get_target_lang_from_request(request)
-#
-#     return render(
-#         request,
-#         'publicdomain/index.html',
-#         {
-#             "locale": target_lang,
-#         }
-#     )
 
 DEED_TEMPLATE_MAPPING = {
+    # license_code : template name
     "sampling": "licenses/sampling_deed.html",
     "sampling+": "licenses/sampling_deed.html",
     "nc-sampling+": "licenses/sampling_deed.html",
@@ -64,307 +17,12 @@ DEED_TEMPLATE_MAPPING = {
     "CC0": "licenses/zero_deed.html",
     "mark": "licenses/pdmark_deed.html",
     "publicdomain": "licenses/publicdomain_deed.html",
+    # others use "licenses/standard_deed.html"
 }
 
 
 # For removing the deed.foo section of a deed url
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
-
-
-def license_deed_view(
-    request: HttpRequest,
-    license_code: str,
-    version: str,
-    target_lang: str = None,
-    jurisdiction: str = None,
-):
-    """
-    The main and major deed generating view.
-    Can be called with various combinations of arguments.
-    See urls.py in this same directory.
-    """
-    # print(f"license_deed_view({license_code}, {version}, {target_lang}, {jurisdiction})")
-    ##########################
-    # Try and get the license.
-    ##########################
-
-    license_kwargs = {
-        "license_code": license_code,
-        "version": version,
-    }
-
-    if target_lang:
-        license_kwargs["legal_codes__language__code"] = target_lang
-    if jurisdiction:
-        jurisdiction_object = get_object_or_404(
-            Jurisdiction,
-            code=jurisdiction,
-        )
-        license_kwargs["jurisdiction"] = jurisdiction_object
-
-    license = License.objects.filter(**license_kwargs).first()
-
-    if not license:
-        print("License not found, checking close matches")
-        licenses = catch_license_versions_from_request(
-            license_code=license_code,
-            jurisdiction=jurisdiction,
-            target_lang=target_lang,
-        )
-        print("Found %d versions" % len(licenses))
-
-        if licenses:
-            # If we can't get it, but others of that code exist, give
-            # a special 404.
-            return license_catcher(request, license_code, target_lang, jurisdiction)
-        else:
-            # Otherwise, give the normal 404.
-            return HttpResponseNotFound()
-
-    ####################
-    # Everything else ;)
-    ####################
-    # "color" of the license; the color reflects the relative amount
-    # of freedom.
-    color = FREEDOM_COLORS[license.level_of_freedom]
-
-    # Get the language this view will be displayed in.
-    #  - First checks to see if the routing matchdict specifies the language
-    #  - Or, next gets the jurisdictions' default language if the jurisdiction
-    #    specifies one
-    #  - Otherwise it's english!
-    if target_lang:
-        pass
-    elif license.jurisdiction and license.jurisdiction.default_language:
-        target_lang = locale_to_lower_upper(license.jurisdiction.default_language.code)
-    else:
-        target_lang = "en"
-
-    # print(license.id)
-
-    # True if the legalcode for this license is available in
-    # multiple languages (or a single language with a language code different
-    # than that of the jurisdiction).
-    legalcodes = license.legalcodes_for_language(target_lang)
-    if len(legalcodes) > 1:  # or list(legalcodes)[0][2] is not None:
-        multi_language = True
-        legalcodes = sorted(
-            legalcodes, key=lambda lc: lc[2]
-        )  # FIXME: What is this supposed to be sorting by?
-    else:
-        multi_language = False
-
-    try:
-        license_title = license.translated_title(target_lang)
-    except TranslatedLicenseName.DoesNotExist:
-        # don't have one for that language, use default
-        license_title = license.translated_title()
-
-    # Find out all the active languages
-    active_languages = get_well_translated_langs()
-    negotiated_locale = applicable_langs(target_lang)[0]
-
-    # If negotiating the locale says that this isn't a valid language,
-    # let's fall back to something that is.
-    if target_lang != negotiated_locale:
-        base_url = REMOVE_DEED_URL_RE.match(request.path_info).groups()[0]
-        redirect_to = base_url + "deed." + negotiated_locale
-        return HttpResponseRedirect(redirect_to=redirect_to)
-
-    main_template = DEED_TEMPLATE_MAPPING.get(
-        license.license_code, "licenses/standard_deed.html"
-    )
-
-    # We're not using reverse() here because the chooser isn't part
-    # of this project.
-    kwargs = {
-        "license_code": license.license_code,
-        "jurisdiction": license.jurisdiction and license.jurisdiction.about or "",
-        "version": license.version,
-        "lang": target_lang,
-    }
-
-    # Build a link to the chooser
-    get_this = "/choose/results-one?%s" % urllib.parse.urlencode(kwargs)
-
-    context = {
-        "request": request,
-        "license_code": license.license_code,
-        "license_code_quoted": urllib.parse.quote(license.license_code),
-        "license_title": license_title,
-        "license": license,
-        "multi_language": multi_language,
-        "legalcodes": legalcodes,
-        "color": color,
-        "active_languages": active_languages,
-        "target_lang": target_lang,
-        "jurisdiction": kwargs["jurisdiction"],
-        "get_this": get_this,
-        "locale": target_lang,
-        "gettext": ugettext_for_locale(target_lang)
-    }
-    context.update(rtl_context_stuff(target_lang))
-
-    return render(request, main_template, context)
-
-
-def sort_licenses(x: License) -> StrictVersion:
-    """
-    Sort function for licenses (use as key in `sort` and `sorted`).
-    Sorts by version, ascending.
-    """
-    return StrictVersion(x.version)
-
-
-ALL_POSSIBLE_VERSIONS_CACHE = {}
-
-
-def all_possible_license_versions(search_args: dict) -> List[License]:
-    """
-    Given a license code and optional jurisdiction, determine all
-    possible license versions available.
-    'jurisdiction' should be a short code and not a jurisdiction URI.
-
-    Returns:
-     An iterable of License objects
-    """
-    code = search_args.get("code", None)
-    jurisdiction = search_args.get("jurisdiction", None)
-    target_lang = search_args.get("target_lang", None)
-
-    cache_key = (code, jurisdiction, target_lang)
-    if cache_key in ALL_POSSIBLE_VERSIONS_CACHE:
-        return ALL_POSSIBLE_VERSIONS_CACHE[cache_key]
-
-    license_kwargs = {
-        "license_code": code,
-    }
-    if jurisdiction:
-        license_kwargs["jurisdiction__code"] = jurisdiction
-    if target_lang:
-        license_kwargs["legal_codes__language__code"] = target_lang
-
-    print(license_kwargs)
-    license_results = sorted(
-        License.objects.filter(**license_kwargs), key=sort_licenses
-    )
-    print(f"len(results) = {len(license_results)}")
-    ALL_POSSIBLE_VERSIONS_CACHE[cache_key] = license_results
-    return license_results
-
-
-def catch_license_versions_from_request(
-    *, license_code: str, jurisdiction: str, target_lang: str
-) -> List[License]:
-    """
-    If we're a view that tries to figure out what alternate licenses
-    might exist from the user's request, this utility helps look for
-    those.
-
-    Returns an iterable of License objects.
-    """
-
-    licenses = []
-    # Most wide search is by code. Lines below this insert more specific
-    # searches before this one if we have the information to do those searches.
-    searches = [{"code": license_code}]
-    if license_code == "by-nc-nd":
-        # Some older licenses have nc, nd in the opposite order
-        # Adding this search might seem pointless because we stop as soon as one of our
-        # searches finds any licenses, and there will be "by-nc-nd" licenses
-        # found by the previously added search. However, in the code below
-        # this, we will add more criteria to both these searches and insert
-        # them before these, opening the possibility that there will be
-        # by-nd-nc licenses that match and not by-nc-nd licenses.
-        searches.append({"code": "by-nd-nc"})
-    if jurisdiction:
-        # Look to see if there are other licenses of that code, possibly of
-        # that jurisdiction.  Otherwise, we'll just look it up by code.  Also,
-        # if by jurisdiction fails, by code will be the fallback.
-        for search in list(searches):
-            searches.insert(0, dict(search, jurisdiction=jurisdiction))
-    if target_lang:
-        # Start by looking for this specific language.
-        for search in list(searches):
-            searches.insert(0, dict(search, target_lang=target_lang))
-
-    print(searches)
-    for search_args in searches:
-        print(f"Searching with {search_args}")
-        licenses += all_possible_license_versions(search_args)
-        print(f"len(licenses)={len(licenses)}")
-        if licenses:
-            break
-
-    return licenses
-
-
-# def get_license(view) -> Callable[..., HttpResponse]:
-#     """
-#     View *decorator* to look up a license from the view parms
-#     and pass it in.  license_code, jurisdiction, and version
-#     must all be in the URL.
-#     """
-#
-#     @wraps(view)
-#     def new_view_func(request: HttpRequest, *args, **kwargs):
-#         try:
-#             license = License.objects.get(
-#                 license_code=kwargs["license_code"],
-#                 jurisdiction__code=kwargs["jurisdiction"],
-#                 version=kwargs["version"],
-#             )
-#         except License.DoesNotExist:
-#             return HttpResponseNotFound()
-#         else:
-#             kwargs["license"] = license
-#             del kwargs["license_code"]
-#             del kwargs["jurisdiction"]
-#             del kwargs["version"]
-#
-#         return view(request, *args, **kwargs)
-#
-#     return new_view_func
-
-
-# This function could probably use a better name, but I can't think of
-# one!
-def license_catcher(
-    request, license_code: str, target_lang: str, jurisdiction: str
-) -> HttpResponse:
-    """
-    If someone chooses something like /licenses/by/ (fails to select a
-    version, etc) help point them to the available licenses.
-    """
-    licenses = catch_license_versions_from_request(
-        license_code=license_code, jurisdiction=jurisdiction, target_lang=target_lang,
-    )
-    # Returns an iterable of License objects
-
-    if not licenses:
-        return HttpResponseNotFound()
-
-    context = {
-        "request": request,
-        "license_versions": list(reversed(licenses)),
-        "license_class": licenses[0].license_class,
-        "page_style": "bare",
-    }
-    if target_lang:
-        context["target_lang"] = target_lang
-        context.update(rtl_context_stuff(target_lang))
-        with translation.override(target_lang):
-            # This is a helper page, but it's still for not-found situations.
-            # 404!
-            return render(
-                request, "catalog_pages/license_catcher.html", context, status=404,
-            )
-    else:
-        # This is a helper page, but it's still for not-found situations.
-        # 404!
-        return render(
-            request, "catalog_pages/license_catcher.html", context, status=404,
-        )
 
 
 def home(request):
@@ -388,3 +46,75 @@ def home(request):
         "licenses_by_code": licenses_by_code,
     }
     return render(request, "home.html", context)
+
+
+def license_deed_view(request, license, target_lang):
+    """
+    Display the page for the deed for this license, in the specified language.
+    (There's no URL for this; the other views use this after figuring out which
+    license and language to use.)
+    """
+    template = DEED_TEMPLATE_MAPPING.get(
+        license.license_code, "licenses/standard_deed.html"
+    )
+    context = {
+        "license": license,
+        "target_lang": target_lang,
+        "get_this": "/choose/results-one?license_code=%s&amp;jurisdiction=%s&amp;version=%s&amp;lang=%s"
+        % (
+            urllib.parse.quote(license.license_code),
+            license.jurisdiction.code if license.jurisdiction else "",
+            license.version,
+            target_lang,
+        ),
+    }
+    context.update(rtl_context_stuff(target_lang))
+    with override(target_lang):
+        return render(request, template, context)
+
+
+def license_deed_view_code_version_jurisdiction_language(
+    request, license_code, version, jurisdiction, target_lang
+):
+    # Any license with this code, version, and jurisdiction will do.
+    # Then we'll render the deed template in the target lang.
+    license = License.objects.filter(
+        license_code=license_code, version=version, jurisdiction__code=jurisdiction,
+    ).first()
+    return license_deed_view(request, license, target_lang)
+
+
+def license_deed_view_code_version_jurisdiction(
+    request, license_code, version, jurisdiction
+):
+    """
+    If no language specified, but jurisdiction default language is not english,
+    use that language instead of english.
+    """
+    jurisdiction_object = get_object_or_404(Jurisdiction, code=jurisdiction)
+    target_lang = (
+        jurisdiction_object.default_language.code
+        if jurisdiction_object.default_language
+        else DEFAULT_LANGUAGE_CODE
+    )
+    return license_deed_view_code_version_jurisdiction_language(
+        request, license_code, version, jurisdiction, target_lang
+    )
+
+
+def license_deed_view_code_version_language(
+    request, license_code, version, target_lang
+):
+    # Any license with this code and version, and no jurisdiction, will do.
+    # Then we'll render the deed template in the target lang.
+    license = License.objects.filter(
+        license_code=license_code, version=version, jurisdiction=None,
+    ).first()
+    return license_deed_view(request, license, target_lang)
+
+
+def license_deed_view_code_version_english(request, license_code, version):
+    target_lang = DEFAULT_LANGUAGE_CODE
+    return license_deed_view_code_version_language(
+        request, license_code, version, target_lang
+    )

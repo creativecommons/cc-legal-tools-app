@@ -1,5 +1,3 @@
-import os
-
 from django.test import TestCase
 
 from i18n.utils import (
@@ -7,9 +5,6 @@ from i18n.utils import (
     rtl_context_stuff,
     ugettext_for_locale,
     locale_to_lower_upper,
-    applicable_langs,
-    get_all_trans_stats,
-    get_well_translated_langs,
 )
 
 
@@ -47,25 +42,25 @@ class I18NTest(TestCase):
                 rtl_context_stuff("en"),
             )
 
-    def test_get_well_translated_langs(self):
-        dirname = os.path.dirname(__file__)
-        filepath = os.path.join(dirname, "testdata.csv")
-        result = get_well_translated_langs(
-            threshold=80, trans_file=filepath, append_english=False
-        )
-        self.assertEqual([], result)
-        result = get_well_translated_langs(
-            threshold=80, trans_file=filepath, append_english=True
-        )
-        self.assertEqual([{"code": "en", "name": "English"}], result)
-        result = get_well_translated_langs(
-            threshold=1, trans_file=filepath, append_english=True
-        )
-        # Alphabetized
-        self.assertEqual(
-            [{"code": "en", "name": "English"}, {"code": "fr", "name": "français"}],
-            result,
-        )
+    # def test_get_well_translated_langs(self):
+    #     dirname = os.path.dirname(__file__)
+    #     filepath = os.path.join(dirname, "testdata.csv")
+    #     result = get_well_translated_langs(
+    #         threshold=80, trans_file=filepath, append_english=False
+    #     )
+    #     self.assertEqual([], result)
+    #     result = get_well_translated_langs(
+    #         threshold=80, trans_file=filepath, append_english=True
+    #     )
+    #     self.assertEqual([{"code": "en", "name": "English"}], result)
+    #     result = get_well_translated_langs(
+    #         threshold=1, trans_file=filepath, append_english=True
+    #     )
+    #     # Alphabetized
+    #     self.assertEqual(
+    #         [{"code": "en", "name": "English"}, {"code": "fr", "name": "français"}],
+    #         result,
+    #     )
 
     def test_ugettext_for_locale(self):
         ugettext_en = ugettext_for_locale("en")
@@ -77,36 +72,36 @@ class I18NTest(TestCase):
         self.assertEqual(msg_en, ugettext_en(msg_en))
         self.assertEqual(msg_fr, ugettext_fr(msg_en))
 
-    def test_get_all_trans_stats(self):
-        from i18n.utils import CACHED_TRANS_STATS
-
-        CACHED_TRANS_STATS.clear()
-
-        with self.subTest("Uses cached result"):
-            CACHED_TRANS_STATS["unused filename"] = "ding dong"
-            self.assertEqual("ding dong", get_all_trans_stats("unused filename"))
-            CACHED_TRANS_STATS.clear()
-
-        with self.subTest("Nonexistent file raises exception"):
-            with self.assertRaises(IOError):
-                get_all_trans_stats("no such filename here")
-
-        with self.subTest("reads CSV file"):
-            dirname = os.path.dirname(__file__)
-            filepath = os.path.join(dirname, "testdata.csv")
-            result = get_all_trans_stats(filepath)
-            self.assertEqual(
-                {
-                    "fr": {
-                        "num_messages": 222,
-                        "num_trans": 13,
-                        "num_fuzzy": 7,
-                        "num_untrans": 202,
-                        "percent_trans": 75,
-                    }
-                },
-                result,
-            )
+    # def test_get_all_trans_stats(self):
+    #     from i18n.utils import CACHED_TRANS_STATS
+    #
+    #     CACHED_TRANS_STATS.clear()
+    #
+    #     with self.subTest("Uses cached result"):
+    #         CACHED_TRANS_STATS["unused filename"] = "ding dong"
+    #         self.assertEqual("ding dong", get_all_trans_stats("unused filename"))
+    #         CACHED_TRANS_STATS.clear()
+    #
+    #     with self.subTest("Nonexistent file raises exception"):
+    #         with self.assertRaises(IOError):
+    #             get_all_trans_stats("no such filename here")
+    #
+    #     with self.subTest("reads CSV file"):
+    #         dirname = os.path.dirname(__file__)
+    #         filepath = os.path.join(dirname, "testdata.csv")
+    #         result = get_all_trans_stats(filepath)
+    #         self.assertEqual(
+    #             {
+    #                 "fr": {
+    #                     "num_messages": 222,
+    #                     "num_trans": 13,
+    #                     "num_fuzzy": 7,
+    #                     "num_untrans": 202,
+    #                     "percent_trans": 75,
+    #                 }
+    #             },
+    #             result,
+    #         )
 
     def test_locale_to_lower_upper(self):
         # (in, out)
@@ -117,31 +112,31 @@ class I18NTest(TestCase):
         ]
         for input, output in testdata:
             self.assertEqual(output, locale_to_lower_upper(input))
-
-    def test_applicable_langs(self):
-        from i18n.utils import CACHED_APPLICABLE_LANGS
-
-        CACHED_APPLICABLE_LANGS.clear()
-
-        with self.subTest("uses cached result"):
-            cache_key = ("foobar",)
-            CACHED_APPLICABLE_LANGS[cache_key] = ["bizzle"]
-            self.assertEqual(["bizzle"], applicable_langs("foobar"))
-            CACHED_APPLICABLE_LANGS.clear()
-
-        # Should always include "en". Does NOT cache that result.
-        with self.subTest("always includes 'en'"):
-            self.assertEqual(["en"], applicable_langs("no such locale"))
-            self.assertNotIn(("en",), CACHED_APPLICABLE_LANGS)
-
-        with self.subTest("Just the language works"):
-            locale = "fr"
-            self.assertEqual(["fr", "en"], applicable_langs(locale))
-            self.assertIn((locale,), CACHED_APPLICABLE_LANGS)
-            CACHED_APPLICABLE_LANGS.clear()
-
-        with self.subTest("adding the territory works too"):
-            locale = "es_ES"
-            self.assertEqual(["es_ES", "es", "en"], applicable_langs(locale))
-            self.assertIn((locale,), CACHED_APPLICABLE_LANGS)
-            CACHED_APPLICABLE_LANGS.clear()
+    #
+    # def test_applicable_langs(self):
+    #     from i18n.utils import CACHED_APPLICABLE_LANGS
+    #
+    #     CACHED_APPLICABLE_LANGS.clear()
+    #
+    #     with self.subTest("uses cached result"):
+    #         cache_key = ("foobar",)
+    #         CACHED_APPLICABLE_LANGS[cache_key] = ["bizzle"]
+    #         self.assertEqual(["bizzle"], applicable_langs("foobar"))
+    #         CACHED_APPLICABLE_LANGS.clear()
+    #
+    #     # Should always include "en". Does NOT cache that result.
+    #     with self.subTest("always includes 'en'"):
+    #         self.assertEqual(["en"], applicable_langs("no such locale"))
+    #         self.assertNotIn(("en",), CACHED_APPLICABLE_LANGS)
+    #
+    #     with self.subTest("Just the language works"):
+    #         locale = "fr"
+    #         self.assertEqual(["fr", "en"], applicable_langs(locale))
+    #         self.assertIn((locale,), CACHED_APPLICABLE_LANGS)
+    #         CACHED_APPLICABLE_LANGS.clear()
+    #
+    #     with self.subTest("adding the territory works too"):
+    #         locale = "es_ES"
+    #         self.assertEqual(["es_ES", "es", "en"], applicable_langs(locale))
+    #         self.assertIn((locale,), CACHED_APPLICABLE_LANGS)
+    #         CACHED_APPLICABLE_LANGS.clear()

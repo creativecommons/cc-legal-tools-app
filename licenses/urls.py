@@ -1,6 +1,11 @@
 from django.urls import path, register_converter
 
-from licenses.views import license_deed_view
+from licenses.views import (
+    license_deed_view_code_version_english,
+    license_deed_view_code_version_language,
+    license_deed_view_code_version_jurisdiction_language,
+    license_deed_view_code_version_jurisdiction,
+)
 
 
 """
@@ -19,6 +24,7 @@ class LicenseCodeConverter:
     Licenses codes look like "MIT" or "by-sa" or "by-nc-nd" or "CC0".
     We accept any mix of letters, digits, and dashes.
     """
+
     regex = r"(?i)[-a-z0-9+]+"
 
     def to_python(self, value):
@@ -38,6 +44,7 @@ class JurisdictionConverter:
 
     BUT it also looks as if we use "igo" and "scotland".
     """
+
     regex = r"[a-z]{2}|igo|scotland"
 
     def to_python(self, value):
@@ -52,10 +59,12 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 class VersionConverter:
     """
-    These all APPEAR to have the format X.Y, where X and Y are digits.
+    These mostly APPEAR to have the format X.Y, where X and Y are digits.
     To be forgiving, we accept any mix of digits and ".".
+    There's also at least one with an empty version (MIT).
     """
-    regex = r"[0-9.]+"
+
+    regex = r"[0-9.]+|"
 
     def to_python(self, value):
         return value
@@ -81,6 +90,7 @@ class LangConverter:
 
     (Why underscores? Because of en_GB being used some places.)
     """
+
     regex = r"[a-zA-Z_-]*"
 
     def to_python(self, value):
@@ -92,33 +102,53 @@ class LangConverter:
 
 register_converter(LangConverter, "lang")
 
+"""
+/licenses/ - overview and links to the licenses (part of this project?)
+/licenses/?lang=es - overview and links to the licenses (part of this project?) in Spanish
+
+/licenses/by/4.0 - deed for BY 4.0 English
+/licenses/by/4.0/deed.es - deed for BY 4.0 Spanish
+/licenses/by/4.0/legalcode - license BY 4.0 English
+/licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
+...
+/licenses/by/3.0/ - deed for BY 3.0 Unported in English
+/licenses/by/3.0/legalcode - license for BY 3.0 Unported in English
+
+/licenses/by-nc-sa/3.0/de/ - deed for by-nc-sa, 3.0, jurisdiction Germany, in German
+/licenses/by-nc-sa/3.0/de/deed.it - deed for by-nc-sa, 3.0, jurisdiction Germany, in Italian
+/licenses/by-nc-sa/3.0/de/legalcode - license for by-nc-sa, 3.0, jurisdiction Germany, in German
+(I CANNOT find license for by-nc-sa 3.0 jurisdiction Germany in other languages (/legalcode.it is a 404))
+
+/licenses/by-sa/2.5/ca/ - deed for BY-SA 2.5, jurisdiction Canada, in English
+/licenses/by-sa/2.5/ca/deed.it - deed for BY-SA 2.5, jurisdiction Canada, in Italian
+/licenses/by-sa/2.5/ca/legalcode.en - license for BY-SA 2.5, jurisdiction Canada, in English
+/licenses/by-sa/2.5/ca/legalcode.fr - license for BY-SA 2.5, jurisdiction Canada, in French
+
+/licenses/by-sa/2.0/uk/ - deed for BY-SA 2.0, jurisdiction England and Wales, in English
+/licenses/by-sa/2.0/uk/deed.es - deed for BY-SA 2.0, jurisdiction England and Wales, in Spanish
+/licenses/by-sa/2.0/uk/legalcode - license for BY-SA 2.0, jurisdiction England and Wales, in English
+"""
+
+# DEEDS
 urlpatterns = [
     path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
-        license_deed_view,
-        name="license_deed_lang_jurisdiction",
-    ),
-    path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed",
-        license_deed_view,
-        name="license_deed_jurisdiction_explicit",
+        "<code:license_code>/<version:version>",
+        license_deed_view_code_version_english,
+        name="license_deed_view_code_version_english",
     ),
     path(
         "<code:license_code>/<version:version>/deed.<lang:target_lang>",
-        license_deed_view,
-        name="license_deed_lang",
-    ),
-    path(
-        "<code:license_code>/<version:version>/deed",
-        license_deed_view,
-        name="license_deed_explicit",
+        license_deed_view_code_version_language,
+        name="license_deed_view_code_version_language",
     ),
     path(
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
-        license_deed_view,
-        name="license_deed_jurisdiction",
+        license_deed_view_code_version_jurisdiction,
+        name="license_deed_view_code_version_jurisdiction",
     ),
     path(
-        "<code:license_code>/<version:version>/", license_deed_view, name="license_deed"
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
+        license_deed_view_code_version_jurisdiction_language,
+        name="license_deed_view_code_version_jurisdiction_language",
     ),
 ]

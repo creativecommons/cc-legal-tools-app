@@ -3,7 +3,7 @@ import factory.fuzzy
 from django.utils import translation
 from factory import post_generation
 
-from licenses import DEFAULT_JURISDICTION_LANGUAGES
+from i18n import DEFAULT_JURISDICTION_LANGUAGES
 from licenses.models import (
     License,
     LegalCode,

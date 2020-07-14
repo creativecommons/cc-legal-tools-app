@@ -15,11 +15,11 @@
                   <ul>
                     {% if jurisdiction %}
                       {% for license in licenses_of_jurisdiction %}
-                        <li><a href="{% url 'license_deed_jurisdiction_explicit' license_code=code version=version jurisdiction=jurisdiction.code %}">{{ license }}</a></li>
+                        <li><a href="{{ license.get_deed_url }}">{{ license }}</a></li>
                       {% endfor %}
                     {% elif version %}
                       {% for license in licenses_of_jurisdiction %}
-                        <li><a href="{% url 'license_deed_explicit' license_code=code version=version %}">{{ license }}</a></li>
+                        <li><a href="{{ license.get_deed_url }}">{{ license }}</a></li>
                       {% endfor %}
                     {% endif %}
                   </ul>

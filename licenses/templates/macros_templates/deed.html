@@ -80,8 +80,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
                     {% if multi_language %}
                       <span class="summary">
                         {% blocktrans %}This is a human-readable summary of (and not a substitute for) the license, which is available in the following languages:{% endblocktrans %}
-                        {% for legalcode_link, legalcode, legalcode_name in legalcodes %}
-                          <a href="{{ legalcode_link }}">{{ legalcode_name }}</a>
+                        {% for legalcode in legalcodes %}
+                          <a href="{{ legalcode.url }}">{{ legalcode.language.name }}</a>
                         {% endfor %}
                       </span>
                     {% else %}

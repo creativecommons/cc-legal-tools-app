@@ -2,7 +2,7 @@
 
 {% block license_name %}
   <span property="dc:title"
-        style="display: inline;">{{ license_title }}</span>
+        style="display: inline;">{{ license.translated_title }}</span>
 {% endblock %}
 
 {% block body %}
@@ -29,7 +29,7 @@
         </li>
       {% endif %}
 
-      {% if license.license_code in ('nc-sampling+', 'sampling+') %}
+      {% if license.sampling_plus %}
         <li class="license samplingplus">
           {% blocktrans %}To perform, display, and distribute copies of this whole work for noncommercial purposes (e.g., file-sharing or noncommercial webcasting).{% endblocktrans %}
         </li>
@@ -54,7 +54,7 @@
         </li>
       {% endif %}
 
-      {% if license.license_code in ['nc-sampling+', 'sampling+'] %}
+      {% if license.sampling_plus %}
         <li>
           {% blocktrans %}For any reuse or distribution, you must make clear to others the license terms of this work. The best way to do this is with a link to this web page.{% endblocktrans %}
         </li>

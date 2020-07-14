@@ -8,3 +8,4 @@ class GetJurisdictionCodeTest(TestCase):
         # Just returns the last portion of the path
         self.assertEqual("foo", get_code_from_jurisdiction_url("http://example.com/bar/foo/"))
         self.assertEqual("foo", get_code_from_jurisdiction_url("http://example.com/bar/foo"))
+        self.assertEqual("", get_code_from_jurisdiction_url("http://example.com"))
