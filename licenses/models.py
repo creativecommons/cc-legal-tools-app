@@ -9,48 +9,52 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
-import urllib
-
+from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from django.utils import translation
+from django.utils.translation import ugettext
 
-from licenses import FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MAX
+from i18n import DEFAULT_LANGUAGE_CODE
+from licenses import (
+    FREEDOM_LEVEL_MIN,
+    FREEDOM_LEVEL_MID,
+    FREEDOM_LEVEL_MAX,
+)
 
 
 class Creator(models.Model):
-    url = models.URLField(unique=True, max_length=200, help_text="E.g. http://creativecommons.org")
+    url = models.URLField(
+        unique=True, max_length=200, help_text="E.g. http://creativecommons.org"
+    )
 
     def __str__(self):
         return f"Creator<{self.url}>"
 
 
 class Jurisdiction(models.Model):
-    url = models.URLField(
-        unique=True,
-        max_length=200, help_text="E.g. http://creativecommons.org/international/at/",
-    )
-    # FIXME: Where to get data on jurisdictions' default languages?
+    code = models.CharField(max_length=9, unique=True, blank=False)
+
+    @property
+    def about(self):
+        # Not using "https:" deliberately because this is the "official"
+        # name of the jurisdiction in the RDF.
+        return f"http://creativecommons.org/international/{self.code}/"
+
     default_language = models.ForeignKey(
         "Language", null=True, on_delete=models.CASCADE
     )
 
-    @property
-    def code(self):
-        pieces = urllib.parse.urlsplit(self.url).path.strip("/").split("/")
-        try:
-            return pieces[1]
-        except IndexError:
-            return ""
-
     def __str__(self):
-        return f"Jurisdiction<{self.url}>"
+        return f"Jurisdiction<{self.code}>"
 
 
 class LicenseClass(models.Model):
     # <cc:licenseClass rdf:resource="http://creativecommons.org/license/"/>
     url = models.URLField(
         unique=True,
-        max_length=200, help_text="E.g. http://creativecommons.org/license/",
+        max_length=200,
+        help_text="E.g. http://creativecommons.org/license/",
     )
 
     def __str__(self):
@@ -66,6 +70,11 @@ class Language(models.Model):
 
     def __str__(self):
         return f"Language<{self.code}>"
+
+    def name(self):
+        """Name of language (translated to current active language)"""
+        name = dict(settings.LANGUAGES)[self.code]
+        return ugettext(name)
 
 
 class LegalCode(models.Model):
@@ -92,7 +101,8 @@ class License(models.Model):
     )
     license_code = models.CharField(
         max_length=40,
-        help_text="shorthand representation for which class of licenses this falls into.  E.g. 'by-nc-sa', or 'MIT'",
+        help_text="shorthand representation for which class of licenses this falls into.  "
+        "E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+', 'devnations', ...",
     )
     version = models.CharField(
         max_length=3, help_text="E.g. '4.0'. Not required.", blank=True, default=""
@@ -173,13 +183,6 @@ class License(models.Model):
     def __str__(self):
         return f"License<{self.about}>"
 
-    def set_permissions_and_prohibitions_from_license_code(self):
-        if self.creator and self.creator.url == "http://creativecommons.org":
-            self.requires_share_alike = "sa" in self.license_code
-            self.permits_derivative_works = "nd" not in self.license_code
-        else:
-            raise ValueError("set_permissions_and_prohibitions_from_license_code should only be called on CC licenses")
-
     def rdf(self):
         """Generate RDF for this license?"""
         return "RDF Generation Not Implemented"  # FIXME if needed
@@ -188,12 +191,56 @@ class License(models.Model):
         if not language_code:
             # Use current language
             language_code = translation.get_language()
-        translated_license_name = self.names.get(language__code=language_code)
+        try:
+            translated_license_name = self.names.get(language__code=language_code)
+        except TranslatedLicenseName.DoesNotExist:
+            if language_code != DEFAULT_LANGUAGE_CODE:
+                return self.translated_title(DEFAULT_LANGUAGE_CODE)
+            return self.about
         return translated_license_name.name
 
-    def legalcodes_for_language(self, target_lang: str):
-        """Returns queryset of LegalCode"""
-        return self.legal_codes.filter(language__code=target_lang)
+    def default_language_code(self):
+        if self.jurisdiction and self.jurisdiction.default_language:
+            return self.jurisdiction.default_language.code
+        return DEFAULT_LANGUAGE_CODE
+
+    def get_deed_url_for_language(self, target_lang: str):
+        """
+        Return a URL that'll give us a view for a deed for this license,
+        displayed in the specified language. (If you want it displayed in
+        a default language, use get_deed_url()).
+        """
+        kwargs = dict(
+            license_code=self.license_code,
+            version=self.version,
+            target_lang=target_lang,
+        )
+
+        if self.jurisdiction:
+            kwargs["jurisdiction"] = self.jurisdiction.code
+            viewname = "license_deed_view_code_version_jurisdiction_language"
+        else:
+            viewname = "license_deed_view_code_version_language"
+
+        return reverse(viewname, kwargs=kwargs)
+
+    def get_deed_url(self):
+        """
+        Return a URL that'll give us a view for the deed for this license,
+        but leave the language up to the view.
+        """
+        kwargs = dict(
+            license_code=self.license_code,
+            version=self.version,
+        )
+
+        if self.jurisdiction:
+            kwargs["jurisdiction"] = self.jurisdiction.code
+            viewname = "license_deed_view_code_version_jurisdiction"
+        else:
+            viewname = "license_deed_view_code_version_english"
+
+        return reverse(viewname, kwargs=kwargs)
 
     @property
     def level_of_freedom(self):
@@ -211,6 +258,10 @@ class License(models.Model):
     @property
     def superseded(self):
         return self.is_replaced_by is not None
+
+    @property
+    def sampling_plus(self):
+        return self.license_code in ('nc-sampling+', 'sampling+')
 
 
 class TranslatedLicenseName(models.Model):

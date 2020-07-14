@@ -1,39 +1,54 @@
 from django.test import TestCase
 from django.urls import reverse
 
-# Conditions under which we expect to see these strings in a deed page.
-# The lambda is called with a License object
 from licenses.models import License, Jurisdiction, Creator
 from licenses.tests.factories import LicenseFactory
+from licenses.views import DEED_TEMPLATE_MAPPING
+
+
+def never(l):
+    return False
+
+
+def always(l):
+    return True
 
 
 strings_to_lambdas = {
-    "INVALID_VARIABLE": lambda l: False,  # Should never appear
-    "You are free to:": lambda l: True,
-    "You do not have to comply with the license for elements of the material in the public domain": lambda l: True,
-    "The licensor cannot revoke these freedoms as long as you follow the license terms.": lambda l: True,
-    "appropriate credit": lambda l: True,
+    # Conditions under which we expect to see these strings in a deed page.
+    # The lambda is called with a License object
+    "INVALID_VARIABLE": never,  # Should never appear
+    "You are free to:": lambda l: l.license_code not in DEED_TEMPLATE_MAPPING,
+    "You do not have to comply with the license for elements of the material in the public domain":
+        lambda l: l.license_code not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
+    "The licensor cannot revoke these freedoms as long as you follow the license terms.":
+        lambda l: l.license_code not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
+    "appropriate credit": lambda l: l.requires_attribution and l.license_code not in DEED_TEMPLATE_MAPPING,
     "You may do so in any reasonable manner, but not in any way that "
-    "suggests the licensor endorses you or your use.": lambda l: True,
-    "We never expect to see this string in a license deed.": lambda l: False,
+    "suggests the licensor endorses you or your use.":
+        lambda l: l.requires_attribution and l.license_code not in DEED_TEMPLATE_MAPPING,
+    "We never expect to see this string in a license deed.": never,
     "you must distribute your contributions under the": lambda l: l.requires_share_alike,
     "ShareAlike": lambda l: l.requires_share_alike,
     "same license": lambda l: l.requires_share_alike,
     "as the original.": lambda l: l.requires_share_alike,
-    "Adapt": lambda l: l.permits_derivative_works,
-    "remix, transform, and build upon the material": lambda l: l.permits_derivative_works,
+    "Adapt": lambda l: l.permits_derivative_works and l.license_code not in DEED_TEMPLATE_MAPPING,
+    "remix, transform, and build upon the material":
+        lambda l: l.permits_derivative_works and l.license_code not in DEED_TEMPLATE_MAPPING,
     "you may not distribute the modified material.": lambda l: not l.permits_derivative_works,
     "NoDerivatives": lambda l: not l.permits_derivative_works,
     "This license is acceptable for Free Cultural Works.": lambda l: l.license_code
-    in ["by", "by-sa"],
-    "for any purpose, even commercially.": lambda l: not l.prohibits_commercial_use,
-    "You may not use the material for": lambda l: l.prohibits_commercial_use,
-    "commercial purposes": lambda l: l.prohibits_commercial_use,
+    in ["by", "by-sa", "publicdomain", "CC0"],
+    "for any purpose, even commercially.":
+        lambda l: l.license_code not in DEED_TEMPLATE_MAPPING and not l.prohibits_commercial_use,
+    "You may not use the material for":
+        lambda l: l.prohibits_commercial_use and l.license_code not in DEED_TEMPLATE_MAPPING,
+    ">commercial purposes<": lambda l: l.prohibits_commercial_use and l.license_code not in DEED_TEMPLATE_MAPPING,
     "When the Licensor is an intergovernmental organization": lambda l: l.jurisdiction
     and l.jurisdiction.code == "igo",
     "of this license is available. You should use it for new works,": lambda l: l.superseded,
     """href="/worldwide/""": lambda l: l.jurisdiction is not None
-    and l.jurisdiction.code not in ["", "es", "igo"],
+    and l.jurisdiction.code not in ["", "es", "igo"] and l.license_code not in DEED_TEMPLATE_MAPPING,
 }
 
 
@@ -62,65 +77,64 @@ for bits in range(8):  # We'll enumerate the variations
     license_codes.append("-".join(parts))
 
 
-class LicenseDeedViewTest(TestCase):
-    def validate(self, rsp, license):
+class HomeViewTest(TestCase):
+    def test_home_view(self):
+        url = reverse("home")
+        rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("home.html")
+
+
+class LicenseDeedViewTest(TestCase):
+    def validate_deed_text(self, rsp, license):
+        self.assertEqual(200, rsp.status_code)
+        self.assertEqual("en", rsp.context["target_lang"])
+        text = rsp.content.decode("utf-8")
+        if "INVALID_VARIABLE" in text:  # Some unresolved variable in the template
+            msgs = ["INVALID_VARIABLE in output"]
+            for line in text.splitlines():
+                if "INVALID_VARIABLE" in line:
+                    msgs.append(line)
+            self.fail("\n".join(msgs))
+
         expected, unexpected = expected_and_unexpected_strings_for_license(license)
         for s in expected:
-            with self.subTest(license.license_code + license.version + s):
-                if s not in rsp.content.decode("utf-8"):
-                    print(rsp.content.decode("utf-8"))
+            with self.subTest("|".join([license.license_code, license.version, s])):
+                if s not in text:
+                    print(text)
                 self.assertContains(rsp, s)
         for s in unexpected:
-            with self.subTest(license.license_code + license.version + s):
+            with self.subTest("|".join([license.license_code, license.version, s])):
                 self.assertNotContains(rsp, s)
 
     def test_text_in_deeds(self):
-        # Test that each deed view includes the expected strings and not the unexpected strings
-        # for its license.
-        for license_code in license_codes:
-            with self.subTest(license_code):
-                version = "3.0"
-                license = License.objects.filter(
-                    license_code=license_code, version=version
-                ).exclude(jurisdiction=None).first()
-                url = reverse(
-                    viewname="license_deed_jurisdiction_explicit",
-                    kwargs={
-                        "license_code": license_code,
-                        "version": version,
-                        "jurisdiction": license.jurisdiction.code
-                    },
-                )
+        for license in License.objects.all():
+            with self.subTest(license.about):
+                # Test in English since that's how we've set up the strings to test for
+                url = license.get_deed_url_for_language("en")
                 rsp = self.client.get(url)
-                self.validate(rsp, license)
+                self.assertEqual(rsp.status_code, 200)
+                self.validate_deed_text(rsp, license)
 
     def test_deed_for_superseded_license(self):
         license_code = "by-nc-sa"
         version = "2.0"  # No 4.0 licenses have been superseded
 
-        new_license = License.objects.filter(
-            license_code=license_code,
-            version="3.0",
-        ).first()
-        license = License.objects.filter(
-            license_code=license_code,
-            version=version,
-        ).first()
+        new_license = License.objects.get(
+            license_code=license_code, version="3.0", jurisdiction=None
+        )
+        license = License.objects.get(
+            license_code=license_code, version=version, jurisdiction=None
+        )
         license.is_replaced_by = new_license
         license.save()
-
-        url = reverse(
-            viewname="license_deed",
-            kwargs={"license_code": license_code, "version": version},
-        )
-        rsp = self.client.get(url)
-        self.validate(rsp, license)
+        rsp = self.client.get(license.get_deed_url())
+        self.validate_deed_text(rsp, license)
 
     def test_jurisdictions(self):
         for code in ["es", "igo"]:
             creator = Creator.objects.first()
-            jurisdiction = Jurisdiction.objects.get(url=f"http://creativecommons.org/international/{code}/")
+            jurisdiction = Jurisdiction.objects.get(code=code)
             with self.subTest(code):
                 license = LicenseFactory(
                     creator=creator,
@@ -133,13 +147,34 @@ class LicenseDeedViewTest(TestCase):
                     prohibits_commercial_use=False,
                     permits_derivative_works=False,
                 )
-                url = reverse(
-                    viewname="license_deed_jurisdiction_explicit",
-                    kwargs={
-                        "license_code": license.license_code,
-                        "jurisdiction": code,
-                        "version": license.version,
-                    },
-                )
-                rsp = self.client.get(url)
-                self.validate(rsp, license)
+                rsp = self.client.get(license.get_deed_url())
+                self.validate_deed_text(rsp, license)
+
+    def test_language(self):
+        license = (
+            License.objects.filter(
+                license_code="by-nd", version="3.0", legal_codes__language__code="es",
+            )
+            .exclude(jurisdiction=None)
+            .first()
+        )
+        rsp = self.client.get(license.get_deed_url())
+        self.validate_deed_text(rsp, license)
+
+    def test_use_jurisdiction_default_language(self):
+        """
+        If no language specified, but jurisdiction default language is not english,
+        use that language instead of english.
+        """
+        license = License.objects.filter(version="3.0", jurisdiction__code="fr").first()
+        url = reverse(
+            "license_deed_view_code_version_jurisdiction",
+            kwargs=dict(
+                license_code=license.license_code,
+                version=license.version,
+                jurisdiction=license.jurisdiction.code,
+            ),
+        )
+        rsp = self.client.get(url)
+        context = rsp.context
+        self.assertEqual("fr", context["target_lang"])

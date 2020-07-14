@@ -8,14 +8,26 @@ import datetime
 from django.test import TestCase
 
 from licenses.import_metadata_from_rdf import MetadataImporter
-from licenses.models import License, TranslatedLicenseName, LicenseLogo, LegalCode
+from licenses.models import License, TranslatedLicenseName, LicenseLogo, LegalCode, Jurisdiction
 
 
 class MetadataTest(TestCase):
     def test_repeated_import(self):
         # It should be safe to import the data again, just a no-op
         MetadataImporter().import_metadata(open("index.rdf", "rb"))
-        print("Done 'importing' the data again")
+
+    def test_import_from_scratch(self):
+        # Some of the import code only runs when things don't already exist, so delete
+        # most of the data and run it.
+        License.objects.all().delete()
+        Jurisdiction.objects.all().delete()
+        LegalCode.objects.all().delete()
+        TranslatedLicenseName.objects.all().delete()
+        MetadataImporter().import_metadata(open("index.rdf", "rb"))
+
+    def test_jurisdiction_default_language(self):
+        # Jurisdictions get imported with their default language assigned correctly
+        self.assertEqual("fr", Jurisdiction.objects.get(code="fr").default_language.code)
 
     def test_mit_license(self):
         license = License.objects.get(license_code="MIT")
@@ -108,7 +120,7 @@ class MetadataTest(TestCase):
         )
         self.assertEqual("http://creativecommons.org", license.creator.url)
         self.assertEqual("http://creativecommons.org/license/", license.license_class.url)
-        self.assertTrue(license.jurisdiction.url.endswith("/es/"))
+        self.assertEqual("es", license.jurisdiction.code)
         self.assertTrue(license.requires_attribution)
         self.assertTrue(license.requires_notice)
         self.assertTrue(license.permits_reproduction)

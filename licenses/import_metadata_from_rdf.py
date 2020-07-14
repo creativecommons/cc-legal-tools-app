@@ -16,23 +16,23 @@ import datetime
 import xml.etree.ElementTree as ET
 from typing import Optional
 
+from licenses import MISSING_LICENSES
+from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
 from licenses.models import (
     License,
     TranslatedLicenseName,
     Language,
     LicenseLogo,
-    Jurisdiction,
     Creator,
     LicenseClass,
     LegalCode,
+    Jurisdiction,
 )
+from licenses.utils import get_code_from_jurisdiction_url
+
 
 NO_DEFAULT = object()  # Marker meaning don't allow use of a default value.
 
-# If something has no language listed, that generally means it's English.
-# We want to set an actual language code on it so that once this data has
-# been imported, we don't have to treat English as a special default.
-DEFAULT_LANGUAGE_CODE = "en"
 
 # Namespaces in the RDF
 namespaces = {
@@ -47,20 +47,6 @@ namespaces = {
 # The following licenses are refered to but do not exist in the data.
 # We will be reporting these elsewhere, but for the time being, ignore
 # these in the import.
-MISSING_LICENSES = [
-    "http://creativecommons.org/licenses/by-nc/2.1/",
-    "http://creativecommons.org/licenses/by-nd/2.1/",
-    "http://creativecommons.org/licenses/by-nc-nd/2.1/",
-    "http://creativecommons.org/licenses/by-sa/2.1/",
-    "http://creativecommons.org/licenses/by-nc-sa/2.1/",
-    "http://creativecommons.org/licenses/nc/2.0/",
-    "http://creativecommons.org/licenses/nc-sa/2.0/",
-    "http://creativecommons.org/licenses/by/2.1/",
-    "http://creativecommons.org/licenses/nd-nc/2.0/",
-    "http://creativecommons.org/licenses/by-nd-nc/2.0/",
-    "http://creativecommons.org/licenses/nd/2.0/",
-    "http://creativecommons.org/licenses/sa/2.0/",
-]
 
 
 CREATOR_CACHE = {}  # Map URL to Creator objects (mostly unsaved)
@@ -68,7 +54,9 @@ JURISDICTION_CACHE = {}  # Map URL to Jurisdiction objects (mostly unsaved)
 LANGUAGE_CACHE = {}  # Map URL to Language objects (mostly unsaved)
 LEGAL_CODE_CACHE = {}  # Map URL to LegalCode objects (mostly unsaved)
 LICENSE_CLASS_CACHE = {}  # Map URL to LicenseClass objects (mostly unsaved)
-TRANSLATED_LICENSE_NAME_CACHE = {}  # Map of unsaved TranslatedLicenseName objects. key=license_about|lang_code.
+TRANSLATED_LICENSE_NAME_CACHE = (
+    {}
+)  # Map of unsaved TranslatedLicenseName objects. key=license_about|lang_code.
 LICENSE_LOGOS = []  # List of unsaved LicenseLogo objects
 
 
@@ -91,8 +79,16 @@ def get_creator_for_url(url):
     return get_instance_with_caching(Creator, CREATOR_CACHE, "url", url)
 
 
-def get_jurisdiction_for_url(url):
-    return get_instance_with_caching(Jurisdiction, JURISDICTION_CACHE, "url", url)
+def get_jurisdiction_for_code(code):
+    kwargs = {}
+    if code not in JURISDICTION_CACHE:
+        if code in DEFAULT_JURISDICTION_LANGUAGES:
+            langs = DEFAULT_JURISDICTION_LANGUAGES[code]
+            if len(langs) == 1:
+                kwargs = {"default_language": get_language_for_code(langs[0])}
+    return get_instance_with_caching(
+        Jurisdiction, JURISDICTION_CACHE, "code", code, **kwargs
+    )
 
 
 def get_language_for_code(code):
@@ -113,9 +109,7 @@ def get_translated_license_name(license, language, name):
     key = f"{license.about}|{language.code}"
     if key not in TRANSLATED_LICENSE_NAME_CACHE:
         TRANSLATED_LICENSE_NAME_CACHE[key] = TranslatedLicenseName(
-            license=license,
-            language=language,
-            name=name
+            license=license, language=language, name=name
         )
     return TRANSLATED_LICENSE_NAME_CACHE[key]
 
@@ -134,9 +128,8 @@ def do_bulk_create(objects):
 
 class MetadataImporter:
     def import_metadata(self, readable):
-        global CREATOR_CACHE, JURISDICTION_CACHE, LANGUAGE_CACHE, LEGAL_CODE_CACHE, \
-            LICENSE_CLASS_CACHE, TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, \
-            LEGAL_CODES_TO_ADD_TO_LICENSES
+        global CREATOR_CACHE, JURISDICTION_CACHE, LANGUAGE_CACHE, LEGAL_CODE_CACHE, LICENSE_CLASS_CACHE, \
+            TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, LEGAL_CODES_TO_ADD_TO_LICENSES
 
         print("Populating database with license data.")
 
@@ -172,13 +165,15 @@ class MetadataImporter:
 
         # Populate the caches with whatever's in the database already
         CREATOR_CACHE = {c.url: c for c in Creator.objects.all()}
-        JURISDICTION_CACHE = {j.url: j for j in Jurisdiction.objects.all()}
+        JURISDICTION_CACHE = {j.code: j for j in Jurisdiction.objects.all()}
         LANGUAGE_CACHE = {lang.code: lang for lang in Language.objects.all()}
         LEGAL_CODE_CACHE = {lg.url: lg for lg in LegalCode.objects.all()}
         LICENSE_CLASS_CACHE = {lc.url: lc for lc in LicenseClass.objects.all()}
 
         for tln in TranslatedLicenseName.objects.select_related("license", "language"):
-            TRANSLATED_LICENSE_NAME_CACHE[f"{tln.license.about}|{tln.language.code}"] = tln
+            TRANSLATED_LICENSE_NAME_CACHE[
+                f"{tln.license.about}|{tln.language.code}"
+            ] = tln
 
         print("Reading RDF")
 
@@ -214,6 +209,8 @@ class MetadataImporter:
             legal_code.language = legal_code.language
 
         do_bulk_create(LEGAL_CODE_CACHE.values())
+        for jurisdiction in JURISDICTION_CACHE.values():
+            jurisdiction.default_language = jurisdiction.default_language
         do_bulk_create(JURISDICTION_CACHE.values())
         do_bulk_create(LICENSE_CLASS_CACHE.values())
 
@@ -243,7 +240,9 @@ class MetadataImporter:
         # Update TranslatedLicenseName objects with the saved license and language objects
         # before saving them
         for tln in TRANSLATED_LICENSE_NAME_CACHE.values():
-            if not tln.pk:  # pragma: no cover (only really used if we're restarting after a partial import)
+            if (
+                not tln.pk
+            ):  # pragma: no cover (only really used if we're restarting after a partial import)
                 tln.language = tln.language
                 tln.license = tln.license
         do_bulk_create(TRANSLATED_LICENSE_NAME_CACHE.values())
@@ -282,7 +281,6 @@ class MetadataImporter:
             return self.licenses[license_url]
 
         license_element = self.license_elements[license_url]  # type: ET.Element
-        # print("Importing {}".format(license_element.attrib[namespaced("rdf", "about")]))
 
         #
         # References to other licenses
@@ -323,7 +321,9 @@ class MetadataImporter:
         )
 
         jurisdiction = (
-            get_jurisdiction_for_url(jurisdiction_url) if jurisdiction_url else None
+            get_jurisdiction_for_code(get_code_from_jurisdiction_url(jurisdiction_url))
+            if jurisdiction_url
+            else None
         )
 
         creator_url = get_element_attribute(

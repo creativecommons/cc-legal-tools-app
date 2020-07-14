@@ -3,6 +3,7 @@ import factory.fuzzy
 from django.utils import translation
 from factory import post_generation
 
+from i18n import DEFAULT_JURISDICTION_LANGUAGES
 from licenses.models import (
     License,
     LegalCode,
@@ -26,7 +27,7 @@ class JurisdictionFactory(factory.DjangoModelFactory):
     class Meta:
         model = Jurisdiction
 
-    url = factory.Faker("url")
+    code = factory.fuzzy.FuzzyChoice(DEFAULT_JURISDICTION_LANGUAGES.keys())
 
 
 class LanguageFactory(factory.DjangoModelFactory):

@@ -74,7 +74,7 @@
                     {% block legalcode_block %}{% endblock %}
                   </div>
 
-                  <div id="deed-main-content" class="row {{ license.jurisdiction.code }}">
+                  <div id="deed-main-content" class="row {% if license.jurisdiction %}{{ license.jurisdiction.code }}{% endif %}">
                     {% block body %}{% endblock %}
                   </div>
                 </div>

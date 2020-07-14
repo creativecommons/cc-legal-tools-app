@@ -11,18 +11,18 @@
           <li>{{ version }}
             <ul>
               {% for jurisdiction, licenses_of_jurisdiction in licenses_of_version.items %}
-                <li>Jurisdiction: {% if jurisdiction %}{{ jurisdiction.url }}{% else %}None{% endif %}
-                  <ul>
-                    {% if jurisdiction %}
+                <li>{% if jurisdiction %}Jurisdiction:{{ jurisdiction.code }}{% endif %}
+                  {% if licenses_of_jurisdiction|length > 1 %}
+                    <ul>
                       {% for license in licenses_of_jurisdiction %}
-                        <li><a href="{% url 'license_deed_jurisdiction_explicit' license_code=code version=version jurisdiction=jurisdiction.code %}">{{ license }}</a></li>
+                        <li><a href="{{ license.get_deed_url }}">{{ license.about }}</a></li>
                       {% endfor %}
-                    {% elif version %}
+                    </ul>
+                  {% else %}
                       {% for license in licenses_of_jurisdiction %}
-                        <li><a href="{% url 'license_deed_explicit' license_code=code version=version %}">{{ license }}</a></li>
+                        <a href="{{ license.get_deed_url }}">{{ license.about }}</a>
                       {% endfor %}
-                    {% endif %}
-                  </ul>
+                  {% endif %}
                 </li>
               {% endfor %}
             </ul>
