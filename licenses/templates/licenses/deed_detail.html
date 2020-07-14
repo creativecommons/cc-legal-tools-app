@@ -69,7 +69,7 @@
                   </div>
                 </div>
 
-                <div id="deed-main-content" class="row {# {% if license.jurisdiction %} #}{{ license.jurisdiction.code }}{# {% endif %} #}">
+                <div id="deed-main-content" class="row {# {% if license.jurisdiction %} #}{{ license.jurisdiction_code }}{# {% endif %} #}">
                   {# {% block body %} #}{# {% endblock %} #}
                 </div>
               </div>
@@ -112,7 +112,7 @@
     {# {% block help_panels %} #}
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">{# {% blocktrans %} #}Disclaimer{# {% endblocktrans %} #}</div>
-        {# {% if license.jurisdiction.code == 'jp' %} #}
+        {# {% if license.jurisdiction_code == 'jp' %} #}
           <div class="bd">
             {# {% blocktrans %} #}<p>
               The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href="legalcode" class="fulltext">Please click here to see the full License</a>.

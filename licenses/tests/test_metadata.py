@@ -8,7 +8,7 @@ import datetime
 from django.test import TestCase
 
 from licenses.import_metadata_from_rdf import MetadataImporter
-from licenses.models import License, TranslatedLicenseName, LicenseLogo, LegalCode, Jurisdiction
+from licenses.models import License, TranslatedLicenseName, LicenseLogo, LegalCode
 
 
 class MetadataTest(TestCase):
@@ -20,19 +20,14 @@ class MetadataTest(TestCase):
         # Some of the import code only runs when things don't already exist, so delete
         # most of the data and run it.
         License.objects.all().delete()
-        Jurisdiction.objects.all().delete()
         LegalCode.objects.all().delete()
         TranslatedLicenseName.objects.all().delete()
         MetadataImporter().import_metadata(open("index.rdf", "rb"))
 
-    def test_jurisdiction_default_language(self):
-        # Jurisdictions get imported with their default language assigned correctly
-        self.assertEqual("fr", Jurisdiction.objects.get(code="fr").default_language.code)
-
     def test_mit_license(self):
         license = License.objects.get(license_code="MIT")
-        self.assertIsNone(license.creator)
-        self.assertEqual("http://creativecommons.org/license/software", license.license_class.url)
+        self.assertEqual("", license.creator_url)
+        self.assertEqual("http://creativecommons.org/license/software", license.license_class_url)
 
         self.assertTrue(license.permits_derivative_works)
         self.assertTrue(license.permits_distribution)
@@ -47,8 +42,8 @@ class MetadataTest(TestCase):
 
     def test_bsd(self):
         license = License.objects.get(license_code="BSD")
-        self.assertIsNone(license.creator)
-        self.assertEqual("http://creativecommons.org/license/software", license.license_class.url)
+        self.assertEqual("", license.creator_url)
+        self.assertEqual("http://creativecommons.org/license/software", license.license_class_url)
 
         self.assertTrue(license.permits_derivative_works)
         self.assertTrue(license.permits_distribution)
@@ -63,8 +58,8 @@ class MetadataTest(TestCase):
 
     def test_40_by_nc_nd(self):
         license = License.objects.get(version="4.0", license_code="by-nc-nd")
-        self.assertEqual("http://creativecommons.org", license.creator.url)
-        self.assertEqual("http://creativecommons.org/license/", license.license_class.url)
+        self.assertEqual("http://creativecommons.org", license.creator_url)
+        self.assertEqual("http://creativecommons.org/license/", license.license_class_url)
 
         self.assertTrue(license.requires_attribution)
         self.assertTrue(license.requires_notice)
@@ -81,18 +76,18 @@ class MetadataTest(TestCase):
         self.assertEqual(1, len(legalcodes))
         legalcode = legalcodes[0]
         self.assertEqual(legalcode.url, "http://creativecommons.org/licenses/by-nc-nd/4.0/legalcode")
-        self.assertEqual(legalcode.language.code, "en")
+        self.assertEqual(legalcode.language_code, "en")
 
         tname = TranslatedLicenseName.objects.get(
             license=license,
-            language__code="it",
+            language_code="it",
         )
         self.assertEqual("Attribuzione - Non commerciale - Non opere derivate 4.0 Internazionale", tname.name)
 
     def test_40_by_sa(self):
         license = License.objects.get(version="4.0", license_code="by-sa")
-        self.assertEqual("http://creativecommons.org", license.creator.url)
-        self.assertEqual("http://creativecommons.org/license/", license.license_class.url)
+        self.assertEqual("http://creativecommons.org", license.creator_url)
+        self.assertEqual("http://creativecommons.org/license/", license.license_class_url)
 
         self.assertTrue(license.requires_attribution)
         self.assertTrue(license.requires_notice)
@@ -107,7 +102,7 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
         tname = TranslatedLicenseName.objects.get(
             license=license,
-            language__code="af",
+            language_code="af",
         )
         self.assertEqual("Erkenning-InsgelyksDeel 4.0 International", tname.name)
 
@@ -118,9 +113,9 @@ class MetadataTest(TestCase):
             "http://creativecommons.org/licenses/by-nc-nd/3.0/",
             license.source.about
         )
-        self.assertEqual("http://creativecommons.org", license.creator.url)
-        self.assertEqual("http://creativecommons.org/license/", license.license_class.url)
-        self.assertEqual("es", license.jurisdiction.code)
+        self.assertEqual("http://creativecommons.org", license.creator_url)
+        self.assertEqual("http://creativecommons.org/license/", license.license_class_url)
+        self.assertEqual("es", license.jurisdiction_code)
         self.assertTrue(license.requires_attribution)
         self.assertTrue(license.requires_notice)
         self.assertTrue(license.permits_reproduction)
@@ -133,13 +128,13 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
 
         # one of six legalcodes for this one
-        legalcode = license.legal_codes.get(language__code="es")
+        legalcode = license.legal_codes.get(language_code="es")
         self.assertEqual(legalcode.url, "http://creativecommons.org/licenses/by-nc-nd/3.0/es/legalcode.es")
-        self.assertEqual(legalcode.language.code, "es")
+        self.assertEqual(legalcode.language_code, "es")
 
         tname = TranslatedLicenseName.objects.get(
             license=license,
-            language__code="id",
+            language_code="id",
         )
         self.assertEqual("Atribusi-NonKomersial-TanpaTurunan 3.0 Spanyol", tname.name)
 
@@ -173,8 +168,8 @@ class MetadataTest(TestCase):
             # Here's a Legalcode that did not have a language in the RDF
             legal_code = LegalCode.objects.get(url="http://creativecommons.org/publicdomain/zero/1.0/legalcode")
             # It should be using English
-            self.assertEqual("en", legal_code.language.code)
+            self.assertEqual("en", legal_code.language_code)
         with self.subTest("title"):
             bsd_license = License.objects.get(about="http://creativecommons.org/licenses/BSD/")
             title = TranslatedLicenseName.objects.get(license=bsd_license, name="BSD License")
-            self.assertEqual("en", title.language.code)
+            self.assertEqual("en", title.language_code)

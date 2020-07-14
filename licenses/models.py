@@ -9,13 +9,11 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
-from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import translation
-from django.utils.translation import ugettext
 
-from i18n import DEFAULT_LANGUAGE_CODE
+from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
 from licenses import (
     FREEDOM_LEVEL_MIN,
     FREEDOM_LEVEL_MID,
@@ -23,74 +21,23 @@ from licenses import (
 )
 
 
-class Creator(models.Model):
-    url = models.URLField(
-        unique=True, max_length=200, help_text="E.g. http://creativecommons.org"
-    )
-
-    def __str__(self):
-        return f"Creator<{self.url}>"
-
-
-class Jurisdiction(models.Model):
-    code = models.CharField(max_length=9, unique=True, blank=False)
-
-    @property
-    def about(self):
-        # Not using "https:" deliberately because this is the "official"
-        # name of the jurisdiction in the RDF.
-        return f"http://creativecommons.org/international/{self.code}/"
-
-    default_language = models.ForeignKey(
-        "Language", null=True, on_delete=models.CASCADE
-    )
-
-    def __str__(self):
-        return f"Jurisdiction<{self.code}>"
-
-
-class LicenseClass(models.Model):
-    # <cc:licenseClass rdf:resource="http://creativecommons.org/license/"/>
-    url = models.URLField(
-        unique=True,
-        max_length=200,
-        help_text="E.g. http://creativecommons.org/license/",
-    )
-
-    def __str__(self):
-        return f"LicenseClass<{self.url}>"
-
-
-class Language(models.Model):
-    code = models.CharField(
-        unique=True,
-        max_length=7,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
-    )
-
-    def __str__(self):
-        return f"Language<{self.code}>"
-
-    def name(self):
-        """Name of language (translated to current active language)"""
-        name = dict(settings.LANGUAGES)[self.code]
-        return ugettext(name)
-
-
 class LegalCode(models.Model):
     url = models.URLField(
         max_length=200,
         help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
     )
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    language_code = models.CharField(
+        max_length=7,
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+    )
 
     class Meta:
         unique_together = [
-            ("url", "language"),
+            ("url", "language_code"),
         ]
 
     def __str__(self):
-        return f"LegalCode<{self.language}, {self.url}>"
+        return f"LegalCode<{self.language_code}, {self.url}>"
 
 
 class License(models.Model):
@@ -112,29 +59,18 @@ class License(models.Model):
         blank=True,
         help_text="legal codes related to this license? not sure what these are though",
     )
-    jurisdiction = models.ForeignKey(
-        Jurisdiction,
-        null=True,
+    jurisdiction_code = models.CharField(max_length=9, blank=True, default="")
+    creator_url = models.URLField(
+        max_length=200,
         blank=True,
-        on_delete=models.CASCADE,
-        related_name="licenses",
-        help_text="Jurisdiction of this license",
+        default="",
+        help_text="E.g. http://creativecommons.org",
     )
-    creator = models.ForeignKey(
-        Creator,
-        null=True,
+    license_class_url = models.URLField(
+        max_length=200,
+        help_text="E.g. http://creativecommons.org/license/",
         blank=True,
-        on_delete=models.CASCADE,
-        related_name="licenses",
-        help_text="Creator of this license.",
-    )
-    license_class = models.ForeignKey(
-        LicenseClass,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
-        related_name="licenses",
-        help_text="Which license class this license belongs to.",
+        default="",
     )
 
     source = models.ForeignKey(
@@ -192,7 +128,7 @@ class License(models.Model):
             # Use current language
             language_code = translation.get_language()
         try:
-            translated_license_name = self.names.get(language__code=language_code)
+            translated_license_name = self.names.get(language_code=language_code)
         except TranslatedLicenseName.DoesNotExist:
             if language_code != DEFAULT_LANGUAGE_CODE:
                 return self.translated_title(DEFAULT_LANGUAGE_CODE)
@@ -200,8 +136,12 @@ class License(models.Model):
         return translated_license_name.name
 
     def default_language_code(self):
-        if self.jurisdiction and self.jurisdiction.default_language:
-            return self.jurisdiction.default_language.code
+        if (
+            self.jurisdiction_code
+            and self.jurisdiction_code in DEFAULT_JURISDICTION_LANGUAGES
+            and len(DEFAULT_JURISDICTION_LANGUAGES[self.jurisdiction_code]) == 1
+        ):
+            return DEFAULT_JURISDICTION_LANGUAGES[self.jurisdiction_code][0]
         return DEFAULT_LANGUAGE_CODE
 
     def get_deed_url_for_language(self, target_lang: str):
@@ -216,8 +156,8 @@ class License(models.Model):
             target_lang=target_lang,
         )
 
-        if self.jurisdiction:
-            kwargs["jurisdiction"] = self.jurisdiction.code
+        if self.jurisdiction_code:
+            kwargs["jurisdiction"] = self.jurisdiction_code
             viewname = "license_deed_view_code_version_jurisdiction_language"
         else:
             viewname = "license_deed_view_code_version_language"
@@ -229,13 +169,10 @@ class License(models.Model):
         Return a URL that'll give us a view for the deed for this license,
         but leave the language up to the view.
         """
-        kwargs = dict(
-            license_code=self.license_code,
-            version=self.version,
-        )
+        kwargs = dict(license_code=self.license_code, version=self.version,)
 
-        if self.jurisdiction:
-            kwargs["jurisdiction"] = self.jurisdiction.code
+        if self.jurisdiction_code:
+            kwargs["jurisdiction"] = self.jurisdiction_code
             viewname = "license_deed_view_code_version_jurisdiction"
         else:
             viewname = "license_deed_view_code_version_english"
@@ -261,21 +198,24 @@ class License(models.Model):
 
     @property
     def sampling_plus(self):
-        return self.license_code in ('nc-sampling+', 'sampling+')
+        return self.license_code in ("nc-sampling+", "sampling+")
 
 
 class TranslatedLicenseName(models.Model):
     license = models.ForeignKey(License, related_name="names", on_delete=models.CASCADE)
-    language = models.ForeignKey(Language, on_delete=models.CASCADE)
+    language_code = models.CharField(
+        max_length=7,
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+    )
     name = models.CharField(max_length=250, help_text="Translated name of license")
 
     class Meta:
         unique_together = [
-            ("license", "language"),
+            ("license", "language_code"),
         ]
 
     def __str__(self):
-        return f"TranslatedLicenseName<{self.language}, {self.license}>"
+        return f"TranslatedLicenseName<{self.language_code}, {self.license}>"
 
 
 class LicenseLogo(models.Model):

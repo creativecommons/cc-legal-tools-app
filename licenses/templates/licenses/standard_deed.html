@@ -2,7 +2,7 @@
 {% load i18n static %}
 {% block title %}
   Creative Commons &mdash; {{ license.translated_title }}
-  &mdash; CC {{license.license_code.upper }} {{ license.version }}{% if jurisdiction %} {{ jurisdiction.upper }}{% endif %}
+  &mdash; CC {{license.license_code.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %}
 {% endblock title %}
 
 {% block page_top %}
@@ -14,7 +14,7 @@
 {% block license_name %}
   <span class="cc-license-title" property="dc:title dct:title">{{ license.translated_title }}</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
-    (CC {{ license.license_code.upper }} {{ license.version }}{% if license.jurisdiction %} {{ license.jurisdiction.code.upper }}{% endif %})
+    (CC {{ license.license_code.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %})
   </span>
 {% endblock license_name %}
 
@@ -27,12 +27,12 @@
       </div>
     {% endif %}
 
-    {% if license.jurisdiction %}
-      {% with c=license.jurisdiction.code imageurl="/images/international/{{ license.jurisdiction.code }}.png" %}
+    {% if license.jurisdiction_code %}
+      {% with c=license.jurisdiction_code imageurl="/images/international/{{ license.jurisdiction_code }}.png" %}
         {% if c != '' and c != 'es' and c != 'igo' %}
-          <a href="/worldwide/{{ license.jurisdiction.code }}/">
+          <a href="/worldwide/{{ license.jurisdiction_code }}/">
             <img src="{% static imageurl %}"
-                 alt="{{ license.jurisdiction.code }}"
+                 alt="{{ license.jurisdiction_code }}"
                  style="border: 1px solid #C0C0C0"/>
           </a>
         {% endif %}
@@ -167,7 +167,7 @@
       {% blocktrans %}Notices:{% endblocktrans %}
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-    {% if license.jurisdiction.code == 'igo' %}
+    {% if license.jurisdiction_code == 'igo' %}
       <li class="license">
         {% blocktrans %}When the Licensor is an intergovernmental organization, disputes will be resolved by <a href="#" id="mediation_and_arbitration_popup" class="helpLink">mediation and arbitration</a> unless otherwise agreed.{% endblocktrans %}
       </li>

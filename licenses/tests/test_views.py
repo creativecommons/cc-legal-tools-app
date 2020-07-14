@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from licenses.models import License, Jurisdiction, Creator
+from licenses.models import License
 from licenses.tests.factories import LicenseFactory
 from licenses.views import DEED_TEMPLATE_MAPPING
 
@@ -44,11 +44,10 @@ strings_to_lambdas = {
     "You may not use the material for":
         lambda l: l.prohibits_commercial_use and l.license_code not in DEED_TEMPLATE_MAPPING,
     ">commercial purposes<": lambda l: l.prohibits_commercial_use and l.license_code not in DEED_TEMPLATE_MAPPING,
-    "When the Licensor is an intergovernmental organization": lambda l: l.jurisdiction
-    and l.jurisdiction.code == "igo",
+    "When the Licensor is an intergovernmental organization": lambda l: l.jurisdiction_code == "igo",
     "of this license is available. You should use it for new works,": lambda l: l.superseded,
-    """href="/worldwide/""": lambda l: l.jurisdiction is not None
-    and l.jurisdiction.code not in ["", "es", "igo"] and l.license_code not in DEED_TEMPLATE_MAPPING,
+    """href="/worldwide/""": lambda l: l.jurisdiction_code != ""
+    and l.jurisdiction_code not in ["", "es", "igo"] and l.license_code not in DEED_TEMPLATE_MAPPING,
 }
 
 
@@ -121,10 +120,10 @@ class LicenseDeedViewTest(TestCase):
         version = "2.0"  # No 4.0 licenses have been superseded
 
         new_license = License.objects.get(
-            license_code=license_code, version="3.0", jurisdiction=None
+            license_code=license_code, version="3.0", jurisdiction_code=""
         )
         license = License.objects.get(
-            license_code=license_code, version=version, jurisdiction=None
+            license_code=license_code, version=version, jurisdiction_code=""
         )
         license.is_replaced_by = new_license
         license.save()
@@ -133,13 +132,10 @@ class LicenseDeedViewTest(TestCase):
 
     def test_jurisdictions(self):
         for code in ["es", "igo"]:
-            creator = Creator.objects.first()
-            jurisdiction = Jurisdiction.objects.get(code=code)
             with self.subTest(code):
                 license = LicenseFactory(
-                    creator=creator,
                     license_code="by-nd-sa",
-                    jurisdiction=jurisdiction,
+                    jurisdiction_code="es",
                     version="3.7",
                     requires_share_alike=True,
                     permits_distribution=False,
@@ -153,9 +149,9 @@ class LicenseDeedViewTest(TestCase):
     def test_language(self):
         license = (
             License.objects.filter(
-                license_code="by-nd", version="3.0", legal_codes__language__code="es",
+                license_code="by-nd", version="3.0", legal_codes__language_code="es",
             )
-            .exclude(jurisdiction=None)
+            .exclude(jurisdiction_code="")
             .first()
         )
         rsp = self.client.get(license.get_deed_url())
@@ -166,13 +162,13 @@ class LicenseDeedViewTest(TestCase):
         If no language specified, but jurisdiction default language is not english,
         use that language instead of english.
         """
-        license = License.objects.filter(version="3.0", jurisdiction__code="fr").first()
+        license = License.objects.filter(version="3.0", jurisdiction_code="fr").first()
         url = reverse(
             "license_deed_view_code_version_jurisdiction",
             kwargs=dict(
                 license_code=license.license_code,
                 version=license.version,
-                jurisdiction=license.jurisdiction.code,
+                jurisdiction=license.jurisdiction_code,
             ),
         )
         rsp = self.client.get(url)
