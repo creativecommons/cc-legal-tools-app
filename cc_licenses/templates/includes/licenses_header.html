@@ -4,10 +4,12 @@
   <h2 class="is-vcentered">
     {# Icon Sections #}
       <span class="padding-right-bigger">
-      {# replace with list of icon classes that should be on this license #}
-      {% for i in "x"|ljust:"4" %}
+      {# Forloop through icons classes that are being sent from model #}
+        <i class="cc-logo icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
         <i class="cc-by icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
-      {% endfor %}
+        <i class="cc-nc icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
+        <i class="cc-sa icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
+      {# endfor #}
       </span>
 
     CC BY-NC-SA 4.0
