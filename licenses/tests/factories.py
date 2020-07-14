@@ -1,6 +1,9 @@
 import factory
 import factory.fuzzy
+from django.utils import translation
+from factory import post_generation
 
+from i18n import DEFAULT_JURISDICTION_LANGUAGES
 from licenses.models import (
     License,
     LegalCode,
@@ -24,7 +27,7 @@ class JurisdictionFactory(factory.DjangoModelFactory):
     class Meta:
         model = Jurisdiction
 
-    url = factory.Faker("url")
+    code = factory.fuzzy.FuzzyChoice(DEFAULT_JURISDICTION_LANGUAGES.keys())
 
 
 class LanguageFactory(factory.DjangoModelFactory):
@@ -64,6 +67,14 @@ class LicenseFactory(factory.DjangoModelFactory):
     requires_source_code = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_commercial_use = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_high_income_nation_use = factory.fuzzy.FuzzyChoice([False, True])
+    jurisdiction = factory.SubFactory(JurisdictionFactory)
+    creator = factory.SubFactory(CreatorFactory, url="http://creativecommons.org")
+
+    @post_generation
+    def post(obj, create, extracted, **kwargs):
+        if not obj.names.count():
+            language = Language.objects.get(code=translation.get_language())
+            TranslatedLicenseNameFactory(license=obj, language=language)
 
 
 class LicenseLogoFactory(factory.DjangoModelFactory):

@@ -1,0 +1,1768 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-06 10:53-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: cc_licenses/templates/404.html:3
+msgid "Page Not Found"
+msgstr ""
+
+#: deeds/mappers.py:6
+msgid "Argentina"
+msgstr "Argentina"
+
+#: deeds/mappers.py:7
+msgid "Austria"
+msgstr "Austria"
+
+#: deeds/mappers.py:8
+msgid "Australia"
+msgstr "Australia"
+
+#: deeds/mappers.py:9
+msgid "Belgium"
+msgstr "Bélgica"
+
+#: deeds/mappers.py:10
+msgid "Bulgaria"
+msgstr "Bulgaria"
+
+#: deeds/mappers.py:11
+msgid "Brazil"
+msgstr "Brasil"
+
+#: deeds/mappers.py:12
+msgid "Canada"
+msgstr "Canadá"
+
+#: deeds/mappers.py:13
+msgid "Switzerland"
+msgstr "Suiza"
+
+#: deeds/mappers.py:14
+msgid "Chile"
+msgstr "Chile"
+
+#: deeds/mappers.py:15
+msgid "China Mainland"
+msgstr "China continental"
+
+#: deeds/mappers.py:16
+msgid "Colombia"
+msgstr "Colombia"
+
+#: deeds/mappers.py:17
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+#: deeds/mappers.py:18
+msgid "Czech Republic"
+msgstr "República Checa"
+
+#: deeds/mappers.py:19
+msgid "Germany"
+msgstr "Alemania"
+
+#: deeds/mappers.py:20
+msgid "Denmark"
+msgstr "Dinamarca"
+
+#: deeds/mappers.py:21
+msgid "Ecuador"
+msgstr "Ecuador"
+
+#: deeds/mappers.py:22
+msgid "Estonia"
+msgstr "Estonia"
+
+#: deeds/mappers.py:23
+msgid "Egypt"
+msgstr "Egipto"
+
+#: deeds/mappers.py:24
+msgid "Spain"
+msgstr "España"
+
+#: deeds/mappers.py:25
+msgid "Catalonia"
+msgstr "Cataluña"
+
+#: deeds/mappers.py:26
+msgid "Finland"
+msgstr "Finlandia"
+
+#: deeds/mappers.py:27
+msgid "France"
+msgstr "Francia"
+
+#: deeds/mappers.py:28
+msgid "Greece"
+msgstr "Grecia"
+
+#: deeds/mappers.py:29
+msgid "Guatemala"
+msgstr "Guatemala"
+
+#: deeds/mappers.py:30
+msgid "Hong Kong"
+msgstr "Hong Kong"
+
+#: deeds/mappers.py:31
+msgid "Croatia"
+msgstr "Croacia"
+
+#: deeds/mappers.py:32
+msgid "Hungary"
+msgstr "Hungría"
+
+#: deeds/mappers.py:33
+msgid "Ireland"
+msgstr "Irlanda"
+
+#: deeds/mappers.py:34
+msgid "Israel"
+msgstr "Israel"
+
+#: deeds/mappers.py:35
+msgid "IGO"
+msgstr "Organizaciones intergubernamentales"
+
+#: deeds/mappers.py:36
+msgid "India"
+msgstr "India"
+
+#: deeds/mappers.py:37
+msgid "Italy"
+msgstr "Italia"
+
+#: deeds/mappers.py:38
+msgid "Jordan"
+msgstr "Jordania"
+
+#: deeds/mappers.py:39
+msgid "Japan"
+msgstr "Japón"
+
+#: deeds/mappers.py:40
+msgid "South Korea"
+msgstr "Corea del Sur"
+
+#: deeds/mappers.py:41
+msgid "Luxembourg"
+msgstr "Luxemburgo"
+
+#: deeds/mappers.py:42
+msgid "Macedonia"
+msgstr "Macedonia"
+
+#: deeds/mappers.py:43
+msgid "Malta"
+msgstr "Malta"
+
+#: deeds/mappers.py:44
+msgid "Mexico"
+msgstr "México"
+
+#: deeds/mappers.py:45
+msgid "Malaysia"
+msgstr "Malasia"
+
+#: deeds/mappers.py:46
+msgid "Nigeria"
+msgstr "Nigeria"
+
+#: deeds/mappers.py:47
+msgid "Netherlands"
+msgstr "Países Bajos"
+
+#: deeds/mappers.py:48
+msgid "Norway"
+msgstr "Noruega"
+
+#: deeds/mappers.py:49
+msgid "New Zealand"
+msgstr "Nueva Zelanda"
+
+#: deeds/mappers.py:50
+msgid "Peru"
+msgstr "Perú"
+
+#: deeds/mappers.py:51
+msgid "Philippines"
+msgstr "Filipinas"
+
+#: deeds/mappers.py:52
+msgid "Poland"
+msgstr "Polonia"
+
+#: deeds/mappers.py:53
+msgid "Puerto Rico"
+msgstr "Puerto Rico"
+
+#: deeds/mappers.py:54
+msgid "Portugal"
+msgstr "Portugal"
+
+#: deeds/mappers.py:55
+msgid "Romania"
+msgstr "Rumanía"
+
+#: deeds/mappers.py:56
+msgid "Serbia"
+msgstr "Serbia"
+
+#: deeds/mappers.py:57
+msgid "UK: Scotland"
+msgstr "Reino Unido: Escocia"
+
+#: deeds/mappers.py:58
+msgid "Sweden"
+msgstr "Suecia"
+
+#: deeds/mappers.py:59
+msgid "Singapore"
+msgstr "Singapur"
+
+#: deeds/mappers.py:60
+msgid "Slovenia"
+msgstr "Eslovenia"
+
+#: deeds/mappers.py:61
+msgid "Slovak Republic"
+msgstr "Eslovaquia"
+
+#: deeds/mappers.py:62
+msgid "Thailand"
+msgstr "Tailandia"
+
+#: deeds/mappers.py:63
+msgid "Taiwan"
+msgstr "Taiwán"
+
+#: deeds/mappers.py:64
+msgid "Ukraine"
+msgstr "Ucrania"
+
+#: deeds/mappers.py:65
+msgid "Uganda"
+msgstr "Uganda"
+
+#: deeds/mappers.py:66
+msgid "UK: England & Wales"
+msgstr "Reino Unido: Inglaterra y Gales"
+
+#: deeds/mappers.py:67
+msgid "United States"
+msgstr "Estados Unidos de América"
+
+#: deeds/mappers.py:68
+msgid "Venezuela"
+msgstr "Venezuela"
+
+#: deeds/mappers.py:69
+msgid "Vietnam"
+msgstr "Vietnam"
+
+#: deeds/mappers.py:70
+msgid "South Africa"
+msgstr "Sudáfrica"
+
+#: deeds/mappers.py:74
+msgid "Afrikaans"
+msgstr "Afrikáans"
+
+#: deeds/mappers.py:75
+msgid "Arabic"
+msgstr "Árabe"
+
+#: deeds/mappers.py:76
+msgid "Assamese"
+msgstr "Asamés"
+
+#: deeds/mappers.py:77
+msgid "Asturian"
+msgstr "Asturiano"
+
+#: deeds/mappers.py:78
+msgid "Azerbaijani"
+msgstr "Azerbayaní"
+
+#: deeds/mappers.py:79
+msgid "Belarusian"
+msgstr "Bielorruso"
+
+#: deeds/mappers.py:80
+msgid "Bulgarian"
+msgstr "Búlgaro"
+
+#: deeds/mappers.py:81
+msgid "Bengali"
+msgstr "Bengalí"
+
+#: deeds/mappers.py:82
+msgid "Catalan"
+msgstr "Catalán"
+
+#: deeds/mappers.py:83
+msgid "Czech"
+msgstr "Checo"
+
+#: deeds/mappers.py:84
+msgid "Danish"
+msgstr "Danés"
+
+#: deeds/mappers.py:85
+msgid "German"
+msgstr "Alemán"
+
+#: deeds/mappers.py:86
+msgid "Greek"
+msgstr "Griego"
+
+#: deeds/mappers.py:87
+msgid "English"
+msgstr "Inglés"
+
+#: deeds/mappers.py:88
+msgid "English (CA)"
+msgstr "Inglés (CA)"
+
+#: deeds/mappers.py:89
+msgid "English (GB)"
+msgstr "Inglés (GB)"
+
+#: deeds/mappers.py:90
+msgid "English (Hong Kong)"
+msgstr "Inglés (Hong Kong)"
+
+#: deeds/mappers.py:91
+msgid "English (Singapore)"
+msgstr "Inglés (Singapur)"
+
+#: deeds/mappers.py:92
+msgid "English (US)"
+msgstr "Inglés (US)"
+
+#: deeds/mappers.py:93
+msgid "Esperanto"
+msgstr "Esperanto"
+
+#: deeds/mappers.py:94
+msgid "Spanish"
+msgstr "Español"
+
+#: deeds/mappers.py:95
+msgid "Spanish (AR)"
+msgstr "Español (AR)"
+
+#: deeds/mappers.py:96
+msgid "Spanish (CL)"
+msgstr "Español (CL)"
+
+#: deeds/mappers.py:97
+msgid "Spanish (CO)"
+msgstr "Español (CO)"
+
+#: deeds/mappers.py:98
+msgid "Spanish (Ecuador)"
+msgstr "Español (Ecuador)"
+
+#: deeds/mappers.py:99
+msgid "Spanish (Spain)"
+msgstr "Español (España)"
+
+#: deeds/mappers.py:100
+msgid "Spanish (Guatemala)"
+msgstr "Español (Guatemala)"
+
+#: deeds/mappers.py:101
+msgid "Spanish (MX)"
+msgstr "Español (MX)"
+
+#: deeds/mappers.py:102
+msgid "Spanish (PE)"
+msgstr "Español (PE)"
+
+#: deeds/mappers.py:103
+msgid "Estonian"
+msgstr "Estonio"
+
+#: deeds/mappers.py:104
+msgid "Basque"
+msgstr "Vasco"
+
+#: deeds/mappers.py:105
+msgid "Persian"
+msgstr "Persa"
+
+#: deeds/mappers.py:106
+msgid "Finnish"
+msgstr "Finlandés"
+
+#: deeds/mappers.py:107
+msgid "French"
+msgstr "Francés"
+
+#: deeds/mappers.py:108
+msgid "French (CA)"
+msgstr "Francés (CA)"
+
+#: deeds/mappers.py:109
+msgid "Irish"
+msgstr "Irlandés"
+
+#: deeds/mappers.py:110
+msgid "Galician"
+msgstr "Gallego"
+
+#: deeds/mappers.py:111
+msgid "Hebrew"
+msgstr "Hebreo"
+
+#: deeds/mappers.py:112
+msgid "Hindi"
+msgstr "Hindi"
+
+#: deeds/mappers.py:113
+msgid "Croatian"
+msgstr "Croata"
+
+#: deeds/mappers.py:114
+msgid "Hungarian"
+msgstr "Húngaro"
+
+#: deeds/mappers.py:115
+msgid "Armenian"
+msgstr "Armenio"
+
+#: deeds/mappers.py:116
+msgid "Indonesian"
+msgstr "Indonesio"
+
+#: deeds/mappers.py:117
+msgid "Icelandic"
+msgstr "Islandés"
+
+#: deeds/mappers.py:118
+msgid "Italian"
+msgstr "Italiano"
+
+#: deeds/mappers.py:119
+msgid "Japanese"
+msgstr "Japonés"
+
+#: deeds/mappers.py:120
+msgid "Georgian"
+msgstr "Georgiano"
+
+#: deeds/mappers.py:121
+msgid "Kazakh"
+msgstr "Kazajo"
+
+#: deeds/mappers.py:122
+msgid "Korean"
+msgstr "Coreano"
+
+#: deeds/mappers.py:123
+msgid "Lithuanian"
+msgstr "Lituano"
+
+#: deeds/mappers.py:124
+msgid "Latvian"
+msgstr "Letón"
+
+#: deeds/mappers.py:125
+msgid "Macedonian"
+msgstr "Macedonio"
+
+#: deeds/mappers.py:126
+msgid "Malayalam"
+msgstr "Malayo"
+
+#: deeds/mappers.py:127
+msgid "Mongolian"
+msgstr "Mongol"
+
+#: deeds/mappers.py:128
+msgid "Malay"
+msgstr "Malayo"
+
+#: deeds/mappers.py:129
+msgid "Dutch"
+msgstr "Holandés"
+
+#: deeds/mappers.py:130
+msgid "Norwegian"
+msgstr "Noruego"
+
+#: deeds/mappers.py:131
+msgid "Northern Sotho"
+msgstr "Sotho del norte"
+
+#: deeds/mappers.py:132
+msgid "Aranese"
+msgstr "Aranés"
+
+#: deeds/mappers.py:133
+msgid "Polish"
+msgstr "Polaco"
+
+#: deeds/mappers.py:134
+msgid "Portuguese"
+msgstr "Portugués"
+
+#: deeds/mappers.py:135
+msgid "Portuguese (BR)"
+msgstr "Portugués (BR)"
+
+#: deeds/mappers.py:137
+msgid "Romanian"
+msgstr "Rumano"
+
+#: deeds/mappers.py:138
+msgid "Russian"
+msgstr "Ruso"
+
+#: deeds/mappers.py:139
+msgid "Sinhala"
+msgstr "Cingalés"
+
+#: deeds/mappers.py:140
+msgid "Slovenian"
+msgstr "Esloveno"
+
+#: deeds/mappers.py:141
+msgid "Serbian"
+msgstr "Serbio"
+
+#: deeds/mappers.py:142
+msgid "Serbian (Latin)"
+msgstr "Serbio (Latino)"
+
+#: deeds/mappers.py:143
+msgid "Sotho"
+msgstr "Sotho"
+
+#: deeds/mappers.py:144
+msgid "Swedish"
+msgstr "Sueco"
+
+#: deeds/mappers.py:145
+msgid "Tamil"
+msgstr "Tamil"
+
+#: deeds/mappers.py:146
+msgid "Telugu"
+msgstr "Telugú"
+
+#: deeds/mappers.py:147
+msgid "Thai"
+msgstr "Tailandés"
+
+#: deeds/mappers.py:148
+msgid "Turkish"
+msgstr "Turco"
+
+#: deeds/mappers.py:149
+msgid "Ukranian"
+msgstr "Ucraniano"
+
+#: deeds/mappers.py:150
+msgid "Urdu"
+msgstr "Urdu"
+
+#: deeds/mappers.py:151
+msgid "Vietnamese"
+msgstr "Vietnamita"
+
+#: deeds/mappers.py:152 deeds/mappers.py:153
+msgid "Chinese"
+msgstr "Chino"
+
+#: deeds/mappers.py:154
+msgid "Chinese (Hong Kong)"
+msgstr "Chino (Hong Kong)"
+
+#: deeds/mappers.py:155
+msgid "Chinese (Taiwan)"
+msgstr "Chino (Taiwán)"
+
+#: deeds/mappers.py:156
+msgid "Zulu"
+msgstr "Zulú"
+
+#: deeds/mappers.py:160
+msgid "GPL"
+msgstr "GPL"
+
+#: deeds/mappers.py:161
+msgid "LGPL"
+msgstr "LGPL"
+
+#: deeds/mappers.py:162 deeds/mappers.py:182
+#: deeds/templates/licenses/devnations_deed.html:53
+#: deeds/templates/licenses/standard_deed.html:102
+msgid "Attribution"
+msgstr "Atribución"
+
+#: deeds/mappers.py:163
+msgid "Attribution-NonCommercial"
+msgstr "Atribución-NoComercial"
+
+#: deeds/mappers.py:164
+msgid "Attribution-NonCommercial-NoDerivs"
+msgstr "Atribución-NoComercial-SinDerivadas"
+
+#: deeds/mappers.py:165
+msgid "Attribution-NonCommercial-ShareAlike"
+msgstr "Atribución-NoComercial-CompartirIgual"
+
+#: deeds/mappers.py:166
+msgid "Attribution-NoDerivs"
+msgstr "Atribución-SinDerivadas"
+
+#: deeds/mappers.py:167
+msgid "Attribution-NoDerivs-NonCommercial"
+msgstr "Atribución-SinDerivadas-NoComercial"
+
+#: deeds/mappers.py:168
+msgid "Attribution-ShareAlike"
+msgstr "Atribución-CompartirIgual"
+
+#: deeds/mappers.py:169
+msgid "Public Domain Mark"
+msgstr "Etiqueta de Dominio Público"
+
+#: deeds/mappers.py:170 deeds/templates/licenses/standard_deed.html:131
+msgid "NonCommercial"
+msgstr "NoComercial"
+
+#: deeds/mappers.py:171
+msgid "NonCommercial-ShareAlike"
+msgstr "NoComercial-CompartirIgual"
+
+#: deeds/mappers.py:172
+msgid "NonCommercial Sampling Plus"
+msgstr "Sampling Plus No Comercial"
+
+#: deeds/mappers.py:173
+msgid "NoDerivs"
+msgstr "SinDerivadas"
+
+#: deeds/mappers.py:174
+msgid "NoDerivs-NonCommercial"
+msgstr "SinDerivadas-NoComercial"
+
+#: deeds/mappers.py:175
+msgid "Public Domain"
+msgstr "Dominio Público"
+
+#: deeds/mappers.py:176 deeds/templates/licenses/standard_deed.html:149
+msgid "ShareAlike"
+msgstr "CompartirIgual"
+
+#: deeds/mappers.py:177
+msgid "Sampling"
+msgstr "Sampling"
+
+#: deeds/mappers.py:178
+msgid "Sampling Plus"
+msgstr "Sampling Plus"
+
+#: deeds/mappers.py:183
+msgid "Noncommercial"
+msgstr "No Comercial"
+
+#: deeds/mappers.py:184
+msgid "No Derivative Works"
+msgstr "Sin Obras Derivadas"
+
+#: deeds/mappers.py:185
+msgid "Share Alike"
+msgstr "Compartir Igual"
+
+#: deeds/mappers.py:190 deeds/templates/licenses/devnations_deed.html:55
+#: deeds/templates/licenses/sampling_deed.html:45
+msgid ""
+"You must attribute the work in the manner specified by the author or "
+"licensor (but not in any way that suggests that they endorse you or your use"
+" of the work)."
+msgstr ""
+"Debe atribuir la obra en la manera especificada por la autora o licenciante "
+"(pero no de una forma que sugiera que ellas le avalan a usted o a su uso de "
+"la obra)."
+
+#: deeds/mappers.py:194 deeds/templates/licenses/sampling_deed.html:53
+msgid ""
+"You may not use this work to advertise for or promote anything but the work "
+"you create from it."
+msgstr ""
+"No podrá usar esta obra para anunciar o promocionar nada excepto la obra "
+"creada a partir de ésta."
+
+#: deeds/mappers.py:196 deeds/templates/licenses/sampling_deed.html:49
+msgid "You may not use this work for commercial purposes."
+msgstr "No puede usar esta obra para fines comerciales."
+
+#: deeds/mappers.py:197
+msgid "You may not alter, transform, or build upon this work."
+msgstr ""
+"No puede alterar, transformar o generar una obra derivada a partir de esta."
+
+#: deeds/mappers.py:199 deeds/templates/licenses/sampling_deed.html:66
+msgid ""
+"You may not perform, display, or distribute copies of this whole work for "
+"any purpose."
+msgstr ""
+"No puede interpretar, exhibir o distribuir copias de esta obra completa, "
+"para ningún propósito."
+
+#: deeds/mappers.py:202
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same or similar license to this one."
+msgstr ""
+"Si altera o transforma esta obra, o genera una obra derivada a partir de "
+"esta, sólo puede distribuir la obra resultante bajo la misma licencia o una "
+"similar a esta."
+
+#: deeds/mappers.py:206
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same, similar or a compatible license."
+msgstr ""
+"Si altera o transforma esta obra, o genera una obra derivada a partir de "
+"esta, sólo puede distribuir la obra resultante bajo la misma licencia, una "
+"similar o una compatible."
+
+#: deeds/templates/catalog_pages/license_catcher.html:3
+#: deeds/templates/licenses/pdmark_deed.html:188
+#: deeds/templates/macros_templates/partner.html:26
+msgid "Creative Commons"
+msgstr "Creative Commons"
+
+#: deeds/templates/includes/cc_site_footer.html:25
+#: deeds/templates/includes/cc_site_header.html:40
+msgid "Contact"
+msgstr "Contacto"
+
+#: deeds/templates/includes/cc_site_footer.html:26
+msgid "Privacy"
+msgstr "Privacidad"
+
+#: deeds/templates/includes/cc_site_footer.html:27
+msgid "Policies"
+msgstr "Política"
+
+#: deeds/templates/includes/cc_site_footer.html:28
+msgid "Terms"
+msgstr "Términos"
+
+#: deeds/templates/includes/cc_site_footer.html:35
+msgid "We'd love to hear from you!"
+msgstr "¡Nos encantaría saber de usted!"
+
+#: deeds/templates/includes/cc_site_footer.html:44
+msgid "Frequently Asked Questions"
+msgstr "Preguntas frecuentes"
+
+#: deeds/templates/includes/cc_site_header.html:11
+msgid "Menu"
+msgstr "Menú"
+
+#: deeds/templates/includes/cc_site_header.html:16
+#: deeds/templates/includes/cc_site_header.html:27
+msgid "Share your work"
+msgstr "Comparta su trabajo"
+
+#: deeds/templates/includes/cc_site_header.html:17
+#: deeds/templates/includes/cc_site_header.html:28
+msgid "Use &#038; remix"
+msgstr "Use &#038; remezcle"
+
+#: deeds/templates/includes/cc_site_header.html:18
+#: deeds/templates/includes/cc_site_header.html:29
+msgid "What We do"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:19
+#: deeds/templates/includes/cc_site_header.html:30
+msgid "Blog"
+msgstr "Blog"
+
+#: deeds/templates/includes/cc_site_header.html:20
+#: deeds/templates/includes/cc_site_header.html:37
+msgid "Global Network"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:21
+msgid "Search the Commons"
+msgstr "Buscar el procomún"
+
+#: deeds/templates/includes/cc_site_header.html:36
+msgid "Search for CC images"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:38
+msgid "Newsletters"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:39
+msgid "Store"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:46
+msgid "Facebook"
+msgstr "Facebook"
+
+#: deeds/templates/includes/cc_site_header.html:47
+msgid "Twitter"
+msgstr "Twitter"
+
+#: deeds/templates/includes/cc_site_header.html:48
+msgid "Mail"
+msgstr "Correo"
+
+#: deeds/templates/includes/deed_donate_slide.html:7
+#: deeds/templates/macros_templates/deed.html:119
+#: deeds/templates/macros_templates/pdtool_deed.html:92
+msgid ""
+"This content is freely available under simple legal terms because of "
+"Creative Commons, a non-profit that survives on donations. If you love this "
+"content, and love that it's free for everyone, please consider a donation to"
+" support our work."
+msgstr ""
+"Este contenido está disponible de forma libre bajo simples términos legales "
+"gracias a  Creative Commons, una organización sin fines de lucro que "
+"sobrevive con donaciones. Si le encanta este contenido, y le encanta que sea"
+" libre para todas, considere una donación para apoyar nuestro trabajo."
+
+#: deeds/templates/includes/deed_donate_slide.html:8
+msgid "When you share, everyone wins."
+msgstr "Cuando comparte, todo el mundo gana."
+
+#: deeds/templates/includes/deed_donate_slide.html:14
+msgid "Contribute today to Creative Commons"
+msgstr "Contribuya hoy con Creative Commons"
+
+#: deeds/templates/includes/deed_donate_slide.html:35
+msgid "Amount"
+msgstr "Cantidad"
+
+#: deeds/templates/includes/deed_donate_slide.html:42
+msgid "Donate Now"
+msgstr "Done ahora"
+
+#: deeds/templates/includes/language_selector.html:5
+#: deeds/templates/includes/translations.html:4
+msgid "This page is available in the following languages:"
+msgstr "Esta página está disponible en los siguientes idiomas:"
+
+#: deeds/templates/licenses/devnations_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:15
+#: deeds/templates/licenses/standard_deed.html:26
+msgid ""
+"Creative Commons has <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
+"tool</a> and does not recommend that it be applied to works."
+msgstr ""
+"Creative Commons ha <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retirado esta "
+"herramienta legal</a> y no recomienda aplicarla a obras."
+
+#: deeds/templates/licenses/devnations_deed.html:23
+#: deeds/templates/licenses/sampling_deed.html:20
+msgid "You are free:"
+msgstr "Usted es libre de:"
+
+#: deeds/templates/licenses/devnations_deed.html:28
+msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
+msgstr ""
+"<strong>a Compartir</strong> — a copiar, distribuir, y transmitir la obra"
+
+#: deeds/templates/licenses/devnations_deed.html:33
+msgid "<strong>to Remix</strong> — to adapt the work"
+msgstr "<strong>a Remezclar</strong> — a adaptar la obra"
+
+#: deeds/templates/licenses/devnations_deed.html:40
+#: deeds/templates/licenses/sampling_deed.html:41
+msgid "Under the following conditions:"
+msgstr "Bajo las condiciones siguientes:"
+
+#: deeds/templates/licenses/devnations_deed.html:60
+#: deeds/templates/licenses/sampling_deed.html:59
+msgid ""
+"For any reuse or distribution, you must make clear to others the license "
+"terms of this work. The best way to do this is with a link to this web page."
+msgstr ""
+"Para cualquier reuso o distribución, tiene que dejar muy claros para otras "
+"los términos de la licencia de esta obra. La mejor forma de hacerlo es "
+"enlazar a esta página web."
+
+#: deeds/templates/licenses/devnations_deed.html:61
+msgid ""
+"Any of the above conditions can be <a href=\"#\" id=\"waived\" "
+"class=\"helpLink\">waived</a> if you get permission from the copyright "
+"holder."
+msgstr ""
+"Cualquiera de las condiciones de arriba puede <a href=\"#\" id=\"waived\" "
+"class=\"helpLink\">no aplicarse</a> si se obtiene el permiso de l titular de"
+" los derechos autorales."
+
+#: deeds/templates/licenses/devnations_deed.html:69
+#: deeds/templates/licenses/sampling_deed.html:76
+msgid ""
+"Your fair dealing or <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">fair use</a> rights, or other applicable"
+" copyright exceptions and limitations;"
+msgstr ""
+"Sus derechos de trato justo derivados de <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">usos justos</a> u otras excepciones o "
+"limitaciones a los derechos autorales aplicables."
+
+#: deeds/templates/licenses/devnations_deed.html:72
+#: deeds/templates/licenses/sampling_deed.html:79
+msgid ""
+"Rights other persons may have either in the work itself or in how the work "
+"is used, such as <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity</a> or privacy rights."
+msgstr ""
+"Derechos que otras personas pueden tener sobre la propia obra o su uso, como"
+" por ejemplo <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">derechos de imagen</a> o de "
+"privacidad."
+
+#: deeds/templates/licenses/pdmark_deed.html:18
+#: deeds/templates/licenses/zero_deed.html:20
+msgid "No Copyright"
+msgstr "Sin derechos autorales"
+
+#: deeds/templates/licenses/pdmark_deed.html:21
+msgid ""
+"<p id=\"nolaw-text\"> This work has been <b>identified</b> as being free of "
+"known restrictions under copyright law, including all related and "
+"neighboring rights. </p> <p> <br /> You can copy, modify, distribute and "
+"perform the work, even for commercial purposes, all without asking "
+"permission. See <b>Other Information</b> below. </p>"
+msgstr ""
+"<p id=\"nolaw-text\">Esta obra ha sido <b>identificada</b> como libre de "
+"restricciones conocidas bajo la ley derecho autoral, incluyendo todos los "
+"derechos conexos. </p><p><br />  Puede copiar, modificar, distribuir e "
+"interpretar la obra, incluso para fines comerciales, todo esto sin pedir "
+"permiso. Vea <b>más información</b> a continuación. </p>"
+
+#: deeds/templates/licenses/pdmark_deed.html:31
+#: deeds/templates/licenses/zero_deed.html:49
+msgid "Other Information"
+msgstr "Más información"
+
+#: deeds/templates/licenses/pdmark_deed.html:34
+msgid ""
+"The work may not be free of known copyright restrictions in all <a href=\"\""
+" class=\"helpLink\" id=\"all_jurisdictions\">jurisdictions</a>."
+msgstr ""
+"La obra puede que no esté libre de restricciones conocidas de derechos "
+"autorales en todas <a href=\"\" class=\"helpLink\" "
+"id=\"all_jurisdictions\">las jurisdicciones</a>."
+
+#: deeds/templates/licenses/pdmark_deed.html:37
+msgid ""
+"Persons may have other rights in or related to the work, such as patent or "
+"trademark rights, and others may have rights in how the work is used, such "
+"as <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
+msgstr ""
+"Las personas pueden tener otros derechos en o relacionados con la obra, como"
+" patentes o marcas registradas, y otros pueden tener derechos sobre cómo se "
+"usa la obra, como derechos a la <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">publicidad o privacidad</a>."
+
+#: deeds/templates/licenses/pdmark_deed.html:40
+msgid ""
+"In some jurisdictions <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">moral rights</a> of the author may persist beyond the "
+"term of copyright. These rights may include the right to be identified as "
+"the author and the right to object to derogatory treatments."
+msgstr ""
+"En algunas jurisdicciones <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">los derechos morales</a> de la autora pueden persistir "
+"más allá del término de los derechos autorales. Estos derechos pueden "
+"incluir el derecho de ser identificada como la autora y el derecho a objetar"
+" tratos despectivos de la obra."
+
+#: deeds/templates/licenses/pdmark_deed.html:43
+msgid ""
+"Unless expressly stated otherwise, the person who identified the work makes "
+"no warranties about the work, and disclaims liability for all uses of the "
+"work, to the fullest extent permitted by applicable law."
+msgstr ""
+"A menos que esté expresamente señalado, la persona que identificó la obra "
+"con este acuerdo no entrega garantías sobre la obra, y se exime de toda "
+"responsabilidad por todos los usos de la misma, en la medida en que sea "
+"permitido por la legislación aplicable."
+
+#: deeds/templates/licenses/pdmark_deed.html:46
+msgid ""
+"When using or citing the work, you should not imply <a href=\"\" "
+"class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
+"person who identified the work."
+msgstr ""
+"Al usar o citar la obra, no debe insinuar <a href=\"\" class=\"helpLink\" "
+"id=\"endorsement\">aprobación</a> por parte de la autora o la persona que "
+"identificó la obra."
+
+#: deeds/templates/licenses/pdmark_deed.html:74
+#: deeds/templates/licenses/zero_deed.html:82
+msgid "Work:"
+msgstr "Obra:"
+
+#: deeds/templates/licenses/pdmark_deed.html:79
+msgid "Author:"
+msgstr "Autora:"
+
+#: deeds/templates/licenses/pdmark_deed.html:83
+msgid "Identified by:"
+msgstr "Identificada por:"
+
+#: deeds/templates/licenses/pdmark_deed.html:89
+#: deeds/templates/licenses/zero_deed.html:95
+msgid ""
+"You can <a href=\"\" class=\"helpLink\" id=\"citation_help\">cite</a> this "
+"work with this HTML:"
+msgstr ""
+"Puede <a href=\"\" class=\"helpLink\" id=\"citation_help\">citar</a> esta "
+"obra con este HTML:"
+
+#: deeds/templates/licenses/pdmark_deed.html:114
+#: deeds/templates/licenses/zero_deed.html:123
+msgid "Endorsement"
+msgstr "Aprobación"
+
+#: deeds/templates/licenses/pdmark_deed.html:118
+#: deeds/templates/licenses/zero_deed.html:126
+msgid ""
+"In some jurisdictions, wrongfully implying that an author, publisher or "
+"anyone else endorses your use of a work may be unlawful."
+msgstr ""
+"En algunas jurisdicciones, podría ser ilegal insinuar de forma indebida que "
+"una autora, editora o cualquier otra persona aprueba o respalda esta obra."
+
+#: deeds/templates/licenses/pdmark_deed.html:121
+#: deeds/templates/licenses/pdmark_deed.html:135
+#: deeds/templates/licenses/pdmark_deed.html:149
+#: deeds/templates/licenses/pdmark_deed.html:162
+#: deeds/templates/licenses/pdmark_deed.html:173
+#: deeds/templates/licenses/zero_deed.html:117
+#: deeds/templates/licenses/zero_deed.html:130
+#: deeds/templates/licenses/zero_deed.html:142
+msgid "Learn more"
+msgstr "Aprenda más"
+
+#: deeds/templates/licenses/pdmark_deed.html:128
+#: deeds/templates/licenses/zero_deed.html:136
+msgid "Citation"
+msgstr "Cita"
+
+#: deeds/templates/licenses/pdmark_deed.html:132
+#: deeds/templates/licenses/zero_deed.html:139
+msgid ""
+"Copy and paste the HTML provided into your webpage to easily cite this work."
+msgstr ""
+"Copie y pegue el HTML brindado en su página web para citar fácilmente esta "
+"obra."
+
+#: deeds/templates/licenses/pdmark_deed.html:142
+msgid "Moral Rights"
+msgstr "Derechos morales"
+
+#: deeds/templates/licenses/pdmark_deed.html:146
+msgid ""
+"Copyright laws in most jurisdictions around the world grant creators \"moral"
+" rights\" which may provide some redress if use of a work is considered "
+"\"derogatory\"."
+msgstr ""
+"Las leyes sobre derechos autorales en la mayoría de las jurisdicciones del "
+"mundo garantizan a las creadoras «derechos morales» que pueden brindar algún"
+" respaldo si el uso de una obra es considerado «despectivo»."
+
+#: deeds/templates/licenses/pdmark_deed.html:155
+#: deeds/templates/licenses/zero_deed.html:110
+msgid "Other Rights"
+msgstr "Otros derechos"
+
+#: deeds/templates/licenses/pdmark_deed.html:159
+#: deeds/templates/licenses/zero_deed.html:113
+msgid ""
+"The use of a work free of known copyright restrictions may be otherwise "
+"regulated or limited. The work or its use may be subject to personal data "
+"protection laws, publicity, image, or privacy rights that allow a person to "
+"control how their voice, image or likeness is used, or other restrictions or"
+" limitations under applicable law."
+msgstr ""
+"El uso de una obra libre de restricciones conocidas de derechos autorales "
+"puede ser regulado o limitado. La obra o su uso pueden estar sujetos a "
+"reglas legales de protección de datos personales, derechos de publicidad, "
+"imagen o privacidad que permiten a la persona controlar cómo su voz, imagen "
+"o apariencia es usada, u otras restricciones o limitaciones bajo la ley "
+"aplicable."
+
+#: deeds/templates/licenses/pdmark_deed.html:167
+msgid "Term of Copyright"
+msgstr "Término de derecho autoral"
+
+#: deeds/templates/licenses/pdmark_deed.html:170
+msgid ""
+"Copyright terms vary jurisdiction to jurisdiction. A work free of copyright "
+"restrictions in one jurisdiction may not be similarly free in other "
+"jurisdictions."
+msgstr ""
+"Los términos de derechos autorales varían de jurisdicción en jurisdicción. "
+"Una obra libre de restricciones de derechos autorales en una jurisdicción "
+"puede que no sea igualmente libre en otras jurisdicciones."
+
+#: deeds/templates/licenses/pdmark_deed.html:196
+#: deeds/templates/licenses/pdmark_deed.html:198
+#: deeds/templates/licenses/zero_deed.html:172
+#: deeds/templates/licenses/zero_deed.html:187
+#: deeds/templates/macros_templates/deed.html:94
+#: deeds/templates/macros_templates/deed.html:141
+msgid "Disclaimer"
+msgstr "Advertencia"
+
+#: deeds/templates/licenses/pdmark_deed.html:200
+msgid ""
+"<p> The Public Domain Mark is not a legal instrument. </p> <p> Creative "
+"Commons is not a law firm and does not provide legal services or advice. "
+"Distributing, displaying, or linking to this Public Domain Mark does not "
+"create an attorney-client relationship. </p> <p> Creative Commons has not "
+"verified the copyright status of any work to which this mark has been "
+"applied. CC makes no warranties about any work or its copyright status in "
+"any jurisdiction, and disclaims all liability for all uses of any work. </p>"
+msgstr ""
+"<p>La Etiqueta de Dominio Público no es un instrumento legal.</p> "
+"<p>Creative Commons no es una oficina de abogados y no brinda servicios ni "
+"asesoría de tipo legal. Distribuir, exhibir o enlazar a esta Etiqueta de "
+"Dominio Público no crea una relación abogado-cliente.</p> <p>Creative "
+"Commons no ha verificado el estado de derechos autorales de ninguna obra a "
+"la que esta etiqueta ha sido aplicada. CC no da garantías sobre ninguna obra"
+" o su estado de derechos autorales en cualquier jurisdicción, y se exime de "
+"toda responsabilidad por el uso de cualquier obra.</p>"
+
+#: deeds/templates/licenses/pdmark_deed.html:207
+#, python-format
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
+"  "
+msgstr ""
+
+#: deeds/templates/licenses/publicdomain_deed.html:5
+msgid ""
+"Copyright-Only Dedication (based on United States law)\n"
+"or Public Domain Certification"
+msgstr ""
+
+#: deeds/templates/licenses/publicdomain_deed.html:19
+msgid ""
+"Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
+"  (based on United States law)<br />\n"
+"  or Public Domain Certification"
+msgstr ""
+"Dedicación Sólo de Derecho Autoral <a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
+"  (basada en las leyes de los Estados Unidos) <br /> \n"
+"  o Certificación de Dominio Público"
+
+#: deeds/templates/licenses/publicdomain_deed.html:28
+#: deeds/templates/licenses/standard_deed.html:77
+#: deeds/templates/licenses/zero_deed.html:37
+msgid "This license is acceptable for Free Cultural Works."
+msgstr "Esta licencia es aceptable para Obras Culturales Libres."
+
+#: deeds/templates/licenses/publicdomain_deed.html:38
+msgid ""
+"        <p>The person or persons who have associated work with this document (the \"Dedicator\" or \"Certifier\") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the \"Work\") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a \"dedicator\" below.</p>\n"
+"\n"
+"        <p>A certifier has taken reasonable steps to verify the copyright status of this work. Certifier recognizes that his good faith efforts may not shield him from liability if in fact the work certified is not in the public domain.</p>\n"
+"\n"
+"        <p>Dedicator makes this dedication for the benefit of the public at large and to the detriment of the Dedicator's heirs and successors. Dedicator intends this dedication to be an overt act of relinquishment in perpetuity of all present and future rights under copyright law, whether vested or contingent, in the Work. Dedicator understands that such relinquishment of all rights includes the relinquishment of all rights to enforce (by lawsuit or otherwise) those copyrights in the Work.</p>\n"
+"\n"
+"        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>"
+msgstr ""
+"<p>La persona o grupo de personas que han asociado bajo esta licencia (la «Dedicante» o «certificadora») (a) certifica que, en su conocimiento, la obra de autoría identificada está en el dominio público del país en que se encuentra publicada, o (b) cede por este acto todo el derecho autoral que tengan las dedicantes en la obra de autoría identificada abajo (la «Obra») al dominio público. Una certificadora, asimismo, dedica cualquier interés de derechos autorales que pueda tener en la obra asociada, y para este propósito, se describe como «dedicante» abajo. </p>\n"
+"\n"
+" <p>Una certificador ha tomado las medidas razonables para verificar el estado de esta obra respecto del derecho autoral. La certificadora reconoce que sus esfuerzos de buena fe podrían no eximirlo de responsabilidad si no fuera cierto que efectivamente la obra certificada está en el dominio público. </p>\n"
+"\n"
+" <p>La dedicante realiza esta dedicación en beneficio del público en general y en detrimento de sus herederas y las de sus sucesoras. La dedicante realiza esta dedicación con la intención de que constituya un acto de renuncia expresa a perpetuidad de todos los derechos presentes y futuros bajo las leyes de derechos autorales, adquiridos o contingentes. La dedicante entiende que dicha renuncia de todos los derechos incluye la misma renuncia de todos los derechos para hacer cumplir (mediante demanda u otra vía) esos derechos sobre la Obra. </p>\n"
+"\n"
+" <p>La dedicante reconoce que, una vez puesta en el dominio público, la Obra puede ser libremente reproducida, distribuida, transmitida, usada, modificada, editada u objeto de cualquier otra forma de explotación para el propósito que sea, comercial o no, y de cualquier forma, incluyendo métodos que aún no se inventan o conciben.</p>"
+
+#: deeds/templates/licenses/publicdomain_deed.html:49
+msgid ""
+"This tool is based on United States law and may not be applicable outside "
+"the US. For dedicating new works to the public domain, we recommend <a "
+"href=\"/choose/zero/\">CC0</a>."
+msgstr ""
+"Esta herramienta está basada en las leyes de Estados Unidos y puede no ser "
+"aplicable fuera de los Estados Unidos. Para dedicar nuevas obras al dominio "
+"público, recomendamos <a href=\"/choose/zero/\">CC0</a>."
+
+#: deeds/templates/licenses/sampling_deed.html:24
+msgid ""
+"To sample, mash-up, or otherwise creatively transform this work for "
+"noncommercial purposes."
+msgstr ""
+"Para hacer samples, mash-ups, u otras formas de transformación creativa de "
+"esta obra para propósitos no comerciales."
+
+#: deeds/templates/licenses/sampling_deed.html:28
+msgid ""
+"To sample, mash-up, or otherwise creatively transform this work for "
+"commercial or noncommercial purposes."
+msgstr ""
+"Hacer samples, mash-ups, u otra transformación creativa de esta obra con "
+"propósitos comerciales o no comerciales."
+
+#: deeds/templates/licenses/sampling_deed.html:34
+msgid ""
+"To perform, display, and distribute copies of this whole work for "
+"noncommercial purposes (e.g., file-sharing or noncommercial webcasting)."
+msgstr ""
+"Interpretar, exhibir y distribuir copias de la obra completa con propósitos "
+"no comerciales (e.g., compartir archivos o transmisiones no comerciales vía "
+"web)"
+
+#: deeds/templates/licenses/sampling_deed.html:63
+msgid ""
+"For any reuse, you must make clear to others the license terms of this work."
+msgstr ""
+"Para cualquier reuso, debe dejar claros a otras los términos de la licencia "
+"de esta obra."
+
+#: deeds/templates/licenses/standard_deed.html:44
+msgid "You are free to:"
+msgstr "Usted es libre de: "
+
+#: deeds/templates/licenses/standard_deed.html:49
+msgid ""
+"<strong>Share</strong>  &mdash; copy and redistribute the material in any "
+"medium or format"
+msgstr ""
+"<strong>Compartir</strong> &mdash; copiar y redistribuir el material en "
+"cualquier medio o formato"
+
+#: deeds/templates/licenses/standard_deed.html:56
+msgid ""
+"<strong>Adapt</strong>  &mdash; remix, transform, and build upon the "
+"material"
+msgstr ""
+"<strong> Adaptar</strong>  &mdash; remezclar, transformar y construir a "
+"partir del material"
+
+#: deeds/templates/licenses/standard_deed.html:62
+msgid "for any purpose, even commercially."
+msgstr "para cualquier propósito, incluso comercialmente."
+
+#: deeds/templates/licenses/standard_deed.html:89
+msgid ""
+"The licensor cannot revoke these freedoms as long as you follow the license "
+"terms."
+msgstr ""
+"La licenciante no puede revocar estas libertades en tanto usted siga los "
+"términos de la licencia"
+
+#: deeds/templates/licenses/standard_deed.html:96
+msgid "Under the following terms:"
+msgstr "Bajo los siguientes términos:"
+
+#: deeds/templates/licenses/standard_deed.html:103
+msgid ""
+"You must give <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">appropriate credit</a></span>, provide a link to the "
+"license, and <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\">indicate if changes were "
+"made</a></span>.  You may do so in any reasonable manner, but not in any way"
+" that suggests the licensor endorses you or your use."
+msgstr ""
+"Usted debe dar <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">crédito de manera adecuada</a></span>, brindar un enlace "
+"a la licencia, e <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\">indicar si se han realizado"
+" cambios</a></span>. Puede hacerlo en cualquier forma razonable, pero no de "
+"forma tal que sugiera que usted o su uso tienen el apoyo de la licenciante."
+
+#: deeds/templates/licenses/standard_deed.html:109
+msgid "Attribute this work:"
+msgstr "Atribuir esta obra:"
+
+#: deeds/templates/licenses/standard_deed.html:121
+msgid "Information"
+msgstr "Información"
+
+#: deeds/templates/licenses/standard_deed.html:131
+msgid ""
+"You may not use the material for <a href=\"#\" "
+"id=\"commercial_purposes_popup\" class=\"helpLink\">commercial purposes</a>."
+msgstr ""
+"Usted no puede hacer uso del material con <a href=\"#\" "
+"id=\"commercial_purposes_popup\" class=\"helpLink\">propósitos "
+"comerciales</a>."
+
+#: deeds/templates/licenses/standard_deed.html:139
+msgid "NoDerivatives"
+msgstr "SinDerivadas"
+
+#: deeds/templates/licenses/standard_deed.html:139
+msgid ""
+"If you <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">remix, transform, or build upon</a> the material, you may"
+" not distribute the modified material."
+msgstr ""
+"Si <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">remezcla, transforma o crea a partir</a> del material, no"
+" podrá distribuir el material modificado."
+
+#: deeds/templates/licenses/standard_deed.html:149
+msgid ""
+"If you remix, transform, or build upon the material, you must distribute "
+"your contributions under the <a href=\"#\" id=\"same_license_popup\" "
+"class=\"helpLink\">same license</a> as the original."
+msgstr ""
+"Si remezcla, transforma o crea a partir del material, debe distribuir su "
+"contribución bajo la la<a href=\"#\" id=\"same_license_popup\" "
+"class=\"helpLink\">misma licencia</a> del original."
+
+#: deeds/templates/licenses/standard_deed.html:160
+msgid "No additional restrictions"
+msgstr "No hay restricciones adicionales"
+
+#: deeds/templates/licenses/standard_deed.html:160
+msgid ""
+"You may not apply legal terms or <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">technological "
+"measures</a> that legally restrict others from doing anything the license "
+"permits."
+msgstr ""
+"No puede aplicar términos legales ni <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\"> medidas "
+"tecnológicas</ a> que restrinjan legalmente a otras a hacer cualquier uso "
+"permitido por la licencia."
+
+#: deeds/templates/licenses/standard_deed.html:167
+msgid "Notices:"
+msgstr "Avisos:"
+
+#: deeds/templates/licenses/standard_deed.html:172
+msgid ""
+"When the Licensor is an intergovernmental organization, disputes will be "
+"resolved by <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">mediation and arbitration</a> unless otherwise agreed."
+msgstr ""
+"Cuando la licenciante sea una organización intergubernamental, las disputas "
+"serán resuelta por medio de <a href=\"#\" "
+"id=\"mediation_and_arbitration_popup\" class=\"helpLink\">mediación y "
+"arbitraje</a>, a menos que se acuerde lo contrario."
+
+#: deeds/templates/licenses/standard_deed.html:177
+msgid ""
+"You do not have to comply with the license for elements of the material in "
+"the public domain or where your use is permitted by an applicable <a "
+"href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">exception"
+" or limitation</a>."
+msgstr ""
+"No tiene que cumplir con la licencia para elementos del materiale en el "
+"dominio público o cuando su uso esté permitido por una  <a href=\"#\" "
+"id=\"exception_or_limitation_popup\" class=\"helpLink\">excepción o "
+"limitación</a> aplicable."
+
+#: deeds/templates/licenses/standard_deed.html:180
+msgid ""
+"No warranties are given. The license may not give you all of the permissions"
+" necessary for your intended use. For example, other rights such as <a "
+"href=\"#\" id=\"publicity_privacy_or_moral_rights_popup\" "
+"class=\"helpLink\">publicity, privacy, or moral rights</a> may limit how you"
+" use the material."
+msgstr ""
+"No se dan garantías. La licencia podría no darle todos los permisos que "
+"necesita para el uso que tenga previsto. Por ejemplo, otros derechos como <a"
+" href=\"#\" id=\"publicity_privacy_or_moral_rights_popup\" "
+"class=\"helpLink\"> publicidad, privacidad, o derechos morales</a> pueden "
+"limitar la forma en que utilice el material."
+
+#: deeds/templates/licenses/standard_deed.html:188
+#, python-format
+msgid ""
+"A <a href=\"%(current_version_url)s\">new version</a> of this license is "
+"available. You should use it for new works, and you may want to relicense "
+"existing works under it. No works are <em>automatically</em> put under the "
+"new license, however."
+msgstr ""
+"Existe una <a href=\"%(current_version_url)s\">versión nueva</a> de esta "
+"licencia. Debería utilizarla para sus nuevas obras, y puede utilizarla para "
+"relicenciar obras ya existentes bajo esta. Sin embargo, ninguna obra queda "
+"<em>automáticamente</em> sujeta a esta nueva licencia."
+
+#: deeds/templates/licenses/standard_deed.html:203
+msgid "What does \"Attribute this work\" mean?"
+msgstr "¿Qué significa «Atribuir esta obra»?"
+
+#: deeds/templates/licenses/standard_deed.html:206
+msgid ""
+"The page you came from contained embedded licensing metadata, including how "
+"the creator wishes to be attributed for re-use. You can use the HTML here to"
+" cite the work. Doing so will also include metadata on your page so that "
+"others can find the original work as well."
+msgstr ""
+"La página de la que proviene contiene metadatos de licenciamiento "
+"incrustados, incluyendo cómo la creadora desea ser reconocida para reusos. "
+"Aquí puede utilizar el HTML para citar la obra. Al hacer esto también se "
+"incluirán los metadatos en su página para que otras puedan encontrar también"
+" la obra original."
+
+#: deeds/templates/licenses/standard_deed.html:212
+msgid ""
+"The applicable mediation rules will be designated in the copyright notice "
+"published with the work, or if none then in the request for mediation.  "
+"Unless otherwise designated in a copyright notice attached to the work, the "
+"UNCITRAL Arbitration Rules apply to any arbitration."
+msgstr ""
+"Las reglas de mediación aplicables, se indicarán en el aviso de de derechos "
+"autorales publicadas con la obra, o si no hay ninguna entonces en la "
+"solicitud de mediación. A menos que se designe otra cosa en un aviso de "
+"derechos autorales adjunto al trabajo, el Reglamento de Arbitraje de la "
+"Comisión de las Naciones Unidas para el Derecho Mercantil Internacional "
+"(CNUDMI) se aplica en cualquier arbitraje."
+
+#: deeds/templates/licenses/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:280
+msgid "More info"
+msgstr "Más información"
+
+#: deeds/templates/licenses/standard_deed.html:220
+msgid ""
+"If supplied, you must provide the name of the creator and attribution "
+"parties, a copyright notice, a license notice, a disclaimer notice, and a "
+"link to the material. CC licenses prior to Version 4.0 also require you to "
+"provide the title of the material if supplied, and may have other slight "
+"differences."
+msgstr ""
+"Si se suministran, debe brindar el nombre de la creadora y de las partes "
+"atribuidas, un aviso de derechos autorales, una nota de licencia, un aviso "
+"legal, y un enlace al material. Las licencias CC anteriores a la versión 4.0"
+" también requieren que brinde el título del material si se suministra, y "
+"pueden tener otras ligeras diferencias."
+
+#: deeds/templates/licenses/standard_deed.html:228
+msgid ""
+"In 4.0, you must indicate if you modified the material and retain an "
+"indication of previous modifications. In 3.0 and earlier license versions, "
+"the indication of changes is only required if you create a derivative."
+msgstr ""
+"En 4.0, debe indicar si ha modificado el material y mantener una indicación "
+"de las modificaciones anteriores. En 3.0 y versiones anteriores a la "
+"licencia, la indicación de los cambios sólo se requiere si se crea una obra "
+"derivada."
+
+#: deeds/templates/licenses/standard_deed.html:230
+msgid "Marking guide"
+msgstr "Guía de etiquetado"
+
+#: deeds/templates/licenses/standard_deed.html:238
+msgid ""
+"You may also use a license listed as compatible at <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
+msgstr ""
+"Usted además puede utilizar una licencia que aparezca como compatible en<a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
+
+#: deeds/templates/licenses/standard_deed.html:246
+msgid ""
+"A commercial use is one primarily intended for commercial advantage or "
+"monetary compensation."
+msgstr ""
+"Un uso comercial es aquel que pretende principalmente obtener ventaja "
+"comercial o compensación monetaria."
+
+#: deeds/templates/licenses/standard_deed.html:254
+msgid "Merely changing the format never creates a derivative."
+msgstr "El simple hecho de cambiar el formato nunca genera una obra derivada."
+
+#: deeds/templates/licenses/standard_deed.html:262
+msgid ""
+"The license prohibits application of effective technological measures, "
+"defined with reference to Article 11 of the WIPO Copyright Treaty."
+msgstr ""
+"La licencia prohíbe la aplicación efectiva de medidas tecnológicas, "
+"definidas de acuerdo al Artículo 11 del Tratado OMPI de derecho autoral."
+
+#: deeds/templates/licenses/standard_deed.html:270
+msgid ""
+"The rights of users under exceptions and limitations, such as fair use and "
+"fair dealing, are not affected by the CC licenses."
+msgstr ""
+"Los derechos de las usuarias bajo las excepciones y limitaciones, como el "
+"uso justo y trato justo, no se ven afectados por las licencias CC."
+
+#: deeds/templates/licenses/standard_deed.html:278
+msgid ""
+"You may need to get additional permissions before using the material as you "
+"intend."
+msgstr ""
+"Puede necesitar permisos adicionales antes de usar el material como lo había"
+" previsto."
+
+#: deeds/templates/licenses/zero_deed.html:12
+msgid "Public Domain Dedication"
+msgstr "Dedicación de Dominio Público"
+
+#: deeds/templates/licenses/zero_deed.html:25
+msgid ""
+"The person who associated a work with this deed has <b>dedicated</b> the "
+"work to the public domain by waiving all of his or her rights to the work "
+"worldwide under copyright law, including all related and neighboring rights,"
+" to the extent allowed by law."
+msgstr ""
+"La persona que asoció una obra con este resumen ha <b>dedicado</b> la obra "
+"al dominio público, mediante la renuncia a todos sus derechos a la obra bajo"
+" las leyes de derechos autorales en todo el mundo, incluyendo todos los "
+"derechos conexos y afines, en la medida permitida por la ley."
+
+#: deeds/templates/licenses/zero_deed.html:28
+msgid ""
+"You can copy, modify, distribute and perform the work, even for commercial "
+"purposes, all without asking permission. See <b>Other Information</b> below."
+msgstr ""
+"Puede copiar, modificar, distribuir e interpretar la obra, incluso para "
+"propósitos comerciales, sin pedir permiso. Vea <b>Otra información</b> "
+"debajo."
+
+#: deeds/templates/licenses/zero_deed.html:52
+msgid ""
+"In no way are the patent or trademark rights of any person affected by CC0, "
+"nor are the rights that other persons may have in the work or in how the "
+"work is used, such as <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
+msgstr ""
+"CC0 no afecta en ninguna forma los derechos de patentes o de marcas sobre la"
+" obra, ni derechos que otras personas puedan tener en la obra o en cómo la "
+"obra es usada, como <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">derechos de publicidad o "
+"privacidad</a>."
+
+#: deeds/templates/licenses/zero_deed.html:56
+msgid ""
+"Unless expressly stated otherwise, the person who associated a work with "
+"this deed makes no warranties about the work, and disclaims liability for "
+"all uses of the work, to the fullest extent permitted by applicable law."
+msgstr ""
+"A menos que esté expresamente señalado, la persona que asoció una obra con "
+"este resumen no da garantías sobre la obra, y se exime de toda "
+"responsabilidad por los usos de la misma, en la medida permitida por la ley."
+
+#: deeds/templates/licenses/zero_deed.html:60
+msgid ""
+"When using or citing the work, you should not imply <a href=\"\" "
+"class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
+"affirmer."
+msgstr ""
+"Al usar o citar la obra, no debería insinuar <a href=\"\" class=\"helpLink\""
+" id=\"endorsement\">aprobación</a> de la autora o la afirmadora."
+
+#: deeds/templates/licenses/zero_deed.html:88
+msgid "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Affirmer</a>"
+msgstr "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Afirmadora</a>"
+
+#: deeds/templates/licenses/zero_deed.html:149
+msgid "Who is the affirmer?"
+msgstr "¿Quién es la afirmadora?"
+
+#: deeds/templates/licenses/zero_deed.html:153
+msgid ""
+"The affirmer is the person who surrendered rights to the work worldwide "
+"using CC0, to the extent allowable by law. It may be the original author of "
+"the work or another person who may have had some copyright or related or "
+"neighboring legal rights in the work."
+msgstr ""
+"La afirmadora es la persona que entrega los derechos de la obra a todo el "
+"mundo usando CC0, en la medida permitida por la ley. Podría tratarse de la "
+"autora original de la obra o de otra persona que puede haber tenido derechos"
+" autorales,  derechos conexos u otros derechos relacionados sobre la obra."
+
+#: deeds/templates/licenses/zero_deed.html:176
+msgid ""
+"<p> The Commons Deed is not a legal instrument. It is simply a handy "
+"reference for understanding the CC0 Legal Code, a human-readable expression "
+"of some of its key terms. Think of it as the user-friendly interface to the "
+"CC0 Legal Code beneath. This Deed itself has no legal value, and its "
+"contents do not appear in CC0. </p> <p> Creative Commons is not a law firm "
+"and does not provide legal services. Distributing, displaying, or linking to"
+" this Commons Deed does not create an attorney-client relationship. </p> <p>"
+" Creative Commons has not verified the copyright status of any work to which"
+" CC0 has been applied. CC makes no warranties about any work or its "
+"copyright status in any jurisdiction, and disclaims all liability for all "
+"uses of any work. </p>"
+msgstr ""
+"<p>El resumen (Commons Deed) no es un instrumento legal. Simplemente es una referencia útil para entender el código legal de CC0, una descripción legible por humanos de algunos de sus términos clave. Piense en este como una interfaz amigable para acceder al código legal interno de CC0. El resumen por sí solo no tiene valor legal y sus contenidos no aparecen en CC0.</p> \n"
+"<p>Creative Commons no es una de abogados y no ofrece servicios de tipo legal. La distribución, exhibición o el enlace de este resumen no crea ninguna relación abogado-cliente.</p> <p> Creative Commons no ha verificado el estado de derechos autorales de ninguna de las obras a las que se ha aplicado CC0. CC no ofrece garantías sobre ninguna obra ni sobre su estado de  derechos autorales en ninguna jurisdicción, y se desliga de toda responsabilidad por todos los usos de cualquier obra.</p>"
+
+#: deeds/templates/licenses/zero_deed.html:182
+msgid ""
+"This is a human-readable summary of the <a href=\"./legalcode\">Legal Code "
+"(read the full text)</a>."
+msgstr ""
+"Esto es un resumen legible por humanos del <a href=\"./legalcode\">Texto "
+"Legal (lea el texto completo)</a> de la licencia."
+
+#: deeds/templates/licenses/zero_deed.html:194
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"https://creativecommons.org/choose/zero/\">use the license</a> for your own material.\n"
+"  "
+msgstr ""
+
+#: deeds/templates/macros_templates/deed.html:28
+#: deeds/templates/macros_templates/engine.html:50
+#: deeds/templates/macros_templates/pdtool_deed.html:31
+msgid "Skip to content"
+msgstr "Saltar al contenido"
+
+#: deeds/templates/macros_templates/deed.html:38
+#: deeds/templates/macros_templates/pdtool_deed.html:40
+msgid "Help us build a vibrant, collaborative global commons"
+msgstr "Ayúdenos a construir un procomún global vibrante y colaborativo"
+
+#: deeds/templates/macros_templates/deed.html:39
+#: deeds/templates/macros_templates/pdtool_deed.html:41
+msgid "Donate"
+msgstr "Donar"
+
+#: deeds/templates/macros_templates/deed.html:39
+#: deeds/templates/macros_templates/pdtool_deed.html:41
+msgid "Now"
+msgstr "Ahora"
+
+#: deeds/templates/macros_templates/deed.html:60
+#: deeds/templates/macros_templates/pdtool_deed.html:62
+msgid "Creative Commons License Deed"
+msgstr "Resumen de Licencia Creative Commons"
+
+#: deeds/templates/macros_templates/deed.html:82
+msgid ""
+"This is a human-readable summary of (and not a substitute for) the license, "
+"which is available in the following languages:"
+msgstr ""
+"Este es un resumen legible por humanos (y no un sustituto) de la licencia, "
+"la cual se encuentra disponible en los siguientes idiomas:"
+
+#: deeds/templates/macros_templates/deed.html:89
+msgid ""
+"This is a human-readable summary of (and not a substitute for) the <a "
+"href=\"legalcode\" class=\"fulltext\">license</a>."
+msgstr ""
+"Este es un resumen legible por humanos (y no un sustituto) de la <a "
+"href=\"legalcode\" class=\"fulltext\">licencia</a>."
+
+#: deeds/templates/macros_templates/deed.html:108
+#, python-format
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
+"            "
+msgstr ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Aprenda más </a>sobre el licenciamiento con CC o<a id=\"get_this\" href=\"%(get_this)s\">utilice una licencia CC</a> para su material.\n"
+"            "
+
+#: deeds/templates/macros_templates/deed.html:144
+msgid ""
+"<p>\n"
+"              The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href=\"legalcode\" class=\"fulltext\">Please click here to see the full License</a>.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              Creative Commons and Creative Commons Japan are not law firms, and distributing of or displaying of, or linking to the Commons Deed does not constitute an offer of legal advice or any other legal services. Creative Commons and Creative Commons Japan are not a party to the License underlying this Commons Deed, and disclaim liablity for damages resulting from any use of the Commons Deed and the underlying License.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              The Product licensed under Creative Commons License is provided by the person who applied the License.  Creative Commons and Creative Commons Japan make no warranties regarding the title of the licensor.  Please read <a href=\"http://creativecommons.jp/faq/\">here</a> for information regarding the application of licenses and exploitation of the Product licensed under Creative Commons licenses.\n"
+"              </p>"
+msgstr ""
+"<p>\n"
+"              El resumen del procomún («Commons Deed») no es una licencia. Es simplemente una referencia útil para entender el Código Legal (la licencia completa) — es una expresión legible por humanos de algunos de sus términos clave. Este resumen en sí mismo no tiene valor legal, y su contenido no aparece en la licencia real. Los términos reales de la licencia están establecidos por el Código Legal. <a href=\"legalcode\" class=\"fulltext\">Haga clic aquí para ver la licencia completa</a>.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              Creative Commons y Creative Commons no son oficinas de abogados, y la distribución, exhibición o enlace al resumen no constituye una oferta de asesoramiento legal ni ningún otro servicio legal. Creative Commons y Creative Commons Japón no son una parte en la Licencia que subyace a este resumen, y renuncia a la responsabilidad por los daños resultantes de cualquier uso del resumen y la Licencia subyacente.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              El producto licenciado bajo la Licencia Creative Commons es brindado por la persona que aplicó la licencia. Creative Commons y Creative Commons Japón no dan garantías con respecto al título de la licenciante. Lea <a href=\"http://creativecommons.jp/faq/\">aquí</a> para obtener información sobre la aplicación de licencias y la explotación del Producto bajo licencia Creative Commons.\n"
+"              </p>"
+
+#: deeds/templates/macros_templates/deed.html:158
+msgid ""
+"This deed highlights only some of the key features and terms of the actual "
+"license. It is not a license and has no legal value. You should carefully "
+"review all of the terms and conditions of the actual license before using "
+"the licensed material."
+msgstr ""
+"Este resumen destaca sólo algunas de las características clave y los "
+"términos de la licencia real. No es una licencia y no tiene valor legal. "
+"Usted debe revisar cuidadosamente todos los términos y condiciones de la "
+"licencia actual antes de usar el material licenciado."
+
+#: deeds/templates/macros_templates/deed.html:160
+msgid ""
+"Creative Commons is not a law firm and does not provide legal services. "
+"Distributing, displaying, or linking to this deed or the license that it "
+"summarizes does not create a lawyer-client or any other relationship."
+msgstr ""
+"Creative Commons no es un bufete de abogados y no ofrece servicios legales. "
+"Distribuir, exhibir, o enlazar a este resumen o la licencia que se resume, "
+"no crea una relación abogado-cliente ni de cualquier otro tipo."
+
+#: deeds/templates/macros_templates/deed.html:168
+#: deeds/templates/macros_templates/pdtool_deed.html:118
+msgid "expand child menu"
+msgstr "expandir submenú"
+
+#: deeds/templates/macros_templates/deed.html:168
+#: deeds/templates/macros_templates/pdtool_deed.html:118
+msgid "collapse child menu"
+msgstr "contraer submenú"
+
+#: deeds/templates/macros_templates/pdtool_deed.html:27
+msgid "hide-banner"
+msgstr "ocultar-banner"

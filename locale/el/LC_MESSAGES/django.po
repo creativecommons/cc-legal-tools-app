@@ -1,0 +1,1806 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-07-06 10:53-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: cc_licenses/templates/404.html:3
+msgid "Page Not Found"
+msgstr ""
+
+#: deeds/mappers.py:6
+msgid "Argentina"
+msgstr "Αργεντινή"
+
+#: deeds/mappers.py:7
+msgid "Austria"
+msgstr "Αυστρία"
+
+#: deeds/mappers.py:8
+msgid "Australia"
+msgstr "Αυστραλία"
+
+#: deeds/mappers.py:9
+msgid "Belgium"
+msgstr "Βέλγιο"
+
+#: deeds/mappers.py:10
+msgid "Bulgaria"
+msgstr "Βουλγαρία"
+
+#: deeds/mappers.py:11
+msgid "Brazil"
+msgstr "Βραζιλία"
+
+#: deeds/mappers.py:12
+msgid "Canada"
+msgstr "Καναδάς"
+
+#: deeds/mappers.py:13
+msgid "Switzerland"
+msgstr "Ελβετία"
+
+#: deeds/mappers.py:14
+msgid "Chile"
+msgstr "Χιλή"
+
+#: deeds/mappers.py:15
+msgid "China Mainland"
+msgstr "Κίνα"
+
+#: deeds/mappers.py:16
+msgid "Colombia"
+msgstr "Κολομβία"
+
+#: deeds/mappers.py:17
+msgid "Costa Rica"
+msgstr "Κόστα Ρίκα"
+
+#: deeds/mappers.py:18
+msgid "Czech Republic"
+msgstr "Δημοκρατία της Τσεχίας"
+
+#: deeds/mappers.py:19
+msgid "Germany"
+msgstr "Γερμανία"
+
+#: deeds/mappers.py:20
+msgid "Denmark"
+msgstr "Δανία"
+
+#: deeds/mappers.py:21
+msgid "Ecuador"
+msgstr "Εκουαδόρ"
+
+#: deeds/mappers.py:22
+msgid "Estonia"
+msgstr "Εσθονία"
+
+#: deeds/mappers.py:23
+msgid "Egypt"
+msgstr "Αίγυπτος"
+
+#: deeds/mappers.py:24
+msgid "Spain"
+msgstr "Ισπανία"
+
+#: deeds/mappers.py:25
+msgid "Catalonia"
+msgstr "Καταλονία"
+
+#: deeds/mappers.py:26
+msgid "Finland"
+msgstr "Φιλανδία"
+
+#: deeds/mappers.py:27
+msgid "France"
+msgstr "Γαλλία"
+
+#: deeds/mappers.py:28
+msgid "Greece"
+msgstr "Ελλάδα"
+
+#: deeds/mappers.py:29
+msgid "Guatemala"
+msgstr "Γουατεμάλα"
+
+#: deeds/mappers.py:30
+msgid "Hong Kong"
+msgstr "Χονγκ Κονγκ"
+
+#: deeds/mappers.py:31
+msgid "Croatia"
+msgstr "Κροατία"
+
+#: deeds/mappers.py:32
+msgid "Hungary"
+msgstr "Ουγγαρία"
+
+#: deeds/mappers.py:33
+msgid "Ireland"
+msgstr "Ιρλανδία"
+
+#: deeds/mappers.py:34
+msgid "Israel"
+msgstr "Ισραήλ"
+
+#: deeds/mappers.py:35
+msgid "IGO"
+msgstr "IGO"
+
+#: deeds/mappers.py:36
+msgid "India"
+msgstr "Ινδία"
+
+#: deeds/mappers.py:37
+msgid "Italy"
+msgstr "Ιταλία"
+
+#: deeds/mappers.py:38
+msgid "Jordan"
+msgstr "Ιορδανία"
+
+#: deeds/mappers.py:39
+msgid "Japan"
+msgstr "Ιαπωνία"
+
+#: deeds/mappers.py:40
+msgid "South Korea"
+msgstr "Νότια Κορέα"
+
+#: deeds/mappers.py:41
+msgid "Luxembourg"
+msgstr "Λουξεμβούργο"
+
+#: deeds/mappers.py:42
+msgid "Macedonia"
+msgstr "Πρώην Γιουγκοσλαβική Δημοκρατία της Μακεδονίας"
+
+#: deeds/mappers.py:43
+msgid "Malta"
+msgstr "Μάλτα"
+
+#: deeds/mappers.py:44
+msgid "Mexico"
+msgstr "Μεξικό"
+
+#: deeds/mappers.py:45
+msgid "Malaysia"
+msgstr "Μαλαισία"
+
+#: deeds/mappers.py:46
+msgid "Nigeria"
+msgstr "Νιγηρία"
+
+#: deeds/mappers.py:47
+msgid "Netherlands"
+msgstr "Ολλανδία"
+
+#: deeds/mappers.py:48
+msgid "Norway"
+msgstr "Νορβηγία"
+
+#: deeds/mappers.py:49
+msgid "New Zealand"
+msgstr "Νέα Ζηλανδία"
+
+#: deeds/mappers.py:50
+msgid "Peru"
+msgstr "Περού"
+
+#: deeds/mappers.py:51
+msgid "Philippines"
+msgstr "Φιλιππίνες"
+
+#: deeds/mappers.py:52
+msgid "Poland"
+msgstr "Πολωνία"
+
+#: deeds/mappers.py:53
+msgid "Puerto Rico"
+msgstr "Πουέρτο Ρίκο"
+
+#: deeds/mappers.py:54
+msgid "Portugal"
+msgstr "Πορτογαλία"
+
+#: deeds/mappers.py:55
+msgid "Romania"
+msgstr "Ρουμανία"
+
+#: deeds/mappers.py:56
+msgid "Serbia"
+msgstr "Σερβία"
+
+#: deeds/mappers.py:57
+msgid "UK: Scotland"
+msgstr "Ηνωμένο Βασίλειο: Σκωτία"
+
+#: deeds/mappers.py:58
+msgid "Sweden"
+msgstr "Σουηδία"
+
+#: deeds/mappers.py:59
+msgid "Singapore"
+msgstr "Σιγκαπούρη"
+
+#: deeds/mappers.py:60
+msgid "Slovenia"
+msgstr "Σλοβενία"
+
+#: deeds/mappers.py:61
+msgid "Slovak Republic"
+msgstr "Δημοκρατία της Σλοβακίας"
+
+#: deeds/mappers.py:62
+msgid "Thailand"
+msgstr "Ταϋλάνδη"
+
+#: deeds/mappers.py:63
+msgid "Taiwan"
+msgstr "Ταϊβάν"
+
+#: deeds/mappers.py:64
+msgid "Ukraine"
+msgstr "Ουκρανία"
+
+#: deeds/mappers.py:65
+msgid "Uganda"
+msgstr "Ουγκάντα"
+
+#: deeds/mappers.py:66
+msgid "UK: England & Wales"
+msgstr "Ηνωμένο Βασίλειο: Αγγλία & Ουαλία"
+
+#: deeds/mappers.py:67
+msgid "United States"
+msgstr "Ηνωμένες Πολιτείες"
+
+#: deeds/mappers.py:68
+msgid "Venezuela"
+msgstr "Βενεζουέλα"
+
+#: deeds/mappers.py:69
+msgid "Vietnam"
+msgstr "Βιετνάμ"
+
+#: deeds/mappers.py:70
+msgid "South Africa"
+msgstr "Νότια Αφρική"
+
+#: deeds/mappers.py:74
+msgid "Afrikaans"
+msgstr "Αφρικάανς"
+
+#: deeds/mappers.py:75
+msgid "Arabic"
+msgstr "Αραβικά"
+
+#: deeds/mappers.py:76
+msgid "Assamese"
+msgstr "Ασαμέζικα"
+
+#: deeds/mappers.py:77
+msgid "Asturian"
+msgstr "Διάλεκτος Asturian"
+
+#: deeds/mappers.py:78
+msgid "Azerbaijani"
+msgstr "Αζέρικα"
+
+#: deeds/mappers.py:79
+msgid "Belarusian"
+msgstr "Λευκορωσικά"
+
+#: deeds/mappers.py:80
+msgid "Bulgarian"
+msgstr "Βουλγαρικά"
+
+#: deeds/mappers.py:81
+msgid "Bengali"
+msgstr "Βεγγαλικά"
+
+#: deeds/mappers.py:82
+msgid "Catalan"
+msgstr "Καταλανικά"
+
+#: deeds/mappers.py:83
+msgid "Czech"
+msgstr "Τσεχία"
+
+#: deeds/mappers.py:84
+msgid "Danish"
+msgstr "Δανέζικα"
+
+#: deeds/mappers.py:85
+msgid "German"
+msgstr "Γερμανικά"
+
+#: deeds/mappers.py:86
+msgid "Greek"
+msgstr "Ελληνικά"
+
+#: deeds/mappers.py:87
+msgid "English"
+msgstr "Αγγλικά"
+
+#: deeds/mappers.py:88
+msgid "English (CA)"
+msgstr "Αγγλικά (CA)"
+
+#: deeds/mappers.py:89
+msgid "English (GB)"
+msgstr "Αγγλικά (ΗΒ)"
+
+#: deeds/mappers.py:90
+msgid "English (Hong Kong)"
+msgstr "Αγγλικά (Χονγκ Κονγκ)"
+
+#: deeds/mappers.py:91
+msgid "English (Singapore)"
+msgstr "Αγγλικά (Σιγκαπούρη)"
+
+#: deeds/mappers.py:92
+msgid "English (US)"
+msgstr "Αγγλικά (ΗΠΑ)"
+
+#: deeds/mappers.py:93
+msgid "Esperanto"
+msgstr "Εσπεράντο"
+
+#: deeds/mappers.py:94
+msgid "Spanish"
+msgstr "Ισπανικά"
+
+#: deeds/mappers.py:95
+msgid "Spanish (AR)"
+msgstr "Ισπανικά (AΡ)"
+
+#: deeds/mappers.py:96
+msgid "Spanish (CL)"
+msgstr "Ισπανικά (ΚΛ)"
+
+#: deeds/mappers.py:97
+msgid "Spanish (CO)"
+msgstr "Ισπανικά (CO)"
+
+#: deeds/mappers.py:98
+msgid "Spanish (Ecuador)"
+msgstr "Ισπανικά (Εκουαδόρ)"
+
+#: deeds/mappers.py:99
+msgid "Spanish (Spain)"
+msgstr "Ισπανικά (Ισπανία)"
+
+#: deeds/mappers.py:100
+msgid "Spanish (Guatemala)"
+msgstr "Ισπανικά (Γουατεμάλα)"
+
+#: deeds/mappers.py:101
+msgid "Spanish (MX)"
+msgstr "Ισπανικά (MX)"
+
+#: deeds/mappers.py:102
+msgid "Spanish (PE)"
+msgstr "Ισπανικά (PE)"
+
+#: deeds/mappers.py:103
+msgid "Estonian"
+msgstr "Εσθονικά"
+
+#: deeds/mappers.py:104
+msgid "Basque"
+msgstr "Βασκικά"
+
+#: deeds/mappers.py:105
+msgid "Persian"
+msgstr "Περσικά"
+
+#: deeds/mappers.py:106
+msgid "Finnish"
+msgstr "Φινλανδικά "
+
+#: deeds/mappers.py:107
+msgid "French"
+msgstr "Γαλλικά"
+
+#: deeds/mappers.py:108
+msgid "French (CA)"
+msgstr "Γαλλικά (Καναδά)"
+
+#: deeds/mappers.py:109
+msgid "Irish"
+msgstr "Ιρλανδικά"
+
+#: deeds/mappers.py:110
+msgid "Galician"
+msgstr "Γαλικιανά"
+
+#: deeds/mappers.py:111
+msgid "Hebrew"
+msgstr "Εβραϊκά"
+
+#: deeds/mappers.py:112
+msgid "Hindi"
+msgstr "Ινδικά"
+
+#: deeds/mappers.py:113
+msgid "Croatian"
+msgstr "Κροατικά"
+
+#: deeds/mappers.py:114
+msgid "Hungarian"
+msgstr "Ουγγρικά"
+
+#: deeds/mappers.py:115
+msgid "Armenian"
+msgstr "Αρμένικα"
+
+#: deeds/mappers.py:116
+msgid "Indonesian"
+msgstr "Ινδονησιακά"
+
+#: deeds/mappers.py:117
+msgid "Icelandic"
+msgstr "Ισλανδικά"
+
+#: deeds/mappers.py:118
+msgid "Italian"
+msgstr "Ιταλικά"
+
+#: deeds/mappers.py:119
+msgid "Japanese"
+msgstr "Ιαπωνικά"
+
+#: deeds/mappers.py:120
+msgid "Georgian"
+msgstr "Γεωργιανά"
+
+#: deeds/mappers.py:121
+msgid "Kazakh"
+msgstr "Καζακικά"
+
+#: deeds/mappers.py:122
+msgid "Korean"
+msgstr "Κορεάτικα"
+
+#: deeds/mappers.py:123
+msgid "Lithuanian"
+msgstr "Λιθουανικά"
+
+#: deeds/mappers.py:124
+msgid "Latvian"
+msgstr "Λετονικά"
+
+#: deeds/mappers.py:125
+msgid "Macedonian"
+msgstr "Πρώην Γιουγκοσλαβική Δημοκρατία της Μακεδονίας"
+
+#: deeds/mappers.py:126
+msgid "Malayalam"
+msgstr "Μαλαγιαλαμικά"
+
+#: deeds/mappers.py:127
+msgid "Mongolian"
+msgstr "Μογγολικά"
+
+#: deeds/mappers.py:128
+msgid "Malay"
+msgstr "Μαλάι"
+
+#: deeds/mappers.py:129
+msgid "Dutch"
+msgstr "Ολλανδικά"
+
+#: deeds/mappers.py:130
+msgid "Norwegian"
+msgstr "Νορβηγικά"
+
+#: deeds/mappers.py:131
+msgid "Northern Sotho"
+msgstr "Βόρειο Σόθο"
+
+#: deeds/mappers.py:132
+msgid "Aranese"
+msgstr "Διάλεκτος Aranese"
+
+#: deeds/mappers.py:133
+msgid "Polish"
+msgstr "Πολωνικά"
+
+#: deeds/mappers.py:134
+msgid "Portuguese"
+msgstr "Πορτογαλικά"
+
+#: deeds/mappers.py:135
+msgid "Portuguese (BR)"
+msgstr "Πορτογαλικά (BR)"
+
+#: deeds/mappers.py:137
+msgid "Romanian"
+msgstr "Ρουμανικά"
+
+#: deeds/mappers.py:138
+msgid "Russian"
+msgstr "Ρωσικά"
+
+#: deeds/mappers.py:139
+msgid "Sinhala"
+msgstr "Σιγγαλέζικα"
+
+#: deeds/mappers.py:140
+msgid "Slovenian"
+msgstr "Σλοβένικα"
+
+#: deeds/mappers.py:141
+msgid "Serbian"
+msgstr "Σερβικά"
+
+#: deeds/mappers.py:142
+msgid "Serbian (Latin)"
+msgstr "Σερβικά (Λατινικά)"
+
+#: deeds/mappers.py:143
+msgid "Sotho"
+msgstr "Σόθο"
+
+#: deeds/mappers.py:144
+msgid "Swedish"
+msgstr "Σουηδικά"
+
+#: deeds/mappers.py:145
+msgid "Tamil"
+msgstr "Διάλεκτος Ταμίλ"
+
+#: deeds/mappers.py:146
+msgid "Telugu"
+msgstr "Telegu"
+
+#: deeds/mappers.py:147
+msgid "Thai"
+msgstr "Ταϊλανδέζα"
+
+#: deeds/mappers.py:148
+msgid "Turkish"
+msgstr "Τουρκικά"
+
+#: deeds/mappers.py:149
+msgid "Ukranian"
+msgstr "Ουκρανικά"
+
+#: deeds/mappers.py:150
+msgid "Urdu"
+msgstr "Ουρντού"
+
+#: deeds/mappers.py:151
+msgid "Vietnamese"
+msgstr "Βιετναμέζικα"
+
+#: deeds/mappers.py:152 deeds/mappers.py:153
+msgid "Chinese"
+msgstr "Κινέζικα"
+
+#: deeds/mappers.py:154
+msgid "Chinese (Hong Kong)"
+msgstr "Κινέζικα (Χονγκ Κονγκ)"
+
+#: deeds/mappers.py:155
+msgid "Chinese (Taiwan)"
+msgstr "Κινέζικα (Ταϊβάν)"
+
+#: deeds/mappers.py:156
+msgid "Zulu"
+msgstr "Ζουλού"
+
+#: deeds/mappers.py:160
+msgid "GPL"
+msgstr "GPL"
+
+#: deeds/mappers.py:161
+msgid "LGPL"
+msgstr "LGPL"
+
+#: deeds/mappers.py:162 deeds/mappers.py:182
+#: deeds/templates/licenses/devnations_deed.html:53
+#: deeds/templates/licenses/standard_deed.html:102
+msgid "Attribution"
+msgstr "Αναφορά Δημιουργού"
+
+#: deeds/mappers.py:163
+msgid "Attribution-NonCommercial"
+msgstr "Αναφορά Δημιουργού-Μη Εμπορική Χρήση"
+
+#: deeds/mappers.py:164
+msgid "Attribution-NonCommercial-NoDerivs"
+msgstr "Αναφορά Δημιουργού-Μη Εμπορική Χρήση-Όχι Παράγωγα Έργα"
+
+#: deeds/mappers.py:165
+msgid "Attribution-NonCommercial-ShareAlike"
+msgstr "Αναφορά Δημιουργού - Μη Εμπορική Χρήση - Παρόμοια Διανομή"
+
+#: deeds/mappers.py:166
+msgid "Attribution-NoDerivs"
+msgstr "Αναφορά Δημιουργού-Όχι Παράγωγα Έργα"
+
+#: deeds/mappers.py:167
+msgid "Attribution-NoDerivs-NonCommercial"
+msgstr "Αναφορά Δημιουργού-Όχι Παράγωγα Έργα-Μη Εμπορική Χρήση"
+
+#: deeds/mappers.py:168
+msgid "Attribution-ShareAlike"
+msgstr "Αναφορά Δημιουργού - Παρόμοια Διανομή"
+
+#: deeds/mappers.py:169
+msgid "Public Domain Mark"
+msgstr "Σήμα Δημόσιου Τομέα"
+
+#: deeds/mappers.py:170 deeds/templates/licenses/standard_deed.html:131
+msgid "NonCommercial"
+msgstr "Μη Εμπορική Χρήση"
+
+#: deeds/mappers.py:171
+msgid "NonCommercial-ShareAlike"
+msgstr "Μη Εμπορική Χρήση - Παρόμοια Διανομή"
+
+#: deeds/mappers.py:172
+msgid "NonCommercial Sampling Plus"
+msgstr " Άδεια Δείγματος Plus για Μη Εμπορική Χρήση"
+
+#: deeds/mappers.py:173
+msgid "NoDerivs"
+msgstr "Όχι Παράγωγα Έργα"
+
+#: deeds/mappers.py:174
+msgid "NoDerivs-NonCommercial"
+msgstr "Όχι Παράγωγα Έργα - Μη Εμπορική Χρήση"
+
+#: deeds/mappers.py:175
+msgid "Public Domain"
+msgstr "Δημόσιος Τομέας"
+
+#: deeds/mappers.py:176 deeds/templates/licenses/standard_deed.html:149
+msgid "ShareAlike"
+msgstr "Παρόμοια Διανομή"
+
+#: deeds/mappers.py:177
+msgid "Sampling"
+msgstr "Sampling"
+
+#: deeds/mappers.py:178
+msgid "Sampling Plus"
+msgstr "Άδεια Δείγματος Plus"
+
+#: deeds/mappers.py:183
+msgid "Noncommercial"
+msgstr "Μη Εμπορική Χρήση"
+
+#: deeds/mappers.py:184
+msgid "No Derivative Works"
+msgstr "Όχι Παράγωγα Έργα"
+
+#: deeds/mappers.py:185
+msgid "Share Alike"
+msgstr "Παρόμοια Διανομή"
+
+#: deeds/mappers.py:190 deeds/templates/licenses/devnations_deed.html:55
+#: deeds/templates/licenses/sampling_deed.html:45
+msgid ""
+"You must attribute the work in the manner specified by the author or "
+"licensor (but not in any way that suggests that they endorse you or your use"
+" of the work)."
+msgstr ""
+"Θα πρέπει να κάνετε την αναφορά στο έργο με τον τρόπο που έχει οριστεί από "
+"το δημιουργό ή το χορηγούντο την άδεια (χωρίς όμως να εννοείται με "
+"οποιονδήποτε τρόπο ότι εγκρίνουν εσάς ή τη χρήση του έργου από εσάς)."
+
+#: deeds/mappers.py:194 deeds/templates/licenses/sampling_deed.html:53
+msgid ""
+"You may not use this work to advertise for or promote anything but the work "
+"you create from it."
+msgstr ""
+"Δε μπορείτε να χρησιμοποιήσετε το έργο αυτό προκειμένου να διαφημίσετε ή να "
+"προωθήσετε οτιδήποτε άλλο πέρα από το έργο από το οποίο δημιουργείτε."
+
+#: deeds/mappers.py:196 deeds/templates/licenses/sampling_deed.html:49
+msgid "You may not use this work for commercial purposes."
+msgstr "Δε μπορείτε να χρησιμοποιήσετε το έργο αυτό για εμπορικούς σκοπούς."
+
+#: deeds/mappers.py:197
+msgid "You may not alter, transform, or build upon this work."
+msgstr ""
+"Δε μπορείτε να αλλοιώσετε, να τροποποιήσετε ή να δημιουργήσετε πάνω στο έργο"
+" αυτό."
+
+#: deeds/mappers.py:199 deeds/templates/licenses/sampling_deed.html:66
+msgid ""
+"You may not perform, display, or distribute copies of this whole work for "
+"any purpose."
+msgstr ""
+"Δε μπορείτε να ερμηνεύσετε, να κάνετε προσιτό στο κοινό ή να διανέμετε "
+"αντίγραφα από ολόκληρο αυτό το έργο για οποιοδήποτε σκοπό."
+
+#: deeds/mappers.py:202
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same or similar license to this one."
+msgstr ""
+"Εάν αλλοιώσετε, τροποποιήσετε ή δημιουργήσετε περαιτέρω βασισμένοι στο έργο "
+"θα μπορείτε να διανέμετε το έργο που θα προκύψει μόνο με την ίδια ή παρόμοια"
+" άδεια."
+
+#: deeds/mappers.py:206
+msgid ""
+"If you alter, transform, or build upon this work, you may distribute the "
+"resulting work only under the same, similar or a compatible license."
+msgstr ""
+"Εάν αλλοιώσετε, τροποποιήσετε ή δημιουργήσετε πάνω στο έργο αυτό, μπορείτε "
+"να διανείμετε το έργο που θα προκύψει μόνο υπό τους όρους της ίδιας, όμοιας "
+"ή συμβατής άδειας."
+
+#: deeds/templates/catalog_pages/license_catcher.html:3
+#: deeds/templates/licenses/pdmark_deed.html:188
+#: deeds/templates/macros_templates/partner.html:26
+msgid "Creative Commons"
+msgstr "Creative Commons"
+
+#: deeds/templates/includes/cc_site_footer.html:25
+#: deeds/templates/includes/cc_site_header.html:40
+msgid "Contact"
+msgstr "Επικοινωνία"
+
+#: deeds/templates/includes/cc_site_footer.html:26
+msgid "Privacy"
+msgstr "Προστασία Προσωπικών Δεδομένων"
+
+#: deeds/templates/includes/cc_site_footer.html:27
+msgid "Policies"
+msgstr "Πολιτικές"
+
+#: deeds/templates/includes/cc_site_footer.html:28
+msgid "Terms"
+msgstr "Όροι"
+
+#: deeds/templates/includes/cc_site_footer.html:35
+msgid "We'd love to hear from you!"
+msgstr "Περιμένουμε νέα σας!"
+
+#: deeds/templates/includes/cc_site_footer.html:44
+msgid "Frequently Asked Questions"
+msgstr "Συχνές ερωτήσεις"
+
+#: deeds/templates/includes/cc_site_header.html:11
+msgid "Menu"
+msgstr "Μενού"
+
+#: deeds/templates/includes/cc_site_header.html:16
+#: deeds/templates/includes/cc_site_header.html:27
+msgid "Share your work"
+msgstr "Πραγματοποιείστε Διαμοιρασμό του έργου σας"
+
+#: deeds/templates/includes/cc_site_header.html:17
+#: deeds/templates/includes/cc_site_header.html:28
+msgid "Use &#038; remix"
+msgstr "Χρήση και Επεξεργασία"
+
+#: deeds/templates/includes/cc_site_header.html:18
+#: deeds/templates/includes/cc_site_header.html:29
+msgid "What We do"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:19
+#: deeds/templates/includes/cc_site_header.html:30
+msgid "Blog"
+msgstr "Ιστολόγιο"
+
+#: deeds/templates/includes/cc_site_header.html:20
+#: deeds/templates/includes/cc_site_header.html:37
+msgid "Global Network"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:21
+msgid "Search the Commons"
+msgstr "Αναζητείστε Υλικό Creative Commons"
+
+#: deeds/templates/includes/cc_site_header.html:36
+msgid "Search for CC images"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:38
+msgid "Newsletters"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:39
+msgid "Store"
+msgstr ""
+
+#: deeds/templates/includes/cc_site_header.html:46
+msgid "Facebook"
+msgstr "Facebook"
+
+#: deeds/templates/includes/cc_site_header.html:47
+msgid "Twitter"
+msgstr "Twitter"
+
+#: deeds/templates/includes/cc_site_header.html:48
+msgid "Mail"
+msgstr "Ηλεκτρονικό Ταχυδρομίο"
+
+#: deeds/templates/includes/deed_donate_slide.html:7
+#: deeds/templates/macros_templates/deed.html:119
+#: deeds/templates/macros_templates/pdtool_deed.html:92
+msgid ""
+"This content is freely available under simple legal terms because of "
+"Creative Commons, a non-profit that survives on donations. If you love this "
+"content, and love that it's free for everyone, please consider a donation to"
+" support our work."
+msgstr ""
+"Οι εν λόγω άδειες και τα εργαλεία προσφέρονται ελεύθερα στο κοινό με "
+"απλοποιημένους νομικούς όρους, εξαιτίας του μη κερδοσκοπικού χαρακτήρα τoυ "
+"οργανισμού Creative Commons, ο οποίος συντηρείται με δωρεές. Εάν σας αρέσουν"
+" οι παρεχόμενες από εμάς άδειες και τα εργαλεία και υποστηρίζετε την "
+"ελεύθερη διάθεσή τους σε όλους, συμβάλετε κι εσείς και υποστηρίξτε τη δράση "
+"μας με μία δωρεά."
+
+#: deeds/templates/includes/deed_donate_slide.html:8
+msgid "When you share, everyone wins."
+msgstr "Όταν μοιράζεσαι, όλοι βγαίνουν κερδισμένοι."
+
+#: deeds/templates/includes/deed_donate_slide.html:14
+msgid "Contribute today to Creative Commons"
+msgstr "Συμβάλλετε σήμερα στον οργανισμό Creative Commons"
+
+#: deeds/templates/includes/deed_donate_slide.html:35
+msgid "Amount"
+msgstr "Ποσό"
+
+#: deeds/templates/includes/deed_donate_slide.html:42
+msgid "Donate Now"
+msgstr "Κάντε μια δωρεά τώρα"
+
+#: deeds/templates/includes/language_selector.html:5
+#: deeds/templates/includes/translations.html:4
+msgid "This page is available in the following languages:"
+msgstr "Η σελίδα αυτή είναι διαθέσιμη στις ακόλουθες γλώσσες:"
+
+#: deeds/templates/licenses/devnations_deed.html:19
+#: deeds/templates/licenses/publicdomain_deed.html:34
+#: deeds/templates/licenses/sampling_deed.html:15
+#: deeds/templates/licenses/standard_deed.html:26
+msgid ""
+"Creative Commons has <a "
+"href=\"http://creativecommons.org/retiredlicenses\">retired this legal "
+"tool</a> and does not recommend that it be applied to works."
+msgstr ""
+"Ο οργανισμός Creative Commons έχει αποσύρει αυτή <a "
+"href=\"/retiredlicenses\">την άδεια </a> και δεν συνιστά να τη "
+"χρησιμοποιείτε για νέα έργα."
+
+#: deeds/templates/licenses/devnations_deed.html:23
+#: deeds/templates/licenses/sampling_deed.html:20
+msgid "You are free:"
+msgstr "Είναι ελεύθερη:"
+
+#: deeds/templates/licenses/devnations_deed.html:28
+msgid "<strong>to Share</strong> — to copy, distribute and transmit the work"
+msgstr ""
+"<strong>για Διανομή</strong>: για αναπαραγωγή, διανομή, παρουσίαση στο κοινό"
+" του Έργου"
+
+#: deeds/templates/licenses/devnations_deed.html:33
+msgid "<strong>to Remix</strong> — to adapt the work"
+msgstr "<strong>για διασκευή</strong> —για να τροποποιήσετε το έργο"
+
+#: deeds/templates/licenses/devnations_deed.html:40
+#: deeds/templates/licenses/sampling_deed.html:41
+msgid "Under the following conditions:"
+msgstr "Υπό τις ακόλουθες προϋποθέσεις:"
+
+#: deeds/templates/licenses/devnations_deed.html:60
+#: deeds/templates/licenses/sampling_deed.html:59
+msgid ""
+"For any reuse or distribution, you must make clear to others the license "
+"terms of this work. The best way to do this is with a link to this web page."
+msgstr ""
+"Για κάθε νέα χρήση ή διανομή, πρέπει να καταστήσετε σαφείς στους άλλους τους"
+" όρους της άδειας αυτού του Έργου. Ο καλύτερος τρόπος για να πράξετε αυτό "
+"είναι να δημιουργήσετε ένα σύνδεσμο με το διαδικτυακό τόπο αυτής της "
+"ιστοσελίδας."
+
+#: deeds/templates/licenses/devnations_deed.html:61
+msgid ""
+"Any of the above conditions can be <a href=\"#\" id=\"waived\" "
+"class=\"helpLink\">waived</a> if you get permission from the copyright "
+"holder."
+msgstr ""
+"Κάθε μία από τις παραπάνω συνθήκες μπορεί να <a href=\"#\" id=\"waived\" "
+"class=\"helpLink\">παρακαμφθεί</a> αν πάρετε άδεια από τον κάτοχο των "
+"πνευματικών δικαιωμάτων."
+
+#: deeds/templates/licenses/devnations_deed.html:69
+#: deeds/templates/licenses/sampling_deed.html:76
+msgid ""
+"Your fair dealing or <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">fair use</a> rights, or other applicable"
+" copyright exceptions and limitations;"
+msgstr ""
+"Η σωστή δοσοληψία σας ή <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_fair_use.2C_fair_dealing_or_other_exceptions_to_copyright.3F\""
+" id=\"fair_use\" class=\"helpLink\">εύλογη χρήση</a>, ή άλλοι εφαρμοστέοι "
+"περιορισμοί και εξαιρέσεις δικαιωμάτων πνευματικής ιδιοκτησίας."
+
+#: deeds/templates/licenses/devnations_deed.html:72
+#: deeds/templates/licenses/sampling_deed.html:79
+msgid ""
+"Rights other persons may have either in the work itself or in how the work "
+"is used, such as <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity</a> or privacy rights."
+msgstr ""
+"Μπορεί να υπάρχουν δικαιώματα άλλων ατόμων  είτε στο έργο καθεαυτό είτε στο "
+"πώς αυτό χρησιμοποιείται όπως <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">δικαιώματα δημοσιότητας</a> ή "
+"δικαιώματα περί την ιδιωτικότητα."
+
+#: deeds/templates/licenses/pdmark_deed.html:18
+#: deeds/templates/licenses/zero_deed.html:20
+msgid "No Copyright"
+msgstr "Δεν υπάρχουν πνευματικά δικαιώματα"
+
+#: deeds/templates/licenses/pdmark_deed.html:21
+msgid ""
+"<p id=\"nolaw-text\"> This work has been <b>identified</b> as being free of "
+"known restrictions under copyright law, including all related and "
+"neighboring rights. </p> <p> <br /> You can copy, modify, distribute and "
+"perform the work, even for commercial purposes, all without asking "
+"permission. See <b>Other Information</b> below. </p>"
+msgstr ""
+"<p id=\"nolaw-text\"> Αυτό το έργο έχει <b>αναγνωριστεί</b> ως ελεύθερο "
+"γνωστών περιορισμών πνευματικής ιδιοκτησίας, συμπεριλαμβανομένων και όλων "
+"των σχετικών και συγγενικών δικαιωμάτων.  </p> <p> <br /> Μπορείς να "
+"αντιγράψεις, τροποποιήσεις, διανέμεις, και παρουσιάσεις το έργο, ακόμη και "
+"για εμπορικούς σκοπούς, χωρίς να ζητήσεις προηγούμενη άδεια για όλα αυτά. "
+"Βλέπε <b>περαιτέρω πληροφόρηση</b> παρακάτω. </p>"
+
+#: deeds/templates/licenses/pdmark_deed.html:31
+#: deeds/templates/licenses/zero_deed.html:49
+msgid "Other Information"
+msgstr "Άλλες πληροφορίες"
+
+#: deeds/templates/licenses/pdmark_deed.html:34
+msgid ""
+"The work may not be free of known copyright restrictions in all <a href=\"\""
+" class=\"helpLink\" id=\"all_jurisdictions\">jurisdictions</a>."
+msgstr ""
+"Το έργο μπορεί να μην είναι ελεύθερο από γνωστούς περιορισμούς copyright σε "
+"όλες τις <a href=\"\" class=\"helpLink\" id=\"all_jurisdictions\">περιοχές "
+"δικαιοδοσίας</a>."
+
+#: deeds/templates/licenses/pdmark_deed.html:37
+msgid ""
+"Persons may have other rights in or related to the work, such as patent or "
+"trademark rights, and others may have rights in how the work is used, such "
+"as <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
+msgstr ""
+"Μερικοί μπορεί να κατέχουν άλλα δικαιώματα επί του έργου ή σχετικά με αυτό "
+"όπως δικαιώματα βιομηχανικής ιδιοκτησίας (πατέντα, σήμα) και άλλοι μπορεί να"
+" έχουν δικαιώματα επί της χρήσης του έργου όπως το δικαίωμα στη <a "
+"href=\"https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant\""
+" class=\"helpLink\" id=\"publicity_rights\">δημοσιότητα ή την "
+"ιδιωτικότητα.</a>"
+
+#: deeds/templates/licenses/pdmark_deed.html:40
+msgid ""
+"In some jurisdictions <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">moral rights</a> of the author may persist beyond the "
+"term of copyright. These rights may include the right to be identified as "
+"the author and the right to object to derogatory treatments."
+msgstr ""
+"Σε μερικές περιοχές δικαιοδοσίας <a href=\"\" class=\"helpLink\" "
+"id=\"moral_rights\">τα ηθικά δικαιώματα</a> του συγγραφέως μπορούν να "
+"υφίστανται ακόμη και μετά τη λήξη των όρων του copyright. Αυτά τα δικαιώματα"
+" μπορεί να συμπεριλαμβάνουν το δικαίωμα ταυτοποίησης ως συγγραφέας και το "
+"δικαίωμα αντίρρησης στην εξευτελιστική μεταχείριση."
+
+#: deeds/templates/licenses/pdmark_deed.html:43
+msgid ""
+"Unless expressly stated otherwise, the person who identified the work makes "
+"no warranties about the work, and disclaims liability for all uses of the "
+"work, to the fullest extent permitted by applicable law."
+msgstr ""
+"Εκτός αν άλλως έχει ρητά διατυπωθεί, το πρόσωπο που έχει αναγνωρίσει το έργο"
+" δεν παρέχει καμία εγγύηση για το έργο, και αποποιείται νομική ευθύνη για "
+"κάθε χρήση του έργου, στον υπέρτατο βαθμό που αυτό επιτρέπεται από "
+"εφαρμοστέο νόμο. "
+
+#: deeds/templates/licenses/pdmark_deed.html:46
+msgid ""
+"When using or citing the work, you should not imply <a href=\"\" "
+"class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
+"person who identified the work."
+msgstr ""
+"Όταν χρησιμοποιείτε ή αναφέρεσθε στο έργο, δεν πρέπει να υπονοείτε <a "
+"href=\"\" class=\"helpLink\" id=\"endorsement\">επιδοκιμασία</a> εκ μέρους "
+"του συγγραφέα ή του ατόμου που ταυτοποίησε το έργο."
+
+#: deeds/templates/licenses/pdmark_deed.html:74
+#: deeds/templates/licenses/zero_deed.html:82
+msgid "Work:"
+msgstr "Έργο:"
+
+#: deeds/templates/licenses/pdmark_deed.html:79
+msgid "Author:"
+msgstr "Συγγραφέας:"
+
+#: deeds/templates/licenses/pdmark_deed.html:83
+msgid "Identified by:"
+msgstr "Αναγνωρίζεται από:"
+
+#: deeds/templates/licenses/pdmark_deed.html:89
+#: deeds/templates/licenses/zero_deed.html:95
+msgid ""
+"You can <a href=\"\" class=\"helpLink\" id=\"citation_help\">cite</a> this "
+"work with this HTML:"
+msgstr ""
+"Μπορείτε να κάνετε <a href=\"\" class=\"helpLink\" "
+"id=\"citation_help\">παραπομπή</a> αυτή τη δουλειά με αυτό τον κώδικα HTML:"
+
+#: deeds/templates/licenses/pdmark_deed.html:114
+#: deeds/templates/licenses/zero_deed.html:123
+msgid "Endorsement"
+msgstr "Πιστοποίηση"
+
+#: deeds/templates/licenses/pdmark_deed.html:118
+#: deeds/templates/licenses/zero_deed.html:126
+msgid ""
+"In some jurisdictions, wrongfully implying that an author, publisher or "
+"anyone else endorses your use of a work may be unlawful."
+msgstr ""
+"Σε μερικά δικαιικά συστήματα, ο εσφαλμένος υπαινιγμός οτι ο συγγραφέας, ο "
+"εκδότης ή κάποιος άλλος εγκρίνει τη χρήση ενός έργου από εσένα μπορεί να "
+"είναι μη σύννομος. "
+
+#: deeds/templates/licenses/pdmark_deed.html:121
+#: deeds/templates/licenses/pdmark_deed.html:135
+#: deeds/templates/licenses/pdmark_deed.html:149
+#: deeds/templates/licenses/pdmark_deed.html:162
+#: deeds/templates/licenses/pdmark_deed.html:173
+#: deeds/templates/licenses/zero_deed.html:117
+#: deeds/templates/licenses/zero_deed.html:130
+#: deeds/templates/licenses/zero_deed.html:142
+msgid "Learn more"
+msgstr "Μάθετε περισσότερα"
+
+#: deeds/templates/licenses/pdmark_deed.html:128
+#: deeds/templates/licenses/zero_deed.html:136
+msgid "Citation"
+msgstr "Παραπομπή"
+
+#: deeds/templates/licenses/pdmark_deed.html:132
+#: deeds/templates/licenses/zero_deed.html:139
+msgid ""
+"Copy and paste the HTML provided into your webpage to easily cite this work."
+msgstr ""
+"Κάνε αντιγραφή και επικόλληση του HTML κώδικα που παρέχεται στην ιστοσελίδα "
+"σου για εύκολη παραπομπή σ' αυτό το έργο. "
+
+#: deeds/templates/licenses/pdmark_deed.html:142
+msgid "Moral Rights"
+msgstr "Εξουσίες Ηθικού Δικαιώματος "
+
+#: deeds/templates/licenses/pdmark_deed.html:146
+msgid ""
+"Copyright laws in most jurisdictions around the world grant creators \"moral"
+" rights\" which may provide some redress if use of a work is considered "
+"\"derogatory\"."
+msgstr ""
+"Οι νομοθεσίες πνευματικής ιδιοκτησίας στα περισσότερα δικαιικά συστήματα σ' "
+"όλο τον κόσμο παρέχουν στους δημιουργούς εξουσίες ηθικού δικαιώματος που "
+"δίνουν το δικαίωμα επανόρθωσης/αποζημίωσης σε περίπτωση χρήσης έργου που "
+"μπορεί να εκληφθεί ως προσβλητική. "
+
+#: deeds/templates/licenses/pdmark_deed.html:155
+#: deeds/templates/licenses/zero_deed.html:110
+msgid "Other Rights"
+msgstr "Άλλα δικαιώματα"
+
+#: deeds/templates/licenses/pdmark_deed.html:159
+#: deeds/templates/licenses/zero_deed.html:113
+msgid ""
+"The use of a work free of known copyright restrictions may be otherwise "
+"regulated or limited. The work or its use may be subject to personal data "
+"protection laws, publicity, image, or privacy rights that allow a person to "
+"control how their voice, image or likeness is used, or other restrictions or"
+" limitations under applicable law."
+msgstr ""
+"Η χρήση ενός έργου ελεύθερου από γνωστούς περιορισμούς πνευματικής "
+"ιδιοκτησίας μπορεί να υπόκειται σε άλλες ρυθμίσεις ή περιορισμούς. Το έργο ή"
+" η χρήση του μπορεί να υπόκειται σε ρυθμίσεις νομοθεσίας για την προστασία "
+"δεδομένων προσωπικού χαρακτήρα, ρυθμίσεις δημοσιότητας, εικόνας, ή "
+"ιδιωτικότητας που επιτρέπουν σ' ένα πρόσωπο να ελέγχει πως η φωνή, εικόνα ή "
+"ομοιότητα μ'αυτό χρησιμοποιείται, ή άλλες ρυθμίσεις ή περιορισμούς σύμφωνα "
+"με εφαρμοστέο νόμο. "
+
+#: deeds/templates/licenses/pdmark_deed.html:167
+msgid "Term of Copyright"
+msgstr "Διάρκεια ισχύος πνευματικής ιδιοκτησίας"
+
+#: deeds/templates/licenses/pdmark_deed.html:170
+msgid ""
+"Copyright terms vary jurisdiction to jurisdiction. A work free of copyright "
+"restrictions in one jurisdiction may not be similarly free in other "
+"jurisdictions."
+msgstr ""
+"Η διάρκεια ισχύος της πνευματικής ιδιοκτησίας διαφέρει από ένα δικαιικό "
+"σύστημα σε άλλο. Ένα έργο ελεύθερο περιορισμών πνευματικής ιδιοκτησίας σε "
+"ένα δικαιικό σύστημα μπορεί να μην είναι ελεύθερο πνευματικής ιδιοκτησίας σε"
+" άλλα. "
+
+#: deeds/templates/licenses/pdmark_deed.html:196
+#: deeds/templates/licenses/pdmark_deed.html:198
+#: deeds/templates/licenses/zero_deed.html:172
+#: deeds/templates/licenses/zero_deed.html:187
+#: deeds/templates/macros_templates/deed.html:94
+#: deeds/templates/macros_templates/deed.html:141
+msgid "Disclaimer"
+msgstr "Αποποίηση"
+
+#: deeds/templates/licenses/pdmark_deed.html:200
+msgid ""
+"<p> The Public Domain Mark is not a legal instrument. </p> <p> Creative "
+"Commons is not a law firm and does not provide legal services or advice. "
+"Distributing, displaying, or linking to this Public Domain Mark does not "
+"create an attorney-client relationship. </p> <p> Creative Commons has not "
+"verified the copyright status of any work to which this mark has been "
+"applied. CC makes no warranties about any work or its copyright status in "
+"any jurisdiction, and disclaims all liability for all uses of any work. </p>"
+msgstr ""
+"<p> Το Σήμα Δημόσιου Τομέα δεν είναι νομικό εργαλείο.</p> <p> Ο οργανισμός "
+"Creative Commons δεν είναι εταιρία δικηγόρων και δεν παρέχει νομικές "
+"υπηρεσίες ή συμβουλές. Η διανομή, παρουσίαση ή σύνδεση με αυτό το Σήμα "
+"Δημόσιου Τομέα δεν δημιουργεί σχέση δικηγόρου-πελάτη.  </p> <p> Ο οργανισμός"
+" Creative Commons δεν έχει επιβεβαιώσει το status πνευματικής ιδιοκτησίας "
+"οποιουδήποτε έργου επί του οποίου αυτό το σήμα έχει τεθεί. Ο οργανισμός "
+"Creative Commons δεν παρέχει καμία εγγύηση σχετικά με οποιοδήποτε έργο ή το "
+"καθεστώς πνευματικής ιδιοκτησίας του σε οποιοδήποτε δικαιικό σύστημα, και "
+"αποποιείται κάθε νομική ευθύνη για όλες τις χρήσεις οποιουδήποτε έργου. </p>"
+
+#: deeds/templates/licenses/pdmark_deed.html:207
+#, python-format
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
+"  "
+msgstr ""
+
+#: deeds/templates/licenses/publicdomain_deed.html:5
+msgid ""
+"Copyright-Only Dedication (based on United States law)\n"
+"or Public Domain Certification"
+msgstr ""
+
+#: deeds/templates/licenses/publicdomain_deed.html:19
+msgid ""
+"Copyright-Only Dedication<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
+"  (based on United States law)<br />\n"
+"  or Public Domain Certification"
+msgstr ""
+"Πνευματικά δικαιώματα-Μόνον εκχώρηση<a href=\"#\" class=\"helpLink\" id=\"use_zero\">*</a>\n"
+"  (βασισμένο στον νόμο των ΗΠΑ)<br />\n"
+"  ή στην Πιστοποίηση Δημόσιου Τομέα"
+
+#: deeds/templates/licenses/publicdomain_deed.html:28
+#: deeds/templates/licenses/standard_deed.html:77
+#: deeds/templates/licenses/zero_deed.html:37
+msgid "This license is acceptable for Free Cultural Works."
+msgstr "Αυτή η άδεια είναι αποδεκτή για Ελεύθερα "
+
+#: deeds/templates/licenses/publicdomain_deed.html:38
+msgid ""
+"        <p>The person or persons who have associated work with this document (the \"Dedicator\" or \"Certifier\") hereby either (a) certifies that, to the best of his knowledge, the work of authorship identified is in the public domain of the country from which the work is published, or (b) hereby dedicates whatever copyright the dedicators holds in the work of authorship identified below (the \"Work\") to the public domain. A certifier, moreover, dedicates any copyright interest he may have in the associated work, and for these purposes, is described as a \"dedicator\" below.</p>\n"
+"\n"
+"        <p>A certifier has taken reasonable steps to verify the copyright status of this work. Certifier recognizes that his good faith efforts may not shield him from liability if in fact the work certified is not in the public domain.</p>\n"
+"\n"
+"        <p>Dedicator makes this dedication for the benefit of the public at large and to the detriment of the Dedicator's heirs and successors. Dedicator intends this dedication to be an overt act of relinquishment in perpetuity of all present and future rights under copyright law, whether vested or contingent, in the Work. Dedicator understands that such relinquishment of all rights includes the relinquishment of all rights to enforce (by lawsuit or otherwise) those copyrights in the Work.</p>\n"
+"\n"
+"        <p>Dedicator recognizes that, once placed in the public domain, the Work may be freely reproduced, distributed, transmitted, used, modified, built upon, or otherwise exploited by anyone for any purpose, commercial or non-commercial, and in any way, including by methods that have not yet been invented or conceived.</p>"
+msgstr ""
+"        <p>Το άτομο ή τα άτομα που έχουν συσχετίσει έργο με αυτό το αρχείο (αυτός που το προσφέρει ή πιστοποιεί) με το παρόν είτε (α) πιστοποιούν ότι, εν γνώσει τους, το έργο του οποίου η πατρότητα  εξακριβώθηκε, αποτελεί κοινό κτήμα στην χώρα στην οποία αυτό δημοσιεύτηκε, είτε (β) προσφέρουν ως κοινό κτήμα οποιοδήποτε δικαίωμα πνευματικής ιδιοκτησίας έχει ο προσφέρων το έργο, η πατρότητα του οποίου διαπιστώνεται παρακάτω. Αυτός που πιστοποιεί προσφέρει περαιτέρω οποιοδήποτε δικαίωμα επί των δικαιωμάτων πνευματικής ιδιοκτησίας  που τυχόν έχει με το έργο που σχετίζεται και για τους λόγους αυτούς περιγράφεται ως \"αυτός που προσφέρει\" παρακάτω.</p>\n"
+"\n"
+"        <p>Αυτός που πιστοποιεί έχει κάνει τις απαραίτητες ενέργειες προκειμένου να εξακριβώσει το καθεστώς σχετικά με τα δικαιώματα πνευματικής ιδιοκτησίας στο έργο αυτό. Αυτός που πιστοποιεί αναγνωρίζει ότι όλες οι προσπάθειες που έκανε με καλή την πίστη δεν τον απαλλάσσουν από τυχόν ευθύνη σε περίπτωση που το έργο του οποίου η πατρότητα εξακριβώθηκε δεν αποτελεί κοινό κτήμα.</p>\n"
+"\n"
+"        <p>Αυτός που προσφέρει κάνει την προσφορά αυτή για το καλό του κοινού και σε βάρος των απογόνων και κληρονόμων του. Αυτός που προσφέρει έχει σκοπό να αποτελεί η προσφορά του μία απροκάλυπτη πράξη εκχώρησης στο διηνεκές όλων των τωρινών και μελλοντικών δικαιωμάτων πνευματικής ιδιοκτησίας κεκτημένων ή ενδεχόμενων να προκύψουν στο μέλλον επί του έργου.</p>\n"
+"\n"
+"        <p>Αυτός που προσφέρει αναγνωρίζει ότι από τη στιγμή που το έργο θα αποτελέσει κοινό κτήμα, θα μπορεί ο καθένας ελεύθερα να το αναπαράγει, να το διανέμει, να το μεταδίδει, να το χρησιμοποιεί, να το τροποποιεί, να δημιουργεί παράγωγα έργα βασισμένα σε αυτό ή αλλιώς να το εκμεταλλεύεται ο καθένας για οποιονδήποτε σκοπό, εμπορικό ή μη εμπορικό, και με οποιονδήποτε τρόπο συμπεριλαμβανομένων και μεθόδων εκμετάλλευσης που δεν έχουν ακόμα εφευρεθεί ή συλληφθεί ως ιδέα.</p>"
+
+#: deeds/templates/licenses/publicdomain_deed.html:49
+msgid ""
+"This tool is based on United States law and may not be applicable outside "
+"the US. For dedicating new works to the public domain, we recommend <a "
+"href=\"/choose/zero/\">CC0</a>."
+msgstr ""
+"Αυτό το εργαλείο στηρίζεται σε νόμο των ΗΠΑ και μπορεί να μην είναι "
+"εφαρμόσιμο σε δικαιοδοσία εκτός των ΗΠΑ. Για να εκχωρήσετε νέα έργα στο "
+"Δημόσιο Τομέα, συνιστούμε την άδεια CC0"
+
+#: deeds/templates/licenses/sampling_deed.html:24
+msgid ""
+"To sample, mash-up, or otherwise creatively transform this work for "
+"noncommercial purposes."
+msgstr ""
+"Να πάρετε δείγματα, να αλλάξετε ή αλλιώς να τροποποιήσετε δημιουργικά το "
+"έργο αυτό για μη εμπορικούς σκοπούς"
+
+#: deeds/templates/licenses/sampling_deed.html:28
+msgid ""
+"To sample, mash-up, or otherwise creatively transform this work for "
+"commercial or noncommercial purposes."
+msgstr ""
+"Για να δειγματίζετε, να αλλάξετε, ή άλλως να τροποποιήσετε δημιουργικά το "
+"έργο είτε για εμπορικούς είτε για μη εμπορικούς σκοπούς."
+
+#: deeds/templates/licenses/sampling_deed.html:34
+msgid ""
+"To perform, display, and distribute copies of this whole work for "
+"noncommercial purposes (e.g., file-sharing or noncommercial webcasting)."
+msgstr ""
+"Να ερμηνεύετε, να παρουσιάζετε στο κοινό και να διανέμετε αντίγραφα "
+"ολόκληρου του έργου για μη εμπορικούς σκοπούς (π.χ., ανταλλαγή αρχείων ή μη "
+"εμπορικό webcasting)"
+
+#: deeds/templates/licenses/sampling_deed.html:63
+msgid ""
+"For any reuse, you must make clear to others the license terms of this work."
+msgstr ""
+"Για κάθε νέα χρησιμοποίηση του έργου σας θα πρέπει να αποσαφηνίσετε στους "
+"άλλους τους όρους της άδειας γι' αυτό το έργο."
+
+#: deeds/templates/licenses/standard_deed.html:44
+msgid "You are free to:"
+msgstr "Μπορείτε να:"
+
+#: deeds/templates/licenses/standard_deed.html:49
+msgid ""
+"<strong>Share</strong>  &mdash; copy and redistribute the material in any "
+"medium or format"
+msgstr ""
+"<strong>Μοιραστείτε</strong>  &mdash; αντιγράψετε και αναδιανέμετε το υλικό "
+"με κάθε μέσο και τρόπο"
+
+#: deeds/templates/licenses/standard_deed.html:56
+msgid ""
+"<strong>Adapt</strong>  &mdash; remix, transform, and build upon the "
+"material"
+msgstr ""
+"<strong>Προσαρμόστε</strong>  &mdash; αναμείξτε, τροποποιήστε και "
+"δημιουργήστε πάνω στο υλικό"
+
+#: deeds/templates/licenses/standard_deed.html:62
+msgid "for any purpose, even commercially."
+msgstr "για κάθε σκοπό, ακόμα και εμπορικό."
+
+#: deeds/templates/licenses/standard_deed.html:89
+msgid ""
+"The licensor cannot revoke these freedoms as long as you follow the license "
+"terms."
+msgstr ""
+"Ο αδειοδότης δεν μπορεί να ανακαλέσει αυτές τις ελευθερίες όσο εσείς "
+"ακολουθείτε τους όρους της άδειας."
+
+#: deeds/templates/licenses/standard_deed.html:96
+msgid "Under the following terms:"
+msgstr "Υπό τους ακόλουθους όρους:"
+
+#: deeds/templates/licenses/standard_deed.html:103
+msgid ""
+"You must give <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\">appropriate credit</a></span>, provide a link to the "
+"license, and <span rel=\"cc:requires\" "
+"resource=\"http://creativecommons.org/ns#Notice\"><a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\">indicate if changes were "
+"made</a></span>.  You may do so in any reasonable manner, but not in any way"
+" that suggests the licensor endorses you or your use."
+msgstr ""
+"Θα πρέπει να καταχωρίσετε <a href=\"#\" id=\"appropriate_credit_popup\" "
+"class=\"helpLink\"> αναφορά στο δημιουργό </a> </ span>, με σύνδεσμο της "
+"άδειας, και <span rel = \"cc:cc:requires\" resource= "
+"\"http://creativecommons.org/ns#Notice\"> <a href=\"#\" "
+"id=\"indicate_changes_popup\" class=\"helpLink\"> με αναφορά αν έχουν γίνει "
+"αλλαγές </a> </ span>. Μπορείτε να το κάνετε αυτό με οποιονδήποτε εύλογο "
+"τρόπο, αλλά όχι με τρόπο που να υπονοεί ότι ο δημιουργός αποδέχεται το έργο "
+"σας ή τη χρήση που εσείς κάνετε."
+
+#: deeds/templates/licenses/standard_deed.html:109
+msgid "Attribute this work:"
+msgstr "Κάντε Αναφορά Δημιουργού σ'αυτό το έργο:"
+
+#: deeds/templates/licenses/standard_deed.html:121
+msgid "Information"
+msgstr "Πληροφορία"
+
+#: deeds/templates/licenses/standard_deed.html:131
+msgid ""
+"You may not use the material for <a href=\"#\" "
+"id=\"commercial_purposes_popup\" class=\"helpLink\">commercial purposes</a>."
+msgstr ""
+"Δε μπορείτε να χρησιμοποιήσετε το υλικό για <a href=\"#\" "
+"id=\"commercial_purposes_popup\" class=\"helpLink\">εμπορικούς σκοπούς</a>."
+
+#: deeds/templates/licenses/standard_deed.html:139
+msgid "NoDerivatives"
+msgstr "Μη παραγόμενα "
+
+#: deeds/templates/licenses/standard_deed.html:139
+msgid ""
+"If you <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">remix, transform, or build upon</a> the material, you may"
+" not distribute the modified material."
+msgstr ""
+"Αν <a href=\"#\" id=\"some_kinds_of_mods_popup\" "
+"class=\"helpLink\">αναμείξετε, τροποποιήσετε, ή δημιουργήσετε πάνω</a> στο "
+"υλικό, δε μπορείτε να διανείμετε το τροποποιημένο υλικό."
+
+#: deeds/templates/licenses/standard_deed.html:149
+msgid ""
+"If you remix, transform, or build upon the material, you must distribute "
+"your contributions under the <a href=\"#\" id=\"same_license_popup\" "
+"class=\"helpLink\">same license</a> as the original."
+msgstr ""
+"Αν αναμείξετε, τροποποιήσετε, ή δημιουργήσετε πάνω στο υλικό, πρέπει ν "
+"δινείμετε τις δικές σας συνεισφορές υπό την <a href=\"#\" "
+"id=\"same_license_popup\" class=\"helpLink\">ίδια άδεια</a> όπως και το "
+"πρωτότυπο."
+
+#: deeds/templates/licenses/standard_deed.html:160
+msgid "No additional restrictions"
+msgstr "Δεν υπάρχουν πρόσθετοι περιορισμοί"
+
+#: deeds/templates/licenses/standard_deed.html:160
+msgid ""
+"You may not apply legal terms or <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">technological "
+"measures</a> that legally restrict others from doing anything the license "
+"permits."
+msgstr ""
+"Δε μπορείτε να εφαρμόσετε νομικούς όρους ή <a href=\"#\" "
+"id=\"technological_measures_popup\" class=\"helpLink\">τεχνολογικά μέτρα</a>"
+" που να περιορίζουν νομικά τους άλλους από το να κάνουν  ο,τιδήποτε "
+"επιτρέπει η άδεια."
+
+#: deeds/templates/licenses/standard_deed.html:167
+msgid "Notices:"
+msgstr "Σημειώσεις:"
+
+#: deeds/templates/licenses/standard_deed.html:172
+msgid ""
+"When the Licensor is an intergovernmental organization, disputes will be "
+"resolved by <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">mediation and arbitration</a> unless otherwise agreed."
+msgstr ""
+"Όταν ο πάροχος της αδείας είναι μια διακυβερνητική οργάνωση, οι διαμάχες θα "
+"επιλύονται μέσω <a href=\"#\" id=\"mediation_and_arbitration_popup\" "
+"class=\"helpLink\">διαμεσολάβησης και διαιτησίας</a> εκτός και αν έχει "
+"συμφωνηθεί διαφορετικά."
+
+#: deeds/templates/licenses/standard_deed.html:177
+msgid ""
+"You do not have to comply with the license for elements of the material in "
+"the public domain or where your use is permitted by an applicable <a "
+"href=\"#\" id=\"exception_or_limitation_popup\" class=\"helpLink\">exception"
+" or limitation</a>."
+msgstr ""
+"Δεν είστε υποχρεωμένοι να συμμορφωθείτε με τη άδεια για στοιχεία του υλικού "
+"που είναι σε Κοινό Κτήμ/ public domain, ή εκεί όπου η χρήση επιτρέπεται στα "
+"πλαίσια μιας ισχύουσας <a href=\"#\" id=\"exception_or_limitation_popup\" "
+"class=\"helpLink\">εξαίρεσης ή περιορισμού</a>."
+
+#: deeds/templates/licenses/standard_deed.html:180
+msgid ""
+"No warranties are given. The license may not give you all of the permissions"
+" necessary for your intended use. For example, other rights such as <a "
+"href=\"#\" id=\"publicity_privacy_or_moral_rights_popup\" "
+"class=\"helpLink\">publicity, privacy, or moral rights</a> may limit how you"
+" use the material."
+msgstr ""
+"Δεν παρέχεται καμία εγγύηση. Η άδεια μπορεί να μη σας δίνει όλα τα "
+"απαραίτητα δικαιώματα για τη χρήση που σκοπεύετε. Για παράδειγμα, άλλα "
+"δικιώματα, όπως <a href=\"#\" id=\"publicity_privacy_or_moral_rights_popup\""
+" class=\"helpLink\">διαφήμιση, ιδιωτικότητα, ή ηθικά δικαιώματα</a> μπορεί "
+"να περιορίσουν το πως χρησιμοποιείτε το υλικό."
+
+#: deeds/templates/licenses/standard_deed.html:188
+#, python-format
+msgid ""
+"A <a href=\"%(current_version_url)s\">new version</a> of this license is "
+"available. You should use it for new works, and you may want to relicense "
+"existing works under it. No works are <em>automatically</em> put under the "
+"new license, however."
+msgstr ""
+"Μία <a href=\"%(current_version_url)s\">νέα έκδοση</a> αυτής της άδειας "
+"είναι διαθέσιμη. Θα πρέπει να τη χρησιμοποιήσετε για νέα έργα, και "
+"ενδεχομένως θέλετε να αδειοδοτήσετε ξανά μ'αυτήν υπάρχοντα έργα. Εντούτοις, "
+"κανένα έργο <em>δεν τίθεται αυτόματα</em>στο καθεστώς μιας νέας άδειας."
+
+#: deeds/templates/licenses/standard_deed.html:203
+msgid "What does \"Attribute this work\" mean?"
+msgstr "Τι σημαίνει  \"Αναφορά Δημιουργού σ'αυτό το έργο\";"
+
+#: deeds/templates/licenses/standard_deed.html:206
+msgid ""
+"The page you came from contained embedded licensing metadata, including how "
+"the creator wishes to be attributed for re-use. You can use the HTML here to"
+" cite the work. Doing so will also include metadata on your page so that "
+"others can find the original work as well."
+msgstr ""
+"Η σελίδα από την οποία προήλθατε περιέχει ενσωματωμένα μεταδεδομένα "
+"χορήγησης αδειών, συμπεριλαμβανομένων δεδομένων για το πώς ο δημιουργός "
+"επιθυμεί να αναφέρεται σε περαιτέρω χρήση. Μπορείτε να χρησιμοποιήσετε τον "
+"κώδικα HTML, εδώ για να αναφέρετε το έργο. Με αυτόν τον τρόπο θα "
+"περιλαμβάνονται μεταδεδομένα για την ιστοσελίδα σας έτσι ώστε οι άλλοι "
+"μπορούν να βρουν το πρωτότυπο έργο, επίσης."
+
+#: deeds/templates/licenses/standard_deed.html:212
+msgid ""
+"The applicable mediation rules will be designated in the copyright notice "
+"published with the work, or if none then in the request for mediation.  "
+"Unless otherwise designated in a copyright notice attached to the work, the "
+"UNCITRAL Arbitration Rules apply to any arbitration."
+msgstr ""
+"Οι ισχύοντες κανόνες διαμεσολάβησης θα υποδεικνύονται στη σημείωση copyright"
+" που δημοσιεύεται με το έργο, ή αν δεν υπάρχει καμία τέτοια, τότε στο αίτημα"
+" για διαμεσολάβηση.  Εκτός και αν, σε κάποια σημείωση copyright που είναι "
+"επισυνημμένη στο έργο, έχει υποδειχθεί διαφορετικά, θα ισχύουν οι κανόνες "
+"Διαμεσολάβησης UNCITRAL που ισχύουν σε κάθε διαμεσολάβηση."
+
+#: deeds/templates/licenses/standard_deed.html:214
+#: deeds/templates/licenses/standard_deed.html:222
+#: deeds/templates/licenses/standard_deed.html:232
+#: deeds/templates/licenses/standard_deed.html:240
+#: deeds/templates/licenses/standard_deed.html:248
+#: deeds/templates/licenses/standard_deed.html:256
+#: deeds/templates/licenses/standard_deed.html:264
+#: deeds/templates/licenses/standard_deed.html:272
+#: deeds/templates/licenses/standard_deed.html:280
+msgid "More info"
+msgstr "Περισσότερες πληροφορίες"
+
+#: deeds/templates/licenses/standard_deed.html:220
+msgid ""
+"If supplied, you must provide the name of the creator and attribution "
+"parties, a copyright notice, a license notice, a disclaimer notice, and a "
+"link to the material. CC licenses prior to Version 4.0 also require you to "
+"provide the title of the material if supplied, and may have other slight "
+"differences."
+msgstr ""
+"Εάν υπάρχουν, πρέπει να δώσετε το όνομα του αρχικού δημιουργού και τα "
+"ονόματα τρίτων, ανφορά στα πνευματικά δικαιώματα, την αρχική άδεια, "
+"αποποίησης ευθύνης και σύνδεσμο στο υλικό. Οι άδειες CC πριν από την έκδοση "
+"4.0 απαιτούν να παρέχετε τον τίτλο του υλικού."
+
+#: deeds/templates/licenses/standard_deed.html:228
+msgid ""
+"In 4.0, you must indicate if you modified the material and retain an "
+"indication of previous modifications. In 3.0 and earlier license versions, "
+"the indication of changes is only required if you create a derivative."
+msgstr ""
+"Στην έκδοση 4.0, πρέπει να υποδείξετε εάν τροποποιήσατε το υλικό και "
+"διατηρήσατε μια ένδειξη για τις προηγούμενες τροποποιήσεις. Στην έκδοση 3.0 "
+"και στις προγενέστερες εκδόσεις της αδείας, η ένδειξη των αλλαγών απαιτείται"
+" μόνο αν δημιουργήσατε ένα παράγωγο έργο."
+
+#: deeds/templates/licenses/standard_deed.html:230
+msgid "Marking guide"
+msgstr "Οδηγός σήμανσης"
+
+#: deeds/templates/licenses/standard_deed.html:238
+msgid ""
+"You may also use a license listed as compatible at <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
+msgstr ""
+"Μπορείτε επίσης να χρησιμοποιήσετε μια άδεια καταχωρημένη ως συμβατή στο <a "
+"href=\"https://creativecommons.org/compatiblelicenses\">https://creativecommons.org/compatiblelicenses</a>"
+
+#: deeds/templates/licenses/standard_deed.html:246
+msgid ""
+"A commercial use is one primarily intended for commercial advantage or "
+"monetary compensation."
+msgstr ""
+"Ως εμπορική χρήση νοείται πρωτίστως εκείνη που αποσκοπεί στον προσπορισμό "
+"ενός εμπορικού πλεονεκτήματος ή μιας χρηματικής ανταμοιβής."
+
+#: deeds/templates/licenses/standard_deed.html:254
+msgid "Merely changing the format never creates a derivative."
+msgstr "Η απλή αλλαγή του φορμά δεν δημιουργεί ένα παράγωγο."
+
+#: deeds/templates/licenses/standard_deed.html:262
+msgid ""
+"The license prohibits application of effective technological measures, "
+"defined with reference to Article 11 of the WIPO Copyright Treaty."
+msgstr ""
+"Η άδεια απαγορεύει τη εφαρμογή αποτελεσματικών τεχνολογικών μέτρων, που "
+"ορίζονται με αναφορά στο Άρθρο 11 της Συνθήκης της Παγκόσμιας Οργάνωσης για "
+"την Προστασία της Πνευματικής Ιδιοκτησίας/ WIPO, σχετικά με το Copyright."
+
+#: deeds/templates/licenses/standard_deed.html:270
+msgid ""
+"The rights of users under exceptions and limitations, such as fair use and "
+"fair dealing, are not affected by the CC licenses."
+msgstr ""
+"Τα δικαιώματα των χρηστών, πέραν των εξαιρέσεων και των περιορισμών όπως η "
+"ορθή χρήση και διανομή, δεν επηρεάζονται από τις άδειες της CC.   "
+
+#: deeds/templates/licenses/standard_deed.html:278
+msgid ""
+"You may need to get additional permissions before using the material as you "
+"intend."
+msgstr ""
+"Ενδέχεται να πρέπει να λάβετε περαιτέρω αδειοδότηση πριν χρησιμοποιήσετε "
+"αυτό το υλικό όπως επιθυμείτε."
+
+#: deeds/templates/licenses/zero_deed.html:12
+msgid "Public Domain Dedication"
+msgstr "Εκχώρηση ως Κοινό Κτήμα"
+
+#: deeds/templates/licenses/zero_deed.html:25
+msgid ""
+"The person who associated a work with this deed has <b>dedicated</b> the "
+"work to the public domain by waiving all of his or her rights to the work "
+"worldwide under copyright law, including all related and neighboring rights,"
+" to the extent allowed by law."
+msgstr ""
+"Το άτομο που συσχέτισε ένα έργο με αυτό το περιληπτικό σημείωμα άδειας έχει "
+"<b>διεθέσει</b> το έργο ως κοινό κτήμα αποποιούμενο όλα τα δικαιώματά "
+"του/της επί του έργου για όλο τον κόσμο σύμφωνα με το νόμο για την προστασία"
+" της πνευματικής ιδιοκτησίας, συμπεριλαμβανομένων και όλων των σχετικών ή "
+"συγγενικών δικαιωμάτων του/της επί του έργου στο βαθμό που αυτό επιτρέπεται "
+"από το νόμο."
+
+#: deeds/templates/licenses/zero_deed.html:28
+msgid ""
+"You can copy, modify, distribute and perform the work, even for commercial "
+"purposes, all without asking permission. See <b>Other Information</b> below."
+msgstr ""
+"Μπορείς να αντιγράφεις, διανέμεις, και παρουσιάζεις το έργο ακόμη και αν "
+"πρόκειται για εμπορικές χρήσεις, χωρίς να λαμβάνεις άδεια. Βλέπε "
+"<b>περαιτέρω πληροφόρηση</b> παρακάτω."
+
+#: deeds/templates/licenses/zero_deed.html:52
+msgid ""
+"In no way are the patent or trademark rights of any person affected by CC0, "
+"nor are the rights that other persons may have in the work or in how the "
+"work is used, such as <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">publicity or privacy</a> rights."
+msgstr ""
+"Τα δικαιώματα για τα διπλώματα ευρεσιτεχνίας/πατέντες και για τα εμπορικά "
+"κατατεθέντα σήματα/trademark οποιουδήποτε ατόμου δεν επηρεάζονται κατά "
+"κανέναν τρόπο από την CC0, ούτε και τα δικαιώματα που μπορεί να έχουν άλλα "
+"άτομα στο έργο ή στο πως χρησιμοποιείται το έργο, όπως τα δικαιώματα στη <a "
+"href=\"http://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant.3F\""
+" class=\"helpLink\" id=\"publicity_rights\">διαφήμιση ή την "
+"ιδιωτικότητα</a>."
+
+#: deeds/templates/licenses/zero_deed.html:56
+msgid ""
+"Unless expressly stated otherwise, the person who associated a work with "
+"this deed makes no warranties about the work, and disclaims liability for "
+"all uses of the work, to the fullest extent permitted by applicable law."
+msgstr ""
+"Εκτός αν άλλως έχει ρητά διατυπωθεί, το πρόσωπο που συσχέτισε ένα έργο με "
+"αυτό το συμφωνητικό δεν παρέχει οποιαδήποτε εγγύηση σχετικά με το έργο, και "
+"αποποιείται νομική ευθύνη για όλες τις χρήσεις του έργου, στον υπέρτατο "
+"βαθμό που αυτό επιτρέπεται από εφαρμοστέο νόμο. "
+
+#: deeds/templates/licenses/zero_deed.html:60
+msgid ""
+"When using or citing the work, you should not imply <a href=\"\" "
+"class=\"helpLink\" id=\"endorsement\">endorsement</a> by the author or the "
+"affirmer."
+msgstr ""
+"Όταν κάνεις χρήση του έργου ή παραπέμπεις σε αυτό, δεν πρέπει να "
+"υπαινίσσεσαι ότι φέρει <a href=\"\" class=\"helpLink\" "
+"id=\"endorsement\">έγκριση</a> από τον συγγραφέα ή το πρόσωπο που αναγνώρισε"
+" το έργο. "
+
+#: deeds/templates/licenses/zero_deed.html:88
+msgid "<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Affirmer</a>"
+msgstr ""
+"<a href=\"\" class=\"inline-help helpLink\" id=\"who_is_affirmer\">Ο "
+"αναγνωρίσας</a>"
+
+#: deeds/templates/licenses/zero_deed.html:149
+msgid "Who is the affirmer?"
+msgstr "Ποιο είναι το πρόσωπο που αναγνώρισε το έργο;"
+
+#: deeds/templates/licenses/zero_deed.html:153
+msgid ""
+"The affirmer is the person who surrendered rights to the work worldwide "
+"using CC0, to the extent allowable by law. It may be the original author of "
+"the work or another person who may have had some copyright or related or "
+"neighboring legal rights in the work."
+msgstr ""
+"Αυτός που αναγνώρισε το έργο είναι το πρόσωπο που αποποιήθηκε δικαιωμάτων "
+"επί του έργου παγκόσμια κάνοντας χρήση της άδειας CC0, στο βαθμό που αυτό "
+"επιτρέπεται από το νόμο. Μπορεί να είναι ο αρχικός δικαιούχος του έργου ή "
+"άλλο πρόσωπο που είχε κάποιο δικαίωμα πνευματικής ιδιοκτησίας ή συγγενικό "
+"δικαίωμα επί του έργου. "
+
+#: deeds/templates/licenses/zero_deed.html:176
+msgid ""
+"<p> The Commons Deed is not a legal instrument. It is simply a handy "
+"reference for understanding the CC0 Legal Code, a human-readable expression "
+"of some of its key terms. Think of it as the user-friendly interface to the "
+"CC0 Legal Code beneath. This Deed itself has no legal value, and its "
+"contents do not appear in CC0. </p> <p> Creative Commons is not a law firm "
+"and does not provide legal services. Distributing, displaying, or linking to"
+" this Commons Deed does not create an attorney-client relationship. </p> <p>"
+" Creative Commons has not verified the copyright status of any work to which"
+" CC0 has been applied. CC makes no warranties about any work or its "
+"copyright status in any jurisdiction, and disclaims all liability for all "
+"uses of any work. </p>"
+msgstr ""
+"<p>Το Περιληπτικό Μέρος της άδειας δεν είναι ένα νομικό εργαλείο. Είναι απλά"
+" μία χρήσιμη αναφορά για την κατανόηση του Νομικού Μέρους της άδειας CC0, "
+"είναι μία ανθρωπίνως εύληπτη έκφραση ορισμένων από τους όρους--κλειδιά της "
+"άδειας αυτής. Σκεφτείτε το σαν μία φιλική προς τον χρήστη παρουσίαση  του "
+"περιεχομένου του Νομικού Μέρους της άδειας CC0 που ακολουθεί. Αυτό το "
+"Περιληπτικό Μέρος από μόνο του δεν έχει νομική αξία και τα περιεχόμενα του "
+"δεν εμφανίζονται στο περιεχόμενο της άδειας CC0.</p><p>Ο οργανισμός Creative"
+" Commons δεν είναι εταιρία δικηγόρων και δεν παρέχει νομικές υπηρεσίες. Η "
+"διανομή, παρουσίαση στο κοινό, ή σύνδεση σε αυτό το Περιληπτικό Σημείωμα της"
+" άδειας δεν δημιουργεί μία σχέση δικηγόρου-πελάτη.</p><p>Ο οργανισμός "
+"Creative Commons δεν έχει επιβεβαιώσει το status περί την πνευματική "
+"ιδιοκτησία σε οποιοδήποτε έργο έχει υπαχθεί στην άδεια CC0. Ο οργανισμός "
+"Creative Commons δεν παρέχει καμία εγγύηση για οποιοδήποτε έργο ή για το "
+"καθεστώς πνευματικής του ιδιοκτησίας σε οποιαδήποτε δικαιοδοσία, και "
+"αποποιείται κάθε νομική ευθύνη για οποιαδήποτε χρήση οποιουδήποτε έργου.</p>"
+
+#: deeds/templates/licenses/zero_deed.html:182
+msgid ""
+"This is a human-readable summary of the <a href=\"./legalcode\">Legal Code "
+"(read the full text)</a>."
+msgstr ""
+"Αυτό είναι μία περίληψη σε μορφή που μπορεί να αναγνωστεί από κάποιον του <a"
+" href=\"./legalcode\">Νομικού Μέρους (διαβάστε το πλήρες κείμενο)</a>."
+
+#: deeds/templates/licenses/zero_deed.html:194
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"https://creativecommons.org/choose/zero/\">use the license</a> for your own material.\n"
+"  "
+msgstr ""
+
+#: deeds/templates/macros_templates/deed.html:28
+#: deeds/templates/macros_templates/engine.html:50
+#: deeds/templates/macros_templates/pdtool_deed.html:31
+msgid "Skip to content"
+msgstr "Μεταβείτε στο περιεχόμενο"
+
+#: deeds/templates/macros_templates/deed.html:38
+#: deeds/templates/macros_templates/pdtool_deed.html:40
+msgid "Help us build a vibrant, collaborative global commons"
+msgstr ""
+"Βοηθείστε μας να δημιουργήσουμε ένα βιώσιμο, διεπιστημονικό διεθνές δίκτυο "
+"κοινών."
+
+#: deeds/templates/macros_templates/deed.html:39
+#: deeds/templates/macros_templates/pdtool_deed.html:41
+msgid "Donate"
+msgstr "Δωρεά"
+
+#: deeds/templates/macros_templates/deed.html:39
+#: deeds/templates/macros_templates/pdtool_deed.html:41
+msgid "Now"
+msgstr "Τώρα"
+
+#: deeds/templates/macros_templates/deed.html:60
+#: deeds/templates/macros_templates/pdtool_deed.html:62
+msgid "Creative Commons License Deed"
+msgstr "Πράξη Κοινών Creative Commons"
+
+#: deeds/templates/macros_templates/deed.html:82
+msgid ""
+"This is a human-readable summary of (and not a substitute for) the license, "
+"which is available in the following languages:"
+msgstr ""
+"Αυτή είναι μία εύληπτη από μη νομικούς περίληψη των αδειών, η οποία δεν τις "
+"αντικαθιστά και είναι διαθέσιμη στις ακόλουθες γλώσσες:"
+
+#: deeds/templates/macros_templates/deed.html:89
+msgid ""
+"This is a human-readable summary of (and not a substitute for) the <a "
+"href=\"legalcode\" class=\"fulltext\">license</a>."
+msgstr ""
+"Αυτή είναι μία εύληπτη από μη νομικούς περίληψη (κι όχι υποκατάστατο) των <a"
+" href=\"legalcode\" class=\"fulltext\">αδειών</a>."
+
+#: deeds/templates/macros_templates/deed.html:108
+#, python-format
+msgid ""
+"\n"
+"        <a href=\"http://wiki.creativecommons.org/FAQ\">Learn more</a> about CC licensing, or <a id=\"get_this\" href=\"%(get_this)s\">use the license</a> for your own material.\n"
+"            "
+msgstr ""
+"\n"
+"<a href=\"http://wiki.creativecommons.org/FAQ\">Μάθετε περισσότερα</a> σχετικά με την CC αδειοδότηση ή <a id=\"get_this\" href=\"%(get_this)s\">χρησιμοποιήστε την άδεια</a> σε δικό σας υλικό."
+
+#: deeds/templates/macros_templates/deed.html:144
+msgid ""
+"<p>\n"
+"              The Commons Deed is not a license. It is simply a handy reference for understanding the Legal Code (the full License) — it is a human-readable expression of some of its key terms. This Deed itself has no legal value, and its contents do not appear in the actual License.  The actual terms of the license is set forth by the Legal Code.  <a href=\"legalcode\" class=\"fulltext\">Please click here to see the full License</a>.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              Creative Commons and Creative Commons Japan are not law firms, and distributing of or displaying of, or linking to the Commons Deed does not constitute an offer of legal advice or any other legal services. Creative Commons and Creative Commons Japan are not a party to the License underlying this Commons Deed, and disclaim liablity for damages resulting from any use of the Commons Deed and the underlying License.\n"
+"              </p>\n"
+"\n"
+"              <p>\n"
+"              The Product licensed under Creative Commons License is provided by the person who applied the License.  Creative Commons and Creative Commons Japan make no warranties regarding the title of the licensor.  Please read <a href=\"http://creativecommons.jp/faq/\">here</a> for information regarding the application of licenses and exploitation of the Product licensed under Creative Commons licenses.\n"
+"              </p>"
+msgstr ""
+"<p>\n"
+"Η Πράξη Κοινών δεν αποτελεί άδεια. Πρόκειται απλά για μία εύχρηστη περίληψη προκειμένου να κατανοήσετε τον Νομικό της Κώδικα (της κυρίως Άδειας) - είναι μία εύληπτη από μη νομικούς παράθεση των βασικών όρων της άδειας. Η Πράξη αυτή καθ΄εαυτή δεν έχει καμία νομική ισχύ και το περιεχόμενό της δε συνιστά μέρος της κυρίως Άδειας. Οι ακριβείς όροι της άδειας αναγράφονται στον Νομικό της Κώδικα. <a href=\"legalcode\" class=\"fulltext\">Επιλέξτε εδώ για να δείτε το πλήρες κείμενο της Άδειας</a>.\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"O οργανισμός Creative Commons και τα Creative Commons Ιαπωνίας δεν είναι συνεταιρισμός ή εταιρία δικηγόρων και η προώθηση ή η εμφάνιση ή η παραπομπή στην Πράξη Κοινών δεν συνιστά πρόταση για την παροχή νομικών συμβουλών ή  οιωνδήποτε άλλων νομικών υπηρεσιών. Ο οργανισμός Creative Commons ή Creative Commons Ιαπωνίας δεν είναι συμβαλλόμενα μέρη στην Άδεια που περιγράφεται στην παρούσα Πράξη Κοινών, και αποποιείται κάθε ευθύνη για αποζημίωση προκύπτουσα από κάθε χρήση της  Πράξης Κοινών ή της περιγραφόμενης σε αυτήν Άδειας.\n"
+"</p>\n"
+"\n"
+"<p>\n"
+"Το Αντικείμενο το οποίο αδειοδοτείται με μία άδεια Creative Commons παρέχεται από το άτομο που εφάρμοσε την άδεια. Ο οργανισμός Creative Commons και Creative Commons Ιαπωνίας δεν παρέχει οιαδήποτε εγγύηση σχετικά με τον τίτλο του αδειοδότη.  Παρακαλώ διαβάστε <a href=\"http://creativecommons.jp/faq/\">εδώ</a> για πληροφορίες σχετικά με την εφαρμογή των αδειών και την εκμετάλλευση του Aντικειμένου που αδειοδοτείται κάτω από μία άδεια Creative Commons. \n"
+"</p>"
+
+#: deeds/templates/macros_templates/deed.html:158
+msgid ""
+"This deed highlights only some of the key features and terms of the actual "
+"license. It is not a license and has no legal value. You should carefully "
+"review all of the terms and conditions of the actual license before using "
+"the licensed material."
+msgstr ""
+"Η παρούσα πράξη επισημαίνει μόνο κάποια από τα βασικά χαρακτηριστικά και "
+"τους όρους της κυρίως άδειας. Η ίδια δεν είναι άδεια και δεν έχει νομική "
+"ισχύ. Σας συνιστούμε να διαβάσετε προσεκτικά όλους τους όρους και τις "
+"προϋποθέσεις της κυρίως άδειας πριν τη χρήση του αντικειμένου της "
+"αδειοδότησης."
+
+#: deeds/templates/macros_templates/deed.html:160
+msgid ""
+"Creative Commons is not a law firm and does not provide legal services. "
+"Distributing, displaying, or linking to this deed or the license that it "
+"summarizes does not create a lawyer-client or any other relationship."
+msgstr ""
+"Tα Creative Commons δεν είναι συνεταιρισμός ή εταιρεία δικηγόρων και δεν "
+"παρέχει νομικές υπηρεσίες. Η προώθηση ή η εμφάνιση ή η παραπομπή στην "
+"παρούσα πράξη ή την άδεια που συνοψίζει δεν δημιουργεί κάποια σχέση "
+"δικηγόρου - πελάτη ή οποιαδήποτε άλλη σχέση."
+
+#: deeds/templates/macros_templates/deed.html:168
+#: deeds/templates/macros_templates/pdtool_deed.html:118
+msgid "expand child menu"
+msgstr "Παιδικό μενού"
+
+#: deeds/templates/macros_templates/deed.html:168
+#: deeds/templates/macros_templates/pdtool_deed.html:118
+msgid "collapse child menu"
+msgstr "Ελαχιστοποίηση παιδικού μενού"
+
+#: deeds/templates/macros_templates/pdtool_deed.html:27
+msgid "hide-banner"
+msgstr "απόκρυψη πλαισίου"
