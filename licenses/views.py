@@ -387,7 +387,7 @@ def license_detail(request):
     return render(request, "licenses/licenses_detail.html")
 
 def sampling_detail(request):
-    return render(request, "licenses/sampling_deed.html")
+    return render(request, "licenses/sampling_deed_detail.html")
 
 def deed_detail(request):
     return render(request, "licenses/deed_detail.html")
