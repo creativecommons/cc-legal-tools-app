@@ -2,6 +2,10 @@
 {% block content %}
   <p><b>Temporary homepage</b></p>
 
+  <p><a href="{% url 'license_detail' %}">Example license page (styled)</a></p>
+  <p><a href="{% url 'sampling_detail' %}">Example sampling license page (styled)</a></p>
+  <p><a href="{% url 'deed_detail' %}">Example deed page (styled)</a></p>
+
   <p>Some deeds to look at:</p>
   <ul>
   {% for code, licenses_of_code in licenses_by_code.items %}

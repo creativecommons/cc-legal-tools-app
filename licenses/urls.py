@@ -136,6 +136,15 @@ register_converter(LangConverter, "lang")
 # DEEDS
 urlpatterns = [
     path(
+        "license/", license_detail, name="license_detail"
+    ),
+    path(
+        "sampling/", sampling_detail, name="sampling_detail"
+    ),
+    path(
+        "deed/", deed_detail, name="deed_detail"
+    ),
+    path(
         "<code:license_code>/<version:version>",
         license_deed_view_code_version_english,
         name="license_deed_view_code_version_english",
@@ -155,13 +164,4 @@ urlpatterns = [
         license_deed_view_code_version_jurisdiction_language,
         name="license_deed_view_code_version_jurisdiction_language",
     ),
-    path(
-        "license/", license_detail, name="license_detail"
-    ),
-    path(
-        "sampling/", sampling_detail, name="sampling_detail"
-    ),
-    path(
-        "deed/", deed_detail, name="deed_detail"
-    )
 ]

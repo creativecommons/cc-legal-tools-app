@@ -1,28 +1,8 @@
 import re
 import urllib.parse
 
-from distutils.version import StrictVersion
-from functools import wraps
-from typing import Callable
-from typing import List
-
-from django.http import HttpRequest
-from django.http import HttpResponse
-from django.http import HttpResponseNotFound
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.shortcuts import render
 from django.utils import translation
-
-# from i18n.utils import get_well_translated_langs
-from i18n.utils import locale_to_lower_upper
-# from i18n.utils import negotiate_locale
-# from i18n.utils import render_template
-from i18n.utils import rtl_context_stuff
-from licenses import FREEDOM_COLORS
-from licenses.models import Jurisdiction
-from licenses.models import License
-from licenses.models import TranslatedLicenseName
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import rtl_context_stuff
@@ -122,27 +102,6 @@ def license_deed_view_code_version_jurisdiction(
         request, license_code, version, jurisdiction, target_lang
     )
 
-    context = {
-        "request": request,
-        "license_versions": reversed(licenses),
-        "license_class": licenses[0].license_class,
-        "page_style": "bare",
-    }
-    if target_lang:
-        context["target_lang"] = target_lang
-        context.update(rtl_context_stuff(target_lang))
-        with translation.override(target_lang):
-            # This is a helper page, but it's still for not-found situations.
-            # 404!
-            return render(
-                request, "catalog_pages/license_catcher.html", context, status=404,
-            )
-    else:
-        # This is a helper page, but it's still for not-found situations.
-        # 404!
-        return render(
-            request, "catalog_pages/license_catcher.html", context, status=404,
-        )
 
 def license_deed_view_code_version_language(
     request, license_code, version, target_lang
@@ -161,12 +120,15 @@ def license_deed_view_code_version_english(request, license_code, version):
         request, license_code, version, target_lang
     )
 
-################# 4.0 Styled Pages ########################
+
+# ################# 4.0 Styled Pages ########################
 def license_detail(request):
     return render(request, "licenses/licenses_detail.html")
 
+
 def sampling_detail(request):
     return render(request, "licenses/sampling_deed_detail.html")
+
 
 def deed_detail(request):
     return render(request, "licenses/deed_detail.html")
