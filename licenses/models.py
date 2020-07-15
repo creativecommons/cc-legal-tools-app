@@ -26,6 +26,7 @@ class LegalCode(models.Model):
         max_length=200,
         help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
     )
+    license = models.ForeignKey("licenses.License", on_delete=models.CASCADE, related_name="legal_codes")
     language_code = models.CharField(
         max_length=7,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
@@ -34,6 +35,7 @@ class LegalCode(models.Model):
     class Meta:
         unique_together = [
             ("url", "language_code"),
+            ("license", "language_code"),
         ]
 
     def __str__(self):
@@ -53,11 +55,6 @@ class License(models.Model):
     )
     version = models.CharField(
         max_length=3, help_text="E.g. '4.0'. Not required.", blank=True, default=""
-    )
-    legal_codes = models.ManyToManyField(
-        LegalCode,
-        blank=True,
-        help_text="legal codes related to this license? not sure what these are though",
     )
     jurisdiction_code = models.CharField(max_length=9, blank=True, default="")
     creator_url = models.URLField(
