@@ -31,8 +31,4 @@ before_script:
   # - psql service_info -c "CREATE EXTENSION postgis;" -U postgres
 
 script:
-  - python manage.py makemigrations --dry-run | grep 'No changes detected' || (echo 'There are changes which require migrations.' && exit 1)
-  - coverage run manage.py test
-  - coverage report -m --fail-under 80
-  - flake8 .
-  - make docs
+  - make -j lint test docs
