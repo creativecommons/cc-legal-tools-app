@@ -339,7 +339,6 @@ class MetadataImporter:
 
         for legal_code_element in license_element.findall("cc:legalcode", namespaces):
             code_url = legal_code_element.attrib[namespaced("rdf", "resource")]
-            self.legalcode_urls_in_licenses.add(code_url)
 
             # See if there's a Description for this legalcode
             descriptions = self.root.findall(
