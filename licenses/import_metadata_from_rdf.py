@@ -101,7 +101,7 @@ def do_bulk_create(objects):
 
 class MetadataImporter:
     def import_metadata(self, readable):
-        global LEGAL_CODE_CACHE, TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, LEGAL_CODES_TO_ADD_TO_LICENSES  # , LEGAL_CODE_URL_TO_LANGUAGE
+        global LEGAL_CODE_CACHE, TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, LEGAL_CODES_TO_ADD_TO_LICENSES
 
         print("Populating database with license data.")
 
