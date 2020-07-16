@@ -1,40 +1,13 @@
-import factory
 import factory.fuzzy
 from django.utils import translation
 from factory import post_generation
 
-from i18n import DEFAULT_JURISDICTION_LANGUAGES
 from licenses.models import (
     License,
     LegalCode,
-    Creator,
-    Jurisdiction,
-    LicenseClass,
-    Language,
     TranslatedLicenseName,
     LicenseLogo,
 )
-
-
-class CreatorFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = Creator
-
-    url = factory.Faker("url")
-
-
-class JurisdictionFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = Jurisdiction
-
-    code = factory.fuzzy.FuzzyChoice(DEFAULT_JURISDICTION_LANGUAGES.keys())
-
-
-class LanguageFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = Language
-
-    code = factory.fuzzy.FuzzyChoice(["en", "sr-Latn", "x-i18n"])
 
 
 class LegalCodeFactory(factory.DjangoModelFactory):
@@ -42,14 +15,7 @@ class LegalCodeFactory(factory.DjangoModelFactory):
         model = LegalCode
 
     url = factory.Faker("url")
-    language = factory.SubFactory(LanguageFactory)
-
-
-class LicenseClassFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = LicenseClass
-
-    url = factory.Faker("url")
+    language_code = "de"
 
 
 class LicenseFactory(factory.DjangoModelFactory):
@@ -67,14 +33,16 @@ class LicenseFactory(factory.DjangoModelFactory):
     requires_source_code = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_commercial_use = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_high_income_nation_use = factory.fuzzy.FuzzyChoice([False, True])
-    jurisdiction = factory.SubFactory(JurisdictionFactory)
-    creator = factory.SubFactory(CreatorFactory, url="http://creativecommons.org")
+    jurisdiction_code = ""
+    creator_url = factory.Faker("url")
+    license_class_url = factory.Faker("url")
 
     @post_generation
     def post(obj, create, extracted, **kwargs):
         if not obj.names.count():
-            language = Language.objects.get(code=translation.get_language())
-            TranslatedLicenseNameFactory(license=obj, language=language)
+            TranslatedLicenseNameFactory(
+                license=obj, language_code=translation.get_language()
+            )
 
 
 class LicenseLogoFactory(factory.DjangoModelFactory):
@@ -90,5 +58,5 @@ class TranslatedLicenseNameFactory(factory.DjangoModelFactory):
         model = TranslatedLicenseName
 
     license = factory.SubFactory(LicenseFactory)
-    language = factory.SubFactory(LanguageFactory)
+    language_code = "pt"
     name = factory.Faker("name")

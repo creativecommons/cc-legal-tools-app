@@ -17,16 +17,12 @@ import xml.etree.ElementTree as ET
 from typing import Optional
 
 from licenses import MISSING_LICENSES
-from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
+from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.models import (
     License,
     TranslatedLicenseName,
-    Language,
     LicenseLogo,
-    Creator,
-    LicenseClass,
     LegalCode,
-    Jurisdiction,
 )
 from licenses.utils import get_code_from_jurisdiction_url
 
@@ -49,11 +45,7 @@ namespaces = {
 # these in the import.
 
 
-CREATOR_CACHE = {}  # Map URL to Creator objects (mostly unsaved)
-JURISDICTION_CACHE = {}  # Map URL to Jurisdiction objects (mostly unsaved)
-LANGUAGE_CACHE = {}  # Map URL to Language objects (mostly unsaved)
 LEGAL_CODE_CACHE = {}  # Map URL to LegalCode objects (mostly unsaved)
-LICENSE_CLASS_CACHE = {}  # Map URL to LicenseClass objects (mostly unsaved)
 TRANSLATED_LICENSE_NAME_CACHE = (
     {}
 )  # Map of unsaved TranslatedLicenseName objects. key=license_about|lang_code.
@@ -75,41 +67,22 @@ def get_instance_with_caching(model, cache, argname, value, **extra_kwargs):
     return cache[value]
 
 
-def get_creator_for_url(url):
-    return get_instance_with_caching(Creator, CREATOR_CACHE, "url", url)
-
-
-def get_jurisdiction_for_code(code):
-    kwargs = {}
-    if code not in JURISDICTION_CACHE:
-        if code in DEFAULT_JURISDICTION_LANGUAGES:
-            langs = DEFAULT_JURISDICTION_LANGUAGES[code]
-            if len(langs) == 1:
-                kwargs = {"default_language": get_language_for_code(langs[0])}
+def get_legal_code_for_url(url, language_code, license):
     return get_instance_with_caching(
-        Jurisdiction, JURISDICTION_CACHE, "code", code, **kwargs
+        LegalCode,
+        LEGAL_CODE_CACHE,
+        "url",
+        url,
+        language_code=language_code,
+        license=license,
     )
 
 
-def get_language_for_code(code):
-    return get_instance_with_caching(Language, LANGUAGE_CACHE, "code", code)
-
-
-def get_legal_code_for_url(url, language):
-    return get_instance_with_caching(
-        LegalCode, LEGAL_CODE_CACHE, "url", url, language=language,
-    )
-
-
-def get_license_class_for_url(url):
-    return get_instance_with_caching(LicenseClass, LICENSE_CLASS_CACHE, "url", url)
-
-
-def get_translated_license_name(license, language, name):
-    key = f"{license.about}|{language.code}"
+def get_translated_license_name(license, language_code, name):
+    key = f"{license.about}|{language_code}"
     if key not in TRANSLATED_LICENSE_NAME_CACHE:
         TRANSLATED_LICENSE_NAME_CACHE[key] = TranslatedLicenseName(
-            license=license, language=language, name=name
+            license=license, language_code=language_code, name=name
         )
     return TRANSLATED_LICENSE_NAME_CACHE[key]
 
@@ -128,14 +101,13 @@ def do_bulk_create(objects):
 
 class MetadataImporter:
     def import_metadata(self, readable):
-        global CREATOR_CACHE, JURISDICTION_CACHE, LANGUAGE_CACHE, LEGAL_CODE_CACHE, LICENSE_CLASS_CACHE, \
-            TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, LEGAL_CODES_TO_ADD_TO_LICENSES
+        global LEGAL_CODE_CACHE, TRANSLATED_LICENSE_NAME_CACHE, LICENSE_LOGOS, LEGAL_CODES_TO_ADD_TO_LICENSES
 
         print("Populating database with license data.")
 
         # https://docs.python.org/3/library/xml.etree.elementtree.html#xml.etree.ElementTree.Element
         rdf_string = readable.read().decode("utf-8")
-        root = ET.fromstring(rdf_string)  # type: ET.Element
+        self.root = ET.fromstring(rdf_string)  # type: ET.Element
 
         # We're going to start by building license_elements, which is just a dictionary
         # mapping license URLs to the elements from the RDF file that define them.
@@ -145,7 +117,7 @@ class MetadataImporter:
 
         self.license_elements = {
             license_element.attrib[namespaced("rdf", "about")]: license_element
-            for license_element in root.findall("cc:License", namespaces)
+            for license_element in self.root.findall("cc:License", namespaces)
         }
         # Populate self.licenses with License objects that already exist in the database
         self.licenses = {  # Maps urls to License objects
@@ -164,66 +136,33 @@ class MetadataImporter:
         )
 
         # Populate the caches with whatever's in the database already
-        CREATOR_CACHE = {c.url: c for c in Creator.objects.all()}
-        JURISDICTION_CACHE = {j.code: j for j in Jurisdiction.objects.all()}
-        LANGUAGE_CACHE = {lang.code: lang for lang in Language.objects.all()}
         LEGAL_CODE_CACHE = {lg.url: lg for lg in LegalCode.objects.all()}
-        LICENSE_CLASS_CACHE = {lc.url: lc for lc in LicenseClass.objects.all()}
 
-        for tln in TranslatedLicenseName.objects.select_related("license", "language"):
+        for tln in TranslatedLicenseName.objects.select_related("license"):
             TRANSLATED_LICENSE_NAME_CACHE[
-                f"{tln.license.about}|{tln.language.code}"
+                f"{tln.license.about}|{tln.language_code}"
             ] = tln
 
         print("Reading RDF")
 
-        # First get the <rdf:Description>s - these tell us what the languages are for
-        # the legalcode objects, so we can create them now.
-        # <rdf:Description rdf:about="http://creativecommons.org/licenses/by-nd/3.0/es/legalcode.ca">
-        #   <dcq:language>ca</dcq:language>
-        # </rdf:Description>
-        # Note: these all have languages specified
-        for description in root.findall("rdf:Description", namespaces):
-            url = description.attrib[namespaced("rdf", "about")]
-            lang_code = get_element_text(description, "dcq:language")
-            get_legal_code_for_url(
-                url=url, language=get_language_for_code(lang_code),
-            )
-
-        # Now do the reading of the licenses (<cc:License>)
+        # Read the licenses (<cc:License>)
         for url in self.license_elements.keys():
             self.get_license_object(url)
 
         # Finally, carefully save everything not already saved, creating things first
         # that will need to be referred to later.
         print("Saving objects to database")
-        do_bulk_create(CREATOR_CACHE.values())
-        do_bulk_create(LANGUAGE_CACHE.values())
-        # Update some objects to be saved with the now-saved Language objects.
+
+        do_bulk_create(self.licenses.values())
 
         # Django seems kind of dumb about this - even though the object attribute
         # points to a saved Django model object, it doesn't recognize that it can
         # use the PK from that model object. I guess it only recognizes the pk
         # at the time when you assign a model object to the attribute.
-        for legal_code in LEGAL_CODE_CACHE.values():
-            legal_code.language = legal_code.language
-
+        for legal_code_object in LEGAL_CODE_CACHE.values():
+            if not legal_code_object.pk:
+                legal_code_object.license = legal_code_object.license
         do_bulk_create(LEGAL_CODE_CACHE.values())
-        for jurisdiction in JURISDICTION_CACHE.values():
-            jurisdiction.default_language = jurisdiction.default_language
-        do_bulk_create(JURISDICTION_CACHE.values())
-        do_bulk_create(LICENSE_CLASS_CACHE.values())
-
-        # update some objects on the licenses
-        for license in self.licenses.values():
-            if (
-                not license.pk
-            ):  # pragma: no cover (only really used if we're restarting after a partial import)
-                license.creator = license.creator
-                license.jurisdiction = license.jurisdiction
-                license.license_class = license.license_class
-
-        do_bulk_create(self.licenses.values())
 
         # Find licenses with references to other licenses that still need to be updated
         for license in self.licenses.values():
@@ -243,22 +182,12 @@ class MetadataImporter:
             if (
                 not tln.pk
             ):  # pragma: no cover (only really used if we're restarting after a partial import)
-                tln.language = tln.language
                 tln.license = tln.license
         do_bulk_create(TRANSLATED_LICENSE_NAME_CACHE.values())
 
         for logo in LICENSE_LOGOS:
             logo.license = logo.license
         do_bulk_create(LICENSE_LOGOS)
-
-        through_model = License.legal_codes.through
-        through_models = []
-        for license in self.licenses.values():
-            for legal_code in getattr(license, "legal_codes_to_add", []):
-                through_models.append(
-                    through_model(license=license, legalcode=legal_code)
-                )
-        do_bulk_create(through_models)
 
     def get_license_object(self, license_url: str) -> Optional[License]:
         """
@@ -319,23 +248,14 @@ class MetadataImporter:
         jurisdiction_url = get_element_attribute(
             license_element, "cc:jurisdiction", "rdf:resource", ""
         )
-
-        jurisdiction = (
-            get_jurisdiction_for_code(get_code_from_jurisdiction_url(jurisdiction_url))
-            if jurisdiction_url
-            else None
-        )
+        jurisdiction_code = get_code_from_jurisdiction_url(jurisdiction_url)
 
         creator_url = get_element_attribute(
             license_element, "dc:creator", "rdf:resource", ""
         )
-        creator = get_creator_for_url(creator_url) if creator_url else None
 
         license_class_url = get_element_attribute(
             license_element, "cc:licenseClass", "rdf:resource"
-        )
-        license_class = (
-            get_license_class_for_url(license_class_url) if license_class_url else None
         )
 
         #
@@ -375,9 +295,9 @@ class MetadataImporter:
             about=license_url,
             license_code=get_element_text(license_element, "dc:identifier"),
             version=get_element_text(license_element, "dcq:hasVersion", ""),
-            jurisdiction=jurisdiction,
-            creator=creator,
-            license_class=license_class,
+            jurisdiction_code=jurisdiction_code,
+            creator_url=creator_url,
+            license_class_url=license_class_url,
             deprecated_on=deprecated_on,
             permits_derivative_works="http://creativecommons.org/ns#DerivativeWorks"
             in permits_urls,
@@ -402,35 +322,66 @@ class MetadataImporter:
         license.source_url = source_url
         license.is_replaced_by_url = replacement_url
         license.is_based_on_url = is_based_on_url
-        # And the legal codes
-        license.legal_codes_to_add = []
 
         # Other objects that link to the License object
 
         # legal code
         #  <cc:legalcode rdf:resource="http://creativecommons.org/licenses/by-nc-nd/3.0/it/legalcode"/>
-        # Does not specify language. For the non-english ones, we should already have
-        # processed a <Description> that told us what the language is. There might be
-        # no Description for the English ones, though.
+        #
+        # Does not specify language directly.  However, there are rdf:Description elements like
+        #   <rdf:Description rdf:about="http://creativecommons.org/licenses/by-nd/3.0/es/legalcode.ca">
+        #     <dcq:language>ca</dcq:language>
+        #   </rdf:Description>
+        # that tell us what the language should be for the legal code object with the same URL.
+        #
+        # Also, the translations from English *should* have a URL ending in "." plus the language code,
+        # so we could just use that.
+
         for legal_code_element in license_element.findall("cc:legalcode", namespaces):
             code_url = legal_code_element.attrib[namespaced("rdf", "resource")]
-            # If we don't already know a language for this legalcode, assume it's English.
-            legal_code = get_legal_code_for_url(
-                code_url, language=get_language_for_code(DEFAULT_LANGUAGE_CODE)
+
+            # See if there's a Description for this legalcode
+            descriptions = self.root.findall(
+                f"rdf:Description[@{namespaced('rdf', 'about')}='{code_url}']",
+                namespaces,
             )
-            license.legal_codes_to_add.append(legal_code)
+            language_code = None
+            if len(descriptions):
+                # Does it have a dcq:language child?
+                if len(descriptions[0].findall("dcq:language", namespaces)) > 0:
+                    language_code = get_element_text(descriptions[0], "dcq:language")
+            if language_code is None:
+                # If we don't already know a language for this legalcode, assume it's English.
+                language_code = DEFAULT_LANGUAGE_CODE
+            if code_url.endswith("/legalcode"):
+                if language_code != DEFAULT_LANGUAGE_CODE:
+                    print(
+                        f"WARNING: code_url={code_url} but about to use language {language_code}"
+                    )
+            else:
+                lang_from_url = code_url.split(".")[-1]
+                lang = language_code
+                if "-" in language_code:
+                    lang = language_code.split("-")[0]
+                if language_code != lang_from_url and lang != lang_from_url:
+                    print(
+                        f"WARNING: code_url={code_url} but about to use language {language_code}"
+                    )
+
+            get_legal_code_for_url(
+                code_url, language_code=language_code, license=license,
+            )
             license_element.remove(legal_code_element)
 
         # titles
         for title_element in license_element.findall("dc:title", namespaces):
-            # attribute "xml:lang" is almost always present - but missing every now and then.
+            # attribute "xml:lang" is *almost* always present - but missing every now and then.
             lang_key = namespaced("xml", "lang")
             if lang_key in title_element.attrib:
                 lang_code = title_element.attrib[lang_key]
             else:
                 lang_code = DEFAULT_LANGUAGE_CODE
-            language = get_language_for_code(lang_code)
-            get_translated_license_name(license, language, title_element.text)
+            get_translated_license_name(license, lang_code, title_element.text)
             license_element.remove(title_element)
 
         # logos

@@ -3,6 +3,9 @@ from django.utils import translation
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext
 
+from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
+
+
 CACHED_APPLICABLE_LANGS = {}
 CACHED_WELL_TRANSLATED_LANGS = {}
 
@@ -41,6 +44,13 @@ JURISDICTION_CURRENCY_LOOKUP = {
     "si": "eu",
     "es": "eu",
 }
+
+
+def get_language_for_jurisdiction(jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE):
+    langs = DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, [])
+    if len(langs) == 1:
+        return langs[0]
+    return default_language
 
 
 def get_locale_text_orientation(locale_identifier: str) -> str:

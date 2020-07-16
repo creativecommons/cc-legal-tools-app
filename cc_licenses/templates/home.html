@@ -15,7 +15,7 @@
           <li>{{ version }}
             <ul>
               {% for jurisdiction, licenses_of_jurisdiction in licenses_of_version.items %}
-                <li>{% if jurisdiction %}Jurisdiction:{{ jurisdiction.code }}{% endif %}
+                <li>{% if jurisdiction %}Jurisdiction:{{ jurisdiction }}{% endif %}
                   {% if licenses_of_jurisdiction|length > 1 %}
                     <ul>
                       {% for license in licenses_of_jurisdiction %}
