@@ -61,3 +61,5 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "ug": ["ug"],
     "uk": ["uk"],
 }
+
+LANGUAGE_CODE_REGEX = r"[a-zA-Z_-]*"

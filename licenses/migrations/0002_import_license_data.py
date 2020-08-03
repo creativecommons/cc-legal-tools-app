@@ -5,7 +5,11 @@ from licenses.import_metadata_from_rdf import MetadataImporter
 
 
 def import_license_data(apps, schema_editor):
-    MetadataImporter().import_metadata(open("index.rdf", "rb"))
+    LegalCode = apps.get_model("licenses.LegalCode")
+    License = apps.get_model("licenses.License")
+    LicenseLogo = apps.get_model("licenses.LicenseLogo")
+    TranslatedLicenseName = apps.get_model("licenses.TranslatedLicenseName")
+    MetadataImporter(LegalCode, License, LicenseLogo, TranslatedLicenseName).import_metadata(open("index.rdf", "rb"))
 
 
 class Migration(migrations.Migration):

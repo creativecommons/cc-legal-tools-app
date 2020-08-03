@@ -191,7 +191,8 @@ class Migration(migrations.Migration):
                 (
                     "url",
                     models.URLField(
-                        help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl"
+                        help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
+                        unique=True,
                     ),
                 ),
                 (
@@ -210,11 +211,5 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                "unique_together": {
-                    ("url", "language_code"),
-                    ("license", "language_code"),
-                },
-            },
         ),
     ]
