@@ -1,5 +1,4 @@
 import os
-import sys
 from argparse import ArgumentParser
 
 from django.core.management import BaseCommand
@@ -48,7 +47,10 @@ class Command(BaseCommand):
             try:
                 legal_code = LegalCode.objects.get(url=url)
             except LegalCode.DoesNotExist:
-                # print(f"NO LegalCode objects for {html_filename} {url}")
+                print(
+                    f"NO LegalCode objects for {html_filename} {url}, looking for another for "
+                    f"the same license code/version/jurisdiction."
+                )
                 try:
                     license = License.objects.get(
                         license_code=data["license_code"],
@@ -56,6 +58,10 @@ class Command(BaseCommand):
                         jurisdiction_code=data["jurisdiction_code"],
                     )
                 except License.DoesNotExist:
+                    print(
+                        f"Did not find any license with the same code/version/jurisdiction. Will "
+                        f"look for another with that code and copy it to make a new one."
+                    )
                     # Try to gen one up
                     # Copy one with the same license_code so all the permissions are correct.
                     # print(f'Looking for license with license code {data["license_code"]}')
@@ -64,11 +70,10 @@ class Command(BaseCommand):
                     ).first()
                     if license is None:
                         print(f"{html_filename} {data}")
-                        print(
-                            f"There is no license for {data}, and no license for that "
-                            f"license code to make one up from. Something needs to be fixed."
+                        raise Exception(
+                            f"There is no license for {data}, and no license for "
+                            f"license code {data['license_code']} to make one up from. Something needs to be fixed."
                         )
-                        sys.exit(1)
                     license.pk = None
                     license.jurisdiction_code = data["jurisdiction_code"]
                     license.version = data["version"]
