@@ -1,12 +1,19 @@
 {% extends 'base.html' %}
 {% load i18n static %}
 
-{# Note Next Link #}
-{% block note %}
-  Version 4.0 &#8226; See the <a href="#">errata page</a> for any corrections and the date of change &#8226 Translation published 2020/XX/XX
+{% block next_btn_section %}
+<div class="columns">
+  <div class="column is-one-quarter"></div>
+  <div class="column columns padding-vertical-normal">
+    <div class="column is-three-quarters padding-top-normal">
+      Version 4.0 &#8226; See the <a href="#">errata page</a> for any corrections and the date of change &#8226 Translation published 2020/XX/XX
+    </div>
+    <div class="column">
+      <button id="next-btn" class="button tiny is-pulled-right" data-href="/licenses/sampling/">See the deed</button>
+    </div>
+  </div>
+</div>
 {% endblock %}
-{% block next_text %}See the deed{% endblock %}
-{% block next_href %}/licenses/sampling/{% endblock %}
 
 {% block content %}
   <div class="columns">
