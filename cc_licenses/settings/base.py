@@ -32,6 +32,12 @@ INSTALLED_APPS = [
     'i18n',
 ]
 
+THIRD_PARTY_APPS = [
+    'bakery',  # builds site as flat files
+]
+
+INSTALLED_APPS += THIRD_PARTY_APPS
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -197,3 +203,6 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Percent translated that languages should be at or above
 TRANSLATION_THRESHOLD = 80
+
+# django-bakery settings
+BUILD_DIR = f"{ROOT_DIR}/build/"
