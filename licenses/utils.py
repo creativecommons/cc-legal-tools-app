@@ -2,6 +2,7 @@ import posixpath
 import re
 import urllib
 
+from .models import License
 from i18n import LANGUAGE_CODE_REGEX
 
 
@@ -106,3 +107,74 @@ def parse_legalcode_filename(filename):
     )
 
     return data
+
+
+# Django Distill Utility Functions
+
+
+def get_licenses_code_and_version():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+    """
+    for license in License.objects.all():
+        yield {
+            "code": license.license_code,
+            "version": license.version,
+        }
+
+
+def get_licenses_code_version_lang():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+        - lang (
+            value is a translated license's
+            language_code
+        )
+    """
+    for license in License.objects.all():
+        for translated_license in license.names.all():
+            yield {
+                "code": license.license_code,
+                "version": license.version,
+                "lang": translated_license.language_code,
+            }
+
+
+def get_licenses_code_version_jurisdiction():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+        - jurisdiction
+    """
+    for license in License.objects.all():
+        yield {
+            "code": license.license_code,
+            "version": license.version,
+            "jurisdiction": license.jurisdiction_code,
+        }
+
+
+def get_licenses_code_version_jurisdiction_lang():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+        - jurisdiction
+        - lang (
+            value is a translated license's
+            language_code
+        )
+    """
+    for license in License.objects.all():
+        for translated_license in license.names.all():
+            yield {
+                "code": license.license_code,
+                "version": license.version,
+                "jurisdiction": license.jurisdiction_code,
+                "lang": translated_license.language_code,
+            }
