@@ -6,6 +6,7 @@ django==2.2.13
 polib==1.1.0
 psycopg2-binary==2.8.5
 whitenoise==4.1.4
+django-distill==1.9
 
 # DEPENDENCIES
 pytz==2020.1              # via django
