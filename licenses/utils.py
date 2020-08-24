@@ -120,7 +120,7 @@ def get_licenses_code_and_version():
     """
     for license in License.objects.all():
         yield {
-            "code": license.license_code,
+            "license_code": license.license_code,
             "version": license.version,
         }
 
@@ -130,7 +130,7 @@ def get_licenses_code_version_lang():
     dictionary keys:
         - license_code
         - version
-        - lang (
+        - target_lang (
             value is a translated license's
             language_code
         )
@@ -138,9 +138,9 @@ def get_licenses_code_version_lang():
     for license in License.objects.all():
         for translated_license in license.names.all():
             yield {
-                "code": license.license_code,
+                "license_code": license.license_code,
                 "version": license.version,
-                "lang": translated_license.language_code,
+                "target_lang": translated_license.language_code,
             }
 
 
@@ -153,7 +153,7 @@ def get_licenses_code_version_jurisdiction():
     """
     for license in License.objects.all():
         yield {
-            "code": license.license_code,
+            "license_code": license.license_code,
             "version": license.version,
             "jurisdiction": license.jurisdiction_code,
         }
@@ -165,7 +165,7 @@ def get_licenses_code_version_jurisdiction_lang():
         - license_code
         - version
         - jurisdiction
-        - lang (
+        - target_lang (
             value is a translated license's
             language_code
         )
@@ -173,8 +173,8 @@ def get_licenses_code_version_jurisdiction_lang():
     for license in License.objects.all():
         for translated_license in license.names.all():
             yield {
-                "code": license.license_code,
+                "license_code": license.license_code,
                 "version": license.version,
                 "jurisdiction": license.jurisdiction_code,
-                "lang": translated_license.language_code,
+                "target_lang": translated_license.language_code,
             }
