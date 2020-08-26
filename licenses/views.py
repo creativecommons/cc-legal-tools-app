@@ -5,7 +5,8 @@ from django.shortcuts import render
 from django.utils import translation
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import rtl_context_stuff, get_language_for_jurisdiction
+from i18n.utils import get_language_for_jurisdiction
+from i18n.utils import rtl_context_stuff
 from licenses.models import License
 
 
@@ -82,7 +83,9 @@ def license_deed_view_code_version_jurisdiction_language(
     license = License.objects.filter(
         license_code=license_code, version=version, jurisdiction_code=jurisdiction,
     ).first()
-    return license_deed_view(request, license, target_lang)
+    if license:
+        return license_deed_view(request, license, target_lang)
+    return render(request, template_name="404.html")
 
 
 def license_deed_view_code_version_jurisdiction(
@@ -106,7 +109,9 @@ def license_deed_view_code_version_language(
     license = License.objects.filter(
         license_code=license_code, version=version, jurisdiction_code="",
     ).first()
-    return license_deed_view(request, license, target_lang)
+    if license:
+        return license_deed_view(request, license, target_lang)
+    return render(request, template_name="404.html")
 
 
 def license_deed_view_code_version_english(request, license_code, version):
