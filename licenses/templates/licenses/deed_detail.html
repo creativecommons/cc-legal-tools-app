@@ -16,10 +16,12 @@
   <div class="container">
     {% include 'includes/deed_body.html' %}
     {% include 'includes/disclaimer.html' %}
-    {% include 'includes/related_links.html' %}
+    <div class="columns margin-top-normal">
+      {% include 'includes/related_links.html' with show_standard_deed="True" %}
+    </div>
   </div>
 {% endblock %}
-<!-- 
+<!--
         <div id="primary" class="content-area">
           <main id="main" class="site-main container" role="main">
             <div id="deed" class="row" dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}">

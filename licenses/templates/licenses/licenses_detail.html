@@ -25,7 +25,9 @@
       {% include 'includes/legal_code.html' %}
       {% include 'includes/view_legal_code_link_plain_text.html' %}
       {% include 'includes/about_cc.html' %}
-      {% include 'includes/related_links.html' %}
+      <div class="columns margin-top-normal">
+        {% include 'includes/related_links.html' with show_legal_code="True" %}
+      </div>
     </div>
   </div>
 {% endblock %}
@@ -39,7 +41,7 @@
     arrowArray.forEach(function(arrow) {
       arrow.addEventListener("click", handleArrowClicked);
     });
- 
+
     function handleArrowClicked() {
       // Toggle consideration section's screen reader announcement text (inside of icon)
       if (this.dataset.consideration === "1" && this.dataset.direction === "down") {

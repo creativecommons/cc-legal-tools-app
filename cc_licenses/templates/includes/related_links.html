@@ -1,12 +1,33 @@
-<div class="menu padding-vertical-normal">
+<div class="menu padding-vertical-normal column is-half">
   <ul class="menu-list">
     <li>
       {# replace with license long title #}
-      <h4 class="has-text-black">Related Links</h4>
+      {% if show_sampling_deed %}
+        <h4 class="has-text-black">Related Links</h4>
+      {% endif %}
+      {% if show_standard_deed %}
+        <p class="body-big has-text-black">
+          Creative Commons is the nonprofit behind the
+          open licenses that allow creators to share their
+          work. Our licenses and legal tools are free to use.
+        </p>
+      {% endif %}
+      {% if show_legal_code %}
+        <p class="body-big has-text-black">
+          We're glad you're here! Creative Commons is the nonprofit
+          behind the open licenses that allow creators to share their
+          work. Our licenses are free to use.
+        </p>
+      {% endif %}
       <ul>
+        {% if not show_sampling_deed %}
+          <li><span class="body-bigger padding-right-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about our work</a></li>
+        {% endif %}
         <li><span class="body-bigger padding-right-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about CC Licensing</a></li>
         <li><span class="body-bigger padding-right-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Support our work</a></li>
-        <li><span class="body-bigger padding-right-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Use the license for your own material.<i class="icon external-link padding-bottom-small caption"></i></a></li>
+        {% if not show_sampling_deed %}
+          <li><span class="body-bigger padding-right-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Use the license for your own material.<i class="icon external-link padding-bottom-small caption"></i></a></li>
+        {% endif %}
       </ul>
     </li>
   </ul>
