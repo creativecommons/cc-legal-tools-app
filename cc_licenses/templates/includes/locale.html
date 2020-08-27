@@ -1,6 +1,6 @@
-<div class="locale level-{% if lang_dir == 'ltr' %}right{% else %}left{% endif %} has-text-black" dir={{ lang_dir }}>
+<div class="locale level-{% if lang_dir == 'ltr' %}right{% else %}left{% endif %} level-item has-text-black" dir={{ lang_dir }}>
   Languages available
-  <div class="control has-icons-{% if lang_dir == 'ltr' %}left{% else %}right{% endif %}">
+  <div class="control has-icons-{% if lang_dir == 'ltr' %}left{% else %}right{% endif %} {% if lang_dir == 'rtl' %}margin-right-small{% endif %}">
     <div class="select">
       <select>
         {% block lang-options %}
