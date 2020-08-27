@@ -14,9 +14,9 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    {% include 'includes/red_alert.html' with lang_dir="rtl" %}
-    {% include 'includes/sampling_deed_body.html' with lang_dir="rtl" %}
-    {% include 'includes/related_links.html' with show_sampling_deed="True" lang_dir="rtl" %}
-  </div>
+    <div class="container">
+      {% include 'includes/red_alert.html' %}
+      {% include 'includes/sampling_deed_body.html'%}
+      {% include 'includes/related_links.html' with show_sampling_deed="True" %}
+    </div>
 {% endblock %}

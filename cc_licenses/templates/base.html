@@ -15,15 +15,17 @@
 <body typeoff="cc:License">
     {% include 'includes/header.html' %}
     <main>
+      {% with lang_dir="rtl" %}
         <div class="level padding-horizontal-large padding-vertical-normal">
-            {% include 'includes/skiplink.html' with lang_dir="rtl" %}
-            {% include 'includes/breadcrumbs.html' with lang_dir="rtl" %}
-            {% include 'includes/locale.html' with lang_dir="rtl" %}
+              {% include 'includes/skiplink.html' %}
+              {% include 'includes/breadcrumbs.html' %}
+              {% include 'includes/locale.html' %}
         </div>
         <section id="content" class="padding-horizontal-larger">
           {% block next_btn_section %}{% endblock %}
           {% block content %}{% endblock %}
         </section>
+      {% endwith %}
     </main>
     {% include 'includes/footer.html' %}
 

@@ -13,14 +13,14 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container">
-    {% include 'includes/deed_body.html' with lang_dir="rtl" %}
-    {% include 'includes/disclaimer.html' with lang_dir="rtl" %}
-    <div class="columns margin-top-normal is-vcentered">
-      {% include 'includes/related_links.html' with show_standard_deed="True" lang_dir="rtl" %}
-      {% include 'includes/newsletter.html' with lang_dir="rtl" %}
+    <div class="container">
+      {% include 'includes/deed_body.html' %}
+      {% include 'includes/disclaimer.html' %}
+      <div class="columns margin-top-normal is-vcentered">
+        {% include 'includes/related_links.html' with show_standard_deed="True" %}
+        {% include 'includes/newsletter.html' %}
+      </div>
     </div>
-  </div>
 {% endblock %}
 <!--
         <div id="primary" class="content-area">
