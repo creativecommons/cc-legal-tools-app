@@ -17,6 +17,8 @@
     <div class="container">
       {% include 'includes/red_alert.html' %}
       {% include 'includes/sampling_deed_body.html'%}
-      {% include 'includes/related_links.html' with show_sampling_deed="True" %}
+      <div class="columns margin-top-normal" dir={{ lang_dir }}>
+        {% include 'includes/related_links.html' with show_sampling_deed="True" %}
+      </div>
     </div>
 {% endblock %}
