@@ -16,11 +16,12 @@
 {% endblock %}
 
 {% block content %}
+  {% with lang_dir="rtl" %}
   <div class="columns">
     {% include 'includes/menu-sidebar.html' %}
     <div class="column">
-      {% include 'includes/licenses_header.html' %}
-      {% include 'includes/about_cc_and_license.html' %}
+      {% include 'includes/licenses_header.html'%}
+      {% include 'includes/about_cc_and_license.html'%}
       {% include 'includes/use_of_licenses.html' %}
       {% include 'includes/legal_code.html' %}
       {% include 'includes/view_legal_code_link_plain_text.html' %}
@@ -30,6 +31,7 @@
       </div>
     </div>
   </div>
+  {% endwith %}
 {% endblock %}
 
 {% block extra-js%}

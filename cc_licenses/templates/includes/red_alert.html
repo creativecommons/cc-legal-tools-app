@@ -1,6 +1,6 @@
-<div id="red_alert" class="padding-bigger margin-top-big">
+<div id="red_alert" class="padding-bigger margin-top-big" dir="rtl">
   <p class="has-text-black body-big is-flex">
-    <i class="exclamation-circle icon padding-right-big"></i>
+    <i class="exclamation-circle icon padding-{% if lang_dir == 'ltr' %}right{% else %}left{% endif %}-big"></i>
     Creative Commons has retired this legal tool and does not recommend that it be applied to works.
   </p>
 </div>

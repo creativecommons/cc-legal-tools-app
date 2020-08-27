@@ -16,9 +16,9 @@
     {% include 'includes/header.html' %}
     <main>
         <div class="level padding-horizontal-large padding-vertical-normal">
-            {% include 'includes/skiplink.html' %}
-            {% include 'includes/breadcrumbs.html' %}
-            {% include 'includes/locale.html' %}
+            {% include 'includes/skiplink.html' with lang_dir="rtl" %}
+            {% include 'includes/breadcrumbs.html' with lang_dir="rtl" %}
+            {% include 'includes/locale.html' with lang_dir="rtl" %}
         </div>
         <section id="content" class="padding-horizontal-larger">
           {% block next_btn_section %}{% endblock %}
@@ -28,7 +28,7 @@
     {% include 'includes/footer.html' %}
 
     <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
-   
+
     <script>
         /**
          * Get the fully-qualified URL of a Vocabulary asset.
@@ -70,9 +70,9 @@
 
         /** Next Button On Click Event Listener **/
         document.getElementById("next-btn").addEventListener("click", function (e) {
-          /** 
+          /**
            * On click redirect the user to page they are trying to visit
-           * which is stored in the data-href.  
+           * which is stored in the data-href.
            **/
           return window.location.href = this.dataset.href
         })
