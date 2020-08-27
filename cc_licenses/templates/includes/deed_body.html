@@ -16,7 +16,7 @@
   <div class="columns is-multiline">
     {# Forloop  - populate content from deed model#}
     <div class="column is-1">
-      <i class="cc-by icon has-text-black has-background-white is-size-1 padding-left-big"></i>
+      <i class="cc-by icon has-text-black has-background-white is-size-1 padding-{% if lang_dir == 'ltr' %}left{% else %}right{% endif %}-big"></i>
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
@@ -27,7 +27,7 @@
     </div>
     {# endfor #}
     <div class="column is-1">
-      <i class="cc-nc icon has-text-black has-background-white is-size-1 padding-left-big"></i>
+      <i class="cc-nc icon has-text-black has-background-white is-size-1 padding-{% if lang_dir == 'ltr' %}left{% else %}right{% endif %}-big"></i>
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
@@ -35,7 +35,7 @@
       </p>
     </div>
     <div class="column is-1">
-      <i class="cc-sa icon has-text-black has-background-white is-size-1 padding-left-big"></i>
+      <i class="cc-sa icon has-text-black has-background-white is-size-1 padding-{% if lang_dir == 'ltr' %}left{% else %}right{% endif %}-big"></i>
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
