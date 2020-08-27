@@ -182,6 +182,7 @@ class Command(BaseCommand):
 
     It then creates .po and .mo files under f"locale.licenses/{language_code}/LC_MESSAGES"
     """
+
     def handle(self, **options):
         # We'll accumulate our messages in this dictionary. See save_dict_to_pofile().
         by_text = {}
@@ -242,7 +243,9 @@ class Command(BaseCommand):
             django_language_code = to_language(language_code)
             django_locale_code = to_locale(language_code)
             # django_language_code=zh-hans django_locale_code=zh_Hans
-            print(f"django_language_code={django_language_code} django_locale_code={django_locale_code}")
+            print(
+                f"django_language_code={django_language_code} django_locale_code={django_locale_code}"
+            )
 
             dir = f"locale.licenses/{django_locale_code}/LC_MESSAGES"
             po_filename = f"{domain}.po"
@@ -258,7 +261,9 @@ class Command(BaseCommand):
             # To double-check, make sure we can load the translations in a way that Django would
             # if we were going to use them.
             DjangoTranslation(
-                language=django_language_code, domain=domain, localedirs=["locale.licenses"],
+                language=django_language_code,
+                domain=domain,
+                localedirs=["locale.licenses"],
             )
 
     def import_by_40_license_html(self, license_code, version, language_code, text):
@@ -290,7 +295,6 @@ class Command(BaseCommand):
         # for some unknown reason.
         raw_html = raw_html.replace("<b>", "<strong>").replace("</b>", "</strong>")
         raw_html = raw_html.replace("<B>", "<strong>").replace("</B>", "</strong>")
-
 
         # Parse the raw HTML to a BeautifulSoup object.
         soup = BeautifulSoup(raw_html, "lxml")
@@ -342,7 +346,6 @@ class Command(BaseCommand):
             if len(children) == 1:
                 return nested_text(children[0])
             return "".join(str(child) for child in children)
-
 
         # Get the license titles and intro text.
 
@@ -422,18 +425,14 @@ class Command(BaseCommand):
             sys.exit(1)
 
         # s2a1: rights
-        text["s2a_license_grant"]["intro"] = str(
-            list(find_id("s2a1"))[0]
-        ).strip()
+        text["s2a_license_grant"]["intro"] = str(list(find_id("s2a1"))[0]).strip()
 
         if "nc" in license_code:
             text["s2a_license_grant"]["share_nc"] = str(
                 list(find_id("s2a1A"))[0]
             ).strip()
         else:
-            text["s2a_license_grant"]["share"] = str(
-                list(find_id("s2a1A"))[0]
-            ).strip()
+            text["s2a_license_grant"]["share"] = str(list(find_id("s2a1A"))[0]).strip()
 
         if "nc" in license_code and "nd" in license_code:
             text["s2a_license_grant"]["adapted_nc_nd"] = str(
@@ -496,9 +495,7 @@ class Command(BaseCommand):
         text["s3_conditions_attribution"] = text_up_to(s3a, "ol")
 
         if "nd" in license_code:
-            text["s3_conditions"]["if_you_share_nd"] = text_up_to(
-                find_id("s3a1"), "ol"
-            )
+            text["s3_conditions"]["if_you_share_nd"] = text_up_to(find_id("s3a1"), "ol")
         else:
             text["s3_conditions"]["if_you_share_non_nd"] = text_up_to(
                 find_id("s3a1"), "ol"
@@ -531,13 +528,13 @@ class Command(BaseCommand):
                 "extract_reuse_nc_nd"
             ] = nested_text(find_id("s4a"))
         elif "nc" in license_code:
-            text["s4_sui_generics_database_rights"]["extract_reuse_nc"] = str(find_id(
-                "s4a"
-            ))
+            text["s4_sui_generics_database_rights"]["extract_reuse_nc"] = str(
+                find_id("s4a")
+            )
         elif "nd" in license_code:
-            text["s4_sui_generics_database_rights"]["extract_reuse_nd"] = str(find_id(
-                "s4a"
-            ))
+            text["s4_sui_generics_database_rights"]["extract_reuse_nd"] = str(
+                find_id("s4a")
+            )
         else:
             text["s4_sui_generics_database_rights"][
                 "extract_reuse_non_nc_non_nd"
