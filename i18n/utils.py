@@ -1,9 +1,11 @@
-from babel import Locale, UnknownLocaleError
+from babel import Locale
+from babel import UnknownLocaleError
 from django.utils import translation
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext
 
-from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
+from i18n import DEFAULT_JURISDICTION_LANGUAGES
+from i18n import DEFAULT_LANGUAGE_CODE
 
 
 CACHED_APPLICABLE_LANGS = {}
@@ -46,7 +48,9 @@ JURISDICTION_CURRENCY_LOOKUP = {
 }
 
 
-def get_language_for_jurisdiction(jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE):
+def get_language_for_jurisdiction(
+    jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE
+):
     langs = DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, [])
     if len(langs) == 1:
         return langs[0]
@@ -58,7 +62,7 @@ def get_locale_text_orientation(locale_identifier: str) -> str:
     Find out whether the locale is ltr or rtl
     """
     try:
-        locale = Locale.parse(locale_identifier)
+        locale = Locale.parse(locale_identifier, sep="-")
     except UnknownLocaleError:
         raise ValueError("No locale found with identifier %r" % locale_identifier)
     return "ltr" if locale.character_order == "left-to-right" else "rtl"

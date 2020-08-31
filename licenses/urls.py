@@ -141,28 +141,28 @@ urlpatterns = [
     path("license/", license_detail, name="license_detail"),
     path("sampling/", sampling_detail, name="sampling_detail"),
     path("deed/", deed_detail, name="deed_detail"),
-    distill_path(
-        "<code:license_code>/<version:version>",
-        license_deed_view_code_version_english,
-        name="license_deed_view_code_version_english",
-        distill_func=get_licenses_code_and_version,
-    ),
+    # distill_path(
+    #     "<code:license_code>/<version:version>",
+    #     license_deed_view_code_version_english,
+    #     name="license_deed_view_code_version_english",
+    #     distill_func=get_licenses_code_and_version,
+    # ),
     distill_path(
         "<code:license_code>/<version:version>/deed.<lang:target_lang>",
         license_deed_view_code_version_language,
         name="license_deed_view_code_version_language",
         distill_func=get_licenses_code_version_lang,
     ),
-    distill_path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
-        license_deed_view_code_version_jurisdiction,
-        name="license_deed_view_code_version_jurisdiction",
-        distill_func=get_licenses_code_version_jurisdiction,
-    ),
-    distill_path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
-        license_deed_view_code_version_jurisdiction_language,
-        name="license_deed_view_code_version_jurisdiction_language",
-        distill_func=get_licenses_code_version_jurisdiction_lang,
-    ),
+    # distill_path(
+    #     "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
+    #     license_deed_view_code_version_jurisdiction,
+    #     name="license_deed_view_code_version_jurisdiction",
+    #     distill_func=get_licenses_code_version_jurisdiction,
+    # ),
+    # distill_path(
+    #     "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
+    #     license_deed_view_code_version_jurisdiction_language,
+    #     name="license_deed_view_code_version_jurisdiction_language",
+    #     distill_func=get_licenses_code_version_jurisdiction_lang,
+    # ),
 ]
