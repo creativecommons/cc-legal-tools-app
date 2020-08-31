@@ -156,11 +156,13 @@ def get_licenses_code_version_jurisdiction():
         - jurisdiction
     """
     for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-        yield {
-            "license_code": license.license_code,
-            "version": license.version,
-            "jurisdiction": license.jurisdiction_code,
-        }
+        if license.jurisdiction_code:
+            yield {
+                "license_code": license.license_code,
+                "version": license.version,
+                "jurisdiction": license.jurisdiction_code,
+            }
+        continue
 
 
 def get_licenses_code_version_jurisdiction_lang():
@@ -176,7 +178,10 @@ def get_licenses_code_version_jurisdiction_lang():
     """
     for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
         for translated_license in license.names.all():
-            if translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
+            if (
+                translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS
+                and license.jurisdiction_code
+            ):
                 yield {
                     "license_code": license.license_code,
                     "version": license.version,
