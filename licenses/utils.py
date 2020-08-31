@@ -2,6 +2,7 @@ import posixpath
 import re
 import urllib
 
+from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from .models import License
 from i18n import LANGUAGE_CODE_REGEX
 
@@ -137,11 +138,13 @@ def get_licenses_code_version_lang():
     """
     for license in License.objects.all():
         for translated_license in license.names.all():
-            yield {
-                "license_code": license.license_code,
-                "version": license.version,
-                "target_lang": translated_license.language_code,
-            }
+            if translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
+                yield {
+                    "license_code": license.license_code,
+                    "version": license.version,
+                    "target_lang": translated_license.language_code,
+                }
+            continue
 
 
 def get_licenses_code_version_jurisdiction():
@@ -172,9 +175,11 @@ def get_licenses_code_version_jurisdiction_lang():
     """
     for license in License.objects.all():
         for translated_license in license.names.all():
-            yield {
-                "license_code": license.license_code,
-                "version": license.version,
-                "jurisdiction": license.jurisdiction_code,
-                "target_lang": translated_license.language_code,
-            }
+            if translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
+                yield {
+                    "license_code": license.license_code,
+                    "version": license.version,
+                    "jurisdiction": license.jurisdiction_code,
+                    "target_lang": translated_license.language_code,
+                }
+            continue
