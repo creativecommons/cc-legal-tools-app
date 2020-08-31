@@ -373,6 +373,7 @@ class Command(BaseCommand):
             "sui_generis_database_rights",
             "you",
         ]
+
         # now insert the optional ones
         def insert_after(after_this, what_to_insert):
             i = expected_definitions.index(after_this)
@@ -563,7 +564,6 @@ class Command(BaseCommand):
                 # already seen s4, this is the ol, so the next child is our text
                 take_next = True
 
-        part = "s5_disclaimer"
         text["s5_disclaimer_title"] = find_id("s5").string
         text["s5_a"] = find_id("s5a").string  # bold
         text["s5_b"] = find_id("s5b").string  # bold
