@@ -83,9 +83,7 @@ def license_deed_view_code_version_jurisdiction_language(
     license = License.objects.filter(
         license_code=license_code, version=version, jurisdiction_code=jurisdiction,
     ).first()
-    if license:
-        return license_deed_view(request, license, target_lang)
-    return render(request, template_name="404.html")
+    return license_deed_view(request, license, target_lang)
 
 
 def license_deed_view_code_version_jurisdiction(
@@ -109,9 +107,7 @@ def license_deed_view_code_version_language(
     license = License.objects.filter(
         license_code=license_code, version=version, jurisdiction_code="",
     ).first()
-    if license:
-        return license_deed_view(request, license, target_lang)
-    return render(request, template_name="404.html")
+    return license_deed_view(request, license, target_lang)
 
 
 def license_deed_view_code_version_english(request, license_code, version):
