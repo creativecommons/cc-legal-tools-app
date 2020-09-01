@@ -2,12 +2,11 @@ import factory.fuzzy
 from django.utils import translation
 from factory import post_generation
 
-from licenses.models import (
-    License,
-    LegalCode,
-    TranslatedLicenseName,
-    LicenseLogo,
-)
+from licenses.constants import LICENSE_VERSIONS
+from licenses.models import LegalCode
+from licenses.models import License
+from licenses.models import LicenseLogo
+from licenses.models import TranslatedLicenseName
 
 
 class LegalCodeFactory(factory.DjangoModelFactory):
@@ -23,6 +22,8 @@ class LicenseFactory(factory.DjangoModelFactory):
         model = License
 
     about = factory.Faker("url")
+    license_code = ""
+    version = factory.fuzzy.FuzzyChoice(LICENSE_VERSIONS)
     permits_derivative_works = factory.fuzzy.FuzzyChoice([False, True])
     permits_reproduction = factory.fuzzy.FuzzyChoice([False, True])
     permits_distribution = factory.fuzzy.FuzzyChoice([False, True])
