@@ -2,13 +2,13 @@ from django.test import TestCase
 from django.utils.translation import override
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from licenses import FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MAX
-from licenses.models import (
-    LegalCode,
-    License,
-    LicenseLogo,
-    TranslatedLicenseName,
-)
+from licenses import FREEDOM_LEVEL_MAX
+from licenses import FREEDOM_LEVEL_MID
+from licenses import FREEDOM_LEVEL_MIN
+from licenses.models import LegalCode
+from licenses.models import License
+from licenses.models import LicenseLogo
+from licenses.models import TranslatedLicenseName
 
 
 class LegalCodeModelTest(TestCase):
@@ -86,24 +86,39 @@ class LicenseModelTest(TestCase):
 
     def test_get_deed_url_for_language(self):
         with self.subTest("no jurisdiction, default language"):
-            license = License.objects.get(license_code="by-nc-nd", jurisdiction_code="", version="4.0")
-            self.assertEqual("/licenses/by-nc-nd/4.0", license.get_deed_url())
+            license = License.objects.get(
+                license_code="by-nc-nd", jurisdiction_code="", version="4.0"
+            )
+            self.assertEqual("/licenses/by-nc-nd/4.0/", license.get_deed_url())
         with self.subTest("no jurisdiction, ask for spanish"):
-            license = License.objects.get(license_code="by-nc-nd", jurisdiction_code="", version="4.0")
-            self.assertEqual("/licenses/by-nc-nd/4.0/deed.es", license.get_deed_url_for_language("es"))
+            license = License.objects.get(
+                license_code="by-nc-nd", jurisdiction_code="", version="4.0"
+            )
+            self.assertEqual(
+                "/licenses/by-nc-nd/4.0/deed.es",
+                license.get_deed_url_for_language("es"),
+            )
         with self.subTest("spanish jurisdiction, default language"):
-            license = License.objects.get(license_code="by-nc-nd", jurisdiction_code="es", version="3.0")
+            license = License.objects.get(
+                license_code="by-nc-nd", jurisdiction_code="es", version="3.0"
+            )
             self.assertEqual("/licenses/by-nc-nd/3.0/es/", license.get_deed_url())
 
     def test_default_language_code(self):
         with self.subTest("no jurisdiction"):
-            license = License.objects.get(license_code="by-nc-nd", jurisdiction_code="", version="4.0")
+            license = License.objects.get(
+                license_code="by-nc-nd", jurisdiction_code="", version="4.0"
+            )
             self.assertEqual(DEFAULT_LANGUAGE_CODE, license.default_language_code())
         with self.subTest("jurisdiction without default language"):
-            license = License.objects.get(license_code="by-nc-nd", jurisdiction_code="pr", version="3.0")
+            license = License.objects.get(
+                license_code="by-nc-nd", jurisdiction_code="pr", version="3.0"
+            )
             self.assertEqual(DEFAULT_LANGUAGE_CODE, license.default_language_code())
         with self.subTest("jurisdiction with default language"):
-            license = License.objects.get(license_code="by-nc-nd", jurisdiction_code="br", version="3.0")
+            license = License.objects.get(
+                license_code="by-nc-nd", jurisdiction_code="br", version="3.0"
+            )
             self.assertEqual("br", license.default_language_code())
 
 
@@ -111,5 +126,6 @@ class TranslatedLicenseNameModelTest(TestCase):
     def test_str(self):
         record = TranslatedLicenseName.objects.first()
         self.assertEqual(
-            str(record), f"TranslatedLicenseName<{record.language_code}, {record.license}>"
+            str(record),
+            f"TranslatedLicenseName<{record.language_code}, {record.license}>",
         )

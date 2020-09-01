@@ -1,0 +1,142 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Project settings &#8212; cc_licenses 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Translation" href="translation.html" />
+    <link rel="prev" title="Server Provisioning" href="provisioning.html" />
+
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <div class="section" id="project-settings">
+<h1>Project settings<a class="headerlink" href="#project-settings" title="Permalink to this headline">¶</a></h1>
+<p>This only lists settings that have docstrings. See the relevant
+settings files for the complete settings, or run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python manage.py diffsettings
+</pre></div>
+</div>
+<div class="section" id="module-cc_licenses.settings.base">
+<span id="base-settings"></span><h2>Base settings<a class="headerlink" href="#module-cc_licenses.settings.base" title="Permalink to this headline">¶</a></h2>
+<p>Django settings for cc_licenses project.</p>
+</div>
+<div class="section" id="module-cc_licenses.settings.deploy">
+<span id="deploy-settings"></span><h2>Deploy settings<a class="headerlink" href="#module-cc_licenses.settings.deploy" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="cc_licenses.settings.deploy.ENVIRONMENT">
+<code class="descclassname">cc_licenses.settings.deploy.</code><code class="descname">ENVIRONMENT</code><em class="property"> = 'production'</em><a class="headerlink" href="#cc_licenses.settings.deploy.ENVIRONMENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>deploy environment - e.g. “staging” or “production”</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cc_licenses.settings.dev">
+<span id="development-settings"></span><h2>Development settings<a class="headerlink" href="#module-cc_licenses.settings.dev" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="cc_licenses.settings.dev.CELERY_ALWAYS_EAGER">
+<code class="descclassname">cc_licenses.settings.dev.</code><code class="descname">CELERY_ALWAYS_EAGER</code><em class="property"> = True</em><a class="headerlink" href="#cc_licenses.settings.dev.CELERY_ALWAYS_EAGER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run celery tasks synchronously</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="cc_licenses.settings.dev.CELERY_EAGER_PROPAGATES_EXCEPTIONS">
+<code class="descclassname">cc_licenses.settings.dev.</code><code class="descname">CELERY_EAGER_PROPAGATES_EXCEPTIONS</code><em class="property"> = True</em><a class="headerlink" href="#cc_licenses.settings.dev.CELERY_EAGER_PROPAGATES_EXCEPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell us when a synchronous celery task fails</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="cc_licenses.settings.dev.EMAIL_BACKEND">
+<code class="descclassname">cc_licenses.settings.dev.</code><code class="descname">EMAIL_BACKEND</code><em class="property"> = 'django.core.mail.backends.console.EmailBackend'</em><a class="headerlink" href="#cc_licenses.settings.dev.EMAIL_BACKEND" title="Permalink to this definition">¶</a></dt>
+<dd><p>Don’t send emails, just print them on stdout</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Project settings</a><ul>
+<li><a class="reference internal" href="#module-cc_licenses.settings.base">Base settings</a></li>
+<li><a class="reference internal" href="#module-cc_licenses.settings.deploy">Deploy settings</a></li>
+<li><a class="reference internal" href="#module-cc_licenses.settings.dev">Development settings</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Develop and deploy cc_licenses</a><ul>
+      <li>Previous: <a href="provisioning.html" title="previous chapter">Server Provisioning</a></li>
+      <li>Next: <a href="translation.html" title="next chapter">Translation</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/dev/settings.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PROJECT_AUTHOR.
+
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+
+      |
+      <a href="../_sources/dev/settings.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+
+
+
+  </body>
+</html>

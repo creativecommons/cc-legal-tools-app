@@ -1,0 +1,388 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Server Provisioning &#8212; cc_licenses 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Project settings" href="settings.html" />
+    <link rel="prev" title="Develop and deploy cc_licenses" href="index.html" />
+
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+
+  <div class="section" id="server-provisioning">
+<h1>Server Provisioning<a class="headerlink" href="#server-provisioning" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>Cc_Licenses is deployed on the following stack.</p>
+<ul class="simple">
+<li>OS: Ubuntu 18.04 LTS or 20.04 LTS</li>
+<li>Python: 3.7 (or higher)</li>
+<li>Database: Postgres 10+</li>
+<li>Application Server: Gunicorn</li>
+<li>Frontend Server: Nginx</li>
+</ul>
+</div>
+<div class="section" id="domain-and-ssl-certificate">
+<h2>Domain and SSL certificate<a class="headerlink" href="#domain-and-ssl-certificate" title="Permalink to this headline">¶</a></h2>
+<p>(I put this first because you might have to wait for someone else
+to do it, so you might as well start it as early as possible.)</p>
+<p>Just a reminder that you’ll need a domain name that resolves to
+the IP address of your web server, and a corresponding SSL
+certificate if you want to serve pages over SSL.</p>
+</div>
+<div class="section" id="deploying">
+<h2>Deploying<a class="headerlink" href="#deploying" title="Permalink to this headline">¶</a></h2>
+<p>Here’s a recipe for deploying this web site that should work. Automating
+this is left as an exercise for the reader.</p>
+<p>If you haven’t before, clone the repo:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone git@github.com:creativecommons/cc-licenses.git
+</pre></div>
+</div>
+<p>Change to the new directory for the rest of these steps:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd cc-licenses
+</pre></div>
+</div>
+<p>Check out the “develop” branch if you’re wanting to test things still
+in development, or “master” for production:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git checkout develop
+</pre></div>
+</div>
+<p>Do a <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">pull</span></code> to make sure you have the latest from upstream:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git pull origin develop
+</pre></div>
+</div>
+<p>A word to the wise: I often forget that these things change, and have
+to remind myself to use the documentation from the version of the code
+I’m trying to use.</p>
+<div class="section" id="environment">
+<h3>Environment<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h3>
+<p>Create a virtual environment using Python 3.7:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python3 --version
+Python 3.7.7
+$ python3 -m venv /somepath/cc-licenses-venv
+</pre></div>
+</div>
+<p>Activate the venv:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ . /somepath/cc-licenses-venv/bin/activate
+</pre></div>
+</div>
+<p>Install the Python requirements for production into the virtual
+environment. (This is the same whether deploying develop or master.):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install -r requirements/production.txt
+</pre></div>
+</div>
+</div>
+<div class="section" id="settings">
+<h3>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h3>
+<p>We configure a particular site deploy by arranging for a bunch of
+environment variables to be set before starting Django.</p>
+<p>Tell Django to use the deploy settings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export DJANGO_SETTINGS_MODULE=cc_licenses.settings.deploy
+</pre></div>
+</div>
+<p>Set the ENVIRONMENT environment variable to a name to distinguish this
+deploy from others, e.g. “staging” or “production”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export ENVIRONMENT=staging
+</pre></div>
+</div>
+<p>Arrange to make an empty Postgres database available for the site, and
+set environment variable DATABASE_URL pointing to it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export DATABASE_URL=&quot;postgresql://user:pass@hostname:port/dbname?sslmode=require&quot;
+</pre></div>
+</div>
+<p>Note: When coming up with this URL, you can test by seeing if psql can
+connect to it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ psql $DATABASE_URL
+</pre></div>
+</div>
+<p>Create a local directory for static files. This directory needs to be
+writable during this deploy process, and readable by the Django server
+at runtime. Call it STATIC_ROOT:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export STATIC_ROOT=/path/to/staticfiles
+</pre></div>
+</div>
+<p>(This is for files that come from the site source code and will be served
+as static files, like <code class="docutils literal notranslate"><span class="pre">.css</span></code> and <code class="docutils literal notranslate"><span class="pre">.js</span></code> files.)</p>
+<p>Create a local directory for media files. This directory must be readable
+and writable by the Django process at runtime. Call it MEDIA_ROOT:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export MEDIA_ROOT=/path/to/mediafiles
+</pre></div>
+</div>
+<p>(This is for any files that might need to be uploaded by users and stored
+by the Django process, then served again later. Examples: images, avatars,
+files - it depends on the site.)</p>
+<p>Generate a secret key to use, which should be a long random string. One
+way:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">django.utils.crypto</span> <span class="k">import</span> <span class="n">get_random_string</span>
+<span class="n">chars</span> <span class="o">=</span> <span class="s1">&#39;abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&amp;*(-_=+)&#39;</span>
+<span class="n">SECRET_KEY</span> <span class="o">=</span> <span class="n">get_random_string</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">chars</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then set it as DJANGO_SECRET_KEY:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export DJANGO_SECRET_KEY=&lt;the random string from above&gt;
+</pre></div>
+</div>
+<p>This should be different for each site being deployed, but the same on
+all servers running Django for a particular site, and not changing over
+time.</p>
+<p>Set DOMAIN to the hostname the site will be served at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export DOMAIN=www.example.com
+</pre></div>
+</div>
+<p>The site might need to send email to admins on errors, and to users for
+things like password resets. Arrange to make an SMTP server available for
+outgoing email, then set the following Django settings as environment
+variables:</p>
+<ul class="simple">
+<li>EMAIL_HOST</li>
+<li>EMAIL_HOST_USER</li>
+<li>EMAIL_HOST_PASSWORD</li>
+<li>EMAIL_USE_TLS</li>
+<li>EMAIL_USE_SSL (just set one of EMAIL_USE_TLS or EMAIL_USE_TLS to a
+non-empty string to indicate “True”; leave the other unset)</li>
+<li>EMAIL_PORT (optional; defaults to 25, 465, or 587 depending on
+whether EMAIL_USE_TLS, EMAIL_USE_SSL, or neither are set)</li>
+<li>DEFAULT_FROM_EMAIL</li>
+<li>EMAIL_SUBJECT_PREFIX</li>
+</ul>
+<p>These are documented starting
+<a class="reference external" href="https://docs.djangoproject.com/en/3.0/ref/settings/#email-host">here</a>;
+I won’t bother copying the docs.</p>
+</div>
+<div class="section" id="migrate-and-collect-static">
+<h3>Migrate and collect static<a class="headerlink" href="#migrate-and-collect-static" title="Permalink to this headline">¶</a></h3>
+<p>There are a couple of tasks that need to be done any time the code is
+updated, before (re)starting the server. The migrate step only needs to
+be done on one server since it updates the database that all servers are
+sharing. The collectstatic step needs to be done on every server.</p>
+<p>We generally build this into our deploy process.</p>
+<ol class="arabic">
+<li><p class="first">Activate the virtual env:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ . /somepath/cc-licenses-venv/bin/activate
+</pre></div>
+</div>
+</li>
+<li><p class="first">Set all the environment variables (above).</p>
+</li>
+<li><p class="first">Run database migrations:</p>
+<blockquote>
+<div><p>$ python manage.py migrate –noinput</p>
+</div></blockquote>
+</li>
+<li><p class="first">Collect all static files to STATIC_ROOT:</p>
+<blockquote>
+<div><p>$ python manage.py collectstatic –noinput</p>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="run-django">
+<h3>Run Django<a class="headerlink" href="#run-django" title="Permalink to this headline">¶</a></h3>
+<p>To get a process running Django and serving requests, we’ll use a tool
+called <a class="reference external" href="https://gunicorn.org/">gunicorn</a> that’s installed into the
+virtual environment.</p>
+<p>We’ll run this strictly internally, listening for requests on a Unix port.
+Our web server will proxy to that port.</p>
+<p>Reminder: arrange for the environment variables mentioned above to be set
+before gunicorn is started.  (You can set them on the gunicorn command
+line with <code class="docutils literal notranslate"><span class="pre">-e</span></code>, but it gets unwieldy.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd path-where-we-checked-out-the-code
+$ /somepath/cc-licenses-venv/bin/gunicorn --bind unix:/tmp/portfile cc_licenses.wsgi
+</pre></div>
+</div>
+<p>Gunicorn has lots of options for tuning which you can look up.</p>
+</div>
+<div class="section" id="run-a-webserver-in-front">
+<h3>Run a webserver in front<a class="headerlink" href="#run-a-webserver-in-front" title="Permalink to this headline">¶</a></h3>
+<p>We usually run nginx as our front-end web server. A simple approach is to
+add a new config file to /etc/nginx/sites-enabled for each site, making
+sure server_name is set correctly in each.  E.g.
+<code class="docutils literal notranslate"><span class="pre">/etc/nginx/sites-enabled/www.example.com.conf</span></code> (the name is completely
+arbitrary). Then reload or restart nginx.</p>
+<p>In that config file, we generally want to redirect non-SSL requests to
+SSL with something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>server {
+  listen *:80;
+  listen [::]:80;
+  server_name DOMAIN;
+  access_log PATH_access.log;
+  error_log PATH_error.log;
+  return 301 https://DOMAIN$request_uri;
+}
+</pre></div>
+</div>
+<p>changing DOMAIN and PATH appropriately.</p>
+<p>Then we proxy the SSL requests to Django, by adding something like this
+to the file (the SSL cipher settings might be out of date, though).</p>
+<p>Note: <em>after</em> this is known to be working, you can uncomment the
+<code class="docutils literal notranslate"><span class="pre">Strict-Transport-Security</span></code> line if you want.</p>
+<p>You’ll need a valid SSL certificate for this.</p>
+<p>Again, change the all-caps parts appropriately:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>upstream django {
+  server unix:/tmp/portfile fail_timeout=0;
+}
+
+server {
+  listen *:443 ssl;   # add spdy here too if you want
+  listen [::]:443 ssl;
+  server_name DOMAIN;
+  ssl_certificate PATH.crt;
+  ssl_certificate_key PATH.key;
+
+  access_log PATH_access.log;
+  error_log PATH_error.log;
+  root PATH;
+  location /media {
+    alias MEDIA_ROOT;
+  }
+  location /static {
+    alias STATIC_ROOT;
+  }
+  location / {
+    client_max_body_size 500M;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $host;
+    proxy_redirect off;
+    proxy_buffering on;
+    proxy_intercept_errors on;
+    proxy_pass http://django;
+  }
+
+  # See https://www.trevorparker.com/hardening-ssl-in-nginx/
+  ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
+  ssl_prefer_server_ciphers on;
+  ssl_ciphers               DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:ECDHE-RSA-AES1\
+28-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM\
+-SHA384:kEDH+AESGCM:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES\
+256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SH\
+A256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SH\
+A384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SH\
+A256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:\
+!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA;
+  ssl_session_timeout       5m;
+  ssl_session_cache         shared:SSL:10m;
+
+  # add_header Strict-Transport-Security max-age=31536000;
+}
+</pre></div>
+</div>
+<p>Finally, reload or restart nginx:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sudo systemctl reload nginx
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h2>
+<p>Once all that is running, you should be able to visit
+<a class="reference external" href="https://www.example.com">https://www.example.com</a> and see the site front page. But, sometimes not
+everything is quite right the first time :-)</p>
+<p>A gateway error indicates that gunicorn isn’t running. Add some gunicorn
+logging if necessary, and check those logs.</p>
+<p>If you see the wrong site, nginx isn’t properly routing requests for that
+server name to our server. See
+<a class="reference external" href="http://nginx.org/en/docs/http/server_names.html">http://nginx.org/en/docs/http/server_names.html</a>. Keep in mind that nginx
+defaults to just sending requests to the first server it can find if it
+doesn’t recognize the incoming server name.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Server Provisioning</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#domain-and-ssl-certificate">Domain and SSL certificate</a></li>
+<li><a class="reference internal" href="#deploying">Deploying</a><ul>
+<li><a class="reference internal" href="#environment">Environment</a></li>
+<li><a class="reference internal" href="#settings">Settings</a></li>
+<li><a class="reference internal" href="#migrate-and-collect-static">Migrate and collect static</a></li>
+<li><a class="reference internal" href="#run-django">Run Django</a></li>
+<li><a class="reference internal" href="#run-a-webserver-in-front">Run a webserver in front</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Develop and deploy cc_licenses</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Develop and deploy cc_licenses</a></li>
+      <li>Next: <a href="settings.html" title="next chapter">Project settings</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/dev/provisioning.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, PROJECT_AUTHOR.
+
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+
+      |
+      <a href="../_sources/dev/provisioning.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+
+
+
+  </body>
+</html>
