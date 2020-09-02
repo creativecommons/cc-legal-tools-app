@@ -205,4 +205,4 @@ X_FRAME_OPTIONS = 'DENY'
 TRANSLATION_THRESHOLD = 80
 
 # django-distill settings
-DISTILL_DIR=f'{ROOT_DIR}/build/'
+DISTILL_DIR = f'{ROOT_DIR}/build/'

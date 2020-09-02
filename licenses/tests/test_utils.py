@@ -1,7 +1,5 @@
 from django.test import TestCase
 
-from .factories import LicenseFactory
-from .factories import TranslatedLicenseNameFactory
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from licenses.constants import EXCLUDED_LICENSE_VERSIONS
 from licenses.models import License
@@ -165,20 +163,6 @@ class GetLicenseUtilityTest(TestCase):
     """Test django-distill utility functions for
     generating an iterable of license dictionaries
     """
-
-    def test_get_licenses_code_and_version(self):
-        """Should return an iterable of license dictionaries
-        with the dictionary keys (license_code, version)
-
-        Excluding all versions other than 4.0 licenses
-        """
-        licenses = list(License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS))
-        list_of_licenses_dict = [
-            {"license_code": l.license_code, "version": l.version} for l in licenses
-        ]
-        yielded_licenses = get_licenses_code_and_version()
-        yielded_license_list = list(yielded_licenses)
-        self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
     def test_get_licenses_code_and_version(self):
         """Should return an iterable of license dictionaries
