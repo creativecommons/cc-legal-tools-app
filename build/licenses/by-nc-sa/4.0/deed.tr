@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Attribution-Gayriticari-ShareAlike 4.0 Uluslararası
   &mdash; CC BY-NC-SA 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nc-sa/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">İçeriğe geç</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Attribution-Gayriticari-ShareAlike 4.0 Uluslararası</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-NC-SA 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Bu, insan tarafından okunabilen özet<a href="legalcode" class="fulltext">lisanstır</a> (lisansın tamamı yerine geçmez).
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Yasal Uyarı</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,15 +188,15 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
         <strong>Paylaş</strong> &mdash; eseri her ortam veya formatta kopyalayabilir ve yeniden dağıtabilirsiniz.
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Uyarla</strong>  &mdash; her türlü amaç için (ticari amaç da dahil) karıştır, aktar ve mevcut eserin üzerine inşa et
           </li>
+        
 
-
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -204,10 +204,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -221,7 +221,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
     <h3 style="text-align: center">Aşağıdaki şartlar altında:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Atıf</strong> &mdash; <span rel="cc:requires"
@@ -247,8 +247,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
             </a>
           </p>
         </li>
-
-
+      
+      
       <li class="license nc"
           rel="cc:prohibits"
           resource="http://creativecommons.org/ns#CommercialUse">
@@ -257,25 +257,25 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
             <span id="nc-more-container"></span>
           </p>
       </li>
-
-
-
+      
+      
+      
       <li class="license sa"
           rel="cc:requires"
           resource="http://creativecommons.org/ns#ShareAlike">
           <p>
-            <strong>AynıLisanslaPaylaş</strong> &mdash; Eğer materyali karıştırdınızsa, aktardınızsa ya da materyalin üzerine çalıştınızsa, ancak aynı lisans <a href="#" id="same_license_popup" class="helpLink"> ile dağıtabilirsiniz</a>.
+            <strong>AynıLisanslaPaylaş</strong> &mdash; Eğer materyali karıştırdınızsa, aktardınızsa ya da materyalin üzerine çalıştınızsa, ancak aynı lisans <a href="#" id="same_license_popup" class="helpLink"> ile dağıtabilirsiniz</a>. 
             <span id="sa-more-container"></span>
           </p>
       </li>
-
+      
 
     </ul>
   </div>
   <div class="row">
     <ul id="deed-conditions-no-icons" class="col-md-offset-2 col-md-8">
       <li class="license">
-        <strong>Ek sınırlamalar yoktur</strong> &mdash; Lisansın izin verdiği hakları başkaları üzerinde kanunlarla <a href="#" id="technological_measures_popup" class="helpLink">ya da teknolojiyi</a>kullanarak sınırlayamazsınız.
+        <strong>Ek sınırlamalar yoktur</strong> &mdash; Lisansın izin verdiği hakları başkaları üzerinde kanunlarla <a href="#" id="technological_measures_popup" class="helpLink">ya da teknolojiyi</a>kullanarak sınırlayamazsınız. 
       </li>
     </ul>
   </div>
@@ -285,18 +285,18 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="tr">
       Uyarılar:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Kamu Malı malzemenin lisans koşullarına ya da<a href="#" id="exception_or_limitation_popup" class="helpLink">ayrıcalık ya da sınırları</a> ile izin verilen kullanımına uymak zorunda değilsiniz.
       </li>
       <li class="license">
-        Garanti verilmez. Lisans kullanım amacınıza uygun tüm izinleri sağlamayabilir. Mesela, <a href="#" id="publicity_privacy_or_moral_rights_popup" class="helpLink">
+        Garanti verilmez. Lisans kullanım amacınıza uygun tüm izinleri sağlamayabilir. Mesela, <a href="#" id="publicity_privacy_or_moral_rights_popup" class="helpLink">  
 tanınırlık, gizlilik veya manevi haklar</a> gibi haklar kullanıma sınır getirebilir.
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -306,13 +306,13 @@ tanınırlık, gizlilik veya manevi haklar</a> gibi haklar kullanıma sınır ge
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">CC lisanslama hakkında</a> daha fazla bilgi, ya da kendi materyaliniz için <a id="get_this" href="/choose/results-one?license_code=by-nc-sa&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=tr">lisans kullanımı</a>.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -325,20 +325,20 @@ tanınırlık, gizlilik veya manevi haklar</a> gibi haklar kullanıma sınır ge
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Bu sayfa şu dillerde mevcuttur:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -394,7 +394,7 @@ tanınırlık, gizlilik veya manevi haklar</a> gibi haklar kullanıma sınır ge
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -462,19 +462,19 @@ tanınırlık, gizlilik veya manevi haklar</a> gibi haklar kullanıma sınır ge
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Yasal Uyarı</div>
-
+        
           <div class="bd">
             <p>Bu özet asıl lisansın sadece ana hat ve kurallarını belirtir. Lisans değildir ve kanuni değer taşımaz. Lisanslanmış materyali kullanmadan önce orjinal lisanstaki tüm kural ve şartları dikkatle okumanız gerekir.</p>
 
             <p>Creative Coomns bir hukuk firması değildir ve hukuki hizmet vermez. Bu özeti ya da bağlı olduğu lisansı dağıtmak, göstermek ya da linklemek bir avukat müvekkil ilişkisi yaratmaz. </p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

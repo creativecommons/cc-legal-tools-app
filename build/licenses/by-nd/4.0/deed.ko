@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; 저작자표시-변경금지 4.0 국제
   &mdash; CC BY-ND 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nd/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">저작자표시-변경금지 4.0 국제</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-ND 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         이 글은 <a href="legalcode" class="fulltext">이용허락규약(Legal Code)</a>을 읽기 쉽게 요약한 것입니다.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">면책조항</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,13 +188,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
         <strong>공유</strong>  &mdash; 복제, 배포, 전시, 공연 및 공중송신 (포맷 변경도 포함)
         </li>
 
+        
 
-
-
+        
           <li class="license commercial">
             영리목적으로도 이용이 가능합니다.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -202,10 +202,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -219,7 +219,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
     <h3 style="text-align: center">다음과 같은 조건을 따라야 합니다:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>저작자표시</strong> &mdash; <span rel="cc:requires"
@@ -245,17 +245,17 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
             </a>
           </p>
         </li>
-
-
-
+      
+      
+      
       <li class="license nd">
           <p>
             <strong>변경금지</strong> &mdash; 이 저작물을 <a href="#" id="some_kinds_of_mods_popup" class="helpLink">리믹스, 변형하거나 2차적 저작물을 작성</a>하였을 경우 그 결과물을 공유할 수 없습니다.
             <span id="nd-more-container"></span>
           </p>
       </li>
-
-
+      
+      
 
     </ul>
   </div>
@@ -272,7 +272,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
       주의:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         퍼블릭 도메인에 해당하는 저작물의 이용 또는 <a href="#" id="exception_or_limitation_popup" class="helpLink">저작재산권의 제한사유</a>에 해당하는 이용의 경우에는 이 라이선스를 따르지 않아도 됩니다.
@@ -282,7 +282,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -292,13 +292,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a id="get_this" href="/choose/results-one?license_code=by-nd&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=ko">CCL을 적용하는 방법</a>에 대해 <a href="http://wiki.creativecommons.org/FAQ">더 알아보세요.</a>
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -311,20 +311,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     이 페이지는 다음의 언어로 이용할 수 있습니다.
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -380,7 +380,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -448,19 +448,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ko">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">면책조항</div>
-
+        
           <div class="bd">
             <p>이 증서는 라이선스의 몇 가지 주요 내용과 조건을 중점적으로 설명한 것입니다. 이 증서 자체는 라이선스가 아니며 아무런 법적 효력이 없습니다. 저작물을 이용하기 전에 실제 라이선스의 내용과 조건을 주의 깊게 읽어보기 바랍니다.</p>
 
             <p>크리에이티브 커먼즈는 법률 사무소가 아니며 아무런 법적 서비스를 제공하지 않습니다. 이 증서를 배포, 전시하거나 이 증서 또는 라이선스로 링크를 건다고 해서 법적 서비스를 제공하는 관계가 발생하는 것은 아닙니다.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

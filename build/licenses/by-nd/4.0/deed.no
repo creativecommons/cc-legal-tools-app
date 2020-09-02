@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Navngivelse-IngenBearbeidelse 4.0 Internasjonal
   &mdash; CC BY-ND 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nd/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Navngivelse-IngenBearbeidelse 4.0 Internasjonal</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-ND 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Dette er et menneske-lesbart sammendrag av (men ingen erstatning for) den <a href="legalcode" class="fulltext">juridiske lisensteksten</a>.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Ansvarsfraskrivelse</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,13 +188,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
         <strong>Dele</strong>  &mdash; kopiere, distribuere og spre verket i hvilket som helst medium eller format
         </li>
 
+        
 
-
-
+        
           <li class="license commercial">
             til et hvilket som helst formål, inkludert kommersielle.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -202,10 +202,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -219,7 +219,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
     <h3 style="text-align: center">På følgende vilkår:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Navngivelse</strong> &mdash; <span rel="cc:requires"
@@ -245,17 +245,17 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
             </a>
           </p>
         </li>
-
-
-
+      
+      
+      
       <li class="license nd">
           <p>
             <strong>IngenBearbeidelser</strong> &mdash; Dersom du <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remixer, bearbeider eller bygger på</a> materialet, kan du ikke distribuere det endrede materialet.
             <span id="nd-more-container"></span>
           </p>
       </li>
-
-
+      
+      
 
     </ul>
   </div>
@@ -272,7 +272,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
       Notiser:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Du trenger ikke å rette deg etter lisensen for de deler av materialet som er falt i det fri eller der bruken er tillatt av etter <a href="#" id="exception_or_limitation_popup" class="helpLink">lånereglene i åndsverkloven eller annen gjeldende rett</a>.
@@ -282,7 +282,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -292,13 +292,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">Lær mer</a> om CC-lisensiering, eller <a id="get_this" href="/choose/results-one?license_code=by-nd&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=no">bruk lisensen</a> for ditt eget materiale.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -311,20 +311,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Denne siden er tilgjengelig på følgende språk:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -380,7 +380,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -448,19 +448,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="no">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Ansvarsfraskrivelse</div>
-
+        
           <div class="bd">
             <p>Dette sammendraget fremhever bare noen av de viktigste egenskapene og vilkårene i lisensen. Det er ikke en lisens og har ingen juridisk betydning. Du bør lese nøye gjennom alle bestemmelsene og vilkårene i selve lisensen før du bruker det lisensierte materialet.</p>
 
             <p>Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this deed or the license that it summarizes does not create a lawyer-client or any other relationship.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

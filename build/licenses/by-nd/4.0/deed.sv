@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Erkännande-IngaBearbetningar 4.0 Internationell
   &mdash; CC BY-ND 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nd/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Hoppa över till innehåll</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Erkännande-IngaBearbetningar 4.0 Internationell</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-ND 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Detta är en lättläst sammanfattning av (och inte en ersättning för) <a href="legalcode" class="fulltext">licensen</a>.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Friskrivning</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,13 +188,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
         <strong>Dela</strong> &mdash; kopiera och vidaredistribuera materialet oavsett medium eller format
         </li>
 
+        
 
-
-
+        
           <li class="license commercial">
             för alla ändamål, även kommersiellt.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -202,10 +202,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -219,7 +219,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
     <h3 style="text-align: center">På följande villkor:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Erkännande</strong> &mdash; <span rel="cc:requires"
@@ -245,24 +245,24 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
             </a>
           </p>
         </li>
-
-
-
+      
+      
+      
       <li class="license nd">
           <p>
             <strong>IngaBearbetningar</strong> &mdash; Om du <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remixar, transformerar, eller bygger vidare på</a> materialet, får du inte distribuera det modifierade materialet.
             <span id="nd-more-container"></span>
           </p>
       </li>
-
-
+      
+      
 
     </ul>
   </div>
   <div class="row">
     <ul id="deed-conditions-no-icons" class="col-md-offset-2 col-md-8">
       <li class="license">
-        <strong>Inga ytterligare begränsningar</strong> &mdash; Du får inte tillämpa lagliga begränsningar eller <a href="#" id="technological_measures_popup" class="helpLink">teknologiska metoder</a> som juridiskt begränsar andra från att gör något som licensen tillåter.
+        <strong>Inga ytterligare begränsningar</strong> &mdash; Du får inte tillämpa lagliga begränsningar eller <a href="#" id="technological_measures_popup" class="helpLink">teknologiska metoder</a> som juridiskt begränsar andra från att gör något som licensen tillåter. 
       </li>
     </ul>
   </div>
@@ -272,17 +272,17 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
       Anmärkningar:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Du behöver inte följa licensvillkoren för de delar av materialet som finns i public domain eller där ditt användande är tillåtet av en tillämplig <a href="#" id="exception_or_limitation_popup" class="helpLink">undantag eller begränsning</a>.
       </li>
       <li class="license">
-        Inga garantier ges. Licensen ger eller ger dig inte alla de nödvändiga villkoren för ditt tänkta användande av verket. Till exempel, andra rättigheter som <a href="#" id="publicity_privacy_or_moral_rights_popup" class="helpLink">publicitet, integritetslagstiftning, eller ideella rättigheter </a> kan begränsa hur du kan använda verket.
+        Inga garantier ges. Licensen ger eller ger dig inte alla de nödvändiga villkoren för ditt tänkta användande av verket. Till exempel, andra rättigheter som <a href="#" id="publicity_privacy_or_moral_rights_popup" class="helpLink">publicitet, integritetslagstiftning, eller ideella rättigheter </a> kan begränsa hur du kan använda verket. 
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -292,13 +292,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">Lär dig mer</a> om CC-licensiering, eller <a id="get_this" href="/choose/results-one?license_code=by-nd&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=sv">använd licensen</a> för ditt eget material.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -311,20 +311,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Denna sida finns tillgänglig på följande språk:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -380,7 +380,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -448,19 +448,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="sv">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Friskrivning</div>
-
+        
           <div class="bd">
             <p>Denna sammanfattning uppmärksammar enbart vissa av de viktigaste inslagen och villkoren från den faktiska licensen. Den är inte en licens och har inget juridiskt värde. Du bör noggrant gå igenom alla villkor i den faktiska licensen innan du använder det licensierade materialet.</p>
 
             <p>Creative Commons är ingen advokatbyrå och tillhandahåller inga juridiska tjänster eller juridisk rådgivning. Distribution eller visning av, samt länkning till denna handling eller licensen som sammanfattas skapar ingen advokat-klient- eller annat förhållande.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

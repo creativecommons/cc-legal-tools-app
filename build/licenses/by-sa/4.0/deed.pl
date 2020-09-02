@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Uznanie autorstwa-Na tych samych warunkach 4.0 Międzynarodowe
   &mdash; CC BY-SA 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-sa/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Uznanie autorstwa-Na tych samych warunkach 4.0 Międzynarodowe</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-SA 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Poniższy tekst jest jedynie przystępnym podsumowaniem <a href="legalcode" class="fulltext">licencji</a> (której nie zastępuje).
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Klauzula ograniczenia odpowiedzialności</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,19 +188,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
         <strong>Dzielenie się</strong> &mdash; kopiuj i rozpowszechniaj utwór w dowolnym medium i formacie
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Adaptacje</strong> &mdash; remiksuj, zmieniaj i twórz na bazie utworu
           </li>
+        
 
-
-
+        
           <li class="license commercial">
             dla dowolnego celu, także komercyjnego.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -208,8 +208,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
       </ul>
       </div>
 
-
-
+    
+      
         <div id="libre" class="col-sm-2">
           <a href="http://freedomdefined.org/" class="screen-only">
             <img src="/static/images/deed/FreeCulturalWorks_seal_x2.jpg" style="border: 0"
@@ -219,9 +219,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
             <img src="/static/images/deed/seal.png" style="border: 0" alt="" />
           </a>
         </div>
-
-
-  </div>
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -235,11 +235,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
     <h3 style="text-align: center">Na następujących warunkach:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Uznanie autorstwa</strong> &mdash; <span rel="cc:requires"
-          resource="http://creativecommons.org/ns#Attribution">Utwór należy <a href="#" id="appropriate_credit_popup" class="helpLink">odpowiednio oznaczyć</a></span>, podać link do licencji i <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#" id="indicate_changes_popup" class="helpLink">wskazać jeśli zostały dokonane w nim zmiany </a></span>. Możesz to zrobić w dowolny, rozsądny sposób, o ile nie sugeruje to udzielania prze licencjodawcę poparcia dla Ciebie lub sposobu, w jaki wykorzystujesz ten utwór.
+          resource="http://creativecommons.org/ns#Attribution">Utwór należy <a href="#" id="appropriate_credit_popup" class="helpLink">odpowiednio oznaczyć</a></span>, podać link do licencji i <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#" id="indicate_changes_popup" class="helpLink">wskazać jeśli zostały dokonane w nim zmiany </a></span>. Możesz to zrobić w dowolny, rozsądny sposób, o ile nie sugeruje to udzielania prze licencjodawcę poparcia dla Ciebie lub sposobu, w jaki wykorzystujesz ten utwór. 
             <span id="by-more-container"></span>
           </p>
 
@@ -261,10 +261,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
             </a>
           </p>
         </li>
-
-
-
-
+      
+      
+      
+      
       <li class="license sa"
           rel="cc:requires"
           resource="http://creativecommons.org/ns#ShareAlike">
@@ -273,7 +273,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
             <span id="sa-more-container"></span>
           </p>
       </li>
-
+      
 
     </ul>
   </div>
@@ -290,7 +290,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
       Uwagi:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Warunki licencyjne nie muszą być przestrzegane w odniesieniu do tych fragmentów licencjonowanych treści, które znajdują się w domenie publicznej, lub w przypadku sposobów korzystania dozwolonych przez odpowiednie <a href="#" id="exception_or_limitation_popup" class="helpLink">wyjątki lub ograniczenia prawa autorskiego</a>.
@@ -300,7 +300,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -310,12 +310,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="pl">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
 Dowiedz się więcej na temat <a href="http://wiki.creativecommons.org/FAQ">licencji Creative Commons</a> albo <a id="get_this" href="/choose/results-one?license_code=by-sa&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=pl">użyj tej licencji</a> dla udostępnienia własnych treści.
-
-
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -328,20 +328,20 @@ Dowiedz się więcej na temat <a href="http://wiki.creativecommons.org/FAQ">lice
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Strona jest dostępna w następujących językach:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -397,7 +397,7 @@ Dowiedz się więcej na temat <a href="http://wiki.creativecommons.org/FAQ">lice
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -465,19 +465,19 @@ Dowiedz się więcej na temat <a href="http://wiki.creativecommons.org/FAQ">lice
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Klauzula ograniczenia odpowiedzialności</div>
-
+        
           <div class="bd">
             <p>Przystępne podsumowanie licencji opisuje jedynie wybrane warunki i zapisy licencji Creative Commons. Niniejszy tekst nie jest licencją prawnoautorską i nie posiada wartości prawnej. Przed użyciem licencjonowanego utworu należy dokładnie zapoznać się z warunkami licencyjnymi zawartymi w licencji.</p>
 
             <p>Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this deed or the license that it summarizes does not create a lawyer-client or any other relationship.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

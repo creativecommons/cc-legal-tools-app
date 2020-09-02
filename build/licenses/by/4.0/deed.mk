@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Наведи извор 4.0 Меѓународен
   &mdash; CC BY 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Наведи извор 4.0 Меѓународен</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         This is a human-readable summary of (and not a substitute for) the <a href="legalcode" class="fulltext">license</a>.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Забелешка</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,19 +188,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
         <strong>Share</strong>  &mdash; copy and redistribute the material in any medium or format
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Adapt</strong>  &mdash; remix, transform, and build upon the material
           </li>
+        
 
-
-
+        
           <li class="license commercial">
             for any purpose, even commercially.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -208,8 +208,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
       </ul>
       </div>
 
-
-
+    
+      
         <div id="libre" class="col-sm-2">
           <a href="http://freedomdefined.org/" class="screen-only">
             <img src="/static/images/deed/FreeCulturalWorks_seal_x2.jpg" style="border: 0"
@@ -219,9 +219,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
             <img src="/static/images/deed/seal.png" style="border: 0" alt="" />
           </a>
         </div>
-
-
-  </div>
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -235,7 +235,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
     <h3 style="text-align: center">Under the following terms:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Наведи извор</strong> &mdash; <span rel="cc:requires"
@@ -261,10 +261,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
             </a>
           </p>
         </li>
-
-
-
-
+      
+      
+      
+      
 
     </ul>
   </div>
@@ -281,7 +281,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
       Notices:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable <a href="#" id="exception_or_limitation_popup" class="helpLink">exception or limitation</a>.
@@ -291,7 +291,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -301,13 +301,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">Learn more</a> about CC licensing, or <a id="get_this" href="/choose/results-one?license_code=by&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=mk">use the license</a> for your own material.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -320,20 +320,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Оваа страница е достапна на следните јазици
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -389,7 +389,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -457,19 +457,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="mk">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Забелешка</div>
-
+        
           <div class="bd">
             <p>This deed highlights only some of the key features and terms of the actual license. It is not a license and has no legal value. You should carefully review all of the terms and conditions of the actual license before using the licensed material.</p>
 
             <p>Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this deed or the license that it summarizes does not create a lawyer-client or any other relationship.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

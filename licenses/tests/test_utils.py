@@ -201,6 +201,8 @@ class GetLicenseUtilityTest(TestCase):
         Excluding all versions other than 4.0 licenses
         """
         list_of_licenses_dict = []
+        yielded_licenses = get_licenses_code_version_lang()
+        yielded_license_list = list(yielded_licenses)
         for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
             for translated_license in license.names.all():
                 if (
@@ -215,8 +217,6 @@ class GetLicenseUtilityTest(TestCase):
                         }
                     )
                 return
-        yielded_licenses = get_licenses_code_version_lang()
-        yielded_license_list = list(yielded_licenses)
         self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
     def test_get_licenses_code_version_jurisdiction(self):
@@ -226,6 +226,8 @@ class GetLicenseUtilityTest(TestCase):
         4.0 licenses do not have jurisdiction, we should expect an empty result
         """
         list_of_licenses_dict = []
+        yielded_licenses = get_licenses_code_version_jurisdiction()
+        yielded_license_list = list(yielded_licenses)
         for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
             if license.jurisdiction_code:
                 return list_of_licenses_dict.append(
@@ -236,8 +238,6 @@ class GetLicenseUtilityTest(TestCase):
                     }
                 )
             return
-        yielded_licenses = get_licenses_code_version_jurisdiction()
-        yielded_license_list = list(yielded_licenses)
         self.assertEqual([], yielded_license_list)
         self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
@@ -249,6 +249,8 @@ class GetLicenseUtilityTest(TestCase):
         4.0 licenses do not have jurisdiction, we should expect an empty result
         """
         list_of_licenses_dict = []
+        yielded_licenses = get_licenses_code_version_jurisdiction_lang()
+        yielded_license_list = list(yielded_licenses)
         for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
             for translated_license in license.names.all():
                 if (
@@ -265,7 +267,5 @@ class GetLicenseUtilityTest(TestCase):
                         }
                     )
                 return
-        yielded_licenses = get_licenses_code_version_jurisdiction_lang()
-        yielded_license_list = list(yielded_licenses)
         self.assertEqual([], yielded_license_list)
         self.assertEqual(list_of_licenses_dict, yielded_license_list)

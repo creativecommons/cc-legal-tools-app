@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Imenovanje-Bez prerada 4.0 međunarodni sporazumi
   &mdash; CC BY-ND 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nd/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Preskočite na sadržaj</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Imenovanje-Bez prerada 4.0 međunarodni sporazumi</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-ND 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Ovo je svima razumljiv sažetak (a ne zamjena za)  <a href="legalcode" class="fulltext">licencu</a>.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Upozorenje</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,13 +188,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
         <strong>Dijelite dalje</strong>  &mdash; možete umnažati i redistribuirati materijal u bilo kojem mediju ili formatu
         </li>
 
+        
 
-
-
+        
           <li class="license commercial">
             u bilo koju svrhu, pa i komercijalnu.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -202,10 +202,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -219,7 +219,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
     <h3 style="text-align: center">Pod sljedećim uvjetima:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Imenovanje</strong> &mdash; <span rel="cc:requires"
@@ -245,17 +245,17 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
             </a>
           </p>
         </li>
-
-
-
+      
+      
+      
       <li class="license nd">
           <p>
             <strong>NemaDerivata</strong> &mdash; Ako <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remiksirate, mijenjati ili prerađujete</a> materijal, ne smijete distribuirati taj prerađeni materijal.
             <span id="nd-more-container"></span>
           </p>
       </li>
-
-
+      
+      
 
     </ul>
   </div>
@@ -272,7 +272,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
       Upozorenja:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Ne morate se pridržavati licence kada je riječ o elementima djela koji su javno dobro ili gdje je Vaše iskorištavanje djela dopušteno zakonskim <a href="#" id="exception_or_limitation_popup" class="helpLink">iznimkama i ograničenjima autorskog prava</a>.
@@ -282,7 +282,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -292,13 +292,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">Saznajte više</a> o CC licenciranju ili <a id="get_this" href="/choose/results-one?license_code=by-nd&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=hr">primijenite licencu</a> na vlastiti materijal.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -311,20 +311,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Ova stranica je dostupna na sljedećim jezicima:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -380,7 +380,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -448,19 +448,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="hr">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Upozorenje</div>
-
+        
           <div class="bd">
             <p>Ovaj Commons deed izdvaja neke od ključnih odredbi i uvjeta prave licence. Sam Commons deed nije licenca i nema pravni značaj. Prije korištenja licenciranog materijala trebali biste pažljivo razmotriti sve odredbe i uvjete prave licence.</p>
 
             <p>Creative Commons nije odvjednički ured. Distribuiranje Commons Deeda ili licence koju sažimlje, njihovo prikazivanje ili postavljanje linka na njih ne čini odnos pravnog zastupanja ili bilo kakav drugi odnos.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

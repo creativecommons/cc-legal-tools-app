@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Aitortu-EzKomertziala 4.0 International
   &mdash; CC BY-NC 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nc/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Joan edukira</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Aitortu-EzKomertziala 4.0 International</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-NC 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Hau <a href="legalcode" class="fulltext">lizentziaren</a> laburpen bat da (ez du hori ordezkatzen), gizakientzat irakurgarria.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Erantzukizun deskargua</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,15 +188,15 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
         <strong>Partekatu</strong>  &mdash; partekatu, kopiatu eta birbanatu edozein bitarteko edo formatutan
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Moldatu</strong>  &mdash; nahasi, eraldatu eta horretan oinarrituz sortu
           </li>
+        
 
-
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -204,10 +204,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -221,7 +221,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
     <h3 style="text-align: center">Honako baldintzen arabera:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Aitortu</strong> &mdash; <span rel="cc:requires"
@@ -247,8 +247,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
             </a>
           </p>
         </li>
-
-
+      
+      
       <li class="license nc"
           rel="cc:prohibits"
           resource="http://creativecommons.org/ns#CommercialUse">
@@ -257,9 +257,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
             <span id="nc-more-container"></span>
           </p>
       </li>
-
-
-
+      
+      
+      
 
     </ul>
   </div>
@@ -276,7 +276,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
       Oharrak:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Ez duzu lizentzia hau bete behar domeinu publikoan dagoen materialaren elementuen kasuan, ezta zuk egiten duzun erabilera <a href="#" id="exception_or_limitation_popup" class="helpLink">salbuespen edo muga</a> aplikagarri batek baimentzen duenean.
@@ -286,7 +286,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -296,13 +296,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">Ikasi gehiago</a> CC lizentzien inguruan, edo <a id="get_this" href="/choose/results-one?license_code=by-nc&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=eu">erabili lizentzia</a> zure materialerako.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -315,20 +315,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Orri hau hizkuntza hauetan dago ikusgai:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -384,7 +384,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -452,19 +452,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="eu">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Erantzukizun deskargua</div>
-
+        
           <div class="bd">
             <p>Laburpen honek benetako lizentziaren ezaugarri nagusi eta baldintza batzuk soilik nabarmentzen ditu. Ez da lizentzia bat eta ez du balio legalik. Benetako lizentziaren baldintza guztiak arretaz berrikusi beharko zenituzke lizentziadun materiala erabili aurretik.</p>
 
             <p>Creative Commons ez da abokatu-bulego bat, eta ez du lege-zerbitzurik ematen. Laburpen hau edo laburtzen den lizentzia banatzen, erakusten edo horren esteka erabiltzen denean, ez da abokatu-bezero harremanik edo bestelakorik sortzen.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

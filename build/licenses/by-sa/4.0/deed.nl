@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Naamsvermelding-GelijkDelen 4.0 Internationaal
   &mdash; CC BY-SA 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-sa/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Spring naar de content</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Naamsvermelding-GelijkDelen 4.0 Internationaal</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-SA 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Dit is de vereenvoudigde (human-readable) versie van de volledige <a href="legalcode" class="fulltext">licentie</a> en geen vervanging van de volledige licentie.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Vrijwaring</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,19 +188,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
         <strong>het werk te delen</strong> &mdash; te kopiëren, te verspreiden en door te geven via elk medium of bestandsformaat
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>het werk te bewerken</strong> &mdash; te remixen, te veranderen en afgeleide werken te maken
           </li>
+        
 
-
-
+        
           <li class="license commercial">
             voor alle doeleinden, inclusief commerciële doeleinden.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -208,8 +208,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
       </ul>
       </div>
 
-
-
+    
+      
         <div id="libre" class="col-sm-2">
           <a href="http://freedomdefined.org/" class="screen-only">
             <img src="/static/images/deed/FreeCulturalWorks_seal_x2.jpg" style="border: 0"
@@ -219,9 +219,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
             <img src="/static/images/deed/seal.png" style="border: 0" alt="" />
           </a>
         </div>
-
-
-  </div>
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -235,7 +235,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
     <h3 style="text-align: center">Onder de volgende voorwaarden:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Naamsvermelding</strong> &mdash; <span rel="cc:requires"
@@ -261,10 +261,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
             </a>
           </p>
         </li>
-
-
-
-
+      
+      
+      
+      
       <li class="license sa"
           rel="cc:requires"
           resource="http://creativecommons.org/ns#ShareAlike">
@@ -273,7 +273,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
             <span id="sa-more-container"></span>
           </p>
       </li>
-
+      
 
     </ul>
   </div>
@@ -290,7 +290,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
       Let op:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Voor elementen van het materiaal die zich in het publieke domein bevinden, en voor vormen van gebruik die worden toegestaan via een <a href="#" id="exception_or_limitation_popup" class="helpLink">uitzondering of beperking</a> in de Auteurswet, hoef je je niet aan de voorwaarden van de licentie te houden.
@@ -300,7 +300,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -310,12 +310,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
 <a href="http://wiki.creativecommons.org/FAQ">Meer weten</a> over CC licensering of <a id="get_this" href="/choose/results-one?license_code=by-sa&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=nl">gebruik de licentie</a> voor je eigen werk.
-
-
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -328,20 +328,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Deze pagina is beschikbaar in de volgende talen:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -397,7 +397,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -465,19 +465,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="nl">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Vrijwaring</div>
-
+        
           <div class="bd">
             <p>Dit document belicht enkele van de belangrijkste kenmerken en voorwaarden van de volledige licentie. Dit is geen licentie en heeft geen juridische waarde. We raden aan om alle voorwaarden van de volledige licentie te bestuderen voordat je het gelicenseerde materiaal gebruikt.</p>
 
             <p>Creative Commons is geen advocatenkantoor en biedt geen juridische diensten aan. Het verspreiden, tentoonstellen of linken naar dit document of de volledige licentietekst creëert geen advocaat-klantrelatie of enige andere relatie.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

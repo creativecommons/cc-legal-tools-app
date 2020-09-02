@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Atribusi-NonKomersial-BerbagiSerupa 4.0 Internasional
   &mdash; CC BY-NC-SA 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nc-sa/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Atribusi-NonKomersial-BerbagiSerupa 4.0 Internasional</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-NC-SA 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Lisensi ini adalah lisensi ringkas (dan bukan merupakan pengganti) dari <a href="legalcode" class="fulltext">lisensi lengkap</a>.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Penyangkalan</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,15 +188,15 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
         <strong>Berbagi</strong>  &mdash; menyalin dan menyebarluaskan kembali materi ini dalam bentuk atau format apapun;
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Adaptasi</strong>  &mdash; menggubah, mengubah, dan membuat turunan dari materi ini
           </li>
+        
 
-
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -204,10 +204,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -221,7 +221,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
     <h3 style="text-align: center">Berdasarkan ketentuan berikut:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Atribusi</strong> &mdash; <span rel="cc:requires"
@@ -247,8 +247,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
             </a>
           </p>
         </li>
-
-
+      
+      
       <li class="license nc"
           rel="cc:prohibits"
           resource="http://creativecommons.org/ns#CommercialUse">
@@ -257,9 +257,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
             <span id="nc-more-container"></span>
           </p>
       </li>
-
-
-
+      
+      
+      
       <li class="license sa"
           rel="cc:requires"
           resource="http://creativecommons.org/ns#ShareAlike">
@@ -268,7 +268,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
             <span id="sa-more-container"></span>
           </p>
       </li>
-
+      
 
     </ul>
   </div>
@@ -285,7 +285,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
       Pemberitahuan:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Anda tidak perlu menaati lisensi untuk bagian materi ini yang telah berada di bawah domain publik atau untuk penggunaan yang diizinkan di bawah <a href="#" id="exception_or_limitation_popup" class="helpLink">pengecualian atau pembatasan</a>.
@@ -295,7 +295,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -305,13 +305,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">Pelajari lebih lanjut</a> tentang penggunaan lisensi CC, atau <a id="get_this" href="/choose/results-one?license_code=by-nc-sa&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=id">gunakan lisensi ini</a> untuk ciptaan Anda.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -324,20 +324,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Laman ini tersedia dalam bahasa berikut:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -393,7 +393,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -461,19 +461,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="id">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Penyangkalan</div>
-
+        
           <div class="bd">
             <p>Lisensi ini hanya mencantumkan ringkasan fitur penting dan ketentuan dari lisensi yang sebenarnya. Lisensi ini bukan lisensi yang sebenarnya dan tidak memiliki kekuatan hukum. Anda harus mengetahui seluruh ketentuan dan kondisi di dalam teks lisensi yang sebenarnya sebelum menggunakan materi berlisensi CC.</p>
 
             <p>Creative Commons bukanlah suatu firma hukum dan tidak memberikan layanan hukum. Penyebarluasan, penggunaan, dan penautan kepada lisensi ini atau lisensi ringkas tidak menyebabkan munculnya suatu hubungan pengacara-klien atau hubungan lainnya.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

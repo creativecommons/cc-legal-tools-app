@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Uveďte autora-Neužívejte komerčně 4.0 International
   &mdash; CC BY-NC 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nc/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Přeskočit na obsah</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Uveďte autora-Neužívejte komerčně 4.0 International</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-NC 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         Toto je zkrácené, uživatelsky přívětivé znění plného <a href="legalcode" class="fulltext">textu licenčních podmínek</a> (a jako takové licenci nenahrazuje).
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Prohlášení o vyloučení odpovědnosti</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,15 +188,15 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
         <strong>Sdílet</strong> &mdash; rozmnožovat a distribuovat materiál prostřednictvím jakéhokoli média v jakémkoli formátu
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Upravit</strong> &mdash; remixovat, změnit a vyjít z původního díla
           </li>
+        
 
-
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -204,10 +204,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -221,7 +221,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
     <h3 style="text-align: center">Za těchto podmínek</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Uveďte původ</strong> &mdash; <span rel="cc:requires"
@@ -247,8 +247,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
             </a>
           </p>
         </li>
-
-
+      
+      
       <li class="license nc"
           rel="cc:prohibits"
           resource="http://creativecommons.org/ns#CommercialUse">
@@ -257,9 +257,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
             <span id="nc-more-container"></span>
           </p>
       </li>
-
-
-
+      
+      
+      
 
     </ul>
   </div>
@@ -276,7 +276,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
       Poznámky:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Touto licencí se není třeba řídit ohledně částí materiálu, které jsou volným dílem, popř. v případech, které lze klasifikovat jako <a href="#" id="exception_or_limitation_popup" class="helpLink">výjimku či omezení práva autorského</a>.
@@ -286,7 +286,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -296,12 +296,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
 <a href="http://wiki.creativecommons.org/FAQ">Zjistěte více</a> o licencích Creative Commons nebo <a id="get_this" href="/choose/results-one?license_code=by-nc&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=cs"> použijte CC licenci</a> pro vlastní obsah.
-
-
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -314,20 +314,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Tato stránka je k dispozici v následujících jazycích:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -383,7 +383,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -451,19 +451,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="cs">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Prohlášení o vyloučení odpovědnosti</div>
-
+        
           <div class="bd">
             <p>Toto Zkrácené znění, neboli deed, shrnuje pouze některé důležité prvky a podmínky samotných licenčních podmínek. Nejedná se o licenci a samo o sobě nemá žádnou právní váhu. Před vlastním licencováním Vašeho díla si pečlivě prostudujte veškerá ustanovení a samotné licenční podmínky.</p>
 
             <p>Organizace Creative Commons není advokátní kanceláří ani neposkytuje právní služby. Šířením, zveřejněním či odkázáním na tuto licenci nebo její zkrácené znění, neboli deed, které ji shrnuje, nevzniká vztah mezi klientem a advokátem, ani žádný jiný vztah.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

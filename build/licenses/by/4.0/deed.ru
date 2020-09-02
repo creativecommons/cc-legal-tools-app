@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; «Attribution» («Атрибуция») 4.0 Весь мир (в т.ч. Россия и др.)
   &mdash; CC BY 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Перейти к контенту</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">«Attribution» («Атрибуция») 4.0 Весь мир (в т.ч. Россия и др.)</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         На этой странице размещено лишь изложенное понятным языком краткое объяснение лицензии, которое не является заменой <a href="legalcode" class="fulltext">ПОЛНОГО ТЕКСТА ЛИЦЕНЗИИ</a>.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Оговорка (disclaimer)</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,19 +188,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
         <strong>Делиться (обмениваться)</strong> &mdash; копировать и распространять материал на любом носителе и в любом формате
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Адаптировать (создавать производные материалы)</strong>  &mdash; делать ремиксы, видоизменять, и создавать новое, опираясь на этот материал
           </li>
+        
 
-
-
+        
           <li class="license commercial">
             в любых целях, включая коммерческие.
           </li>
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -208,8 +208,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
       </ul>
       </div>
 
-
-
+    
+      
         <div id="libre" class="col-sm-2">
           <a href="http://freedomdefined.org/" class="screen-only">
             <img src="/static/images/deed/FreeCulturalWorks_seal_x2.jpg" style="border: 0"
@@ -219,9 +219,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
             <img src="/static/images/deed/seal.png" style="border: 0" alt="" />
           </a>
         </div>
-
-
-  </div>
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -235,7 +235,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
     <h3 style="text-align: center">При обязательном соблюдении следующих условий:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>«Attribution» («Атрибуция»)</strong> &mdash; <span rel="cc:requires"
@@ -261,10 +261,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
             </a>
           </p>
         </li>
-
-
-
-
+      
+      
+      
+      
 
     </ul>
   </div>
@@ -281,7 +281,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
       Замечания:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         Вы не обязаны действовать согласно условиям лицензии, если конкретная часть материала находится в общественном достоянии или если такое использование вами материала разрешено согласно применимому <a href="#" id="exception_or_limitation_popup" class="helpLink">исключению или ограничению авторских прав</a>.
@@ -291,7 +291,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -301,13 +301,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
         <a href="http://wiki.creativecommons.org/FAQ">Узнайте больше</a> о лицензиях CC или <a id="get_this" href="/choose/results-one?license_code=by&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=ru">используйте эту лицензию</a> для своих собственных произведений.
-
-
-
+            
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -320,20 +320,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Эта страница доступна на следующих языках:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -389,7 +389,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -457,19 +457,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ru">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Оговорка (disclaimer)</div>
-
+        
           <div class="bd">
             <p>Данное краткое описание лицензии содержит только некоторые ключевые особенности и условия самой лицензии. Оно не является лицензией и не имеет юридической силы. Прежде чем начать использовать лицензированный материал, вам следует внимательно ознакомиться со всеми условиями и положениями самой лицензии, прежде чем начать использовать лицензируемый материал.</p>
 
             <p>Creative Commons не является юридической фирмой и не оказывает юридические услуги. Распространение, показ или предоставление ссылки на это краткое описание или на лицензию не создает отношений, аналогичных отношениям между адвокатом и клиентом, или иных отношений. </p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

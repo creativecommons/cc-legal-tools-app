@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; Attribution-NonCommercial-ShareAlike 4.0 Quốc tế
   &mdash; CC BY-NC-SA 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nc-sa/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">Skip to content</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">Attribution-NonCommercial-ShareAlike 4.0 Quốc tế</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-NC-SA 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         This is a human-readable summary of (and not a substitute for) the <a href="legalcode" class="fulltext">license</a>.
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">Disclaimer</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,15 +188,15 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
         <strong>Share</strong>  &mdash; copy and redistribute the material in any medium or format
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>Adapt</strong>  &mdash; remix, transform, and build upon the material
           </li>
+        
 
-
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -204,10 +204,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -221,7 +221,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
     <h3 style="text-align: center">Under the following terms:</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>Ghi công</strong> &mdash; <span rel="cc:requires"
@@ -247,8 +247,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
             </a>
           </p>
         </li>
-
-
+      
+      
       <li class="license nc"
           rel="cc:prohibits"
           resource="http://creativecommons.org/ns#CommercialUse">
@@ -257,9 +257,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
             <span id="nc-more-container"></span>
           </p>
       </li>
-
-
-
+      
+      
+      
       <li class="license sa"
           rel="cc:requires"
           resource="http://creativecommons.org/ns#ShareAlike">
@@ -268,7 +268,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
             <span id="sa-more-container"></span>
           </p>
       </li>
-
+      
 
     </ul>
   </div>
@@ -285,7 +285,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
       Notices:
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable <a href="#" id="exception_or_limitation_popup" class="helpLink">exception or limitation</a>.
@@ -295,7 +295,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -305,12 +305,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
 <a href="http://wiki.creativecommons.org/FAQ">Tìm hiểu thêm</a> về giấy phép CC, hoặc <a id="get_this" href="/choose/results-one?license_code=by-nc-sa&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=vi">sử dụng giấy phép</a> cho tài liệu của bạn
-
-
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -323,20 +323,20 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     Ngôn ngữ hiện có:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -392,7 +392,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -460,19 +460,19 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="vi">
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">Disclaimer</div>
-
+        
           <div class="bd">
             <p>This deed highlights only some of the key features and terms of the actual license. It is not a license and has no legal value. You should carefully review all of the terms and conditions of the actual license before using the licensed material.</p>
 
             <p>Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this deed or the license that it summarizes does not create a lawyer-client or any other relationship.</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">

@@ -10,7 +10,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <title>
-
+    
   Creative Commons &mdash; 表示 - 非営利 - 継承 4.0 国際
   &mdash; CC BY-NC-SA 4.0
 
@@ -18,12 +18,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
 
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-
+  
 
 </head>
 
 <body typeof="cc:License" about="http://creativecommons.org/licenses/by-nc-sa/4.0/" class="license ltr">
-
+  
   <!-- RDF code here for backwards compatibility.  Please use the
        license's RDFa instead. -->
   <!-- RDF Generation Not Implemented -->
@@ -32,7 +32,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
     <div class="site-inner">
       <a class="skip-link screen-reader-text" href="#content">コンテンツへ進む</a>
 
-
+      
 <div class="site-header-wrapper">
   <header id="masthead" class="site-header sticky-nav-main" role="banner">
     <div class="site-header-main">
@@ -104,7 +104,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
           </section>
         </aside>
 
-
+        
 <div id="language-selector-block" class="container">
   <div class="language-selector-inner">
     <span dir="ltr" style="text-align: left">
@@ -114,7 +114,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
     <img class="language-icon" src="/static/images/language_icon_x2.png" alt="Languages" />
 
     <select>
-
+      
     </select>
 
   </div>
@@ -139,13 +139,13 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
                   <h2>
                     <span class="cc-license-icons">
                       <span id="cc-logo" class="icon"><img alt="cc logo" src="/static/images/deed/cc_icon_white_x2.png"></span>
-
-
-
-
+                      
+                      
+                      
+                      
                     </span>
 
-
+                    
   <span class="cc-license-title" property="dc:title dct:title">表示 - 非営利 - 継承 4.0 国際</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC BY-NC-SA 4.0)
@@ -158,11 +158,11 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
               <div id="deed-main" dir="ltr" style="text-align: left" class="row">
                 <div id="legalcode-block">
                   <div id="deed-disclaimer">
-
+                    
                       <span class="summary">
                         これは人が読んでわかりやすいようにした<a href="legalcode" class="fulltext">ライセンス</a>の要約です。(ライセンスの代わりになるものではありません。)
                       </span>
-
+                    
 
                     <span class="disclaimer">
                       <a href="#" id="disclaimer_popup" class="helpLink">免責条項</a>.
@@ -171,12 +171,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
                 </div>
 
                 <div id="deed-main-content" class="row ">
-
+                  
   <div id="deed-rights"
        dir="ltr" style="text-align: left" class="row">
+    
 
-
-
+    
 
     <div class="col-sm-offset-2 col-sm-8">
       <h3 style="text-align: center" resource="http://creativecommons.org/ns#Reproduction"
@@ -188,15 +188,15 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
         <strong>共有</strong> &mdash; どのようなメディアやフォーマットでも資料を複製したり、再配布できます。
         </li>
 
-
+        
           <li class="license remix"
               rel="cc:permits"
               resource="http://creativecommons.org/ns#DerivativeWorks">
             <strong>翻案</strong> &mdash; マテリアルをリミックスしたり、改変したり、別の作品のベースにしたりできます。
           </li>
+        
 
-
-
+        
         <li id="more-container"
             class="license-hidden">
           <span id="devnations-container" />
@@ -204,10 +204,10 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
       </ul>
       </div>
 
-
-
-
-  </div>
+    
+      
+    
+  </div>  
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">
@@ -221,7 +221,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
     <h3 style="text-align: center">あなたの従うべき条件は以下の通りです。</h3>
 
     <ul dir="ltr" style="text-align: left" class="license-properties col-md-offset-2 col-md-8">
-
+      
       <li class="license by">
           <p>
             <strong>表示</strong> &mdash; <span rel="cc:requires"
@@ -247,8 +247,8 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
             </a>
           </p>
         </li>
-
-
+      
+      
       <li class="license nc"
           rel="cc:prohibits"
           resource="http://creativecommons.org/ns#CommercialUse">
@@ -257,9 +257,9 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
             <span id="nc-more-container"></span>
           </p>
       </li>
-
-
-
+      
+      
+      
       <li class="license sa"
           rel="cc:requires"
           resource="http://creativecommons.org/ns#ShareAlike">
@@ -268,7 +268,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
             <span id="sa-more-container"></span>
           </p>
       </li>
-
+      
 
     </ul>
   </div>
@@ -285,7 +285,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
       ご注意：
     </h3>
     <ul class="understanding license-properties col-md-offset-2 col-md-8">
-
+    
 
       <li class="license">
         あなたは、資料の中でパブリック・ドメインに属している部分に関して、あるいはあなたの利用が著作権法上の<a href="#" id="exception_or_limitation_popup" class="helpLink">権利制限規定</a>にもとづく場合には、ライセンスの規定に従う必要はありません。
@@ -295,7 +295,7 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
       </li>
     </ul>
 
-
+    
 
   </div>
   <span id="referrer-metadata-container" />
@@ -305,12 +305,12 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="ja">
 
               <div class="row" id="footer">
                 <p class="learn-more-cc">
-
-
-
+                  
+                    
+            
 CCライセンスの使用について<a href="http://wiki.creativecommons.org/FAQ">もっと知る</a> 、もしくは あなた自身のマテリアルへ<a id="get_this" href="/choose/results-one?license_code=by-nc-sa&amp;amp;jurisdiction=&amp;amp;version=4.0&amp;amp;lang=ja">ライセンスを使う</a> 。
-
-
+                    
+                  
                 </p>
                 <noscript>
                   <div id="deed-donate-footer">
@@ -323,20 +323,20 @@ CCライセンスの使用について<a href="http://wiki.creativecommons.org/F
                     </div>
                   </div>
                 </noscript>
-
+                
 <div id="languages">
   <span dir="ltr" style="text-align: left">
     このページは以下の言語でもご覧になれます:
   </span>
   <br/>
 
-
+  
 </div>
 
 
               </div>
 
-
+              
 
 <div id="deed-donate-slide" style="display: none;">
   <div class="slide-trigger">
@@ -392,7 +392,7 @@ CCライセンスの使用について<a href="http://wiki.creativecommons.org/F
         </div>
       </div>
 
-
+      
 
 <div class="site-footer-wrapper">
   <footer id="colophon" class="site-footer sticky-nav-main" role="contentinfo">
@@ -460,19 +460,19 @@ CCライセンスの使用について<a href="http://wiki.creativecommons.org/F
   </div>
 
   <div id="help-panels" style="display: none">
-
-
+    
+  
       <div id="help_disclaimer_popup" class="help_panel">
         <div class="hd">免責条項</div>
-
+        
           <div class="bd">
             <p>このコモンズ証は、実際のライセンスの条項の鍵となる特徴のいくつかだけをハイライトしたものです。これはライセンスではなく、法律的な意味を持つものではありません。あなたはライセンスされたマテリアルを利用する前に実際のライセンスの条項を全て慎重に検討するべきです。</p>
 
             <p>Creative Commonsは法律事務所ではなく、法律業務を提供するものではありせん。このコモンズ証や、コモンズ証が要約しているライセンスを、配布したり、表示したり、またはそれらにリンクすることは、法律家と依頼者の関係や、そのほかいかなる関係も形成しません。</p>
           </div>
-
+        
       </div>
-
+    
 
   <div id="help_attribution_help" class="help_panel">
     <div class="hd">
