@@ -32,5 +32,8 @@ node_modules
 */static/js/vendors.js
 */static/libs/modernizr.js
 */static/css
+build/
 build/licenses/
 build/static/
+docs/_build/
+
