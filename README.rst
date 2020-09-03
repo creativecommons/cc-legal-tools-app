@@ -95,7 +95,11 @@ Importing the existing license text
 Temporarily during development, we'll be importing the translated license text
 from HTML files.
 
-Clone https://github.com/creativecommons/creativecommons.org next to this repo.
+First, clean up any old data by running::
+
+    python manage.py clear_license_data
+
+Then, clone https://github.com/creativecommons/creativecommons.org next to this repo.
 Then run::
 
     python manage.py load_html_files ../creativecommons.org/docroot/legalcode
@@ -104,9 +108,7 @@ It will read the HTML files from the specified directory, populate the database
 with LegalCode and License records, and at least for the BY 4.0 licenses, create
 .po and .mo files under locale.licenses.
 
-To clean things up ready to start over::
-
-    python manage.py clear_license_data
+To clean things up ready to start over, you can run clear_license_data again.
 
 Deployment
 ----------
