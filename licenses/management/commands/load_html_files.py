@@ -150,7 +150,12 @@ class Command(BaseCommand):
                 domain = legalcode.license.translation_domain
 
                 # Use fake language of language+domain to switch to this set of translations
-                lang_plus_domain = to_language(f"{language_code}{domain}")
+                punctuationless_language_code = (
+                    language_code.replace("-", "").replace("_", "").replace(".", "")
+                )
+                lang_plus_domain = to_language(
+                    f"{punctuationless_language_code}{domain}"
+                )
 
                 pofile = POFile()
                 pofile.metadata = {
@@ -167,8 +172,11 @@ class Command(BaseCommand):
                 }
 
                 for internal_key, translation in messages_text.items():
-                    # Always use english text as the translation key
-                    message_key = english_text[internal_key]
+                    # Always use english text as the translation key (if we have it)
+                    if internal_key in english_text:
+                        message_key = english_text[internal_key]
+                    else:
+                        message_key = translation  # PUNT.
                     # For English file, translations are empty.
                     message_value = "" if language_code == "en" else translation
                     pofile.append(
@@ -389,7 +397,7 @@ class Command(BaseCommand):
         else:
             messages["s2b_other_rights_waive_non_nc"] = str(text_items[2])
 
-        # s3: conditions
+        # Section 3: conditions
         messages["s3_conditions_title"] = nested_text(soup.find(id="s3"))
         messages["s3_conditions_intro"] = nested_text(
             soup.find(id="s3").find_next_sibling("p")
@@ -424,6 +432,7 @@ class Command(BaseCommand):
             messages["sharealike_name"] = nested_text(soup.find(id="s3b").strong)
             messages["sharealike_intro"] = nested_text(soup.find(id="s3b").p)
 
+        # Section 4: Sui generis database rights
         messages["s4_sui_generics_database_rights_titles"] = nested_text(
             soup.find(id="s4")
         )
@@ -470,11 +479,13 @@ class Command(BaseCommand):
                 # already seen s4, this is the ol, so the next child is our text
                 take_next = True
 
+        # Section 5: Disclaimer
         messages["s5_disclaimer_title"] = soup.find(id="s5").string
         messages["s5_a"] = soup.find(id="s5a").string  # bold
         messages["s5_b"] = soup.find(id="s5b").string  # bold
         messages["s5_c"] = soup.find(id="s5c").string  # not bold
 
+        # Section 6: Term and Termination
         messages["s6_termination_title"] = nested_text(soup.find(id="s6"))
         messages["s6_termination_applies"] = nested_text(soup.find(id="s6a"))
         s6b = soup.find(id="s6b")
@@ -502,11 +513,15 @@ class Command(BaseCommand):
             "".join(str(x) for x in children_of_s6b[4:7])
         ).strip()
 
+        # Section 7: Other terms and conditions
         messages["s7_other_terms_title"] = soup.find(id="s7").string
         messages["s7_a"] = soup.find(id="s7a").string
         messages["s7_b"] = soup.find(id="s7b").string
 
+        # Section 8: Interpretation
         messages["s8_interpretation_title"] = soup.find(id="s8").string
+        for key in ["s8a", "s8b", "s8c", "s8d"]:
+            messages[key] = inner_html(soup.find(id=key))
 
         validate_dictionary_is_all_text(messages)
 
