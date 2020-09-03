@@ -6,31 +6,34 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('licenses', '0002_import_license_data'),
+        ("licenses", "0002_import_license_data"),
     ]
 
     operations = [
+        migrations.AlterModelOptions(name="legalcode", options={"ordering": ["url"]},),
         migrations.AlterModelOptions(
-            name='legalcode',
-            options={'ordering': ['url']},
-        ),
-        migrations.AlterModelOptions(
-            name='license',
-            options={'ordering': ['-version', 'license_code', 'jurisdiction_code']},
+            name="license",
+            options={"ordering": ["-version", "license_code", "jurisdiction_code"]},
         ),
         migrations.AddField(
-            model_name='legalcode',
-            name='raw_html',
-            field=models.TextField(blank=True, default=''),
+            model_name="legalcode",
+            name="raw_html",
+            field=models.TextField(blank=True, default=""),
         ),
         migrations.AlterField(
-            model_name='legalcode',
-            name='language_code',
-            field=models.CharField(help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?", max_length=8),
+            model_name="legalcode",
+            name="language_code",
+            field=models.CharField(
+                help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+                max_length=8,
+            ),
         ),
         migrations.AlterField(
-            model_name='translatedlicensename',
-            name='language_code',
-            field=models.CharField(help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?", max_length=8),
+            model_name="translatedlicensename",
+            name="language_code",
+            field=models.CharField(
+                help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+                max_length=8,
+            ),
         ),
     ]
