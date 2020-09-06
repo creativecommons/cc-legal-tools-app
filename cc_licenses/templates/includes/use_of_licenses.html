@@ -1,5 +1,7 @@
+{% load lang_dir %}
+
 {# For JS Toggling Feature for Consideration Sections - See licenses_detail.html #}
-<div id="about-cc-and-license" class="padding-bigger margin-top-bigger has-background-info-light" dir={{ lang_dir }}>
+<div id="about-cc-and-license" class="padding-bigger margin-top-bigger has-background-info-light" dir={% lang_dir is_rtl %}>
   <h4 class="level is-vcentered b-header">Using Creative Commons Public Licenses</h4>
   <p class="has-text-black body-big">
     Creative Commons public licenses provide a standard set of terms and conditions that creators
@@ -19,7 +21,7 @@
       <a href="#">More considerations for licensors.</a>
     </p>
   </div>
-  <hr class="divider {% if lang_dir == 'rtl' %}rtl-divider{% endif %}">
+  <hr class="divider {% if is_rtl %}rtl-divider{% endif %}">
   <div>
     <h4 class="level is-vcentered b-header">Considerations for the public<span class="level-right"><i class="angle-down icon" data-consideration="2" data-direction="down"><span class="is-sr-only">Show Considerations for the Public</span></i></span></h4>
     <p class="has-text-black body-big is-hidden">

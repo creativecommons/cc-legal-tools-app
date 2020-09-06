@@ -1,6 +1,9 @@
-<div id="red_alert" class="padding-bigger margin-top-big" dir={{ lang_dir }}>
+{% load lang_pad_horizontal_reverse %}
+{% load lang_dir %}
+
+<div id="red_alert" class="padding-bigger margin-top-big" dir={% lang_dir is_rtl %}>
   <p class="has-text-black body-big is-flex">
-    <i class="exclamation-circle icon padding-{% if lang_dir == 'ltr' %}right{% else %}left{% endif %}-big"></i>
+    <i class="exclamation-circle icon padding-{% lang_pad_horizontal_reverse is_rtl %}-big"></i>
     Creative Commons has retired this legal tool and does not recommend that it be applied to works.
   </p>
 </div>

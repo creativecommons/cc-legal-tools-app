@@ -1,10 +1,14 @@
+{% load lang_pad_horizontal %}
+{% load lang_pad_horizontal_reverse %}
+{% load lang_dir %}
+
 {# about_cc.html is an identical component to about__cc_and_license #}
 {# refactor this code and use "with" template tag in licenses_detail.html to pass header and text to these templates #}
 {# if this content will be modified through the django admin in the future #}
 
-<div id="about-cc-and-license" class="padding-bigger has-background-info-light" dir={{ lang_dir }}>
-  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% if lang_dir == 'ltr' %}right{% else %}left{% endif %}-normal"></i>About Creative Commons</h4>
-  <p class="has-text-black padding-{% if lang_dir == 'ltr' %}left{% else %}right{% endif %}-big">
+<div id="about-cc-and-license" class="padding-bigger has-background-info-light" dir={% lang_dir is_rtl %}>
+  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% lang_pad_horizontal_reverse is_rtl %}-normal"></i>About Creative Commons</h4>
+  <p class="has-text-black padding-{% lang_pad_horizontal is_rtl %}-big">
     Creative Commons is not a party to its public licenses. Notwithstanding, Creative Commons may elect to apply one of its
     public licenses to material it publishes and in those instances will be considered the "Licensor." The text of the Creative
     Commons public licenses is dedicated to the public domain under the <a href="#">CC0 Public Domain Dedication</a>. Except for the
@@ -14,7 +18,7 @@
     arrangements, understandings, or agreements concerning use of licensed material. For the avoidance of doubt, this paragraph does not form
     part of the public licenses.
   </p>
-  <p class="has-text-black padding-{% if lang_dir == 'ltr' %}left{% else %}right{% endif %}-big padding-top-normal">
+  <p class="has-text-black padding-{% lang_pad_horizontal is_rtl %}-big padding-top-normal">
     Creative Commons may be contacted at <a href="creativecommons.org">creativecommons.org</a>.
   </p>
 </div>

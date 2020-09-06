@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load lang_dir %}
 
 {# Note Next Link #}
 {% block next_text %}See the legal code{% endblock %}
@@ -17,7 +18,7 @@
     <div class="container">
       {% include 'includes/red_alert.html' %}
       {% include 'includes/sampling_deed_body.html'%}
-      <div class="columns margin-top-normal" dir={{ lang_dir }}>
+      <div class="columns margin-top-normal" dir={% lang_dir is_rtl %}>
         {% include 'includes/related_links.html' with show_sampling_deed="True" %}
       </div>
     </div>

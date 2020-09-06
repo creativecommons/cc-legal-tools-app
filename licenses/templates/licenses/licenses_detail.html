@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n static %}
+{% load lang_dir %}
 
 {% block next_btn_section %}
 <div class="columns">
@@ -25,7 +26,7 @@
       {% include 'includes/legal_code.html' %}
       {% include 'includes/view_legal_code_link_plain_text.html' %}
       {% include 'includes/about_cc.html' %}
-      <div class="columns margin-top-normal" dir={{ lang_dir }}>
+      <div class="columns margin-top-normal" dir={% lang_dir is_rtl %}>
         {% include 'includes/related_links.html' with show_legal_code="True" %}
       </div>
     </div>

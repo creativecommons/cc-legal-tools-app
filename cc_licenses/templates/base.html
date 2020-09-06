@@ -1,4 +1,5 @@
 {% load static from staticfiles %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en" class="no-js">
 <head about="{% block about %} {% endblock %}">
@@ -15,13 +16,15 @@
 <body typeoff="cc:License">
     {% include 'includes/header.html' %}
     <main>
-      {% with lang_dir="ltr" %}
+      {% get_language_info for 'en' as lang %}
+      {% with is_rtl=lang.bidi %}
         <div class="level padding-horizontal-large padding-vertical-normal">
               {% include 'includes/skiplink.html' %}
               {% include 'includes/breadcrumbs.html' %}
               {% include 'includes/locale.html' %}
         </div>
         <section id="content" class="padding-horizontal-larger">
+          {{ lang.bidi }}
           {% block next_btn_section %}{% endblock %}
           {% block content %}{% endblock %}
         </section>

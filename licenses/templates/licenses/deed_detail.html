@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n static %}
+{% load lang_dir %}
 
 {% block about %}{{ license.about }}{% endblock %}
 {% block title %} Creative Commons &mdash; {{ license.translated_title }} {% endblock %}
@@ -16,7 +17,7 @@
     <div class="container">
       {% include 'includes/deed_body.html' %}
       {% include 'includes/disclaimer.html' %}
-      <div class="columns margin-top-normal is-vcentered" dir={{ lang_dir }}>
+      <div class="columns margin-top-normal is-vcentered" dir={% lang_dir is_rtl %}>
           {% include 'includes/related_links.html' with show_standard_deed="True" %}
           {% include 'includes/newsletter.html' %}
       </div>
