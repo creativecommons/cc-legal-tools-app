@@ -1,5 +1,5 @@
 {% load lang_pad_horizontal %}
-{% load lang_pad_horizontal_reverse %}
+
 {% load lang_dir %}
 
 {# disclaimer.html is an identical component to about_cc_and_license and about_cc #}
@@ -7,13 +7,13 @@
 {# if this content will be modified through the django admin in the future #}
 
 <div id="disclaimer-info-section" class="padding-bigger has-background-info-light" dir={% lang_dir is_rtl %}>
-  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% lang_pad_horizontal_reverse is_rtl %}-normal"></i>Disclaimer</h4>
-  <p class="has-text-black padding-{% lang_pad_horizontal is_rtl %}-big">
+  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal"></i>Disclaimer</h4>
+  <p class="has-text-black padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big">
     This deed highlights only some of the key features and terms of the actual license. It is not a license and
     has no legal value. You should carefully review all of the terms and conditions of the actual license before
     using the licensed material.
   </p>
-  <p class="has-text-black padding-{% lang_pad_horizontal is_rtl %}-big padding-top-normal">
+  <p class="has-text-black padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big padding-top-normal">
     Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this
     deed or the license that it summarizes does not create a lawyer-client or any other relationship.
   </p>

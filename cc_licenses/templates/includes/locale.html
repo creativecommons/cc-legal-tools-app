@@ -1,10 +1,10 @@
 {% load lang_pad_horizontal %}
-{% load lang_pad_horizontal_reverse %}
+
 {% load lang_dir %}
 
-<div class="locale level-{% lang_pad_horizontal_reverse is_rtl %} level-item has-text-black" dir={% lang_dir is_rtl %}>
+<div class="locale level-{% lang_pad_horizontal is_rtl is_reverse=True %} level-item has-text-black" dir={% lang_dir is_rtl %}>
   Languages available
-  <div class="control has-icons-{% lang_pad_horizontal is_rtl %} {% if is_rtl == 'rtl' %}margin-right-small{% endif %}">
+  <div class="control has-icons-{% lang_pad_horizontal is_rtl is_reverse=False %} {% if is_rtl == 'rtl' %}margin-right-small{% endif %}">
     <div class="select">
       <select>
         {% block lang-options %}
@@ -17,7 +17,7 @@
         {% endblock lang-options %}
       </select>
     </div>
-    <div class="icon is-small is-{% lang_pad_horizontal is_rtl %}">
+    <div class="icon is-small is-{% lang_pad_horizontal is_rtl is_reverse=False %}">
       <!-- TODO Add icons here -->
     </div>
   </div>

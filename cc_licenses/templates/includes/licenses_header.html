@@ -1,4 +1,4 @@
-{% load lang_pad_horizontal_reverse %}
+{% load lang_pad_horizontal %}
 {% load lang_dir %}
 
 {# cc_licenses icons - https://cc-vocabulary.netlify.app/?path=/docs/tokens-icons--figma #}
@@ -6,7 +6,7 @@
 <div id="licenses-header" class="padding-larger margin-bottom-bigger has-text-black" dir={% lang_dir is_rtl %}>
   <h2 class="is-vcentered">
     {# Icon Sections #}
-      <span class="padding-{% lang_pad_horizontal_reverse is_rtl %}-bigger">
+      <span class="padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-bigger">
       {# Forloop through icons classes that are being sent from model #}
         <i class="cc-logo icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
         <i class="cc-by icon has-background-white has-text-black value padding-bottom-small margin-big"></i>

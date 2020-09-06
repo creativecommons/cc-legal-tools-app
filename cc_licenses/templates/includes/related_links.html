@@ -1,4 +1,4 @@
-{% load lang_pad_horizontal_reverse %}
+{% load lang_pad_horizontal %}
 {% load lang_dir %}
 
 <div
@@ -26,12 +26,12 @@
       {% endif %}
       <ul>
         {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% lang_pad_horizontal_reverse is_rtl %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about our work</a></li>
+          <li><span class="body-bigger padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about our work</a></li>
         {% endif %}
-        <li><span class="body-bigger padding-{% lang_pad_horizontal_reverse is_rtl %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about CC Licensing</a></li>
-        <li><span class="body-bigger padding-{% lang_pad_horizontal_reverse is_rtl %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Support our work</a></li>
+        <li><span class="body-bigger padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about CC Licensing</a></li>
+        <li><span class="body-bigger padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Support our work</a></li>
         {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% lang_pad_horizontal_reverse is_rtl %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Use the license for your own material.<i class="icon external-link padding-bottom-small caption"></i></a></li>
+          <li><span class="body-bigger padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Use the license for your own material.<i class="icon external-link padding-bottom-small caption"></i></a></li>
         {% endif %}
       </ul>
     </li>
