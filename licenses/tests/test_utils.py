@@ -174,7 +174,7 @@ class GetLicenseUtilityTest(TestCase):
         self.license3 = LicenseFactory(license_code="by-nd", version="3.0", jurisdiction_code="hk")
         self.license4 = LicenseFactory(license_code="by-nc-sa", version="3.0", jurisdiction_code="us")
         self.license5 = LicenseFactory(license_code="by-na", version="3.0", jurisdiction_code="nl")
-        self.license6 = LicenseFactory(license_code="by", version="") # zero
+        self.license6 = LicenseFactory(license_code="by", version="")  # zero
         self.license7 = LicenseFactory(license_code="by", version="2.5")
         self.license8 = LicenseFactory(license_code="by", version="2.0")
         self.license9 = LicenseFactory(license_code="by", version="2.1")
