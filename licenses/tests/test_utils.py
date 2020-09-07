@@ -1,15 +1,19 @@
 from django.test import TestCase
-
-from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
-from licenses.constants import EXCLUDED_LICENSE_VERSIONS
+from licenses.constants import (
+    EXCLUDED_LANGUAGE_IDENTIFIERS,
+    EXCLUDED_LICENSE_VERSIONS
+)
 from licenses.models import License
-from licenses.utils import get_code_from_jurisdiction_url
-from licenses.utils import get_license_url_from_legalcode_url
-from licenses.utils import get_licenses_code_and_version
-from licenses.utils import get_licenses_code_version_jurisdiction
-from licenses.utils import get_licenses_code_version_jurisdiction_lang
-from licenses.utils import get_licenses_code_version_lang
-from licenses.utils import parse_legalcode_filename
+from licenses.utils import (
+    get_code_from_jurisdiction_url,
+    get_license_url_from_legalcode_url,
+    get_licenses_code_and_version,
+    get_licenses_code_version_jurisdiction,
+    get_licenses_code_version_jurisdiction_lang,
+    get_licenses_code_version_lang,
+    parse_legalcode_filename,
+)
+from .factories import LicenseFactory
 
 
 class GetJurisdictionCodeTest(TestCase):
@@ -163,6 +167,17 @@ class GetLicenseUtilityTest(TestCase):
     """Test django-distill utility functions for
     generating an iterable of license dictionaries
     """
+
+    def setUp(self):
+        self.license1 = LicenseFactory(license_code="by", version="4.0")
+        self.license2 = LicenseFactory(license_code="by-nc", version="4.0")
+        self.license3 = LicenseFactory(license_code="by-nd", version="3.0", jurisdiction_code="hk")
+        self.license4 = LicenseFactory(license_code="by-nc-sa", version="3.0", jurisdiction_code="us")
+        self.license5 = LicenseFactory(license_code="by-na", version="3.0", jurisdiction_code="nl")
+        self.license6 = LicenseFactory(license_code="by", version="") # zero
+        self.license7 = LicenseFactory(license_code="by", version="2.5")
+        self.license8 = LicenseFactory(license_code="by", version="2.0")
+        self.license9 = LicenseFactory(license_code="by", version="2.1")
 
     def test_get_licenses_code_and_version(self):
         """Should return an iterable of license dictionaries
