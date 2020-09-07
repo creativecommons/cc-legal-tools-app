@@ -16,8 +16,9 @@
 <body typeoff="cc:License">
     {% include 'includes/header.html' %}
     <main>
-      {# for testing purposes, replace target_lang with 'en' for ltr and 'ar' for rtl #}
-      {% get_language_info for target_lang as lang %}
+      {# for testing purposes, 'en' for ltr and 'ar' for rtl #}
+      {# Replace with languages_code field coming from views #}
+      {% get_language_info for 'en' as lang %}
       {% with is_rtl=lang.bidi %}
         <div class="level padding-horizontal-large padding-vertical-normal">
               {% include 'includes/skiplink.html' %}
