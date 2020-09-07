@@ -5,8 +5,10 @@ from django.shortcuts import render
 from django.utils import translation
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import get_language_for_jurisdiction
-from i18n.utils import rtl_context_stuff
+from i18n.utils import (
+    get_language_for_jurisdiction,
+    rtl_context_stuff,
+)
 from licenses.models import License
 
 

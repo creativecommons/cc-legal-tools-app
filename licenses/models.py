@@ -13,7 +13,10 @@ from django.db import models
 from django.urls import reverse
 from django.utils import translation
 
-from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
+from i18n import (
+    DEFAULT_LANGUAGE_CODE,
+    DEFAULT_JURISDICTION_LANGUAGES
+)
 from licenses import (
     FREEDOM_LEVEL_MIN,
     FREEDOM_LEVEL_MID,

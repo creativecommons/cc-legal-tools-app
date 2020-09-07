@@ -1,19 +1,24 @@
-from django.urls import path
-from django.urls import register_converter
+from django.urls import (
+    path,
+    register_converter,
+)
 from django_distill import distill_path
-
-from .utils import get_licenses_code_and_version
-from .utils import get_licenses_code_version_jurisdiction
-from .utils import get_licenses_code_version_jurisdiction_lang
-from .utils import get_licenses_code_version_lang
+from .utils import (
+    get_licenses_code_and_version,
+    get_licenses_code_version_lang,
+    get_licenses_code_version_jurisdiction,
+    get_licenses_code_version_jurisdiction_lang,
+)
 from i18n import LANGUAGE_CODE_REGEX
-from licenses.views import deed_detail
-from licenses.views import license_deed_view_code_version_english
-from licenses.views import license_deed_view_code_version_jurisdiction
-from licenses.views import license_deed_view_code_version_jurisdiction_language
-from licenses.views import license_deed_view_code_version_language
-from licenses.views import license_detail
-from licenses.views import sampling_detail
+from licenses.views import (
+    deed_detail,
+    license_deed_view_code_version_english,
+    license_deed_view_code_version_jurisdiction,
+    license_deed_view_code_version_jurisdiction_language,
+    license_deed_view_code_version_language,
+    license_detail,
+    sampling_detail,
+)
 
 """
 Example deeds at

@@ -1,11 +1,15 @@
-from babel import Locale
-from babel import UnknownLocaleError
+from babel import (
+    Locale,
+    UnknownLocaleError,
+)
 from django.utils import translation
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext
 
-from i18n import DEFAULT_JURISDICTION_LANGUAGES
-from i18n import DEFAULT_LANGUAGE_CODE
+from i18n import (
+    DEFAULT_JURISDICTION_LANGUAGES,
+    DEFAULT_LANGUAGE_CODE,
+)
 
 
 CACHED_APPLICABLE_LANGS = {}
