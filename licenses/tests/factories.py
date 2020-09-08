@@ -2,7 +2,6 @@ import factory.fuzzy
 from django.utils import translation
 from factory import post_generation
 
-from licenses.constants import LICENSE_VERSIONS
 from licenses.models import (
     LegalCode,
     License,

@@ -154,7 +154,7 @@ class LicenseDeedViewTest(TestCase):
         )
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-    
+
     def test_license_deed_view_code_version_english(self):
         license = LicenseFactory(license_code="by", version="4.0")
         LegalCodeFactory(license=license, language_code="en")

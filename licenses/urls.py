@@ -1,7 +1,4 @@
-from django.urls import (
-    path,
-    register_converter,
-)
+from django.urls import register_converter
 from django_distill import distill_path
 from .utils import (
     get_licenses_code_and_version,
@@ -137,8 +134,10 @@ register_converter(LangConverter, "lang")
 /licenses/by-sa/2.0/uk/legalcode - license for BY-SA 2.0, jurisdiction England and Wales, in English
 """
 
+
 def distill_wireframes():
     return None
+
 
 # DEEDS
 urlpatterns = [

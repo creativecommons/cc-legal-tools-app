@@ -196,6 +196,7 @@ def get_licenses_code_version_jurisdiction_lang():
                 }
             continue
 
+
 def compute_about_url(license_code, version, jurisdiction_code):
     """
     Compute the canonical unique "about" URL for a license with the given attributes.

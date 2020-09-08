@@ -285,6 +285,8 @@ class GetLicenseUtilityTest(TestCase):
                 return
         self.assertEqual([], yielded_license_list)
         self.assertEqual(list_of_licenses_dict, yielded_license_list)
+
+
 class TestComputeAboutURL(TestCase):
     def test_by_nc_40(self):
         self.assertEqual(
