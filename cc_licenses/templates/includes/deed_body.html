@@ -19,7 +19,7 @@
   <div class="columns is-multiline">
     {# Forloop  - populate content from deed model#}
     <div class="column is-1">
-      <i class="cc-by icon has-text-black has-background-white is-size-1 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big"></i>
+      {% include 'includes/snippet/icon.html' with icon_type='cc-by' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
@@ -30,7 +30,7 @@
     </div>
     {# endfor #}
     <div class="column is-1">
-      <i class="cc-nc icon has-text-black has-background-white is-size-1 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big"></i>
+      {% include 'includes/snippet/icon.html' with icon_type='cc-nc' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
@@ -38,7 +38,7 @@
       </p>
     </div>
     <div class="column is-1">
-      <i class="cc-sa icon has-text-black has-background-white is-size-1 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big"></i>
+      {% include 'includes/snippet/icon.html' with icon_type='cc-sa' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
