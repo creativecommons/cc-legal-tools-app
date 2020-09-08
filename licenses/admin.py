@@ -8,7 +8,6 @@ class LegalCodeAdmin(admin.ModelAdmin):
     fields = [
         "license",
         "language_code",
-        "raw_html",
     ]
     list_display = [
         "language_code",
