@@ -120,13 +120,13 @@ def license_deed_view_code_version_english(request, license_code, version):
 
 
 # ################# 4.0 Styled Pages ########################
-def license_detail(request):
+def license_detail(request):  # pragma: no cover
     return render(request, "licenses/licenses_detail.html")
 
 
-def sampling_detail(request):
+def sampling_detail(request):  # pragma: no cover
     return render(request, "licenses/sampling_deed_detail.html")
 
 
-def deed_detail(request):
+def deed_detail(request):  # pragma: no cover
     return render(request, "licenses/deed_detail.html")
