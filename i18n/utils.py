@@ -291,7 +291,7 @@ class activate_domain_language(ContextDecorator):
         self.old_language = get_language()
         activate(lang_plus_domain)
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type, exc_value, traceback):  # pragma: no cover
         if self.old_language is None:
             deactivate_all()
         else:
