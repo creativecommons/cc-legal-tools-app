@@ -3,10 +3,10 @@ from django.utils import translation
 from factory import post_generation
 
 from licenses.models import (
-    License,
     LegalCode,
-    TranslatedLicenseName,
+    License,
     LicenseLogo,
+    TranslatedLicenseName,
 )
 
 

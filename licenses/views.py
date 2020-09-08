@@ -5,7 +5,10 @@ from django.shortcuts import render
 from django.utils import translation
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import rtl_context_stuff, get_language_for_jurisdiction
+from i18n.utils import (
+    get_language_for_jurisdiction,
+    rtl_context_stuff,
+)
 from licenses.models import License
 
 
@@ -117,13 +120,13 @@ def license_deed_view_code_version_english(request, license_code, version):
 
 
 # ################# 4.0 Styled Pages ########################
-def license_detail(request):
+def license_detail(request):  # pragma: no cover
     return render(request, "licenses/licenses_detail.html")
 
 
-def sampling_detail(request):
+def sampling_detail(request):  # pragma: no cover
     return render(request, "licenses/sampling_deed_detail.html")
 
 
-def deed_detail(request):
+def deed_detail(request):  # pragma: no cover
     return render(request, "licenses/deed_detail.html")

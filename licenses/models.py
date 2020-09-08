@@ -12,7 +12,10 @@ Some licenses ahve a dcq:isReplacedBy element.
 from django.db import models
 from django.urls import reverse
 
-from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
+from i18n import (
+    DEFAULT_LANGUAGE_CODE,
+    DEFAULT_JURISDICTION_LANGUAGES
+)
 from licenses import (
     FREEDOM_LEVEL_MIN,
     FREEDOM_LEVEL_MID,

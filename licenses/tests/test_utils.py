@@ -1,18 +1,28 @@
 from unittest.mock import MagicMock
+from django.test import TestCase
 
 from bs4 import BeautifulSoup
-from django.test import TestCase
 from polib import POEntry
 
+from licenses.models import License
+from licenses.constants import (
+    EXCLUDED_LANGUAGE_IDENTIFIERS,
+    EXCLUDED_LICENSE_VERSIONS
+)
 from licenses.utils import (
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
+    get_licenses_code_and_version,
+    get_licenses_code_version_jurisdiction,
+    get_licenses_code_version_jurisdiction_lang,
+    get_licenses_code_version_lang,
     parse_legalcode_filename,
     compute_about_url,
     validate_list_is_all_text,
     validate_dictionary_is_all_text,
     save_dict_to_pofile,
 )
+from .factories import LicenseFactory
 
 
 class GetJurisdictionCodeTest(TestCase):
@@ -168,6 +178,113 @@ class GetLicenseURLFromLegalCodeURLTest(TestCase):
             get_license_url_from_legalcode_url(
                 "http://opensource.org/licences/bsd-license.php"
             )
+
+
+class GetLicenseUtilityTest(TestCase):
+    """Test django-distill utility functions for
+    generating an iterable of license dictionaries
+    """
+
+    def setUp(self):
+        self.license1 = LicenseFactory(license_code="by", version="4.0")
+        self.license2 = LicenseFactory(license_code="by-nc", version="4.0")
+        self.license3 = LicenseFactory(license_code="by-nd", version="3.0", jurisdiction_code="hk")
+        self.license4 = LicenseFactory(license_code="by-nc-sa", version="3.0", jurisdiction_code="us")
+        self.license5 = LicenseFactory(license_code="by-na", version="3.0", jurisdiction_code="nl")
+        self.license6 = LicenseFactory(license_code="by", version="")  # zero
+        self.license7 = LicenseFactory(license_code="by", version="2.5")
+        self.license8 = LicenseFactory(license_code="by", version="2.0")
+        self.license9 = LicenseFactory(license_code="by", version="2.1")
+
+    def test_get_licenses_code_and_version(self):
+        """Should return an iterable of license dictionaries
+        with the dictionary keys (license_code, version)
+
+        Excluding all versions other than 4.0 licenses
+        """
+        licenses = list(License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS))
+        list_of_licenses_dict = [
+            {"license_code": l.license_code, "version": l.version} for l in licenses
+        ]
+        yielded_licenses = get_licenses_code_and_version()
+        yielded_license_list = list(yielded_licenses)
+        self.assertEqual(list_of_licenses_dict, yielded_license_list)
+
+    def test_get_licenses_code_version_lang(self):
+        """Should return an iterable of license dictionaries
+        with the dictionary keys (license_code, version, target_lang)
+
+        Excluding all versions other than 4.0 licenses
+        """
+        list_of_licenses_dict = []
+        yielded_licenses = get_licenses_code_version_lang()
+        yielded_license_list = list(yielded_licenses)
+        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+            for translated_license in license.names.all():
+                if (
+                    translated_license.language_code
+                    not in EXCLUDED_LANGUAGE_IDENTIFIERS
+                ):
+                    return list_of_licenses_dict.append(
+                        {
+                            "license_code": license.license_code,
+                            "version": license.version,
+                            "target_lang": translated_license.language_code,
+                        }
+                    )
+                return
+        self.assertEqual(list_of_licenses_dict, yielded_license_list)
+
+    def test_get_licenses_code_version_jurisdiction(self):
+        """Should return an iterable of license dictionaries
+        with the dictionary keys (license_code, version, jurisdiction)
+
+        4.0 licenses do not have jurisdiction, we should expect an empty result
+        """
+        list_of_licenses_dict = []
+        yielded_licenses = get_licenses_code_version_jurisdiction()
+        yielded_license_list = list(yielded_licenses)
+        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+            if license.jurisdiction_code:
+                return list_of_licenses_dict.append(
+                    {
+                        "license_code": license.license_code,
+                        "version": license.version,
+                        "jurisdiction": license.jurisdiction_code,
+                    }
+                )
+            return
+        self.assertEqual([], yielded_license_list)
+        self.assertEqual(list_of_licenses_dict, yielded_license_list)
+
+    def test_get_licenses_code_version_jurisdiction_lang(self):
+        """Should return an iterable of license dictionaries
+        with the dictionary keys (license_code, version, jurisdiction,
+        target_lang)
+
+        4.0 licenses do not have jurisdiction, we should expect an empty result
+        """
+        list_of_licenses_dict = []
+        yielded_licenses = get_licenses_code_version_jurisdiction_lang()
+        yielded_license_list = list(yielded_licenses)
+        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+            for translated_license in license.names.all():
+                if (
+                    translated_license.language_code
+                    not in EXCLUDED_LANGUAGE_IDENTIFIERS
+                    and license.jurisdiction_code
+                ):
+                    return list_of_licenses_dict.append(
+                        {
+                            "license_code": license.license_code,
+                            "version": license.version,
+                            "jurisdiction": license.jurisdiction_code,
+                            "target_lang": translated_license.language_code,
+                        }
+                    )
+                return
+        self.assertEqual([], yielded_license_list)
+        self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
 
 class TestComputeAboutURL(TestCase):

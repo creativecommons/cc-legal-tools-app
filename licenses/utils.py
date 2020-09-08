@@ -2,6 +2,9 @@ import posixpath
 import re
 import urllib
 
+from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS
+from .constants import EXCLUDED_LICENSE_VERSIONS
+from .models import License
 from bs4 import NavigableString
 from polib import POFile, POEntry
 
@@ -112,6 +115,86 @@ def parse_legalcode_filename(filename):
     )
 
     return data
+
+
+# Django Distill Utility Functions
+
+
+def get_licenses_code_and_version():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+    """
+    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+        yield {
+            "license_code": license.license_code,
+            "version": license.version,
+        }
+
+
+def get_licenses_code_version_lang():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+        - target_lang (
+            value is a translated license's
+            language_code
+        )
+    """
+    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+        for translated_license in license.names.all():
+            if translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
+                yield {
+                    "license_code": license.license_code,
+                    "version": license.version,
+                    "target_lang": translated_license.language_code,
+                }
+            continue
+
+
+def get_licenses_code_version_jurisdiction():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+        - jurisdiction
+    """
+    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+        if license.jurisdiction_code:
+            yield {
+                "license_code": license.license_code,
+                "version": license.version,
+                "jurisdiction": license.jurisdiction_code,
+            }
+        continue
+
+
+def get_licenses_code_version_jurisdiction_lang():
+    """Returns an iterable of license dictionaries
+    dictionary keys:
+        - license_code
+        - version
+        - jurisdiction
+        - target_lang (
+            value is a translated license's
+            language_code
+        )
+    """
+    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+        for translated_license in license.names.all():
+            if (
+                translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS
+                and license.jurisdiction_code
+            ):
+                yield {
+                    "license_code": license.license_code,
+                    "version": license.version,
+                    "jurisdiction": license.jurisdiction_code,
+                    "target_lang": translated_license.language_code,
+                }
+            continue
 
 
 def compute_about_url(license_code, version, jurisdiction_code):
