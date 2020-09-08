@@ -141,12 +141,30 @@ register_converter(LangConverter, "lang")
 /licenses/by-sa/2.0/uk/legalcode - license for BY-SA 2.0, jurisdiction England and Wales, in English
 """
 
+def distill_wireframes():
+    return None
+
 # DEEDS
 urlpatterns = [
     # New templates to be used
-    path("license/", license_detail, name="license_detail"),
-    path("sampling/", sampling_detail, name="sampling_detail"),
-    path("deed/", deed_detail, name="deed_detail"),
+    distill_path(
+        "license/",
+        license_detail,
+        name="license_detail",
+        distill_func=distill_wireframes
+    ),
+    distill_path(
+        "sampling/",
+        sampling_detail,
+        name="sampling_detail",
+        distill_func=distill_wireframes
+    ),
+    distill_path(
+        "deed/",
+        deed_detail,
+        name="deed_detail",
+        distill_func=distill_wireframes
+    ),
     distill_path(
         "<code:license_code>/<version:version>/",
         license_deed_view_code_version_english,

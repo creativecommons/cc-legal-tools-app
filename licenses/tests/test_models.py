@@ -5,10 +5,17 @@ from i18n import DEFAULT_LANGUAGE_CODE
 from licenses import FREEDOM_LEVEL_MAX
 from licenses import FREEDOM_LEVEL_MID
 from licenses import FREEDOM_LEVEL_MIN
-from licenses.models import LegalCode
-from licenses.models import License
-from licenses.models import LicenseLogo
-from licenses.models import TranslatedLicenseName
+from licenses import (
+    FREEDOM_LEVEL_MAX,
+    FREEDOM_LEVEL_MID,
+    FREEDOM_LEVEL_MIN
+)
+from licenses.models import (
+    LegalCode,
+    License,
+    LicenseLogo,
+    TranslatedLicenseName,
+)
 
 
 class LegalCodeModelTest(TestCase):

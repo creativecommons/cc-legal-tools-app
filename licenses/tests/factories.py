@@ -3,10 +3,12 @@ from django.utils import translation
 from factory import post_generation
 
 from licenses.constants import LICENSE_VERSIONS
-from licenses.models import LegalCode
-from licenses.models import License
-from licenses.models import LicenseLogo
-from licenses.models import TranslatedLicenseName
+from licenses.models import (
+    LegalCode,
+    License,
+    LicenseLogo,
+    TranslatedLicenseName,
+)
 
 
 class LegalCodeFactory(factory.DjangoModelFactory):
