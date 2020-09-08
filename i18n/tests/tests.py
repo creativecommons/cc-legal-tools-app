@@ -1,11 +1,20 @@
-from django.test import TestCase
+import os
+
+from django.test import TestCase, override_settings
+from django.utils.translation import get_language, override, gettext
 
 from i18n.utils import (
     get_locale_text_orientation,
     rtl_context_stuff,
     ugettext_for_locale,
     locale_to_lower_upper,
+    get_language_for_jurisdiction,
+    activate_domain_language,
 )
+
+this_file = __file__
+this_dir = os.path.abspath(os.path.dirname(this_file))
+test_locale_dir = os.path.join(this_dir, "locales")
 
 
 class I18NTest(TestCase):
@@ -112,6 +121,7 @@ class I18NTest(TestCase):
         ]
         for input, output in testdata:
             self.assertEqual(output, locale_to_lower_upper(input))
+
     #
     # def test_applicable_langs(self):
     #     from i18n.utils import CACHED_APPLICABLE_LANGS
@@ -140,3 +150,27 @@ class I18NTest(TestCase):
     #         self.assertEqual(["es_ES", "es", "en"], applicable_langs(locale))
     #         self.assertIn((locale,), CACHED_APPLICABLE_LANGS)
     #         CACHED_APPLICABLE_LANGS.clear()
+
+    def test_get_language_for_jurisdiction(self):
+        # There are 2 for "be" so we return the default instead
+        self.assertEqual("ar", get_language_for_jurisdiction("be", "ar"))
+        # There is none for "xx" so we return the default instead
+        self.assertEqual("ar", get_language_for_jurisdiction("xx", "ar"))
+        # If we have exactly one possibility, we return it
+        self.assertEqual("fr", get_language_for_jurisdiction("fr", "ar"))
+
+    @override_settings(LOCALE_PATHS=[test_locale_dir])
+    def test_activate_domain_language(self):
+        from django.utils.translation.trans_real import _translations
+
+        domain = "test-4.0"
+        language = "es"
+        domain_language = f"{domain}-{language}"
+        with override("fr"):
+            try:
+                with activate_domain_language(domain=domain, language=language):
+                    print("Active language = " + get_language())
+                    self.assertEqual("Translation in Spanish", gettext("message in English"))
+            finally:
+                if domain_language in _translations:
+                    del _translations[domain_language]

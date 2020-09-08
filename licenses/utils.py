@@ -5,6 +5,9 @@ import urllib
 from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from .constants import EXCLUDED_LICENSE_VERSIONS
 from .models import License
+from bs4 import NavigableString
+from polib import POFile, POEntry
+
 from i18n import LANGUAGE_CODE_REGEX
 
 
@@ -106,6 +109,9 @@ def parse_legalcode_filename(filename):
         jurisdiction_code=jurisdiction or "",
         language_code=language or "",
         url=url,
+        about_url=compute_about_url(
+            license_code_for_url, version, jurisdiction or ""
+        ),
     )
 
     return data
@@ -189,3 +195,90 @@ def get_licenses_code_version_jurisdiction_lang():
                     "target_lang": translated_license.language_code,
                 }
             continue
+def compute_about_url(license_code, version, jurisdiction_code):
+    """
+    Compute the canonical unique "about" URL for a license with the given attributes.
+    Note that a "license" is language-independent, unlike a LegalCode
+    but it can have a jurisdiction.q
+
+    E.g.
+
+    http://creativecommons.org/licenses/BSD/
+    http://creativecommons.org/licenses/GPL/2.0/
+    http://creativecommons.org/licenses/LGPL/2.1/
+    http://creativecommons.org/licenses/MIT/
+    http://creativecommons.org/licenses/by/2.0/
+    http://creativecommons.org/licenses/publicdomain/
+    http://creativecommons.org/publicdomain/zero/1.0/
+    http://creativecommons.org/publicdomain/mark/1.0/
+    http://creativecommons.org/licenses/nc-sampling+/1.0/
+    http://creativecommons.org/licenses/devnations/2.0/
+    http://creativecommons.org/licenses/by/3.0/nl/
+    http://creativecommons.org/licenses/by-nc-nd/3.0/br/
+    http://creativecommons.org/licenses/by/4.0/
+    http://creativecommons.org/licenses/by-nc-nd/4.0/
+    """
+    base = "http://creativecommons.org"
+    if license_code in ["BSD", "MIT"]:
+        return f"{base}/licenses/{license_code}/"
+    if "GPL" in license_code:
+        return f"{base}/licenses/{license_code}/{version}/"
+    prefix = "publicdomain" if license_code in ["CC0", "zero", "mark"] else "licenses"
+    mostly = f"{base}/{prefix}/{license_code}/{version}/"
+    if jurisdiction_code:
+        return f"{mostly}{jurisdiction_code}/"
+    return mostly
+
+
+def validate_list_is_all_text(l):
+    """
+    Just for sanity, make sure all the elements of a list are types that
+    we expect to be in there.  Convert it all to str and return the
+    result.
+    """
+    newlist = []
+    for i, value in enumerate(l):
+        if type(value) == NavigableString:
+            newlist.append(str(value))
+            continue
+        elif type(value) not in (str, list, dict):
+            raise ValueError(f"Not a str, list, or dict: {type(value)}: {value}")
+        if isinstance(value, list):
+            newlist.append(validate_list_is_all_text(value))
+        elif isinstance(value, dict):
+            newlist.append(validate_dictionary_is_all_text(value))
+        else:
+            newlist.append(value)
+    return newlist
+
+
+def validate_dictionary_is_all_text(d):
+    """
+    Just for sanity, make sure all the keys and values of a dictionary are types that
+    we expect to be in there.
+    """
+    newdict = dict()
+    for k, v in d.items():
+        assert isinstance(k, str)
+        if type(v) == NavigableString:
+            newdict[k] = str(v)
+            continue
+        elif type(v) not in (str, dict, list):
+            raise ValueError(f"Not a str: k={k} {type(v)}: {v}")
+        if isinstance(v, dict):
+            newdict[k] = validate_dictionary_is_all_text(v)
+        elif isinstance(v, list):
+            newdict[k] = validate_list_is_all_text(v)
+        else:
+            newdict[k] = v
+    return newdict
+
+
+def save_dict_to_pofile(pofile: POFile, messages: dict):
+    """
+    We have a dictionary mapping string message keys to string message values
+    or dictionaries of the same.
+    Write out a .po file of the data.
+    """
+    for message_key, value in messages.items():
+        pofile.append(POEntry(msgid=message_key, msgstr=value.strip()))

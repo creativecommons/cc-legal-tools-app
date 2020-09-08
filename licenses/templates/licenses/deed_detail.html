@@ -4,11 +4,13 @@
 {% block about %}{{ license.about }}{% endblock %}
 {% block title %} Creative Commons &mdash; {{ license.translated_title }} {% endblock %}
 
-{# Note Next Link #}
-{% block note %}{% endblock %}
-{% block next_text %}See the legal code{% endblock %}
-{% block next_href %}/licenses/license/{% endblock %}
-
+{% block next_btn_section %}
+<div class="level container">
+  <div class="level-item level-right">
+    <button id="next-btn" class="button tiny is-pulled-right" data-href="/licenses/license/">See the legal code</button>
+  </div>
+</div>
+{% endblock %}
 
 {% block content %}
   <div class="container">

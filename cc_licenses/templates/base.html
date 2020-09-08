@@ -21,15 +21,7 @@
             {% include 'includes/locale.html' %}
         </div>
         <section id="content" class="padding-horizontal-larger">
-          <div class="columns">
-            <div class="column is-one-quarter"></div>
-            <div class="column columns padding-vertical-normal">
-              <div class="column is-three-quarters padding-top-normal">{% block note %}{% endblock %}</div>
-              <div class="column">
-                <button id="next-btn" class="button tiny is-pulled-right" data-href="{% block next_href %}/{% endblock %}">{% block next_text %}Next{% endblock %}</button>
-              </div>
-            </div>
-          </div>
+          {% block next_btn_section %}{% endblock %}
           {% block content %}{% endblock %}
         </section>
     </main>

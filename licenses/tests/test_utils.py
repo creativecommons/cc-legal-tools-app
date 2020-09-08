@@ -1,9 +1,17 @@
+from unittest.mock import MagicMock
+
+from bs4 import BeautifulSoup
 from django.test import TestCase
+<<<<<<< HEAD
 from licenses.constants import (
     EXCLUDED_LANGUAGE_IDENTIFIERS,
     EXCLUDED_LICENSE_VERSIONS
 )
 from licenses.models import License
+=======
+from polib import POEntry
+
+>>>>>>> 487cdf38de13a06fcba4474d8eeba65fcd798305
 from licenses.utils import (
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
@@ -12,6 +20,10 @@ from licenses.utils import (
     get_licenses_code_version_jurisdiction_lang,
     get_licenses_code_version_lang,
     parse_legalcode_filename,
+    compute_about_url,
+    validate_list_is_all_text,
+    validate_dictionary_is_all_text,
+    save_dict_to_pofile,
 )
 from .factories import LicenseFactory
 
@@ -35,6 +47,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_1.0.html",
                 {
+                    "about_url": "http://creativecommons.org/licenses/by/1.0/",
                     "url": "http://creativecommons.org/licenses/by/1.0/",
                     "license_code": "by",
                     "version": "1.0",
@@ -45,6 +58,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_3.0_es_ast",
                 {
+                    "about_url": "http://creativecommons.org/licenses/by/3.0/es/",
                     "url": "http://creativecommons.org/licenses/by/3.0/es/legalcode.ast",
                     "license_code": "by",
                     "version": "3.0",
@@ -55,6 +69,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_3.0_rs_sr-Cyrl.html",
                 {
+                    "about_url": "http://creativecommons.org/licenses/by/3.0/rs/",
                     "url": "http://creativecommons.org/licenses/by/3.0/rs/legalcode.sr-Cyrl",
                     "license_code": "by",
                     "version": "3.0",
@@ -65,6 +80,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "devnations_2.0.html",
                 {
+                    "about_url": "http://creativecommons.org/licenses/devnations/2.0/",
                     "url": "http://creativecommons.org/licenses/devnations/2.0/",
                     "license_code": "devnations",
                     "version": "2.0",
@@ -75,6 +91,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "LGPL_2.1.html",
                 {
+                    "about_url": "http://creativecommons.org/licenses/LGPL/2.1/",
                     "url": "http://creativecommons.org/licenses/LGPL/2.1/",
                     "license_code": "LGPL",
                     "version": "2.1",
@@ -85,6 +102,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "samplingplus_1.0",
                 {
+                    "about_url": "http://creativecommons.org/licenses/sampling+/1.0/",
                     "url": "http://creativecommons.org/licenses/sampling+/1.0/",
                     "license_code": "sampling+",
                     "version": "1.0",
@@ -95,6 +113,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "zero_1.0_fi.html",
                 {
+                    "about_url": "http://creativecommons.org/publicdomain/zero/1.0/",
                     "url": "http://creativecommons.org/publicdomain/zero/1.0/legalcode.fi",
                     "license_code": "CC0",
                     "version": "1.0",
@@ -105,6 +124,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "nc-samplingplus_1.0.html",
                 {
+                    "about_url": "http://creativecommons.org/licenses/nc-sampling+/1.0/",
                     "url": "http://creativecommons.org/licenses/nc-sampling+/1.0/",
                     "license_code": "nc-sampling+",
                     "version": "1.0",
@@ -268,3 +288,78 @@ class GetLicenseUtilityTest(TestCase):
                 return
         self.assertEqual([], yielded_license_list)
         self.assertEqual(list_of_licenses_dict, yielded_license_list)
+class TestComputeAboutURL(TestCase):
+    def test_by_nc_40(self):
+        self.assertEqual(
+            "http://creativecommons.org/licenses/by-nc/4.0/",
+            compute_about_url(
+                license_code="by-nc", version="4.0", jurisdiction_code="",
+            ),
+        )
+
+    def test_bsd(self):
+        self.assertEqual(
+            "http://creativecommons.org/licenses/BSD/",
+            compute_about_url(license_code="BSD", version="", jurisdiction_code=""),
+        )
+
+    def test_mit(self):
+        self.assertEqual(
+            "http://creativecommons.org/licenses/MIT/",
+            compute_about_url(license_code="MIT", version="", jurisdiction_code=""),
+        )
+
+    def test_gpl20(self):
+        self.assertEqual(
+            "http://creativecommons.org/licenses/GPL/2.0/",
+            compute_about_url(license_code="GPL", version="2.0", jurisdiction_code=""),
+        )
+
+    def test_30_nl(self):
+        self.assertEqual(
+            "http://creativecommons.org/licenses/by/3.0/nl/",
+            compute_about_url(
+                license_code="by", version="3.0", jurisdiction_code="nl",
+            ),
+        )
+
+
+class TestMisc(TestCase):
+    def test_validate_list_is_all_text(self):
+        validate_list_is_all_text(["a", "b"])
+        with self.assertRaises(ValueError):
+            validate_list_is_all_text(["a", 1])
+        with self.assertRaises(ValueError):
+            validate_list_is_all_text(["a", 4.2])
+        with self.assertRaises(ValueError):
+            validate_list_is_all_text(["a", object()])
+        soup = BeautifulSoup("<span>foo</span>", "lxml")
+        navstring = soup.span.string
+        out = validate_list_is_all_text([navstring])
+        self.assertEqual(["foo"], out)
+        self.assertEqual([["foo"]], validate_list_is_all_text([[navstring]]))
+        self.assertEqual([{"a": "foo"}], validate_list_is_all_text([{"a": navstring}]))
+
+    def test_validate_dictionary_is_all_text(self):
+        validate_dictionary_is_all_text({"1": "a", "2": "b"})
+        with self.assertRaises(ValueError):
+            validate_dictionary_is_all_text({"1": "a", "2": 1})
+        with self.assertRaises(ValueError):
+            validate_dictionary_is_all_text({"1": "a", "2": 3.14})
+        with self.assertRaises(ValueError):
+            validate_dictionary_is_all_text({"1": "a", "2": object()})
+        soup = BeautifulSoup("<span>foo</span>", "lxml")
+        navstring = soup.span.string
+        self.assertEqual({"a": "foo"}, validate_dictionary_is_all_text({"a": navstring}))
+        self.assertEqual({"a": ["foo"]}, validate_dictionary_is_all_text({"a": [navstring]}))
+        self.assertEqual({"a": {"b": "foo"}}, validate_dictionary_is_all_text({"a": {"b": "foo"}}))
+
+    def test_save_dict_to_pofile(self):
+        mock_pofile = MagicMock()
+        mock_pofile.append = MagicMock()
+        messages = {"a": "one", "b": "two"}
+        save_dict_to_pofile(mock_pofile, messages)
+        self.assertEqual([], mock_pofile.call_args_list)
+        self.assertEqual(2, len(mock_pofile.append.call_args_list))
+        args, kwargs = mock_pofile.append.call_args_list[0]
+        self.assertTrue(isinstance(args[0], POEntry))

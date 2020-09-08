@@ -1,4 +1,5 @@
 import os
+import re
 
 from django.conf import settings
 
@@ -62,4 +63,5 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "uk": ["uk"],
 }
 
-LANGUAGE_CODE_REGEX = r"[a-zA-Z_-]*"
+LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
+LANGUAGE_CODE_REGEX = re.compile(LANGUAGE_CODE_REGEX_STRING)

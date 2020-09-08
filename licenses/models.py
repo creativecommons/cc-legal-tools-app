@@ -11,7 +11,6 @@ Some licenses ahve a dcq:isReplacedBy element.
 """
 from django.db import models
 from django.urls import reverse
-from django.utils import translation
 
 from i18n import (
     DEFAULT_LANGUAGE_CODE,
@@ -27,23 +26,23 @@ MAX_LANGUAGE_CODE_LENGTH = 8
 
 
 class LegalCode(models.Model):
-    url = models.URLField(
-        max_length=200,
-        help_text="E.g. http://creativecommons.org/licenses/by-nd/3.0/rs/legalcode.sr-Cyrl",
-        unique=True,
-    )
     license = models.ForeignKey("licenses.License", on_delete=models.CASCADE, related_name="legal_codes")
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
-    raw_html = models.TextField(blank=True, default="")  # Might be temporary
+    html_file = models.CharField(
+        max_length=300,
+        help_text="HTML file we got this from",
+        blank=True,
+        default=""
+    )
 
     class Meta:
-        ordering = ["url"]
+        ordering = ["license__about"]
 
     def __str__(self):
-        return f"LegalCode<{self.language_code}, {self.url}>"
+        return f"LegalCode<{self.language_code}, {self.license.about}>"
 
 
 class License(models.Model):
@@ -123,21 +122,31 @@ class License(models.Model):
     def __str__(self):
         return f"License<{self.about}>"
 
+    @property
+    def translation_domain(self):
+        # If there's any - or _ in the domain, things get confusing.
+        # Just do letters and digits.
+        if self.jurisdiction_code:
+            domain = f"{self.license_code}{self.version}{self.jurisdiction_code}"
+        else:
+            domain = f"{self.license_code}{self.version}"
+        return domain.replace("-", "").replace("_", "").replace(".", "")
+
     def rdf(self):
         """Generate RDF for this license?"""
         return "RDF Generation Not Implemented"  # FIXME if needed
 
     def translated_title(self, language_code=None):
-        if not language_code:
-            # Use current language
-            language_code = translation.get_language()
-        try:
-            translated_license_name = self.names.get(language_code=language_code)
-        except TranslatedLicenseName.DoesNotExist:
-            if language_code != DEFAULT_LANGUAGE_CODE:
-                return self.translated_title(DEFAULT_LANGUAGE_CODE)
-            return self.about
-        return translated_license_name.name
+        return "FIXME: Implement translated title"
+        # if not language_code:
+        #     # Use current language
+        #     language_code = translation.get_language()
+        #
+        # with activate_domain_language(self.translation_domain, language_code):
+        #     # We're going to create a 'translation' for a fake locale named
+        #     # `lang_plus_domain`, then temporarily activate it and translate
+        #     # the key we use for medium license titles in our message files.
+        #     return gettext(f"license_medium")
 
     def default_language_code(self):
         if (

@@ -9,7 +9,8 @@ from .utils import (
     get_licenses_code_version_jurisdiction,
     get_licenses_code_version_jurisdiction_lang,
 )
-from i18n import LANGUAGE_CODE_REGEX
+from i18n import LANGUAGE_CODE_REGEX_STRING
+from licenses import VERSION_REGEX_STRING
 from licenses.views import (
     deed_detail,
     license_deed_view_code_version_english,
@@ -70,13 +71,8 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 
 class VersionConverter:
-    """
-    These mostly APPEAR to have the format X.Y, where X and Y are digits.
-    To be forgiving, we accept any mix of digits and ".".
-    There's also at least one with an empty version (MIT).
-    """
 
-    regex = r"[0-9.]+|"
+    regex = VERSION_REGEX_STRING
 
     def to_python(self, value):
         return value
@@ -103,7 +99,7 @@ class LangConverter:
     (Why underscores? Because of en_GB being used some places.)
     """
 
-    regex = LANGUAGE_CODE_REGEX
+    regex = LANGUAGE_CODE_REGEX_STRING
 
     def to_python(self, value):
         return value

@@ -1,10 +1,10 @@
-from babel import (
-    Locale,
-    UnknownLocaleError,
-)
+from contextlib import ContextDecorator
+
+from babel import Locale, UnknownLocaleError
 from django.utils import translation
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext
+from django.utils.translation import ugettext, activate, get_language
+from django.utils.translation.trans_real import DjangoTranslation, deactivate_all
 
 from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
@@ -272,3 +272,27 @@ def locale_to_lower_upper(locale):
 #
 #     CACHED_APPLICABLE_LANGS[cache_key] = applicable_langs
 #     return applicable_langs
+
+
+class activate_domain_language(ContextDecorator):
+    def __init__(self, domain, language):
+        self.domain = domain
+        self.language = language
+
+    def __enter__(self):
+        lang_plus_domain = f"{self.language}_{self.domain}".replace("-", "_")
+
+        from django.utils.translation.trans_real import _translations
+
+        if lang_plus_domain not in _translations:
+            trans = DjangoTranslation(language=lang_plus_domain, domain=self.domain)
+            _translations[lang_plus_domain] = trans
+
+        self.old_language = get_language()
+        activate(lang_plus_domain)
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.old_language is None:
+            deactivate_all()
+        else:
+            activate(self.old_language)
