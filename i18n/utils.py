@@ -279,7 +279,7 @@ class activate_domain_language(ContextDecorator):
         self.domain = domain
         self.language = language
 
-    def __enter__(self):
+    def __enter__(self):  # pragma: no cover
         lang_plus_domain = f"{self.language}_{self.domain}".replace("-", "_")
 
         from django.utils.translation.trans_real import _translations
