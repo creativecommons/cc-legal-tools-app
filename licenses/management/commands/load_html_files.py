@@ -6,15 +6,12 @@ from argparse import ArgumentParser
 from bs4 import BeautifulSoup, Tag
 from django.core.management import BaseCommand
 from django.utils.translation import to_language, to_locale
-from polib import POFile, POEntry
+from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from licenses.bs_utils import inner_html, name_and_text, text_up_to, nested_text
-from licenses.models import License, LegalCode
-from licenses.utils import (
-    validate_dictionary_is_all_text,
-    parse_legalcode_filename,
-)
+from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
+from licenses.models import LegalCode, License
+from licenses.utils import parse_legalcode_filename, validate_dictionary_is_all_text
 
 
 class Command(BaseCommand):

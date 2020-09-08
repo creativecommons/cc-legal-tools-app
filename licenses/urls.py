@@ -1,11 +1,6 @@
 from django.urls import register_converter
 from django_distill import distill_path
-from .utils import (
-    get_licenses_code_and_version,
-    get_licenses_code_version_lang,
-    get_licenses_code_version_jurisdiction,
-    get_licenses_code_version_jurisdiction_lang,
-)
+
 from i18n import LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
 from licenses.views import (
@@ -16,6 +11,13 @@ from licenses.views import (
     license_deed_view_code_version_language,
     license_detail,
     sampling_detail,
+)
+
+from .utils import (
+    get_licenses_code_and_version,
+    get_licenses_code_version_jurisdiction,
+    get_licenses_code_version_jurisdiction_lang,
+    get_licenses_code_version_lang,
 )
 
 """
@@ -146,19 +148,16 @@ urlpatterns = [
         "license/",
         license_detail,
         name="license_detail",
-        distill_func=distill_wireframes
+        distill_func=distill_wireframes,
     ),
     distill_path(
         "sampling/",
         sampling_detail,
         name="sampling_detail",
-        distill_func=distill_wireframes
+        distill_func=distill_wireframes,
     ),
     distill_path(
-        "deed/",
-        deed_detail,
-        name="deed_detail",
-        distill_func=distill_wireframes
+        "deed/", deed_detail, name="deed_detail", distill_func=distill_wireframes
     ),
     distill_path(
         "<code:license_code>/<version:version>/",

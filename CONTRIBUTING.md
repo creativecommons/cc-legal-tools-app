@@ -29,4 +29,3 @@ guidelines on the Creative Common Open Source website.
 Talk to us on [one of our community forums][community].
 
 [community]:https://opensource.creativecommons.org/community/
-

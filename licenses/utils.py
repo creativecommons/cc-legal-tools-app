@@ -2,13 +2,13 @@ import posixpath
 import re
 import urllib
 
-from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS
-from .constants import EXCLUDED_LICENSE_VERSIONS
-from .models import License
 from bs4 import NavigableString
-from polib import POFile, POEntry
+from polib import POEntry, POFile
 
 from i18n import LANGUAGE_CODE_REGEX
+
+from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
+from .models import License
 
 
 def get_code_from_jurisdiction_url(url):
@@ -109,9 +109,7 @@ def parse_legalcode_filename(filename):
         jurisdiction_code=jurisdiction or "",
         language_code=language or "",
         url=url,
-        about_url=compute_about_url(
-            license_code_for_url, version, jurisdiction or ""
-        ),
+        about_url=compute_about_url(license_code_for_url, version, jurisdiction or ""),
     )
 
     return data

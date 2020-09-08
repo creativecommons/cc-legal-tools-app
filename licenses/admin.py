@@ -1,9 +1,6 @@
 from django.contrib import admin
 
-from licenses.models import (
-    LegalCode,
-    License,
-)
+from licenses.models import LegalCode, License
 
 
 @admin.register(LegalCode)

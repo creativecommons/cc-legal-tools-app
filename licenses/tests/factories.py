@@ -2,12 +2,7 @@ import factory.fuzzy
 from django.utils import translation
 from factory import post_generation
 
-from licenses.models import (
-    LegalCode,
-    License,
-    LicenseLogo,
-    TranslatedLicenseName,
-)
+from licenses.models import LegalCode, License, LicenseLogo, TranslatedLicenseName
 
 
 class LegalCodeFactory(factory.DjangoModelFactory):

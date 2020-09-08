@@ -5,10 +5,7 @@ from django.core.management import BaseCommand
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.models import LegalCode, License
-from licenses.utils import (
-    parse_legalcode_filename,
-    get_license_url_from_legalcode_url
-)
+from licenses.utils import get_license_url_from_legalcode_url, parse_legalcode_filename
 
 
 class Command(BaseCommand):
