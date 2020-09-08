@@ -1,17 +1,14 @@
 from unittest.mock import MagicMock
+from django.test import TestCase
 
 from bs4 import BeautifulSoup
-from django.test import TestCase
-<<<<<<< HEAD
+from polib import POEntry
+
+from licenses.models import License
 from licenses.constants import (
     EXCLUDED_LANGUAGE_IDENTIFIERS,
     EXCLUDED_LICENSE_VERSIONS
 )
-from licenses.models import License
-=======
-from polib import POEntry
-
->>>>>>> 487cdf38de13a06fcba4474d8eeba65fcd798305
 from licenses.utils import (
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,

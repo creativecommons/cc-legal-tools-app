@@ -50,7 +50,7 @@ class LicenseModelTest(TestCase):
         license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")
         self.assertEqual("/licenses/bx-oh/1.3/ae/", license.get_deed_url())
         license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
-        self.assertEqual("/licenses/bx-oh/1.3", license.get_deed_url())
+        self.assertEqual("/licenses/bx-oh/1.3/", license.get_deed_url())
 
     def test_get_deed_url_for_language(self):
         license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")
