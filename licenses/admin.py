@@ -7,12 +7,9 @@ from licenses.models import LegalCode, License
 class LegalCodeAdmin(admin.ModelAdmin):
     fields = [
         "license",
-        "url",
         "language_code",
-        "raw_html",
     ]
     list_display = [
-        "url",
         "language_code",
         "license",
     ]

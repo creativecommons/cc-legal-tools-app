@@ -1,7 +1,8 @@
 from django.urls import path
 from django.urls import register_converter
 
-from i18n import LANGUAGE_CODE_REGEX
+from i18n import LANGUAGE_CODE_REGEX_STRING
+from licenses import VERSION_REGEX_STRING
 from licenses.views import (
     license_deed_view_code_version_english,
     license_deed_view_code_version_language,
@@ -63,13 +64,8 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 
 class VersionConverter:
-    """
-    These mostly APPEAR to have the format X.Y, where X and Y are digits.
-    To be forgiving, we accept any mix of digits and ".".
-    There's also at least one with an empty version (MIT).
-    """
 
-    regex = r"[0-9.]+|"
+    regex = VERSION_REGEX_STRING
 
     def to_python(self, value):
         return value
@@ -96,7 +92,7 @@ class LangConverter:
     (Why underscores? Because of en_GB being used some places.)
     """
 
-    regex = LANGUAGE_CODE_REGEX
+    regex = LANGUAGE_CODE_REGEX_STRING
 
     def to_python(self, value):
         return value
@@ -136,15 +132,9 @@ register_converter(LangConverter, "lang")
 
 # DEEDS
 urlpatterns = [
-    path(
-        "license/", license_detail, name="license_detail"
-    ),
-    path(
-        "sampling/", sampling_detail, name="sampling_detail"
-    ),
-    path(
-        "deed/", deed_detail, name="deed_detail"
-    ),
+    path("license/", license_detail, name="license_detail"),
+    path("sampling/", sampling_detail, name="sampling_detail"),
+    path("deed/", deed_detail, name="deed_detail"),
     path(
         "<code:license_code>/<version:version>",
         license_deed_view_code_version_english,

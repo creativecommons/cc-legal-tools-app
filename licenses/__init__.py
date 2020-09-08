@@ -1,3 +1,6 @@
+import re
+
+
 FREEDOM_LEVEL_MAX = 1
 FREEDOM_LEVEL_MID = 2
 FREEDOM_LEVEL_MIN = 3
@@ -21,3 +24,9 @@ MISSING_LICENSES = [
     "http://creativecommons.org/licenses/nd/2.0/",
     "http://creativecommons.org/licenses/sa/2.0/",
 ]
+
+# These mostly APPEAR to have the format X.Y, where X and Y are digits.
+# To be forgiving, we accept any mix of digits and ".".
+# There's also at least one with an empty version (MIT).
+VERSION_REGEX_STRING = r"[0-9.]+|"
+VERSION_REGEX = re.compile(VERSION_REGEX_STRING)
