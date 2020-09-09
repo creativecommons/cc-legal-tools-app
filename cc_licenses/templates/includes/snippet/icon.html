@@ -1,27 +1,27 @@
-{% load  lang_pad_horizontal %}
+{% load start %}
 
 {# This snippet handles media queries for the icons within deed_body #}
 {# and sampling_deed templates #}
 
 {% if is_icon_header %}
 <i
-  class="{{ icon_type }} icon has-text-black has-background-white is-size-1 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big is-hidden-touch margin-normal {{ additional_classes }}"
+  class="{{ icon_type }} icon has-text-black has-background-white is-size-1 padding-{% start is_rtl %}-big is-hidden-touch margin-normal {{ additional_classes }}"
 ></i>
 <i
-  class="{{ icon_type }} icon has-text-black has-background-white is-size-2 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-normal is-hidden-desktop margin-small {{ additional_classes }}"
+  class="{{ icon_type }} icon has-text-black has-background-white is-size-2 padding-{% start is_rtl %}-normal is-hidden-desktop margin-small {{ additional_classes }}"
 ></i>
 {% elif is_license_header %}
 <i
-  class="{{ icon_type }} icon has-text-black has-background-white is-size-1 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big is-hidden-touch margin-big {{ additional_classes }}"
+  class="{{ icon_type }} icon has-text-black has-background-white is-size-1 padding-{% start is_rtl %}-big is-hidden-touch margin-big {{ additional_classes }}"
 ></i>
 <i
-  class="{{ icon_type }} icon has-text-black has-background-white is-size-2 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-normal is-hidden-desktop margin-small {{ additional_classes }}"
+  class="{{ icon_type }} icon has-text-black has-background-white is-size-2 padding-{% start is_rtl %}-normal is-hidden-desktop margin-small {{ additional_classes }}"
 ></i>
 {% else %}
 <i
-  class="{{ icon_type }} icon has-text-black has-background-white is-size-1 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big is-hidden-touch {{ additional_classes }}"
+  class="{{ icon_type }} icon has-text-black has-background-white is-size-1 padding-{% start is_rtl %}-big is-hidden-touch {{ additional_classes }}"
 ></i>
 <i
-  class="{{ icon_type }} icon has-text-black has-background-white is-size-2 padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-normal is-hidden-desktop {{ additional_classes }}"
+  class="{{ icon_type }} icon has-text-black has-background-white is-size-2 padding-{% start is_rtl %}-normal is-hidden-desktop {{ additional_classes }}"
 ></i>
 {% endif %}

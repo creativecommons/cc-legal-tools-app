@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n static %}
-{% load lang_pad_horizontal %}
+{% load end %}
 
 
 {% block next_btn_section %}
@@ -11,7 +11,7 @@
       Version 4.0 &#8226; See the <a href="#">errata page</a> for any corrections and the date of change &#8226 Translation published 2020/XX/XX
     </div>
     <div class="column">
-      <button id="next-btn" class="button tiny is-pulled-{% lang_pad_horizontal is_rtl is_reverse=True %}" data-href="/licenses/sampling/">See the deed</button>
+      <button id="next-btn" class="button tiny is-pulled-{% end is_rtl %}" data-href="/licenses/sampling/">See the deed</button>
     </div>
   </div>
 </div>

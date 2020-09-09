@@ -1,5 +1,4 @@
-{% load lang_pad_horizontal %}
-
+{% load end %}
 
 <div class="column is-one-quarter sidebar-container">
   <aside class="menu sidebar-menu">
@@ -10,8 +9,8 @@
         <ul>
           {# replace with list of section links for the license legal code #}
           {% for i in "x"|ljust:"4" %}
-          <li><span class="body-bigger padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 1 - Definitions</a></li>
-          <li><span class="body-bigger padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 2 - Scope</a></li>
+          <li><span class="body-bigger padding-{% end is_rtl %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 1 - Definitions</a></li>
+          <li><span class="body-bigger padding-{% end is_rtl %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 2 - Scope</a></li>
           {% endfor %}
         </ul>
       </li>

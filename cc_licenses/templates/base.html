@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 {# for testing purposes, 'en' for ltr and 'ar' for rtl #}
 {# Replace with languages_code field coming from views #}
-{% get_language_info for 'ar' as lang %}
+{% get_language_info for 'en' as lang %}
 {% with is_rtl=lang.bidi %}
 <html lang="{{ lang.name }}" class="no-js" dir="{% lang_dir is_rtl %}">
 <head about="{% block about %} {% endblock %}">
