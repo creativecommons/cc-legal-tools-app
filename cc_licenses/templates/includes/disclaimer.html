@@ -1,12 +1,12 @@
 {% load lang_pad_horizontal %}
 
-{% load lang_dir %}
+
 
 {# disclaimer.html is an identical component to about_cc_and_license and about_cc #}
 {# refactor this code and use "with" template tag in licenses_detail.html to pass header and text to these templates #}
 {# if this content will be modified through the django admin in the future #}
 
-<div id="disclaimer-info-section" class="padding-bigger has-background-info-light" dir={% lang_dir is_rtl %}>
+<div id="disclaimer-info-section" class="padding-bigger has-background-info-light" >
   <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% lang_pad_horizontal is_rtl is_reverse=True %}-normal"></i>Disclaimer</h4>
   <p class="has-text-black padding-{% lang_pad_horizontal is_rtl is_reverse=False %}-big">
     This deed highlights only some of the key features and terms of the actual license. It is not a license and
