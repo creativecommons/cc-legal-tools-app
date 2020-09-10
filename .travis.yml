@@ -13,6 +13,7 @@ cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/.cache/venvs
+    - $HOME/.cache/pre-commit
 
 env:
   - DJANGO_SETTINGS_MODULE="cc_licenses.settings.dev"

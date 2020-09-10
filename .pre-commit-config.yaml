@@ -16,17 +16,11 @@ repos:
       - id: black
         args: ["--check"]
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.5.2
-    hooks:
-      - id: isort
-        args: ["--filter-files", "--check-only", "--diff"]
-
   - repo: local
     hooks:
       - id: isort
         name: "Isort"
-        entry: isort --check
+        entry: isort --check --diff
         language: system
         pass_filenames: true
         types: ["python"]
