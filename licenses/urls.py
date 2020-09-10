@@ -2,20 +2,18 @@ from django.urls import register_converter
 from django_distill import distill_path
 from .utils import (
     get_licenses_code_and_version,
-    get_licenses_code_version_lang,
     get_licenses_code_version_jurisdiction,
-    get_licenses_code_version_jurisdiction_lang,
+    get_licenses_code_version_language_code,
+    get_licenses_code_version_jurisdiction_language_code,
 )
-from i18n import LANGUAGE_CODE_REGEX_STRING
+from i18n import LANGUAGE_CODE_REGEX_STRING, DEFAULT_LANGUAGE_CODE
 from licenses import VERSION_REGEX_STRING
 from licenses.views import (
     deed_detail,
-    license_deed_view_code_version_english,
-    license_deed_view_code_version_jurisdiction,
-    license_deed_view_code_version_jurisdiction_language,
-    license_deed_view_code_version_language,
     license_detail,
     sampling_detail,
+    view_license,
+    view_deed,
 )
 
 """
@@ -141,47 +139,77 @@ def distill_wireframes():
 
 # DEEDS
 urlpatterns = [
-    # New templates to be used
+    # Temporary views to test new templates:
     distill_path(
         "license/",
         license_detail,
         name="license_detail",
-        distill_func=distill_wireframes
+        distill_func=distill_wireframes,
     ),
     distill_path(
         "sampling/",
         sampling_detail,
         name="sampling_detail",
-        distill_func=distill_wireframes
+        distill_func=distill_wireframes,
     ),
     distill_path(
-        "deed/",
-        deed_detail,
-        name="deed_detail",
-        distill_func=distill_wireframes
+        "deed/", deed_detail, name="deed_detail", distill_func=distill_wireframes
     ),
+    # More permanent views
+    #
+    # LICENSE PAGES
+    #
+    distill_path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
+        view_license,
+        name="view_40_license",
+        distill_func=get_licenses_code_version_jurisdiction_language_code,
+    ),
+    distill_path(  # Jurisdiction empty: e.g. /licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
+        "<code:license_code>/<version:version>/legalcode.<lang:language_code>",
+        view_license,
+        kwargs=dict(jurisdiction=""),
+        name="view_40_license",
+        distill_func=get_licenses_code_version_language_code,
+    ),
+    distill_path(  # Jurisdiction and language empty (default to English): e.g. /licenses/by/4.0/legalcode - license BY 4.0 English
+        "<code:license_code>/<version:version>/legalcode",
+        view_license,
+        name="licenses_default_jurisdiction_and_language",
+        distill_func=get_licenses_code_and_version,
+        kwargs=dict(language_code=DEFAULT_LANGUAGE_CODE, jurisdiction=""),
+    ),
+    distill_path(  # Language empty (default to THE JURISDICTION'S LANGUAGE): e.g. /licenses/by-nc-sa/3.0/de/legalcode
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode",
+        view_license,
+        name="licenses_default_language_with_jurisdiction",
+        distill_func=get_licenses_code_version_jurisdiction,
+    ),
+    #
+    # DEED PAGES
+    #
     distill_path(
         "<code:license_code>/<version:version>/",
-        license_deed_view_code_version_english,
+        view_deed,
         name="license_deed_view_code_version_english",
         distill_func=get_licenses_code_and_version,
     ),
     distill_path(
-        "<code:license_code>/<version:version>/deed.<lang:target_lang>",
-        license_deed_view_code_version_language,
+        "<code:license_code>/<version:version>/deed.<lang:language_code>",
+        view_deed,
         name="license_deed_view_code_version_language",
-        distill_func=get_licenses_code_version_lang,
+        distill_func=get_licenses_code_version_language_code,
     ),
     distill_path(
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
-        license_deed_view_code_version_jurisdiction,
+        view_deed,
         name="license_deed_view_code_version_jurisdiction",
         distill_func=get_licenses_code_version_jurisdiction,
     ),
     distill_path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
-        license_deed_view_code_version_jurisdiction_language,
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:language_code>",
+        view_deed,
         name="license_deed_view_code_version_jurisdiction_language",
-        distill_func=get_licenses_code_version_jurisdiction_lang,
+        distill_func=get_licenses_code_version_jurisdiction_language_code,
     ),
 ]

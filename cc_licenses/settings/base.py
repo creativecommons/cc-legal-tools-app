@@ -2,6 +2,8 @@
 Django settings for cc_licenses project.
 """
 import os
+from babel import Locale
+from django.conf.locale import LANG_INFO
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # SETTINGS_DIR is where this settings file is
@@ -142,6 +144,22 @@ LOGGING = {
 LANGUAGE_CODE = 'en-us'
 LOCALE_PATHS = (os.path.join(ROOT_DIR, 'locale'), )
 
+# Teach Django about a few more languages
+mi = Locale.parse("mi")
+LANG_INFO["mi"] = {  # Maori
+    "bidi": False,
+    "code": "mi",
+    "name": mi.get_display_name("en"),  # in english
+    "name_local": mi.get_display_name("mi"),  # in their own language
+}
+LANG_INFO["zh-Hans"] = {
+    "fallback": ["zh-hans"],
+}
+LANG_INFO["zh-Hant"] = {
+    "fallback": ["zh-hant"],
+}
+
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -206,3 +224,6 @@ TRANSLATION_THRESHOLD = 80
 
 # django-distill settings
 DISTILL_DIR = f'{ROOT_DIR}/build/'
+
+# By default, assume the translation data's repo is checked out beside this one.
+TRANSLATION_REPOSITORY_DIRECTORY = os.path.join(ROOT_DIR, "..", "cc-licenses-data")

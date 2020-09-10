@@ -109,9 +109,7 @@ def parse_legalcode_filename(filename):
         jurisdiction_code=jurisdiction or "",
         language_code=language or "",
         url=url,
-        about_url=compute_about_url(
-            license_code_for_url, version, jurisdiction or ""
-        ),
+        about_url=compute_about_url(license_code_for_url, version, jurisdiction or ""),
     )
 
     return data
@@ -133,12 +131,12 @@ def get_licenses_code_and_version():
         }
 
 
-def get_licenses_code_version_lang():
+def get_licenses_code_version_language_code():
     """Returns an iterable of license dictionaries
     dictionary keys:
         - license_code
         - version
-        - target_lang (
+        - language_code (
             value is a translated license's
             language_code
         )
@@ -149,7 +147,7 @@ def get_licenses_code_version_lang():
                 yield {
                     "license_code": license.license_code,
                     "version": license.version,
-                    "target_lang": translated_license.language_code,
+                    "language_code": translated_license.language_code,
                 }
             continue
 
@@ -171,13 +169,13 @@ def get_licenses_code_version_jurisdiction():
         continue
 
 
-def get_licenses_code_version_jurisdiction_lang():
+def get_licenses_code_version_jurisdiction_language_code():
     """Returns an iterable of license dictionaries
     dictionary keys:
         - license_code
         - version
         - jurisdiction
-        - target_lang (
+        - language_code (
             value is a translated license's
             language_code
         )
@@ -192,7 +190,7 @@ def get_licenses_code_version_jurisdiction_lang():
                     "license_code": license.license_code,
                     "version": license.version,
                     "jurisdiction": license.jurisdiction_code,
-                    "target_lang": translated_license.language_code,
+                    "language_code": translated_license.language_code,
                 }
             continue
 

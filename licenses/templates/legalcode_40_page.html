@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load i18n static cctrans %}
+
+{% block next_btn_section %}
+<div class="columns">
+  <div class="column is-one-quarter"></div>
+  <div class="column columns padding-vertical-normal">
+    <div class="column is-three-quarters padding-top-normal">
+      Version {{ legalcode.license.version }} &#8226;
+      See the <a href="#">errata page</a> for any corrections and the date of change &#8226
+      Translation published 2020/XX/XX
+    </div>
+    <div class="column">
+      <button id="next-btn" class="button tiny is-pulled-right" data-href="{{ legalcode.deed_url }}">See the deed</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+  <div class="columns">
+    {% include 'includes/menu-sidebar.html' %}
+    <div class="column">
+      {% include 'includes/licenses_header.html' %}
+      {% include 'includes/about_cc_and_license.html' %}
+      {% include 'includes/use_of_licenses.html' %}
+      {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL LICENSE TEXT #}
+      {% include 'includes/view_legal_code_link_plain_text.html' %}
+      {% include 'includes/about_cc.html' %}
+      {% include 'includes/related_links.html' %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra-js%}
+  <script>
+    /*
+      Show/Hide Functionality for expand/collapse sections in use_of_licenses.html
+    */
+    let arrowArray = Array.from(document.getElementsByClassName("angle-down"))
+    arrowArray.forEach(function(arrow) {
+      arrow.addEventListener("click", handleArrowClicked);
+    });
+
+    function handleArrowClicked() {
+      // Toggle consideration section's screen reader announcement text (inside of icon)
+      if (this.dataset.consideration === "1" && this.dataset.direction === "down") {
+        this.firstChild.innerHTML = "Hide Considerations for Licensors"
+      } else if (this.dataset.consideration !== "1" && this.dataset.direction === "down") {
+        this.firstChild.innerHTML = "Hide Considerations for the Public"
+      } else if (this.dataset.consideration === "1" && this.dataset.direction === "up") {
+        this.firstChild.innerHTML = "Show Considerations for Licensors"
+      } else {
+        this.firstChild.innerHTML = "Show Considerations for the Public"
+      }
+      // Toggle icon between up and down
+      if (this.dataset.direction === "down") {
+        // toggle icon to up arrow icon
+        this.classList.remove("angle-down")
+        this.classList.add("angle-up")
+        this.dataset.direction = "up"
+        // show <p> tag
+        this.parentNode.parentNode.nextSibling.nextSibling.classList.remove("is-hidden");
+      } else {
+        // toggle icon to up arrow icon
+        this.classList.add("angle-down")
+        this.classList.remove("angle-up")
+        this.dataset.direction = "down"
+        // hide <p> tag
+        this.parentNode.parentNode.nextSibling.nextSibling.classList.add("is-hidden");
+      }
+    };
+
+  </script>
+{% endblock %}

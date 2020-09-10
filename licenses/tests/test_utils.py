@@ -14,13 +14,11 @@ from licenses.utils import (
     get_license_url_from_legalcode_url,
     get_licenses_code_and_version,
     get_licenses_code_version_jurisdiction,
-    get_licenses_code_version_jurisdiction_lang,
-    get_licenses_code_version_lang,
     parse_legalcode_filename,
     compute_about_url,
     validate_list_is_all_text,
     validate_dictionary_is_all_text,
-    save_dict_to_pofile,
+    save_dict_to_pofile, get_licenses_code_version_language_code, get_licenses_code_version_jurisdiction_language_code,
 )
 from .factories import LicenseFactory
 
@@ -217,7 +215,7 @@ class GetLicenseUtilityTest(TestCase):
         Excluding all versions other than 4.0 licenses
         """
         list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_lang()
+        yielded_licenses = get_licenses_code_version_language_code()
         yielded_license_list = list(yielded_licenses)
         for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
             for translated_license in license.names.all():
@@ -229,7 +227,7 @@ class GetLicenseUtilityTest(TestCase):
                         {
                             "license_code": license.license_code,
                             "version": license.version,
-                            "target_lang": translated_license.language_code,
+                            "language_code": translated_license.language_code,
                         }
                     )
                 return
@@ -265,7 +263,7 @@ class GetLicenseUtilityTest(TestCase):
         4.0 licenses do not have jurisdiction, we should expect an empty result
         """
         list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_jurisdiction_lang()
+        yielded_licenses = get_licenses_code_version_jurisdiction_language_code()
         yielded_license_list = list(yielded_licenses)
         for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
             for translated_license in license.names.all():
@@ -279,7 +277,7 @@ class GetLicenseUtilityTest(TestCase):
                             "license_code": license.license_code,
                             "version": license.version,
                             "jurisdiction": license.jurisdiction_code,
-                            "target_lang": translated_license.language_code,
+                            "language_code": translated_license.language_code,
                         }
                     )
                 return

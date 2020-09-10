@@ -1,9 +1,10 @@
 from django.test import TestCase
+from django.utils import translation
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MIN, FREEDOM_LEVEL_MID
 from licenses.models import LegalCode, TranslatedLicenseName
-from licenses.tests.factories import LicenseFactory, TranslatedLicenseNameFactory
+from licenses.tests.factories import LicenseFactory, TranslatedLicenseNameFactory, LegalCodeFactory
 
 
 class LegalCodeModelTest(TestCase):
@@ -40,23 +41,27 @@ class LicenseModelTest(TestCase):
         license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="any")
         self.assertEqual("RDF Generation Not Implemented", license.rdf())
 
-    def test_default_language_code(self):
-        license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
-        self.assertEqual(DEFAULT_LANGUAGE_CODE, license.default_language_code())
-        license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="fr")
-        self.assertEqual("fr", license.default_language_code())
+    # def test_default_language_code(self):
+    #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
+    #     self.assertEqual(DEFAULT_LANGUAGE_CODE, license.default_language_code())
+    #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="fr")
+    #     self.assertEqual("fr", license.default_language_code())
 
-    def test_get_deed_url(self):
-        license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")
-        self.assertEqual("/licenses/bx-oh/1.3/ae/", license.get_deed_url())
-        license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
-        self.assertEqual("/licenses/bx-oh/1.3/", license.get_deed_url())
+    # def test_get_deed_url(self):
+    #     # https://creativecommons.org/licenses/by-sa/4.0/
+    #     # https://creativecommons.org/licenses/by-sa/4.0/deed.es
+    #     # https://creativecommons.org/licenses/by/3.0/es/
+    #     # https://creativecommons.org/licenses/by/3.0/es/deed.fr
+    #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")
+    #     self.assertEqual("/licenses/bx-oh/1.3/ae/", license.get_deed_url())
+    #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
+    #     self.assertEqual("/licenses/bx-oh/1.3/", license.get_deed_url())
 
-    def test_get_deed_url_for_language(self):
-        license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")
-        self.assertEqual("/licenses/bx-oh/1.3/ae/deed.fr", license.get_deed_url_for_language("fr"))
-        license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
-        self.assertEqual("/licenses/bx-oh/1.3/deed.es", license.get_deed_url_for_language("es"))
+    # def test_get_deed_url_for_language(self):
+    #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")
+    #     self.assertEqual("/licenses/bx-oh/1.3/ae/deed.fr", license.get_deed_url_for_language("fr"))
+    #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
+    #     self.assertEqual("/licenses/bx-oh/1.3/deed.es", license.get_deed_url_for_language("es"))
 
     def test_sampling_plus(self):
         self.assertTrue(LicenseFactory(license_code="nc-sampling+").sampling_plus)
@@ -84,7 +89,12 @@ class LicenseModelTest(TestCase):
         license = LicenseFactory(
             license_code="by-nc-nd", jurisdiction_code="", version="4.0"
         )
-        self.assertEqual("FIXME: Implement translated title", license.translated_title())
+        LegalCodeFactory(license=license, language_code="en")
+        LegalCodeFactory(license=license, language_code="fr")
+        with translation.override(language="fr"):
+            self.assertEqual("Attribution - Utilisation non commerciale - Pas d’Œuvre dérivée 4.0 International", license.translated_title())
+        self.assertEqual("Attribution-NonCommercial-NoDerivatives 4.0 International", license.translated_title("en"))
+        self.assertEqual("Attribution-NonCommercial-NoDerivatives 4.0 International", license.translated_title())
         # with self.subTest("en"):
         #     self.assertEqual(
         #         "Attribution-NonCommercial-NoDerivatives 4.0 International",

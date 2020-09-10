@@ -1,7 +1,11 @@
+from unittest import mock
+
 from django.test import TestCase
 from django.urls import reverse
 
-from licenses.models import License
+from i18n import DEFAULT_LANGUAGE_CODE
+from licenses.models import License, LegalCode
+from licenses.templatetags.license_tags import build_deed_url, build_license_url
 from licenses.tests.factories import LicenseFactory, LegalCodeFactory
 from licenses.views import DEED_TEMPLATE_MAPPING
 
@@ -116,33 +120,29 @@ class LicenseDeedViewTest(TestCase):
 
     def test_text_in_deeds(self):
         LicenseFactory()
-        for license in License.objects.all():
+        for license in License.objects.filter(version="4.0"):
             with self.subTest(license.about):
-                # Test in English since that's how we've set up the strings to test for
-                url = license.get_deed_url_for_language("en")
+                # Test in English and for 4.0 since that's how we've set up the strings to test for
+                url = build_deed_url(license.license_code, license.version, license.jurisdiction_code, "en")
                 rsp = self.client.get(url)
                 self.assertEqual(rsp.status_code, 200)
                 self.validate_deed_text(rsp, license)
 
     def test_license_deed_view_code_version_jurisdiction_language(self):
-        license = LicenseFactory(license_code="by-nc", jurisdiction_code="es", version="4.0")
-        LegalCodeFactory(license=license, language_code="fr")
+        license = LicenseFactory(license_code="by-nc", jurisdiction_code="es", version="3.0")
+        language_code = "fr"
+        LegalCodeFactory(license=license, language_code=language_code)
         # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>"
-        url = reverse(
-            "license_deed_view_code_version_jurisdiction_language",
-            kwargs=dict(
-                license_code=license.license_code,
-                jurisdiction=license.jurisdiction_code,
-                target_lang="fr",
-                version="4.0",
-            )
-        )
-        rsp = self.client.get(url)
+        url = build_deed_url(license.license_code, version=license.version, jurisdiction_code=license.jurisdiction_code, language_code=language_code)
+        # Mock 'get_translation_object' because we have no 3.0 translations imported yet
+        # and we can't use 4.0 to test jurisdictions.
+        with mock.patch.object(LegalCode, "get_translation_object"):
+            rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
     def test_license_deed_view_code_version_jurisdiction(self):
-        license = LicenseFactory(license_code="by-nc", jurisdiction_code="es", version="4.0")
-        LegalCodeFactory(license=license, language_code="fr")
+        license = LicenseFactory(license_code="by-nc", jurisdiction_code="es", version="3.0")
+        LegalCodeFactory(license=license, language_code=DEFAULT_LANGUAGE_CODE)
         # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/"
         url = reverse(
             "license_deed_view_code_version_jurisdiction",
@@ -152,7 +152,10 @@ class LicenseDeedViewTest(TestCase):
                 jurisdiction=license.jurisdiction_code
             )
         )
-        rsp = self.client.get(url)
+        # Mock 'get_translation_object' because we have no 3.0 translations imported yet
+        # and we can't use 4.0 to test jurisdictions.
+        with mock.patch.object(LegalCode, "get_translation_object"):
+            rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
     def test_license_deed_view_code_version_english(self):

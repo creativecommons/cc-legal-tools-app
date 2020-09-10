@@ -1,15 +1,13 @@
 import re
-import urllib.parse
 
-from django.shortcuts import render
-from django.utils import translation
+from django.shortcuts import render, get_object_or_404
+from django.utils.translation import override
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     get_language_for_jurisdiction,
-    rtl_context_stuff,
 )
-from licenses.models import License
+from licenses.models import License, LegalCode
 
 
 DEED_TEMPLATE_MAPPING = {
@@ -30,96 +28,90 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def home(request):
-    # Make a nested set of dictionaries organizing the license deeds by
-    # license code, version, and jurisdiction. See the home.html template
-    # for how it's used.
-    licenses_by_code = {}
-    for license in License.objects.order_by(
-        "license_code", "-version", "jurisdiction_code"
-    ):
-        licenses_by_code.setdefault(license.license_code, {})
-        licenses_by_code[license.license_code].setdefault(license.version, {})
-        licenses_by_code[license.license_code][license.version].setdefault(
-            license.jurisdiction_code, []
-        )
-        licenses_by_code[license.license_code][license.version][
-            license.jurisdiction_code
-        ].append(license)
+    # Get the list of license codes and languages that occur among the 4.0 licenses
+    # to let the template iterate over them as it likes.
+    codes_for_40 = (
+        License.objects.filter(version="4.0")
+        .order_by("license_code")
+        .distinct("license_code")
+        .values_list("license_code", flat=True)
+    )
+    languages_for_40 = (
+        LegalCode.objects.filter(license__version="4.0")
+        .order_by("language_code")
+        .distinct("language_code")
+        .values_list("language_code", flat=True)
+    )
+
+    licenses_by_version = [
+        ("4.0", codes_for_40, languages_for_40),
+    ]
 
     context = {
-        "licenses_by_code": licenses_by_code,
+        "licenses_by_version": licenses_by_version,
+        # "licenses_by_code": licenses_by_code,
+        "legalcodes": LegalCode.objects.filter(
+            license__version="4.0", language_code__in=["en", "es", "ar", "de"]
+        ).order_by("license__license_code", "language_code"),
     }
     return render(request, "home.html", context)
 
 
-def license_deed_view(request, license, target_lang):
-    """
-    Display the page for the deed for this license, in the specified language.
-    (There's no URL for this; the other views use this after figuring out which
-    license and language to use.)
-    """
-    template = DEED_TEMPLATE_MAPPING.get(
-        license.license_code, "licenses/standard_deed.html"
+def view_license(request, license_code, version, jurisdiction=None, language_code=None):
+    if language_code is None and jurisdiction:
+        language_code = get_language_for_jurisdiction(jurisdiction)
+    language_code=language_code or DEFAULT_LANGUAGE_CODE
+
+    legalcode = get_object_or_404(
+        LegalCode,
+        license__license_code=license_code,
+        license__version=version,
+        license__jurisdiction_code=jurisdiction or "",
+        language_code=language_code,
     )
-    context = {
-        "license": license,
-        "target_lang": target_lang,
-        "get_this": "/choose/results-one?license_code=%s&amp;jurisdiction=%s&amp;version=%s&amp;lang=%s"
-        % (
-            urllib.parse.quote(license.license_code),
-            license.jurisdiction_code,
-            license.version,
-            target_lang,
-        ),
-    }
-    context.update(rtl_context_stuff(target_lang))
-    with translation.override(target_lang):
-        return render(request, template, context)
+    translation = legalcode.get_translation_object()
+    with override(language=language_code):
+        return render(
+            request,
+            "legalcode_40_page.html",
+            {
+                "legalcode": legalcode,
+                "license_medium": translation.translations["license_medium"],
+                "translation": translation,  # the full "Translation" object
+                "t": translation.translations,  # the msgid -> translated message dictionary
+            },
+        )
 
 
-def license_deed_view_code_version_jurisdiction_language(
-    request, license_code, version, jurisdiction, target_lang
-):
-    # Any license with this code, version, and jurisdiction will do.
-    # Then we'll render the deed template in the target lang.
-    license = License.objects.filter(
-        license_code=license_code, version=version, jurisdiction_code=jurisdiction,
-    ).first()
-    return license_deed_view(request, license, target_lang)
+def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
+    if language_code is None and jurisdiction:
+        language_code = get_language_for_jurisdiction(jurisdiction)
+    language_code=language_code or DEFAULT_LANGUAGE_CODE
 
-
-def license_deed_view_code_version_jurisdiction(
-    request, license_code, version, jurisdiction
-):
-    """
-    If no language specified, but jurisdiction default language is not english,
-    use that language instead of english.
-    """
-    target_lang = get_language_for_jurisdiction(jurisdiction)
-    return license_deed_view_code_version_jurisdiction_language(
-        request, license_code, version, jurisdiction, target_lang
+    legalcode = get_object_or_404(
+        LegalCode,
+        license__license_code=license_code,
+        license__version=version,
+        license__jurisdiction_code=jurisdiction or "",
+        language_code=language_code,
     )
-
-
-def license_deed_view_code_version_language(
-    request, license_code, version, target_lang
-):
-    # Any license with this code and version, and no jurisdiction, will do.
-    # Then we'll render the deed template in the target lang.
-    license = License.objects.filter(
-        license_code=license_code, version=version, jurisdiction_code="",
-    ).first()
-    return license_deed_view(request, license, target_lang)
-
-
-def license_deed_view_code_version_english(request, license_code, version):
-    target_lang = DEFAULT_LANGUAGE_CODE
-    return license_deed_view_code_version_language(
-        request, license_code, version, target_lang
-    )
-
+    translation = legalcode.get_translation_object()
+    with override(language=language_code):
+        return render(
+            request,
+            "deed_40.html",
+            {
+                "legalcode": legalcode,
+                "license": legalcode.license,
+                "license_medium": translation.translations["license_medium"],
+                "title": translation.translations["license_medium"],
+                "translation": translation,
+                "t": translation.translations,
+            },
+        )
 
 # ################# 4.0 Styled Pages ########################
+# TEMPORARY VIEWS
 def license_detail(request):  # pragma: no cover
     return render(request, "licenses/licenses_detail.html")
 
