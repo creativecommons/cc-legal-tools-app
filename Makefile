@@ -2,18 +2,16 @@
 PROJECT_NAME = cc_licenses
 STATIC_DIR = ./$(PROJECT_NAME)/static
 
-default: lint test
+default:
+	# Checks syntax and runs tests
+	pre-commit run -v -a
 
 test:
 	# Run all tests and report coverage
-	# Requires coverage
-	python manage.py makemigrations --dry-run | grep 'No changes detected' || \
-		(echo 'There are changes which require migrations.' && exit 1)
-	coverage run manage.py test --noinput -v 2 --keepdb
-	coverage report -m --fail-under 98
+	pre-commit run -v -a
 
 lint-py:
-	# Check for Python formatting issues
+	# Just check for Python formatting issues
 	# Requires flake8
 	flake8 .
 
