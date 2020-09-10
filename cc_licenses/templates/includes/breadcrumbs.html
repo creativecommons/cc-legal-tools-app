@@ -8,3 +8,14 @@
       {% endblock %}
   </ul>
 </nav>
+
+<style>
+  html[dir="rtl"] nav.breadcrumb>ul li+li:before {
+    transform: scaleX(-1);
+  }
+
+  html[dir="rtl"] .breadcrumb li:first-child a {
+      padding-right: 0;
+      padding-left: .5rem;
+  }
+</style>
