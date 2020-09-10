@@ -54,4 +54,4 @@ text-unidecode==1.3       # via python-slugify
 toml==0.10.1              # via pre-commit
 urllib3==1.25.9           # via requests, transifex-client
 virtualenv==20.0.25       # via pre-commit
-https://github.com/creativecommons/cc-link-checker/archive/master.zip  # https://github.com/creativecommons/cc-link-checker
+https://github.com/creativecommons/cc-link-checker/archive/v2020.09.1.zip  # https://github.com/creativecommons/cc-link-checker
