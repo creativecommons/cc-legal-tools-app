@@ -1,6 +1,9 @@
 {% load static from staticfiles %}
+{% load i18n bidi %}
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+{% get_current_language as LANGUAGE_CODE %}{# View will have set current language #}
+{% get_language_info for LANGUAGE_CODE as lang %}
+<html lang="{{ lang.name }}" class="no-js" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
 <head about="{% block about %} {% endblock %}">
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
@@ -13,72 +16,72 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/css/vocabulary.css">
 </head>
 <body typeoff="cc:License">
-    {% include 'includes/header.html' %}
-    <main>
-        <div class="level padding-horizontal-large padding-vertical-normal">
-            {% include 'includes/skiplink.html' %}
-            {% include 'includes/breadcrumbs.html' %}
-            {% include 'includes/locale.html' %}
-        </div>
-        <section id="content" class="padding-horizontal-larger">
-          {% block next_btn_section %}{% endblock %}
-          {% block content %}{% endblock %}
-        </section>
-    </main>
-    {% include 'includes/footer.html' %}
+  {% include 'includes/header.html' %}
+  <main>
+    <div class="level padding-{% start %}-big padding-{% end %}-large padding-vertical-normal">
+          {% include 'includes/skiplink.html' %}
+          {% include 'includes/breadcrumbs.html' %}
+          {% include 'includes/locale.html' %}
+    </div>
+    <section id="content" class="padding-horizontal-larger">
+      {% block next_btn_section %}{% endblock %}
+      {% block content %}{% endblock %}
+    </section>
+  </main>
+  {% include 'includes/footer.html' %}
 
-    <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
-   
-    <script>
-        /**
-         * Get the fully-qualified URL of a Vocabulary asset.
-         *
-         * @param {string} version - the Vocabulary version in which to locate the asset
-         * @param {string} path - the path of the asset being patched
-         * @return {string} the fully qualified URL of the asset
-         */
-        const getFullyQualifiedUrl = (version, path) => {
-        //   let baseUrl = 'https://unpkg.com/@creativecommons/vocabulary'
-          // If you prefer jsDelivr instead, use
-          let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary'
-          return `${baseUrl}@${version}/${path}`
-        }
+  <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
 
-        /**
-         * Create an invisible container and place the asset into the DOM.
-         *
-         * This function is intended to be used to patch SVG assets that are later
-         * referenced inside `<use>` tags in `<svg>` tags. It can also be used to force
-         * an image to be downloaded to speed up its loading when referenced again.
-         *
-         * @param {string} path - the path of the asset being patched
-         * @param {string} version - the Vocabulary version in which to locate the asset
-         */
-        const patchAssetIntoDom = (path, version = 'latest') => {
-          fetch(getFullyQualifiedUrl(version, path)).then(response => {
-            return response.text()
-          }).then(data => {
-            // Render SVG in the page
-            const logo = document.querySelector('#cc-logo')
-            const footerLogo = document.querySelector('#cc-footer-logo')
-            logo.innerHTML = data;
-            footerLogo.innerHTML = data;
-          })
-        }
+  <script>
+      /**
+      * Get the fully-qualified URL of a Vocabulary asset.
+      *
+      * @param {string} version - the Vocabulary version in which to locate the asset
+      * @param {string} path - the path of the asset being patched
+      * @return {string} the fully qualified URL of the asset
+      */
+      const getFullyQualifiedUrl = (version, path) => {
+      //   let baseUrl = 'https://unpkg.com/@creativecommons/vocabulary'
+        // If you prefer jsDelivr instead, use
+        let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary'
+        return `${baseUrl}@${version}/${path}`
+      }
 
-        patchAssetIntoDom('assets/logos/cc/logomark.svg');
-
-        /** Next Button On Click Event Listener **/
-        document.getElementById("next-btn").addEventListener("click", function (e) {
-          /** 
-           * On click redirect the user to page they are trying to visit
-           * which is stored in the data-href.  
-           **/
-          return window.location.href = this.dataset.href
+      /**
+      * Create an invisible container and place the asset into the DOM.
+      *
+      * This function is intended to be used to patch SVG assets that are later
+      * referenced inside `<use>` tags in `<svg>` tags. It can also be used to force
+      * an image to be downloaded to speed up its loading when referenced again.
+      *
+      * @param {string} path - the path of the asset being patched
+      * @param {string} version - the Vocabulary version in which to locate the asset
+      */
+      const patchAssetIntoDom = (path, version = 'latest') => {
+        fetch(getFullyQualifiedUrl(version, path)).then(response => {
+          return response.text()
+        }).then(data => {
+          // Render SVG in the page
+          const logo = document.querySelector('#cc-logo')
+          const footerLogo = document.querySelector('#cc-footer-logo')
+          logo.innerHTML = data;
+          footerLogo.innerHTML = data;
         })
-      </script>
-      {% block extra-js %}
-      {% endblock %}
+      }
+
+      patchAssetIntoDom('assets/logos/cc/logomark.svg');
+
+      /** Next Button On Click Event Listener **/
+      document.getElementById("next-btn").addEventListener("click", function (e) {
+        /**
+        * On click redirect the user to page they are trying to visit
+        * which is stored in the data-href.
+        **/
+        return window.location.href = this.dataset.href
+      })
+    </script>
+    {% block extra-js %}
+    {% endblock %}
   </body>
 </html>
 

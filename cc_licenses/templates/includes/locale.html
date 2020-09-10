@@ -1,6 +1,9 @@
-<div class="locale level-right has-text-black">
+{% load bidi %}
+
+
+<div class="locale level-right level-item has-text-black" >
   Languages available
-  <div class="control has-icons-left">
+  <div class="control margin-{% start %}-small">
     <div class="select">
       <select>
         {% block lang-options %}
@@ -13,7 +16,7 @@
         {% endblock lang-options %}
       </select>
     </div>
-    <div class="icon is-small is-left">
+    <div class="icon is-small is-{% start %}">
       <!-- TODO Add icons here -->
     </div>
   </div>

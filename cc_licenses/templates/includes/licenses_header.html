@@ -1,20 +1,40 @@
+{% load bidi %}
+
 {# cc_licenses icons - https://cc-vocabulary.netlify.app/?path=/docs/tokens-icons--figma #}
 
-<div id="licenses-header" class="padding-larger margin-bottom-bigger has-text-black">
+<div id="licenses-header" class="padding-larger margin-bottom-bigger has-text-black is-hidden-touch is-hidden-desktop-only" >
   <h2 class="is-vcentered">
     {# Icon Sections #}
-      <span class="padding-right-bigger">
+      <span class="padding-{% end %}-bigger">
       {# Forloop through icons classes that are being sent from model #}
-        <i class="cc-logo icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
-        <i class="cc-by icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
-        <i class="cc-nc icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
-        <i class="cc-sa icon has-background-white has-text-black value padding-bottom-small margin-big"></i>
+        {% include 'includes/snippet/icon.html' with icon_type='cc-logo' additional_classes='padding-bottom-small' is_license_header=True %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-by' additional_classes='padding-bottom-small' is_license_header=True %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_license_header=True %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_license_header=True %}
       {# endfor #}
       </span>
 
     CC BY-NC-SA 4.0
   </h2>
   <h1 class="b-header">Attribution-NonCommercial-ShareAlike 4.0 International</h1>
+</div>
+
+<div id="licenses-header" class="padding-larger margin-bottom-bigger has-text-black is-hidden-widescreen" >
+  <h2 class="has-text-centered">
+    {# Icon Sections #}
+      <span>
+      {# Forloop through icons classes that are being sent from model #}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-logo' additional_classes='padding-bottom-small' is_license_header=True %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-by' additional_classes='padding-bottom-small' is_license_header=True %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_license_header=True %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_license_header=True %}
+      {# endfor #}
+      </span>
+  </h2>
+  <h2 class="has-text-centered is-hidden-touch is-hidden-desktop-only padding-{% start %}-normal">CC BY-NC-SA 4.0</h2>
+  <h3 class="has-text-centered is-hidden-touch">CC BY-NC-SA 4.0</h3>
+  <h4 class="has-text-centered is-hidden-desktop-only is-hidden-widescreen">CC BY-NC-SA 4.0</h4>
+  <h2 class="b-header has-text-centered">Attribution-NonCommercial-ShareAlike 4.0 International</h2>
 </div>
 
 <style>
