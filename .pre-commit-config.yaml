@@ -14,13 +14,12 @@ repos:
     rev: 19.10b0
     hooks:
       - id: black
-        args: ["--check"]
 
   - repo: local
     hooks:
       - id: isort
         name: "Isort"
-        entry: isort --check --diff
+        entry: isort
         language: system
         pass_filenames: true
         types: ["python"]
