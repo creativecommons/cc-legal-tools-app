@@ -1,4 +1,4 @@
-{% load bidi %}
+{% load bidi i18n %}
 <footer class="main-footer margin-top-bigger">
   <div class="container">
     <div class="columns">
@@ -36,10 +36,10 @@
           <div class="column is-full">
             <nav class="footer-navigation">
               <ul class="menu">
-                <li><a href="#" class="menu-item">Who We Are</a></li>
-                <li><a href="#" class="menu-item">What We Do</a></li>
-                <li><a href="#" class="menu-item">Our Impact<i class="icon external-link"></i></a></li>
-                <li><a href="#" class="menu-item">News</a></li>
+                <li><a href="#" class="menu-item">{% trans "Who We Are" %}</a></li>
+                <li><a href="#" class="menu-item">{% trans "What We Do" %}</a></li>
+                <li><a href="#" class="menu-item">{% trans "Our Impact" %}<i class="icon external-link"></i></a></li>
+                <li><a href="#" class="menu-item">{% trans "News" %}</a></li>
               </ul>
             </nav>
           </div>
@@ -47,7 +47,7 @@
         <div class="columns">
           <div class="column is-two-thirds">
             <div class="subscription">
-              <h5 class="b-header">Subscribe to our newsletter</h5>
+              <h5 class="b-header">{% trans "Subscribe to our newsletter" %}</h5>
               <form class="newsletter">
                 <input type="text" class="input" placeholder="Your email">
                 <input type="submit" value="subscribe" class="button small">
@@ -55,13 +55,15 @@
             </div>
             <div class="attribution margin-top-bigger">
               <p class="caption">
-                Except where otherwise
-                <a href="https://creativecommons.org/policies#license" target="_blank" rel="noopener">noted</a>,
-                content on this site is licensed under a
-                <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International license</a>.
-                <a href="https://creativecommons.org/website-icons" target="_blank" rel="noopener">Icons</a>
-                by
-                <a href="https://fontawesome.com/" target="_blank" rel="noopener">Font Awesome</a>.
+                {% blocktrans trimmed %}
+                  Except where otherwise
+                  <a href="https://creativecommons.org/policies#license" target="_blank" rel="noopener">noted</a>,
+                  content on this site is licensed under a
+                  <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons Attribution 4.0 International license</a>.
+                  <a href="https://creativecommons.org/website-icons" target="_blank" rel="noopener">Icons</a>
+                  by
+                  <a href="https://fontawesome.com/" target="_blank" rel="noopener">Font Awesome</a>.
+                {% endblocktrans %}
               </p>
               <div class="margin-top-smaller">
                 <i class="icon margin-{% end %}-small is-size-4">cclogo</i>
@@ -71,11 +73,11 @@
           </div>
           <div class="column is-one-third">
             <aside class="donate-section">
-              <h5>Our work relies on you!</h5>
-              <p>Help us keep the internet free and open.</p>
+              <h5>{% trans "Our work relies on you!" %}</h5>
+              <p>{% trans "Help us keep the internet free and open." %}</p>
               <a class="button small donate" href="http://creativecommons.org/donate">
                 <i class="icon cc-letterheart margin-{% end %}-small is-size-5 padding-top-smaller"></i>
-                Donate now
+                {% trans "Donate now" %}
               </a>
             </aside>
           </div>

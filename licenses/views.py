@@ -75,8 +75,10 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
             request,
             "legalcode_40_page.html",
             {
+                "fat_code": legalcode.license.fat_code(),
                 "legalcode": legalcode,
                 "license_medium": translation.translations["license_medium"],
+                "title": translation.translations["license_medium"],
                 "translation": translation,  # the full "Translation" object
                 "t": translation.translations,  # the msgid -> translated message dictionary
             },
@@ -101,6 +103,7 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
             request,
             "deed_40.html",
             {
+                "fat_code": legalcode.license.fat_code(),
                 "legalcode": legalcode,
                 "license": legalcode.license,
                 "license_medium": translation.translations["license_medium"],

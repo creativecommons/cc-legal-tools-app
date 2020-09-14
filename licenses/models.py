@@ -65,12 +65,7 @@ class LegalCode(models.Model):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
-        license = self.license
-        s = f"{license.license_code} {license.version}"
-        if license.license_code.startswith("by"):
-            s = f"CC {s}"
-        s = s.upper()
-        return s
+        return self.license.fat_code()
 
     def downstreams(self):
         """
@@ -291,6 +286,17 @@ class License(models.Model):
     def rdf(self):
         """Generate RDF for this license?"""
         return "RDF Generation Not Implemented"  # FIXME if needed
+
+    def fat_code(self):
+        """
+        Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
+        """
+        license = self
+        s = f"{license.license_code} {license.version}"
+        if license.license_code.startswith("by"):
+            s = f"CC {s}"
+        s = s.upper()
+        return s
 
     def translated_title(self, language_code=None):
         legalcode = self.get_legalcode_for_language_code(language_code)

@@ -1,18 +1,18 @@
-{% load bidi %}
+{% load bidi i18n %}
 
 
 <div class="locale level-right level-item has-text-black" >
-  Languages available
+  {% trans "Languages available" %}
   <div class="control margin-{% start %}-small">
     <div class="select">
       <select>
         {% block lang-options %}
-        <option disabled>Select</option>
-        <option selected>English - English</option>
-        <option>le Français - French</option>
-        <option>Japanese - 日本語</option>
-        <option>Russian - Русский</option>
-        <option>Spanish - Español</option>
+        <option disabled>{% trans "Select" %}</option>
+        <option selected>{% trans "English" %} - English</option>
+        <option>le Français - {% trans "French" %}</option>
+        <option>{% trans "Japanese" %} - 日本語</option>
+        <option>{% trans "Russian" %} - Русский</option>
+        <option>{% trans "Spanish" %} - Español</option>
         {% endblock lang-options %}
       </select>
     </div>

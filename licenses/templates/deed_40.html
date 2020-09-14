@@ -2,12 +2,12 @@
 {% load i18n static %}
 
 {% block about %}{{ license.about }}{% endblock %}
-{% block title %} Creative Commons &mdash; {{ title }} {% endblock %}
+{% block title %}Creative Commons &mdash; {{ title }} {% endblock %}
 
 {% block next_btn_section %}
 <div class="level container">
   <div class="level-item level-right">
-    <button id="next-btn" class="button tiny is-pulled-right" data-href="/licenses/license/">See the legal code</button>
+    <button id="next-btn" class="button tiny is-pulled-right" data-href="{{ legalcode.license_url }}">{% trans "See the legal code" %}</button>
   </div>
 </div>
 {% endblock %}

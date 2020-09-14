@@ -11,7 +11,7 @@
       Translation published 2020/XX/XX
     </div>
     <div class="column">
-      <button id="next-btn" class="button tiny is-pulled-right" data-href="{{ legalcode.deed_url }}">See the deed</button>
+      <button id="next-btn" class="button tiny is-pulled-right" data-href="{{ legalcode.deed_url }}">{% trans "See the deed" %}</button>
     </div>
   </div>
 </div>
@@ -45,13 +45,13 @@
     function handleArrowClicked() {
       // Toggle consideration section's screen reader announcement text (inside of icon)
       if (this.dataset.consideration === "1" && this.dataset.direction === "down") {
-        this.firstChild.innerHTML = "Hide Considerations for Licensors"
+        this.firstChild.innerHTML = "{% trans "Hide Considerations for Licensors" %}"
       } else if (this.dataset.consideration !== "1" && this.dataset.direction === "down") {
-        this.firstChild.innerHTML = "Hide Considerations for the Public"
+        this.firstChild.innerHTML = "{% trans "Hide Considerations for the Public" %}"
       } else if (this.dataset.consideration === "1" && this.dataset.direction === "up") {
-        this.firstChild.innerHTML = "Show Considerations for Licensors"
+        this.firstChild.innerHTML = "{% trans "Show Considerations for Licensors" %}"
       } else {
-        this.firstChild.innerHTML = "Show Considerations for the Public"
+        this.firstChild.innerHTML = "{% trans "Show Considerations for the Public" %}"
       }
       // Toggle icon between up and down
       if (this.dataset.direction === "down") {

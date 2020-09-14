@@ -1,4 +1,4 @@
-{% load bidi %}
+{% load bidi i18n %}
 
 {# cc_licenses icons - https://cc-vocabulary.netlify.app/?path=/docs/tokens-icons--figma #}
 
@@ -14,10 +14,10 @@
       {# endfor #}
       </span>
 
-    {{ legalcode.fat_code }} {#  e.g. CC BY-NC 4.0 #}
+    {{ fat_code }} {#  e.g. CC BY-NC 4.0 #}
   </h2>
   {# e.g. Attribution-NonCommercial-ShareAlike 4.0 International #}
-  <h1 class="b-header">{{ license_medium }}</h1>
+  <h1 class="b-header">{{ title }}</h1>
 </div>
 
 <div id="licenses-header" class="padding-larger margin-bottom-bigger has-text-black is-hidden-widescreen" >
@@ -32,10 +32,10 @@
       {# endfor #}
       </span>
   </h2>
-  <h2 class="has-text-centered is-hidden-touch is-hidden-desktop-only padding-{% start %}-normal">CC BY-NC-SA 4.0</h2>
-  <h3 class="has-text-centered is-hidden-touch">CC BY-NC-SA 4.0</h3>
-  <h4 class="has-text-centered is-hidden-desktop-only is-hidden-widescreen">CC BY-NC-SA 4.0</h4>
-  <h2 class="b-header has-text-centered">Attribution-NonCommercial-ShareAlike 4.0 International</h2>
+  <h2 class="has-text-centered is-hidden-touch is-hidden-desktop-only padding-{% start %}-normal">{{ fat_code }}</h2>
+  <h3 class="has-text-centered is-hidden-touch">{{ fat_code }}</h3>
+  <h4 class="has-text-centered is-hidden-desktop-only is-hidden-widescreen">{{ fat_code }}</h4>
+  <h2 class="b-header has-text-centered">{{ title }}</h2>
 </div>
 
 <style>

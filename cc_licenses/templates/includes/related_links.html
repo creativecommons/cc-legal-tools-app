@@ -1,4 +1,4 @@
-{% load bidi %}
+{% load bidi i18n %}
 
 <div
   class="menu padding-vertical-normal column is-half"
@@ -7,30 +7,34 @@
     <li>
       {# replace with license long title #}
       {% if show_sampling_deed %}
-        <h4 class="has-text-black">Related Links</h4>
+        <h4 class="has-text-black">{% trans "Related Links" %}</h4>
       {% endif %}
       {% if show_standard_deed %}
         <p class="body-big has-text-black">
-          Creative Commons is the nonprofit behind the
-          open licenses that allow creators to share their
-          work. Our licenses and legal tools are free to use.
+          {% blocktrans trimmed %}
+            Creative Commons is the nonprofit behind the
+            open licenses that allow creators to share their
+            work. Our licenses and legal tools are free to use.
+          {% endblocktrans %}
         </p>
       {% endif %}
       {% if show_legal_code %}
         <p class="body-big has-text-black">
-          We're glad you're here! Creative Commons is the nonprofit
-          behind the open licenses that allow creators to share their
-          work. Our licenses are free to use.
+          {% blocktrans trimmed %}
+            We're glad you're here! Creative Commons is the nonprofit
+            behind the open licenses that allow creators to share their
+            work. Our licenses are free to use.
+          {% endblocktrans %}
         </p>
       {% endif %}
       <ul>
         {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about our work</a></li>
+          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about our work" %}</a></li>
         {% endif %}
-        <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Learn more about CC Licensing</a></li>
-        <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Support our work</a></li>
+        <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about CC Licensing" %}</a></li>
+        <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">{% trans "Support our work" %}</a></li>
         {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">Use the license for your own material.<i class="icon external-link padding-bottom-small caption"></i></a></li>
+          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline body-big" style="font-weight: bold;">{% trans "Use the license for your own material." %}<i class="icon external-link padding-bottom-small caption"></i></a></li>
         {% endif %}
       </ul>
     </li>
