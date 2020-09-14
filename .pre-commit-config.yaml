@@ -24,6 +24,14 @@ repos:
         language: system
         pass_filenames: true
         types: ["python"]
+
+      - id: flake8
+        name: "Flake8"
+        entry: flake8
+        language: system
+        pass_filenames: true
+        types: ["python"]
+
       - id: missing-migrations
         name: 'Missing migrations'
         entry: python manage.py makemigrations --check

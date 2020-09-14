@@ -33,7 +33,11 @@ class Migration(migrations.Migration):
                 (
                     "license_code",
                     models.CharField(
-                        help_text="shorthand representation for which class of licenses this falls into.  E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+', 'devnations', ...",
+                        help_text=(
+                            "shorthand representation for which class of licenses "
+                            "this falls into.  E.g. 'by-nc-sa', or 'MIT', "
+                            "'nc-sampling+', 'devnations', ..."
+                        ),
                         max_length=40,
                     ),
                 ),

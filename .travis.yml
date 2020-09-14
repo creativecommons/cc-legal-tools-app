@@ -32,4 +32,4 @@ before_script:
   # - psql service_info -c "CREATE EXTENSION postgis;" -U postgres
 
 script:
-  - make -j lint test docs
+  - make -j test docs

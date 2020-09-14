@@ -2,20 +2,10 @@
 PROJECT_NAME = cc_licenses
 STATIC_DIR = ./$(PROJECT_NAME)/static
 
-default:
-	# Checks syntax and runs tests
-	pre-commit run -v -a
-
+# note: the pre-commit hooks do both linting and testing.
 test:
 	# Run all tests and report coverage
 	pre-commit run -v -a
-
-lint-py:
-	# Just check for Python formatting issues
-	# Requires flake8
-	flake8 .
-
-lint: lint-py
 
 # Generate a random string of desired length
 generate-secret: length = 32
