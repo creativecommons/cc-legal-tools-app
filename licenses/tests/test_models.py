@@ -1,9 +1,11 @@
 from unittest import mock
-from unittest.mock import call
+from unittest.mock import MagicMock, call
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import translation
+from django.utils.translation import override
 
+from i18n.translation import Translation
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.models import LegalCode, TranslatedLicenseName
 from licenses.tests.factories import (
@@ -22,6 +24,34 @@ class LegalCodeModelTest(TestCase):
             str(legal_code),
             f"LegalCode<{legal_code.language_code}, {legal_code.license.about}>",
         )
+
+    @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/foo")
+    def test_translation_filename(self):
+        data = [
+            # ("expected", license_code, version, jurisdiction, language),
+            ("/foo/translations/by-sa/0.3/by-sa_0.3_de.po", "by-sa", "0.3", "", "de"),
+            (
+                "/foo/translations/by-sa/0.3/by-sa_0.3_xx_de.po",
+                "by-sa",
+                "0.3",
+                "xx",
+                "de",
+            ),
+        ]
+
+        for expected, license_code, version, jurisdiction, language in data:
+            with self.subTest(expected):
+                license = LicenseFactory(
+                    license_code=license_code,
+                    version=version,
+                    jurisdiction_code=jurisdiction,
+                )
+                self.assertEqual(
+                    expected,
+                    LegalCodeFactory(
+                        license=license, language_code=language
+                    ).translation_filename(),
+                )
 
     def test_deed_url(self):
         lc = LegalCodeFactory()
@@ -150,6 +180,24 @@ class LegalCodeModelTest(TestCase):
 class LicenseModelTest(TestCase):
     # fixtures = ["licenses.json"]
 
+    def test_get_legalcode_for_language_code(self):
+        license = LicenseFactory()
+
+        lc_pt = LegalCodeFactory(license=license, language_code="pt")
+        lc_en = LegalCodeFactory(license=license, language_code="en")
+
+        with override(language="pt"):
+            result = license.get_legalcode_for_language_code(None)
+            self.assertEqual(lc_pt.id, result.id)
+        result = license.get_legalcode_for_language_code("pt")
+        self.assertEqual(lc_pt.id, result.id)
+        result = license.get_legalcode_for_language_code("en")
+        self.assertEqual(lc_en.id, result.id)
+        with self.assertRaises(LegalCode.DoesNotExist):
+            license.get_legalcode_for_language_code("en_us")
+        result = license.get_legalcode_for_language_code("en-us")
+        self.assertEqual(lc_en.id, result.id)
+
     def test_translation_domain(self):
         license = LicenseFactory(
             license_code="qwerty", version="2.7", jurisdiction_code="zys"
@@ -222,42 +270,54 @@ class LicenseModelTest(TestCase):
         )
         LegalCodeFactory(license=license, language_code="en")
         LegalCodeFactory(license=license, language_code="fr")
+
+        # What a pain to get testing to work without .po files necessarily... FIXME make some test .po files
         with translation.override(language="fr"):
+            lc_fr = license.get_legalcode_for_language_code(None)
+        with translation.override(language="en"):
+            lc_en = license.get_legalcode_for_language_code(None)
+
+        mock_translation_object = MagicMock(autospec=Translation)
+        expected = "Test License Title (fr)"
+        mock_translation_object.translations = {"license_medium": expected}
+        mock_get_translation_object_method = MagicMock(
+            return_value=mock_translation_object
+        )
+        with mock.patch.object(
+            lc_fr, "get_translation_object", mock_get_translation_object_method
+        ):
+            self.assertEqual(lc_fr.get_translation_object(), mock_translation_object)
+            with mock.patch.object(
+                license, "get_legalcode_for_language_code"
+            ) as mock_get_lc:
+                mock_get_lc.return_value = lc_fr
+
+                with translation.override(language="fr"):
+                    result = license.translated_title()
             self.assertEqual(
-                "Attribution - Utilisation non commerciale - Pas d’Œuvre dérivée 4.0 International",
-                license.translated_title(),
+                expected, result,
             )
-        self.assertEqual(
-            "Attribution-NonCommercial-NoDerivatives 4.0 International",
-            license.translated_title("en"),
-        )
-        self.assertEqual(
-            "Attribution-NonCommercial-NoDerivatives 4.0 International",
-            license.translated_title(),
-        )
-        # with self.subTest("en"):
-        #     self.assertEqual(
-        #         "Attribution-NonCommercial-NoDerivatives 4.0 International",
-        #         license.translated_title(),
-        #     )
-        # with self.subTest("es explicit"):
-        #     self.assertEqual(
-        #         "Atribución-NoComercial-SinDerivadas 4.0 Internacional",
-        #         license.translated_title("es"),
-        #     )
-        # with self.subTest("fr set as current lang"):
-        #     with override("fr"):
-        #         self.assertEqual(
-        #             "Attribution - Pas d’Utilisation Commerciale - Pas de Modification 4.0 Ceci peut être "
-        #             "votre site web principal ou la page d’informations vous concernant sur une plate forme "
-        #             "d’hébergement, comme Flickr Commons.",
-        #             license.translated_title(),
-        #         )
-        # with self.subTest("no translation for language"):
-        #     self.assertEqual(
-        #         "Attribution-NonCommercial-NoDerivatives 4.0 International",
-        #         license.translated_title("xx"),
-        #     )
+
+        expected = "Test License Title (en)"
+        mock_translation_object.translations = {"license_medium": expected}
+        with mock.patch.object(
+            lc_en, "get_translation_object", mock_get_translation_object_method
+        ):
+            mock_get_legalcode_for_language_code = MagicMock(return_value=lc_en)
+            with mock.patch.object(
+                license,
+                "get_legalcode_for_language_code",
+                mock_get_legalcode_for_language_code,
+            ):
+                self.assertEqual(
+                    lc_en.get_translation_object(), mock_translation_object
+                )
+                self.assertEqual(
+                    expected, license.translated_title("en"),
+                )
+                self.assertEqual(
+                    expected, license.translated_title(),
+                )
 
 
 class TranslatedLicenseNameModelTest(TestCase):

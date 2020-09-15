@@ -205,7 +205,8 @@ class LicenseDeedViewTest(TestCase):
             "license_deed_view_code_version_english",
             kwargs=dict(license_code=license.license_code, version=license.version,),
         )
-        rsp = self.client.get(url)
+        with mock.patch.object(LegalCode, "get_translation_object"):
+            rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
     # def test_deed_for_superseded_license(self):
