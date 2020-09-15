@@ -38,5 +38,21 @@ class TranslationTest(TestCase):
     def test_translating(self):
         t = Translation(TEST_POFILE, "es")
         result = t.translate("message in English")
-        print(result)
         self.assertEqual("Translation in Spanish", result)
+
+    def test_misc_methods(self):
+        t = Translation(TEST_POFILE, "es")
+        self.assertEqual(1, t.num_messages())
+        self.assertEqual(1, t.num_translated())
+        self.assertEqual(100, t.percent_translated())
+
+    def test_compare_to(self):
+        t = Translation(TEST_POFILE, "es")
+        out = t.compare_to(t)
+        expected = {
+            "different_translations": {},
+            "keys_common": {"message in English"},
+            "keys_extra": set(),
+            "keys_missing": set(),
+        }
+        self.assertEqual(expected, out)

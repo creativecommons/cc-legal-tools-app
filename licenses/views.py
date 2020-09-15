@@ -1,10 +1,12 @@
 import re
+from collections import OrderedDict
 
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import override
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_language_for_jurisdiction
+from licenses.constants import VARYING_MESSAGE_IDS
 from licenses.models import LegalCode, License
 
 DEED_TEMPLATE_MAPPING = {
@@ -109,3 +111,70 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
                 "t": translation.translations,
             },
         )
+
+
+def translation_consistency(request, version, language_code):  # pragma: no cover
+    assert isinstance(version, str)
+    legalcodes = LegalCode.objects.filter(
+        language_code=language_code, license__version=version
+    ).order_by("license__license_code")
+    for lc in legalcodes:
+        t = lc.get_translation_object()
+        lc.num_translated = t.num_translated()
+        lc.num_messages = t.num_messages()
+        lc.percent_translated = t.percent_translated()
+
+        lc.compared_to = {}
+        for lc2 in legalcodes:
+            lc.compared_to[lc2.license.license_code] = t.compare_to(
+                lc2.get_translation_object()
+            )
+
+    sorted_codes = list(
+        legalcodes.order_by("license__license_code").values_list(
+            "license__license_code", flat=True
+        )
+    )
+
+    lcs_by_code = {lc.license.license_code: lc for lc in legalcodes}
+
+    row_headers = sorted_codes
+    col_headers = sorted_codes
+
+    english_for_key = {}
+    for lc in legalcodes:
+        license = lc.license
+        en_lc = LegalCode.objects.get(language_code="en", license=license)
+        english_for_key.update(en_lc.get_translation_object().translations)
+
+    matrix = OrderedDict()
+    translation_differences = OrderedDict()
+    for row in row_headers:
+        if row not in matrix:
+            matrix[row] = OrderedDict()
+        for col in col_headers:
+            row_lc = lcs_by_code[row]
+            comparison = row_lc.compared_to[col]
+            matrix[row][col] = len(comparison["different_translations"])
+
+            for msgid, translations in comparison["different_translations"].items():
+                if msgid not in VARYING_MESSAGE_IDS:
+                    key = english_for_key[msgid]
+                    if key not in translation_differences:
+                        translation_differences[key] = set()
+                    for txt in translations:
+                        translation_differences[key].add(txt)
+
+    return render(
+        request,
+        "translation_consistency.html",
+        {
+            "codes": sorted_codes,
+            "col_headers": col_headers,
+            "row_headers": row_headers,
+            "language_code": language_code,
+            "legalcodes": legalcodes,
+            "matrix": matrix,
+            "translation_differences": translation_differences,
+        },
+    )
