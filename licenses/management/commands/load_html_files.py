@@ -219,10 +219,6 @@ class Command(BaseCommand):
             insert_after("adapted_material", "adapters_license")
             insert_after("adapters_license", "by_sa_compatible_license")
             insert_after("exceptions_and_limitations", "license_elements_sa")
-            # See https://github.com/creativecommons/creativecommons.org/issues/1153
-            # BY-SA 4.0 for "pt" has an extra definition. Work around for now.
-            if language_code == "pt":
-                insert_after("you", "you2")
         elif license_code == "by":
             insert_after("adapted_material", "adapters_license")
         elif license_code == "by-nc":
@@ -266,12 +262,20 @@ class Command(BaseCommand):
         # s2a1: rights
         messages["s2a_license_grant_intro"] = str(list(soup.find(id="s2a1"))[0]).strip()
 
-        messages["s2a_license_grant_share"] = str(
-            list(soup.find(id="s2a1A"))[0]
-        ).strip()
-        messages["s2a_license_grant_adapted"] = str(
-            list(soup.find(id="s2a1B"))[0]
-        ).strip()
+        if "nc" in license_code:
+            messages["s2a_license_grant_share_nc"] = str(
+                list(soup.find(id="s2a1A"))[0]
+            ).strip()
+            messages["s2a_license_grant_adapted_nc"] = str(
+                list(soup.find(id="s2a1B"))[0]
+            ).strip()
+        else:
+            messages["s2a_license_grant_share"] = str(
+                list(soup.find(id="s2a1A"))[0]
+            ).strip()
+            messages["s2a_license_grant_adapted"] = str(
+                list(soup.find(id="s2a1B"))[0]
+            ).strip()
 
         # s2a2: exceptions and limitations
         nt = name_and_text(soup.find(id="s2a2"))
