@@ -12,6 +12,8 @@ import polib
 from django.conf import settings
 from django.utils.safestring import mark_safe
 
+from licenses.constants import VARYING_MESSAGE_IDS
+
 
 class Translation:
     def __init__(self, pofilepath, language_code):
@@ -34,6 +36,49 @@ class Translation:
         else:
             default = msgid
         return self.translations.get(msgid, default)
+
+    # The rest of this is just for analyzing translation statistics, not needed to produce the site.
+    def num_messages(self):
+        return len(list(self.translations.keys()))
+
+    def num_translated(self):
+        return len(
+            list(key for key in self.translations.keys() if self.translations[key])
+        )
+
+    def percent_translated(self):
+        total = self.num_messages()
+        if total > 0:
+            return 100 * (self.num_translated() / total)
+        return 0
+
+    def compare_to(self, translation):
+        """
+        See how the given translation compares to this one.
+        Returns a dictionary, hopefully keys are self-explanatory.
+        """
+        t1 = self
+        t2 = translation
+        self_keys = list(t1.translations.keys())
+        given_keys = list(t2.translations.keys())
+
+        keys_missing = set(self_keys) - set(given_keys)
+        keys_extra = set(given_keys) - set(self_keys)
+        keys_common = set(self_keys) & set(given_keys)
+        different_translations = {}
+        for key in keys_common:
+            if key not in VARYING_MESSAGE_IDS:
+                if t1.translations[key] != t2.translations[key]:
+                    different_translations[key] = (
+                        t1.translations[key],
+                        t2.translations[key],
+                    )
+        return dict(
+            keys_missing=keys_missing,
+            keys_extra=keys_extra,
+            keys_common=keys_common,
+            different_translations=different_translations,
+        )
 
 
 @functools.lru_cache(maxsize=500)

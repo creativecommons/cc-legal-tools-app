@@ -3,7 +3,7 @@ from django_distill import distill_path
 
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
-from licenses.views import view_deed, view_license
+from licenses.views import translation_consistency, view_deed, view_license
 
 from .utils import (
     get_licenses_code_and_version,
@@ -133,6 +133,12 @@ def distill_wireframes():
 
 # DEEDS
 urlpatterns = [
+    # Utility
+    path(
+        "consistency/<version:version>/<lang:language_code>/",
+        translation_consistency,
+        name="translation_consistency",
+    ),
     #
     # LICENSE PAGES
     #

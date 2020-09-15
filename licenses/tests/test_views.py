@@ -267,3 +267,13 @@ class LicenseDeedViewTest(TestCase):
     #     rsp = self.client.get(url)
     #     context = rsp.context
     #     self.assertEqual("fr", context["target_lang"])
+
+
+class TranslationConsistencyViewTest(TestCase):
+    def test_translation_consistency_view(self):
+        # FIXME: This is the bare minimum test.
+        url = reverse(
+            "translation_consistency", kwargs={"language_code": "es", "version": "4.0"}
+        )
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <style>
+    th, td {
+      padding: 0.5rem;
+    }
+  </style>
+  <div>
+    <h3>Language: {{  language_code }}</h3>
+    <p>License version: {{  legalcodes.first.license.version }}</p>
+    <p>Messages translated</p>
+    <table border="1">
+      <thead>
+        <tr>
+          <th>License</th>
+          <th>Num translated</th>
+          <th>Num messages</th>
+          <th>Percent</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lc in legalcodes %}
+          <tr>
+            <td>{{ lc.license.license_code }}</td>
+            <td>{{ lc.num_translated }}</td>
+            <td>{{ lc.num_messages }}</td>
+            <td>{{ lc.percent_translated }}%</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3>Number of different translations of the same text between pairs of licenses</h3>
+    <table border=1>
+      <thead>
+        <tr>
+          <td></td>
+          {% for col in col_headers %}
+            <th>{{ col }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row_name, column_data in matrix.items %}
+          <tr>
+            <th>{{ row_name }}</th>
+            {% for col_name, num_differences in column_data.items %}
+              <td>{{ num_differences|default:"-" }}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3>Translation differences</h3>
+    <style>
+      ul li {
+        margin-bottom: 1rem;
+      }
+      ul li p {
+        font-weight: bold;
+        color: black;
+      }
+    </style>
+
+    <ul>
+      {% for code, texts in translation_differences.items %}
+        <li>
+          <p>English: {{ code }}:</p>
+          <p>Translations:</p>
+          <ul>
+
+            {% for text in texts %}
+              <li>{{ text }}</li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% endfor %}
+
+    </ul>
+
+  </div>
+{% endblock content %}

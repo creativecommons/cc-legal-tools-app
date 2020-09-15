@@ -31,6 +31,11 @@
                 <a href="{% build_license_url license_code version "" language_code %}">License</a>
               </td>
             {% endfor %}
+
+            <td>
+              <a href="{% url 'translation_consistency' version language_code %}">*</a>
+            </td>
+
           </tr>
         {% endfor %}
       </tbody>
