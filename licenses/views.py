@@ -109,17 +109,3 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
                 "t": translation.translations,
             },
         )
-
-
-# ################# 4.0 Styled Pages ########################
-# TEMPORARY VIEWS
-def license_detail(request):  # pragma: no cover
-    return render(request, "licenses/licenses_detail.html")
-
-
-def sampling_detail(request):  # pragma: no cover
-    return render(request, "licenses/sampling_deed_detail.html")
-
-
-def deed_detail(request):  # pragma: no cover
-    return render(request, "licenses/deed_detail.html")

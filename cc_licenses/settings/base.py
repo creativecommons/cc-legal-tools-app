@@ -204,5 +204,8 @@ TRANSLATION_THRESHOLD = 80
 # django-distill settings
 DISTILL_DIR = f"{ROOT_DIR}/build/"
 
-# By default, assume the translation data's repo is checked out beside this one.
-TRANSLATION_REPOSITORY_DIRECTORY = os.path.join(ROOT_DIR, "..", "cc-licenses-data")
+# Location of the translation data's repo. Look in env for TRANSLATION_REPOSITORY_DIRECTORY.
+# Default is next to this one.
+TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
+    "TRANSLATION_REPOSITORY_DIRECTORY", os.path.join(ROOT_DIR, "..", "cc-licenses-data")
+)

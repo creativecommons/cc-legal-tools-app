@@ -3,13 +3,7 @@ from django_distill import distill_path
 
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
-from licenses.views import (
-    deed_detail,
-    license_detail,
-    sampling_detail,
-    view_deed,
-    view_license,
-)
+from licenses.views import view_deed, view_license
 
 from .utils import (
     get_licenses_code_and_version,
@@ -139,28 +133,12 @@ def distill_wireframes():
 
 # DEEDS
 urlpatterns = [
-    # Temporary views to test new templates:
-    distill_path(
-        "license/",
-        license_detail,
-        name="license_detail",
-        distill_func=distill_wireframes,
-    ),
-    distill_path(
-        "sampling/",
-        sampling_detail,
-        name="sampling_detail",
-        distill_func=distill_wireframes,
-    ),
-    distill_path(
-        "deed/", deed_detail, name="deed_detail", distill_func=distill_wireframes
-    ),
-    # More permanent views
     #
     # LICENSE PAGES
     #
     path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
-        # BUT there are no non-40 licenses we can distill, so just make this a regular URL path.
+        # BUT there are no non-40 licenses we can distill, so just make this a regular URL path,
+        # not a distill_path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
         view_license,
         name="view_40_license",
@@ -186,7 +164,8 @@ urlpatterns = [
     path(
         # Language empty (default to THE JURISDICTION'S LANGUAGE):
         # e.g. /licenses/by-nc-sa/3.0/de/legalcode
-        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path.
+        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path,
+        # not a distill_path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode",
         view_license,
         name="licenses_default_language_with_jurisdiction",
@@ -207,13 +186,15 @@ urlpatterns = [
         distill_func=get_licenses_code_version_language_code,
     ),
     path(
-        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path.
+        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path,
+        # not a distill_path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
         view_deed,
         name="license_deed_view_code_version_jurisdiction",
     ),
     path(
-        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path.
+        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path,
+        # not a distill_path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:language_code>",
         view_deed,
         name="license_deed_view_code_version_jurisdiction_language",

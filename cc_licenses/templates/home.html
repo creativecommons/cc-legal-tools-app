@@ -3,10 +3,6 @@
 {% block content %}
   <p><b>Temporary homepage</b></p>
 
-  <p><a href="{% url 'license_detail' %}">Example license page (styled)</a></p>
-  <p><a href="{% url 'sampling_detail' %}">Example sampling license page (styled)</a></p>
-  <p><a href="{% url 'deed_detail' %}">Example deed page (styled)</a></p>
-
   <p>Some licenses:</p>
 
   {% for version, license_codes, language_codes in licenses_by_version %}

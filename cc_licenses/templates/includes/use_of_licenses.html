@@ -11,7 +11,7 @@
       are for informational purposes only, are not exhaustive, and do not form part of our licenses.
     {% endblocktrans %}
   </p>
-  <hr class="divider rtl-divider">
+  <hr class="divider">
   <div>
     <h4 class="level is-vcentered b-header">{% trans "Considerations for licensors" %}<span class="level-right"><i class="angle-down icon" data-consideration="1" data-direction="down"><span class="is-sr-only">{% trans "Show Considerations for Licensors" %}</span></i></span></h4>
     <p class="has-text-black body-big is-hidden">
@@ -25,7 +25,7 @@
     {% endblocktrans %}
     </p>
   </div>
-  <hr class="divider {% if is_rtl %}rtl-divider{% endif %}">
+  <hr class="divider">
   <div>
     <h4 class="level is-vcentered b-header">{% trans "Considerations for the public" %}<span class="level-right"><i class="angle-down icon" data-consideration="2" data-direction="down"><span class="is-sr-only">{% trans "Show Considerations for the Public" %}</span></i></span></h4>
     <p class="has-text-black body-big is-hidden">
@@ -43,12 +43,15 @@
 </div>
 
 <style>
-  .has-background-info-light .divider {
+  [dir="rtl"] .has-background-info-light .divider {
+      margin-right: -2rem;
+  }
+  [dir="ltr"] .has-background-info-light .divider {
       margin-left: -2rem;
+  }
+
+  .has-background-info-light .divider {
       width: calc(100% + 4rem);
       background-color: #b0b0b0;
-  }
-  .divider.rtl-divider {
-    margin-right: -2rem;
   }
 </style>
