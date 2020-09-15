@@ -1,0 +1,14 @@
+[tool.black]
+# line-length default is 88.
+# NOTE that at present, there are lines Black will not reformat to fit in 88 chars,
+# and so we're telling flake8 to allow longer lines. But 88 is a good length for
+# when Black can achieve it.
+line-length = 88
+target_version = ['py37']
+exclude = '''
+
+(
+  /node_modules/
+  | /venv/
+)
+'''

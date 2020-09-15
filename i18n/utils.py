@@ -3,14 +3,10 @@ from contextlib import ContextDecorator
 from babel import Locale, UnknownLocaleError
 from django.utils import translation
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext, activate, get_language
+from django.utils.translation import activate, get_language, ugettext
 from django.utils.translation.trans_real import DjangoTranslation, deactivate_all
 
-from i18n import (
-    DEFAULT_JURISDICTION_LANGUAGES,
-    DEFAULT_LANGUAGE_CODE,
-)
-
+from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
 
 CACHED_APPLICABLE_LANGS = {}
 CACHED_WELL_TRANSLATED_LANGS = {}

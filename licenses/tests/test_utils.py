@@ -1,15 +1,13 @@
 from unittest.mock import MagicMock
-from django.test import TestCase
 
 from bs4 import BeautifulSoup
+from django.test import TestCase
 from polib import POEntry
 
+from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
 from licenses.models import License
-from licenses.constants import (
-    EXCLUDED_LANGUAGE_IDENTIFIERS,
-    EXCLUDED_LICENSE_VERSIONS
-)
 from licenses.utils import (
+    compute_about_url,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
     get_licenses_code_and_version,
@@ -17,11 +15,11 @@ from licenses.utils import (
     get_licenses_code_version_jurisdiction_lang,
     get_licenses_code_version_lang,
     parse_legalcode_filename,
-    compute_about_url,
-    validate_list_is_all_text,
-    validate_dictionary_is_all_text,
     save_dict_to_pofile,
+    validate_dictionary_is_all_text,
+    validate_list_is_all_text,
 )
+
 from .factories import LicenseFactory
 
 
@@ -188,9 +186,15 @@ class GetLicenseUtilityTest(TestCase):
     def setUp(self):
         self.license1 = LicenseFactory(license_code="by", version="4.0")
         self.license2 = LicenseFactory(license_code="by-nc", version="4.0")
-        self.license3 = LicenseFactory(license_code="by-nd", version="3.0", jurisdiction_code="hk")
-        self.license4 = LicenseFactory(license_code="by-nc-sa", version="3.0", jurisdiction_code="us")
-        self.license5 = LicenseFactory(license_code="by-na", version="3.0", jurisdiction_code="nl")
+        self.license3 = LicenseFactory(
+            license_code="by-nd", version="3.0", jurisdiction_code="hk"
+        )
+        self.license4 = LicenseFactory(
+            license_code="by-nc-sa", version="3.0", jurisdiction_code="us"
+        )
+        self.license5 = LicenseFactory(
+            license_code="by-na", version="3.0", jurisdiction_code="nl"
+        )
         self.license6 = LicenseFactory(license_code="by", version="")  # zero
         self.license7 = LicenseFactory(license_code="by", version="2.5")
         self.license8 = LicenseFactory(license_code="by", version="2.0")
@@ -349,9 +353,15 @@ class TestMisc(TestCase):
             validate_dictionary_is_all_text({"1": "a", "2": object()})
         soup = BeautifulSoup("<span>foo</span>", "lxml")
         navstring = soup.span.string
-        self.assertEqual({"a": "foo"}, validate_dictionary_is_all_text({"a": navstring}))
-        self.assertEqual({"a": ["foo"]}, validate_dictionary_is_all_text({"a": [navstring]}))
-        self.assertEqual({"a": {"b": "foo"}}, validate_dictionary_is_all_text({"a": {"b": "foo"}}))
+        self.assertEqual(
+            {"a": "foo"}, validate_dictionary_is_all_text({"a": navstring})
+        )
+        self.assertEqual(
+            {"a": ["foo"]}, validate_dictionary_is_all_text({"a": [navstring]})
+        )
+        self.assertEqual(
+            {"a": {"b": "foo"}}, validate_dictionary_is_all_text({"a": {"b": "foo"}})
+        )
 
     def test_save_dict_to_pofile(self):
         mock_pofile = MagicMock()

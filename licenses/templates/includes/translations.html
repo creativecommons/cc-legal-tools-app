@@ -7,11 +7,10 @@
 
   {% for lang in active_languages %}
     <a title="{{ lang.name }}"
-       rel="alternate nofollow frbr:translation" 
+       rel="alternate nofollow frbr:translation"
        rev="frbr:translationOf"
        href="./deed.{{ lang.code}}"
        hreflang="{{ lang.code }}"
        xml:lang="{{ lang.code }}">{{ lang.name }}</a>
   {% endfor %}
 </div>
-

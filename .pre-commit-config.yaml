@@ -1,0 +1,53 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-json
+
+  - repo: https://github.com/psf/black
+    rev: 19.10b0
+    hooks:
+      - id: black
+
+  - repo: local
+    hooks:
+      - id: isort
+        name: "Isort"
+        entry: isort
+        language: system
+        pass_filenames: true
+        types: ["python"]
+
+      - id: flake8
+        name: "Flake8"
+        entry: flake8
+        language: system
+        pass_filenames: true
+        types: ["python"]
+
+      - id: missing-migrations
+        name: 'Missing migrations'
+        entry: python manage.py makemigrations --check
+        language: system
+        pass_filenames: false
+        types: ["file", "python"]
+
+      - id: python-test
+        name: 'Run Django tests'
+        entry: coverage run manage.py test --noinput --keepdb
+        language: system
+        pass_filenames: false
+        types: ["file", "python"]
+
+      - id: coverage
+        name: 'Confirm test coverage'
+        entry: coverage report -m --fail-under 98
+        language: system
+        pass_filenames: false
+        types: ["file", "python"]

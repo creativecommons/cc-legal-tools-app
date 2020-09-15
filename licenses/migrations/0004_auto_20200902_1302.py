@@ -6,25 +6,23 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('licenses', '0003_auto_20200715_0918'),
+        ("licenses", "0003_auto_20200715_0918"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='legalcode',
-            options={'ordering': ['license__about']},
+            name="legalcode", options={"ordering": ["license__about"]},
         ),
-        migrations.RemoveField(
-            model_name='legalcode',
-            name='raw_html',
-        ),
-        migrations.RemoveField(
-            model_name='legalcode',
-            name='url',
-        ),
+        migrations.RemoveField(model_name="legalcode", name="raw_html",),
+        migrations.RemoveField(model_name="legalcode", name="url",),
         migrations.AddField(
-            model_name='legalcode',
-            name='html_file',
-            field=models.CharField(blank=True, default='', help_text='HTML file we got this from', max_length=300),
+            model_name="legalcode",
+            name="html_file",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="HTML file we got this from",
+                max_length=300,
+            ),
         ),
     ]

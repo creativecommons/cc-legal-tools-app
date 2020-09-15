@@ -1,15 +1,15 @@
 import os
 
 from django.test import TestCase, override_settings
-from django.utils.translation import get_language, override, gettext
+from django.utils.translation import get_language, gettext, override
 
 from i18n.utils import (
+    activate_domain_language,
+    get_language_for_jurisdiction,
     get_locale_text_orientation,
+    locale_to_lower_upper,
     rtl_context_stuff,
     ugettext_for_locale,
-    locale_to_lower_upper,
-    get_language_for_jurisdiction,
-    activate_domain_language,
 )
 
 this_file = __file__
@@ -170,7 +170,9 @@ class I18NTest(TestCase):
             try:
                 with activate_domain_language(domain=domain, language=language):
                     print("Active language = " + get_language())
-                    self.assertEqual("Translation in Spanish", gettext("message in English"))
+                    self.assertEqual(
+                        "Translation in Spanish", gettext("message in English")
+                    )
             finally:
                 if domain_language in _translations:
                     del _translations[domain_language]

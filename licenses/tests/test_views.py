@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from licenses.models import License
-from licenses.tests.factories import LicenseFactory, LegalCodeFactory
+from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 from licenses.views import DEED_TEMPLATE_MAPPING
 
 
@@ -125,7 +125,9 @@ class LicenseDeedViewTest(TestCase):
                 self.validate_deed_text(rsp, license)
 
     def test_license_deed_view_code_version_jurisdiction_language(self):
-        license = LicenseFactory(license_code="by-nc", jurisdiction_code="es", version="4.0")
+        license = LicenseFactory(
+            license_code="by-nc", jurisdiction_code="es", version="4.0"
+        )
         LegalCodeFactory(license=license, language_code="fr")
         # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>"
         url = reverse(
@@ -135,13 +137,15 @@ class LicenseDeedViewTest(TestCase):
                 jurisdiction=license.jurisdiction_code,
                 target_lang="fr",
                 version="4.0",
-            )
+            ),
         )
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
     def test_license_deed_view_code_version_jurisdiction(self):
-        license = LicenseFactory(license_code="by-nc", jurisdiction_code="es", version="4.0")
+        license = LicenseFactory(
+            license_code="by-nc", jurisdiction_code="es", version="4.0"
+        )
         LegalCodeFactory(license=license, language_code="fr")
         # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/"
         url = reverse(
@@ -149,8 +153,8 @@ class LicenseDeedViewTest(TestCase):
             kwargs=dict(
                 license_code=license.license_code,
                 version=license.version,
-                jurisdiction=license.jurisdiction_code
-            )
+                jurisdiction=license.jurisdiction_code,
+            ),
         )
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
@@ -160,10 +164,7 @@ class LicenseDeedViewTest(TestCase):
         LegalCodeFactory(license=license, language_code="en")
         url = reverse(
             "license_deed_view_code_version_english",
-            kwargs=dict(
-                license_code=license.license_code,
-                version=license.version,
-            )
+            kwargs=dict(license_code=license.license_code, version=license.version,),
         )
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)

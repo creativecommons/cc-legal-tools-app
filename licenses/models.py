@@ -12,30 +12,22 @@ Some licenses ahve a dcq:isReplacedBy element.
 from django.db import models
 from django.urls import reverse
 
-from i18n import (
-    DEFAULT_LANGUAGE_CODE,
-    DEFAULT_JURISDICTION_LANGUAGES
-)
-from licenses import (
-    FREEDOM_LEVEL_MIN,
-    FREEDOM_LEVEL_MID,
-    FREEDOM_LEVEL_MAX,
-)
+from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
+from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 
 MAX_LANGUAGE_CODE_LENGTH = 8
 
 
 class LegalCode(models.Model):
-    license = models.ForeignKey("licenses.License", on_delete=models.CASCADE, related_name="legal_codes")
+    license = models.ForeignKey(
+        "licenses.License", on_delete=models.CASCADE, related_name="legal_codes"
+    )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
     html_file = models.CharField(
-        max_length=300,
-        help_text="HTML file we got this from",
-        blank=True,
-        default=""
+        max_length=300, help_text="HTML file we got this from", blank=True, default=""
     )
 
     class Meta:
