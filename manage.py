@@ -2,7 +2,6 @@
 import os
 import sys
 
-
 if __name__ == "__main__":
     if "DATABASE_URL" in os.environ:
         # Dokku or similar

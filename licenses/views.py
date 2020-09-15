@@ -1,14 +1,11 @@
 import re
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.translation import override
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import (
-    get_language_for_jurisdiction,
-)
-from licenses.models import License, LegalCode
-
+from i18n.utils import get_language_for_jurisdiction
+from licenses.models import LegalCode, License
 
 DEED_TEMPLATE_MAPPING = {
     # license_code : template name
@@ -60,7 +57,7 @@ def home(request):
 def view_license(request, license_code, version, jurisdiction=None, language_code=None):
     if language_code is None and jurisdiction:
         language_code = get_language_for_jurisdiction(jurisdiction)
-    language_code=language_code or DEFAULT_LANGUAGE_CODE
+    language_code = language_code or DEFAULT_LANGUAGE_CODE
 
     legalcode = get_object_or_404(
         LegalCode,
@@ -77,8 +74,8 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
             {
                 "fat_code": legalcode.license.fat_code(),
                 "legalcode": legalcode,
-                "license_medium": translation.translations["license_medium"],
-                "title": translation.translations["license_medium"],
+                "license_medium": translation.translate("license_medium"),
+                "title": translation.translate("license_medium"),
                 "translation": translation,  # the full "Translation" object
                 "t": translation.translations,  # the msgid -> translated message dictionary
             },
@@ -88,7 +85,7 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
 def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
     if language_code is None and jurisdiction:
         language_code = get_language_for_jurisdiction(jurisdiction)
-    language_code=language_code or DEFAULT_LANGUAGE_CODE
+    language_code = language_code or DEFAULT_LANGUAGE_CODE
 
     legalcode = get_object_or_404(
         LegalCode,
@@ -112,6 +109,7 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
                 "t": translation.translations,
             },
         )
+
 
 # ################# 4.0 Styled Pages ########################
 # TEMPORARY VIEWS

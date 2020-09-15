@@ -1,19 +1,19 @@
-from django.urls import register_converter
+from django.urls import path, register_converter
 from django_distill import distill_path
-from .utils import (
-    get_licenses_code_and_version,
-    get_licenses_code_version_jurisdiction,
-    get_licenses_code_version_language_code,
-    get_licenses_code_version_jurisdiction_language_code,
-)
-from i18n import LANGUAGE_CODE_REGEX_STRING, DEFAULT_LANGUAGE_CODE
+
+from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
 from licenses.views import (
     deed_detail,
     license_detail,
     sampling_detail,
-    view_license,
     view_deed,
+    view_license,
+)
+
+from .utils import (
+    get_licenses_code_and_version,
+    get_licenses_code_version_language_code,
 )
 
 """
@@ -159,31 +159,37 @@ urlpatterns = [
     #
     # LICENSE PAGES
     #
-    distill_path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
+    path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
+        # BUT there are no non-40 licenses we can distill, so just make this a regular URL path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
         view_license,
         name="view_40_license",
-        distill_func=get_licenses_code_version_jurisdiction_language_code,
     ),
-    distill_path(  # Jurisdiction empty: e.g. /licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
+    distill_path(
+        # Jurisdiction empty:
+        # e.g. /licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
         "<code:license_code>/<version:version>/legalcode.<lang:language_code>",
         view_license,
         kwargs=dict(jurisdiction=""),
         name="view_40_license",
         distill_func=get_licenses_code_version_language_code,
     ),
-    distill_path(  # Jurisdiction and language empty (default to English): e.g. /licenses/by/4.0/legalcode - license BY 4.0 English
+    distill_path(
+        # Jurisdiction and language empty (default to English):
+        # e.g. /licenses/by/4.0/legalcode - license BY 4.0 English
         "<code:license_code>/<version:version>/legalcode",
         view_license,
         name="licenses_default_jurisdiction_and_language",
         distill_func=get_licenses_code_and_version,
         kwargs=dict(language_code=DEFAULT_LANGUAGE_CODE, jurisdiction=""),
     ),
-    distill_path(  # Language empty (default to THE JURISDICTION'S LANGUAGE): e.g. /licenses/by-nc-sa/3.0/de/legalcode
+    path(
+        # Language empty (default to THE JURISDICTION'S LANGUAGE):
+        # e.g. /licenses/by-nc-sa/3.0/de/legalcode
+        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode",
         view_license,
         name="licenses_default_language_with_jurisdiction",
-        distill_func=get_licenses_code_version_jurisdiction,
     ),
     #
     # DEED PAGES
@@ -200,16 +206,16 @@ urlpatterns = [
         name="license_deed_view_code_version_language",
         distill_func=get_licenses_code_version_language_code,
     ),
-    distill_path(
+    path(
+        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
         view_deed,
         name="license_deed_view_code_version_jurisdiction",
-        distill_func=get_licenses_code_version_jurisdiction,
     ),
-    distill_path(
+    path(
+        # BUT there are no licenses with jurisdictions we can distill, so just make this a regular URL path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:language_code>",
         view_deed,
         name="license_deed_view_code_version_jurisdiction_language",
-        distill_func=get_licenses_code_version_jurisdiction_language_code,
     ),
 ]

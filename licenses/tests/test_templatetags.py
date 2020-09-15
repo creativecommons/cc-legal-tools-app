@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from licenses.templatetags.license_tags import build_license_url, build_deed_url
+from licenses.templatetags.license_tags import build_deed_url, build_license_url
 
 
 class LicenseTagsTest(TestCase):
@@ -33,7 +33,6 @@ class LicenseTagsTest(TestCase):
             ("by-sa", "4.0", "", "es", "/licenses/by-sa/4.0/deed.es"),
             ("by", "3.0", "es", "", "/licenses/by/3.0/es/"),
             ("by", "3.0", "es", "fr", "/licenses/by/3.0/es/deed.fr"),
-
             ("by", "4.0", "", "", "/licenses/by/4.0/"),
             ("by", "4.0", "", "xx", "/licenses/by/4.0/deed.xx"),
             ("by-nc", "2.0", "zz", "", "/licenses/by-nc/2.0/zz/"),

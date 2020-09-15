@@ -2,6 +2,7 @@
 Django settings for cc_licenses project.
 """
 import os
+
 from babel import Locale
 from django.conf.locale import LANG_INFO
 
@@ -29,49 +30,44 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    'licenses',
-    'i18n',
+    "licenses",
+    "i18n",
 ]
 
-THIRD_PARTY_APPS = [
-    'django_distill'
-]
+THIRD_PARTY_APPS = ["django_distill"]
 
 INSTALLED_APPS += THIRD_PARTY_APPS
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 ROOT_URLCONF = "cc_licenses.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(PROJECT_DIR, 'templates'),
-        ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(PROJECT_DIR, "templates"),],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                'dealer.contrib.django.context_processor',
+                "dealer.contrib.django.context_processor",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'cc_licenses.wsgi.application'
+WSGI_APPLICATION = "cc_licenses.wsgi.application"
 
 
 # Database
@@ -86,54 +82,45 @@ DATABASES = {
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(ROOT_DIR, 'public', 'media')
+MEDIA_ROOT = os.path.join(ROOT_DIR, "public", "media")
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {
+        "basic": {"format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",},
     },
-    'formatters': {
-        'basic': {
-            'format': '%(asctime)s %(name)-20s %(levelname)-8s %(message)s',
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "basic",
         },
     },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
+    "loggers": {
+        "django.request": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
         },
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'basic',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'django.security': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
+        "django.security": {
+            "handlers": ["mail_admins"],
+            "level": "ERROR",
+            "propagate": True,
         },
     },
-    'root': {
-        'handlers': ['console', ],
-        'level': 'INFO',
-    },
+    "root": {"handlers": ["console",], "level": "INFO",},
 }
 
 # Internationalization
@@ -141,8 +128,8 @@ LOGGING = {
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
-LOCALE_PATHS = (os.path.join(ROOT_DIR, 'locale'), )
+LANGUAGE_CODE = "en-us"
+LOCALE_PATHS = (os.path.join(ROOT_DIR, "locale"),)
 
 # Teach Django about a few more languages
 mi = Locale.parse("mi")
@@ -167,7 +154,7 @@ LANG_INFO["zh-Hant"] = {
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = "America/New_York"
 
 USE_I18N = True
 
@@ -181,16 +168,14 @@ USE_TZ = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(ROOT_DIR, 'public', 'static')
+STATIC_ROOT = os.path.join(ROOT_DIR, "public", "static")
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 # Additional locations of static files
-STATICFILES_DIRS = (
-    os.path.join(PROJECT_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(PROJECT_DIR, "static"),)
 
 # If using Celery, tell it to obey our logging configuration.
 CELERYD_HIJACK_ROOT_LOGGER = False
@@ -198,17 +183,11 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 # https://docs.djangoproject.com/en/1.9/topics/auth/passwords/#password-validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
 # Make things more secure by default. Run "python manage.py check --deploy"
@@ -217,13 +196,13 @@ AUTH_PASSWORD_VALIDATORS = [
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 CSRF_COOKIE_HTTPONLY = True
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = "DENY"
 
 # Percent translated that languages should be at or above
 TRANSLATION_THRESHOLD = 80
 
 # django-distill settings
-DISTILL_DIR = f'{ROOT_DIR}/build/'
+DISTILL_DIR = f"{ROOT_DIR}/build/"
 
 # By default, assume the translation data's repo is checked out beside this one.
 TRANSLATION_REPOSITORY_DIRECTORY = os.path.join(ROOT_DIR, "..", "cc-licenses-data")

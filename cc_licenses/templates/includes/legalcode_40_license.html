@@ -1,4 +1,3 @@
-{% load cctrans %}
 <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
   {% include 'includes/snippet/icon_header_snippet.html' %}
   <div>
@@ -15,7 +14,7 @@
       <ol type="a" class="body-big padding-left-normal">
         {% for defn in legalcode.definitions %}
           <li id="{{ defn.id }}" class="padding-bottom-normal">
-            <div class="padding-left-normal">{{ defn.msgid|t:translation }}
+            <div class="padding-left-normal">{{ defn.translation }}
             </div>
           </li>
         {% endfor %}
@@ -42,7 +41,7 @@
             <div class="para">
               <ol type="A" class="padding-left-normal padding-vertical-normal">
                 {% for downstream in legalcode.downstreams %}
-                  <li id="{{ downstream.id }}" class="padding-left-normal {% if forloop.last %}padding-bottom-small{% else %}padding-bottom-normal{% endif %}"><span style="text-decoration: underline;">{{ downstream.msgid_name|t:translation }}</span>. {{ downstream.msgid_text|t:translation }}</li>
+                  <li id="{{ downstream.id }}" class="padding-left-normal {% if forloop.last %}padding-bottom-small{% else %}padding-bottom-normal{% endif %}"><span style="text-decoration: underline;">{{ downstream.name_translation }}</span>. {{ downstream.text_translation }}</li>
                 {% endfor %}
               </ol>
             </div>

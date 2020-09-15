@@ -2,22 +2,10 @@
 PROJECT_NAME = cc_licenses
 STATIC_DIR = ./$(PROJECT_NAME)/static
 
-default: lint test
-
+# note: the pre-commit hooks do both linting and testing.
 test:
 	# Run all tests and report coverage
-	# Requires coverage
-	python manage.py makemigrations --dry-run | grep 'No changes detected' || \
-		(echo 'There are changes which require migrations.' && exit 1)
-	coverage run manage.py test --noinput -v 2 --keepdb
-	coverage report -m --fail-under 98
-
-lint-py:
-	# Check for Python formatting issues
-	# Requires flake8
-	flake8 .
-
-lint: lint-py
+	pre-commit run -v -a
 
 # Generate a random string of desired length
 generate-secret: length = 32

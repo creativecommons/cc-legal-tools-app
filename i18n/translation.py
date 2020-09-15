@@ -21,8 +21,7 @@ class Translation:
             raise FileNotFoundError(pofilepath)
         self.pofile = polib.pofile(pofilepath)
         self.translations = {
-            entry.msgid: mark_safe(entry.msgstr)
-            for entry in self.pofile
+            entry.msgid: mark_safe(entry.msgstr) for entry in self.pofile
         }
 
         # For debugging, you can dump the translations:

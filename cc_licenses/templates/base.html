@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 {% get_current_language as LANGUAGE_CODE %}{# View will have set current language #}
 {% get_language_info for LANGUAGE_CODE as lang %}
-<html lang="{{ lang.name }}" class="no-js" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
+<html lang="{{ lang.code }}" class="no-js" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
 <head about="{% block about %} {% endblock %}">
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>

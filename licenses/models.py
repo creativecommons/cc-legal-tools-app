@@ -17,28 +17,22 @@ from django.db import models
 from django.utils import translation
 
 from i18n.translation import get_translation_object
-from licenses import (
-    FREEDOM_LEVEL_MIN,
-    FREEDOM_LEVEL_MID,
-    FREEDOM_LEVEL_MAX,
-)
-from licenses.templatetags.license_tags import build_license_url, build_deed_url
-
+from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
+from licenses.templatetags.license_tags import build_deed_url, build_license_url
 
 MAX_LANGUAGE_CODE_LENGTH = 8
 
 
 class LegalCode(models.Model):
-    license = models.ForeignKey("licenses.License", on_delete=models.CASCADE, related_name="legal_codes")
+    license = models.ForeignKey(
+        "licenses.License", on_delete=models.CASCADE, related_name="legal_codes"
+    )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
     html_file = models.CharField(
-        max_length=300,
-        help_text="HTML file we got this from",
-        blank=True,
-        default=""
+        max_length=300, help_text="HTML file we got this from", blank=True, default=""
     )
 
     class Meta:
@@ -52,14 +46,24 @@ class LegalCode(models.Model):
         URL to view this translation of this license
         """
         license = self.license
-        return build_license_url(license.license_code, license.version, license.jurisdiction_code, self.language_code)
+        return build_license_url(
+            license.license_code,
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        )
 
     def deed_url(self):
         """
         URL to view this translation of this deed
         """
         license = self.license
-        return build_deed_url(license.license_code, license.version, license.jurisdiction_code, self.language_code)
+        return build_deed_url(
+            license.license_code,
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        )
 
     def fat_code(self):
         """
@@ -85,8 +89,9 @@ class LegalCode(models.Model):
         if self.license.license_code in ["by-sa", "by-nc-sa"]:
             expected_downstreams.insert(1, "adapted_material")
         LETTERS = string.ascii_uppercase
+        translation = self.get_translation_object()
         # s2a5_license_grant_downstream_offer_name
-        return [
+        result = [
             {
                 "id": f"s2a5{LETTERS[i]}_{item}",
                 "msgid_name": f"s2a5_license_grant_downstream_{item}_name",
@@ -94,7 +99,10 @@ class LegalCode(models.Model):
             }
             for i, item in enumerate(expected_downstreams)
         ]
-
+        for item in result:
+            item["name_translation"] = translation.translate(item["msgid_name"])
+            item["text_translation"] = translation.translate(item["msgid_text"])
+        return result
 
     def definitions(self):
         """
@@ -119,6 +127,8 @@ class LegalCode(models.Model):
             "sui_generis_database_rights",
             "you",
         ]
+
+        translation = self.get_translation_object()
 
         # now insert the optional ones
         def insert_after(after_this, what_to_insert):
@@ -145,13 +155,13 @@ class LegalCode(models.Model):
             insert_after("licensor", "noncommercial")
 
         LETTERS = string.ascii_lowercase
-        return [
-            {
-                "id": f"s1{LETTERS[i]}",
-                "msgid": f"s1_definitions_{item}",
-            }
+        result = [
+            {"id": f"s1{LETTERS[i]}", "msgid": f"s1_definitions_{item}",}
             for i, item in enumerate(expected_definitions)
         ]
+        for item in result:
+            item["translation"] = translation.translate(item["msgid"])
+        return result
 
     def get_translation_object(self):
         return get_translation_object(self.translation_filename(), self.language_code)
@@ -171,12 +181,19 @@ class LegalCode(models.Model):
         "{translation repo topdir}/translations/by-nc/4.0/by-nc_4.0_fr.po".
         """
         license = self.license
-        filename_parts = [license.license_code.lower(), license.version, license.jurisdiction_code, self.language_code]
+        filename_parts = [
+            license.license_code.lower(),
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        ]
         # Remove any empty parts
         filename_parts = [x for x in filename_parts if x]
         filename = "_".join(filename_parts) + ".po"
         subdir = f"{license.license_code.lower()}/{license.version or 'None'}"
-        fullpath = os.path.join(settings.TRANSLATION_REPOSITORY_DIRECTORY, "translations", subdir, filename)
+        fullpath = os.path.join(
+            settings.TRANSLATION_REPOSITORY_DIRECTORY, "translations", subdir, filename
+        )
         return fullpath
 
 

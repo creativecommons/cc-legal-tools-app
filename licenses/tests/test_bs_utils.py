@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from django.test import TestCase
 
-from licenses.bs_utils import nested_text, text_up_to, name_and_text, inner_html
+from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
 
 
 class TestBSUtils(TestCase):
@@ -45,9 +45,7 @@ class TestBSUtils(TestCase):
         <div id="top"><p>Child 1</p><span>Foo</span><p>Child 4</p> </div>
         """
         soup = BeautifulSoup(text, "lxml")
-        self.assertEqual(
-            "<p>Child 1</p>", text_up_to(soup.find(id="top"), "span")
-        )
+        self.assertEqual("<p>Child 1</p>", text_up_to(soup.find(id="top"), "span"))
 
     def test_name_and_text(self):
         """

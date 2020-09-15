@@ -2,13 +2,13 @@ import posixpath
 import re
 import urllib
 
-from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS
-from .constants import EXCLUDED_LICENSE_VERSIONS
-from .models import License
 from bs4 import NavigableString
-from polib import POFile, POEntry
+from polib import POEntry, POFile
 
 from i18n import LANGUAGE_CODE_REGEX
+
+from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
+from .models import License
 
 
 def get_code_from_jurisdiction_url(url):
@@ -147,49 +147,6 @@ def get_licenses_code_version_language_code():
                 yield {
                     "license_code": license.license_code,
                     "version": license.version,
-                    "language_code": translated_license.language_code,
-                }
-            continue
-
-
-def get_licenses_code_version_jurisdiction():
-    """Returns an iterable of license dictionaries
-    dictionary keys:
-        - license_code
-        - version
-        - jurisdiction
-    """
-    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-        if license.jurisdiction_code:
-            yield {
-                "license_code": license.license_code,
-                "version": license.version,
-                "jurisdiction": license.jurisdiction_code,
-            }
-        continue
-
-
-def get_licenses_code_version_jurisdiction_language_code():
-    """Returns an iterable of license dictionaries
-    dictionary keys:
-        - license_code
-        - version
-        - jurisdiction
-        - language_code (
-            value is a translated license's
-            language_code
-        )
-    """
-    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-        for translated_license in license.names.all():
-            if (
-                translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS
-                and license.jurisdiction_code
-            ):
-                yield {
-                    "license_code": license.license_code,
-                    "version": license.version,
-                    "jurisdiction": license.jurisdiction_code,
                     "language_code": translated_license.language_code,
                 }
             continue

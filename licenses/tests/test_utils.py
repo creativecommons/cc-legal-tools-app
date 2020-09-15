@@ -1,25 +1,23 @@
 from unittest.mock import MagicMock
-from django.test import TestCase
 
 from bs4 import BeautifulSoup
+from django.test import TestCase
 from polib import POEntry
 
+from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
 from licenses.models import License
-from licenses.constants import (
-    EXCLUDED_LANGUAGE_IDENTIFIERS,
-    EXCLUDED_LICENSE_VERSIONS
-)
 from licenses.utils import (
+    compute_about_url,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
     get_licenses_code_and_version,
-    get_licenses_code_version_jurisdiction,
+    get_licenses_code_version_language_code,
     parse_legalcode_filename,
-    compute_about_url,
-    validate_list_is_all_text,
+    save_dict_to_pofile,
     validate_dictionary_is_all_text,
-    save_dict_to_pofile, get_licenses_code_version_language_code, get_licenses_code_version_jurisdiction_language_code,
+    validate_list_is_all_text,
 )
+
 from .factories import LicenseFactory
 
 
@@ -186,9 +184,15 @@ class GetLicenseUtilityTest(TestCase):
     def setUp(self):
         self.license1 = LicenseFactory(license_code="by", version="4.0")
         self.license2 = LicenseFactory(license_code="by-nc", version="4.0")
-        self.license3 = LicenseFactory(license_code="by-nd", version="3.0", jurisdiction_code="hk")
-        self.license4 = LicenseFactory(license_code="by-nc-sa", version="3.0", jurisdiction_code="us")
-        self.license5 = LicenseFactory(license_code="by-na", version="3.0", jurisdiction_code="nl")
+        self.license3 = LicenseFactory(
+            license_code="by-nd", version="3.0", jurisdiction_code="hk"
+        )
+        self.license4 = LicenseFactory(
+            license_code="by-nc-sa", version="3.0", jurisdiction_code="us"
+        )
+        self.license5 = LicenseFactory(
+            license_code="by-na", version="3.0", jurisdiction_code="nl"
+        )
         self.license6 = LicenseFactory(license_code="by", version="")  # zero
         self.license7 = LicenseFactory(license_code="by", version="2.5")
         self.license8 = LicenseFactory(license_code="by", version="2.0")
@@ -223,65 +227,13 @@ class GetLicenseUtilityTest(TestCase):
                     translated_license.language_code
                     not in EXCLUDED_LANGUAGE_IDENTIFIERS
                 ):
-                    return list_of_licenses_dict.append(
+                    list_of_licenses_dict.append(
                         {
                             "license_code": license.license_code,
                             "version": license.version,
                             "language_code": translated_license.language_code,
                         }
                     )
-                return
-        self.assertEqual(list_of_licenses_dict, yielded_license_list)
-
-    def test_get_licenses_code_version_jurisdiction(self):
-        """Should return an iterable of license dictionaries
-        with the dictionary keys (license_code, version, jurisdiction)
-
-        4.0 licenses do not have jurisdiction, we should expect an empty result
-        """
-        list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_jurisdiction()
-        yielded_license_list = list(yielded_licenses)
-        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-            if license.jurisdiction_code:
-                return list_of_licenses_dict.append(
-                    {
-                        "license_code": license.license_code,
-                        "version": license.version,
-                        "jurisdiction": license.jurisdiction_code,
-                    }
-                )
-            return
-        self.assertEqual([], yielded_license_list)
-        self.assertEqual(list_of_licenses_dict, yielded_license_list)
-
-    def test_get_licenses_code_version_jurisdiction_lang(self):
-        """Should return an iterable of license dictionaries
-        with the dictionary keys (license_code, version, jurisdiction,
-        target_lang)
-
-        4.0 licenses do not have jurisdiction, we should expect an empty result
-        """
-        list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_jurisdiction_language_code()
-        yielded_license_list = list(yielded_licenses)
-        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-            for translated_license in license.names.all():
-                if (
-                    translated_license.language_code
-                    not in EXCLUDED_LANGUAGE_IDENTIFIERS
-                    and license.jurisdiction_code
-                ):
-                    return list_of_licenses_dict.append(
-                        {
-                            "license_code": license.license_code,
-                            "version": license.version,
-                            "jurisdiction": license.jurisdiction_code,
-                            "language_code": translated_license.language_code,
-                        }
-                    )
-                return
-        self.assertEqual([], yielded_license_list)
         self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
 
@@ -347,9 +299,15 @@ class TestMisc(TestCase):
             validate_dictionary_is_all_text({"1": "a", "2": object()})
         soup = BeautifulSoup("<span>foo</span>", "lxml")
         navstring = soup.span.string
-        self.assertEqual({"a": "foo"}, validate_dictionary_is_all_text({"a": navstring}))
-        self.assertEqual({"a": ["foo"]}, validate_dictionary_is_all_text({"a": [navstring]}))
-        self.assertEqual({"a": {"b": "foo"}}, validate_dictionary_is_all_text({"a": {"b": "foo"}}))
+        self.assertEqual(
+            {"a": "foo"}, validate_dictionary_is_all_text({"a": navstring})
+        )
+        self.assertEqual(
+            {"a": ["foo"]}, validate_dictionary_is_all_text({"a": [navstring]})
+        )
+        self.assertEqual(
+            {"a": {"b": "foo"}}, validate_dictionary_is_all_text({"a": {"b": "foo"}})
+        )
 
     def test_save_dict_to_pofile(self):
         mock_pofile = MagicMock()

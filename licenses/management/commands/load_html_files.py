@@ -1,20 +1,15 @@
-import gettext
 import os
 import sys
 from argparse import ArgumentParser
 
 from bs4 import BeautifulSoup, Tag
 from django.core.management import BaseCommand
-from django.utils.translation import to_language, to_locale
-from polib import POFile, POEntry
+from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from licenses.bs_utils import inner_html, name_and_text, text_up_to, nested_text
-from licenses.models import License, LegalCode
-from licenses.utils import (
-    validate_dictionary_is_all_text,
-    parse_legalcode_filename,
-)
+from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
+from licenses.models import LegalCode, License
+from licenses.utils import parse_legalcode_filename, validate_dictionary_is_all_text
 
 
 class Command(BaseCommand):
@@ -126,8 +121,6 @@ class Command(BaseCommand):
         # something to fall back to.
         language_codes.remove("en")
         for language_code in ["en"] + language_codes:
-            # if language_code != "en":
-            #     break
             for license_code in LICENSE_CODES:
                 legalcode = LegalCode.objects.get(
                     license__license_code=license_code,
@@ -146,19 +139,6 @@ class Command(BaseCommand):
                 if language_code == "en":
                     english_by_license_code[license_code] = messages_text
 
-                english_text = english_by_license_code[license_code]
-
-                # # Save to a .po file for this language.
-                # domain = legalcode.license.translation_domain
-                #
-                # # Use fake language of language+domain to switch to this set of translations
-                # punctuationless_language_code = (
-                #     language_code.replace("-", "").replace("_", "").replace(".", "")
-                # )
-                # lang_plus_domain = to_language(
-                #     f"{punctuationless_language_code}{domain}"
-                # )
-
                 pofile = POFile()
                 pofile.metadata = {
                     "Project-Id-Version": f"{license_code}-{version}",
@@ -175,29 +155,12 @@ class Command(BaseCommand):
 
                 for internal_key, translation in messages_text.items():
                     message_key = internal_key
-                    # # Always use english text as the translation key (if we have it)
-                    # if internal_key in english_text:
-                    #     message_key = english_text[internal_key]
-                    # else:
-                    #     message_key = translation  # PUNT.
-                    # For English file, translations are empty.
-                    # message_value = "" if language_code == "en" else translation
                     message_value = translation
                     pofile.append(
                         POEntry(msgid=message_key, msgstr=message_value.strip())
                     )
 
                 assert "license_medium" in messages_text
-
-                # # Dir name will be like "en_US" or "tr_TR" or "zh_CN" or "zh-Hans"
-                #
-                # django_language_code = to_language(lang_plus_domain)
-                # django_locale_code = to_locale(lang_plus_domain)
-                # # django_language_code=zh-hans django_locale_code=zh_Hans
-                #
-                # dir = f"locale.licenses/{django_locale_code}/LC_MESSAGES"
-                #
-                # po_filename = f"{domain}.po"
                 po_filename = legalcode.translation_filename()
                 dir = os.path.dirname(po_filename)
                 if not os.path.isdir(dir):
@@ -205,35 +168,11 @@ class Command(BaseCommand):
                 pofile.save(po_filename)
                 print(f"Created {po_filename}")
 
-                # # Compile the messages to a .mo file so we can load them in the next step.
-                # mo_filename = f"{domain}.mo"
-                # pofile.save_as_mofile(os.path.join(dir, mo_filename))
-                # print(f"Created {os.path.join(dir, mo_filename)}")
-                #
-                # # To double-check, make sure we can load the translations in a way that Django would
-                # # if we were going to use them.
-                #
-                # # def translation(domain, localedir=None, languages=None,
-                # #                 class_=None, fallback=False, codeset=None):
-                # gettext.Catalog(
-                #     domain=domain,
-                #     languages=[django_language_code],
-                #     localedir="locale.licenses",
-                #     codeset="utf-8",
-                # )
-                #
-                # # DjangoTranslation(
-                # #     language=django_language_code,
-                # #     domain=domain,
-                # #     localedirs=["locale.licenses"],
-                # # )
-
     def import_by_40_license_html(self, content, license_code, language_code):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
         messages = {}
-        # print(f"Importing {license_code} {version} {language_code}")
         print(f"Importing {license_code} {language_code}")
         raw_html = content
         # Some trivial making consistent - some translators changed 'strong' to 'b'
@@ -328,32 +267,36 @@ class Command(BaseCommand):
         messages["s2a_license_grant_intro"] = str(list(soup.find(id="s2a1"))[0]).strip()
 
         messages["s2a_license_grant_share"] = str(
-                list(soup.find(id="s2a1A"))[0]
-            ).strip()
+            list(soup.find(id="s2a1A"))[0]
+        ).strip()
         messages["s2a_license_grant_adapted"] = str(
-                list(soup.find(id="s2a1B"))[0]
-            ).strip()
-
-
+            list(soup.find(id="s2a1B"))[0]
+        ).strip()
 
         # s2a2: exceptions and limitations
         nt = name_and_text(soup.find(id="s2a2"))
-        messages["s2a2_license_grant_exceptions"] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        messages[
+            "s2a2_license_grant_exceptions"
+        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
 
         # s2a3: term
         nt = name_and_text(soup.find(id="s2a3"))
-        messages["s2a3_license_grant_term"] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        messages[
+            "s2a3_license_grant_term"
+        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
 
         # s2a4: media
         nt = name_and_text(soup.find(id="s2a4"))
-        messages["s2a4_license_grant_media"] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        messages[
+            "s2a4_license_grant_media"
+        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
 
         # s2a5: scope/grant/downstream
         # The title is just the prefix to the list of items, which are in their
         # own div, so this is slightly messy. Using the name from name_and_text
         # will get us the text we want without wrappings.
         nt = name_and_text(soup.find(id="s2a5"))
-        messages["s2a5_license_grant_downstream_title"] = nt['name']
+        messages["s2a5_license_grant_downstream_title"] = nt["name"]
 
         expected_downstreams = [
             "offer",
@@ -399,15 +342,13 @@ class Command(BaseCommand):
             soup.find(id="s3").find_next_sibling("p")
         )
 
-
-           # <p id="s3"><strong>Section 3 – License Conditions.</strong></p>
-           #
-           #      <p>Your exercise of the Licensed Rights is expressly made subject to the following conditions.</p>
-           #
-           #      <ol type="a">
-           #          <li id="s3a"><p><strong>Attribution</strong>.</p>
-           #          <ol>
-
+        # <p id="s3"><strong>Section 3 – License Conditions.</strong></p>
+        #
+        #      <p>Your exercise of the Licensed Rights is expressly made subject to the following conditions.</p>
+        #
+        #      <ol type="a">
+        #          <li id="s3a"><p><strong>Attribution</strong>.</p>
+        #          <ol>
 
         s3a = soup.find(id="s3a")
         inside = str(inner_html(s3a))
@@ -421,14 +362,14 @@ class Command(BaseCommand):
             print(str(s3a))
             raise ValueError("Fix s3a's attribution string")
 
-        messages["s3_conditions_if_you_share"] = text_up_to(
-            soup.find(id="s3a1"), "ol"
-        )
+        messages["s3_conditions_if_you_share"] = text_up_to(soup.find(id="s3a1"), "ol")
 
         messages["s3_conditions_retain_the_following"] = text_up_to(
             soup.find(id="s3a1A"), "ol"
         )
-        messages["s3a1Ai_conditions_identification"] = inner_html(soup.find(id="s3a1Ai"))
+        messages["s3a1Ai_conditions_identification"] = inner_html(
+            soup.find(id="s3a1Ai")
+        )
         messages["s3a1Aii_conditions_copyright"] = inner_html(soup.find(id="s3a1Aii"))
         messages["s3a1Aiii_conditions_license"] = inner_html(soup.find(id="s3a1Aiii"))
         messages["s3a1Aiv_conditions_disclaimer"] = inner_html(soup.find(id="s3a1Aiv"))
@@ -439,7 +380,9 @@ class Command(BaseCommand):
         messages["s3a3_conditions_remove"] = inner_html(soup.find(id="s3a3"))
         if soup.find(id="s3a4"):
             # Only present if neither SA or ND
-            messages["s3a4_if_you_share_adapted_material"] = nested_text(soup.find(id="s3a4"))
+            messages["s3a4_if_you_share_adapted_material"] = nested_text(
+                soup.find(id="s3a4")
+            )
 
         # share-alike is only in some licenses
         if license_code.endswith("-sa"):
@@ -457,10 +400,14 @@ class Command(BaseCommand):
         messages["s4_sui_generics_database_rights_intro"] = (
             soup.find(id="s4").find_next_sibling("p").string
         )
-        messages["s4_sui_generics_database_rights_extract_reuse"] = nested_text(soup.find(id="s4a"))
+        messages["s4_sui_generics_database_rights_extract_reuse"] = nested_text(
+            soup.find(id="s4a")
+        )
         s4b = soup.find(id="s4b").get_text()
         messages["s4_sui_generics_database_rights_adapted_material"] = s4b
-        messages["s4_sui_generics_database_rights_comply_s3a"] = soup.find(id="s4c").get_text()
+        messages["s4_sui_generics_database_rights_comply_s3a"] = soup.find(
+            id="s4c"
+        ).get_text()
         # The next text comes after the 'ol' after s4, but isn't inside a tag itself!
         parent = soup.find(id="s4").parent
         s4_seen = False

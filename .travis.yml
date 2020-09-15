@@ -13,6 +13,7 @@ cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/.cache/venvs
+    - $HOME/.cache/pre-commit
 
 env:
   - DJANGO_SETTINGS_MODULE="cc_licenses.settings.dev"
@@ -31,4 +32,4 @@ before_script:
   # - psql service_info -c "CREATE EXTENSION postgis;" -U postgres
 
 script:
-  - make -j lint test docs
+  - make -j test docs
