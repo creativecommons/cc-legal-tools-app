@@ -1,4 +1,5 @@
 import subprocess
+from datetime import now
 from argparse import ArgumentParser
 
 from django.core.management import BaseCommand
@@ -61,9 +62,18 @@ def git_on_branch_and_pull_str(branch: str) -> str:
     """Returns a string represention of the git command to checkout and pull from a branch"""
     return f"git checkout {branch} && git pull origin {branch}"
 
-def git_commit_and_push(branch: str) --> str:
+def git_commit_and_push(branch: str) -> str:
   """Returns a string representation of the git command to checkout, commit, and push branch"""
-    return f"git checkout {branch} && git push origin {branch}"
+  commit_and_push_cmd = (
+      f"git checkout {branch} "
+      f" && git commit -m '{branch} Timestamp (EST): {now()}' " 
+      f"git push origin {branch}"
+  )
+  return subprocess.run(
+    commit_and_push_cmd,
+    shell=True,
+    check=True,
+  )
 
 def list_open_branches():
     """List of open branches in cc-licenses-data repo
