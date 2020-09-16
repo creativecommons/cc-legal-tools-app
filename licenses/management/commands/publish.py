@@ -1,3 +1,4 @@
+import os
 import subprocess
 import datetime
 from argparse import ArgumentParser
@@ -10,49 +11,22 @@ GO_TO_TRANSLATIONS_REPO = f"cd {TRANSLATION_REPOSITORY_DIRECTORY} && "
 PULL_BRANCHES_DOWN_FROM_DEVELOP = "git checkout develop && git pull"
 PULL_DOWN_TRANSLATION_BRANCHES = GO_TO_TRANSLATIONS_REPO + PULL_BRANCHES_DOWN_FROM_DEVELOP
 
-def set_publish_settings():
-    """Set environment to use publish settings
-    
-    This is so when django-distill runs it places
-    the build directory in the cc-licenses-data repo
-    """
-    set_env_settings = (
-        "unset DJANGO_SETTINGS_MODULE && "
-        "export DJANGO_SETTINGS_MODULE=cc_licenses.settings.publish"
-    )
-    return subprocess.run(
-        set_env_settings,
-        shell=True,
-        check=True,
-    )
-
-def set_default_settings():
-    """Set environment to use the default settings
-    
-    Cleanup definition: When django-distill finishes we should have 
-    the build directory outputting to the cc-licenses directory for
-    development purposes.
-    """
-    set_env_settings = (
-        "unset DJANGO_SETTINGS_MODULE && "
-        "export DJANGO_SETTINGS_MODULE=cc_licenses.settings.dev"
-    )
-    return subprocess.run(
-        set_env_settings,
-        shell=True,
-        check=True,
-    )
-
 def run_django_distill():
     """Outputs the build directory
     """
+    my_env = os.environ.copy()
+    my_env["DJANGO_SETTINGS_MODULE"] = "cc_licenses.settings.publish"
+    cmd = 'python manage.py distill-local --quiet --force'
     return subprocess.run(
-      'python manage.py distill-local --quiet --force',
+      cmd,
       shell=True,
-      check=True
+      check=True,
+      text=True,
+      input="YES",
+      env=my_env,
     )
 
-def git_on_branch_and_pull(branch: str) -> str:
+def git_on_branch_and_pull(branch: str):
     """Returns a string represention of the git command to checkout and pull from a branch"""
     git_on_branch_and_pull_cmd = GO_TO_TRANSLATIONS_REPO + (
       f"git checkout {branch} && git pull origin {branch}"
@@ -64,10 +38,10 @@ def git_on_branch_and_pull(branch: str) -> str:
     )
 
 
-def git_commit_and_push(branch: str) -> str:
+def git_commit_and_push(branch: str):
   """Returns a string representation of the git command to checkout, commit, and push branch"""
   commit_and_push_cmd = GO_TO_TRANSLATIONS_REPO + (
-      "git add /build/ && "
+      "git add build/ && "
       f"git checkout {branch} && "
       f"git commit -m '{branch} Timestamp (EST): ' && " 
       f"git push origin {branch}"
@@ -126,7 +100,7 @@ class Command(BaseCommand):
         if not options.get("branch_name"):
             return list_open_branches()
         git_on_branch_and_pull(options["branch_name"])
-        set_publish_settings()
+        # set_publish_settings()
         run_django_distill()
-        set_default_settings()
+        # set_default_settings()
         git_commit_and_push(options["branch_name"])
