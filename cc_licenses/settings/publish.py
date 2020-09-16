@@ -1,0 +1,3 @@
+from .base import *
+
+DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
