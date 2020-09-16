@@ -42,6 +42,13 @@ def set_default_settings():
         check=True,
     )
 
+def run_django_distill():
+    """Outputs the build directory
+    """
+    return subprocess.run(
+      'python manage.py distill-local --quiet --force'
+    )
+
 def pull_translations_branches():
     """Git pulls branches in cc-licenses-data to update local git registry"""
     return subprocess.run(
