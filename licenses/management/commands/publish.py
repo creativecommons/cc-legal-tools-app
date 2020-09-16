@@ -1,5 +1,5 @@
 import subprocess
-from datetime import now
+import datetime
 from argparse import ArgumentParser
 
 from django.core.management import BaseCommand
@@ -47,7 +47,9 @@ def run_django_distill():
     """Outputs the build directory
     """
     return subprocess.run(
-      'python manage.py distill-local --quiet --force'
+      'python manage.py distill-local --quiet --force',
+      shell=True,
+      check=True
     )
 
 def git_on_branch_and_pull(branch: str) -> str:
@@ -65,9 +67,9 @@ def git_on_branch_and_pull(branch: str) -> str:
 def git_commit_and_push(branch: str) -> str:
   """Returns a string representation of the git command to checkout, commit, and push branch"""
   commit_and_push_cmd = GO_TO_TRANSLATIONS_REPO + (
-      "git add build/"
-      f"git checkout {branch} "
-      f" && git commit -m '{branch} Timestamp (EST): {now()}' " 
+      "git add /build/ && "
+      f"git checkout {branch} && "
+      f"git commit -m '{branch} Timestamp (EST): ' && " 
       f"git push origin {branch}"
   )
   return subprocess.run(
