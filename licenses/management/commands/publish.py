@@ -50,21 +50,22 @@ def run_django_distill():
       'python manage.py distill-local --quiet --force'
     )
 
-def pull_translations_branches():
-    """Git pulls branches in cc-licenses-data to update local git registry"""
-    return subprocess.run(
-        PULL_DOWN_TRANSLATION_BRANCHES,
-        shell=True,
-        check=True,
-      )
-
-def git_on_branch_and_pull_str(branch: str) -> str:
+def git_on_branch_and_pull(branch: str) -> str:
     """Returns a string represention of the git command to checkout and pull from a branch"""
-    return f"git checkout {branch} && git pull origin {branch}"
+    git_on_branch_and_pull_cmd = GO_TO_TRANSLATIONS_REPO + (
+      f"git checkout {branch} && git pull origin {branch}"
+    )
+    return subprocess.run(
+      git_on_branch_and_pull_cmd,
+      shell=True,
+      check=True
+    )
+
 
 def git_commit_and_push(branch: str) -> str:
   """Returns a string representation of the git command to checkout, commit, and push branch"""
-  commit_and_push_cmd = (
+  commit_and_push_cmd = GO_TO_TRANSLATIONS_REPO + (
+      "git add build/"
       f"git checkout {branch} "
       f" && git commit -m '{branch} Timestamp (EST): {now()}' " 
       f"git push origin {branch}"
@@ -74,6 +75,14 @@ def git_commit_and_push(branch: str) -> str:
     shell=True,
     check=True,
   )
+
+def pull_translations_branches():
+    """Git pulls branches in cc-licenses-data to update local git registry"""
+    return subprocess.run(
+        PULL_DOWN_TRANSLATION_BRANCHES,
+        shell=True,
+        check=True,
+      )
 
 def list_open_branches():
     """List of open branches in cc-licenses-data repo
@@ -114,5 +123,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not options.get("branch_name"):
             return list_open_branches()
-        branch_cmd = git_on_branch_and_pull_str(options["branch_name"])
-        print(branch_cmd)
+        git_on_branch_and_pull(options["branch_name"])
+        set_publish_settings()
+        run_django_distill()
+        set_default_settings()
+        git_commit_and_push(options["branch_name"])
