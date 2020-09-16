@@ -127,7 +127,7 @@ def translation_consistency(request, version, language_code):  # pragma: no cove
         lc.compared_to = {}
         for lc2 in legalcodes:
             lc.compared_to[lc2.license.license_code] = t.compare_to(
-                lc2.get_translation_object()
+                lc2.get_translation_object(), lc, lc2,
             )
 
     sorted_codes = list(
@@ -159,11 +159,12 @@ def translation_consistency(request, version, language_code):  # pragma: no cove
 
             for msgid, translations in comparison["different_translations"].items():
                 if msgid not in VARYING_MESSAGE_IDS:
-                    key = english_for_key[msgid]
+                    key = f"{english_for_key[msgid]} ({msgid})"
                     if key not in translation_differences:
-                        translation_differences[key] = set()
-                    for txt in translations:
-                        translation_differences[key].add(txt)
+                        translation_differences[key] = dict()
+                    for txt, license_codes in translations.items():
+                        translation_differences[key].setdefault(txt, set())
+                        translation_differences[key][txt] |= license_codes
 
     return render(
         request,

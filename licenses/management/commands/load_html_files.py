@@ -11,6 +11,64 @@ from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
 from licenses.models import LegalCode, License
 from licenses.utils import parse_legalcode_filename, validate_dictionary_is_all_text
 
+# messages that have the same base key but vary among some licenses and so have
+# extensions added.
+# If a license key for a BY 4.0 license is *NOT* on this list or VARYING_MESSAGE_IDS,
+# then the translated text should be the *SAME* for all the BY 4.0
+# licenses.
+# See set_message for how this is used.
+VARYING_MESSAGES = {
+    "s2a_license_grant_share": "nc|",
+    "s2a_license_grant_adapted": "nc_nd|nc|nd|",
+    "s2b3_other_rights_waive": "nc|",
+    "s3_conditions_if_you_share": "nd|",
+    "s3b1": "nc|",
+    "s4_sui_generics_database_rights_extract_reuse": "nc_nd|nc|nd|",
+    "s4_sui_generics_database_rights_adapted_material": "sa|",
+    "s6_termination_reinstates_where": "sa|",
+}
+
+
+def set_message(license, messages, key, value):
+    """
+    messages is a dictionary of msgid -> msgstr
+    key is the base msgid to set, value is what to set it to.
+
+    Mostly we just set messages[key] = value
+    But if key is in VARYING_MESSAGES then what we do depends
+    on the license whose messages we are gathering.
+    We split VARYING_MESSAGES[key] by "|" to get a series
+    of rules, check each one, and use the first one that applies
+    to decide where to save the message.
+
+    E.g. if we have "nc_nd|nc|" and license.nc_nd is false but
+    license.nc is true, then we store the message at "{key}_nc"
+    and are done.
+    If nothing earlier matches and there's an empty rule at the end,
+    we store the message at "{key}".
+    """
+    if key in VARYING_MESSAGES:
+        rules = VARYING_MESSAGES[key].split("|")
+        for rule in rules:
+            if rule:
+                # rule could be something like "nc_nd", in which case we
+                # see if that attribute of the license is true and if so,
+                # assign this value to the given key + _ + the rule
+                # if it's not already set.
+                # Or rule can be empty, in which case we just assign the key
+                # if it's not already set.
+                onoff = getattr(license, rule)
+                if onoff:
+                    newkey = f"{key}_{rule}"
+                    if newkey not in messages:
+                        messages[newkey] = value
+                    return
+            elif key not in messages:
+                messages[key] = value
+                return
+    else:
+        messages[key] = value
+
 
 class Command(BaseCommand):
     """
@@ -132,9 +190,7 @@ class Command(BaseCommand):
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                messages_text = self.import_by_40_license_html(
-                    content, license_code, language_code
-                )
+                messages_text = self.import_by_40_license_html(content, legalcode)
 
                 if language_code == "en":
                     english_by_license_code[license_code] = messages_text
@@ -168,10 +224,13 @@ class Command(BaseCommand):
                 pofile.save(po_filename)
                 print(f"Created {po_filename}")
 
-    def import_by_40_license_html(self, content, license_code, language_code):
+    def import_by_40_license_html(self, content, legalcode):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
+        license = legalcode.license
+        license_code = license.license_code
+        language_code = legalcode.language_code
         messages = {}
         print(f"Importing {license_code} {language_code}")
         raw_html = content
@@ -183,12 +242,17 @@ class Command(BaseCommand):
         # Parse the raw HTML to a BeautifulSoup object.
         soup = BeautifulSoup(raw_html, "lxml")
 
+        # Shortcut to set messages for this license and messages dictionary
+        def setmsg(key, value):
+            set_message(license, messages, key, value)
+
         # Get the license titles and intro text.
 
         deed_main_content = soup.find(id="deed-main-content")
-        messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
-        messages["license_long"] = inner_html(deed_main_content.h3)
-        messages["license_intro"] = inner_html(
+        setmsg("license_medium", inner_html(soup.find(id="deed-license").h2))
+        setmsg("license_long", inner_html(deed_main_content.h3))
+        # license_intro different for every one
+        messages[f"license_intro_{license_code.replace('-', '_')}"] = inner_html(
             deed_main_content.h3.find_next_sibling("p")
         )
 
@@ -235,72 +299,58 @@ class Command(BaseCommand):
             insert_after("licensor", "noncommercial")
 
         # definitions are in an "ol" that is the next sibling of the id=s1 element.
-        messages["s1_definitions_title"] = inner_html(soup.find(id="s1").strong)
+        setmsg("s1_definitions_title", inner_html(soup.find(id="s1").strong))
         for i, definition in enumerate(
             soup.find(id="s1").find_next_siblings("ol")[0].find_all("li")
         ):
             thing = name_and_text(definition)
             defn_key = expected_definitions[i]
-            messages[
-                f"s1_definitions_{defn_key}"
-            ] = f"""<span style="text-decoration: underline;">{thing['name']}</span> {thing['text']}"""
+            setmsg(
+                f"s1_definitions_{defn_key}",
+                f"""<span style="text-decoration: underline;">{thing['name']}</span> {thing['text']}""",
+            )
 
         # Section 2 – Scope.
-        messages["s2_scope"] = inner_html(soup.find(id="s2").strong)
+        setmsg("s2_scope", inner_html(soup.find(id="s2").strong))
 
         # Section 2a - License Grant
         # translation of "License grant"
         s2a = soup.find(id="s2a")
         if s2a.strong:
-            messages["s2a_license_grant_title"] = inner_html(s2a.strong)
+            setmsg("s2a_license_grant_title", inner_html(s2a.strong))
         elif s2a.b:
-            messages["s2a_license_grant_title"] = inner_html(s2a.b)
+            setmsg("s2a_license_grant_title", inner_html(s2a.b))
         else:
             print(f"How do I handle {s2a}?")
             sys.exit(1)
 
         # s2a1: rights
-        messages["s2a_license_grant_intro"] = str(list(soup.find(id="s2a1"))[0]).strip()
+        setmsg("s2a_license_grant_intro", str(list(soup.find(id="s2a1"))[0]).strip())
 
-        if "nc" in license_code:
-            messages["s2a_license_grant_share_nc"] = str(
-                list(soup.find(id="s2a1A"))[0]
-            ).strip()
-            messages["s2a_license_grant_adapted_nc"] = str(
-                list(soup.find(id="s2a1B"))[0]
-            ).strip()
-        else:
-            messages["s2a_license_grant_share"] = str(
-                list(soup.find(id="s2a1A"))[0]
-            ).strip()
-            messages["s2a_license_grant_adapted"] = str(
-                list(soup.find(id="s2a1B"))[0]
-            ).strip()
+        setmsg("s2a_license_grant_share", str(list(soup.find(id="s2a1A"))[0]).strip())
+        setmsg("s2a_license_grant_adapted", str(list(soup.find(id="s2a1B"))[0]).strip())
 
         # s2a2: exceptions and limitations
         nt = name_and_text(soup.find(id="s2a2"))
-        messages[
-            "s2a2_license_grant_exceptions"
-        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        setmsg(
+            "s2a2_license_grant_exceptions",
+            f"<strong>{nt['name']}</strong>{nt['text']}",
+        )
 
         # s2a3: term
         nt = name_and_text(soup.find(id="s2a3"))
-        messages[
-            "s2a3_license_grant_term"
-        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        setmsg("s2a3_license_grant_term", f"<strong>{nt['name']}</strong>{nt['text']}")
 
         # s2a4: media
         nt = name_and_text(soup.find(id="s2a4"))
-        messages[
-            "s2a4_license_grant_media"
-        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        setmsg("s2a4_license_grant_media", f"<strong>{nt['name']}</strong>{nt['text']}")
 
         # s2a5: scope/grant/downstream
         # The title is just the prefix to the list of items, which are in their
         # own div, so this is slightly messy. Using the name from name_and_text
         # will get us the text we want without wrappings.
         nt = name_and_text(soup.find(id="s2a5"))
-        messages["s2a5_license_grant_downstream_title"] = nt["name"]
+        setmsg("s2a5_license_grant_downstream_title", nt["name"])
 
         expected_downstreams = [
             "offer",
@@ -319,31 +369,35 @@ class Command(BaseCommand):
             messages[f"s2a5_license_grant_downstream_{key}_text"] = thing["text"]
 
         nt = name_and_text(soup.find(id="s2a6"))
-        messages["s2a6_license_grant_no_endorsement_name"] = nt["name"]
-        messages["s2a6_license_grant_no_endorsement_text"] = nt["text"]
+        setmsg("s2a6_license_grant_no_endorsement_name", nt["name"])
+        setmsg("s2a6_license_grant_no_endorsement_text", nt["text"])
 
         # s2b: other rights
         s2b = soup.find(id="s2b")
         if s2b.p and s2b.p.strong:
-            messages["s2b_other_rights_title"] = nested_text(s2b.p.strong)
+            setmsg("s2b_other_rights_title", nested_text(s2b.p.strong))
         elif s2b.p:
-            messages["s2b_other_rights_title"] = nested_text(s2b.p)
+            setmsg("s2b_other_rights_title", nested_text(s2b.p))
         elif s2b.strong:
-            messages["s2b_other_rights_title"] = nested_text(s2b.strong)
+            setmsg("s2b_other_rights_title", nested_text(s2b.strong))
         else:
             print(str(s2b))
             raise ValueError("Where is s2b's title?")
         list_items = soup.find(id="s2b").ol.find_all("li", recursive=False)
         assert list_items[0].name == "li"
-        messages["s2b1_other_rights_moral"] = nested_text(list_items[0])
-        messages["s2b2_other_rights_patent"] = nested_text(list_items[1])
-        messages["s2b3_other_rights_waive"] = nested_text(list_items[2])
+        setmsg("s2b1_other_rights_moral", nested_text(list_items[0]))
+        setmsg("s2b2_other_rights_patent", nested_text(list_items[1]))
+        if license.nc:
+            setmsg("s2b3_other_rights_waive_nc", nested_text(list_items[2]))
+        else:
+            setmsg("s2b3_other_rights_waive", nested_text(list_items[2]))
 
         # Section 3: conditions
         s3 = soup.find(id="s3")
-        messages["s3_conditions_title"] = nested_text(s3)
-        messages["s3_conditions_intro"] = nested_text(
-            soup.find(id="s3").find_next_sibling("p")
+        setmsg("s3_conditions_title", nested_text(s3))
+        setmsg(
+            "s3_conditions_intro",
+            nested_text(soup.find(id="s3").find_next_sibling("p")),
         )
 
         # <p id="s3"><strong>Section 3 – License Conditions.</strong></p>
@@ -359,59 +413,61 @@ class Command(BaseCommand):
         if inside.startswith(" "):  # ar translation takes liberties with whitespace
             s3a = BeautifulSoup(inside.strip(), "lxml")
         if s3a.p and s3a.p.strong:
-            messages["s3_conditions_attribution"] = nested_text(s3a.p.strong)
+            setmsg("s3_conditions_attribution", nested_text(s3a.p.strong))
         elif s3a.strong:
-            messages["s3_conditions_attribution"] = nested_text(s3a.strong)
+            setmsg("s3_conditions_attribution", nested_text(s3a.strong))
         else:
             print(str(s3a))
             raise ValueError("Fix s3a's attribution string")
 
-        messages["s3_conditions_if_you_share"] = text_up_to(soup.find(id="s3a1"), "ol")
-
-        messages["s3_conditions_retain_the_following"] = text_up_to(
-            soup.find(id="s3a1A"), "ol"
+        setmsg("s3_conditions_if_you_share", text_up_to(soup.find(id="s3a1"), "ol"))
+        setmsg(
+            "s3_conditions_retain_the_following",
+            text_up_to(soup.find(id="s3a1A"), "ol"),
         )
-        messages["s3a1Ai_conditions_identification"] = inner_html(
-            soup.find(id="s3a1Ai")
-        )
-        messages["s3a1Aii_conditions_copyright"] = inner_html(soup.find(id="s3a1Aii"))
-        messages["s3a1Aiii_conditions_license"] = inner_html(soup.find(id="s3a1Aiii"))
-        messages["s3a1Aiv_conditions_disclaimer"] = inner_html(soup.find(id="s3a1Aiv"))
-        messages["s3a1Av_conditions_link"] = inner_html(soup.find(id="s3a1Av"))
-        messages["s3a1B_conditions_modified"] = inner_html(soup.find(id="s3a1B"))
-        messages["s3a1C_conditions_licensed"] = inner_html(soup.find(id="s3a1C"))
-        messages["s3a2_conditions_satisfy"] = inner_html(soup.find(id="s3a2"))
-        messages["s3a3_conditions_remove"] = inner_html(soup.find(id="s3a3"))
+        setmsg("s3a1Ai_conditions_identification", inner_html(soup.find(id="s3a1Ai")))
+        setmsg("s3a1Aii_conditions_copyright", inner_html(soup.find(id="s3a1Aii")))
+        setmsg("s3a1Aiii_conditions_license", inner_html(soup.find(id="s3a1Aiii")))
+        setmsg("s3a1Aiv_conditions_disclaimer", inner_html(soup.find(id="s3a1Aiv")))
+        setmsg("s3a1Av_conditions_link", inner_html(soup.find(id="s3a1Av")))
+        setmsg("s3a1B_conditions_modified", inner_html(soup.find(id="s3a1B")))
+        setmsg("s3a1C_conditions_licensed", inner_html(soup.find(id="s3a1C")))
+        setmsg("s3a2_conditions_satisfy", inner_html(soup.find(id="s3a2")))
+        setmsg("s3a3_conditions_remove", inner_html(soup.find(id="s3a3")))
         if soup.find(id="s3a4"):
             # Only present if neither SA or ND
-            messages["s3a4_if_you_share_adapted_material"] = nested_text(
-                soup.find(id="s3a4")
+            setmsg(
+                "s3a4_if_you_share_adapted_material", nested_text(soup.find(id="s3a4"))
             )
 
         # share-alike is only in some licenses
         if license_code.endswith("-sa"):
-            messages["sharealike_name"] = nested_text(soup.find(id="s3b").strong)
-            messages["sharealike_intro"] = nested_text(soup.find(id="s3b").p)
+            setmsg("sharealike_name", nested_text(soup.find(id="s3b").strong))
+            setmsg("sharealike_intro", nested_text(soup.find(id="s3b").p))
 
-            messages["s3b1"] = nested_text(soup.find(id="s3b1"))
-            messages["s3b2"] = nested_text(soup.find(id="s3b2"))
-            messages["s3b3"] = nested_text(soup.find(id="s3b3"))
+            setmsg("s3b1", nested_text(soup.find(id="s3b1")))
+            setmsg("s3b2", nested_text(soup.find(id="s3b2")))
+            setmsg("s3b3", nested_text(soup.find(id="s3b3")))
 
         # Section 4: Sui generis database rights
-        messages["s4_sui_generics_database_rights_titles"] = nested_text(
-            soup.find(id="s4")
+        setmsg(
+            "s4_sui_generics_database_rights_titles", nested_text(soup.find(id="s4"))
         )
-        messages["s4_sui_generics_database_rights_intro"] = (
-            soup.find(id="s4").find_next_sibling("p").string
-        )
-        messages["s4_sui_generics_database_rights_extract_reuse"] = nested_text(
-            soup.find(id="s4a")
+        setmsg(
+            "s4_sui_generics_database_rights_intro",
+            (soup.find(id="s4").find_next_sibling("p").string),
         )
         s4b = soup.find(id="s4b").get_text()
-        messages["s4_sui_generics_database_rights_adapted_material"] = s4b
-        messages["s4_sui_generics_database_rights_comply_s3a"] = soup.find(
-            id="s4c"
-        ).get_text()
+
+        setmsg(
+            "s4_sui_generics_database_rights_extract_reuse",
+            nested_text(soup.find(id="s4a")),
+        )
+
+        setmsg("s4_sui_generics_database_rights_adapted_material", s4b)
+        setmsg(
+            "s4_sui_generics_database_rights_comply_s3a", soup.find(id="s4c").get_text()
+        )
         # The next text comes after the 'ol' after s4, but isn't inside a tag itself!
         parent = soup.find(id="s4").parent
         s4_seen = False
@@ -430,23 +486,21 @@ class Command(BaseCommand):
             elif not take_rest and item.name == "ol":
                 # already seen s4, this is the ol, so the next child is our text
                 take_rest = True
-        messages["s4_sui_generics_database_rights_postscript"] = " ".join(parts)
+        setmsg("s4_sui_generics_database_rights_postscript", " ".join(parts))
 
         # Section 5: Disclaimer
-        messages["s5_disclaimer_title"] = soup.find(id="s5").string
-        messages["s5_a"] = soup.find(id="s5a").string  # bold
-        messages["s5_b"] = soup.find(id="s5b").string  # bold
-        messages["s5_c"] = soup.find(id="s5c").string  # not bold
+        setmsg("s5_disclaimer_title", soup.find(id="s5").string)
+        setmsg("s5_a", soup.find(id="s5a").string)  # bold
+        setmsg("s5_b", soup.find(id="s5b").string)  # bold
+        setmsg("s5_c", soup.find(id="s5c").string)  # not bold
 
         # Section 6: Term and Termination
-        messages["s6_termination_title"] = nested_text(soup.find(id="s6"))
-        messages["s6_termination_applies"] = nested_text(soup.find(id="s6a"))
+        setmsg("s6_termination_title", nested_text(soup.find(id="s6")))
+        setmsg("s6_termination_applies", nested_text(soup.find(id="s6a")))
         s6b = soup.find(id="s6b")
         if s6b.p:
             # most languages put the introductory text in a paragraph, making it easy
-            messages["s6_termination_reinstates_where"] = soup.find(
-                id="s6b"
-            ).p.get_text()
+            reinstates_where = soup.find(id="s6b").p.get_text()
         else:
             # if they don't, we have to pick out the text from the beginning of s6b's
             # content until the beginning of the "ol" inside it.
@@ -455,26 +509,30 @@ class Command(BaseCommand):
                 if child.name == "ol":
                     break
                 s += str(child)
-            messages["s6_termination_reinstates_where"] = s
-        messages["s6_termination_reinstates_automatically"] = soup.find(
-            id="s6b1"
-        ).get_text()
-        messages["s6_termination_reinstates_express"] = soup.find(id="s6b2").get_text()
+            reinstates_where = s
+
+        setmsg("s6_termination_reinstates_where", reinstates_where)
+
+        setmsg(
+            "s6_termination_reinstates_automatically", soup.find(id="s6b1").get_text()
+        )
+        setmsg("s6_termination_reinstates_express", soup.find(id="s6b2").get_text())
 
         children_of_s6b = list(soup.find(id="s6b").children)
-        messages["s6_termination_reinstates_postscript"] = (
-            "".join(str(x) for x in children_of_s6b[4:7])
-        ).strip()
-        messages["s6_separate_terms"] = inner_html(soup.find(id="s6c"))
-        messages["s6_survival"] = inner_html(soup.find(id="s6d"))
+        setmsg(
+            "s6_termination_reinstates_postscript",
+            ("".join(str(x) for x in children_of_s6b[4:7])).strip(),
+        )
+        setmsg("s6_separate_terms", inner_html(soup.find(id="s6c")))
+        setmsg("s6_survival", inner_html(soup.find(id="s6d")))
 
         # Section 7: Other terms and conditions
-        messages["s7_other_terms_title"] = soup.find(id="s7").string
-        messages["s7_a"] = soup.find(id="s7a").string
-        messages["s7_b"] = soup.find(id="s7b").string
+        setmsg("s7_other_terms_title", soup.find(id="s7").string)
+        setmsg("s7_a", soup.find(id="s7a").string)
+        setmsg("s7_b", soup.find(id="s7b").string)
 
         # Section 8: Interpretation
-        messages["s8_interpretation_title"] = soup.find(id="s8").string
+        setmsg("s8_interpretation_title", soup.find(id="s8").string)
         for key in ["s8a", "s8b", "s8c", "s8d"]:
             messages[key] = inner_html(soup.find(id=key))
 

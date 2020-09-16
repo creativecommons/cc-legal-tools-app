@@ -65,6 +65,12 @@ class LegalCode(models.Model):
             self.language_code,
         )
 
+    def license_intro(self):
+        """Return the translated license intro - this is different on every license"""
+        code = self.license.license_code
+        key = f"license_intro_{code.replace('-', '_')}"
+        return self.get_translation_object().translate(key)
+
     def fat_code(self):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
@@ -260,7 +266,7 @@ class License(models.Model):
     permits_distribution = models.BooleanField()
     permits_sharing = models.BooleanField()
 
-    requires_share_alike = models.BooleanField()
+    requires_share_alike = models.BooleanField()  # -sa
     requires_notice = models.BooleanField()
     requires_attribution = models.BooleanField()
     requires_source_code = models.BooleanField()
@@ -344,6 +350,24 @@ class License(models.Model):
     @property
     def include_share_adapted_material_clause(self):
         return self.license_code in ["by", "by-nc"]
+
+    @property
+    def nc_nd(self):
+        """True if both nc and nd"""
+        return self.nc and self.nd
+
+    @property
+    def nc(self):
+        """True if nc"""
+        return "nc" in self.license_code
+
+    @property
+    def nd(self):
+        return "nd" in self.license_code
+
+    @property
+    def sa(self):
+        return "sa" in self.license_code
 
 
 class TranslatedLicenseName(models.Model):

@@ -5,6 +5,7 @@ from unittest.mock import call
 from django.test import TestCase, override_settings
 
 from i18n.translation import Translation, get_translation_object
+from licenses.tests.factories import LegalCodeFactory
 
 TEST_POFILE = os.path.join(
     os.path.dirname(__file__), "locales", "es_test_4.0", "LC_MESSAGES", "test-4.0.po"
@@ -45,14 +46,27 @@ class TranslationTest(TestCase):
         self.assertEqual(1, t.num_messages())
         self.assertEqual(1, t.num_translated())
         self.assertEqual(100, t.percent_translated())
+        t.translations["message in English"] = ""
+        self.assertEqual(0, t.percent_translated())
+        t.translations.clear()
+        self.assertEqual(0, t.percent_translated())
 
     def test_compare_to(self):
-        t = Translation(TEST_POFILE, "es")
-        out = t.compare_to(t)
+        t1 = Translation(TEST_POFILE, "es")
+        t2 = Translation(TEST_POFILE, "es")
+        t2.translations["message in English"] = "different translation"
+        lc1 = LegalCodeFactory(license__license_code="by-sa")
+        lc2 = LegalCodeFactory(license=lc1.license)
+        out = t1.compare_to(t2, lc1, lc2)
         expected = {
-            "different_translations": {},
-            "keys_common": {"message in English"},
-            "keys_extra": set(),
             "keys_missing": set(),
+            "keys_extra": set(),
+            "keys_common": {"message in English"},
+            "different_translations": {
+                "message in English": {
+                    "Translation in Spanish": {"by-sa"},
+                    "different translation": {"by-sa"},
+                }
+            },
         }
         self.assertEqual(expected, out)

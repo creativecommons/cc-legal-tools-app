@@ -4,7 +4,7 @@
   <div>
     <h3 class="padding-bottom-normal b-header">{{ t.license_long }}</h3>
     <p class="body-big padding-bottom-larger">
-      {{ t.license_intro }}
+      {{ legalcode.license_intro }}
     </p>
     {# Alongside the classes you see below. Content inside of li tags must be wrapped in div tags and assigned "padding-{% start %}-normal"#}
 
@@ -30,8 +30,22 @@
         <ol class="padding-{% start %}-normal padding-vertical-normal">
           <li id="s2a1" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s2a_license_grant_intro }}
             <ol type="A" class="padding-{% start %}-normal padding-vertical-normal">
-              <li id="s2a1A" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s2a_license_grant_share }}</li>
-              <li id="s2a1B" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2a_license_grant_adapted }}</li>
+
+              {% if license.nc %}
+                <li id="s2a1A" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s2a_license_grant_share_nc }}</li>
+              {% else %}
+                <li id="s2a1A" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s2a_license_grant_share }}</li>
+              {% endif %}
+
+              {% if license.nc_nd %}
+                  <li id="s2a1B" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2a_license_grant_adapted_nc_nd }}</li>
+              {% elif license.nc %}
+                  <li id="s2a1B" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2a_license_grant_adapted_nc }}</li>
+              {% elif license.nd %}
+                  <li id="s2a1B" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2a_license_grant_adapted_nd }}</li>
+              {% else %}
+                  <li id="s2a1B" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2a_license_grant_adapted }}</li>
+              {% endif %}
             </ol>
           </li>
           <li id="s2a2" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s2a2_license_grant_exceptions }}</li>
@@ -54,7 +68,11 @@
           <ol class="padding-{% start %}-normal padding-vertical-normal">
             <li id="s2b1" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s2b1_other_rights_moral }}</li>
             <li id="s2b2" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s2b2_other_rights_patent }}</li>
-            <li id="s2b3" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2b3_other_rights_waive }}</li>
+            {% if license.nc %}
+              <li id="s2b3" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2b3_other_rights_waive_nc }}</li>
+            {% else %}
+              <li id="s2b3" class="padding-{% start %}-normal padding-bottom-small">{{ t.s2b3_other_rights_waive }}</li>
+            {% endif %}
           </ol>
         </li>
       </ol>
@@ -70,7 +88,13 @@
         <li id="s3a" class="padding-{% start %}-normal padding-bottom-normal"><p><strong>{{ t.s3_conditions_attribution }}</strong>.</p>
           <ol type="1" class="padding-{% start %}-normal padding-vertical-normal">
             <li id="s3a1" class="padding-{% start %}-normal padding-bottom-normal">
-              <p>{{ t.s3_conditions_if_you_share }}</p>
+              <p>
+                {% if license.nd %}
+                  {{ t.s3_conditions_if_you_share_nd }}
+                {% else %}
+                  {{ t.s3_conditions_if_you_share }}
+                {% endif %}
+              </p>
               <ol type="A" class="padding-{% start %}-normal padding-vertical-normal">
                   <li id="s3a1A" class="padding-{% start %}-normal padding-bottom-small">{{ t.s3_conditions_retain_the_following }}
                     <ol type="i" class="padding-{% start %}-normal padding-vertical-normal">
@@ -99,7 +123,11 @@
           <li id="s3b" class="padding-{% start %}-normal padding-bottom-normal"><strong>{{ t.sharealike_name }}</strong>.
             <p class="padding-top-normal padding-bottom-normal">{{ t.sharealike_intro }}</p>
             <ol class="padding-{% start %}-normal">
-              <li id="s3b1" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s3b1 }}</li>
+              {% if license.nc %}
+                <li id="s3b1" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s3b1_nc }}</li>
+              {% else %}
+                <li id="s3b1" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s3b1 }}</li>
+              {% endif %}
               <li id="s3b2" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s3b2 }}</li>
               <li id="s3b3" class="padding-{% start %}-normal padding-bottom-small">{{ t.s3b3 }}</li>
             </ol>
@@ -113,9 +141,25 @@
       <p id="s4" class="body-bigger padding-bottom-normal"><strong>{{ t.s4_sui_generics_database_rights_titles }}</strong></p>
       <p class="body-big padding-bottom-normal">{{ t.s4_sui_generics_database_rights_intro }}</p>
       <ol type="a" class="body-big padding-{% start %}-normal">
-          <li id="s4a" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_extract_reuse }}</li>
-          <li id="s4b" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_adapted_material }}</li>
-          <li id="s4c" class="padding-{% start %}-normal padding-bottom-small">{{ t.s4_sui_generics_database_rights_comply_s3a }}</li>
+        {# extract_reuse #}
+        {% if license.nc_nd %}
+            <li id="s4a" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_extract_reuse_nc_nd }}</li>
+        {% elif license.nc %}
+            <li id="s4a" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_extract_reuse_nc }}</li>
+        {% elif license.nd %}
+            <li id="s4a" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_extract_reuse_nd }}</li>
+        {% else %}
+            <li id="s4a" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_extract_reuse }}</li>
+        {% endif %}
+
+        {# adapted_material #}
+        {% if license.sa %}
+            <li id="s4b" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_adapted_material_sa }}</li>
+        {% else %}
+            <li id="s4b" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s4_sui_generics_database_rights_adapted_material }}</li>
+        {% endif %}
+
+        <li id="s4c" class="padding-{% start %}-normal padding-bottom-small">{{ t.s4_sui_generics_database_rights_comply_s3a }}</li>
       </ol>
 
       <span class="body-big">{{ t.s4_sui_generics_database_rights_postscript }}</span>
@@ -139,7 +183,13 @@
       <ol type="a" class="body-big padding-{% start %}-normal">
         <li id="s6a" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s6_termination_applies }}</li>
         <li id="s6b" class="padding-{% start %}-normal padding-bottom-normal">
-          <p class="body-big padding-bottom-normal">{{ t.s6_termination_reinstates_where }}</p>
+
+          {% if license.sa %}
+            <p class="body-big padding-bottom-normal">{{ t.s6_termination_reinstates_where_sa }}</p>
+          {% else %}
+            <p class="body-big padding-bottom-normal">{{ t.s6_termination_reinstates_where }}</p>
+          {% endif %}
+
           <ol class="body-big padding-{% start %}-normal">
             <li id="s6b1" class="padding-{% start %}-normal padding-bottom-normal">{{ t.s6_termination_reinstates_automatically }}</li>
             <li id="s6b2" class="padding-{% start %}-normal padding-bottom-small">{{ t.s6_termination_reinstates_express }}</li>

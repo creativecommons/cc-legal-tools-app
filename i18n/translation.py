@@ -52,7 +52,7 @@ class Translation:
             return 100 * (self.num_translated() / total)
         return 0
 
-    def compare_to(self, translation):
+    def compare_to(self, translation, lc1, lc2):
         """
         See how the given translation compares to this one.
         Returns a dictionary, hopefully keys are self-explanatory.
@@ -65,14 +65,20 @@ class Translation:
         keys_missing = set(self_keys) - set(given_keys)
         keys_extra = set(given_keys) - set(self_keys)
         keys_common = set(self_keys) & set(given_keys)
-        different_translations = {}
-        for key in keys_common:
-            if key not in VARYING_MESSAGE_IDS:
-                if t1.translations[key] != t2.translations[key]:
-                    different_translations[key] = (
-                        t1.translations[key],
-                        t2.translations[key],
-                    )
+        different_translations = (
+            {}
+        )  # map msgid to a dictionary mapping translated text to set containing the license codes using that text
+        for msgid in keys_common:
+            if msgid not in VARYING_MESSAGE_IDS:
+                if t1.translations[msgid] != t2.translations[msgid]:
+                    if msgid not in different_translations:
+                        different_translations[msgid] = {}
+                    txt1 = t1.translations[msgid]
+                    different_translations[msgid].setdefault(txt1, set())
+                    different_translations[msgid][txt1].add(lc1.license.license_code)
+                    txt2 = t2.translations[msgid]
+                    different_translations[msgid].setdefault(txt2, set())
+                    different_translations[msgid][txt2].add(lc2.license.license_code)
         return dict(
             keys_missing=keys_missing,
             keys_extra=keys_extra,

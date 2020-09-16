@@ -58,27 +58,25 @@
       ul li {
         margin-bottom: 1rem;
       }
-      ul li p {
+      dt {
         font-weight: bold;
         color: black;
       }
     </style>
 
-    <ul>
+    <dl class="diffs">
       {% for code, texts in translation_differences.items %}
-        <li>
-          <p>English: {{ code }}:</p>
-          <p>Translations:</p>
-          <ul>
-
-            {% for text in texts %}
-              <li>{{ text }}</li>
+        <dt>English: {{ code }}</dt>
+        <dd>
+          <dl>
+            {% for text, license_codes in texts.items %}
+              <dt>{{ license_codes }}:</dt><dd>{{ text|escape }}</dd>
             {% endfor %}
           </ul>
+        </dd>
         </li>
       {% endfor %}
-
-    </ul>
+    </dl>
 
   </div>
 {% endblock content %}
