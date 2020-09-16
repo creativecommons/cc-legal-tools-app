@@ -11,9 +11,7 @@ from licenses.utils import (
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
     get_licenses_code_and_version,
-    get_licenses_code_version_jurisdiction,
-    get_licenses_code_version_jurisdiction_lang,
-    get_licenses_code_version_lang,
+    get_licenses_code_version_language_code,
     parse_legalcode_filename,
     save_dict_to_pofile,
     validate_dictionary_is_all_text,
@@ -221,7 +219,7 @@ class GetLicenseUtilityTest(TestCase):
         Excluding all versions other than 4.0 licenses
         """
         list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_lang()
+        yielded_licenses = get_licenses_code_version_language_code()
         yielded_license_list = list(yielded_licenses)
         for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
             for translated_license in license.names.all():
@@ -229,65 +227,13 @@ class GetLicenseUtilityTest(TestCase):
                     translated_license.language_code
                     not in EXCLUDED_LANGUAGE_IDENTIFIERS
                 ):
-                    return list_of_licenses_dict.append(
+                    list_of_licenses_dict.append(
                         {
                             "license_code": license.license_code,
                             "version": license.version,
-                            "target_lang": translated_license.language_code,
+                            "language_code": translated_license.language_code,
                         }
                     )
-                return
-        self.assertEqual(list_of_licenses_dict, yielded_license_list)
-
-    def test_get_licenses_code_version_jurisdiction(self):
-        """Should return an iterable of license dictionaries
-        with the dictionary keys (license_code, version, jurisdiction)
-
-        4.0 licenses do not have jurisdiction, we should expect an empty result
-        """
-        list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_jurisdiction()
-        yielded_license_list = list(yielded_licenses)
-        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-            if license.jurisdiction_code:
-                return list_of_licenses_dict.append(
-                    {
-                        "license_code": license.license_code,
-                        "version": license.version,
-                        "jurisdiction": license.jurisdiction_code,
-                    }
-                )
-            return
-        self.assertEqual([], yielded_license_list)
-        self.assertEqual(list_of_licenses_dict, yielded_license_list)
-
-    def test_get_licenses_code_version_jurisdiction_lang(self):
-        """Should return an iterable of license dictionaries
-        with the dictionary keys (license_code, version, jurisdiction,
-        target_lang)
-
-        4.0 licenses do not have jurisdiction, we should expect an empty result
-        """
-        list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_jurisdiction_lang()
-        yielded_license_list = list(yielded_licenses)
-        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-            for translated_license in license.names.all():
-                if (
-                    translated_license.language_code
-                    not in EXCLUDED_LANGUAGE_IDENTIFIERS
-                    and license.jurisdiction_code
-                ):
-                    return list_of_licenses_dict.append(
-                        {
-                            "license_code": license.license_code,
-                            "version": license.version,
-                            "jurisdiction": license.jurisdiction_code,
-                            "target_lang": translated_license.language_code,
-                        }
-                    )
-                return
-        self.assertEqual([], yielded_license_list)
         self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
 

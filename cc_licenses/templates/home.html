@@ -1,39 +1,40 @@
 {% extends "base.html" %}
+{% load i18n license_tags %}
 {% block content %}
   <p><b>Temporary homepage</b></p>
 
-  <p><a href="{% url 'license_detail' %}">Example license page (styled)</a></p>
-  <p><a href="{% url 'sampling_detail' %}">Example sampling license page (styled)</a></p>
-  <p><a href="{% url 'deed_detail' %}">Example deed page (styled)</a></p>
+  <p>Some licenses:</p>
 
-  <p>Some deeds to look at:</p>
-  <ul>
-  {% for code, licenses_of_code in licenses_by_code.items %}
-    <li>{{ code }}
-      <ul>
-        {% for version, licenses_of_version in licenses_of_code.items %}
-          <li>{{ version }}
-            <ul>
-              {% for jurisdiction, licenses_of_jurisdiction in licenses_of_version.items %}
-                <li>{% if jurisdiction %}Jurisdiction:{{ jurisdiction }}{% endif %}
-                  {% if licenses_of_jurisdiction|length > 1 %}
-                    <ul>
-                      {% for license in licenses_of_jurisdiction %}
-                        <li><a href="{{ license.get_deed_url }}">{{ license.about }}</a></li>
-                      {% endfor %}
-                    </ul>
-                  {% else %}
-                      {% for license in licenses_of_jurisdiction %}
-                        <a href="{{ license.get_deed_url }}">{{ license.about }}</a>
-                      {% endfor %}
-                  {% endif %}
-                </li>
-              {% endfor %}
-            </ul>
-          </li>
+  {% for version, license_codes, language_codes in licenses_by_version %}
+    <h2>{{ version }}</h2>
+    <table border=1>
+      <thead>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          {% for code in license_codes %}
+            <td>{{ code }}</td>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for language_code in language_codes %}
+          {% get_language_info for language_code as lang %}
+          <tr>
+            <th>{{ language_code }}</th>
+            <th>{{ lang.name_local }}</th>
+            <th>{{ lang.name }}</th>
+            {% for license_code in license_codes %}
+              <td>
+                <a href="{% build_deed_url license_code version "" language_code %}">Deed</a>
+                <a href="{% build_license_url license_code version "" language_code %}">License</a>
+              </td>
+            {% endfor %}
+          </tr>
         {% endfor %}
-      </ul>
-    </li>
+      </tbody>
+    </table>
   {% endfor %}
   </ul>
 

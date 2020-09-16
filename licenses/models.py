@@ -9,11 +9,16 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
-from django.db import models
-from django.urls import reverse
+import os
+import string
 
-from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
+from django.conf import settings
+from django.db import models
+from django.utils import translation
+
+from i18n.translation import get_translation_object
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
+from licenses.templatetags.license_tags import build_deed_url, build_license_url
 
 MAX_LANGUAGE_CODE_LENGTH = 8
 
@@ -35,6 +40,161 @@ class LegalCode(models.Model):
 
     def __str__(self):
         return f"LegalCode<{self.language_code}, {self.license.about}>"
+
+    def license_url(self):
+        """
+        URL to view this translation of this license
+        """
+        license = self.license
+        return build_license_url(
+            license.license_code,
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        )
+
+    def deed_url(self):
+        """
+        URL to view this translation of this deed
+        """
+        license = self.license
+        return build_deed_url(
+            license.license_code,
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        )
+
+    def fat_code(self):
+        """
+        Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
+        """
+        return self.license.fat_code()
+
+    def downstreams(self):
+        """
+        For use in e.g. templates, returns an iterable of dictionaries
+        of the items in the downstream recipients section for this license.
+        Each dictionary looks like:
+            {
+                "id": "s2a5A",
+                "msgid_name": "s2a5A_defitnition_trnsla_name",
+                "msgid_text": "s2a5A_defitnition_trnsla_text",
+            }
+        """
+        expected_downstreams = [
+            "offer",
+            "no_restrictions",
+        ]
+        if self.license.license_code in ["by-sa", "by-nc-sa"]:
+            expected_downstreams.insert(1, "adapted_material")
+        LETTERS = string.ascii_uppercase
+        translation = self.get_translation_object()
+        # s2a5_license_grant_downstream_offer_name
+        result = [
+            {
+                "id": f"s2a5{LETTERS[i]}_{item}",
+                "msgid_name": f"s2a5_license_grant_downstream_{item}_name",
+                "msgid_text": f"s2a5_license_grant_downstream_{item}_text",
+            }
+            for i, item in enumerate(expected_downstreams)
+        ]
+        for item in result:
+            item["name_translation"] = translation.translate(item["msgid_name"])
+            item["text_translation"] = translation.translate(item["msgid_text"])
+        return result
+
+    def definitions(self):
+        """
+        For use in e.g. templates, returns an iterable of dictionaries
+        of the items in the definitions section for this license.
+        Each dictionary looks like:
+            {
+                "id": "s1c",
+                "msgid": "s1_defitnition_trnsla"
+            }
+        """
+        license_code = self.license.license_code
+        expected_definitions = [
+            "adapted_material",
+            "copyright_and_similar_rights",
+            "effective_technological_measures",
+            "exceptions_and_limitations",
+            "licensed_material",
+            "licensed_rights",
+            "licensor",
+            "share",
+            "sui_generis_database_rights",
+            "you",
+        ]
+
+        translation = self.get_translation_object()
+
+        # now insert the optional ones
+        def insert_after(after_this, what_to_insert):
+            i = expected_definitions.index(after_this)
+            expected_definitions.insert(i + 1, what_to_insert)
+
+        if license_code == "by-sa":
+            insert_after("adapted_material", "adapters_license")
+            insert_after("adapters_license", "by_sa_compatible_license")
+            insert_after("exceptions_and_limitations", "license_elements_sa")
+        elif license_code == "by":
+            insert_after("adapted_material", "adapters_license")
+        elif license_code == "by-nc":
+            insert_after("adapted_material", "adapters_license")
+            insert_after("licensor", "noncommercial")
+        elif license_code == "by-nd":
+            pass
+        elif license_code == "by-nc-nd":
+            insert_after("licensor", "noncommercial")
+        elif license_code == "by-nc-sa":
+            insert_after("adapted_material", "adapters_license")
+            insert_after("exceptions_and_limitations", "license_elements_nc_sa")
+            insert_after("adapters_license", "by_nc_sa_compatible_license")
+            insert_after("licensor", "noncommercial")
+
+        LETTERS = string.ascii_lowercase
+        result = [
+            {"id": f"s1{LETTERS[i]}", "msgid": f"s1_definitions_{item}",}
+            for i, item in enumerate(expected_definitions)
+        ]
+        for item in result:
+            item["translation"] = translation.translate(item["msgid"])
+        return result
+
+    def get_translation_object(self):
+        return get_translation_object(self.translation_filename(), self.language_code)
+
+    def translation_filename(self):
+        """
+        Return absolute path to the .po file with this translation.
+        These are in the cc-licenses-data repository, in subdirectories:
+          - "translations"
+          - license code (all lowercase)
+          - license version (e.g. 4.0, or "None" if not applicable)
+
+        Within that directory, the files will be named "{lowercase_license_code}_{version}_{jurisdictiction}_{language_code}.po",
+        except that if any part is not applicable, we'll leave out it and its separating "_" - e.g.
+        for the BY-NC 4.0 French translation, which has no jurisdiction, the filename will be
+        "by-nc_4.0_fr.po", and in full,
+        "{translation repo topdir}/translations/by-nc/4.0/by-nc_4.0_fr.po".
+        """
+        license = self.license
+        filename_parts = [
+            license.license_code.lower(),
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        ]
+        # Remove any empty parts
+        filename_parts = [x for x in filename_parts if x]
+        filename = "_".join(filename_parts) + ".po"
+        subdir = f"{license.license_code.lower()}/{license.version or 'None'}"
+        fullpath = os.path.join(
+            settings.TRANSLATION_REPOSITORY_DIRECTORY, "translations", subdir, filename
+        )
+        return fullpath
 
 
 class License(models.Model):
@@ -114,6 +274,22 @@ class License(models.Model):
     def __str__(self):
         return f"License<{self.about}>"
 
+    def get_legalcode_for_language_code(self, language_code):
+        """
+        Return the legalcode for this license and language.
+        If language_code has a "-" and we don't find it, try
+        without the "-*" part (to handle e.g. "en-us").
+        """
+        if not language_code:
+            language_code = translation.get_language()
+        try:
+            return self.legal_codes.get(language_code=language_code)
+        except LegalCode.DoesNotExist:
+            if "-" in language_code:  # e.g. "en-us"
+                lang = language_code.split("-")[0]
+                return self.legal_codes.get(language_code=lang)
+            raise
+
     @property
     def translation_domain(self):
         # If there's any - or _ in the domain, things get confusing.
@@ -128,61 +304,21 @@ class License(models.Model):
         """Generate RDF for this license?"""
         return "RDF Generation Not Implemented"  # FIXME if needed
 
+    def fat_code(self):
+        """
+        Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
+        """
+        license = self
+        s = f"{license.license_code} {license.version}"
+        if license.license_code.startswith("by"):
+            s = f"CC {s}"
+        s = s.upper()
+        return s
+
     def translated_title(self, language_code=None):
-        return "FIXME: Implement translated title"
-        # if not language_code:
-        #     # Use current language
-        #     language_code = translation.get_language()
-        #
-        # with activate_domain_language(self.translation_domain, language_code):
-        #     # We're going to create a 'translation' for a fake locale named
-        #     # `lang_plus_domain`, then temporarily activate it and translate
-        #     # the key we use for medium license titles in our message files.
-        #     return gettext(f"license_medium")
-
-    def default_language_code(self):
-        if (
-            self.jurisdiction_code
-            and self.jurisdiction_code in DEFAULT_JURISDICTION_LANGUAGES
-            and len(DEFAULT_JURISDICTION_LANGUAGES[self.jurisdiction_code]) == 1
-        ):
-            return DEFAULT_JURISDICTION_LANGUAGES[self.jurisdiction_code][0]
-        return DEFAULT_LANGUAGE_CODE
-
-    def get_deed_url_for_language(self, target_lang: str):
-        """
-        Return a URL that'll give us a view for a deed for this license,
-        displayed in the specified language. (If you want it displayed in
-        a default language, use get_deed_url()).
-        """
-        kwargs = dict(
-            license_code=self.license_code,
-            version=self.version,
-            target_lang=target_lang,
-        )
-
-        if self.jurisdiction_code:
-            kwargs["jurisdiction"] = self.jurisdiction_code
-            viewname = "license_deed_view_code_version_jurisdiction_language"
-        else:
-            viewname = "license_deed_view_code_version_language"
-
-        return reverse(viewname, kwargs=kwargs)
-
-    def get_deed_url(self):
-        """
-        Return a URL that'll give us a view for the deed for this license,
-        but leave the language up to the view.
-        """
-        kwargs = dict(license_code=self.license_code, version=self.version,)
-
-        if self.jurisdiction_code:
-            kwargs["jurisdiction"] = self.jurisdiction_code
-            viewname = "license_deed_view_code_version_jurisdiction"
-        else:
-            viewname = "license_deed_view_code_version_english"
-
-        return reverse(viewname, kwargs=kwargs)
+        legalcode = self.get_legalcode_for_language_code(language_code)
+        translation_object = legalcode.get_translation_object()
+        return translation_object.translations["license_medium"]
 
     @property
     def level_of_freedom(self):
@@ -204,6 +340,10 @@ class License(models.Model):
     @property
     def sampling_plus(self):
         return self.license_code in ("nc-sampling+", "sampling+")
+
+    @property
+    def include_share_adapted_material_clause(self):
+        return self.license_code in ["by", "by-nc"]
 
 
 class TranslatedLicenseName(models.Model):

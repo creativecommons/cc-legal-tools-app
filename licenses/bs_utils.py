@@ -38,6 +38,8 @@ def text_up_to(tag, tagname):
     """
     Given a tag, return the text of the immediate children up to,
     but not including the first child whose tagname is 'tagname'.
+    (This includes the tags of the immediate children themselves.
+    E.g.
     """
     children = list(
         takewhile(
