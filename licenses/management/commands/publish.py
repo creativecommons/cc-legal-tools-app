@@ -16,8 +16,30 @@ def set_publish_settings():
     the build directory in the cc-licenses-data repo
     """
     set_env_settings = (
-      "unset DJANGO_SETTINGS_MODULE && "
-      "export DJANGO_SETTINGS_MODULE=cc_licenses.settings.publish"
+        "unset DJANGO_SETTINGS_MODULE && "
+        "export DJANGO_SETTINGS_MODULE=cc_licenses.settings.publish"
+    )
+    return subprocess.run(
+        set_env_settings,
+        shell=True,
+        check=True,
+    )
+
+def set_default_settings():
+    """Set environment to use the default settings
+    
+    Cleanup definition: When django-distill finishes we should have 
+    the build directory outputting to the cc-licenses directory for
+    development purposes.
+    """
+    set_env_settings = (
+        "unset DJANGO_SETTINGS_MODULE && "
+        "export DJANGO_SETTINGS_MODULE=cc_licenses.settings.dev"
+    )
+    return subprocess.run(
+        set_env_settings,
+        shell=True,
+        check=True,
     )
 
 def pull_translations_branches():
