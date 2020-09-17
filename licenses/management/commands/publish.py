@@ -74,15 +74,11 @@ def pull_translations_branches():
 def list_open_branches():
     """List of open branches in cc-licenses-data repo
     """
-    list_branches_cmd = GO_TO_TRANSLATIONS_REPO + "git branch"
-    print(
-      "\n'branch_name' to publish artifacts to must be supplied.\n"
-      "Retrieving active branches from cc-licenses-data...\n\n"
-    )
+    list_branches_cmd = GO_TO_TRANSLATIONS_REPO + "git branch --list"
     pull_translations_branches()
     branches = subprocess.check_output(list_branches_cmd, shell=True).decode().split('\n')
     print("\n\nWhich branch are we publishing to?\n")
-    return [print(b) for b in list(branches)]
+    [print(b) for b in branches]
 
 
 def publish_branch(branch: str):
