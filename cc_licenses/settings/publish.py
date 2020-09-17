@@ -1,3 +1,5 @@
-from .base import *
+from settings import base
 
-DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
+from .base import *  # noqa
+
+DISTILL_DIR = f"{base.TRANSLATION_REPOSITORY_DIRECTORY}/build/"
