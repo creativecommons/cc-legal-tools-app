@@ -54,7 +54,7 @@ def git_commit_and_push(branch: str):
   commit_and_push_cmd = GO_TO_TRANSLATIONS_REPO + (
       "git add build/ && "
       f"git checkout {branch} && "
-      f"git commit -m '{branch} Timestamp (EST): ' && " 
+      f"git commit -m '{branch} ' && " 
       f"git push origin {branch}"
   )
   return subprocess.run(
