@@ -6,23 +6,13 @@ from django.core.management import BaseCommand
 
 from cc_licenses.settings.base import TRANSLATION_REPOSITORY_DIRECTORY
 
-# Go to cc-licenses-data and do something
-GO_TO_TRANSLATIONS_REPO = f"cd {TRANSLATION_REPOSITORY_DIRECTORY} && "
-PULL_BRANCHES_DOWN_FROM_DEVELOP = "git checkout develop && git pull"
-PULL_DOWN_TRANSLATION_BRANCHES = (
-    GO_TO_TRANSLATIONS_REPO + PULL_BRANCHES_DOWN_FROM_DEVELOP
-)
-
 
 def run_django_distill():
-    """Outputs the build directory
+    """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR
     """
     my_env = os.environ.copy()
-    my_env["DJANGO_SETTINGS_MODULE"] = "cc_licenses.settings.publish"
-    cmd = "python manage.py distill-local --quiet --force"
-    return subprocess.run(
-        cmd, shell=True, check=True, text=True, input="YES", env=my_env,
-    )
+    cmd = ["python", "manage.py", "distill-local", "--quiet", "--force"]
+    return subprocess.run(cmd, check=True, text=True, input="YES", env=my_env,)
 
 
 def git_branch_status(branch: str):
@@ -30,11 +20,11 @@ def git_branch_status(branch: str):
 
     Returns True or False
     """
-    check_branch_status_cmd = (
-        GO_TO_TRANSLATIONS_REPO + f"git checkout {branch} && " + "git status"
+    subprocess.run(
+        ["git", "checkout", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
     )
     status = (
-        subprocess.check_output(check_branch_status_cmd, shell=True)
+        subprocess.check_output(["git", "status"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
         .decode()
         .split("\n")
     )
@@ -44,39 +34,49 @@ def git_branch_status(branch: str):
 
 
 def git_on_branch_and_pull(branch: str):
-    """Returns a string represention of the git command to checkout and pull from a branch"""
-    git_on_branch_and_pull_cmd = GO_TO_TRANSLATIONS_REPO + (
-        f"git checkout {branch} && git pull origin {branch}"
+    """Commands to checkout and pull from a branch"""
+    subprocess.run(
+        ["git", "checkout", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
     )
-    return subprocess.run(git_on_branch_and_pull_cmd, shell=True, check=True)
+    return subprocess.run(
+        ["git", "pull", "origin", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+    )
 
 
 def git_commit_and_push(branch: str):
-    """Returns a string representation of the git command to checkout, commit, and push branch"""
-    commit_and_push_cmd = GO_TO_TRANSLATIONS_REPO + (
-        "git add build/ && "
-        f"git checkout {branch} && "
-        f"git commit -m '{branch}' && "
-        f"git push origin {branch}"
+    """Command to git checkout, commit, and push branch"""
+    subprocess.run(["git", "add", "build/"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
+    subprocess.run(
+        ["git", "checkout", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
     )
-    return subprocess.run(commit_and_push_cmd, shell=True, check=True,)
+    subprocess.run(
+        ["git", "commit", "-m", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+    )
+    return subprocess.run(
+        ["git", "push", "origin" f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+    )
 
 
 def pull_translations_branches():
     """Git pulls branches in cc-licenses-data to update local git registry"""
-    return subprocess.run(PULL_DOWN_TRANSLATION_BRANCHES, shell=True, check=True,)
+    subprocess.run(["git", "checkout", "develop"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
+    return subprocess.run(["git", "pull"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
 
 
 def list_open_branches():
     """List of open branches in cc-licenses-data repo
     """
-    list_branches_cmd = GO_TO_TRANSLATIONS_REPO + "git branch --list"
     pull_translations_branches()
     branches = (
-        subprocess.check_output(list_branches_cmd, shell=True).decode().split("\n")
+        subprocess.check_output(
+            ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        )
+        .decode()
+        .split("\n")
     )
     print("\n\nWhich branch are we publishing to?\n")
-    [print(b) for b in branches]
+    for b in branches:
+        return print(b)
 
 
 def publish_branch(branch: str):
@@ -96,9 +96,12 @@ def publish_all():
     Develop is not checked because it serves as the source of truth. It should be
     manually merged into.
     """
-    list_branches_cmd = GO_TO_TRANSLATIONS_REPO + "git branch --list"
     branches = (
-        subprocess.check_output(list_branches_cmd, shell=True).decode().split("\n")
+        subprocess.check_output(
+            ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        )
+        .decode()
+        .split("\n")
     )
     exclude_develop_list = [b for b in branches if "develop" not in b]
     del exclude_develop_list[-1]
@@ -106,7 +109,8 @@ def publish_all():
     print(
         f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches"
     )
-    [publish_branch(b) for b in branch_list]
+    for b in branch_list:
+        publish_branch(b)
 
 
 class Command(BaseCommand):
