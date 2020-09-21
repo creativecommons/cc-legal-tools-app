@@ -1,4 +1,3 @@
-import os
 import subprocess
 from argparse import ArgumentParser
 
@@ -9,16 +8,22 @@ from cc_licenses.settings.base import TRANSLATION_REPOSITORY_DIRECTORY
 
 def run_django_distill():
     """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR
+
+    The input option that subprocess provides is important. If a build dir does not exist we must
+    say yes the first time we run this command in order to create the directory. Once the build dir
+    is created the force argument will auto-create the build without our input. This is way we are
+    using subprocess in this method over management.call_command.
     """
-    my_env = os.environ.copy()
     cmd = ["python", "manage.py", "distill-local", "--quiet", "--force"]
-    return subprocess.run(cmd, check=True, text=True, input="YES", env=my_env,)
+    return subprocess.run(cmd, text=True, input="YES",)
 
 
-def git_branch_status(branch: str):
-    """Checks if there is a build to commit using git status
+def check_if_build_to_push(branch: str):
+    """Navigates to a branch and checks the status of the branch
 
-    Returns True or False
+    Returns:
+        True if files need to be committed
+        False if the working tree is clean
     """
     subprocess.run(
         ["git", "checkout", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
@@ -47,13 +52,10 @@ def git_commit_and_push(branch: str):
     """Command to git checkout, commit, and push branch"""
     subprocess.run(["git", "add", "build/"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
     subprocess.run(
-        ["git", "checkout", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
-    )
-    subprocess.run(
         ["git", "commit", "-m", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
     )
     return subprocess.run(
-        ["git", "push", "origin" f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        ["git", "push", "origin", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
     )
 
 
@@ -76,14 +78,14 @@ def list_open_branches():
     )
     print("\n\nWhich branch are we publishing to?\n")
     for b in branches:
-        return print(b)
+        print(b)
 
 
 def publish_branch(branch: str):
     """Workflow for publishing a single branch"""
     git_on_branch_and_pull(branch)
     run_django_distill()
-    build_to_push = git_branch_status(branch)
+    build_to_push = check_if_build_to_push(branch)
     if build_to_push:
         git_commit_and_push(branch)
     else:
