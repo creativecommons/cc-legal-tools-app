@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 from django.core.management import BaseCommand
 
 from cc_licenses.settings.base import TRANSLATION_REPOSITORY_DIRECTORY
+from licenses.utils import cleanup_current_branch_output, strip_list_whitespace
 
 
 def run_django_distill():
@@ -31,7 +32,7 @@ def check_if_build_to_push(branch: str):
     status = (
         subprocess.check_output(["git", "status"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
         .decode()
-        .split("\n")
+        .splitlines()
     )
     if "nothing to commit, working tree clean" in status:
         return False
@@ -103,15 +104,14 @@ def publish_all():
             ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
         )
         .decode()
-        .split("\n")
+        .splitlines()
     )
-    exclude_develop_list = [b for b in branches if "develop" not in b]
-    del exclude_develop_list[-1]
-    branch_list = [b.lstrip() for b in exclude_develop_list]
+    branch_list = strip_list_whitespace("left", branches)
+    cleaned_branch_list = cleanup_current_branch_output(branch_list)
     print(
-        f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches"
+        f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
     )
-    for b in branch_list:
+    for b in cleaned_branch_list:
         publish_branch(b)
 
 
@@ -148,7 +148,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         if options.get("list_branches"):
-            return list_open_branches()
-        if options.get("branch_name"):
-            return publish_branch(options["branch_name"])
-        return publish_all()
+            list_open_branches()
+        elif options.get("branch_name"):
+            publish_branch(options["branch_name"])
+        else:
+            publish_all()

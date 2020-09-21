@@ -239,3 +239,44 @@ def save_dict_to_pofile(pofile: POFile, messages: dict):
     """
     for message_key, value in messages.items():
         pofile.append(POEntry(msgid=message_key, msgstr=value.strip()))
+
+
+def strip_list_whitespace(direction: str, list_of_str: list) -> list:
+    """Strips whitespace from strings in a list of strings
+
+    Arguments:
+        direction: (string) Determines whether to strip whitespace
+        to the left, right, or both sides of a string
+        list_of_str: (list) list of strings
+    """
+    if direction == "left":
+        return [s.lstrip() for s in list_of_str]
+    if direction == "right":
+        return [s.rstrip() for s in list_of_str]
+    return [s.strip() for s in list_of_str]
+
+
+def cleanup_current_branch_output(branch_list: list) -> list:
+    """cleanups the way git outputs the current branch
+
+    for example: git branch --list
+        some-branch
+        * develop
+
+        branch-list = ['some-branch', '* develop']
+
+    The asterisks is attached to the current branch, and we want to remove
+    this:
+        branch-list = ['some-branch' 'develop']
+
+    Arguments:
+        branch-list (list) list of git branches.
+    """
+    cleaned_list = []
+    for branch in branch_list:
+        if "*" in branch:
+            cleaned_branch = branch.replace("* ", "")
+            cleaned_list.append(cleaned_branch)
+        else:
+            cleaned_list.append(branch)
+    return cleaned_list

@@ -7,6 +7,7 @@ from polib import POEntry
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
 from licenses.models import License
 from licenses.utils import (
+    cleanup_current_branch_output,
     compute_about_url,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
@@ -14,6 +15,7 @@ from licenses.utils import (
     get_licenses_code_version_language_code,
     parse_legalcode_filename,
     save_dict_to_pofile,
+    strip_list_whitespace,
     validate_dictionary_is_all_text,
     validate_list_is_all_text,
 )
@@ -318,3 +320,17 @@ class TestMisc(TestCase):
         self.assertEqual(2, len(mock_pofile.append.call_args_list))
         args, kwargs = mock_pofile.append.call_args_list[0]
         self.assertTrue(isinstance(args[0], POEntry))
+
+    def test_strip_list_whitespace(self):
+        expected_list = ["left", "right", "center"]
+        left_list = [" left", " right", " center"]
+        right_list = ["left ", "right ", "center "]
+        center_list = [" left ", " right ", " center "]
+        self.assertEqual(strip_list_whitespace("left", left_list), expected_list)
+        self.assertEqual(strip_list_whitespace("right", right_list), expected_list)
+        self.assertEqual(strip_list_whitespace("center", center_list), expected_list)
+
+    def test_cleanup_current_branch_output(self):
+        expected_list = ["some-branch", "another-branch", "develop"]
+        unmodified_list = ["some-branch", "* another-branch", "develop"]
+        self.assertEqual(cleanup_current_branch_output(unmodified_list), expected_list)
