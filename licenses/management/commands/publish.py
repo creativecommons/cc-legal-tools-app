@@ -1,22 +1,36 @@
+import os
 import subprocess
 from argparse import ArgumentParser
+from shutil import rmtree
 
-from django.core.management import BaseCommand
+from django.conf import settings
+from django.core.management import BaseCommand, CommandError
+from django_distill.distill import urls_to_distill
+from django_distill.errors import DistillError
+from django_distill.renderer import render_to_dir
 
 from cc_licenses.settings.base import TRANSLATION_REPOSITORY_DIRECTORY
 from licenses.utils import cleanup_current_branch_output, strip_list_whitespace
 
 
-def run_django_distill():
+def run_django_distill(obj: object):
     """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR
-
-    The input option that subprocess provides is important. If a build dir does not exist we must
-    say yes the first time we run this command in order to create the directory. Once the build dir
-    is created the force argument will auto-create the build without our input. This is way we are
-    using subprocess in this method over management.call_command.
     """
-    cmd = ["python", "manage.py", "distill-local", "--quiet", "--force"]
-    return subprocess.run(cmd, text=True, input="YES",)
+    stdout = obj._quiet
+    output_dir = getattr(settings, "DISTILL_DIR", None)
+    if not os.path.isdir(settings.STATIC_ROOT):
+        e = "Static source directory does not exist, run collectstatic"
+        raise CommandError(e)
+    output_dir = os.path.abspath(os.path.expanduser(output_dir))
+    if os.path.isdir(output_dir):
+        rmtree(output_dir)
+        os.makedirs(output_dir)
+    else:
+        os.makedirs(output_dir)
+    try:
+        render_to_dir(output_dir, urls_to_distill, stdout)
+    except DistillError as err:
+        raise CommandError(str(err)) from err
 
 
 def check_if_build_to_push(branch: str):
@@ -82,10 +96,10 @@ def list_open_branches():
         print(b)
 
 
-def publish_branch(branch: str):
+def publish_branch(obj: object, branch: str):
     """Workflow for publishing a single branch"""
     git_on_branch_and_pull(branch)
-    run_django_distill()
+    run_django_distill(obj)
     build_to_push = check_if_build_to_push(branch)
     if build_to_push:
         git_commit_and_push(branch)
@@ -93,7 +107,7 @@ def publish_branch(branch: str):
         print(f"\n{branch} build dir is up to date.\n")
 
 
-def publish_all():
+def publish_all(obj: object):
     """Workflow for checking branches other than develop and updating their build dir
 
     Develop is not checked because it serves as the source of truth. It should be
@@ -112,7 +126,7 @@ def publish_all():
         f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
     )
     for b in cleaned_branch_list:
-        publish_branch(b)
+        publish_branch(obj, b)
 
 
 class Command(BaseCommand):
@@ -146,10 +160,13 @@ class Command(BaseCommand):
             help="A list of active branches in cc-licenses-data will be displayed",
         )
 
+    def _quiet(self, *args, **kwargs):
+        pass
+
     def handle(self, *args, **options):
         if options.get("list_branches"):
             list_open_branches()
         elif options.get("branch_name"):
-            publish_branch(options["branch_name"])
+            publish_branch(self, options["branch_name"])
         else:
-            publish_all()
+            publish_all(self)
