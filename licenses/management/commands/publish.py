@@ -13,24 +13,6 @@ from cc_licenses.settings.base import TRANSLATION_REPOSITORY_DIRECTORY
 from licenses.utils import cleanup_current_branch_output, strip_list_whitespace
 
 
-def run_django_distill(obj: object):
-    """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR
-    """
-    stdout = obj._quiet
-    output_dir = getattr(settings, "DISTILL_DIR", None)
-    if not os.path.isdir(settings.STATIC_ROOT):
-        e = "Static source directory does not exist, run collectstatic"
-        raise CommandError(e)
-    output_dir = os.path.abspath(os.path.expanduser(output_dir))
-    if os.path.isdir(output_dir):
-        rmtree(output_dir)
-    os.makedirs(output_dir)
-    try:
-        render_to_dir(output_dir, urls_to_distill, stdout)
-    except DistillError as err:
-        raise CommandError(str(err)) from err
-
-
 def check_if_build_to_push(branch: str):
     """Navigates to a branch and checks the status of the branch
 
@@ -87,44 +69,11 @@ def list_open_branches():
             ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
         )
         .decode()
-        .split("\n")
+        .splitlines()
     )
     print("\n\nWhich branch are we publishing to?\n")
     for b in branches:
         print(b)
-
-
-def publish_branch(obj: object, branch: str):
-    """Workflow for publishing a single branch"""
-    git_on_branch_and_pull(branch)
-    run_django_distill(obj)
-    build_to_push = check_if_build_to_push(branch)
-    if build_to_push:
-        git_commit_and_push(branch)
-    else:
-        print(f"\n{branch} build dir is up to date.\n")
-
-
-def publish_all(obj: object):
-    """Workflow for checking branches other than develop and updating their build dir
-
-    Develop is not checked because it serves as the source of truth. It should be
-    manually merged into.
-    """
-    branches = (
-        subprocess.check_output(
-            ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
-        )
-        .decode()
-        .splitlines()
-    )
-    branch_list = strip_list_whitespace("left", branches)
-    cleaned_branch_list = cleanup_current_branch_output(branch_list)
-    print(
-        f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
-    )
-    for b in cleaned_branch_list:
-        publish_branch(obj, b)
 
 
 class Command(BaseCommand):
@@ -161,10 +110,55 @@ class Command(BaseCommand):
     def _quiet(self, *args, **kwargs):
         pass
 
+    def run_django_distill(self):
+        """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR
+        """
+        stdout = self._quiet
+        output_dir = getattr(settings, "DISTILL_DIR", None)
+        if not os.path.isdir(settings.STATIC_ROOT):
+            e = "Static source directory does not exist, run collectstatic"
+            raise CommandError(e)
+        output_dir = os.path.abspath(os.path.expanduser(output_dir))
+        if os.path.isdir(output_dir):
+            rmtree(output_dir)
+        os.makedirs(output_dir)
+        try:
+            render_to_dir(output_dir, urls_to_distill, stdout)
+        except DistillError as err:
+            raise CommandError(str(err)) from err
+
+    def publish_branch(self, branch: str):
+        """Workflow for publishing a single branch"""
+        git_on_branch_and_pull(branch)
+        self.run_django_distill()
+        build_to_push = check_if_build_to_push(branch)
+        if build_to_push:
+            git_commit_and_push(branch)
+        else:
+            print(f"\n{branch} build dir is up to date.\n")
+
+    def publish_all(self):
+        """Workflow for checking branches and updating their build dir
+        """
+        branches = (
+            subprocess.check_output(
+                ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+            )
+            .decode()
+            .splitlines()
+        )
+        branch_list = strip_list_whitespace("left", branches)
+        cleaned_branch_list = cleanup_current_branch_output(branch_list)
+        print(
+            f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
+        )
+        for b in cleaned_branch_list:
+            self.publish_branch(b)
+
     def handle(self, *args, **options):
         if options.get("list_branches"):
             list_open_branches()
         elif options.get("branch_name"):
-            publish_branch(self, options["branch_name"])
+            self.publish_branch(options["branch_name"])
         else:
-            publish_all(self)
+            self.publish_all()
