@@ -209,3 +209,9 @@ DISTILL_DIR = f"{ROOT_DIR}/build/"
 TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
     "TRANSLATION_REPOSITORY_DIRECTORY", os.path.join(ROOT_DIR, "..", "cc-licenses-data")
 )
+
+TRANSIFEX = {
+    "ORGANIZATION_SLUG": "creativecommons",
+    "PROJECT_SLUG": "CC",
+    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
+}

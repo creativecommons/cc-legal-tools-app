@@ -2,7 +2,7 @@ import factory.fuzzy
 from django.utils import translation
 from factory import post_generation
 
-from licenses.models import LegalCode, License, LicenseLogo, TranslatedLicenseName
+from licenses.models import LegalCode, License, TranslatedLicenseName
 
 
 class LicenseFactory(factory.DjangoModelFactory):
@@ -34,14 +34,6 @@ class LicenseFactory(factory.DjangoModelFactory):
             TranslatedLicenseNameFactory(
                 license=obj, language_code=translation.get_language()
             )
-
-
-class LicenseLogoFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = LicenseLogo
-
-    license = factory.SubFactory(LicenseFactory)
-    image = factory.Faker("name")
 
 
 class TranslatedLicenseNameFactory(factory.DjangoModelFactory):
