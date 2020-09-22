@@ -24,9 +24,7 @@ def run_django_distill(obj: object):
     output_dir = os.path.abspath(os.path.expanduser(output_dir))
     if os.path.isdir(output_dir):
         rmtree(output_dir)
-        os.makedirs(output_dir)
-    else:
-        os.makedirs(output_dir)
+    os.makedirs(output_dir)
     try:
         render_to_dir(output_dir, urls_to_distill, stdout)
     except DistillError as err:
