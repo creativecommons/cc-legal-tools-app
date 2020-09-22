@@ -217,3 +217,9 @@ TRANSIFEX = {
 
 # Django translations are in the transltion repo directory, under "locale".
 LOCALE_PATHS = (os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),)
+
+TRANSIFEX = {
+    "ORGANIZATION_SLUG": "creativecommons",
+    "PROJECT_SLUG": "CC",
+    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
+}
