@@ -7,8 +7,8 @@ from polib import POEntry, POFile
 
 from i18n import LANGUAGE_CODE_REGEX
 
-from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
-from .models import License
+from .constants import EXCLUDED_LICENSE_VERSIONS
+from .models import LegalCode, License
 
 
 def get_code_from_jurisdiction_url(url):
@@ -141,15 +141,16 @@ def get_licenses_code_version_language_code():
             language_code
         )
     """
-    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-        for translated_license in license.names.all():
-            if translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
-                yield {
-                    "license_code": license.license_code,
-                    "version": license.version,
-                    "language_code": translated_license.language_code,
-                }
-            continue
+    for legalcode in LegalCode.objects.exclude(
+        license__version__in=EXCLUDED_LICENSE_VERSIONS
+    ):
+        license = legalcode.license
+        item = {
+            "license_code": license.license_code,
+            "version": license.version,
+            "language_code": legalcode.language_code,
+        }
+        yield item
 
 
 def compute_about_url(license_code, version, jurisdiction_code):

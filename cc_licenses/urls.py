@@ -17,12 +17,18 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django_distill import distill_path
 
 from licenses.views import home
 
+
+def distill_no_parameters():
+    return None
+
+
 urlpatterns = [
     url(r"^admin/", admin.site.urls),
-    url(r"^$", home, name="home"),
+    distill_path("", home, name="home", distill_func=distill_no_parameters),
     url(r"licenses/", include("licenses.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

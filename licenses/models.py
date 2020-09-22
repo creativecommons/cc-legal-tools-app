@@ -344,28 +344,3 @@ class License(models.Model):
     @property
     def include_share_adapted_material_clause(self):
         return self.license_code in ["by", "by-nc"]
-
-
-class TranslatedLicenseName(models.Model):
-    license = models.ForeignKey(License, related_name="names", on_delete=models.CASCADE)
-    language_code = models.CharField(
-        max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
-    )
-    name = models.CharField(max_length=250, help_text="Translated name of license")
-
-    class Meta:
-        unique_together = [
-            ("license", "language_code"),
-        ]
-
-    def __str__(self):
-        return f"TranslatedLicenseName<{self.language_code}, {self.license}>"
-
-
-class LicenseLogo(models.Model):
-    license = models.ForeignKey(License, on_delete=models.CASCADE)
-    image = models.FileField()
-
-    def __str__(self):
-        return f"LicenseLogo<{self.image.url}>"
