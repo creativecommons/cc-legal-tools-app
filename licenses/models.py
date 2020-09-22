@@ -56,17 +56,20 @@ class LegalCode(models.Model):
         If this translation is modified, what is the name of the GitHub branch
         we'll use to manage the modifications?
         Basically its "{license code}-{version}-{language}[-{jurisdiction code}",
-        except that all the "by*" licenses use "bystar" for the license_code part.
+        except that all the "by* 4.0" licenses use "cc4" for the license_code part.
+        This has to be a valid DNS domain, so we also change any _ to - and
+        remove any periods.
         """
         license = self.license
-        if license.license_code.startswith("by"):
-            code_part = "bystar"
+        parts = []
+        if license.license_code.startswith("by") and license.version == "4.0":
+            parts.append("cc4")
         else:
-            code_part = license.license_code
-        parts = [code_part, license.version, self.language_code]
+            parts.extend([license.license_code, license.version])
+        parts.append(self.language_code)
         if license.jurisdiction_code:
             parts.append(license.jurisdiction_code)
-        return "-".join(parts)
+        return "-".join(parts).replace("_", "-").replace(".", "").lower()
 
     def license_url(self):
         """
