@@ -5,8 +5,9 @@ from django.test import TestCase
 from polib import POEntry
 
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
-from licenses.models import License
+from licenses.models import LegalCode, License
 from licenses.utils import (
+    cleanup_current_branch_output,
     compute_about_url,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
@@ -14,11 +15,12 @@ from licenses.utils import (
     get_licenses_code_version_language_code,
     parse_legalcode_filename,
     save_dict_to_pofile,
+    strip_list_whitespace,
     validate_dictionary_is_all_text,
     validate_list_is_all_text,
 )
 
-from .factories import LicenseFactory
+from .factories import LegalCodeFactory, LicenseFactory
 
 
 class GetJurisdictionCodeTest(TestCase):
@@ -198,6 +200,10 @@ class GetLicenseUtilityTest(TestCase):
         self.license8 = LicenseFactory(license_code="by", version="2.0")
         self.license9 = LicenseFactory(license_code="by", version="2.1")
 
+        for license in License.objects.all():
+            LegalCodeFactory(license=license, language_code="en")
+            LegalCodeFactory(license=license, language_code="fr")
+
     def test_get_licenses_code_and_version(self):
         """Should return an iterable of license dictionaries
         with the dictionary keys (license_code, version)
@@ -221,19 +227,19 @@ class GetLicenseUtilityTest(TestCase):
         list_of_licenses_dict = []
         yielded_licenses = get_licenses_code_version_language_code()
         yielded_license_list = list(yielded_licenses)
-        for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-            for translated_license in license.names.all():
-                if (
-                    translated_license.language_code
-                    not in EXCLUDED_LANGUAGE_IDENTIFIERS
-                ):
-                    list_of_licenses_dict.append(
-                        {
-                            "license_code": license.license_code,
-                            "version": license.version,
-                            "language_code": translated_license.language_code,
-                        }
-                    )
+        for legalcode in LegalCode.objects.exclude(
+            license__version__in=EXCLUDED_LICENSE_VERSIONS
+        ):
+            language_code = legalcode.language_code
+            license = legalcode.license
+            if language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
+                list_of_licenses_dict.append(
+                    {
+                        "license_code": license.license_code,
+                        "version": license.version,
+                        "language_code": language_code,
+                    }
+                )
         self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
 
@@ -318,3 +324,17 @@ class TestMisc(TestCase):
         self.assertEqual(2, len(mock_pofile.append.call_args_list))
         args, kwargs = mock_pofile.append.call_args_list[0]
         self.assertTrue(isinstance(args[0], POEntry))
+
+    def test_strip_list_whitespace(self):
+        expected_list = ["left", "right", "center"]
+        left_list = [" left", " right", " center"]
+        right_list = ["left ", "right ", "center "]
+        center_list = [" left ", " right ", " center "]
+        self.assertEqual(strip_list_whitespace("left", left_list), expected_list)
+        self.assertEqual(strip_list_whitespace("right", right_list), expected_list)
+        self.assertEqual(strip_list_whitespace("center", center_list), expected_list)
+
+    def test_cleanup_current_branch_output(self):
+        expected_list = ["some-branch", "another-branch", "develop"]
+        unmodified_list = ["some-branch", "* another-branch", "develop"]
+        self.assertEqual(cleanup_current_branch_output(unmodified_list), expected_list)

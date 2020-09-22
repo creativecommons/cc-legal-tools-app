@@ -7,8 +7,8 @@ from polib import POEntry, POFile
 
 from i18n import LANGUAGE_CODE_REGEX
 
-from .constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
-from .models import License
+from .constants import EXCLUDED_LICENSE_VERSIONS
+from .models import LegalCode, License
 
 
 def get_code_from_jurisdiction_url(url):
@@ -141,15 +141,16 @@ def get_licenses_code_version_language_code():
             language_code
         )
     """
-    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
-        for translated_license in license.names.all():
-            if translated_license.language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
-                yield {
-                    "license_code": license.license_code,
-                    "version": license.version,
-                    "language_code": translated_license.language_code,
-                }
-            continue
+    for legalcode in LegalCode.objects.exclude(
+        license__version__in=EXCLUDED_LICENSE_VERSIONS
+    ):
+        license = legalcode.license
+        item = {
+            "license_code": license.license_code,
+            "version": license.version,
+            "language_code": legalcode.language_code,
+        }
+        yield item
 
 
 def compute_about_url(license_code, version, jurisdiction_code):
@@ -239,3 +240,44 @@ def save_dict_to_pofile(pofile: POFile, messages: dict):
     """
     for message_key, value in messages.items():
         pofile.append(POEntry(msgid=message_key, msgstr=value.strip()))
+
+
+def strip_list_whitespace(direction: str, list_of_str: list) -> list:
+    """Strips whitespace from strings in a list of strings
+
+    Arguments:
+        direction: (string) Determines whether to strip whitespace
+        to the left, right, or both sides of a string
+        list_of_str: (list) list of strings
+    """
+    if direction == "left":
+        return [s.lstrip() for s in list_of_str]
+    if direction == "right":
+        return [s.rstrip() for s in list_of_str]
+    return [s.strip() for s in list_of_str]
+
+
+def cleanup_current_branch_output(branch_list: list) -> list:
+    """cleanups the way git outputs the current branch
+
+    for example: git branch --list
+        some-branch
+        * develop
+
+        branch-list = ['some-branch', '* develop']
+
+    The asterisks is attached to the current branch, and we want to remove
+    this:
+        branch-list = ['some-branch' 'develop']
+
+    Arguments:
+        branch-list (list) list of git branches.
+    """
+    cleaned_list = []
+    for branch in branch_list:
+        if "*" in branch:
+            cleaned_branch = branch.replace("* ", "")
+            cleaned_list.append(cleaned_branch)
+        else:
+            cleaned_list.append(branch)
+    return cleaned_list

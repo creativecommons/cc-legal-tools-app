@@ -9,12 +9,8 @@ from django.utils.translation import override
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.translation import Translation
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
-from licenses.models import LegalCode, TranslatedLicenseName
-from licenses.tests.factories import (
-    LegalCodeFactory,
-    LicenseFactory,
-    TranslatedLicenseNameFactory,
-)
+from licenses.models import LegalCode
+from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 from licenses.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
 from licenses.transifex import TransifexHelper
 
@@ -479,13 +475,3 @@ class LicenseModelTest(TestCase):
         lic2 = LicenseFactory(is_replaced_by=lic1)
         self.assertTrue(lic2.superseded)
         self.assertFalse(lic1.superseded)
-
-
-class TranslatedLicenseNameModelTest(TestCase):
-    def test_str(self):
-        TranslatedLicenseNameFactory()
-        record = TranslatedLicenseName.objects.first()
-        self.assertEqual(
-            str(record),
-            f"TranslatedLicenseName<{record.language_code}, {record.license}>",
-        )

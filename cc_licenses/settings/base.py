@@ -210,6 +210,10 @@ TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
     "TRANSLATION_REPOSITORY_DIRECTORY", os.path.join(ROOT_DIR, "..", "cc-licenses-data")
 )
 
+# django-distill settings
+# Put the static files in the data repo under "build"
+DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
+
 TRANSIFEX = {
     "ORGANIZATION_SLUG": "creativecommons",
     "PROJECT_SLUG": "CC",

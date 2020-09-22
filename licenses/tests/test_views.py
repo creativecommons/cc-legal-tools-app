@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from i18n import DEFAULT_LANGUAGE_CODE
+from i18n.translation import Translation
 from licenses.models import LegalCode, License
 from licenses.templatetags.license_tags import build_deed_url
 from licenses.tests.factories import LegalCodeFactory, LicenseFactory
@@ -174,7 +175,10 @@ class LicenseDeedViewTest(TestCase):
         )
         # Mock 'get_translation_object' because we have no 3.0 translations imported yet
         # and we can't use 4.0 to test jurisdictions.
-        with mock.patch.object(LegalCode, "get_translation_object"):
+        translation_object = Translation(pofilepath="/dev/null", language_code="es")
+        translation_object.translations = {"license_medium": "license medium"}
+        with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
+            mock_gto.return_value = translation_object
             rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
@@ -194,7 +198,10 @@ class LicenseDeedViewTest(TestCase):
         )
         # Mock 'get_translation_object' because we have no 3.0 translations imported yet
         # and we can't use 4.0 to test jurisdictions.
-        with mock.patch.object(LegalCode, "get_translation_object"):
+        translation_object = Translation(pofilepath="/dev/null", language_code="es")
+        translation_object.translations = {"license_medium": "license medium"}
+        with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
+            mock_gto.return_value = translation_object
             rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
@@ -205,7 +212,10 @@ class LicenseDeedViewTest(TestCase):
             "license_deed_view_code_version_english",
             kwargs=dict(license_code=license.license_code, version=license.version,),
         )
-        with mock.patch.object(LegalCode, "get_translation_object"):
+        translation_object = Translation(pofilepath="/dev/null", language_code="es")
+        translation_object.translations = {"license_medium": "license medium"}
+        with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
+            mock_gto.return_value = translation_object
             rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 

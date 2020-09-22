@@ -1,8 +1,6 @@
 import factory.fuzzy
-from django.utils import translation
-from factory import post_generation
 
-from licenses.models import LegalCode, License, TranslatedLicenseName
+from licenses.models import LegalCode, License
 
 
 class LicenseFactory(factory.DjangoModelFactory):
@@ -27,22 +25,6 @@ class LicenseFactory(factory.DjangoModelFactory):
     jurisdiction_code = ""
     creator_url = factory.Faker("url")
     license_class_url = factory.Faker("url")
-
-    @post_generation
-    def post(obj, create, extracted, **kwargs):
-        if not obj.names.count():
-            TranslatedLicenseNameFactory(
-                license=obj, language_code=translation.get_language()
-            )
-
-
-class TranslatedLicenseNameFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = TranslatedLicenseName
-
-    license = factory.SubFactory(LicenseFactory)
-    language_code = "pt"
-    name = factory.Faker("name")
 
 
 class LegalCodeFactory(factory.DjangoModelFactory):

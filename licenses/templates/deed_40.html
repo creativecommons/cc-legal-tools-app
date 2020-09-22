@@ -16,6 +16,9 @@
   <div class="container">
     {% include 'includes/deed_body.html' %}
     {% include 'includes/disclaimer.html' %}
-    {% include 'includes/related_links.html' %}
+    <div class="columns margin-top-normal is-vcentered" >
+      {% include 'includes/related_links.html' with show_standard_deed=True %}
+      {% include 'includes/newsletter.html' %}
+    </div>
   </div>
 {% endblock %}
