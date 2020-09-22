@@ -208,4 +208,5 @@ TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
 )
 
 # django-distill settings
+# Put the static files in the data repo under "build"
 DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"

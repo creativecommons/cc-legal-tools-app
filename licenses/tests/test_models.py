@@ -7,12 +7,8 @@ from django.utils.translation import override
 
 from i18n.translation import Translation
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
-from licenses.models import LegalCode, TranslatedLicenseName
-from licenses.tests.factories import (
-    LegalCodeFactory,
-    LicenseFactory,
-    TranslatedLicenseNameFactory,
-)
+from licenses.models import LegalCode
+from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 
 
 class LegalCodeModelTest(TestCase):
@@ -318,13 +314,3 @@ class LicenseModelTest(TestCase):
                 self.assertEqual(
                     expected, license.translated_title(),
                 )
-
-
-class TranslatedLicenseNameModelTest(TestCase):
-    def test_str(self):
-        TranslatedLicenseNameFactory()
-        record = TranslatedLicenseName.objects.first()
-        self.assertEqual(
-            str(record),
-            f"TranslatedLicenseName<{record.language_code}, {record.license}>",
-        )
