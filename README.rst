@@ -110,6 +110,14 @@ with LegalCode and License records, and at least for the BY 4.0 licenses, create
 
 To clean things up ready to start over, you can run clear_license_data again.
 
+Translation
+-----------
+
+To upload/download translation files to/from Transifex, you'll need an account
+there with access to these translations.
+Then follow `these instructions <https://docs.transifex.com/api/introduction#authentication>`_
+to get an API token, and set TRANSIFEX_API_TOKEN in your environment with its value.
+
 Deployment
 ----------
 
@@ -132,3 +140,59 @@ Deployment with Dokku
 
 Alternatively, you can deploy the project using Dokku. See the
 `Caktus developer docs <http://caktus.github.io/developer-documentation/dokku.html>`_.
+
+How the license translation is implemented
+------------------------------------------
+
+First, note that translation is done in two different ways. Most things use the built-in
+Django translation support. But the translation of the actual legal text of the licenses
+is handled separately, and that's what this section is about.
+
+Second note: the initial implementation focuses on the 4.0 by-*
+licenses. Others will be added as time allows.
+
+The translation data consists of ``.po`` files, and they are managed in a separate
+repository from this code, ``https://github.com/creativecommons/cc-licenses-data``.
+This is typically checked out beside the ``cc-licenses`` repo, but can be put anywhere by changing the Django ``TRANSLATION_REPOSITORY_DIRECTORY`` setting,
+or setting the ``TRANSLATION_REPOSITORY_DIRECTORY`` environment variable.
+
+The .po files do *not* use the English messages as the message IDs, which would be
+the usual practice. But we will shortly change them to do so, since it'll be
+simpler. Right now, when we upload and download .po files with Transifex, we change the message IDs
+appropriately so that Transifex *does* see and use English messages as message IDs.
+Transifex expects that.
+
+For each combination of license code, version, and jurisdiction code, there's a separate
+translation resource (Transifex terminology) or domain (gettext/Django terminology).
+
+Transifex requires the resource slug to consist solely of letters, digits, underscores,
+and hyphens. So we define the resource slug/domain by joining the license code,
+version, and jurisdiction with underscores (``_``), then stripping out any periods
+(``.``) from the resulting string. Examples: ``by-nc_40``, ``by-nc-sa_30_es``.
+
+For each resource/domain/license, there's a file for each translation. The
+filename adds ``_`` and the language code to the resource slug, roughly,
+but we don't have to strip the ``.`` from the version because our filenames
+don't have to match the Transifex resource slug exactly. Instead, they
+match the versions as represented in the Creative Commons URLs and our
+database.
+
+We have the following structure in our translation data repo::
+
+    translations/
+       by-nc/
+           4.0/
+                 by-nc_4.0_en.po
+                 by-nc_4.0_zh-Hans.po
+                 ...
+
+The language code used is the same as what's in the URLs on the web site
+and in our database.
+So since we have ``https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans``,
+we have ``zh-Hans`` in our filename.
+
+The .po files are initially created by running
+``python manage.py load_html_files <path to docroot/legalcode>``
+where ``<path to docroot/legalcode>`` is the path to
+the docroot/legalcode directory where the ``creativecommons.org``
+repo is checked out. (See also above.)

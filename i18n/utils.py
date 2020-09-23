@@ -1,10 +1,8 @@
-from contextlib import ContextDecorator
-
+import polib
 from babel import Locale, UnknownLocaleError
 from django.utils import translation
 from django.utils.encoding import force_text
-from django.utils.translation import activate, get_language, ugettext
-from django.utils.translation.trans_real import DjangoTranslation, deactivate_all
+from django.utils.translation import ugettext
 
 from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
 
@@ -46,6 +44,18 @@ JURISDICTION_CURRENCY_LOOKUP = {
     "si": "eu",
     "es": "eu",
 }
+
+
+def get_pofile_content(pofile: polib.POFile) -> str:
+    """
+    Return the content of the pofile object - a string
+    that contains what would be in the po file on the disk
+    if we saved it.
+    """
+    # This isn't really worth its own function, except that mocking
+    # __unicode__ for tests is a pain, and it's easier to have this
+    # function so we can just mock it.
+    return pofile.__unicode__()
 
 
 def get_language_for_jurisdiction(
@@ -268,27 +278,3 @@ def locale_to_lower_upper(locale):
 #
 #     CACHED_APPLICABLE_LANGS[cache_key] = applicable_langs
 #     return applicable_langs
-
-
-class activate_domain_language(ContextDecorator):
-    def __init__(self, domain, language):
-        self.domain = domain
-        self.language = language
-
-    def __enter__(self):  # pragma: no cover
-        lang_plus_domain = f"{self.language}_{self.domain}".replace("-", "_")
-
-        from django.utils.translation.trans_real import _translations
-
-        if lang_plus_domain not in _translations:
-            trans = DjangoTranslation(language=lang_plus_domain, domain=self.domain)
-            _translations[lang_plus_domain] = trans
-
-        self.old_language = get_language()
-        activate(lang_plus_domain)
-
-    def __exit__(self, exc_type, exc_value, traceback):  # pragma: no cover
-        if self.old_language is None:
-            deactivate_all()
-        else:
-            activate(self.old_language)

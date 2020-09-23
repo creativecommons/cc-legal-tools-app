@@ -207,8 +207,13 @@ TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
 )
 
 # django-distill settings
-# Put the static files in the data repo under "build"
 DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
+
+TRANSIFEX = {
+    "ORGANIZATION_SLUG": "creativecommons",
+    "PROJECT_SLUG": "CC",
+    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
+}
 
 # Django translations are in the transltion repo directory, under "locale".
 LOCALE_PATHS = (os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),)
