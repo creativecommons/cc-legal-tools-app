@@ -156,11 +156,7 @@ repository from this code, ``https://github.com/creativecommons/cc-licenses-data
 This is typically checked out beside the ``cc-licenses`` repo, but can be put anywhere by changing the Django ``TRANSLATION_REPOSITORY_DIRECTORY`` setting,
 or setting the ``TRANSLATION_REPOSITORY_DIRECTORY`` environment variable.
 
-The .po files do *not* use the English messages as the message IDs, which would be
-the usual practice. But we will shortly change them to do so, since it'll be
-simpler. Right now, when we upload and download .po files with Transifex, we change the message IDs
-appropriately so that Transifex *does* see and use English messages as message IDs.
-Transifex expects that.
+The
 
 For each combination of license code, version, and jurisdiction code, there's a separate
 translation resource (Transifex terminology) or domain (gettext/Django terminology).
