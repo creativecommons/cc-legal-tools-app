@@ -202,6 +202,7 @@ class LegalCode(models.Model):
 
     def get_english_pofile(self) -> polib.POFile:
         if self.language_code != DEFAULT_LANGUAGE_CODE:
+            # Same license, just in English translation:
             english_legalcode = type(self).objects.get(
                 license=self.license, language_code=DEFAULT_LANGUAGE_CODE
             )
@@ -227,6 +228,11 @@ class LegalCode(models.Model):
                 entry.msgid: entry.msgstr for entry in english_pofile
             }
             for entry in new_pofile:
+                if entry.msgid not in internal_key_to_english_message:
+                    raise ValueError(
+                        f"Our English pofile has no message for the key {entry.msgid}, "
+                        f"something is wrong with the translation files."
+                    )
                 entry.msgid = internal_key_to_english_message[entry.msgid]
             return new_pofile
 

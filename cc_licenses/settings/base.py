@@ -201,9 +201,6 @@ X_FRAME_OPTIONS = "DENY"
 # Percent translated that languages should be at or above
 TRANSLATION_THRESHOLD = 80
 
-# django-distill settings
-DISTILL_DIR = f"{ROOT_DIR}/build/"
-
 # Location of the translation data's repo. Look in env for TRANSLATION_REPOSITORY_DIRECTORY.
 # Default is next to this one.
 TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
@@ -211,7 +208,6 @@ TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
 )
 
 # django-distill settings
-# Put the static files in the data repo under "build"
 DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
 
 TRANSIFEX = {

@@ -153,12 +153,12 @@ licenses. Others will be added as time allows.
 
 The translation data consists of ``.po`` files, and they are managed in a separate
 repository from this code, ``https://github.com/creativecommons/cc-licenses-data``.
-This is typically checked out beside the ``cc-licenses`` repo, but can be put anywhere by changing the Django ``TRANSLATION_REPOSITORY_DIRECTORY`` setting.
+This is typically checked out beside the ``cc-licenses`` repo, but can be put anywhere by changing the Django ``TRANSLATION_REPOSITORY_DIRECTORY`` setting,
+or setting the ``TRANSLATION_REPOSITORY_DIRECTORY`` environment variable.
 
 The .po files do *not* use the English messages as the message IDs, which would be
-the usual practice. This helps us to identify messages that should be translated
-the same but aren't, so that eventually we can re-use translations for multiple
-licenses.
+the usual practice. FIXME: FILL IN THE REASON HERE. OR USE THE ENGLISH MESSAGES
+WHICH WOULD BE SIMPLER.
 
 When we upload and download .po files with Transifex, we change the message IDs
 appropriately so that Transifex *does* see and use English messages as message IDs.
