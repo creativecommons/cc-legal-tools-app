@@ -144,51 +144,70 @@ Alternatively, you can deploy the project using Dokku. See the
 How the license translation is implemented
 ------------------------------------------
 
-First, note that translation is done in two different ways. Most things use the built-in
+First, note that translation is done use two sets of files. Most things use the built-in
 Django translation support. But the translation of the actual legal text of the licenses
-is handled separately, and that's what this section is about.
+is handled using a different set of files.
 
 Second note: the initial implementation focuses on the 4.0 by-*
 licenses. Others will be added as time allows.
 
+Also note: What Transifex calls a ``resource`` is what Django
+calls a ``domain``. I'll probably use the terms interchangeably.
+
 The translation data consists of ``.po`` files, and they are managed in a separate
 repository from this code, ``https://github.com/creativecommons/cc-licenses-data``.
-This is typically checked out beside the ``cc-licenses`` repo, but can be put anywhere by changing the Django ``TRANSLATION_REPOSITORY_DIRECTORY`` setting,
+This is typically checked out beside the ``cc-licenses`` repo, but can be put
+anywhere by changing the Django ``TRANSLATION_REPOSITORY_DIRECTORY`` setting,
 or setting the ``TRANSLATION_REPOSITORY_DIRECTORY`` environment variable.
 
-The
+For the common web site stuff, and translated text outside of the actual legal
+code of the licenses, the messages use the standard Django translation
+domain ``django``, and the resource name on Transifex for those messages is
+``django-po``. These files are also in the cc-licenses-data repo.
 
-For each combination of license code, version, and jurisdiction code, there's a separate
-translation resource (Transifex terminology) or domain (gettext/Django terminology).
+For the license legal code, for each combination of license code, version, and
+jurisdiction code, there's another separate domain.
 
 Transifex requires the resource slug to consist solely of letters, digits, underscores,
-and hyphens. So we define the resource slug/domain by joining the license code,
+and hyphens. So we define the resource slug by joining the license code,
 version, and jurisdiction with underscores (``_``), then stripping out any periods
-(``.``) from the resulting string. Examples: ``by-nc_40``, ``by-nc-sa_30_es``.
+(``.``) from the resulting string. Examples: ``by-nc_40``, ``by-nc-sa_30_es``
+(where ``_es`` represents the jurisdiction, not the translation).
 
-For each resource/domain/license, there's a file for each translation. The
-filename adds ``_`` and the language code to the resource slug, roughly,
-but we don't have to strip the ``.`` from the version because our filenames
-don't have to match the Transifex resource slug exactly. Instead, they
-match the versions as represented in the Creative Commons URLs and our
-database.
+For each domain, there's a file for each translation.
+The files are all named ``<resourcename>.po`` but are in different directories
+for each translated language.
 
 We have the following structure in our translation data repo::
 
-    translations/
-       by-nc/
-           4.0/
-                 by-nc_4.0_en.po
-                 by-nc_4.0_zh-Hans.po
+    legalcode/
+       <language>/
+           LC_MESSAGES/
+                 by_4.0.mo
+                 by_4.0.po
+                 by-nc_4.0.mo
+                 by-nc_4.0.po
                  ...
 
-The language code used is the same as what's in the URLs on the web site
-and in our database.
-So since we have ``https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans``,
-we have ``zh-Hans`` in our filename.
+The language code used in the path to the files is *not* necessarily
+the same as what we're using to identify the licenses in the
+URLs. Good example? The translated files for
+``https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans``
+are in the ``zh_Hans`` directory. That's because ``zh_Hans`` is what
+Django uses to identify that translation.
 
-The .po files are initially created by running
+The .po files are initially created from the existing HTML license files
+by running
 ``python manage.py load_html_files <path to docroot/legalcode>``
 where ``<path to docroot/legalcode>`` is the path to
 the docroot/legalcode directory where the ``creativecommons.org``
 repo is checked out. (See also above.)
+
+After this is done and merged to the main branch, it should not be
+done again. Instead, edit the HTML license template files to change
+the English text, and use Transifex to update the translation files.
+
+Anytime ``.po`` files are created or changed, run
+``python manage.py compilemessages`` to update the ``.mo`` files.
+
+.. important:: If the ``.mo`` files are not updated, Django will not use the updated translations!

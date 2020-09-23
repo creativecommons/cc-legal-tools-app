@@ -10,8 +10,6 @@ Some licenses ahve a dcq:isReplacedBy element.
 
 """
 import os
-import string
-from copy import deepcopy
 
 import polib
 from django.conf import settings
@@ -19,12 +17,19 @@ from django.db import models
 from django.utils import translation
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.translation import get_translation_object
+from i18n.utils import get_translation_object
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.templatetags.license_tags import build_deed_url, build_license_url
 from licenses.transifex import TransifexHelper
 
 MAX_LANGUAGE_CODE_LENGTH = 8
+
+
+DJANGO_LANGUAGE_CODES = {
+    # CC language code: django language code
+    "zh-Hans": "zh_Hans",
+    "zh-Hant": "zh_Hant",
+}
 
 
 class LegalCode(models.Model):
@@ -50,6 +55,14 @@ class LegalCode(models.Model):
 
     def __str__(self):
         return f"LegalCode<{self.language_code}, {self.license.about}>"
+
+    @property
+    def django_language_code(self):
+        """A few of the language codes as used to identify the license
+        translations 'officially' are a little different from what Dango
+        uses for the same case.
+        """
+        return DJANGO_LANGUAGE_CODES.get(self.language_code, self.language_code)
 
     def branch_name(self):
         """
@@ -101,168 +114,51 @@ class LegalCode(models.Model):
         """
         return self.license.fat_code()
 
-    def downstreams(self):
-        """
-        For use in e.g. templates, returns an iterable of dictionaries
-        of the items in the downstream recipients section for this license.
-        Each dictionary looks like:
-            {
-                "id": "s2a5A",
-                "msgid_name": "s2a5A_defitnition_trnsla_name",
-                "msgid_text": "s2a5A_defitnition_trnsla_text",
-            }
-        """
-        expected_downstreams = [
-            "offer",
-            "no_restrictions",
-        ]
-        if self.license.license_code in ["by-sa", "by-nc-sa"]:
-            expected_downstreams.insert(1, "adapted_material")
-        LETTERS = string.ascii_uppercase
-        translation = self.get_translation_object()
-        # s2a5_license_grant_downstream_offer_name
-        result = [
-            {
-                "id": f"s2a5{LETTERS[i]}_{item}",
-                "msgid_name": f"s2a5_license_grant_downstream_{item}_name",
-                "msgid_text": f"s2a5_license_grant_downstream_{item}_text",
-            }
-            for i, item in enumerate(expected_downstreams)
-        ]
-        for item in result:
-            item["name_translation"] = translation.translate(item["msgid_name"])
-            item["text_translation"] = translation.translate(item["msgid_text"])
-        return result
-
-    def definitions(self):
-        """
-        For use in e.g. templates, returns an iterable of dictionaries
-        of the items in the definitions section for this license.
-        Each dictionary looks like:
-            {
-                "id": "s1c",
-                "msgid": "s1_defitnition_trnsla"
-            }
-        """
-        license_code = self.license.license_code
-        expected_definitions = [
-            "adapted_material",
-            "copyright_and_similar_rights",
-            "effective_technological_measures",
-            "exceptions_and_limitations",
-            "licensed_material",
-            "licensed_rights",
-            "licensor",
-            "share",
-            "sui_generis_database_rights",
-            "you",
-        ]
-
-        translation = self.get_translation_object()
-
-        # now insert the optional ones
-        def insert_after(after_this, what_to_insert):
-            i = expected_definitions.index(after_this)
-            expected_definitions.insert(i + 1, what_to_insert)
-
-        if license_code == "by-sa":
-            insert_after("adapted_material", "adapters_license")
-            insert_after("adapters_license", "by_sa_compatible_license")
-            insert_after("exceptions_and_limitations", "license_elements_sa")
-        elif license_code == "by":
-            insert_after("adapted_material", "adapters_license")
-        elif license_code == "by-nc":
-            insert_after("adapted_material", "adapters_license")
-            insert_after("licensor", "noncommercial")
-        elif license_code == "by-nd":
-            pass
-        elif license_code == "by-nc-nd":
-            insert_after("licensor", "noncommercial")
-        elif license_code == "by-nc-sa":
-            insert_after("adapted_material", "adapters_license")
-            insert_after("exceptions_and_limitations", "license_elements_nc_sa")
-            insert_after("adapters_license", "by_nc_sa_compatible_license")
-            insert_after("licensor", "noncommercial")
-
-        LETTERS = string.ascii_lowercase
-        result = [
-            {"id": f"s1{LETTERS[i]}", "msgid": f"s1_definitions_{item}",}
-            for i, item in enumerate(expected_definitions)
-        ]
-        for item in result:
-            item["translation"] = translation.translate(item["msgid"])
-        return result
+    @property
+    def translation_domain(self):
+        return self.license.resource_slug
 
     def get_translation_object(self):
-        return get_translation_object(self.translation_filename(), self.language_code)
+        domain = self.license.resource_slug
+        return get_translation_object(language_code=self.language_code, domain=domain)
 
     def get_pofile(self) -> polib.POFile:
-        # Piggy-back on the translation objects, which are cached as singletons for efficiency.
-        return self.get_translation_object().pofile
+        with open(self.translation_filename(), "rb") as f:
+            content = f.read()
+        return polib.pofile(content)
 
     def get_english_pofile(self) -> polib.POFile:
         if self.language_code != DEFAULT_LANGUAGE_CODE:
             # Same license, just in English translation:
-            english_legalcode = type(self).objects.get(
-                license=self.license, language_code=DEFAULT_LANGUAGE_CODE
+            english_legalcode = License.get_legalcode_for_language_code(
+                DEFAULT_LANGUAGE_CODE
             )
             return english_legalcode.get_pofile()
         return self.get_pofile()
-
-    def get_pofile_with_english_msgids(self) -> polib.POFile:
-        """
-        Get a pofile for this translation, but with the internal message keys replaced by the corresponding
-        English messages. If this is English already, return a pofile with the English messages as keys
-        and empty translations, as that's the expected content for an English pofile when English is the
-        base language.
-        """
-        new_pofile = deepcopy(self.get_pofile())
-        if self.language_code == DEFAULT_LANGUAGE_CODE:
-            for entry in new_pofile:
-                entry.msgid = entry.msgstr
-                entry.msgstr = ""
-            return new_pofile
-        else:
-            english_pofile = self.get_english_pofile()
-            internal_key_to_english_message = {
-                entry.msgid: entry.msgstr for entry in english_pofile
-            }
-            for entry in new_pofile:
-                if entry.msgid not in internal_key_to_english_message:
-                    raise ValueError(
-                        f"Our English pofile has no message for the key {entry.msgid}, "
-                        f"something is wrong with the translation files."
-                    )
-                entry.msgid = internal_key_to_english_message[entry.msgid]
-            return new_pofile
 
     def translation_filename(self):
         """
         Return absolute path to the .po file with this translation.
         These are in the cc-licenses-data repository, in subdirectories:
-          - "translations"
-          - license code (all lowercase)
-          - license version (e.g. 4.0, or "None" if not applicable)
+          - "legalcode/"
+          - language code (should match what Django uses, not what Transifex uses)
+          - "LC_MESSAGES/"  (Django insists on this)
+          - files
 
-        Within that directory, the files will be named "{lowercase_license_code}_{version}_{jurisdictiction}_{language_code}.po",
-        except that if any part is not applicable, we'll leave out it and its separating "_" - e.g.
-        for the BY-NC 4.0 French translation, which has no jurisdiction, the filename will be
-        "by-nc_4.0_fr.po", and in full,
-        "{translation repo topdir}/translations/by-nc/4.0/by-nc_4.0_fr.po".
+        The filenames are {resource_slug}.po (get the resource_slug
+        from the license).
+
+        e.g. for the BY-NC 4.0 French translation, which has no jurisdiction,
+        the filename will be "by-nc_4.0.po", and in full,
+        "{translation repo topdir}/legalcode/fr/by-nc_4.0.po".
         """
-        license = self.license
-        filename_parts = [
-            license.license_code.lower(),
-            license.version,
-            license.jurisdiction_code,
-            self.language_code,
-        ]
-        # Remove any empty parts
-        filename_parts = [x for x in filename_parts if x]
-        filename = "_".join(filename_parts) + ".po"
-        subdir = f"{license.license_code.lower()}/{license.version or 'None'}"
+        filename = f"{self.license.resource_slug}.po"
         fullpath = os.path.join(
-            settings.TRANSLATION_REPOSITORY_DIRECTORY, "translations", subdir, filename
+            settings.TRANSLATION_REPOSITORY_DIRECTORY,
+            "legalcode",
+            self.django_language_code,
+            "LC_MESSAGES",
+            filename,
         )
         return fullpath
 
@@ -369,6 +265,7 @@ class License(models.Model):
     def resource_slug(self):
         # Transifex translation resource slug for this license.
         # letters, numbers, underscores or hyphens.
+        # No periods.
         if self.jurisdiction_code:
             slug = f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
         else:
@@ -392,11 +289,6 @@ class License(models.Model):
             s = f"{s} {license.jurisdiction_code}"
         s = s.upper()
         return s
-
-    def translated_title(self, language_code=None):
-        legalcode = self.get_legalcode_for_language_code(language_code)
-        translation_object = legalcode.get_translation_object()
-        return translation_object.translations["license_medium"]
 
     @property
     def level_of_freedom(self):
@@ -448,15 +340,6 @@ class TranslationBranch(models.Model):
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
     last_transifex_update = models.DateTimeField(
-        "Time when translations related to this branch were last updated on Transifex "
-        "that we know of.  If we see a newer last_update in Transifex, we need to update "
-        "the git branch from the latest translation files, and then update this value "
-        "to the most recent update time of those files.",
-        null=True,
-        blank=True,
+        "Time when last updated on Transifex.", null=True, blank=True,
     )
-    complete = models.BooleanField(
-        "There should only be one record per branch name with complete=False. There could "
-        "be many with complete=True.",
-        default=False,
-    )
+    complete = models.BooleanField("Only one incomplete per branch", default=False,)

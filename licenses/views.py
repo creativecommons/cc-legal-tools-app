@@ -1,13 +1,12 @@
 import re
 
 from django.shortcuts import get_object_or_404, render
-from django.utils.translation import override
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import get_language_for_jurisdiction
+from i18n.utils import active_translation, get_language_for_jurisdiction
 from licenses.models import LegalCode, License
 
-DEED_TEMPLATE_MAPPING = {
+DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
     # license_code : template name
     "sampling": "licenses/sampling_deed.html",
     "sampling+": "licenses/sampling_deed.html",
@@ -67,18 +66,11 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
         language_code=language_code,
     )
     translation = legalcode.get_translation_object()
-    with override(language=language_code):
+    with active_translation(translation):
         return render(
             request,
             "legalcode_40_page.html",
-            {
-                "fat_code": legalcode.license.fat_code(),
-                "legalcode": legalcode,
-                "license_medium": translation.translate("license_medium"),
-                "title": translation.translate("license_medium"),
-                "translation": translation,  # the full "Translation" object
-                "t": translation.translations,  # the msgid -> translated message dictionary
-            },
+            {"legalcode": legalcode, "license": legalcode.license,},
         )
 
 
@@ -95,17 +87,9 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         language_code=language_code,
     )
     translation = legalcode.get_translation_object()
-    with override(language=language_code):
+    with active_translation(translation):
         return render(
             request,
             "deed_40.html",
-            {
-                "fat_code": legalcode.license.fat_code(),
-                "legalcode": legalcode,
-                "license": legalcode.license,
-                "license_medium": translation.translations["license_medium"],
-                "title": translation.translations["license_medium"],
-                "translation": translation,
-                "t": translation.translations,
-            },
+            {"legalcode": legalcode, "license": legalcode.license,},
         )

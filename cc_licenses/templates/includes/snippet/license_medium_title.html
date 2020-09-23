@@ -1,0 +1,15 @@
+{#  Medium-length license title #}
+{% load i18n license_tags %}
+{% if legalcode|is_one_of:"by" %}
+{% blocktrans trimmed %}Attribution 4.0 International{% endblocktrans %}
+{% elif legalcode|is_one_of:"by-nc" %}
+{% blocktrans trimmed %}Attribution-NonCommercial 4.0 International{% endblocktrans %}
+{% elif legalcode|is_one_of:"by-nc-nd" %}
+{% blocktrans trimmed %}Attribution-NonCommercial-NoDerivatives 4.0 International{% endblocktrans %}
+{% elif legalcode|is_one_of:"by-nc-sa" %}
+{% blocktrans trimmed %}Attribution-NonCommercial-ShareAlike 4.0 International{% endblocktrans %}
+{% elif legalcode|is_one_of:"by-nd" %}
+{% blocktrans trimmed %}Attribution-NoDerivatives 4.0 International{% endblocktrans %}
+{% elif legalcode|is_one_of:"by-sa" %}
+{% blocktrans trimmed %}Attribution-ShareAlike 4.0 International{% endblocktrans %}
+{% endif %}

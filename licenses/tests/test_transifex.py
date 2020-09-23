@@ -154,7 +154,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             mock_gtr.return_value = []
 
             with mpo(self.helper, "create_resource") as mock_create_resource:
-                with mpo(legalcode, "get_pofile_with_english_msgids") as mock_gpwem:
+                with mpo(legalcode, "get_pofile") as mock_gpwem:
                     mock_gpwem.return_value = english_pofile
                     with mp("licenses.transifex.get_pofile_content") as mock_gpc:
                         mock_gpc.return_value = "not really"
@@ -163,7 +163,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
         mock_create_resource.assert_called_with(
             "by-nd_40",
             "CC BY-ND 4.0",
-            "/trans/repo/translations/by-nd/4.0/by-nd_4.0_en.po",
+            "/trans/repo/legalcode/en/LC_MESSAGES/by-nd_40.po",
             "not really",
         )
         mock_gpwem.assert_called_with()
@@ -178,7 +178,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
 
         with mpo(self.helper, "get_transifex_resources") as mock_gtr:
             mock_gtr.return_value = []
-            with mpo(legalcode, "get_pofile_with_english_msgids") as mock_gpwem:
+            with mpo(legalcode, "get_pofile") as mock_gpwem:
                 mock_gpwem.return_value = test_pofile
                 with self.assertRaisesMessage(ValueError, "Must upload English first"):
                     self.helper.upload_messages_to_transifex(legalcode)
@@ -193,22 +193,19 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             license=license, language_code=DEFAULT_LANGUAGE_CODE,
         )
         test_resources = [{"slug": license.resource_slug,}]
-        test_pofile = mock.MagicMock()
+        test_pofile = polib.POFile()
         with mpo(self.helper, "get_transifex_resources") as mock_gtr:
             mock_gtr.return_value = test_resources
-            with mpo(legalcode, "get_pofile_with_english_msgids") as mock_gpwem:
-                mock_gpwem.return_value = test_pofile
-                with mp("licenses.transifex.get_pofile_content") as mock_gpc:
-                    mock_gpc.return_value = "not really"
-                    with mpo(self.helper, "update_source_messages") as mock_usm:
-                        self.helper.upload_messages_to_transifex(legalcode)
+            with mp("licenses.transifex.get_pofile_content") as mock_gpc:
+                mock_gpc.return_value = "not really"
+                with mpo(self.helper, "update_source_messages") as mock_usm:
+                    self.helper.upload_messages_to_transifex(legalcode, test_pofile)
 
         mock_gtr.assert_called_with()
-        mock_gpwem.assert_called_with()
         mock_gpc.assert_called_with(test_pofile)
         mock_usm.assert_called_with(
             "by-nd_40",
-            "/trans/repo/translations/by-nd/4.0/by-nd_4.0_en.po",
+            "/trans/repo/legalcode/en/LC_MESSAGES/by-nd_40.po",
             "not really",
         )
 
@@ -220,20 +217,17 @@ msgstr "Attribution-NoDerivatives 4.0 International"
         test_pofile = mock.MagicMock()
         with mpo(self.helper, "get_transifex_resources") as mock_gtr:
             mock_gtr.return_value = test_resources
-            with mpo(legalcode, "get_pofile_with_english_msgids") as mock_gpwem:
-                mock_gpwem.return_value = test_pofile
-                with mp("licenses.transifex.get_pofile_content") as mock_gpc:
-                    mock_gpc.return_value = "not really"
-                    with mpo(self.helper, "update_translations") as mock_ut:
-                        self.helper.upload_messages_to_transifex(legalcode)
+            with mp("licenses.transifex.get_pofile_content") as mock_gpc:
+                mock_gpc.return_value = "not really"
+                with mpo(self.helper, "update_translations") as mock_ut:
+                    self.helper.upload_messages_to_transifex(legalcode, test_pofile)
 
         mock_gtr.assert_called_with()
-        mock_gpwem.assert_called_with()
         mock_gpc.assert_called_with(test_pofile)
         mock_ut.assert_called_with(
             "by-nd_40",
             "fr",
-            "/trans/repo/translations/by-nd/4.0/by-nd_4.0_fr.po",
+            "/trans/repo/legalcode/fr/LC_MESSAGES/by-nd_40.po",
             "not really",
         )
 
