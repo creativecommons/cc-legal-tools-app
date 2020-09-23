@@ -129,7 +129,6 @@ LOGGING = {
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = "en-us"
-LOCALE_PATHS = (os.path.join(ROOT_DIR, "locale"),)
 
 # Teach Django about a few more languages
 mi = Locale.parse("mi")
@@ -215,3 +214,6 @@ TRANSIFEX = {
     "PROJECT_SLUG": "CC",
     "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
 }
+
+# Django translations are in the transltion repo directory, under "locale".
+LOCALE_PATHS = (os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),)
