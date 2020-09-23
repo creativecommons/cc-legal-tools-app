@@ -7,3 +7,9 @@ minimum_perc = 0
 source_file = locale/en/LC_MESSAGES/django.po
 source_lang = en
 type = PO
+# Transifex uses zh-Hans and zh-Hant, Django insists on zh_Hans and zh_Hant in its paths.
+# The lang_map does the conversion when we're doing tx push/pull, so that
+# we can name our directories zh_Hans and zh_Hant, and Transifex will use those
+# directories instead of zh-Hans and zh-Hant.
+# lang_map = REMOTE_CODE: LOCAL_CODE, REMOTE_CODE: LOCAL_CODE
+lang_map = zh-Hans: zh_Hans, zh-Hant: zh_Hant
