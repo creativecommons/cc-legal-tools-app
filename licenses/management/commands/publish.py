@@ -9,7 +9,6 @@ from django_distill.distill import urls_to_distill
 from django_distill.errors import DistillError
 from django_distill.renderer import render_to_dir
 
-from cc_licenses.settings.base import TRANSLATION_REPOSITORY_DIRECTORY
 from licenses.utils import cleanup_current_branch_output, strip_list_whitespace
 
 
@@ -21,10 +20,12 @@ def check_if_build_to_push(branch: str):
         False if the working tree is clean
     """
     subprocess.run(
-        ["git", "checkout", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        ["git", "checkout", f"{branch}"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
     )
     status = (
-        subprocess.check_output(["git", "status"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
+        subprocess.check_output(
+            ["git", "status"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
+        )
         .decode()
         .splitlines()
     )
@@ -36,28 +37,37 @@ def check_if_build_to_push(branch: str):
 def git_on_branch_and_pull(branch: str):
     """Commands to checkout and pull from a branch"""
     subprocess.run(
-        ["git", "checkout", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        ["git", "checkout", f"{branch}"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
     )
     return subprocess.run(
-        ["git", "pull", "origin", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        ["git", "pull", "origin", f"{branch}"],
+        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
     )
 
 
 def git_commit_and_push(branch: str):
     """Command to git checkout, commit, and push branch"""
-    subprocess.run(["git", "add", "build/"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
     subprocess.run(
-        ["git", "commit", "-m", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        ["git", "add", "build/"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
+    )
+    subprocess.run(
+        ["git", "commit", "-m", f"{branch}"],
+        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
     )
     return subprocess.run(
-        ["git", "push", "origin", f"{branch}"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+        ["git", "push", "origin", f"{branch}"],
+        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
     )
 
 
 def pull_translations_branches():
     """Git pulls branches in cc-licenses-data to update local git registry"""
-    subprocess.run(["git", "checkout", "develop"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
-    return subprocess.run(["git", "pull"], cwd=TRANSLATION_REPOSITORY_DIRECTORY)
+    subprocess.run(
+        ["git", "checkout", "develop"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
+    )
+    return subprocess.run(
+        ["git", "pull"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
+    )
 
 
 def list_open_branches():
@@ -66,7 +76,7 @@ def list_open_branches():
     pull_translations_branches()
     branches = (
         subprocess.check_output(
-            ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+            ["git", "branch", "--list"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
         )
         .decode()
         .splitlines()
@@ -142,7 +152,8 @@ class Command(BaseCommand):
         """
         branches = (
             subprocess.check_output(
-                ["git", "branch", "--list"], cwd=TRANSLATION_REPOSITORY_DIRECTORY
+                ["git", "branch", "--list"],
+                cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
             )
             .decode()
             .splitlines()
