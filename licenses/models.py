@@ -11,14 +11,18 @@ Some licenses ahve a dcq:isReplacedBy element.
 """
 import os
 import string
+from copy import deepcopy
 
+import polib
 from django.conf import settings
 from django.db import models
 from django.utils import translation
 
+from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.translation import get_translation_object
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.templatetags.license_tags import build_deed_url, build_license_url
+from licenses.transifex import TransifexHelper
 
 MAX_LANGUAGE_CODE_LENGTH = 8
 
@@ -35,11 +39,37 @@ class LegalCode(models.Model):
         max_length=300, help_text="HTML file we got this from", blank=True, default=""
     )
 
+    translation_last_update = models.DateTimeField(
+        help_text="The last_updated field from Transifex for this translation",
+        null=True,
+        default=None,
+    )
+
     class Meta:
         ordering = ["license__about"]
 
     def __str__(self):
         return f"LegalCode<{self.language_code}, {self.license.about}>"
+
+    def branch_name(self):
+        """
+        If this translation is modified, what is the name of the GitHub branch
+        we'll use to manage the modifications?
+        Basically its "{license code}-{version}-{language}[-{jurisdiction code}",
+        except that all the "by* 4.0" licenses use "cc4" for the license_code part.
+        This has to be a valid DNS domain, so we also change any _ to - and
+        remove any periods.
+        """
+        license = self.license
+        parts = []
+        if license.license_code.startswith("by") and license.version == "4.0":
+            parts.append("cc4")
+        else:
+            parts.extend([license.license_code, license.version])
+        parts.append(self.language_code)
+        if license.jurisdiction_code:
+            parts.append(license.jurisdiction_code)
+        return "-".join(parts).replace("_", "-").replace(".", "").lower()
 
     def license_url(self):
         """
@@ -166,6 +196,46 @@ class LegalCode(models.Model):
     def get_translation_object(self):
         return get_translation_object(self.translation_filename(), self.language_code)
 
+    def get_pofile(self) -> polib.POFile:
+        # Piggy-back on the translation objects, which are cached as singletons for efficiency.
+        return self.get_translation_object().pofile
+
+    def get_english_pofile(self) -> polib.POFile:
+        if self.language_code != DEFAULT_LANGUAGE_CODE:
+            # Same license, just in English translation:
+            english_legalcode = type(self).objects.get(
+                license=self.license, language_code=DEFAULT_LANGUAGE_CODE
+            )
+            return english_legalcode.get_pofile()
+        return self.get_pofile()
+
+    def get_pofile_with_english_msgids(self) -> polib.POFile:
+        """
+        Get a pofile for this translation, but with the internal message keys replaced by the corresponding
+        English messages. If this is English already, return a pofile with the English messages as keys
+        and empty translations, as that's the expected content for an English pofile when English is the
+        base language.
+        """
+        new_pofile = deepcopy(self.get_pofile())
+        if self.language_code == DEFAULT_LANGUAGE_CODE:
+            for entry in new_pofile:
+                entry.msgid = entry.msgstr
+                entry.msgstr = ""
+            return new_pofile
+        else:
+            english_pofile = self.get_english_pofile()
+            internal_key_to_english_message = {
+                entry.msgid: entry.msgstr for entry in english_pofile
+            }
+            for entry in new_pofile:
+                if entry.msgid not in internal_key_to_english_message:
+                    raise ValueError(
+                        f"Our English pofile has no message for the key {entry.msgid}, "
+                        f"something is wrong with the translation files."
+                    )
+                entry.msgid = internal_key_to_english_message[entry.msgid]
+            return new_pofile
+
     def translation_filename(self):
         """
         Return absolute path to the .po file with this translation.
@@ -291,14 +361,20 @@ class License(models.Model):
             raise
 
     @property
-    def translation_domain(self):
-        # If there's any - or _ in the domain, things get confusing.
-        # Just do letters and digits.
+    def resource_name(self):
+        """Human-readable name for the translation resource for this license"""
+        return self.fat_code()
+
+    @property
+    def resource_slug(self):
+        # Transifex translation resource slug for this license.
+        # letters, numbers, underscores or hyphens.
         if self.jurisdiction_code:
-            domain = f"{self.license_code}{self.version}{self.jurisdiction_code}"
+            slug = f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
         else:
-            domain = f"{self.license_code}{self.version}"
-        return domain.replace("-", "").replace("_", "").replace(".", "")
+            slug = f"{self.license_code}_{self.version}"
+        slug = slug.replace(".", "")
+        return slug
 
     def rdf(self):
         """Generate RDF for this license?"""
@@ -312,6 +388,8 @@ class License(models.Model):
         s = f"{license.license_code} {license.version}"
         if license.license_code.startswith("by"):
             s = f"CC {s}"
+        if license.jurisdiction_code:
+            s = f"{s} {license.jurisdiction_code}"
         s = s.upper()
         return s
 
@@ -344,3 +422,58 @@ class License(models.Model):
     @property
     def include_share_adapted_material_clause(self):
         return self.license_code in ["by", "by-nc"]
+
+    def tx_upload_messages(self):
+        """
+        Upload the messages to Transifex,
+        creating the resource if it doesn't already exist.
+        """
+        # Have to do English first, they get uploaded differently as the "source" messages
+        # and are required if we need to first create the resource in Transifex.
+        en_legalcode = self.get_legalcode_for_language_code(DEFAULT_LANGUAGE_CODE)
+        helper = TransifexHelper()
+        helper.upload_messages_to_transifex(legalcode=en_legalcode)
+        for legalcode in self.legal_codes.exclude(language_code=DEFAULT_LANGUAGE_CODE):
+            helper.upload_messages_to_transifex(legalcode=legalcode)
+
+
+class TranslatedLicenseName(models.Model):
+    license = models.ForeignKey(License, related_name="names", on_delete=models.CASCADE)
+    language_code = models.CharField(
+        max_length=MAX_LANGUAGE_CODE_LENGTH,
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+    )
+    name = models.CharField(max_length=250, help_text="Translated name of license")
+
+    class Meta:
+        unique_together = [
+            ("license", "language_code"),
+        ]
+
+    def __str__(self):
+        return f"TranslatedLicenseName<{self.language_code}, {self.license}>"
+
+
+class TranslationBranch(models.Model):
+    branch_name = models.CharField(max_length=40)
+    legalcodes = models.ManyToManyField("LegalCode")
+    version = models.CharField(
+        max_length=3, help_text="E.g. '4.0'. Not required.", blank=True, default=""
+    )
+    language_code = models.CharField(
+        max_length=MAX_LANGUAGE_CODE_LENGTH,
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+    )
+    last_transifex_update = models.DateTimeField(
+        "Time when translations related to this branch were last updated on Transifex "
+        "that we know of.  If we see a newer last_update in Transifex, we need to update "
+        "the git branch from the latest translation files, and then update this value "
+        "to the most recent update time of those files.",
+        null=True,
+        blank=True,
+    )
+    complete = models.BooleanField(
+        "There should only be one record per branch name with complete=False. There could "
+        "be many with complete=True.",
+        default=False,
+    )
