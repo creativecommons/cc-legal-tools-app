@@ -2,16 +2,43 @@
 
 <div class="column is-one-quarter sidebar-container">
   <aside class="menu sidebar-menu">
-    {# replace with license long title #}
-    <p ><a class="link has-text-black">{{ title }}</a></p>
+    <a class="link has-text-black is-block padding-bottom-normal" href="#legal-code-body">{{ title }}</a>
     <ul class="menu-list" >
       <li>
         <ul>
           {# replace with list of section links for the license legal code #}
-          {% for i in "x"|ljust:"4" %}
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 1 - Definitions</a></li>
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 2 - Scope</a></li>
-          {% endfor %}
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s1">{{ t.s1_definitions_title }}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s2">{{ t.s2_scope }}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s3">{{ t.s3_conditions_title }}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s4">{{ t.s4_sui_generics_database_rights_titles }}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s5" class="is-inline">{{ t.s5_disclaimer_title }}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class=" is-block column" href="#s6">{{ t.s6_termination_title }}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s7">{{ t.s7_other_terms_title }}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class=" is-block column" href="#s8">{{ t.s8_interpretation_title }}</a>
+          </li>
         </ul>
       </li>
     </ul>
