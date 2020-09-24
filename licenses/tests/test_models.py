@@ -130,18 +130,18 @@ class LegalCodeModelTest(TestCase):
         legalcode = LegalCodeFactory(
             license__version="4.0", license__license_code="by-sa", language_code="de"
         )
-        self.assertEqual("bystar-4.0-de", legalcode.branch_name())
+        self.assertEqual("cc4-de", legalcode.branch_name())
         legalcode = LegalCodeFactory(
             license__version="3.5", license__license_code="other", language_code="de"
         )
-        self.assertEqual("other-3.5-de", legalcode.branch_name())
+        self.assertEqual("other-35-de", legalcode.branch_name())
         legalcode = LegalCodeFactory(
             license__version="3.5",
             license__license_code="other",
             language_code="de",
             license__jurisdiction_code="xyz",
         )
-        self.assertEqual("other-3.5-de-xyz", legalcode.branch_name())
+        self.assertEqual("other-35-de-xyz", legalcode.branch_name())
 
 
 # Many of these tests mostly are based on whether the metadata import worked right, and
