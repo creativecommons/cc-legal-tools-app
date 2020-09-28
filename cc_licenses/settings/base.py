@@ -128,7 +128,7 @@ LOGGING = {
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
 
 # Teach Django about a few more languages
 mi = Locale.parse("mi")
