@@ -9,15 +9,11 @@ from polib import POEntry, POFile
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
 from licenses.models import LegalCode, License
-from licenses.utils import parse_legalcode_filename, validate_dictionary_is_all_text
-
-
-def clean_string(s):
-    """
-    Get a string into a canonical form - no whitespace at either end,
-    no newlines, no double-spaces.
-    """
-    return s.strip().replace("\n", " ").replace("  ", " ")
+from licenses.utils import (
+    clean_string,
+    parse_legalcode_filename,
+    validate_dictionary_is_all_text,
+)
 
 
 class Command(BaseCommand):
