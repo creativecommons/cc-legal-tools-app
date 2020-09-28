@@ -144,7 +144,7 @@ Alternatively, you can deploy the project using Dokku. See the
 How the license translation is implemented
 ------------------------------------------
 
-First, note that translation is done use two sets of files. Most things use the built-in
+First, note that translation uses two sets of files. Most things use the built-in
 Django translation support. But the translation of the actual legal text of the licenses
 is handled using a different set of files.
 
