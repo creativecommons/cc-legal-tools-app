@@ -4,6 +4,7 @@ Deal with Transifex
 import os
 from base64 import b64encode
 
+import polib
 import requests
 import requests.auth
 from django.conf import settings
@@ -129,9 +130,12 @@ class TransifexHelper:
             files=files,
         )
 
-    def upload_messages_to_transifex(
-        self, legalcode,
-    ):
+    def upload_messages_to_transifex(self, legalcode, pofile: polib.POFile = None):
+        """
+        We get the metadata from the legalcode object.
+        You can omit the pofile and we'll get it using legalcode.get_pofile().
+        We allow passing it in separately because it makes writing tests so much easier.
+        """
         language_code = legalcode.language_code
         resource_slug = legalcode.license.resource_slug
         resource_name = legalcode.license.resource_name
@@ -140,7 +144,9 @@ class TransifexHelper:
         resources = self.get_transifex_resources()
         resource_slugs = [item["slug"] for item in resources]
 
-        pofile = legalcode.get_pofile_with_english_msgids()
+        if pofile is None:
+            pofile = legalcode.get_pofile()
+
         pofile_content = get_pofile_content(pofile)
 
         if resource_slug not in resource_slugs:

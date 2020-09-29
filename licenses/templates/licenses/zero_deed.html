@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block license_name %}
-  <span property="dc:title dct:title" style="display:inline !important;">{{ license.translated_title }}</span>
+  <span property="dc:title dct:title" style="display:inline !important;">{% include "includes/snippet/license_medium_title.html" %}</span>
   (<span property="dc:identifier dct:identifier" style="display:inline !important;">CC0 1.0</span>)<br>
   {% blocktrans %}Public Domain Dedication{% endblocktrans %}
 {% endblock %}

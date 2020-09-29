@@ -3,7 +3,7 @@
 
 
 {% block about %}{{ license.about }}{% endblock %}
-{% block title %} Creative Commons &mdash; {{ license.translated_title }} {% endblock %}
+{% block title %} Creative Commons &mdash; {% include "includes/snippet/license_medium_title.html" %} {% endblock %}
 
 {% block next_btn_section %}
 <div class="level container">

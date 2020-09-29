@@ -9,7 +9,11 @@ from polib import POEntry, POFile
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
 from licenses.models import LegalCode, License
-from licenses.utils import parse_legalcode_filename, validate_dictionary_is_all_text
+from licenses.utils import (
+    clean_string,
+    parse_legalcode_filename,
+    validate_dictionary_is_all_text,
+)
 
 
 class Command(BaseCommand):
@@ -154,13 +158,34 @@ class Command(BaseCommand):
                 }
 
                 for internal_key, translation in messages_text.items():
-                    message_key = internal_key
-                    message_value = translation
+                    if language_code == "en":
+                        message_key = translation.strip()
+                        message_value = ""
+                    else:
+                        # WORKAROUND - by-nc-nd 4.0 NL has an extra item under s3a.
+                        if (
+                            internal_key == "s3a4_if_you_share_adapted_material"
+                            and internal_key
+                            not in english_by_license_code[license_code]
+                        ):
+                            message_key = (
+                                "If You Share Adapted Material You produce, the Adapter's "
+                                "License You apply must not prevent recipients of the Adapted "
+                                "Material from complying with this Public License."
+                            )
+                        else:
+                            message_key = english_by_license_code[license_code][
+                                internal_key
+                            ]
+                        message_value = translation
+
                     pofile.append(
-                        POEntry(msgid=message_key, msgstr=message_value.strip())
+                        POEntry(
+                            msgid=clean_string(message_key),
+                            msgstr=clean_string(message_value),
+                        )
                     )
 
-                assert "license_medium" in messages_text
                 po_filename = legalcode.translation_filename()
                 dir = os.path.dirname(po_filename)
                 if not os.path.isdir(dir):
@@ -379,7 +404,8 @@ class Command(BaseCommand):
         messages["s3a2_conditions_satisfy"] = inner_html(soup.find(id="s3a2"))
         messages["s3a3_conditions_remove"] = inner_html(soup.find(id="s3a3"))
         if soup.find(id="s3a4"):
-            # Only present if neither SA or ND
+            # Only present if neither SA or ND.
+            # OR in the NL translation of by-nc-nd, go figure...
             messages["s3a4_if_you_share_adapted_material"] = nested_text(
                 soup.find(id="s3a4")
             )
@@ -400,14 +426,21 @@ class Command(BaseCommand):
         messages["s4_sui_generics_database_rights_intro"] = (
             soup.find(id="s4").find_next_sibling("p").string
         )
-        messages["s4_sui_generics_database_rights_extract_reuse"] = nested_text(
-            soup.find(id="s4a")
+
+        s4a = nested_text(soup.find(id="s4a"))
+        if "nc" in license_code:
+            messages["s4_sui_generics_database_rights_extract_reuse_nc"] = s4a
+        else:
+            messages["s4_sui_generics_database_rights_extract_reuse"] = s4a
+
+        s4b = nested_text(soup.find(id="s4b"))
+        if license_code.endswith("-sa"):
+            messages["s4_sui_generics_database_rights_adapted_material_sa"] = s4b
+        else:
+            messages["s4_sui_generics_database_rights_adapted_material"] = s4b
+        messages["s4_sui_generics_database_rights_comply_s3a"] = nested_text(
+            soup.find(id="s4c")
         )
-        s4b = soup.find(id="s4b").get_text()
-        messages["s4_sui_generics_database_rights_adapted_material"] = s4b
-        messages["s4_sui_generics_database_rights_comply_s3a"] = soup.find(
-            id="s4c"
-        ).get_text()
         # The next text comes after the 'ol' after s4, but isn't inside a tag itself!
         parent = soup.find(id="s4").parent
         s4_seen = False
