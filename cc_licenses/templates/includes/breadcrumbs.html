@@ -3,10 +3,11 @@
   <ul>
       {% block breadcrumbs-li %}
       <li><a href="#">{% trans "Home" %}</a></li>
-      <li><a href="#">{% trans "Child page" %}</a></li>
-      <li><a href="#">{% trans "Child child page" %}</a></li>
-      {% if legalcode %}
-        <li class="is-active"><a href="#" aria-current="page displayed">{% include "includes/snippet/license_medium_title.html" %}</a></li>
+      <li><a href="#">{% trans "License" %}</a></li>
+      {% if 'legalcode' in request.path %}
+        <li class="is-active"><a href="#" aria-current="page displayed">{% trans "Legal Code for" %} {% include "includes/snippet/license_medium_title.html" %}</a></li>
+      {% else %}
+      <li class="is-active"><a href="#" aria-current="page displayed">{% trans "License Deed for" %} {% include "includes/snippet/license_medium_title.html" %}</a></li>
       {% endif %}
       {% endblock %}
   </ul>
