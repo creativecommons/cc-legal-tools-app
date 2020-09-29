@@ -12,7 +12,7 @@
         {% for option in languages_and_links %}
           <option
             id="option-{{ option.language_code }}"
-            {% if option.language_code == LANGUAGE_CODE %}selected{% endif %}
+            {% if option.selected %}selected{% endif %}
             value="{{ option.language_code }}"
             data-link="{{ option.link }}"
           >

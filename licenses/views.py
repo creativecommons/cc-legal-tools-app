@@ -77,6 +77,7 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
                 get_language_info(legal_code.language_code)["name_local"]
             ),
             "link": legal_code.license_url(),
+            "selected": language_code == legal_code.language_code,
         }
         for legal_code in legalcode.license.legal_codes.all()
     ]
@@ -120,6 +121,7 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
                 get_language_info(legal_code.language_code)["name_local"]
             ),
             "link": legal_code.deed_url(),
+            "selected": language_code == legal_code.language_code,
         }
         for legal_code in legalcode.license.legal_codes.all()
     ]
