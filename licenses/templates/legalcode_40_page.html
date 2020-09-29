@@ -2,8 +2,8 @@
 {% load i18n static %}
 {% load bidi %}
 
-{% block breadcrumbs-li %}
-  <li class="is-active"><a href="#" aria-current="page displayed">{% trans "Legal Code for" %} {% include "includes/snippet/license_medium_title.html" %}</a></li>
+{% block page-displayed %}
+  {% trans "Legal Code for" %} {% include "includes/snippet/license_medium_title.html" %}
 {% endblock %}
 
 {% block next_btn_section %}

@@ -24,9 +24,7 @@
             <ul>
                 <li><a href="#">{% trans "Home" %}</a></li>
                 <li><a href="#">{% trans "License" %}</a></li>
-                {% block breadcrumbs-li %}
-                  <li class="is-active"><a href="#" aria-current="page displayed">{% include "includes/snippet/license_medium_title.html" %}</a></li>
-                {% endblock %}
+                <li class="is-active"><a href="#" aria-current="page displayed">{% block page-displayed %}{% endblock %}</a></li>
             </ul>
           </nav>
           {% include 'includes/locale.html' %}
