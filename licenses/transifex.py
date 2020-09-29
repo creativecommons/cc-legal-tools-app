@@ -2,15 +2,21 @@
 Deal with Transifex
 """
 import os
-from base64 import b64encode
+from collections import defaultdict
 
+import git
+import iso8601
 import polib
 import requests
 import requests.auth
 from django.conf import settings
+from django.core.management import call_command
+from django.utils.timezone import now
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content
+from licenses.git_utils import commit_and_push_changes, setup_local_branch
+from licenses.utils import b64encode_string
 
 I18N_FILE_TYPE = "PO"
 
@@ -22,17 +28,12 @@ HOST_20 = "www.transifex.com"
 BASE_URL_25 = "https://api.transifex.com/"
 HOST_25 = "api.transifex.com"
 
+LEGALCODES_KEY = "__LEGALCODES__"
 
-def b64encode_string(s: str) -> str:
-    """
-    b64encode the string and return the resulting string.
-    """
-    # This sequence is kind of counter-intuitive, so pull it out into
-    # a util function so we're not worrying about it in the rest of the logic.
-    bits = s.encode()
-    encoded_bits = b64encode(bits)
-    encoded_string = encoded_bits.decode()
-    return encoded_string
+
+def _empty_branch_object():
+    """Return a dictionary with LEGALCODES_KEY mapped to an empty list"""
+    return {LEGALCODES_KEY: []}
 
 
 class TransifexAuthRequests(requests.auth.AuthBase):
@@ -111,7 +112,7 @@ class TransifexHelper:
         )
 
     def update_source_messages(self, resource_slug, pofilename, pofile_content):
-        # Update the source messages
+        # Update the source messages on Transifex from our local .pofile.
         files = self.files_argument("content", pofilename, pofile_content)
         self.request20(
             "put",
@@ -164,3 +165,132 @@ class TransifexHelper:
             self.update_translations(
                 resource_slug, language_code, pofilename, pofile_content
             )
+
+    def get_transifex_resource_stats(self):
+        fetch_resources_url = f"organizations/{self.organization_slug}/projects/{self.project_slug}/resources/"
+
+        r = self.request25("get", fetch_resources_url)
+        resource_slugs_on_transifex = [item["slug"] for item in r.json()]
+
+        # Get fuller stats for all of the resources
+        stats = {}
+        for resource_slug in resource_slugs_on_transifex:
+            resource_url = f"{fetch_resources_url}{resource_slug}"
+            r = self.request25("get", resource_url)
+            stats[resource_slug] = r.json()["stats"]
+        return stats
+
+    def check_for_translation_updates(self):
+        """
+        Use the Transifex API to find the last update timestamp for all our translations.
+        If translations are updated, we might end up creating a branch or other actions.
+        """
+        from licenses.models import LegalCode
+
+        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+            print(f"git = {git}")
+            print(f"git.Repo = {git.Repo}")
+            print(f"repo = {repo}")
+            print(f"repo.is_dirty = {repo.is_dirty}")
+            print(f"repo.is_dirty() = {repo.is_dirty()}")
+            if repo.is_dirty():
+                raise Exception(
+                    f"Git repo at {settings.TRANSLATION_REPOSITORY_DIRECTORY} is dirty. "
+                    f"We cannot continue."
+                )
+            repo.remotes.origin.fetch()
+
+            # Get fuller stats for all of the resources
+            stats = self.get_transifex_resource_stats()
+            resource_slugs_on_transifex = stats.keys()
+
+            # We only have the BY* 4.0 licenses in our database so far.
+            # We'd like to process one potential translation branch at a time.
+            # For the BY* 4.0 licenses, there's a single translation branch for
+            # each language. So identify all the languages and iterate over those.
+            # (Except English)
+
+            # Gather the files we need to update in git.
+            # This is a dict with keys = branch names, and values dictionaries mapping
+            # relative paths of files to update, to their contents (bytes).
+            self.branches_to_update = defaultdict(_empty_branch_object)
+            self.legalcodes_to_update = []
+
+            legalcodes = LegalCode.objects.filter(
+                license__version="4.0", license__license_code__startswith="by"
+            ).exclude(language_code=DEFAULT_LANGUAGE_CODE)
+            for legalcode in legalcodes:
+                # What would its translation branch name be, if there was one?
+                branch_name = legalcode.branch_name()
+                language_code = legalcode.language_code
+
+                resource_slug = legalcode.license.resource_slug
+                if (
+                    resource_slug not in resource_slugs_on_transifex
+                    or language_code not in stats[resource_slug]
+                ):
+                    continue
+
+                # We have a translation in this language for this license on Transifex.
+                # When was it last updated?
+                last_tx_update = iso8601.parse_date(
+                    stats[resource_slug][language_code]["translated"]["last_activity"]
+                )
+
+                if legalcode.translation_last_update is None:
+                    # First time: initialize, don't create branch
+                    print(f"Init last translation update time for {legalcode}")
+                    legalcode.translation_last_update = last_tx_update
+                    legalcode.save()
+                    continue
+
+                if last_tx_update <= legalcode.translation_last_update:
+                    print(f"Translation has not changed for {legalcode}")
+                    continue
+
+                # Translation has changed!
+                legalcode.translation_last_update = last_tx_update
+                # Don't save yet, wait til we've updated git, but remember the
+                # legalcode to save it later.
+                self.legalcodes_to_update.append(legalcode)
+                # Download the current translations
+                resource_url = (
+                    f"/project/{self.project_slug}/resource/{resource_slug}"
+                    f"/translation/{language_code}/"
+                    f"?mode=translator&file={I18N_FILE_TYPE}"
+                )
+                r2 = self.request20("get", resource_url)
+                pofilepath = legalcode.translation_filename()
+                self.branches_to_update[branch_name][pofilepath] = r2.text
+                repo.index.add([pofilepath])
+
+            # Now update any branches we need to
+            for branch_name, files in self.branches_to_update.items():
+                setup_local_branch(repo, branch_name, settings.OFFICIAL_GIT_BRANCH)
+                for path, content in files.items():
+                    if path == LEGALCODES_KEY:
+                        continue
+                    abspath = os.path.join(
+                        settings.TRANSLATION_REPOSITORY_DIRECTORY, path
+                    )
+                    pofile = polib.pofile(content)
+                    pofile.save(abspath)
+
+                # Compile the .po files to .mo files
+                call_command("compilemessages")
+
+                # Add the new and updated files to git
+                repo.index.add("legalcode")
+
+                # Commit and push
+                timestamp = now()
+                commit_msg = (
+                    f"Translation changes downloaded {timestamp} from Transifex"
+                )
+                commit_and_push_changes(repo, branch_name, commit_msg)
+
+                # Now that we know the new changes are upstream, save the LegalCode
+                # objects with their new translation_last_updates
+                LegalCode.objects.bulk_update(
+                    self.legalcodes_to_update, "translation_last_update"
+                )

@@ -1,5 +1,8 @@
+from pprint import pprint
 from unittest import mock
+from unittest.mock import MagicMock, call
 
+import git
 import polib
 import requests
 from django.test import TestCase, override_settings
@@ -230,6 +233,53 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             "/trans/repo/legalcode/fr/LC_MESSAGES/by-nd_40.po",
             "not really",
         )
+
+    def test_get_transifex_resource_stats(self):
+        # First call returns a response whose json value is a list of dicts with slug keys
+        call0_response = MagicMock()
+        call0_response.json.return_value = [{"slug": "slug0"}]
+
+        # second call is more data about slug0 - FIXME
+        call1_response = MagicMock()
+        call1_response.json.return_value = {"stats": "stats1"}
+        with mpo(self.helper, "request25") as mock_request25:
+            # Return values for each call to request25
+            mock_request25.side_effect = [
+                call0_response,
+                call1_response,
+            ]
+            result = self.helper.get_transifex_resource_stats()
+        calls = mock_request25.call_args_list
+        self.assertEqual([
+            call('get', 'organizations/org/projects/proj/resources/'),
+            call('get', 'organizations/org/projects/proj/resources/slug0'),
+        ], calls)
+        self.assertEqual({"slug0": "stats1"}, result)
+
+
+class CheckForTranslationUpdatesTest(TestCase):
+    def test_check_for_translation_updates_with_dirty_repo(self):
+        helper = TransifexHelper()
+        mock_repo = MagicMock()
+        mock_repo.is_dirty.return_value = True
+        with mpo(git, "Repo") as mock_Repo:
+            mock_Repo.return_value = mock_repo
+
+            with self.assertRaisesMessage(Exception, "is dirty. We cannot continue."):
+                helper.check_for_translation_updates()
+
+    def test_check_for_translation_updates_with_no_legalcodes(self):
+        helper = TransifexHelper()
+        mock_repo = MagicMock()
+        mock_repo.is_dirty.return_value = False
+        print(f"mock_repo = {mock_repo}")
+        print(f"mock_repo.is_dirty = {mock_repo.is_dirty}")
+        # mock_RepoClass = MagicMock(side_effect=mock_repo)
+        # print(f"mock_RepoClass = {mock_RepoClass}")
+        with mock.patch("licenses.transifex.git") as mock_git:
+            print(f"mock_git = {mock_git}")
+            mock_git.Repo.return_value = mock_repo
+            helper.check_for_translation_updates()
 
 
 class TestTransifexAuthRequests(TestCase):

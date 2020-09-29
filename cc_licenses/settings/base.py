@@ -221,3 +221,6 @@ TRANSIFEX = {
     "PROJECT_SLUG": "CC",
     "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
 }
+
+# The git branch where the official, approved, used in production translations are.
+OFFICIAL_GIT_BRANCH = "develop"

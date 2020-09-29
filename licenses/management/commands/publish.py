@@ -63,7 +63,8 @@ def git_commit_and_push(branch: str):
 def pull_translations_branches():
     """Git pulls branches in cc-licenses-data to update local git registry"""
     subprocess.run(
-        ["git", "checkout", "develop"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
+        ["git", "checkout", settings.OFFICIAL_GIT_BRANCH],
+        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
     )
     return subprocess.run(
         ["git", "pull"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
