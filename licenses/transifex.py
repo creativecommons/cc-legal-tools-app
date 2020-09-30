@@ -2,6 +2,7 @@
 Deal with Transifex
 """
 import os
+import re
 from collections import defaultdict
 
 import git
@@ -10,8 +11,6 @@ import polib
 import requests
 import requests.auth
 from django.conf import settings
-from django.core.management import call_command
-from django.utils.timezone import now
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content
@@ -188,11 +187,6 @@ class TransifexHelper:
         from licenses.models import LegalCode
 
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
-            print(f"git = {git}")
-            print(f"git.Repo = {git.Repo}")
-            print(f"repo = {repo}")
-            print(f"repo.is_dirty = {repo.is_dirty}")
-            print(f"repo.is_dirty() = {repo.is_dirty()}")
             if repo.is_dirty():
                 raise Exception(
                     f"Git repo at {settings.TRANSLATION_REPOSITORY_DIRECTORY} is dirty. "
@@ -239,13 +233,11 @@ class TransifexHelper:
 
                 if legalcode.translation_last_update is None:
                     # First time: initialize, don't create branch
-                    print(f"Init last translation update time for {legalcode}")
                     legalcode.translation_last_update = last_tx_update
                     legalcode.save()
                     continue
 
                 if last_tx_update <= legalcode.translation_last_update:
-                    print(f"Translation has not changed for {legalcode}")
                     continue
 
                 # Translation has changed!
@@ -261,7 +253,7 @@ class TransifexHelper:
                 )
                 r2 = self.request20("get", resource_url)
                 pofilepath = legalcode.translation_filename()
-                self.branches_to_update[branch_name][pofilepath] = r2.text
+                self.branches_to_update[branch_name][pofilepath] = r2.content  # binary
                 repo.index.add([pofilepath])
 
             # Now update any branches we need to
@@ -273,17 +265,17 @@ class TransifexHelper:
                     abspath = os.path.join(
                         settings.TRANSLATION_REPOSITORY_DIRECTORY, path
                     )
-                    pofile = polib.pofile(content)
+                    pofile = polib.pofile(pofile=content.decode(), encoding="utf-8")
                     pofile.save(abspath)
-
-                # Compile the .po files to .mo files
-                call_command("compilemessages")
-
-                # Add the new and updated files to git
-                repo.index.add("legalcode")
+                    mofilepath = re.sub(r"\.po$", ".mo", abspath)
+                    pofile.save_as_mofile(mofilepath)
+                    repo.index.add(abspath)
+                    repo.index.add(mofilepath)
 
                 # Commit and push
-                timestamp = now()
+                timestamp = stats[resource_slug][language_code]["translated"][
+                    "last_activity"
+                ]
                 commit_msg = (
                     f"Translation changes downloaded {timestamp} from Transifex"
                 )
@@ -292,5 +284,5 @@ class TransifexHelper:
                 # Now that we know the new changes are upstream, save the LegalCode
                 # objects with their new translation_last_updates
                 LegalCode.objects.bulk_update(
-                    self.legalcodes_to_update, "translation_last_update"
+                    self.legalcodes_to_update, fields=["translation_last_update"],
                 )
