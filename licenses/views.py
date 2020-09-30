@@ -2,7 +2,7 @@ import re
 from operator import itemgetter
 
 from django.shortcuts import get_object_or_404, render
-from django.utils.translation import get_language_info, gettext, override
+from django.utils.translation import get_language_info, override
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_language_for_jurisdiction
@@ -67,23 +67,24 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
         license__jurisdiction_code=jurisdiction or "",
         language_code=language_code,
     )
-    translation = legalcode.get_translation_object()
-
-    languages_and_links = [
-        {
-            "language_code": legal_code.language_code,
-            "name": gettext(get_language_info(legal_code.language_code)["name"]),
-            "name_local": gettext(
-                get_language_info(legal_code.language_code)["name_local"]
-            ),
-            "link": legal_code.license_url(),
-            "selected": language_code == legal_code.language_code,
-        }
-        for legal_code in legalcode.license.legal_codes.all()
-    ]
-    languages_and_links.sort(key=itemgetter("name"))
 
     with override(language=language_code):
+        languages_and_links = [
+            {
+                "language_code": legal_code.language_code,
+                # name: name of language in the current language, if available
+                "name": get_language_info(legal_code.language_code).get(
+                    "name_translated", "name"
+                ),
+                # name_local: name of language in its own language
+                "name_local": get_language_info(legal_code.language_code)["name_local"],
+                "link": legal_code.license_url(),
+                "selected": language_code == legal_code.language_code,
+            }
+            for legal_code in legalcode.license.legal_codes.all()
+        ]
+        languages_and_links.sort(key=itemgetter("name"))
+
         return render(
             request,
             "legalcode_40_page.html",
@@ -91,10 +92,6 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
-                "license_medium": translation.translate("license_medium"),
-                "title": translation.translate("license_medium"),
-                "translation": translation,  # the full "Translation" object
-                "t": translation.translations,  # the msgid -> translated message dictionary
             },
         )
 
@@ -111,23 +108,23 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         license__jurisdiction_code=jurisdiction or "",
         language_code=language_code,
     )
-    translation = legalcode.get_translation_object()
-
-    languages_and_links = [
-        {
-            "language_code": legal_code.language_code,
-            "name": gettext(get_language_info(legal_code.language_code)["name"]),
-            "name_local": gettext(
-                get_language_info(legal_code.language_code)["name_local"]
-            ),
-            "link": legal_code.deed_url(),
-            "selected": language_code == legal_code.language_code,
-        }
-        for legal_code in legalcode.license.legal_codes.all()
-    ]
-    languages_and_links.sort(key=itemgetter("name"))
 
     with override(language=language_code):
+        languages_and_links = [
+            {
+                "language_code": legal_code.language_code,
+                # name: name of language in the current language
+                "name": get_language_info(legal_code.language_code).get(
+                    "name_translated", "name"
+                ),
+                # name_local: name of language in its own language
+                "name_local": get_language_info(legal_code.language_code)["name_local"],
+                "link": legal_code.license_url(),
+                "selected": language_code == legal_code.language_code,
+            }
+            for legal_code in legalcode.license.legal_codes.all()
+        ]
+        languages_and_links.sort(key=itemgetter("name"))
         return render(
             request,
             "deed_40.html",
@@ -136,9 +133,5 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
                 "license": legalcode.license,
-                "license_medium": translation.translations["license_medium"],
-                "title": translation.translations["license_medium"],
-                "translation": translation,
-                "t": translation.translations,
             },
         )
