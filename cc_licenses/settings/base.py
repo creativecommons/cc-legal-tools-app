@@ -213,7 +213,7 @@ DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
 # License translations are in the translation repo directory, under "translations".
 LOCALE_PATHS = (
     os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),
-    os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "translations"),
+    os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "legalcode"),
 )
 
 TRANSIFEX = {

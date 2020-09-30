@@ -2,10 +2,10 @@ import re
 from operator import itemgetter
 
 from django.shortcuts import get_object_or_404, render
-from django.utils.translation import get_language_info, override
+from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import get_language_for_jurisdiction
+from i18n.utils import active_translation, get_language_for_jurisdiction
 from licenses.models import LegalCode, License
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -90,7 +90,8 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
         legalcode.license.legal_codes.all(), language_code
     )
 
-    with override(language=language_code):
+    translation = legalcode.get_translation_object()
+    with active_translation(translation):
         return render(
             request,
             "legalcode_40_page.html",
@@ -118,7 +119,8 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         legalcode.license.legal_codes.all(), language_code
     )
 
-    with override(language=language_code):
+    translation = legalcode.get_translation_object()
+    with active_translation(translation):
         return render(
             request,
             "deed_40.html",
