@@ -2,9 +2,9 @@ from unittest import mock
 
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.translation.trans_real import DjangoTranslation
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.translation import Translation
 from licenses.models import LegalCode, License
 from licenses.templatetags.license_tags import build_deed_url
 from licenses.tests.factories import LegalCodeFactory, LicenseFactory
@@ -102,20 +102,12 @@ class ViewLicenseTest(TestCase):
         for language_code in ["es", "ar"]:
             lc = LegalCodeFactory(license__version="4.0", language_code=language_code)
             url = lc.license_url()
-            with mock.patch.object(
-                LegalCode, "get_translation_object"
-            ) as mock_get_translation_object:
-                mock_get_translation_object.return_value.translate.return_value = (
-                    "qwerty"
-                )
-                rsp = self.client.get(url)
+            rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
             self.assertTemplateUsed(rsp, "legalcode_40_page.html")
             self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
             context = rsp.context
-            self.assertEqual(lc.fat_code(), context["fat_code"])
             self.assertEqual(lc, context["legalcode"])
-            self.assertEqual("qwerty", context["title"])
             self.assertContains(rsp, f'''lang="{language_code}"''')
             if language_code == "es":
                 self.assertContains(rsp, '''dir="ltr"''')
@@ -175,8 +167,7 @@ class LicenseDeedViewTest(TestCase):
         )
         # Mock 'get_translation_object' because we have no 3.0 translations imported yet
         # and we can't use 4.0 to test jurisdictions.
-        translation_object = Translation(pofilepath="/dev/null", language_code="es")
-        translation_object.translations = {"license_medium": "license medium"}
+        translation_object = DjangoTranslation(language="fr")
         with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
             mock_gto.return_value = translation_object
             rsp = self.client.get(url)
@@ -198,22 +189,7 @@ class LicenseDeedViewTest(TestCase):
         )
         # Mock 'get_translation_object' because we have no 3.0 translations imported yet
         # and we can't use 4.0 to test jurisdictions.
-        translation_object = Translation(pofilepath="/dev/null", language_code="es")
-        translation_object.translations = {"license_medium": "license medium"}
-        with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
-            mock_gto.return_value = translation_object
-            rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-
-    def test_license_deed_view_code_version_english(self):
-        license = LicenseFactory(license_code="by", version="4.0")
-        LegalCodeFactory(license=license, language_code="en")
-        url = reverse(
-            "license_deed_view_code_version_english",
-            kwargs=dict(license_code=license.license_code, version=license.version,),
-        )
-        translation_object = Translation(pofilepath="/dev/null", language_code="es")
-        translation_object.translations = {"license_medium": "license medium"}
+        translation_object = DjangoTranslation(language="fr")
         with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
             mock_gto.return_value = translation_object
             rsp = self.client.get(url)

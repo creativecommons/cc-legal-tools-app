@@ -281,3 +281,11 @@ def cleanup_current_branch_output(branch_list: list) -> list:
         else:
             cleaned_list.append(branch)
     return cleaned_list
+
+
+def clean_string(s):
+    """
+    Get a string into a canonical form - no whitespace at either end,
+    no newlines, no double-spaces.
+    """
+    return s.strip().replace("\n", " ").replace("  ", " ")

@@ -4,6 +4,10 @@
 {% block about %}{{ license.about }}{% endblock %}
 {% block title %}Creative Commons &mdash; {{ title }} {% endblock %}
 
+{% block page-displayed %}
+  {% trans "License Deed for" %} {% include "includes/snippet/license_medium_title.html" %}
+{% endblock %}
+
 {% block next_btn_section %}
 <div class="level container">
   <div class="level-item level-right">

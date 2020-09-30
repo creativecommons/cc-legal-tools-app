@@ -1,8 +1,13 @@
+import functools
+import os
+from contextlib import contextmanager
+
 import polib
 from babel import Locale, UnknownLocaleError
-from django.utils import translation
+from django.conf import settings
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext
+from django.utils.translation import override, ugettext
+from django.utils.translation.trans_real import DjangoTranslation, translation
 
 from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
 
@@ -44,6 +49,64 @@ JURISDICTION_CURRENCY_LOOKUP = {
     "si": "eu",
     "es": "eu",
 }
+
+
+@functools.lru_cache(maxsize=500)
+def get_translation_object(*, language_code: str, domain: str) -> DjangoTranslation:
+    """
+    Return a DjangoTranslation object suitable to activate
+    when we're wanting to render templates for this language code and domain.
+    (The domain is typically specific to one or a few licenses that
+    have common translations.)
+    """
+
+    license_locale_dir = os.path.join(
+        settings.TRANSLATION_REPOSITORY_DIRECTORY, "translations"
+    )
+    # Start with a translation object for the domain for this license.
+    license_translation_object = DjangoTranslation(
+        language=language_code, domain=domain, localedirs=[license_locale_dir]
+    )
+    # Add a fallback to the standard Django translation for this language. This gets us the
+    # non-legalcode parts of the pages.
+    license_translation_object.add_fallback(translation(language_code))
+
+    return license_translation_object
+
+
+@contextmanager
+def active_translation(translation: DjangoTranslation):
+    """
+    Context manager to do stuff within its context with a
+    particular translation object set as the active translation.
+    (Use ``get_translation_object`` to get a translation
+    object to use with this.)
+
+    Bypasses all the language code stuff that Django does
+    when you use its ``activate(language_code)`` function.
+
+    The translation object should be a DjangoTranslation
+    (from django.utils.translation.trans_real) or a subclass.
+
+    Warning: this *does* make assumptions about the internals
+    of Django's translation system that could change on us.
+    It doesn't seem likely, though.
+    """
+    # import non-public value here to keep its scope
+    # as limited as possible:
+    from django.utils.translation.trans_real import _active
+
+    # Either _active.value points at a DjangoTranslation
+    # object, or _active has no 'value' attribute.
+    previous_translation = getattr(_active, "value", None)
+    _active.value = translation
+
+    yield
+
+    if previous_translation is None:
+        del _active.value
+    else:
+        _active.value = previous_translation
 
 
 def get_pofile_content(pofile: polib.POFile) -> str:
@@ -173,7 +236,7 @@ def rtl_context_stuff(locale_identifier):
 
 def ugettext_for_locale(locale):
     def _wrapped_ugettext(message):
-        with translation.override(locale):
+        with override(locale):
             return force_text(ugettext(message))
 
     return _wrapped_ugettext

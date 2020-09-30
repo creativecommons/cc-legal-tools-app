@@ -209,11 +209,15 @@ TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
 # django-distill settings
 DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
 
+# Django translations are in the translation repo directory, under "locale".
+# License translations are in the translation repo directory, under "translations".
+LOCALE_PATHS = (
+    os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),
+    os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "translations"),
+)
+
 TRANSIFEX = {
     "ORGANIZATION_SLUG": "creativecommons",
     "PROJECT_SLUG": "CC",
     "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
 }
-
-# Django translations are in the transltion repo directory, under "locale".
-LOCALE_PATHS = (os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),)

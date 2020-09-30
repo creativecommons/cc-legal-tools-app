@@ -10,7 +10,7 @@
 	  content="application/xhtml+xml; charset=utf-8" />
     <title>
       {% block title %}
-        Creative Commons &mdash; {{ license.translated_title }}
+        Creative Commons &mdash; {% include "includes/snippet/license_medium_title.html" %}
       {% endblock %}
     </title>
 
