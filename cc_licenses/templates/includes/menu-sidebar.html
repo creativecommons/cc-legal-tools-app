@@ -2,16 +2,43 @@
 
 <div class="column is-one-quarter sidebar-container">
   <aside class="menu sidebar-menu">
-    {# replace with license long title #}
-    <p ><a class="link has-text-black">{% include "includes/snippet/license_medium_title.html" %}</a></p>
+    <a class="link has-text-black is-block padding-bottom-normal" href="#legal-code-body">{% include 'includes/snippet/license_medium_title.html' %}</a>
     <ul class="menu-list" >
       <li>
         <ul>
           {# replace with list of section links for the license legal code #}
-          {% for i in "x"|ljust:"4" %}
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 1 - Definitions</a></li>
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="#" class="is-inline">Section 2 - Scope</a></li>
-          {% endfor %}
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s1">{% blocktrans trimmed %}Section 1 – Definitions.{% endblocktrans %}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s2">{% blocktrans trimmed %}Section 2 – Scope.{% endblocktrans %}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s3">{% blocktrans trimmed %}Section 3 – License Conditions.{% endblocktrans %}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s4">{% blocktrans trimmed %}Section 4 – Sui Generis Database Rights.{% endblocktrans %}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s5">{% blocktrans trimmed %}Section 5 – Disclaimer of Warranties and Limitation of Liability.{% endblocktrans %}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class=" is-block column" href="#s6">{% blocktrans trimmed %}Section 6 – Term and Termination.{% endblocktrans %}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class="is-block column" href="#s7">{% blocktrans trimmed %}Section 7 – Other Terms and Conditions.{% endblocktrans %}</a>
+          </li>
+          <li class="columns is-vcentered">
+            <div class="body-bigger is-inline-block column is-1">&#8226;</div>
+            <a class=" is-block column" href="#s8">{% blocktrans trimmed %}Section 8 – Interpretation.{% endblocktrans %}</a>
+          </li>
         </ul>
       </li>
     </ul>
