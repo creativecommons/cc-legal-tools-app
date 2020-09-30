@@ -3,85 +3,22 @@ import subprocess
 from argparse import ArgumentParser
 from shutil import rmtree
 
+import git
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
 from django_distill.distill import urls_to_distill
 from django_distill.errors import DistillError
 from django_distill.renderer import render_to_dir
 
+from licenses.git_utils import commit_and_push_changes, setup_local_branch
 from licenses.utils import cleanup_current_branch_output, strip_list_whitespace
 
 
-def check_if_build_to_push(branch: str):
-    """Navigates to a branch and checks the status of the branch
-
-    Returns:
-        True if files need to be committed
-        False if the working tree is clean
-    """
-    subprocess.run(
-        ["git", "checkout", f"{branch}"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
-    )
-    status = (
-        subprocess.check_output(
-            ["git", "status"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
-        )
-        .decode()
-        .splitlines()
-    )
-    if "nothing to commit, working tree clean" in status:
-        return False
-    return True
-
-
-def git_on_branch_and_pull(branch: str):
-    """Commands to checkout and pull from a branch"""
-    subprocess.run(
-        ["git", "checkout", f"{branch}"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
-    )
-    return subprocess.run(
-        ["git", "pull", "origin", f"{branch}"],
-        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
-    )
-
-
-def git_commit_and_push(branch: str):
-    """Command to git checkout, commit, and push branch"""
-    subprocess.run(
-        ["git", "add", "build/"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
-    )
-    subprocess.run(
-        ["git", "commit", "-m", f"{branch}"],
-        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
-    )
-    return subprocess.run(
-        ["git", "push", "origin", f"{branch}"],
-        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
-    )
-
-
-def pull_translations_branches():
-    """Git pulls branches in cc-licenses-data to update local git registry"""
-    subprocess.run(
-        ["git", "checkout", settings.OFFICIAL_GIT_BRANCH],
-        cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
-    )
-    return subprocess.run(
-        ["git", "pull"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
-    )
-
-
 def list_open_branches():
-    """List of open branches in cc-licenses-data repo
+    """List of names of open local branches in cc-licenses-data repo
     """
-    pull_translations_branches()
-    branches = (
-        subprocess.check_output(
-            ["git", "branch", "--list"], cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY
-        )
-        .decode()
-        .splitlines()
-    )
+    with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+        branches = [head.name for head in repo.branches]
     print("\n\nWhich branch are we publishing to?\n")
     for b in branches:
         print(b)
@@ -140,13 +77,13 @@ class Command(BaseCommand):
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
-        git_on_branch_and_pull(branch)
-        self.run_django_distill()
-        build_to_push = check_if_build_to_push(branch)
-        if build_to_push:
-            git_commit_and_push(branch)
-        else:
-            print(f"\n{branch} build dir is up to date.\n")
+        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+            setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
+            self.run_django_distill()
+            if repo.dirty():
+                commit_and_push_changes(repo, branch, "Updated built HTML files")
+            else:
+                print(f"\n{branch} build dir is up to date.\n")
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir
