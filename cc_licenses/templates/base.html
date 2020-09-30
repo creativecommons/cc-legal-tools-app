@@ -20,7 +20,13 @@
   <main>
     <div class="level padding-{% start %}-big padding-{% end %}-large padding-vertical-normal">
           {% include 'includes/skiplink.html' %}
-          {% include 'includes/breadcrumbs.html' %}
+          <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="#">{% trans "Home" %}</a></li>
+                <li><a href="#">{% trans "License" %}</a></li>
+                <li class="is-active"><a href="#" aria-current="page displayed">{% block page-displayed %}{% endblock %}</a></li>
+            </ul>
+          </nav>
           {% include 'includes/locale.html' %}
     </div>
     <section id="content" class="padding-horizontal-larger">
@@ -88,5 +94,14 @@
 <style>
 body {
   background-color: rgb(245, 245, 245);
+}
+
+html[dir="rtl"] nav.breadcrumb>ul li+li:before {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .breadcrumb li:first-child a {
+    padding-right: 0;
+    padding-left: .5rem;
 }
 </style>
