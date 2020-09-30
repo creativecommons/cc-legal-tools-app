@@ -9,7 +9,11 @@ import i18n.utils
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.models import LegalCode, License
-from licenses.tests.factories import LegalCodeFactory, LicenseFactory
+from licenses.tests.factories import (
+    LegalCodeFactory,
+    LicenseFactory,
+    TranslationBranchFactory,
+)
 from licenses.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
 from licenses.transifex import TransifexHelper
 
@@ -285,3 +289,31 @@ class LicenseModelTest(TestCase):
         lic2 = LicenseFactory(is_replaced_by=lic1)
         self.assertTrue(lic2.superseded)
         self.assertFalse(lic1.superseded)
+
+
+class TranslationBranchModelTest(TestCase):
+    def test_stats(self):
+        language_code = "es"
+        lc1 = LegalCodeFactory(language_code=language_code)
+        tb = TranslationBranchFactory(language_code=language_code, legalcodes=[lc1])
+
+        class MockPofile(list):
+            def untranslated_entries(self):
+                return [1, 2, 3, 4, 5]
+
+            def translated_entries(self):
+                return [1, 2, 3]
+
+        mock_pofile = MockPofile()
+        with mock.patch.object(LegalCode, "get_pofile") as mock_get_pofile:
+            mock_get_pofile.return_value = mock_pofile
+            stats = tb.stats
+        self.assertEqual(
+            {
+                "percent": 37,
+                "total_messages": 8,
+                "translated_messages": 3,
+                "untranslated_messages": 5,
+            },
+            stats,
+        )

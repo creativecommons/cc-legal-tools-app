@@ -1,6 +1,11 @@
 import factory.fuzzy
 
-from licenses.models import LegalCode, License
+from licenses.models import LegalCode, License, TranslationBranch
+
+# The language codes we already have translations for
+language_codes = "ar,cs,de,el,en,es,eu,fi,fr,hr,id,it,ja,ko,lt,kv,mi,nl,no,pl,pt,ro,ru,sl,sv,tr,uk,zh_Hans,zh_Hant".split(
+    ","
+)
 
 
 class LicenseFactory(factory.DjangoModelFactory):
@@ -31,5 +36,34 @@ class LegalCodeFactory(factory.DjangoModelFactory):
     class Meta:
         model = LegalCode
 
-    language_code = "de"
+    language_code = factory.fuzzy.FuzzyChoice(language_codes)
     license = factory.SubFactory(LicenseFactory)
+
+
+class TranslationBranchFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = TranslationBranch
+
+    language_code = factory.fuzzy.FuzzyChoice(language_codes)
+    version = "4.0"
+    branch_name = factory.LazyAttribute(
+        lambda o: f"cc4-{o.language_code}".lower().replace("_", "-")
+    )
+
+    @factory.post_generation
+    def legalcodes(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of legalcodes were passed in, use them
+            for group in extracted:
+                self.legalcodes.add(group)
+        else:
+            # Generate a random one with the right features
+            self.legalcodes.add(
+                LegalCodeFactory(
+                    language_code=self.language_code, license__version=self.version,
+                )
+            )

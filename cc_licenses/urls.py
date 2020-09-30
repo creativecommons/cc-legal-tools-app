@@ -19,7 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django_distill import distill_path
 
-from licenses.views import home
+from licenses.views import branch_status, home, translation_status
 
 
 def distill_no_parameters():
@@ -29,6 +29,8 @@ def distill_no_parameters():
 urlpatterns = [
     url(r"^admin/", admin.site.urls),
     distill_path("", home, name="home", distill_func=distill_no_parameters),
+    url(r"status/(?P<id>\d+)/$", branch_status, name="branch_status"),
+    url(r"status/$", translation_status, name="translation_status"),
     url(r"licenses/", include("licenses.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

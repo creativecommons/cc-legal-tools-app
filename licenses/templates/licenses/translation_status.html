@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Translation status</h1>
+
+  <table border="1">
+  <thead>
+  <tr>
+    <th>Branch name</th>
+    <th>Language</th>
+    <th>License version</th>
+    <th># of legal codes changed</th>
+    <th>Last updated in Transifex</th>
+    <th># of translated messages</th>
+    <th>Total # of messages</th>
+    <th>% translated</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for branch in branches %}
+    <tr>
+      <td><a href="{% url 'branch_status' branch.id %}">{{ branch.branch_name }}</a></td>
+      <td>{{ branch.language_code }}</td>
+      <td>{{ branch.version }}</td>
+      <td>{{ branch.legalcodes.count }}</td>
+      <td>{{ branch.last_transifex_update|default_if_none:"-" }}</td>
+      {% with stats=branch.stats %}
+        <td>{{ stats.translated_messages }}</td>
+        <td>{{ stats.total_messages }}</td>
+        <td>{{ stats.percent }}</td>
+      {% endwith %}
+    </tr>
+  {% empty %}
+    <tr><td>There are no active translation branches.</td></tr>
+  {% endfor %}
+  </tbody>
+  </table>
+
+{% endblock %}
