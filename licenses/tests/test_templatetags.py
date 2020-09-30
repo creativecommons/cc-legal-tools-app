@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import get_resolver
 
 from licenses.templatetags.license_tags import build_deed_url, build_license_url
 
@@ -15,12 +16,14 @@ class LicenseTagsTest(TestCase):
             ("by-nc", "2.5", "", "xx", "/licenses/by-nc/2.5/legalcode.xx"),
             ("by-nc", "3.5", "yy", "xx", "/licenses/by-nc/3.5/yy/legalcode.xx"),
         ]
+        resolver = get_resolver()
         for license_code, version, jurisdiction, language, expected_result in data:
             with self.subTest((license_code, version, jurisdiction, language),):
                 result = build_license_url(
                     license_code, version, jurisdiction, language
                 )
                 self.assertEqual(expected_result, result)
+                self.assertTrue(resolver.resolve(result))
 
     def test_build_deed_url(self):
         # https://creativecommons.org/licenses/by-sa/4.0/

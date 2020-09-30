@@ -27,7 +27,9 @@
                 <li class="is-active"><a href="#" aria-current="page displayed">{% block page-displayed %}{% endblock %}</a></li>
             </ul>
           </nav>
-          {% include 'includes/locale.html' %}
+          {% if languages_and_links %}
+            {% include "includes/languages_dropdown.html" %}
+          {% endif %}
     </div>
     <section id="content" class="padding-horizontal-larger">
       {% block next_btn_section %}{% endblock %}

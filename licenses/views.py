@@ -1,9 +1,11 @@
 import re
+from operator import itemgetter
 
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import get_language_info, override
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import active_translation, get_language_for_jurisdiction
+from i18n.utils import get_language_for_jurisdiction
 from licenses.models import LegalCode, License
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -53,6 +55,24 @@ def home(request):
     return render(request, "home.html", context)
 
 
+def get_languages_and_links_for_legalcodes(legalcodes, selected_language_code):
+    languages_and_links = [
+        {
+            "language_code": legal_code.language_code,
+            # name_local: name of language in its own language
+            "name_local": get_language_info(legal_code.language_code)["name_local"],
+            "name_for_sorting": get_language_info(legal_code.language_code)[
+                "name_local"
+            ].lower(),
+            "link": legal_code.license_url(),
+            "selected": selected_language_code == legal_code.language_code,
+        }
+        for legal_code in legalcodes
+    ]
+    languages_and_links.sort(key=itemgetter("name_for_sorting"))
+    return languages_and_links
+
+
 def view_license(request, license_code, version, jurisdiction=None, language_code=None):
     if language_code is None and jurisdiction:
         language_code = get_language_for_jurisdiction(jurisdiction)
@@ -65,12 +85,20 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
         license__jurisdiction_code=jurisdiction or "",
         language_code=language_code,
     )
-    translation = legalcode.get_translation_object()
-    with active_translation(translation):
+
+    languages_and_links = get_languages_and_links_for_legalcodes(
+        legalcode.license.legal_codes.all(), language_code
+    )
+
+    with override(language=language_code):
         return render(
             request,
             "legalcode_40_page.html",
-            {"legalcode": legalcode, "license": legalcode.license,},
+            {
+                "fat_code": legalcode.license.fat_code(),
+                "languages_and_links": languages_and_links,
+                "legalcode": legalcode,
+            },
         )
 
 
@@ -86,10 +114,18 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         license__jurisdiction_code=jurisdiction or "",
         language_code=language_code,
     )
-    translation = legalcode.get_translation_object()
-    with active_translation(translation):
+    languages_and_links = get_languages_and_links_for_legalcodes(
+        legalcode.license.legal_codes.all(), language_code
+    )
+
+    with override(language=language_code):
         return render(
             request,
             "deed_40.html",
-            {"legalcode": legalcode, "license": legalcode.license,},
+            {
+                "fat_code": legalcode.license.fat_code(),
+                "languages_and_links": languages_and_links,
+                "legalcode": legalcode,
+                "license": legalcode.license,
+            },
         )

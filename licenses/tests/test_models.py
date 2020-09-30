@@ -69,6 +69,22 @@ class LegalCodeModelTest(TestCase):
                     ).translation_filename(),
                 )
 
+    def test_license_url(self):
+        lc = LegalCodeFactory()
+        with mock.patch("licenses.models.build_license_url") as mock_build:
+            lc.license_url()
+        self.assertEqual(
+            [
+                call(
+                    lc.license.license_code,
+                    lc.license.version,
+                    lc.license.jurisdiction_code,
+                    lc.language_code,
+                )
+            ],
+            mock_build.call_args_list,
+        )
+
     def test_deed_url(self):
         lc = LegalCodeFactory()
         with mock.patch("licenses.models.build_deed_url") as mock_build:
