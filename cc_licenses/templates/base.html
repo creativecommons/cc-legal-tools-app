@@ -22,9 +22,9 @@
           {% include 'includes/skiplink.html' %}
           <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
             <ul>
-                <li><a href="#">{% trans "Home" %}</a></li>
-                <li><a href="#">{% trans "License" %}</a></li>
-                <li class="is-active"><a href="#" aria-current="page displayed">{% block page-displayed %}{% endblock %}</a></li>
+                <li><a href="https://creativecommons.org/">{% trans "Home" %}</a></li>
+                <li><a href="https://creativecommons.org/licenses/">{% trans "Licenses" %}</a></li>
+                <li class="is-active">{% block page-displayed %}<a href="#" aria-current="page displayed"></a><{% endblock %}</li>
             </ul>
           </nav>
           {% if languages_and_links %}

@@ -3,7 +3,7 @@
 {% load bidi %}
 
 {% block page-displayed %}
-  {% trans "Legal Code for" %} {% include "includes/snippet/license_medium_title.html" %}
+  <a href="{{ legalcode.license_url }}" aria-current="page displayed">{% trans "Legal Code for" %} {% include "includes/snippet/license_medium_title.html" %}</a>
 {% endblock %}
 
 {% block next_btn_section %}
