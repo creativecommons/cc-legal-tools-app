@@ -1,5 +1,6 @@
 import re
 from operator import itemgetter
+from typing import Iterable
 
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_info
@@ -55,7 +56,12 @@ def home(request):
     return render(request, "home.html", context)
 
 
-def get_languages_and_links_for_legalcodes(legalcodes, selected_language_code):
+def get_languages_and_links_for_legalcodes(
+    legalcodes: Iterable[LegalCode], selected_language_code: str, license_or_deed: str
+):
+    """
+    license_or_deed should be "license" or "deed", controlling which kind of page we link to.
+    """
     languages_and_links = [
         {
             "language_code": legal_code.language_code,
@@ -64,7 +70,9 @@ def get_languages_and_links_for_legalcodes(legalcodes, selected_language_code):
             "name_for_sorting": get_language_info(legal_code.language_code)[
                 "name_local"
             ].lower(),
-            "link": legal_code.license_url(),
+            "link": legal_code.license_url()
+            if license_or_deed == "license"
+            else legal_code.deed_url(),
             "selected": selected_language_code == legal_code.language_code,
         }
         for legal_code in legalcodes
@@ -87,7 +95,7 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
     )
 
     languages_and_links = get_languages_and_links_for_legalcodes(
-        legalcode.license.legal_codes.all(), language_code
+        legalcode.license.legal_codes.all(), language_code, "license"
     )
 
     translation = legalcode.get_translation_object()
@@ -116,7 +124,7 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         language_code=language_code,
     )
     languages_and_links = get_languages_and_links_for_legalcodes(
-        legalcode.license.legal_codes.all(), language_code
+        legalcode.license.legal_codes.all(), language_code, "deed"
     )
 
     translation = legalcode.get_translation_object()
