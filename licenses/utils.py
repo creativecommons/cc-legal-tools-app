@@ -6,7 +6,7 @@ from base64 import b64encode
 from bs4 import NavigableString
 from polib import POEntry, POFile
 
-from i18n import LANGUAGE_CODE_REGEX
+from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
 
 from .constants import EXCLUDED_LICENSE_VERSIONS
 
@@ -119,14 +119,18 @@ def parse_legalcode_filename(filename):
 
 
 def get_licenses_code_and_version():
-    """Returns an iterable of license dictionaries
+    """Returns an iterable of license dictionaries that have English Legalcode
+    (not an issue except during tests, really).
     dictionary keys:
         - license_code
         - version
     """
-    from licenses.models import License
+    from licenses.models import LegalCode
 
-    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+    for legalcode in LegalCode.objects.filter(
+        language_code=DEFAULT_LANGUAGE_CODE
+    ).exclude(license__version__in=EXCLUDED_LICENSE_VERSIONS):
+        license = legalcode.license
         yield {
             "license_code": license.license_code,
             "version": license.version,

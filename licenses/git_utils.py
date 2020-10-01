@@ -29,10 +29,12 @@ def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str
         origin.pull(f"{branch_name}:{branch_name}")
 
 
-def commit_and_push_changes(repo: git.Repo, branch_name: str, commit_msg: str):
+def commit_and_push_changes(repo: git.Repo, commit_msg: str):
     """Commit new translation changes to current branch, and push upstream"""
     index = repo.index
     index.commit(commit_msg)
+    current_branch = repo.head.reference
+    branch_name = current_branch.name
     results = repo.remotes.origin.push(f"{branch_name}:{branch_name}")
     if len(results) == 0:
         raise Exception("PUSH FAILED COMPLETELY - add more info to this message")

@@ -86,9 +86,10 @@ class CommitAndPushChangesTest(TestCase):
         commit_msg = "commit message"
         mock_repo = mock.MagicMock()
         mock_repo.remotes.origin.push.return_value = []
+        mock_repo.head.reference.name = branch_name
 
         with self.assertRaisesMessage(Exception, "PUSH FAILED COMPLETELY"):
-            commit_and_push_changes(mock_repo, branch_name, commit_msg)
+            commit_and_push_changes(mock_repo, commit_msg)
 
         mock_repo.index.commit.assert_called_with(commit_msg)
         mock_repo.remotes.origin.push.assert_called_with(f"{branch_name}:{branch_name}")
@@ -101,8 +102,9 @@ class CommitAndPushChangesTest(TestCase):
         mock_result.summary = "push result"
         mock_result.flags = 0
         mock_repo.remotes.origin.push.return_value = [mock_result]
+        mock_repo.head.reference.name = branch_name
 
-        commit_and_push_changes(mock_repo, branch_name, commit_msg)
+        commit_and_push_changes(mock_repo, commit_msg)
 
         mock_repo.index.commit.assert_called_with(commit_msg)
         mock_repo.remotes.origin.push.assert_called_with(f"{branch_name}:{branch_name}")
@@ -115,9 +117,10 @@ class CommitAndPushChangesTest(TestCase):
         mock_result.summary = "push result"
         mock_result.flags = git.PushInfo.ERROR
         mock_repo.remotes.origin.push.return_value = [mock_result]
+        mock_repo.head.reference.name = branch_name
 
         with self.assertRaisesMessage(Exception, "PUSH FAILED push result"):
-            commit_and_push_changes(mock_repo, branch_name, commit_msg)
+            commit_and_push_changes(mock_repo, commit_msg)
 
         mock_repo.index.commit.assert_called_with(commit_msg)
         mock_repo.remotes.origin.push.assert_called_with(f"{branch_name}:{branch_name}")

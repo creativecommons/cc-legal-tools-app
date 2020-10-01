@@ -1,5 +1,4 @@
 import os
-import subprocess
 from argparse import ArgumentParser
 from shutil import rmtree
 
@@ -11,7 +10,6 @@ from django_distill.errors import DistillError
 from django_distill.renderer import render_to_dir
 
 from licenses.git_utils import commit_and_push_changes, setup_local_branch
-from licenses.utils import cleanup_current_branch_output, strip_list_whitespace
 
 
 def list_open_branches():
@@ -80,28 +78,20 @@ class Command(BaseCommand):
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
             self.run_django_distill()
-            if repo.dirty():
-                commit_and_push_changes(repo, branch, "Updated built HTML files")
+            if repo.is_dirty():
+                repo.index.add("build")
+                commit_and_push_changes(repo, "Updated built HTML files")
             else:
                 print(f"\n{branch} build dir is up to date.\n")
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir
         """
-        branches = (
-            subprocess.check_output(
-                ["git", "branch", "--list"],
-                cwd=settings.TRANSLATION_REPOSITORY_DIRECTORY,
-            )
-            .decode()
-            .splitlines()
-        )
-        branch_list = strip_list_whitespace("left", branches)
-        cleaned_branch_list = cleanup_current_branch_output(branch_list)
+        branch_list = list_open_branches()
         print(
             f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
         )
-        for b in cleaned_branch_list:
+        for b in branch_list:
             self.publish_branch(b)
 
     def handle(self, *args, **options):
