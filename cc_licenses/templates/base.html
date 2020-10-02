@@ -24,7 +24,7 @@
             <ul>
                 <li><a href="https://creativecommons.org/">{% trans "Home" %}</a></li>
                 <li><a href="https://creativecommons.org/licenses/">{% trans "Licenses" %}</a></li>
-                <li class="is-active">{% block page-displayed %}<a href="#" aria-current="page displayed"></a><{% endblock %}</li>
+                {% block active-breadcrumb-li %}{% endblock %}
             </ul>
           </nav>
           {% if languages_and_links %}
