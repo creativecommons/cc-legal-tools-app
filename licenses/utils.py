@@ -1,14 +1,14 @@
 import posixpath
 import re
 import urllib
+from base64 import b64encode
 
 from bs4 import NavigableString
 from polib import POEntry, POFile
 
-from i18n import LANGUAGE_CODE_REGEX
+from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
 
 from .constants import EXCLUDED_LICENSE_VERSIONS
-from .models import LegalCode, License
 
 
 def get_code_from_jurisdiction_url(url):
@@ -119,12 +119,18 @@ def parse_legalcode_filename(filename):
 
 
 def get_licenses_code_and_version():
-    """Returns an iterable of license dictionaries
+    """Returns an iterable of license dictionaries that have English Legalcode
+    (not an issue except during tests, really).
     dictionary keys:
         - license_code
         - version
     """
-    for license in License.objects.exclude(version__in=EXCLUDED_LICENSE_VERSIONS):
+    from licenses.models import LegalCode
+
+    for legalcode in LegalCode.objects.filter(
+        language_code=DEFAULT_LANGUAGE_CODE
+    ).exclude(license__version__in=EXCLUDED_LICENSE_VERSIONS):
+        license = legalcode.license
         yield {
             "license_code": license.license_code,
             "version": license.version,
@@ -141,6 +147,8 @@ def get_licenses_code_version_language_code():
             language_code
         )
     """
+    from licenses.models import LegalCode
+
     for legalcode in LegalCode.objects.exclude(
         license__version__in=EXCLUDED_LICENSE_VERSIONS
     ):
@@ -289,3 +297,15 @@ def clean_string(s):
     no newlines, no double-spaces.
     """
     return s.strip().replace("\n", " ").replace("  ", " ")
+
+
+def b64encode_string(s: str) -> str:
+    """
+    b64encode the string and return the resulting string.
+    """
+    # This sequence is kind of counter-intuitive, so pull it out into
+    # a util function so we're not worrying about it in the rest of the logic.
+    bits = s.encode()
+    encoded_bits = b64encode(bits)
+    encoded_string = encoded_bits.decode()
+    return encoded_string

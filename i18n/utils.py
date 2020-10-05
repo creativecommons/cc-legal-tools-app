@@ -1,5 +1,6 @@
 import functools
 import os
+import re
 from contextlib import contextmanager
 
 import polib
@@ -107,6 +108,15 @@ def active_translation(translation: DjangoTranslation):
         del _active.value
     else:
         _active.value = previous_translation
+
+
+def save_content_as_pofile_and_mofile(path: str, content: bytes):
+    """Returns pofile_abspath, mofile_abspath"""
+    pofile = polib.pofile(pofile=content.decode(), encoding="utf-8")
+    pofile.save(path)
+    mofilepath = re.sub(r"\.po$", ".mo", path)
+    pofile.save_as_mofile(mofilepath)
+    return (path, mofilepath)
 
 
 def get_pofile_content(pofile: polib.POFile) -> str:

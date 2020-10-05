@@ -1,10 +1,16 @@
+import datetime
 from unittest import mock
+from unittest.mock import MagicMock, call
 
+import git
 import polib
 import requests
+from django.conf import settings
 from django.test import TestCase, override_settings
+from django.utils.timezone import now, utc
 
 from i18n import DEFAULT_LANGUAGE_CODE
+from licenses.models import TranslationBranch
 from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 from licenses.transifex import TransifexAuthRequests, TransifexHelper
 
@@ -21,6 +27,26 @@ TEST_TRANSIFEX_SETTINGS = {
 # for  'mock.patch' and 'mock.patch.object'
 mp = mock.patch
 mpo = mock.patch.object
+
+
+class DummyRepo:
+    def __init__(self, path):
+        self.index = MagicMock()
+        self.remotes = MagicMock()
+        self.branches = MagicMock()
+        self.heads = MagicMock()
+
+    # def __str__(self):
+    #     return "a dummy repo"
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a, **k):
+        pass
+
+    def is_dirty(self):
+        return False
 
 
 @override_settings(
@@ -230,6 +256,254 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             "/trans/repo/legalcode/fr/LC_MESSAGES/by-nd_40.po",
             "not really",
         )
+
+    def test_get_transifex_resource_stats(self):
+        # First call returns a response whose json value is a list of dicts with slug keys
+        call0_response = MagicMock()
+        call0_response.json.return_value = [{"slug": "slug0"}]
+
+        # second call is more data about slug0 - FIXME
+        call1_response = MagicMock()
+        call1_response.json.return_value = {"stats": "stats1"}
+        with mpo(self.helper, "request25") as mock_request25:
+            # Return values for each call to request25
+            mock_request25.side_effect = [
+                call0_response,
+                call1_response,
+            ]
+            result = self.helper.get_transifex_resource_stats()
+        calls = mock_request25.call_args_list
+        self.assertEqual(
+            [
+                call("get", "organizations/org/projects/proj/resources/"),
+                call("get", "organizations/org/projects/proj/resources/slug0"),
+            ],
+            calls,
+        )
+        self.assertEqual({"slug0": "stats1"}, result)
+
+
+@override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo",)
+class CheckForTranslationUpdatesTest(TestCase):
+    def test_check_for_translation_updates_with_dirty_repo(self):
+        mock_repo = MagicMock()
+        mock_repo.__str__.return_value = "mock_repo"
+        mock_repo.is_dirty.return_value = True
+        with mock.patch.object(git, "Repo") as mock_Repo:
+            mock_Repo.return_value.__enter__.return_value = mock_repo
+            helper = TransifexHelper()
+            with self.assertRaisesMessage(Exception, "is dirty. We cannot continue."):
+                helper.check_for_translation_updates()
+
+    def test_check_for_translation_updates_with_no_legalcodes(self):
+        mock_repo = MagicMock()
+        mock_repo.__str__.return_value = "mock_repo"
+        mock_repo.is_dirty.return_value = False
+        with mock.patch.object(git, "Repo") as mock_Repo:
+            mock_Repo.return_value.__enter__.return_value = mock_repo
+            with mock.patch.object(
+                TransifexHelper, "get_transifex_resource_stats"
+            ) as mock_get_transifex_resource_stats:
+                mock_get_transifex_resource_stats.return_value = {}
+                helper = TransifexHelper()
+                helper.check_for_translation_updates()
+
+    def test_check_for_translation_updates_first_time(self):
+        # We don't have a 'translation_last_update' yet to compare to.
+        self.help_test_check_for_translation_updates(first_time=True, changed=None)
+
+    def test_check_for_translation_updates_unchanged(self):
+        # The translation update timestamp has not changed
+        self.help_test_check_for_translation_updates(first_time=False, changed=False)
+
+    def test_check_for_translation_updates_changed(self):
+        # 'translation' is newer than translation_last_update
+        self.help_test_check_for_translation_updates(first_time=False, changed=True)
+
+    def help_test_check_for_translation_updates(self, first_time, changed):
+        """
+        Helper to test several conditions, since all the setup is so convoluted.
+        """
+        language_code = "zh-Hans"
+        license = LicenseFactory(version="4.0", license_code="by-nd")
+
+        first_translation_update_datetime = datetime.datetime(
+            2007, 1, 25, 12, 0, 0, tzinfo=utc
+        )
+        changed_translation_update_datetime = datetime.datetime(
+            2020, 9, 30, 13, 11, 52, tzinfo=utc
+        )
+
+        if first_time:
+            # We don't yet know when the last update was.
+            legalcode_last_update = None
+        else:
+            # The last update we know of was at this time.
+            legalcode_last_update = first_translation_update_datetime
+
+        legalcode = LegalCodeFactory(
+            license=license,
+            language_code=language_code,
+            translation_last_update=legalcode_last_update,
+        )
+        resource_slug = license.resource_slug
+
+        # 'timestamp' returns on translation stats from transifex
+        if changed:
+            # now it's the newer time
+            timestamp = changed_translation_update_datetime.isoformat()
+        else:
+            # it's still the first time
+            timestamp = first_translation_update_datetime.isoformat()
+
+        mock_repo = MagicMock()
+        mock_repo.is_dirty.return_value = False
+
+        legalcodes = [legalcode]
+        dummy_repo = DummyRepo("/trans/repo")
+
+        # A couple of places use git.Repo(path) to get a git repo object. Have them
+        # all get back our same dummy repo.
+        def dummy_repo_factory(path):
+            return dummy_repo
+
+        helper = TransifexHelper()
+
+        with mpo(
+            helper, "handle_legalcodes_with_updated_translations"
+        ) as mock_handle_legalcodes, mpo(
+            helper, "get_transifex_resource_stats"
+        ) as mock_get_transifex_resource_stats:
+            mock_get_transifex_resource_stats.return_value = {
+                resource_slug: {
+                    language_code: {"translated": {"last_activity": timestamp,}}
+                }
+            }
+            helper.check_for_translation_updates_with_repo_and_legalcodes(
+                dummy_repo, legalcodes
+            )
+        mock_get_transifex_resource_stats.assert_called_with()
+        legalcode.refresh_from_db()
+        if changed:
+            # we mocked the actual processing, so...
+            self.assertEqual(
+                first_translation_update_datetime, legalcode.translation_last_update
+            )
+            mock_handle_legalcodes.assert_called_with(dummy_repo, [legalcode])
+        else:
+            self.assertEqual(
+                first_translation_update_datetime, legalcode.translation_last_update
+            )
+            mock_handle_legalcodes.assert_called_with(dummy_repo, [])
+        return
+
+    def test_handle_legalcodes_with_updated_translations(self):
+        helper = TransifexHelper()
+        dummy_repo = DummyRepo("/trans/repo")
+
+        # No legalcodes, shouldn't call anything or return anything
+        result = helper.handle_legalcodes_with_updated_translations(dummy_repo, [])
+        self.assertEqual([], result)
+
+        # legalcodes for two branches
+        legalcode1 = LegalCodeFactory(
+            license__version="4.0", license__license_code="by-nc", language_code="fr"
+        )
+        legalcode2 = LegalCodeFactory(
+            license__version="4.0", license__license_code="by-nd", language_code="de"
+        )
+        with mpo(helper, "handle_updated_translation_branch") as mock_handle:
+            result = helper.handle_legalcodes_with_updated_translations(
+                dummy_repo, [legalcode1, legalcode2]
+            )
+        self.assertEqual([legalcode1.branch_name(), legalcode2.branch_name()], result)
+        self.assertEqual(
+            [mock.call(dummy_repo, [legalcode1]), mock.call(dummy_repo, [legalcode2]),],
+            mock_handle.call_args_list,
+        )
+
+    def test_handle_updated_translation_branch(self):
+        helper = TransifexHelper()
+        dummy_repo = DummyRepo("/trans/repo")
+        result = helper.handle_updated_translation_branch(dummy_repo, [])
+        self.assertIsNone(result)
+        legalcode1 = LegalCodeFactory(
+            license__version="4.0", license__license_code="by-nc", language_code="fr"
+        )
+        legalcode2 = LegalCodeFactory(
+            license__version="4.0", license__license_code="by-nd", language_code="fr"
+        )
+        with mp("licenses.transifex.setup_local_branch") as mock_setup, mpo(
+            helper, "update_branch_for_legalcode"
+        ) as mock_update_branch, mp(
+            "licenses.transifex.commit_and_push_changes"
+        ) as mock_commit:
+            # setup_local_branch
+            # update_branch_for_legalcode
+            # commit_and_push_changes
+            # branch_object.save()
+            result = helper.handle_updated_translation_branch(
+                dummy_repo, [legalcode1, legalcode2]
+            )
+        self.assertIsNone(result)
+        mock_setup.assert_called_with(
+            dummy_repo, legalcode1.branch_name(), settings.OFFICIAL_GIT_BRANCH
+        )
+        trb = TranslationBranch.objects.get()
+        expected = [
+            mock.call(dummy_repo, legalcode1, trb),
+            mock.call(dummy_repo, legalcode2, trb),
+        ]
+        self.assertEqual(expected, mock_update_branch.call_args_list)
+        mock_commit.assert_called_with(
+            dummy_repo, "Translation changes from Transifex."
+        )
+
+    def test_update_branch_for_legalcode(self):
+        helper = TransifexHelper()
+        dummy_repo = DummyRepo("/trans/repo")
+        legalcode = LegalCodeFactory(
+            license__version="4.0", license__license_code="by-nc", language_code="fr"
+        )
+        helper._stats = {
+            legalcode.license.resource_slug: {
+                legalcode.language_code: {
+                    "translated": {"last_activity": now().isoformat(),}
+                }
+            }
+        }
+        trb = TranslationBranch.objects.create(
+            branch_name=legalcode.branch_name(),
+            version=legalcode.license.version,
+            language_code=legalcode.language_code,
+            complete=False,
+        )
+        content = b"wxyz"
+        # transifex_get_pofile_content
+        # save_content_as_pofile_and_mofile
+        with mpo(helper, "transifex_get_pofile_content") as mock_get_content, mp(
+            "licenses.transifex.save_content_as_pofile_and_mofile"
+        ) as mock_save:
+            mock_get_content.return_value = content
+            mock_save.return_value = [legalcode.translation_filename()]
+            result = helper.update_branch_for_legalcode(dummy_repo, legalcode, trb)
+        self.assertIsNone(result)
+        mock_get_content.assert_called_with(
+            legalcode.license.resource_slug, legalcode.language_code
+        )
+        mock_save.assert_called_with(legalcode.translation_filename(), content)
+        self.assertEqual({legalcode}, set(trb.legalcodes.all()))
+        dummy_repo.index.add.assert_called_with([legalcode.translation_filename()])
+
+    def test_transifex_get_pofile_content(self):
+        helper = TransifexHelper()
+        with mpo(helper, "request20") as mock_req20:
+            mock_req20.return_value = mock.MagicMock(content=b"xxxxxx")
+            result = helper.transifex_get_pofile_content("slug", "lang")
+        mock_req20.assert_called_with(
+            "get", "project/CC/resource/slug/translation/lang/?mode=translator&file=PO"
+        )
+        self.assertEqual(result, b"xxxxxx")
 
 
 class TestTransifexAuthRequests(TestCase):

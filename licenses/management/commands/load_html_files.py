@@ -3,7 +3,7 @@ import sys
 from argparse import ArgumentParser
 
 from bs4 import BeautifulSoup, Tag
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, call_command
 from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
@@ -192,6 +192,8 @@ class Command(BaseCommand):
                     os.makedirs(dir)
                 pofile.save(po_filename)
                 print(f"Created {po_filename}")
+        # Compile the .po files to .mo files
+        call_command("compilemessages")
 
     def import_by_40_license_html(self, content, license_code, language_code):
         """
