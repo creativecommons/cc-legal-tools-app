@@ -1,5 +1,23 @@
 {% load i18n %}
 
 <div id="legal-code-plain-text" style="font-weight: bold;" class="padding-vertical-normal" >
-  <p class="body-big"><a href="#" class="link">{% trans "View Legal Code as plain text" %}</a></p>
+  <p class="body-big">
+    <a id="download-plain-text" href="#" class="link" download="{% include 'includes/snippet/license_medium_title.html'%}.txt">
+      {% trans "View Legal Code as plain text" %}
+    </a>
+  </p>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const downloadLink = document.querySelector("a#download-plain-text")
+    const legalCodeBody = document.querySelector("div#plain-text-body")
+    const legalCodeBodyText = legalCodeBody.textContent
+    const file = new Blob([legalCodeBodyText], {
+      type: "text/plain;charset=utf-8"
+    })
+    fileUrl = window.URL.createObjectURL(file);
+    downloadLink.href = fileUrl
+    // this.setAttribute('download', filename);
+  })
+</script>
