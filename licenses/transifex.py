@@ -257,6 +257,8 @@ class TransifexHelper:
         # Commit and push this branch
         commit_and_push_changes(repo, "Translation changes from Transifex.")
 
+        print(f"Updated branch {branch_name} with updated translations and pushed")
+
         # Now that we know the new changes are upstream, save the LegalCode
         # objects with their new translation_last_updates, and the branch object.
         from licenses.models import LegalCode
@@ -338,6 +340,7 @@ class TransifexHelper:
                 or language_code not in self.stats[resource_slug]
             ):
                 logger.error(f"Transifex has no translation for {resource_slug}")
+                print(f"ERROR: Transifex has no translation for {resource_slug}")
                 continue
 
             # We have a translation in this language for this license on Transifex.
@@ -350,6 +353,7 @@ class TransifexHelper:
                 # First time: initialize, don't create branch
                 legalcode.translation_last_update = last_tx_update
                 legalcode.save()
+                print(f"Initialized last update time for {legalcode}")
                 continue
 
             if last_tx_update <= legalcode.translation_last_update:
@@ -357,6 +361,7 @@ class TransifexHelper:
                 continue
 
             # Translation has changed!
+            print(f"Translation has changed for {legalcode}")
             legalcodes_with_updated_translations.append(legalcode)
 
         return self.handle_legalcodes_with_updated_translations(
