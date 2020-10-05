@@ -3,10 +3,11 @@ import sys
 from argparse import ArgumentParser
 
 from bs4 import BeautifulSoup, Tag
-from django.core.management import BaseCommand, call_command
+from django.core.management import BaseCommand
 from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
+from i18n.utils import save_pofile_as_pofile_and_mofile
 from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
 from licenses.models import LegalCode, License
 from licenses.utils import (
@@ -190,10 +191,12 @@ class Command(BaseCommand):
                 dir = os.path.dirname(po_filename)
                 if not os.path.isdir(dir):
                     os.makedirs(dir)
-                pofile.save(po_filename)
-                print(f"Created {po_filename}")
-        # Compile the .po files to .mo files
-        call_command("compilemessages")
+                # Save mofile ourself. We could call 'compilemessages' but it wants to
+                # compile everything, which is both overkill and can fail if the venv
+                # or project source is not writable. We know this dir is writable, so
+                # just save this pofile and mofile ourselves.
+                files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
+                print(f"Created {files}")
 
     def import_by_40_license_html(self, content, license_code, language_code):
         """
