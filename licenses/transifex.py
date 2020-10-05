@@ -230,7 +230,11 @@ class TransifexHelper:
             resource_slug, legalcode.language_code
         )
         filenames = save_content_as_pofile_and_mofile(pofile_path, pofile_content)
-        repo.index.add(filenames)
+        relpaths = [
+            os.path.relpath(filename, settings.TRANSLATION_REPOSITORY_DIRECTORY)
+            for filename in filenames
+        ]
+        repo.index.add(relpaths)
 
     def handle_updated_translation_branch(self, repo, legalcodes):
         # legalcodes whose translations have been updated and all belong to the same translation branch

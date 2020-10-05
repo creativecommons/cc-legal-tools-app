@@ -1,4 +1,5 @@
 import datetime
+import os
 from unittest import mock
 from unittest.mock import MagicMock, call
 
@@ -493,7 +494,10 @@ class CheckForTranslationUpdatesTest(TestCase):
         )
         mock_save.assert_called_with(legalcode.translation_filename(), content)
         self.assertEqual({legalcode}, set(trb.legalcodes.all()))
-        dummy_repo.index.add.assert_called_with([legalcode.translation_filename()])
+        relpath = os.path.relpath(
+            legalcode.translation_filename(), settings.TRANSLATION_REPOSITORY_DIRECTORY
+        )
+        dummy_repo.index.add.assert_called_with([relpath])
 
     def test_transifex_get_pofile_content(self):
         helper = TransifexHelper()
