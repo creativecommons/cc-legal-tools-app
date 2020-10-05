@@ -125,7 +125,7 @@ class LegalCode(models.Model):
     def get_pofile(self) -> polib.POFile:
         with open(self.translation_filename(), "rb") as f:
             content = f.read()
-        return polib.pofile(content)
+        return polib.pofile(content.decode(), encoding="utf-8")
 
     def get_english_pofile(self) -> polib.POFile:
         if self.language_code != DEFAULT_LANGUAGE_CODE:

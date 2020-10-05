@@ -110,13 +110,18 @@ def active_translation(translation: DjangoTranslation):
         _active.value = previous_translation
 
 
+def save_pofile_as_pofile_and_mofile(pofile: polib.POFile, pofile_path: str):
+    """Returns pofile_abspath, mofile_abspath"""
+    pofile.save(pofile_path)
+    mofilepath = re.sub(r"\.po$", ".mo", pofile_path)
+    pofile.save_as_mofile(mofilepath)
+    return (pofile_path, mofilepath)
+
+
 def save_content_as_pofile_and_mofile(path: str, content: bytes):
     """Returns pofile_abspath, mofile_abspath"""
     pofile = polib.pofile(pofile=content.decode(), encoding="utf-8")
-    pofile.save(path)
-    mofilepath = re.sub(r"\.po$", ".mo", path)
-    pofile.save_as_mofile(mofilepath)
-    return (path, mofilepath)
+    return save_pofile_as_pofile_and_mofile(pofile, path)
 
 
 def get_pofile_content(pofile: polib.POFile) -> str:

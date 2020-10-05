@@ -110,7 +110,7 @@ class LegalCodeModelTest(TestCase):
             with mock.patch.object(polib, "pofile") as mock_pofile:
                 mock_pofile.return_value = test_pofile
                 result = legalcode.get_pofile()
-        mock_pofile.assert_called_with(b"")
+        mock_pofile.assert_called_with("", encoding="utf-8")
         self.assertEqual(test_pofile, result)
 
     @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/some/dir")
