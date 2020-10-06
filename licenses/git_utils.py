@@ -32,24 +32,6 @@ def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str
         origin.pull(f"{branch_name}:{branch_name}")
 
 
-def get_ssh_command():
-    """Return an ssh command that can be used to write to the repo"""
-    keyfile = getattr(settings, "TRANSLATION_REPOSITORY_DEPLOY_KEY", False)
-    if keyfile:
-        if os.path.exists(keyfile):
-            ssh_command = f"ssh -o StrictHostKeyChecking=no -i '{keyfile}'"
-        else:
-            raise ValueError(
-                f"settings.TRANSLATION_REPOSITORY_DEPLOY_KEY is {keyfile}, but that file does not exist or is not readable."
-            )
-    else:
-        raise ValueError(
-            "settings.TRANSLATION_REPOSITORY_DEPLOY_KEY must be set to the filename "
-            "of a private ssh deploy key for the repo before trying to push"
-        )
-    return ssh_command
-
-
 def commit_and_push_changes(repo: git.Repo, commit_msg: str):
     """Commit new translation changes to current branch, and push upstream"""
     index = repo.index
@@ -58,7 +40,12 @@ def commit_and_push_changes(repo: git.Repo, commit_msg: str):
     branch_name = current_branch.name
 
     # Use custom ssh command to use the deploy key when pushing
-    with repo.git.custom_environment(GIT_SSH_COMMAND=get_ssh_command()):
+    # .custom_environment updates the environment in which git is eventually run.
+    ssh_wrapper_path = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
+    with repo.git.custom_environment(
+        GIT_SSH=ssh_wrapper_path,
+        TRANSLATION_REPOSITORY_DEPLOY_KEY=settings.TRANSLATION_REPOSITORY_DEPLOY_KEY,
+    ):
         results = repo.remotes.origin.push(f"{branch_name}:{branch_name}")
     if len(results) == 0:
         raise Exception("PUSH FAILED COMPLETELY - add more info to this message")
