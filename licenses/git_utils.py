@@ -4,6 +4,20 @@ import git
 from django.conf import settings
 
 
+def setup_to_call_git():
+    """
+    Call this to set the environment before starting to use git.
+    Safe to call any number of times.
+    """
+    # Use custom ssh command to use the deploy key when pushing
+    if "GIT_SSH" not in os.environ:
+        os.environ["GIT_SSH"] = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
+    if "TRANSLATION_REPOSITORY_DEPLOY_KEY" not in os.environ:
+        os.environ[
+            "TRANSLATION_REPOSITORY_DEPLOY_KEY"
+        ] = settings.TRANSLATION_REPOSITORY_DEPLOY_KEY
+
+
 def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str):
     """
     Ensure we have a local branch named 'branch_name'.
@@ -39,14 +53,7 @@ def commit_and_push_changes(repo: git.Repo, commit_msg: str):
     current_branch = repo.head.reference
     branch_name = current_branch.name
 
-    # Use custom ssh command to use the deploy key when pushing
-    # .custom_environment updates the environment in which git is eventually run.
-    ssh_wrapper_path = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
-    with repo.git.custom_environment(
-        GIT_SSH=ssh_wrapper_path,
-        TRANSLATION_REPOSITORY_DEPLOY_KEY=settings.TRANSLATION_REPOSITORY_DEPLOY_KEY,
-    ):
-        results = repo.remotes.origin.push(f"{branch_name}:{branch_name}")
+    results = repo.remotes.origin.push(f"{branch_name}:{branch_name}")
     if len(results) == 0:
         raise Exception("PUSH FAILED COMPLETELY - add more info to this message")
     for result in results:

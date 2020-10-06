@@ -1,5 +1,7 @@
 import re
 
+default_app_config = "licenses.apps.LicensesConfig"
+
 FREEDOM_LEVEL_MAX = 1
 FREEDOM_LEVEL_MID = 2
 FREEDOM_LEVEL_MIN = 3
