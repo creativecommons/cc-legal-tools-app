@@ -4,8 +4,8 @@
 {% block about %}{{ license.about }}{% endblock %}
 {% block title %}Creative Commons &mdash; {{ title }} {% endblock %}
 
-{% block page-displayed %}
-  {% trans "License Deed for" %} {% include "includes/snippet/license_medium_title.html" %}
+{% block active-breadcrumb-li %}
+<li class="is-active"><a href="{{ legalcode.deed_url }}" aria-current="page displayed">{% trans "License Deed for" %} {{ legalcode.fat_code }}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}

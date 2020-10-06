@@ -2,8 +2,8 @@
 {% load i18n static %}
 {% load bidi %}
 
-{% block page-displayed %}
-  {% trans "Legal Code for" %} {% include "includes/snippet/license_medium_title.html" %}
+{% block active-breadcrumb-li %}
+  <li class="is-active"><a href="{{ legalcode.license_url }}" aria-current="page displayed">{% trans "Legal Code for" %} {{ legalcode.fat_code }}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}
