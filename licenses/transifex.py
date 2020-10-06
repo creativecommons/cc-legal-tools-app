@@ -61,7 +61,8 @@ class TransifexAuthRequests(requests.auth.AuthBase):
 
 
 class TransifexHelper:
-    def __init__(self):
+    def __init__(self, verbosity=1):
+        self.verbosity = verbosity
         self.project_slug = settings.TRANSIFEX["PROJECT_SLUG"]
         self.organization_slug = settings.TRANSIFEX["ORGANIZATION_SLUG"]
 
@@ -72,6 +73,13 @@ class TransifexHelper:
 
         self.api_v25 = requests.Session()
         self.api_v25.auth = auth
+
+    def say(self, verbosity, msg):
+        """
+        If verbosity is at least 'verbosity', print msg
+        """
+        if self.verbosity >= verbosity:
+            print(msg)
 
     def request20(self, method, path, **kwargs):
         func = getattr(self.api_v20, method)
@@ -209,6 +217,7 @@ class TransifexHelper:
         already been checked out.  Adds the updated files to the index.
         """
         resource_slug = legalcode.license.resource_slug
+        self.say(2, f"\tUpdating {resource_slug} {legalcode.language_code}")
         last_tx_update = iso8601.parse_date(
             self.stats[resource_slug][legalcode.language_code]["translated"][
                 "last_activity"
@@ -244,6 +253,8 @@ class TransifexHelper:
         language_code = legalcodes[0].language_code
         version = legalcodes[0].license.version
 
+        self.say(2, f"Updating branch {branch_name}")
+
         setup_local_branch(repo, branch_name, settings.OFFICIAL_GIT_BRANCH)
 
         # Track the translation update using a TranslationBranch object
@@ -259,9 +270,12 @@ class TransifexHelper:
             self.update_branch_for_legalcode(repo, legalcode, branch_object)
 
         # Commit and push this branch
+        self.say(2, "Committing and pushing")
         commit_and_push_changes(repo, "Translation changes from Transifex.")
 
-        print(f"Updated branch {branch_name} with updated translations and pushed")
+        self.say(
+            2, f"Updated branch {branch_name} with updated translations and pushed"
+        )
 
         # Now that we know the new changes are upstream, save the LegalCode
         # objects with their new translation_last_updates, and the branch object.
@@ -313,11 +327,13 @@ class TransifexHelper:
         Return a list of the names of all local branches that have been updated, that
         can be used e.g. to run publish on those branches.
         """
+        self.say(3, "check if repo is dirty")
         if repo.is_dirty():
             raise Exception(
                 f"Git repo at {settings.TRANSLATION_REPOSITORY_DIRECTORY} is dirty. "
                 f"We cannot continue."
             )
+        self.say(2, "Fetch to update repo")
         repo.remotes.origin.fetch()
         resource_slugs_on_transifex = self.stats.keys()
 
@@ -361,15 +377,16 @@ class TransifexHelper:
                 # First time: initialize, don't create branch
                 legalcode.translation_last_update = last_tx_update
                 legalcode.save()
-                print(f"Initialized last update time for {legalcode}")
+                self.say(2, f"Initialized last update time for {legalcode}")
                 continue
 
             if last_tx_update <= legalcode.translation_last_update:
                 # No change
+                self.say(3, f"No changes for {legalcode}")
                 continue
 
             # Translation has changed!
-            print(f"Translation has changed for {legalcode}")
+            self.say(2, f"Translation has changed for {legalcode}")
             legalcodes_with_updated_translations.append(legalcode)
 
         return self.handle_legalcodes_with_updated_translations(

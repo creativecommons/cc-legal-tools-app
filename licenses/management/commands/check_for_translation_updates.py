@@ -9,7 +9,9 @@ branch_name = "test_branch"
 
 class Command(BaseCommand):
     def handle(self, **options):
-        branches_updated = TransifexHelper().check_for_translation_updates()
+        branches_updated = TransifexHelper(
+            verbosity=options["verbosity"]
+        ).check_for_translation_updates()
 
         # run collectstatic if we're going to publish
         if branches_updated:
