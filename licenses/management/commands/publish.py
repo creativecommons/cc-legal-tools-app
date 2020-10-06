@@ -20,6 +20,7 @@ def list_open_branches():
     print("\n\nWhich branch are we publishing to?\n")
     for b in branches:
         print(b)
+    return branches
 
 
 class Command(BaseCommand):

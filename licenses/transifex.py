@@ -343,7 +343,13 @@ class TransifexHelper:
                 resource_slug not in resource_slugs_on_transifex
                 or language_code not in self.stats[resource_slug]
             ):
-                raise Exception(f"Transifex has no translation for {resource_slug}")
+                logger.error(
+                    f"Transifex has no translation for {resource_slug}"
+                )  # pragma: no cover
+                print(
+                    f"ERROR: Transifex has no translation for {resource_slug}"
+                )  # pragma: no cover
+                continue
 
             # We have a translation in this language for this license on Transifex.
             # When was it last updated?

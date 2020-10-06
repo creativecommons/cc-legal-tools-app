@@ -1,6 +1,25 @@
 from django.contrib import admin
 
-from licenses.models import LegalCode, License
+from licenses.models import LegalCode, License, TranslationBranch
+
+
+@admin.register(TranslationBranch)
+class TranslationBranchAdmin(admin.ModelAdmin):
+    list_display = [
+        "branch_name",
+        "version",
+        "language_code",
+        "last_transifex_update",
+        "complete",
+    ]
+    list_filter = [
+        "complete",
+        "version",
+        "language_code",
+    ]
+    raw_id_fields = [
+        "legalcodes",
+    ]
 
 
 @admin.register(LegalCode)

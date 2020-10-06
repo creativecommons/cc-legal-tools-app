@@ -2,12 +2,14 @@ import re
 from operator import itemgetter
 from typing import Iterable
 
+import git
+from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import active_translation, get_language_for_jurisdiction
-from licenses.models import LegalCode, License
+from licenses.models import LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
     # license_code : template name
@@ -21,6 +23,7 @@ DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
     # others use "licenses/standard_deed.html"
 }
 
+NUM_COMMITS = 3
 
 # For removing the deed.foo section of a deed url
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
@@ -139,3 +142,69 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
                 "license": legalcode.license,
             },
         )
+
+
+def translation_status(request):
+    # with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+    # repo.remotes.origin.fetch()  # Make sure we know about all the upstream branches
+    # heads = repo.remotes.origin.refs
+    # branches = [head.name[len("origin/") :] for head in heads]
+
+    branches = TranslationBranch.objects.exclude(complete=True)
+    return render(request, "licenses/translation_status.html", {"branches": branches})
+
+
+def branch_status_helper(repo, translation_branch):
+    """
+    Returns some of the context for the branch_status view.
+    Mostly separated to help with test so we can readily
+    mock the repo.
+    """
+    branch_name = translation_branch.branch_name
+    origin = repo.remotes.origin
+    origin.fetch()
+    if not hasattr(repo.branches, branch_name):
+        # Not locally, maybe upstream
+        if hasattr(origin.refs, branch_name):
+            repo.create_head(branch_name, f"origin/{branch_name}")
+        else:
+            # Nope, need to create from scratch
+            print("create local branch {branch_name} from scratch")
+            parent_branch = getattr(origin.refs, settings.OFFICIAL_GIT_BRANCH)
+            repo.create_head(branch_name, parent_branch)
+    else:
+        print(f"local branch {branch_name} already exists")
+
+    # Put the commit data in a format that's easy for the template to use
+    # Start by getting data about the last N + 1 commits
+    last_n_commits = list(repo.iter_commits(branch_name, max_count=1 + NUM_COMMITS))
+
+    # Copy the data we need into a list of dictionaries
+    commits_for_template = []
+    for i, c in enumerate(last_n_commits):
+        commits_for_template.append(
+            {
+                "shorthash": c.hexsha[:7],
+                "hexsha": c.hexsha,
+                "message": c.message,
+                "committed_datetime": c.committed_datetime,
+                "committer": c.committer,
+            }
+        )
+    # Add a little more data to most of them.
+    for i, c in enumerate(commits_for_template):
+        if i < NUM_COMMITS:
+            c["previous"] = commits_for_template[i + 1]
+    return {
+        "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
+        "branch": translation_branch,
+        "commits": commits_for_template[:NUM_COMMITS],
+        "last_commit": commits_for_template[0] if commits_for_template else None,
+    }
+
+
+def branch_status(request, id):
+    translation_branch = get_object_or_404(TranslationBranch, id=id)
+    with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+        context = branch_status_helper(repo, translation_branch)
+    return render(request, "licenses/branch_status.html", context,)

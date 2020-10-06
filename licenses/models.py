@@ -342,4 +342,34 @@ class TranslationBranch(models.Model):
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.", null=True, blank=True,
     )
-    complete = models.BooleanField("Only one incomplete per branch", default=False,)
+    complete = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = "translation branches"
+
+    def __str__(self):
+        return f"Translation branch {self.branch_name}. {'Complete' if self.complete else 'In progress'}."
+
+    @property
+    def stats(self):
+        number_of_untranslated_messages = 0
+        number_of_translated_messages = 0
+        for code in self.legalcodes.all():
+            pofile = code.get_pofile()
+            number_of_untranslated_messages += len(pofile.untranslated_entries())
+            number_of_translated_messages += len(pofile.translated_entries())
+        number_of_total_messages = (
+            number_of_untranslated_messages + number_of_translated_messages
+        )
+        if number_of_total_messages:
+            percent_messages_translated = int(
+                number_of_translated_messages * 100 / float(number_of_total_messages)
+            )
+        else:
+            percent_messages_translated = 100
+        return {
+            "number_of_untranslated_messages": number_of_untranslated_messages,
+            "number_of_translated_messages": number_of_translated_messages,
+            "number_of_total_messages": number_of_total_messages,
+            "percent_messages_translated": percent_messages_translated,
+        }

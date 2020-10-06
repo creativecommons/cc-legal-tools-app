@@ -1,5 +1,6 @@
 from unittest import mock
 
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation.trans_real import DjangoTranslation
@@ -7,8 +8,12 @@ from django.utils.translation.trans_real import DjangoTranslation
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.models import LegalCode, License
 from licenses.templatetags.license_tags import build_deed_url
-from licenses.tests.factories import LegalCodeFactory, LicenseFactory
-from licenses.views import DEED_TEMPLATE_MAPPING
+from licenses.tests.factories import (
+    LegalCodeFactory,
+    LicenseFactory,
+    TranslationBranchFactory,
+)
+from licenses.views import DEED_TEMPLATE_MAPPING, branch_status_helper
 
 
 def never(l):
@@ -98,8 +103,24 @@ class HomeViewTest(TestCase):
 
 
 class ViewLicenseTest(TestCase):
+    def test_view_license_identifying_jurisdiction_default_language(self):
+        language_code = "de"
+        lc = LegalCodeFactory(
+            license__version="4.0",
+            language_code=language_code,
+            license__jurisdiction_code="de",
+        )
+        url = lc.license_url()
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed(rsp, "legalcode_40_page.html")
+        self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
+        context = rsp.context
+        self.assertContains(rsp, f'''lang="{language_code}"''')
+        self.assertEqual(lc, context["legalcode"])
+
     def test_view_license(self):
-        for language_code in ["es", "ar"]:
+        for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
             lc = LegalCodeFactory(license__version="4.0", language_code=language_code)
             url = lc.license_url()
             rsp = self.client.get(url)
@@ -253,3 +274,124 @@ class LicenseDeedViewTest(TestCase):
     #     rsp = self.client.get(url)
     #     context = rsp.context
     #     self.assertEqual("fr", context["target_lang"])
+
+
+class BranchStatusViewTest(TestCase):
+    def setUp(self):
+        self.translation_branch = TranslationBranchFactory(language_code="fr",)
+
+    def test_simple_branch(self):
+        url = reverse("branch_status", kwargs=dict(id=self.translation_branch.id))
+        with mock.patch("licenses.views.git"):
+            with mock.patch.object(LegalCode, "get_pofile"):
+                with mock.patch("licenses.views.branch_status_helper") as mock_helper:
+                    mock_helper.return_value = {
+                        "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
+                        "branch": self.translation_branch,
+                        "commits": [],
+                        "last_commit": None,
+                    }
+                    r = self.client.get(url)
+        mock_helper.assert_called_with(mock.ANY, self.translation_branch)
+        self.assertTemplateUsed(r, "licenses/branch_status.html")
+        context = r.context
+        self.assertEqual(self.translation_branch, context["branch"])
+        self.assertEqual(settings.OFFICIAL_GIT_BRANCH, context["official_git_branch"])
+
+    def test_branch_helper_local_branch_exists(self):
+        mock_repo = mock.MagicMock()
+        result = branch_status_helper(mock_repo, self.translation_branch)
+        mock_repo.iter_commits.return_value = []
+        self.assertEqual(
+            {
+                "branch": self.translation_branch,
+                "commits": [],
+                "last_commit": None,
+                "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
+            },
+            result,
+        )
+        mock_repo.iter_commits.assert_called_with(
+            self.translation_branch.branch_name, max_count=4
+        )
+
+    def test_branch_helper_local_branch_does_not_exist_anywhere(self):
+        mock_repo = mock.MagicMock()
+
+        # Our mock repo should act like this branch does not exist anywhere
+        mock_repo.branches = object()  # Will not have an attribute named 'branch_name'
+
+        origin = mock_repo.remotes.origin
+
+        class just_has_parent:
+            pass
+
+        origin.refs = (
+            just_has_parent()
+        )  # Will not have an attribute named 'branch_name'
+        mock_parent_branch = mock.MagicMock()
+        setattr(origin.refs, settings.OFFICIAL_GIT_BRANCH, mock_parent_branch)
+
+        result = branch_status_helper(mock_repo, self.translation_branch)
+        mock_repo.iter_commits.return_value = []
+        self.assertEqual(
+            {
+                "branch": self.translation_branch,
+                "commits": [],
+                "last_commit": None,
+                "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
+            },
+            result,
+        )
+        mock_repo.iter_commits.assert_called_with(
+            self.translation_branch.branch_name, max_count=4
+        )
+        mock_repo.create_head.assert_called_with(
+            self.translation_branch.branch_name, mock_parent_branch
+        )
+
+    def test_branch_helper_branch_only_upstream(self):
+        branch_name = self.translation_branch.branch_name
+
+        mock_repo = mock.MagicMock()
+
+        # Our mock repo should act like this branch does not exist here
+        mock_repo.branches = object()  # Will not have an attribute named 'branch_name'
+
+        # But it does exist upstream
+        origin = mock_repo.remotes.origin
+
+        class has_branch:
+            pass
+
+        origin.refs = has_branch()
+        mock_upstream_branch = mock.MagicMock()
+        setattr(origin.refs, branch_name, mock_upstream_branch)
+
+        result = branch_status_helper(mock_repo, self.translation_branch)
+        mock_repo.iter_commits.return_value = []
+        self.assertEqual(
+            {
+                "branch": self.translation_branch,
+                "commits": [],
+                "last_commit": None,
+                "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
+            },
+            result,
+        )
+        mock_repo.iter_commits.assert_called_with(branch_name, max_count=4)
+        mock_repo.create_head.assert_called_with(branch_name, f"origin/{branch_name}")
+
+
+class TranslationStatusViewTest(TestCase):
+    def test_translation_status_view(self):
+        TranslationBranchFactory()
+        TranslationBranchFactory()
+        TranslationBranchFactory()
+
+        url = reverse("translation_status")
+        with mock.patch.object(LegalCode, "get_pofile"):
+            rsp = self.client.get(url)
+        self.assertTemplateUsed(rsp, "licenses/translation_status.html")
+        context = rsp.context
+        self.assertEqual(3, len(context["branches"]))
