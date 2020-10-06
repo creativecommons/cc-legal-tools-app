@@ -14,6 +14,7 @@
     <th># of translated messages</th>
     <th>Total # of messages</th>
     <th>% translated</th>
+    <th>Preview (not implemented yet)</th>
   </tr>
   </thead>
   <tbody>
@@ -25,10 +26,17 @@
       <td>{{ branch.legalcodes.count }}</td>
       <td>{{ branch.last_transifex_update|default_if_none:"-" }}</td>
       {% with stats=branch.stats %}
-        <td>{{ stats.translated_messages }}</td>
-        <td>{{ stats.total_messages }}</td>
-        <td>{{ stats.percent }}</td>
+        <td>{{ stats.number_of_translated_messages }}</td>
+        <td>{{ stats.number_of_total_messages }}</td>
+        <td>
+        {% if stats.number_of_total_messages %}
+          {{ stats.percent_messages_translated }}
+        {% else %}
+          -
+        {% endif %}
+        </td>
       {% endwith %}
+      <td><a href="#">This will be a link to a preview site.</a></td>
     </tr>
   {% empty %}
     <tr><td>There are no active translation branches.</td></tr>

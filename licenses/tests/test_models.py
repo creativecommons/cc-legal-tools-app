@@ -310,10 +310,10 @@ class TranslationBranchModelTest(TestCase):
             stats = tb.stats
         self.assertEqual(
             {
-                "percent": 37,
-                "total_messages": 8,
-                "translated_messages": 3,
-                "untranslated_messages": 5,
+                "percent_messages_translated": 37,
+                "number_of_total_messages": 8,
+                "number_of_translated_messages": 3,
+                "number_of_untranslated_messages": 5,
             },
             stats,
         )

@@ -18,6 +18,7 @@
       compare
     </a>
   </li>
+  <li><a href="#">This will be a link to a preview site.</a></li>
   </ul>
 
   <h2>Licenses with changed translations</h2>
@@ -39,7 +40,12 @@
       <td>{{ code.translation_last_update|default_if_none:"-" }}</td>
       <td>{{ pofile.translated_entries|length }}</td>
       <td>{{ pofile|length }}</td>
-      <td>{{ pofile.percent_translated }}%</td>
+      <td>
+        {% if pofile|length %}{# display % translated, but only if there are messages to translate #}
+          {{ pofile.percent_translated }}%</td>
+        {% else %}
+          -
+        {% endif %}
       </tr>
     {% endwith %}
   {% endfor %}

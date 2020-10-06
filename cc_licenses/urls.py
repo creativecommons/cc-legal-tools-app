@@ -17,8 +17,9 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django_distill import distill_path
+from django_distill import distill_path, distill_url
 
+from licenses.models import TranslationBranch
 from licenses.views import branch_status, home, translation_status
 
 
@@ -26,11 +27,26 @@ def distill_no_parameters():
     return None
 
 
+def distill_translation_branch_ids():
+    """Return a list of dictionaries with the 'id' values for the translation branches"""
+    return list(TranslationBranch.objects.filter(complete=False).values_list("id"))
+
+
 urlpatterns = [
     url(r"^admin/", admin.site.urls),
     distill_path("", home, name="home", distill_func=distill_no_parameters),
-    url(r"status/(?P<id>\d+)/$", branch_status, name="branch_status"),
-    url(r"status/$", translation_status, name="translation_status"),
+    distill_url(
+        r"status/(?P<id>\d+)/$",
+        branch_status,
+        name="branch_status",
+        distill_func=distill_translation_branch_ids,
+    ),
+    distill_url(
+        r"status/$",
+        translation_status,
+        name="translation_status",
+        distill_func=distill_no_parameters,
+    ),
     url(r"licenses/", include("licenses.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

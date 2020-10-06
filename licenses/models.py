@@ -352,20 +352,24 @@ class TranslationBranch(models.Model):
 
     @property
     def stats(self):
-        untranslated_messages = 0
-        translated_messages = 0
+        number_of_untranslated_messages = 0
+        number_of_translated_messages = 0
         for code in self.legalcodes.all():
             pofile = code.get_pofile()
-            untranslated_messages += len(pofile.untranslated_entries())
-            translated_messages += len(pofile.translated_entries())
-        total_messages = untranslated_messages + translated_messages
-        if total_messages:
-            percent = int(translated_messages * 100 / float(total_messages))
+            number_of_untranslated_messages += len(pofile.untranslated_entries())
+            number_of_translated_messages += len(pofile.translated_entries())
+        number_of_total_messages = (
+            number_of_untranslated_messages + number_of_translated_messages
+        )
+        if number_of_total_messages:
+            percent_messages_translated = int(
+                number_of_translated_messages * 100 / float(number_of_total_messages)
+            )
         else:
-            percent = 100
+            percent_messages_translated = 100
         return {
-            "untranslated_messages": untranslated_messages,
-            "translated_messages": translated_messages,
-            "total_messages": total_messages,
-            "percent": percent,
+            "number_of_untranslated_messages": number_of_untranslated_messages,
+            "number_of_translated_messages": number_of_translated_messages,
+            "number_of_total_messages": number_of_total_messages,
+            "percent_messages_translated": percent_messages_translated,
         }
