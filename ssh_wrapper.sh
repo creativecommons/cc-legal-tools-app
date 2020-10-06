@@ -5,4 +5,4 @@
 # We assume that we've previously set TRANSLATION_REPOSITORY_DEPLOY_KEY in the
 # environment to point to the key file.
 
-exec ssh -o StrictHostKeyChecking=no -i $TRANSLATION_REPOSITORY_DEPLOY_KEY "$@"
+exec ssh -o StrictHostKeyChecking=no -o CheckHostIP=no -i $TRANSLATION_REPOSITORY_DEPLOY_KEY "$@"
