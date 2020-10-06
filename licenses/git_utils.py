@@ -1,4 +1,7 @@
+import os
+
 import git
+from django.conf import settings
 
 
 def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str):
@@ -29,13 +32,34 @@ def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str
         origin.pull(f"{branch_name}:{branch_name}")
 
 
+def get_ssh_command():
+    """Return an ssh command that can be used to write to the repo"""
+    keyfile = getattr(settings, "TRANSLATION_REPOSITORY_DEPLOY_KEY", False)
+    if keyfile:
+        if os.path.exists(keyfile):
+            ssh_command = f"ssh -o StrictHostKeyChecking=no -i '{keyfile}'"
+        else:
+            raise ValueError(
+                f"settings.TRANSLATION_REPOSITORY_DEPLOY_KEY is {keyfile}, but that file does not exist or is not readable."
+            )
+    else:
+        raise ValueError(
+            "settings.TRANSLATION_REPOSITORY_DEPLOY_KEY must be set to the filename "
+            "of a private ssh deploy key for the repo before trying to push"
+        )
+    return ssh_command
+
+
 def commit_and_push_changes(repo: git.Repo, commit_msg: str):
     """Commit new translation changes to current branch, and push upstream"""
     index = repo.index
     index.commit(commit_msg)
     current_branch = repo.head.reference
     branch_name = current_branch.name
-    results = repo.remotes.origin.push(f"{branch_name}:{branch_name}")
+
+    # Use custom ssh command to use the deploy key when pushing
+    with repo.git.custom_environment(GIT_SSH_COMMAND=get_ssh_command()):
+        results = repo.remotes.origin.push(f"{branch_name}:{branch_name}")
     if len(results) == 0:
         raise Exception("PUSH FAILED COMPLETELY - add more info to this message")
     for result in results:
