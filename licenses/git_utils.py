@@ -16,6 +16,8 @@ def setup_to_call_git():
         os.environ[
             "TRANSLATION_REPOSITORY_DEPLOY_KEY"
         ] = settings.TRANSLATION_REPOSITORY_DEPLOY_KEY
+    if "PROJECT_ROOT" not in os.environ:
+        os.environ["PROJECT_ROOT"] = settings.ROOT_DIR
 
 
 def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str):

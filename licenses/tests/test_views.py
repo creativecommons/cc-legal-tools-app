@@ -3,6 +3,7 @@ from unittest import mock
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.translation.trans_real import DjangoTranslation
 
 from i18n import DEFAULT_LANGUAGE_CODE
@@ -13,7 +14,7 @@ from licenses.tests.factories import (
     LicenseFactory,
     TranslationBranchFactory,
 )
-from licenses.views import DEED_TEMPLATE_MAPPING, branch_status_helper
+from licenses.views import DEED_TEMPLATE_MAPPING, NUM_COMMITS, branch_status_helper
 
 
 def never(l):
@@ -300,13 +301,47 @@ class BranchStatusViewTest(TestCase):
 
     def test_branch_helper_local_branch_exists(self):
         mock_repo = mock.MagicMock()
+        mock_commit = mock.MagicMock(
+            hexsha="0123456789abcdef",
+            message="A message",
+            committed_datetime=timezone.now(),
+            committer="John Q. Committer",
+        )
+        mock_commits = [
+            mock_commit,
+            mock_commit,
+            mock_commit,
+            mock_commit,
+        ]
+        mock_repo.iter_commits.return_value = mock_commits
+
+        # Something like this will be returned for each commit
+        # Most will have a "previous" added, though.
+        massaged_commit = {
+            "committed_datetime": mock_commit.committed_datetime,
+            "committer": "John Q. Committer",
+            "hexsha": "0123456789abcdef",
+            "message": "A message",
+            "shorthash": "0123456",
+        }
+
+        expected_commits = [
+            dict(massaged_commit)
+            for i in range(min(NUM_COMMITS + 1, len(mock_commits)))
+        ]
+        for i, commit in enumerate(expected_commits):
+            if (i + 1) < len(expected_commits):
+                commit["previous"] = expected_commits[i + 1]
+        expected_commits = expected_commits[:NUM_COMMITS]
+        last_commit = expected_commits[0]
+
         result = branch_status_helper(mock_repo, self.translation_branch)
-        mock_repo.iter_commits.return_value = []
+
         self.assertEqual(
             {
                 "branch": self.translation_branch,
-                "commits": [],
-                "last_commit": None,
+                "commits": expected_commits,
+                "last_commit": last_commit,
                 "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
             },
             result,

@@ -5,4 +5,9 @@
 # We assume that we've previously set TRANSLATION_REPOSITORY_DEPLOY_KEY in the
 # environment to point to the key file.
 
+# ssh fumbles if it can't write to .ssh, so give it a .ssh it can do that with.
+export HOME=$PROJECT_ROOT
+mkdir -p $HOME/.ssh
+chmod 700 $HOME/.ssh
+
 exec ssh -o StrictHostKeyChecking=no -o CheckHostIP=no -i $TRANSLATION_REPOSITORY_DEPLOY_KEY "$@"

@@ -180,20 +180,20 @@ def branch_status_helper(repo, translation_branch):
     last_n_commits = list(repo.iter_commits(branch_name, max_count=1 + NUM_COMMITS))
 
     # Copy the data we need into a list of dictionaries
-    commits_for_template = []
-    for i, c in enumerate(last_n_commits):
-        commits_for_template.append(
-            {
-                "shorthash": c.hexsha[:7],
-                "hexsha": c.hexsha,
-                "message": c.message,
-                "committed_datetime": c.committed_datetime,
-                "committer": c.committer,
-            }
-        )
+    commits_for_template = [
+        {
+            "shorthash": c.hexsha[:7],
+            "hexsha": c.hexsha,
+            "message": c.message,
+            "committed_datetime": c.committed_datetime,
+            "committer": c.committer,
+        }
+        for c in last_n_commits
+    ]
+
     # Add a little more data to most of them.
     for i, c in enumerate(commits_for_template):
-        if i < NUM_COMMITS:
+        if i < NUM_COMMITS and (i + 1) < len(commits_for_template):
             c["previous"] = commits_for_template[i + 1]
     return {
         "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
