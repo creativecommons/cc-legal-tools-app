@@ -4,9 +4,9 @@ from typing import Iterable
 
 import git
 from django.conf import settings
+from django.core.cache import caches
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_info
-from django.views.decorators.cache import cache_page
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import active_translation, get_language_for_jurisdiction
@@ -193,9 +193,19 @@ def branch_status_helper(repo, translation_branch):
     }
 
 
-@cache_page(timeout=5 * 60, cache="branchstatuscache")
+# using cache_page seems to break django-distill (weird error about invalid
+# host "testserver"). Do our caching more directly.
+# @cache_page(timeout=5 * 60, cache="branchstatuscache")
 def branch_status(request, id):
     translation_branch = get_object_or_404(TranslationBranch, id=id)
-    with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
-        context = branch_status_helper(repo, translation_branch)
-    return render(request, "licenses/branch_status.html", context,)
+    cache = caches["branchstatuscache"]
+    cachekey = (
+        f"{settings.TRANSLATION_REPOSITORY_DIRECTORY}-{translation_branch.branch_name}"
+    )
+    result = cache.get(cachekey)
+    if result is None:
+        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+            context = branch_status_helper(repo, translation_branch)
+            result = render(request, "licenses/branch_status.html", context,)
+        cache.set(cachekey, result, 5 * 60)
+    return result
