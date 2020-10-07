@@ -226,4 +226,4 @@ TRANSIFEX = {
 OFFICIAL_GIT_BRANCH = "develop"
 
 # Path to private keyfile to use when pushing up to data repo
-TRANSLATION_REPOSITORY_DEPLOY_KEY = ""
+TRANSLATION_REPOSITORY_DEPLOY_KEY = os.getenv("TRANSLATION_REPOSITORY_DEPLOY_KEY", "")
