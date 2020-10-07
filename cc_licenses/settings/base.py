@@ -197,6 +197,22 @@ SECURE_BROWSER_XSS_FILTER = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = "DENY"
 
+# template_fragments
+CACHES = {
+    "default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache",},
+    "template_fragments": {
+        # Use memory caching so template fragments get cached whether we have
+        # memcached running or not.
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+    },
+}
+# This will use memcached if we have it, and otherwise just not cache.
+if "CACHE_HOST" in os.environ:
+    CACHES["default"] = {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "LOCATION": "%(CACHE_HOST)s" % os.environ,
+    }
+
 # Percent translated that languages should be at or above
 TRANSLATION_THRESHOLD = 80
 
