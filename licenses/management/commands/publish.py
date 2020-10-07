@@ -80,7 +80,7 @@ class Command(BaseCommand):
             setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
             self.run_django_distill()
             if repo.is_dirty():
-                repo.index.add("build")
+                repo.index.add(["build"])
                 commit_and_push_changes(repo, "Updated built HTML files")
             else:
                 print(f"\n{branch} build dir is up to date.\n")
