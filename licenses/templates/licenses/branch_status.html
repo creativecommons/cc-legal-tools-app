@@ -1,6 +1,9 @@
 {# detailed status for a translation branch #}
 {% extends "base.html" %}
+{% load cache %}
 {% block content %}
+  {% cache 300 branch_status branch.branch_name %}
+
   <p><a href="{% url 'translation_status' %}">Back to overall translation status</a></p>
 
   <h1>Translation branch: {{ branch.branch_name }}</h1>
@@ -82,4 +85,5 @@
   {% endfor %}
   </tbody>
   </table>
+  {% endcache %}
 {% endblock content %}

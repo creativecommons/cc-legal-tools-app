@@ -120,8 +120,8 @@ to get an API token, and set TRANSIFEX_API_TOKEN in your environment with its va
 
 The cc-licenses-data repo should be cloned next to the cc-licenses repo. (It can
 be elsewhere, then you need to set TRANSLATION_REPOSITORY_DIRECTORY to its location.)
-Be sure to clone using a URLlike "git@github..." and not "https://github...", or you won't
-be able to push to it.
+Be sure to clone using a URL that starts with "git@github..." and not "https://github...",
+or you won't be able to push to it.
 
 To enable pushing and pulling the licenses data repo with Github, create an ssh deploy
 key for the cc-licenses-data repo with write permissions, and put the private key file (not password
