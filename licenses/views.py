@@ -6,9 +6,11 @@ import git
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_info
+from django.views.decorators.cache import cache_page
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import active_translation, get_language_for_jurisdiction
+from licenses.git_utils import setup_local_branch
 from licenses.models import LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -161,19 +163,7 @@ def branch_status_helper(repo, translation_branch):
     mock the repo.
     """
     branch_name = translation_branch.branch_name
-    origin = repo.remotes.origin
-    origin.fetch()
-    if not hasattr(repo.branches, branch_name):
-        # Not locally, maybe upstream
-        if hasattr(origin.refs, branch_name):
-            repo.create_head(branch_name, f"origin/{branch_name}")
-        else:
-            # Nope, need to create from scratch
-            print("create local branch {branch_name} from scratch")
-            parent_branch = getattr(origin.refs, settings.OFFICIAL_GIT_BRANCH)
-            repo.create_head(branch_name, parent_branch)
-    else:
-        print(f"local branch {branch_name} already exists")
+    setup_local_branch(repo, branch_name, settings.OFFICIAL_GIT_BRANCH)
 
     # Put the commit data in a format that's easy for the template to use
     # Start by getting data about the last N + 1 commits
@@ -203,6 +193,7 @@ def branch_status_helper(repo, translation_branch):
     }
 
 
+@cache_page(timeout=5 * 60, cache="branchstatuscache")
 def branch_status(request, id):
     translation_branch = get_object_or_404(TranslationBranch, id=id)
     with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:

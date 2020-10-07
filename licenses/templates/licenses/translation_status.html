@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-{% load cache %}
+
 {% block content %}
-  {% cache 300 translation_status %}
   <h1>Translation status</h1>
 
   <table border="1">
@@ -44,5 +43,5 @@
   {% endfor %}
   </tbody>
   </table>
-  {% endcache %}
+
 {% endblock %}

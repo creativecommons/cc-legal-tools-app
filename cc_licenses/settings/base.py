@@ -200,7 +200,7 @@ X_FRAME_OPTIONS = "DENY"
 # template_fragments
 CACHES = {
     "default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache",},
-    "template_fragments": {
+    "branchstatuscache": {
         # Use memory caching so template fragments get cached whether we have
         # memcached running or not.
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
