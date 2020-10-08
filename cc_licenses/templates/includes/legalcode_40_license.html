@@ -1,7 +1,7 @@
 {% load bidi i18n license_tags %}
 <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
   {% include 'includes/snippet/icon_header_snippet.html' %}
-  <div>
+  <div id="plain-text-marker"> {# see publish management command #}
     <h3 class="padding-bottom-normal b-header">
       {% if legalcode|is_one_of:"by" %}{# Long full title #}
         {% blocktrans trimmed %}Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License{% endblocktrans %}
