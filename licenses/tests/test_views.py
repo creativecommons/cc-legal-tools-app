@@ -33,8 +33,7 @@ strings_to_lambdas = {
     "You do not have to comply with the license for elements of "
     "the material in the public domain": lambda l: l.license_code
     not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
-    "The licensor cannot revoke these freedoms as long as you follow the license terms.": lambda l: l.license_code
-    not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
+    "The licensor cannot revoke these freedoms as long as you follow the license terms.": always,
     "appropriate credit": lambda l: l.requires_attribution
     and l.license_code not in DEED_TEMPLATE_MAPPING,
     "You may do so in any reasonable manner, but not in any way that "
@@ -51,8 +50,8 @@ strings_to_lambdas = {
     and l.license_code not in DEED_TEMPLATE_MAPPING,
     "you may not distribute the modified material.": lambda l: not l.permits_derivative_works,
     "NoDerivatives": lambda l: not l.permits_derivative_works,
-    "This license is acceptable for Free Cultural Works.": lambda l: l.license_code
-    in ["by", "by-sa", "publicdomain", "CC0"],
+    # It was decided NOT to include the "free cultural works" icon/text
+    "This license is acceptable for Free Cultural Works.": never,
     "for any purpose, even commercially.": lambda l: l.license_code
     not in DEED_TEMPLATE_MAPPING
     and not l.prohibits_commercial_use,
@@ -103,6 +102,102 @@ class HomeViewTest(TestCase):
         self.assertTemplateUsed("home.html")
 
 
+class LicensesTestsMixin:
+    # Create some licenses to test in setUp
+    def setUp(self):
+        self.by = LicenseFactory(
+            license_code="by",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nc = LicenseFactory(
+            license_code="by-nc",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=True,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nc_nd = LicenseFactory(
+            license_code="by-nc-nd",
+            version="4.0",
+            permits_derivative_works=False,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=True,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nc_sa = LicenseFactory(
+            license_code="by-nc-sa",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=True,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nd = LicenseFactory(
+            license_code="by-nd",
+            version="4.0",
+            permits_derivative_works=False,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_sa = LicenseFactory(
+            license_code="by-sa",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+
+        for license in License.objects.all():
+            LegalCodeFactory(license=license, language_code="en")
+            LegalCodeFactory(license=license, language_code="es")
+            LegalCodeFactory(license=license, language_code="fr")
+
+        super().setUp()
+
+
 class ViewLicenseTest(TestCase):
     def test_view_license_identifying_jurisdiction_default_language(self):
         language_code = "de"
@@ -137,10 +232,10 @@ class ViewLicenseTest(TestCase):
                 self.assertContains(rsp, '''dir="rtl"''')
 
 
-class LicenseDeedViewTest(TestCase):
+class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     def validate_deed_text(self, rsp, license):
         self.assertEqual(200, rsp.status_code)
-        self.assertEqual("en", rsp.context["target_lang"])
+        self.assertEqual("en", rsp.context["legalcode"].language_code)
         text = rsp.content.decode("utf-8")
         if "INVALID_VARIABLE" in text:  # Some unresolved variable in the template
             msgs = ["INVALID_VARIABLE in output"]
@@ -162,7 +257,7 @@ class LicenseDeedViewTest(TestCase):
     def test_text_in_deeds(self):
         LicenseFactory()
         for license in License.objects.filter(version="4.0"):
-            with self.subTest(license.about):
+            with self.subTest(license.fat_code):
                 # Test in English and for 4.0 since that's how we've set up the strings to test for
                 url = build_deed_url(
                     license.license_code,

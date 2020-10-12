@@ -138,6 +138,7 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
             request,
             "deed_40.html",
             {
+                "additional_classes": "",
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,

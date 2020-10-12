@@ -1,35 +1,65 @@
 {% load bidi %}
 
-<h3 class="is-vcentered is-hidden-touch">
+{# https://bulma.io/documentation/helpers/visibility-helpers/ #}
+{# is-hidden-touch means hidden if screen is *narrower* than the typical desktop #}
+{# So this is the DESKTOP or WIDE version of the icon row. #}
+{# Figma mockup has this line left-justified #}
+<h3 class="is-hidden-touch">
   {# Icon Sections #}
     <span class="padding-{% end %}-bigger">
     {# For loop through icons classes that are being sent from model #}
       {% include 'includes/snippet/icon.html' with icon_type='cc-logo' additional_classes='padding-bottom-small' is_icon_header=True %}
       {% include 'includes/snippet/icon.html' with icon_type='cc-by' additional_classes='padding-bottom-small' is_icon_header=True %}
-      {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_icon_header=True %}
-      {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% if license.prohibits_commercial_use %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% endif %}
+      {% if license.requires_share_alike %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% endif %}
+      {% if not license.permits_derivative_works %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nd' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% endif %}
     </span>
   {{ legalcode.fat_code }}
 </h3>
-<h3 class="is-vcentered is-hidden-desktop is-hidden-mobile has-text-centered">
+{# is-hidden-desktop means hidden if screen is larger than typical mobile and tablet-sized screens #}
+{# is-hidden-mobile means hidden if screen is no wider than a typical mobile device #}
+{# I think that leaves this as the TABLET or MEDIUM version. #}
+<h3 class="is-hidden-desktop is-hidden-mobile">
   {# Icon Sections #}
     <span class="padding-{% end %}-big">
     {# For loop through icons classes that are being sent from model #}
       {% include 'includes/snippet/icon.html' with icon_type='cc-logo' additional_classes='padding-bottom-small' is_icon_header=True %}
       {% include 'includes/snippet/icon.html' with icon_type='cc-by' additional_classes='padding-bottom-small' is_icon_header=True %}
-      {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_icon_header=True %}
-      {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% if license.prohibits_commercial_use %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% endif %}
+      {% if license.requires_share_alike %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% endif %}
+      {% if not license.permits_derivative_works %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nd' additional_classes='padding-bottom-small' is_icon_header=True %}
+      {% endif %}
     </span>
     {{ legalcode.fat_code }}
 </h3>
-<h3 class="is-hidden-tablet has-text-centered">
+{# is-hidden-tablet means hidden for any screen bigger than a typical mobile (go figure) #}
+{# so this is the PHONE or NARROW version. #}
+<h3 class="is-hidden-tablet">
   {# Icon Sections #}
     <span>
     {# For loop through icons classes that are being sent from model #}
       {% include 'includes/snippet/icon.html' with icon_type='cc-logo' additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_icon_header=True %}
       {% include 'includes/snippet/icon.html' with icon_type='cc-by' additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_icon_header=True %}
-      {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_icon_header=True %}
-      {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_icon_header=True %}
+      {% if license.prohibits_commercial_use %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_icon_header=True %}
+      {% endif %}
+      {% if license.requires_share_alike %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_icon_header=True %}
+      {% if not license.permits_derivative_works %}
+        {% include 'includes/snippet/icon.html' with icon_type='cc-nd' additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_icon_header=True %}
+      {% endif %}
+      {% endif %}
     </span>
 </h3>
 <h4 class="has-text-centered is-hidden-tablet padding-{% start %}-normal">{{ legalcode.fat_code }}</h4>
