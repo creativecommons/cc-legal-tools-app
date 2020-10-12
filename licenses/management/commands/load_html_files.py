@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 
 from bs4 import BeautifulSoup, Tag
 from django.core.management import BaseCommand
+from django.db.models import Q
 from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
@@ -26,19 +27,42 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: ArgumentParser):
         parser.add_argument("input_directory")
+        parser.add_argument(
+            "--versions",
+            help="comma-separated license versions to include, e.g. '1.0,4.0'",
+        )
 
     def handle(self, input_directory, **options):
-        # We're just doing the BY 4.0 licenses for now
+        if options["versions"]:
+            versions_to_include = options["versions"].split(",")
+        else:
+            versions_to_include = None
+
         licenses_created = 0
         legalcodes_created = 0
 
-        # We'll create LegalCode and License objects for all the by* HTML files.
-        # (We're only going to parse the HTML for the 4.0 ones for now, though.)
+        # We'll create LegalCode and License objects for all the by* HTML files,
+        # and the zero_1.0 ones.
+        # We're just doing these license codes and versions for now:
+        # by* 4.0
+        # cc 1.0
+        BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
+        CC0_LICENSE_CODES = ["CC0"]
+
+        # Queries for legalcode objects
+        BY4_QUERY = Q(
+            license__version="4.0", license__license_code__in=BY_LICENSE_CODES
+        )
+        CC0_QUERY = Q(
+            license__version="1.0", license__license_code__in=CC0_LICENSE_CODES
+        )
+
         html_filenames = sorted(
             [
                 f
                 for f in os.listdir(input_directory)
-                if f.startswith("by") and f.endswith(".html")
+                if (f.startswith("by") or f.startswith("zero_1.0"))
+                and f.endswith(".html")
             ]
         )
         for filename in html_filenames:
@@ -51,6 +75,16 @@ class Command(BaseCommand):
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
             language_code = metadata["language_code"] or DEFAULT_LANGUAGE_CODE
+
+            include = (license_code in BY_LICENSE_CODES and version == "4.0") or (
+                license_code in CC0_LICENSE_CODES and version == "1.0"
+            )
+            include = include and (
+                versions_to_include is None or version in versions_to_include
+            )
+            if not include:
+                continue
+
             about_url = metadata["about_url"]
 
             # These are valid for BY only
@@ -66,6 +100,18 @@ class Command(BaseCommand):
                 requires_source_code = False  # GPL, LGPL only, I think
                 prohibits_commercial_use = "nc" in license_code_parts
                 prohibits_high_income_nation_use = False  # Not any BY 4.0 license
+            elif license_code == "CC0":
+                # permits anything, requires nothing, prohibits nothing
+                permits_derivative_works = True
+                permits_reproduction = True
+                permits_distribution = True
+                permits_sharing = True
+                requires_share_alike = False
+                requires_notice = False
+                requires_attribution = False
+                requires_source_code = False
+                prohibits_commercial_use = False
+                prohibits_high_income_nation_use = False
             else:
                 raise NotImplementedError(basename)
 
@@ -104,19 +150,20 @@ class Command(BaseCommand):
         )
 
         # NOW parse the HTML and output message files
+        relevant_legalcodes = LegalCode.objects.filter(BY4_QUERY | CC0_QUERY).order_by(
+            "language_code"
+        )
 
-        # We're just doing these license codes and version 4.0 for now.
-        LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
-        version = "4.0"
+        if versions_to_include is not None:
+            relevant_legalcodes = relevant_legalcodes.filter(
+                license__version__in=versions_to_include
+            )
 
         # What are the language codes we have translations for?
         language_codes = list(
-            LegalCode.objects.filter(
-                license__version=version, license__license_code__startswith="by"
+            relevant_legalcodes.distinct("language_code").values_list(
+                "language_code", flat=True
             )
-            .order_by("language_code")
-            .distinct("language_code")
-            .values_list("language_code", flat=True)
         )
 
         english_by_license_code = {}
@@ -126,25 +173,39 @@ class Command(BaseCommand):
         # something to fall back to.
         language_codes.remove("en")
         for language_code in ["en"] + language_codes:
-            for license_code in LICENSE_CODES:
-                legalcode = LegalCode.objects.get(
-                    license__license_code=license_code,
-                    license__version=version,
-                    language_code=language_code,
-                )
+            for license_code in CC0_LICENSE_CODES + BY_LICENSE_CODES:
+                # We might not have every license code in every language overall
+                try:
+                    legalcode = relevant_legalcodes.get(
+                        license__license_code=license_code, language_code=language_code,
+                    )
+                except LegalCode.DoesNotExist:
+                    continue
+                version = legalcode.license.version
 
                 print(legalcode.html_file)
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                messages_text = self.import_by_40_license_html(
-                    content, license_code, language_code
-                )
+                if version == "4.0":
+                    messages_text = self.import_by_40_license_html(
+                        content, license_code, language_code
+                    )
+                elif license_code == "CC0":
+                    messages_text = self.import_cc0_license_html(content)
+                else:
+                    raise NotImplementedError(
+                        f"Have not implemented parsing for {license_code} {version} licenses."
+                    )
 
                 if language_code == "en":
                     english_by_license_code[license_code] = messages_text
 
                 pofile = POFile()
+                # The syntax used to wrap messages in a .po file is difficult if you ever
+                # want to copy/paste the messages, so set a wrap width that will essentially
+                # disable wrapping.
+                pofile.wrapwidth = 999999
                 pofile.metadata = {
                     "Project-Id-Version": f"{license_code}-{version}",
                     # 'Report-Msgid-Bugs-To': 'you@example.com',
@@ -197,6 +258,79 @@ class Command(BaseCommand):
                 # just save this pofile and mofile ourselves.
                 files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
                 print(f"Created {files}")
+
+    def import_cc0_license_html(self, content):
+        messages = {}
+        raw_html = content
+        # Parse the raw HTML to a BeautifulSoup object.
+        soup = BeautifulSoup(raw_html, "lxml")
+        deed_main_content = soup.find(id="deed-main-content")
+        messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
+
+        # Big disclaimer (all caps)
+        messages["disclaimer"] = clean_string(nested_text(deed_main_content.blockquote))
+
+        # Statement of Purpose section: "<h3><em>Statement of Purpose</em></h3>"
+        messages["statement_of_purpose"] = nested_text(deed_main_content.h3)
+
+        # SOP section is formatted as paragraphs
+        paragraphs = deed_main_content.find_all("p")
+
+        # First 3 paragraphs in the SOP section are just text
+        messages["sop_p1"] = nested_text(paragraphs[0])
+        messages["sop_p2"] = nested_text(paragraphs[1])
+        messages["sop_p3"] = nested_text(paragraphs[2])
+
+        # Next paragraph is a bold term, and its definition
+        # <p><strong>1. Copyright and Related Rights.</strong>
+        # A Work... </p>
+        # We don't want the "1. " at the start or the trailing "."
+        nt = name_and_text(paragraphs[3])
+        messages["s1_title"] = nt["name"][3:].rstrip(".")
+        messages["s1_par"] = nt["text"]
+
+        # Followed by an ordered list with 7 items
+        ol = paragraphs[3].find_next_sibling("ol")
+        for i, part in enumerate(ol.find_all("li")):
+            messages[f"s1_item{i}"] = nested_text(part)
+
+        # Then two more numbered paragraphs that are definitions
+        # <p><strong>2. Waiver.</strong> To the ...</p>
+        nt = name_and_text(paragraphs[4])
+        messages["s2_title"] = nt["name"][3:].rstrip(".")
+        messages["s2_text"] = nt["text"]
+
+        # <p><strong>3. Public License Fallback.</strong> Should...</p>
+        nt = name_and_text(paragraphs[5])
+        messages["s3_title"] = nt["name"][3:].rstrip(".")
+        messages["s3_text"] = nt["text"]
+
+        # Finally the Limitations header, no intro text, and an ol with 4 items.
+        # <p><strong>4. Limitations and Disclaimers.</strong></p>
+        s4 = paragraphs[6]  # <p><strong>4. Limitations...
+        print(f"s4={s4}")
+        messages["s4_title"] = nested_text(s4)[:3].rstrip(".")
+
+        # In English, s4 is followed by an ol with 4 items.
+        # In .el, s4 is followed by a <p class="tab"> with
+        # 3 <br/> dividing the 4 parts.
+        ol = s4.find_next_sibling("ol")
+        if ol:
+            for i, part in enumerate(ol.find_all("li")):
+                messages[f"s4_part_{i}"] = nested_text(part)
+        else:
+            p4 = s4.find_next_sibling("p", class_="tab")
+            text = nested_text(p4)
+            parts = text.split("<br />")
+            for i, part in enumerate(parts):
+                print(part)
+                messages[f"s4_part_{i}"] = str(part)
+
+        # And that's it. The CC0 "license" is relatively short.
+
+        validate_dictionary_is_all_text(messages)
+
+        return messages
 
     def import_by_40_license_html(self, content, license_code, language_code):
         """

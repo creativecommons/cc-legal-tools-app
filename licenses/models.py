@@ -240,6 +240,25 @@ class License(models.Model):
     def __str__(self):
         return f"License<{self.about}>"
 
+    def logos(self):
+        """
+        Return an iterable of the codes for the logos that should be
+        displayed with this license. E.g.:
+        ["cc-logo", "cc-zero", "cc-by"]
+        """
+        result = ["cc-logo"]  # Everybody gets this
+        if self.license_code == "CC0":
+            result.append("cc-zero")
+        elif self.version == "4.0":
+            result.append("cc-by")  # All the 4.0 licenses are BY
+            if self.prohibits_commercial_use:
+                result.append("cc-nc")
+            if self.requires_share_alike:
+                result.append("cc-sa")
+            if not self.permits_derivative_works:
+                result.append("cc-nd")
+        return result
+
     def get_legalcode_for_language_code(self, language_code):
         """
         Return the legalcode for this license and language.
@@ -266,12 +285,13 @@ class License(models.Model):
         # Transifex translation resource slug for this license.
         # letters, numbers, underscores or hyphens.
         # No periods.
+        # All lowercase.
         if self.jurisdiction_code:
             slug = f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
         else:
             slug = f"{self.license_code}_{self.version}"
         slug = slug.replace(".", "")
-        return slug
+        return slug.lower()
 
     def rdf(self):
         """Generate RDF for this license?"""

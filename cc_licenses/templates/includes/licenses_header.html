@@ -1,18 +1,14 @@
 {% load bidi i18n %}
-
 {# cc_licenses icons - https://cc-vocabulary.netlify.app/?path=/docs/tokens-icons--figma #}
 
 <div id="licenses-header" class="padding-larger margin-bottom-bigger has-text-black is-hidden-touch is-hidden-desktop-only" >
   <h2 class="is-vcentered">
     {# Icon Sections #}
-      <span class="padding-{% end %}-bigger">
-      {# Forloop through icons classes that are being sent from model #}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-logo' additional_classes='padding-bottom-small' is_license_header=True %}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-by' additional_classes='padding-bottom-small' is_license_header=True %}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_license_header=True %}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_license_header=True %}
-      {# endfor #}
-      </span>
+    <span class="padding-{% end %}-bigger">
+      {% for code in license.logos %}
+        {% include 'includes/snippet/icon.html' with icon_type=code additional_classes='padding-bottom-small' is_license_header=True %}
+      {% endfor %}
+    </span>
 
     {{ legalcode.fat_code }} {#  e.g. CC BY-NC 4.0 #}
   </h2>
@@ -23,13 +19,10 @@
 <div id="licenses-header" class="padding-larger margin-bottom-bigger has-text-black is-hidden-widescreen" >
   <h2 class="has-text-centered">
     {# Icon Sections #}
-      <span>
-      {# Forloop through icons classes that are being sent from model #}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-logo' additional_classes='padding-bottom-small' is_license_header=True %}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-by' additional_classes='padding-bottom-small' is_license_header=True %}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-nc' additional_classes='padding-bottom-small' is_license_header=True %}
-        {% include 'includes/snippet/icon.html' with icon_type='cc-sa' additional_classes='padding-bottom-small' is_license_header=True %}
-      {# endfor #}
+    <span>
+      {% for code in license.logos %}
+        {% include 'includes/snippet/icon.html' with icon_type=code additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_license_header=True %}
+      {% endfor %}
       </span>
   </h2>
   <h2 class="has-text-centered is-hidden-touch is-hidden-desktop-only padding-{% start %}-normal">{{ legalcode.fat_code }}</h2>

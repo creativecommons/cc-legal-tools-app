@@ -29,8 +29,7 @@
             <th>{{ lang.name }}</th>
             {% for license_code in license_codes %}
               <td>
-                <a href="{% build_deed_url license_code version "" language_code %}">Deed</a>
-                <a href="{% build_license_url license_code version "" language_code %}">License</a>
+                {% home_box license_code version language_code %}
               </td>
             {% endfor %}
           </tr>

@@ -32,7 +32,7 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def home(request):
-    # Get the list of license codes and languages that occur among the 4.0 licenses
+    # Get the list of license codes and languages that occur among the 1.0 and 4.0 licenses
     # to let the template iterate over them as it likes.
     codes_for_40 = (
         License.objects.filter(version="4.0")
@@ -46,16 +46,31 @@ def home(request):
         .distinct("language_code")
         .values_list("language_code", flat=True)
     )
+    codes_for_10 = (
+        License.objects.filter(version="1.0")
+        .order_by("license_code")
+        .distinct("license_code")
+        .values_list("license_code", flat=True)
+    )
+    languages_for_10 = (
+        LegalCode.objects.filter(license__version="1.0")
+        .order_by("language_code")
+        .distinct("language_code")
+        .values_list("language_code", flat=True)
+    )
 
     licenses_by_version = [
         ("4.0", codes_for_40, languages_for_40),
+        ("1.0", codes_for_10, languages_for_10),
     ]
+    print(codes_for_40)
+    print(codes_for_10)
 
     context = {
         "licenses_by_version": licenses_by_version,
         # "licenses_by_code": licenses_by_code,
         "legalcodes": LegalCode.objects.filter(
-            license__version="4.0", language_code__in=["en", "es", "ar", "de"]
+            license__version__in=["1.0", "4.0"]
         ).order_by("license__license_code", "language_code"),
     }
     return render(request, "home.html", context)
@@ -112,6 +127,7 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
+                "license": legalcode.license,
             },
         )
 
@@ -132,13 +148,21 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         legalcode.license.legal_codes.all(), language_code, "deed"
     )
 
+    body_template = {
+        "1.0": "includes/deed_10_body.html",
+        "4.0": "includes/deed_40_body.html",
+    }.get(
+        "version", "includes/deed_40_body.html"
+    )  # default to 4.0 template
+
     translation = legalcode.get_translation_object()
     with active_translation(translation):
         return render(
             request,
-            "deed_40.html",
+            "deed.html",
             {
                 "additional_classes": "",
+                "body_template": body_template,
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
