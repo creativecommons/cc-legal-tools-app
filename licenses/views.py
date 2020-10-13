@@ -1,11 +1,16 @@
 import re
+import subprocess
+import tempfile
 from operator import itemgetter
 from typing import Iterable
 
 import git
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import caches
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE
@@ -86,7 +91,14 @@ def get_languages_and_links_for_legalcodes(
     return languages_and_links
 
 
-def view_license(request, license_code, version, jurisdiction=None, language_code=None):
+def view_license(
+    request,
+    license_code,
+    version,
+    jurisdiction=None,
+    language_code=None,
+    is_plain_text=False,
+):
     if language_code is None and jurisdiction:
         language_code = get_language_for_jurisdiction(jurisdiction)
     language_code = language_code or DEFAULT_LANGUAGE_CODE
@@ -103,17 +115,33 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
         legalcode.license.legal_codes.all(), language_code, "license"
     )
 
+    kwargs = dict(
+        template_name="legalcode_40_page.html",
+        context={
+            "fat_code": legalcode.license.fat_code(),
+            "languages_and_links": languages_and_links,
+            "legalcode": legalcode,
+        },
+    )
+
     translation = legalcode.get_translation_object()
     with active_translation(translation):
-        return render(
-            request,
-            "legalcode_40_page.html",
-            {
-                "fat_code": legalcode.license.fat_code(),
-                "languages_and_links": languages_and_links,
-                "legalcode": legalcode,
-            },
-        )
+        if not is_plain_text:
+            return render(request, **kwargs)
+        response = HttpResponse(content_type="text/plain", charset="utf-8")
+        html = render_to_string(**kwargs)
+        soup = BeautifulSoup(html, "html.parser")
+        plain_text_soup = soup.find(id="plain-text-marker")
+        with tempfile.NamedTemporaryFile() as temp:
+            temp.write(plain_text_soup.encode("utf-8"))
+            output = subprocess.run(
+                ["pandoc", "-f", "html", temp.name, "-t", "plain",],
+                encoding="utf-8",
+                capture_output=True,
+            )
+            response.write(output.stdout)
+            return response
+        return response
 
 
 def view_deed(request, license_code, version, jurisdiction=None, language_code=None):

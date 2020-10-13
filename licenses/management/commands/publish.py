@@ -1,12 +1,8 @@
-import fnmatch
 import os
-import subprocess
-import tempfile
 from argparse import ArgumentParser
 from shutil import rmtree
 
 import git
-from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
 from django_distill.distill import urls_to_distill
@@ -61,35 +57,6 @@ class Command(BaseCommand):
     def _quiet(self, *args, **kwargs):
         pass
 
-    def output_text_files(self, *args, **kwargs):
-        output_dir = getattr(settings, "DISTILL_DIR", None)
-        licenses_dir = f"{output_dir}licenses/"
-        pattern = "legalcode*"
-        for root, dirs, files in os.walk(licenses_dir):
-            for filename in fnmatch.filter(files, pattern):
-                file_path = os.path.join(root, filename)
-                txt_filename = f"{filename}.txt"
-                txt_file_path = os.path.join(root, txt_filename)
-                with open(file_path, "r") as f:
-                    soup = BeautifulSoup(f, "lxml")
-                    plain_text_soup = soup.find(id="plain-text-marker")
-                    plain_text_html = plain_text_soup.prettify(formatter="html")
-                with tempfile.NamedTemporaryFile(mode="w+t") as temp:
-                    temp.write(plain_text_html)
-                    temp.seek(0)
-                    subprocess.run(
-                        [
-                            "pandoc",
-                            "-f",
-                            "html",
-                            temp.name,
-                            "-t",
-                            "plain",
-                            "-o",
-                            txt_file_path,
-                        ]
-                    )
-
     def run_django_distill(self):
         """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR
         """
@@ -112,7 +79,6 @@ class Command(BaseCommand):
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
             self.run_django_distill()
-            self.output_text_files()
             if repo.is_dirty():
                 repo.index.add(["build"])
                 commit_and_push_changes(repo, "Updated built HTML files")

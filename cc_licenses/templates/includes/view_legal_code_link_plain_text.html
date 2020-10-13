@@ -1,5 +1,15 @@
 {% load i18n %}
 
 <div id="legal-code-plain-text" style="font-weight: bold;" class="padding-vertical-normal" >
-  <p class="body-big"><a href="{{ request.get_full_path }}.txt" class="link" download="{{ legalcode.fat_code }}.txt">{% trans "View Legal Code as plain text" %}</a></p>
+  <p class="body-big"><a id="view-plain-text" href="{{ request.get_full_path }}.txt" class="link">{% trans "View Legal Code as plain text" %}</a></p>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const downloadLink = document.querySelector("a#view-plain-text")
+    path = "{{ request.get_full_path }}"
+    if (path.endsWith("legalcode")) {
+      downloadLink.href = "{{ request.get_full_path}}/index.txt"
+    }
+  })
+</script>
