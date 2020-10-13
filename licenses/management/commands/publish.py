@@ -60,7 +60,10 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--output_dir",
-            help=f'Put output here instead of {getattr(settings, "DISTILL_DIR", None)}. (Warning: will delete whatever is there first.)',
+            help=(
+                f'Put output here instead of {getattr(settings, "DISTILL_DIR", None)}. '
+                f"(Warning: will delete whatever is there first.)"
+            ),
             default=getattr(settings, "DISTILL_DIR", None),
         )
 
