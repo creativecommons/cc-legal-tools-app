@@ -1,13 +1,26 @@
-{% load i18n %}
+{% load i18n license_tags static %}
 <div id="deed-body" class="margin-vertical-bigger padding-xxl" >
   {% include 'includes/snippet/icon_header_snippet.html' %}
   {# Deed Main Content (below) seems to be coming straight from database based on the example provided from cc5 #}
   {# Adding an example of what the deed should look like here #}
   <h3 class="b-header has-text-black padding-bottom-big padding-top-normal" style="font-weight: bold;">{% trans "You are free to:" %}</h3>
-  <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>Share</strong>  &mdash; copy and redistribute the material in any medium or format{% endblocktrans %}
-  </p>
-  <p class="has-text-black body-big padding-bottom-small">{% blocktrans %}<strong>Adapt</strong>  &mdash; remix, transform, and build upon the material{% endblocktrans %}
-  </p>
+
+  {% if license.prohibits_commercial_use or legalcode|is_one_of:"by,by-sa" %}
+   <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>Share</strong>  &mdash; copy and redistribute the material in any medium or format{% endblocktrans %}</p>
+  {% else %}
+    <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>Share</strong> — copy and redistribute the material in any medium or format for any purpose, even commercially.{% endblocktrans %}</p>
+  {% endif %}
+
+  {% if license.permits_derivative_works %}
+    {% if license.prohibits_commercial_use %}
+      <p class="has-text-black body-big padding-bottom-small">{% blocktrans %}<strong>Adapt</strong>  &mdash; remix, transform, and build upon the material{% endblocktrans %}
+      </p>
+    {% else %}
+      <p class="has-text-black body-big padding-bottom-small">{% blocktrans %}<strong>Adapt</strong>  &mdash; remix, transform, and build upon the material for any purpose, even commercially.{% endblocktrans %}
+      </p>
+    {% endif %}
+  {% endif %}
+
   <p class="has-text-black body-big padding-bottom-small">
     {% blocktrans %}The licensor cannot revoke these freedoms as long as you follow the license terms.{% endblocktrans %}
   </p>
@@ -22,21 +35,24 @@
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
         <span style="font-weight: bold;">{% trans "Attribution" %}</span> -
-
         {% blocktrans %}You must give <a href="#" id="appropriate_credit_popup" class="helpLink">appropriate credit</a></span>, provide a link to the license, and <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#" id="indicate_changes_popup" class="helpLink">indicate if changes were made</a></span>.  You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.{% endblocktrans %}
       </p>
     </div>
     {# endfor #}
+
+  {% if license.prohibits_commercial_use %}
     <div class="column is-1">
       {% include 'includes/snippet/icon.html' with icon_type='cc-nc' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
         <span style="font-weight: bold;">{% trans "NonCommercial" %}</span> -
-
         {% blocktrans %}You may not use the material for <a href="#" id="commercial_purposes_popup" class="helpLink">commercial purposes</a>.{% endblocktrans %}
       </p>
     </div>
+  {% endif %}
+
+  {% if license.requires_share_alike %}
     <div class="column is-1">
       {% include 'includes/snippet/icon.html' with icon_type='cc-sa' %}
     </div>
@@ -45,6 +61,19 @@
         <span style="font-weight: bold;">{% trans "ShareAlike" %}</span> - {% blocktrans %}If you remix, transform, or build upon the material, you must distribute your contributions under the <a href="#" id="same_license_popup" class="helpLink">same license</a> as the original.{% endblocktrans %}
       </p>
     </div>
+  {% endif %}
+
+{% if not license.permits_derivative_works %}
+    <div class="column is-1">
+      {% include 'includes/snippet/icon.html' with icon_type='cc-nd' %}
+    </div>
+    <div class="column is-11">
+      <p class="has-text-black body-big padding-bottom-normal">
+        <span style="font-weight: bold;">{% trans "NoDerivatives" %}</span> - {% blocktrans %}If you <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
+      </p>
+    </div>
+{% endif %}
+
     <div class="column is-1">
     </div>
     <div class="column is-11">
