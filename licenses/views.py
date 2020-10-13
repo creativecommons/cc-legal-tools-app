@@ -128,7 +128,7 @@ def view_license(
     with active_translation(translation):
         if not is_plain_text:
             return render(request, **kwargs)
-        response = HttpResponse(content_type="text/plain", charset="utf-8")
+        response = HttpResponse(content_type='text/plain; charset="utf-8";')
         html = render_to_string(**kwargs)
         soup = BeautifulSoup(html, "html.parser")
         plain_text_soup = soup.find(id="plain-text-marker")
