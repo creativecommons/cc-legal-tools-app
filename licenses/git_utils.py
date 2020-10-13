@@ -1,4 +1,27 @@
+import logging
+import os
+
 import git
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+
+def setup_to_call_git():
+    """
+    Call this to set the environment before starting to use git.
+    Safe to call any number of times.
+    """
+    # Use custom ssh command to use the deploy key when pushing
+    if "GIT_SSH" not in os.environ:
+        os.environ["GIT_SSH"] = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
+    if "TRANSLATION_REPOSITORY_DEPLOY_KEY" not in os.environ:
+        os.environ[
+            "TRANSLATION_REPOSITORY_DEPLOY_KEY"
+        ] = settings.TRANSLATION_REPOSITORY_DEPLOY_KEY
+    if "PROJECT_ROOT" not in os.environ:
+        os.environ["PROJECT_ROOT"] = settings.ROOT_DIR
 
 
 def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str):
@@ -11,21 +34,33 @@ def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str
     # is there already a branch?
     origin = repo.remotes.origin
     origin.fetch()
-    if not hasattr(repo.branches, branch_name):
+
+    # Check for branches that track remote branches that no longer exist
+    stale_refs = origin.stale_refs  # List[RemoteReference]
+    stale_branchnames = [ref.remote_head for ref in stale_refs]
+    logger.debug(f"STALE REFS = {stale_refs}")
+
+    exists_locally = hasattr(repo.branches, branch_name)
+    exists_upstream = (
+        hasattr(origin.refs, branch_name) and branch_name not in stale_branchnames
+    )
+
+    if exists_locally:
+        print("local already exists")
+    else:
         # Not locally, maybe upstream
-        if hasattr(origin.refs, branch_name):
+        if exists_upstream:
+            # Create locally, based on upstream
             repo.create_head(branch_name, f"origin/{branch_name}")
         else:
             # Nope, need to create from scratch
             print("create from scratch")
             parent_branch = getattr(origin.refs, parent_branch_name)
             repo.create_head(branch_name, parent_branch)
-    else:
-        print("local already exists")
     branch = getattr(repo.heads, branch_name)
     branch.checkout()
     # Make sure local branch is up to date if there's an upstream branch
-    if hasattr(origin.refs, branch_name):
+    if exists_upstream:
         origin.pull(f"{branch_name}:{branch_name}")
 
 
@@ -35,6 +70,7 @@ def commit_and_push_changes(repo: git.Repo, commit_msg: str):
     index.commit(commit_msg)
     current_branch = repo.head.reference
     branch_name = current_branch.name
+
     results = repo.remotes.origin.push(f"{branch_name}:{branch_name}")
     if len(results) == 0:
         raise Exception("PUSH FAILED COMPLETELY - add more info to this message")

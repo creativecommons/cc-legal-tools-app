@@ -114,7 +114,7 @@ class Command(BaseCommand):
             self.run_django_distill()
             self.output_text_files()
             if repo.is_dirty():
-                repo.index.add("build")
+                repo.index.add(["build"])
                 commit_and_push_changes(repo, "Updated built HTML files")
             else:
                 print(f"\n{branch} build dir is up to date.\n")
