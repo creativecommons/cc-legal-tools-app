@@ -136,6 +136,25 @@ class ViewLicenseTest(TestCase):
             elif language_code == "ar":
                 self.assertContains(rsp, '''dir="rtl"''')
 
+    def test_view_license_plain_text(self):
+        for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
+            lc = LegalCodeFactory(license__version="4.0", language_code=language_code)
+            url = reverse(
+                "view_40_license_txt",
+                kwargs=dict(
+                    license_code=lc.license.license_code,
+                    version=lc.license.version,
+                    language_code=language_code,
+                    is_plain_text=True,
+                ),
+            )
+            rsp = self.client.get(url)
+            self.assertEqual(
+                'text/plain; charset="utf-8";', rsp._headers["content-type"][1]
+            )
+            self.assertEqual(200, rsp.status_code)
+            self.assertGreater(len(rsp.content.decode()), 0)
+
 
 class LicenseDeedViewTest(TestCase):
     def validate_deed_text(self, rsp, license):

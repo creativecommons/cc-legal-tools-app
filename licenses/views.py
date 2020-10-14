@@ -141,7 +141,6 @@ def view_license(
             )
             response.write(output.stdout)
             return response
-        return response
 
 
 def view_deed(request, license_code, version, jurisdiction=None, language_code=None):

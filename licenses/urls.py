@@ -167,7 +167,7 @@ urlpatterns = [
         "<code:license_code>/<version:version>/legalcode.<lang:language_code>.txt",
         view_license,
         kwargs=dict(jurisdiction="", is_plain_text=True),
-        name="view_40_license",
+        name="view_40_license_txt",
         distill_func=get_licenses_code_version_language_code,
     ),
     distill_path(
@@ -175,7 +175,7 @@ urlpatterns = [
         # e.g. /licenses/by/4.0/legalcode - license BY 4.0 English
         "<code:license_code>/<version:version>/legalcode/index.txt",
         view_license,
-        name="licenses_default_jurisdiction_and_language",
+        name="licenses_default_jurisdiction_and_language_txt",
         distill_func=get_licenses_code_and_version,
         kwargs=dict(
             language_code=DEFAULT_LANGUAGE_CODE, jurisdiction="", is_plain_text=True
