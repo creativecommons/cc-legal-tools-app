@@ -18,6 +18,9 @@ cache:
 env:
   - DJANGO_SETTINGS_MODULE="cc_licenses.settings.dev"
 
+before-install:
+  - sudo apt-get -y install pandoc
+
 install:
   - pip install -U pip wheel
   - pip install -U -r requirements/dev.txt
