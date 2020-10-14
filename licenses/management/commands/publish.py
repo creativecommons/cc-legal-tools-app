@@ -115,7 +115,6 @@ class Command(BaseCommand):
         if options["nogit"]:
             self.use_git = False
             self.publish_branch(None)
-            return
         elif options.get("list_branches"):
             list_open_branches()
         elif options.get("branch_name"):

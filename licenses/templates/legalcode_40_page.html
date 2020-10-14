@@ -31,13 +31,11 @@
       {% include 'includes/licenses_header.html' %}
       {% include 'includes/about_cc_and_license.html' %}
       {% include 'includes/use_of_licenses.html' %}
-    <!-- Here comes the license text -->
       {% if license.version == "4.0" %}
-        {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL LICENSE TEXT #}
-      {% elif license.version == "1.0" %}
-        {% include 'includes/legalcode_10_license.html' %}  {# <<< THE ACTUAL LICENSE TEXT #}
+        {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
+      {% elif license.license_code == "CC0" %}
+        {% include 'includes/legalcode_cc0_license.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
       {% endif %}
-    <!-- That was the license text, version={{ license.version }} -->
       {% include 'includes/view_legal_code_link_plain_text.html' %}
       {% include 'includes/about_cc.html' %}
       {% include 'includes/related_links.html' %}

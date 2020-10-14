@@ -53,10 +53,11 @@ class Command(BaseCommand):
         BY4_QUERY = Q(
             license__version="4.0", license__license_code__in=BY_LICENSE_CODES
         )
-        CC0_QUERY = Q(
-            license__version="1.0", license__license_code__in=CC0_LICENSE_CODES
-        )
+        # There's only one version of CC0.
+        CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
 
+        # Get list of html filenames for CC0 and any BY license (any version).
+        # We'll filter out the filenames for unwanted versions later.
         html_filenames = sorted(
             [
                 f
@@ -76,9 +77,9 @@ class Command(BaseCommand):
             jurisdiction_code = metadata["jurisdiction_code"]
             language_code = metadata["language_code"] or DEFAULT_LANGUAGE_CODE
 
-            include = (license_code in BY_LICENSE_CODES and version == "4.0") or (
-                license_code in CC0_LICENSE_CODES and version == "1.0"
-            )
+            include = (
+                license_code in BY_LICENSE_CODES and version == "4.0"
+            ) or license_code in CC0_LICENSE_CODES
             include = include and (
                 versions_to_include is None or version in versions_to_include
             )
@@ -189,10 +190,15 @@ class Command(BaseCommand):
 
                 if version == "4.0":
                     messages_text = self.import_by_40_license_html(
-                        content, license_code, language_code
+                        content=content,
+                        license_code=license_code,
+                        language_code=language_code,
+                        license=license,
                     )
                 elif license_code == "CC0":
-                    messages_text = self.import_cc0_license_html(content)
+                    messages_text = self.import_cc0_license_html(
+                        content=content, language_code=language_code, license=license
+                    )
                 else:
                     raise NotImplementedError(
                         f"Have not implemented parsing for {license_code} {version} licenses."
@@ -204,8 +210,9 @@ class Command(BaseCommand):
                 pofile = POFile()
                 # The syntax used to wrap messages in a .po file is difficult if you ever
                 # want to copy/paste the messages, so set a wrap width that will essentially
-                # disable wrapping.
-                pofile.wrapwidth = 999999
+                # disable wrapping.  Okay to comment out until you need to copy/paste the
+                # messages.
+                # pofile.wrapwidth = 999999
                 pofile.metadata = {
                     "Project-Id-Version": f"{license_code}-{version}",
                     # 'Report-Msgid-Bugs-To': 'you@example.com',
@@ -259,13 +266,17 @@ class Command(BaseCommand):
                 files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
                 print(f"Created {files}")
 
-    def import_cc0_license_html(self, content):
+    def import_cc0_license_html(self, *, content, language_code, license):
         messages = {}
         raw_html = content
         # Parse the raw HTML to a BeautifulSoup object.
         soup = BeautifulSoup(raw_html, "lxml")
         deed_main_content = soup.find(id="deed-main-content")
         messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
+
+        if language_code == "en":
+            license.title_english = messages["license_medium"]
+            license.save()
 
         # Big disclaimer (all caps)
         messages["disclaimer"] = clean_string(nested_text(deed_main_content.blockquote))
@@ -284,9 +295,8 @@ class Command(BaseCommand):
         # Next paragraph is a bold term, and its definition
         # <p><strong>1. Copyright and Related Rights.</strong>
         # A Work... </p>
-        # We don't want the "1. " at the start or the trailing "."
         nt = name_and_text(paragraphs[3])
-        messages["s1_title"] = nt["name"][3:].rstrip(".")
+        messages["s1_title"] = nt["name"]
         messages["s1_par"] = nt["text"]
 
         # Followed by an ordered list with 7 items
@@ -297,19 +307,19 @@ class Command(BaseCommand):
         # Then two more numbered paragraphs that are definitions
         # <p><strong>2. Waiver.</strong> To the ...</p>
         nt = name_and_text(paragraphs[4])
-        messages["s2_title"] = nt["name"][3:].rstrip(".")
+        messages["s2_title"] = nt["name"]
         messages["s2_text"] = nt["text"]
 
         # <p><strong>3. Public License Fallback.</strong> Should...</p>
         nt = name_and_text(paragraphs[5])
-        messages["s3_title"] = nt["name"][3:].rstrip(".")
+        messages["s3_title"] = nt["name"]
         messages["s3_text"] = nt["text"]
 
         # Finally the Limitations header, no intro text, and an ol with 4 items.
         # <p><strong>4. Limitations and Disclaimers.</strong></p>
         s4 = paragraphs[6]  # <p><strong>4. Limitations...
         print(f"s4={s4}")
-        messages["s4_title"] = nested_text(s4)[:3].rstrip(".")
+        messages["s4_title"] = nested_text(s4)
 
         # In English, s4 is followed by an ol with 4 items.
         # In .el, s4 is followed by a <p class="tab"> with
@@ -332,7 +342,9 @@ class Command(BaseCommand):
 
         return messages
 
-    def import_by_40_license_html(self, content, license_code, language_code):
+    def import_by_40_license_html(
+        self, *, content, license, license_code, language_code
+    ):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
@@ -351,6 +363,9 @@ class Command(BaseCommand):
 
         deed_main_content = soup.find(id="deed-main-content")
         messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
+        if language_code == "en":
+            license.title_english = messages["license_medium"]
+            license.save()
         messages["license_long"] = inner_html(deed_main_content.h3)
         messages["license_intro"] = inner_html(
             deed_main_content.h3.find_next_sibling("p")

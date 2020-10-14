@@ -191,6 +191,12 @@ class License(models.Model):
         default="",
     )
 
+    title_english = models.TextField(
+        help_text="License title in English, e.g. 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+        blank=True,
+        default="",
+    )
+
     source = models.ForeignKey(
         "self",
         null=True,
@@ -261,7 +267,7 @@ class License(models.Model):
 
     def get_legalcode_for_language_code(self, language_code):
         """
-        Return the legalcode for this license and language.
+        Return the LegalCode object for this license and language.
         If language_code has a "-" and we don't find it, try
         without the "-*" part (to handle e.g. "en-us").
         """

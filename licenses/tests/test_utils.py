@@ -209,8 +209,6 @@ class GetLicenseUtilityTest(TestCase):
         """Should return an iterable of license dictionaries
         for licenses that have English legalcode,
         with the dictionary keys (license_code, version)
-
-        Excluding all versions other than 4.0 licenses
         """
         licenses = list(
             License.objects.filter(
@@ -227,8 +225,6 @@ class GetLicenseUtilityTest(TestCase):
     def test_get_licenses_code_version_lang(self):
         """Should return an iterable of license dictionaries
         with the dictionary keys (license_code, version, target_lang)
-
-        Excluding all versions other than 4.0 licenses
         """
         list_of_licenses_dict = []
         yielded_licenses = get_licenses_code_version_language_code()
