@@ -1,7 +1,13 @@
 from bs4 import BeautifulSoup
 from django.test import TestCase
 
-from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
+from licenses.bs_utils import (
+    direct_children_with_tag,
+    inner_html,
+    name_and_text,
+    nested_text,
+    text_up_to,
+)
 
 
 class TestBSUtils(TestCase):
@@ -66,3 +72,25 @@ class TestBSUtils(TestCase):
             {"name": "Truck", "text": "is a <strong>heavy</strong> vehicle."},
             name_and_text(soup.find(id="test")),
         )
+
+    def test_direct_children_with_tag(self):
+        text = """
+        <div id="top">
+           <div id="child1"></div>
+           <span id="child2">
+               <div id="grandchild2.1"></div>
+           </span>
+           <div id="child3">
+                <span id="grandchild3.1"></span>
+            </div>
+        </div>
+        """
+        soup = BeautifulSoup(text, "lxml")
+        element = soup.find(id="top")
+        result = direct_children_with_tag(element, "div")
+        self.assertEqual(2, len(result))
+        self.assertEqual(result[0]["id"], "child1")
+        self.assertEqual(result[1]["id"], "child3")
+        result = direct_children_with_tag(element, "span")
+        self.assertEqual(1, len(result))
+        self.assertEqual("child2", result[0]["id"])

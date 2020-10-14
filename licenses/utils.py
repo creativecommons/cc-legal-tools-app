@@ -119,7 +119,7 @@ def parse_legalcode_filename(filename):
 
 
 def get_licenses_code_and_version():
-    """Returns an iterable of license dictionaries that have English Legalcode
+    """Returns a generator of license dictionaries that have English Legalcode
     (not an issue except during tests, really).
     dictionary keys:
         - license_code
@@ -138,7 +138,7 @@ def get_licenses_code_and_version():
 
 
 def get_licenses_code_version_language_code():
-    """Returns an iterable of license dictionaries
+    """Returns a generator of license dictionaries
     dictionary keys:
         - license_code
         - version

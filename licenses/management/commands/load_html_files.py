@@ -9,7 +9,13 @@ from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import save_pofile_as_pofile_and_mofile
-from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
+from licenses.bs_utils import (
+    direct_children_with_tag,
+    inner_html,
+    name_and_text,
+    nested_text,
+    text_up_to,
+)
 from licenses.models import LegalCode, License
 from licenses.utils import (
     clean_string,
@@ -29,7 +35,12 @@ class Command(BaseCommand):
         parser.add_argument("input_directory")
         parser.add_argument(
             "--versions",
-            help="comma-separated license versions to include, e.g. '1.0,4.0'",
+            help="comma-separated license versions to include, e.g. '1.0,3.0,4.0'",
+        )
+        parser.add_argument(
+            "--unwrapped",
+            action="store_true",
+            help="Do not wrap lines in output .po files. Helpful if you need to copy messages. Don't commit the unwrapped files.",
         )
 
     def handle(self, input_directory, **options):
@@ -37,6 +48,7 @@ class Command(BaseCommand):
             versions_to_include = options["versions"].split(",")
         else:
             versions_to_include = None
+        self.unwrapped = options["unwrapped"]
 
         licenses_created = 0
         legalcodes_created = 0
@@ -45,13 +57,17 @@ class Command(BaseCommand):
         # and the zero_1.0 ones.
         # We're just doing these license codes and versions for now:
         # by* 4.0
+        # by* 3.0 - UNPORTED ONLY
         # cc 1.0
+        # (by4 and by3 have the same license codes)
         BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
         CC0_LICENSE_CODES = ["CC0"]
 
         # Queries for legalcode objects
-        BY4_QUERY = Q(
-            license__version="4.0", license__license_code__in=BY_LICENSE_CODES
+        # FOR NOW, omitting ports
+        BY4_QUERY = Q(license__version="4.0",)
+        BY3_UNPORTED_QUERY = Q(
+            license__version="3.0", license__jurisdiction_code="",  # omit ports
         )
         # There's only one version of CC0.
         CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
@@ -77,12 +93,16 @@ class Command(BaseCommand):
             jurisdiction_code = metadata["jurisdiction_code"]
             language_code = metadata["language_code"] or DEFAULT_LANGUAGE_CODE
 
+            # Just BY 3.0 & 4.0, and CC0
             include = (
-                license_code in BY_LICENSE_CODES and version == "4.0"
+                license_code in BY_LICENSE_CODES and version in {"3.0", "4.0"}
             ) or license_code in CC0_LICENSE_CODES
+            # If --versions was given, exclude other versions
             include = include and (
                 versions_to_include is None or version in versions_to_include
             )
+            # We're not yet doing any ported licenses
+            include = include and not jurisdiction_code
             if not include:
                 continue
 
@@ -151,9 +171,9 @@ class Command(BaseCommand):
         )
 
         # NOW parse the HTML and output message files
-        relevant_legalcodes = LegalCode.objects.filter(BY4_QUERY | CC0_QUERY).order_by(
-            "language_code"
-        )
+        relevant_legalcodes = LegalCode.objects.filter(
+            BY4_QUERY | BY3_UNPORTED_QUERY | CC0_QUERY
+        ).order_by("language_code")
 
         if versions_to_include is not None:
             relevant_legalcodes = relevant_legalcodes.filter(
@@ -176,95 +196,91 @@ class Command(BaseCommand):
         for language_code in ["en"] + language_codes:
             for license_code in CC0_LICENSE_CODES + BY_LICENSE_CODES:
                 # We might not have every license code in every language overall
-                try:
-                    legalcode = relevant_legalcodes.get(
-                        license__license_code=license_code, language_code=language_code,
+                for legalcode in relevant_legalcodes.filter(
+                    license__license_code=license_code, language_code=language_code,
+                ):
+                    license = legalcode.license
+                    version = license.version
+                    print(
+                        f"Importing {legalcode.html_file} {license_code} lang={language_code}"
                     )
-                except LegalCode.DoesNotExist:
-                    continue
-                version = legalcode.license.version
+                    with open(legalcode.html_file, "r", encoding="utf-8") as f:
+                        content = f.read()
 
-                print(legalcode.html_file)
-                with open(legalcode.html_file, "r", encoding="utf-8") as f:
-                    content = f.read()
-
-                if version == "4.0":
-                    messages_text = self.import_by_40_license_html(
-                        content=content,
-                        license_code=license_code,
-                        language_code=language_code,
-                        license=license,
-                    )
-                elif license_code == "CC0":
-                    messages_text = self.import_cc0_license_html(
-                        content=content, language_code=language_code, license=license
-                    )
-                else:
-                    raise NotImplementedError(
-                        f"Have not implemented parsing for {license_code} {version} licenses."
-                    )
-
-                if language_code == "en":
-                    english_by_license_code[license_code] = messages_text
-
-                pofile = POFile()
-                # The syntax used to wrap messages in a .po file is difficult if you ever
-                # want to copy/paste the messages, so set a wrap width that will essentially
-                # disable wrapping.  Okay to comment out until you need to copy/paste the
-                # messages.
-                # pofile.wrapwidth = 999999
-                pofile.metadata = {
-                    "Project-Id-Version": f"{license_code}-{version}",
-                    # 'Report-Msgid-Bugs-To': 'you@example.com',
-                    # 'POT-Creation-Date': '2007-10-18 14:00+0100',
-                    # 'PO-Revision-Date': '2007-10-18 14:00+0100',
-                    # 'Last-Translator': 'you <you@example.com>',
-                    # 'Language-Team': 'English <yourteam@example.com>',
-                    "Language": language_code,
-                    "MIME-Version": "1.0",
-                    "Content-Type": "text/plain; charset=utf-8",
-                    "Content-Transfer-Encoding": "8bit",
-                }
-
-                for internal_key, translation in messages_text.items():
-                    if language_code == "en":
-                        message_key = translation.strip()
-                        message_value = ""
-                    else:
-                        # WORKAROUND - by-nc-nd 4.0 NL has an extra item under s3a.
-                        if (
-                            internal_key == "s3a4_if_you_share_adapted_material"
-                            and internal_key
-                            not in english_by_license_code[license_code]
-                        ):
-                            message_key = (
-                                "If You Share Adapted Material You produce, the Adapter's "
-                                "License You apply must not prevent recipients of the Adapted "
-                                "Material from complying with this Public License."
-                            )
-                        else:
-                            message_key = english_by_license_code[license_code][
-                                internal_key
-                            ]
-                        message_value = translation
-
-                    pofile.append(
-                        POEntry(
-                            msgid=clean_string(message_key),
-                            msgstr=clean_string(message_value),
+                    if version == "4.0":
+                        messages_text = self.import_by_40_license_html(
+                            content=content,
+                            license_code=license_code,
+                            language_code=language_code,
+                            license=license,
                         )
-                    )
+                    elif version == "3.0":
+                        messages_text = self.import_by_30_license_html(
+                            content=content,
+                            language_code=language_code,
+                            license=license,
+                        )
+                    elif license_code == "CC0":
+                        messages_text = self.import_cc0_license_html(
+                            content=content,
+                            language_code=language_code,
+                            license=license,
+                        )
+                    else:
+                        raise NotImplementedError(
+                            f"Have not implemented parsing for {license_code} {version} licenses."
+                        )
 
-                po_filename = legalcode.translation_filename()
-                dir = os.path.dirname(po_filename)
-                if not os.path.isdir(dir):
-                    os.makedirs(dir)
-                # Save mofile ourself. We could call 'compilemessages' but it wants to
-                # compile everything, which is both overkill and can fail if the venv
-                # or project source is not writable. We know this dir is writable, so
-                # just save this pofile and mofile ourselves.
-                files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
-                print(f"Created {files}")
+                    key = license_code
+                    if language_code == "en":
+                        english_by_license_code[key] = messages_text
+                    english_messages = english_by_license_code[key]
+
+                    pofile = POFile()
+                    # The syntax used to wrap messages in a .po file is difficult if you ever
+                    # want to copy/paste the messages, so if --unwrapped was passed, set a
+                    # wrap width that will essentially disable wrapping.
+                    if self.unwrapped:
+                        pofile.wrapwidth = 999999
+                    pofile.metadata = {
+                        "Project-Id-Version": f"{license_code}-{version}",
+                        # 'Report-Msgid-Bugs-To': 'you@example.com',
+                        # 'POT-Creation-Date': '2007-10-18 14:00+0100',
+                        # 'PO-Revision-Date': '2007-10-18 14:00+0100',
+                        # 'Last-Translator': 'you <you@example.com>',
+                        # 'Language-Team': 'English <yourteam@example.com>',
+                        "Language": language_code,
+                        "MIME-Version": "1.0",
+                        "Content-Type": "text/plain; charset=utf-8",
+                        "Content-Transfer-Encoding": "8bit",
+                    }
+
+                    # Use the English message text as the message key
+                    for internal_key, translation in messages_text.items():
+                        if language_code == "en":
+                            message_key = translation.strip()
+                            message_value = ""
+                        else:
+                            message_key = english_messages[internal_key]
+                            message_value = translation
+
+                        pofile.append(
+                            POEntry(
+                                msgid=clean_string(message_key),
+                                msgstr=clean_string(message_value),
+                            )
+                        )
+
+                    po_filename = legalcode.translation_filename()
+                    dir = os.path.dirname(po_filename)
+                    if not os.path.isdir(dir):
+                        os.makedirs(dir)
+                    # Save mofile ourself. We could call 'compilemessages' but it wants to
+                    # compile everything, which is both overkill and can fail if the venv
+                    # or project source is not writable. We know this dir is writable, so
+                    # just save this pofile and mofile ourselves.
+                    files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
+                    print(f"Created {files}")
 
     def import_cc0_license_html(self, *, content, language_code, license):
         messages = {}
@@ -337,6 +353,124 @@ class Command(BaseCommand):
                 messages[f"s4_part_{i}"] = str(part)
 
         # And that's it. The CC0 "license" is relatively short.
+
+        validate_dictionary_is_all_text(messages)
+
+        return messages
+
+    def import_by_30_license_html(self, *, content, language_code, license):
+        """
+        Returns a dictionary mapping our internal keys to strings.
+        """
+        messages = {}
+        raw_html = content
+        # Some trivial making consistent - some translators changed 'strong' to 'b'
+        # for some unknown reason.
+        raw_html = raw_html.replace("<b>", "<strong>").replace("</b>", "</strong>")
+        raw_html = raw_html.replace("<B>", "<strong>").replace("</B>", "</strong>")
+
+        # Parse the raw HTML to a BeautifulSoup object.
+        soup = BeautifulSoup(raw_html, "lxml")
+        messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
+        if language_code == "en":
+            license.title_english = messages["license_medium"]
+            license.save()
+
+        deed_main_content = soup.find(id="deed-main-content")
+
+        messages["not_a_law_firm"] = nested_text(deed_main_content.blockquote)
+        # <h3><em>License</em></h3>
+        messages["license"] = nested_text(deed_main_content.h3)
+
+        # Top level paragraphs
+        def paragraphs_generator():
+            for p in direct_children_with_tag(deed_main_content, "p"):
+                yield p
+
+        paragraphs = paragraphs_generator()
+
+        def ols_generator():
+            for ol in direct_children_with_tag(deed_main_content, "ol"):
+                yield ol
+
+        ordered_lists = ols_generator()
+
+        # Two paragraphs of introduction
+        messages["par1"] = nested_text(next(paragraphs))
+        messages["par2"] = nested_text(next(paragraphs))
+
+        # <p><strong>1. Definitions</strong></p>
+        messages["definitions"] = nested_text(next(paragraphs))
+
+        # An ordered list of definitions
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            nt = name_and_text(li)
+            name = nt["name"]
+            text = nt["text"]
+            messages[f"def{i}name"] = name
+            messages[f"def{i}text"] = text
+
+        # <p><strong>2. Fair Dealing Rights.</strong> Nothing ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["fair_dealing_rights"] = nt["name"]
+        messages["fair_dealing_rights_text"] = nt["text"]
+
+        # <p><strong>3. License Grant.</strong> Subject ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["grant"] = nt["name"]
+        messages["grant_text"] = nt["text"]
+
+        # another ol
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"grant{i}"] = nested_text(li)
+
+        messages["par5"] = nested_text(next(paragraphs))
+
+        # <p><strong>4. Restrictions.</strong> The ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["restrictions"] = nt["name"]
+        messages["restrictions_text"] = nt["text"]
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            # Most of these li's just have text.
+            # one has a <p></p> followed by another ordered list
+            if li.p:
+                messages["restrictions avoid doubt"] = nested_text(li.p)
+                ol2 = li.ol
+                for j, li2 in enumerate(direct_children_with_tag(ol2, "li")):
+                    nt = name_and_text(li2)
+                    messages[f"restrictions name {i};{j}"] = nt["name"]
+                    messages[f"restrictions text {i};{j}"] = nt["text"]
+            else:
+                messages[f"restrictions{i}"] = nested_text(li)
+
+        # <p><strong>5. Representations, Warranties and Disclaimer</strong></p>
+        messages["reps_and_disclaimer"] = nested_text(next(paragraphs))
+        messages["unless_mutual"] = nested_text(next(paragraphs))
+
+        # <p><strong>6. Limitation on Liability.</strong> EXCEPT ...</p>
+        nt = name_and_text(next(paragraphs))
+        messages["Limitation"] = nt["name"]
+        messages["Limitation_text"] = nt["text"]
+
+        # <p><strong>7. Termination</strong></p>
+        messages["termination"] = nested_text(next(paragraphs))
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"termination{i}"] = nested_text(li)
+
+        # <p><strong>8. Miscellaneous</strong></p>
+        messages["misc"] = nested_text(next(paragraphs))
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"misc{i}"] = nested_text(li)
+
+        # That's it for the license. The rest is disclaimer that we're handling elsewhere.
 
         validate_dictionary_is_all_text(messages)
 

@@ -64,6 +64,15 @@ class LegalCode(models.Model):
         """
         return DJANGO_LANGUAGE_CODES.get(self.language_code, self.language_code)
 
+    def has_english(self):
+        """
+        Return True if there's an English translation for the same license.
+        """
+        return (
+            self.language_code == "en"
+            or self.license.legal_codes.filter(language_code="en").exists()
+        )
+
     def branch_name(self):
         """
         If this translation is modified, what is the name of the GitHub branch
@@ -353,6 +362,18 @@ class License(models.Model):
         helper.upload_messages_to_transifex(legalcode=en_legalcode)
         for legalcode in self.legal_codes.exclude(language_code=DEFAULT_LANGUAGE_CODE):
             helper.upload_messages_to_transifex(legalcode=legalcode)
+
+    @property
+    def nc(self):
+        return "nc" in self.license_code
+
+    @property
+    def nd(self):
+        return "nd" in self.license_code
+
+    @property
+    def sa(self):
+        return "sa" in self.license_code
 
 
 class TranslationBranch(models.Model):
