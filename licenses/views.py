@@ -115,11 +115,16 @@ def view_license(
         legalcode.license.legal_codes.all(), language_code, "license"
     )
 
+    plain_text_link = f"{ legalcode.license_url() }.txt"
+    if legalcode.license_url().endswith("legalcode"):
+        plain_text_link = f"{ legalcode.license_url() }/index.txt"
+
     kwargs = dict(
         template_name="legalcode_40_page.html",
         context={
             "fat_code": legalcode.license.fat_code(),
             "languages_and_links": languages_and_links,
+            "link_to_plain_text_file": plain_text_link,
             "legalcode": legalcode,
         },
     )
@@ -128,7 +133,7 @@ def view_license(
     with active_translation(translation):
         if not is_plain_text:
             return render(request, **kwargs)
-        response = HttpResponse(content_type='text/plain; charset="utf-8";')
+        response = HttpResponse(content_type='text/plain; charset="utf-8"')
         html = render_to_string(**kwargs)
         soup = BeautifulSoup(html, "html.parser")
         plain_text_soup = soup.find(id="plain-text-marker")

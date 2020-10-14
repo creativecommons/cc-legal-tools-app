@@ -19,6 +19,7 @@ local development system:
 - `virtualenvwrapper <http://pypi.python.org/pypi/virtualenvwrapper>`_ >= 3.0
 - Postgres >= 9.3
 - git >= 1.7
+- pandoc == 2.10.1
 
 Installing the proper NodeJS versions for each of your projects can be difficult. It's probably best
 to `use nvm <https://github.com/nvm-sh/nvm>`_.
@@ -68,6 +69,16 @@ Create the Postgres database and run the initial migrate::
 
     (cc_licenses)$ createdb -E UTF-8 cc_licenses
     (cc_licenses)$ python manage.py migrate
+
+For outputting text files to work properly make sure to install the stable release of pandoc at version 2.10.1.
+For linux via homebrew:
+
+    (cc_licenses)$ brew install pandoc@2.10.1
+
+or for windows via chocolatey:
+
+    (cc_licenses)$ choco install pandoc --version 2.10.1
+
 
 If you want to use `Travis <http://travis-ci.org>`_ to test your project,
 rename ``project.travis.yml`` to ``.travis.yml``, overwriting the ``.travis.yml``
