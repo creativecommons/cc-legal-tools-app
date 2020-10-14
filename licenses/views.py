@@ -5,7 +5,6 @@ from operator import itemgetter
 from typing import Iterable
 
 import git
-from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import caches
 from django.http import HttpResponse
@@ -115,16 +114,17 @@ def view_license(
         legalcode.license.legal_codes.all(), language_code, "license"
     )
 
-    plain_text_link = f"{ legalcode.license_url() }.txt"
-    if legalcode.license_url().endswith("legalcode"):
-        plain_text_link = f"{ legalcode.license_url() }/index.txt"
-
     kwargs = dict(
-        template_name="legalcode_40_page.html",
+        template_name="legalcode_40_page.html"
+        if not is_plain_text
+        else "legalcode_40_plain_text.html",
         context={
             "fat_code": legalcode.license.fat_code(),
             "languages_and_links": languages_and_links,
-            "link_to_plain_text_file": plain_text_link,
+            "link_to_plain_text_file": f"{ legalcode.license_url() }.txt"
+            if not legalcode.license_url().endswith("legalcode")
+            else f"{ legalcode.license_url() }/index.txt",
+            "is_plain_text": is_plain_text,
             "legalcode": legalcode,
         },
     )
@@ -135,10 +135,8 @@ def view_license(
             return render(request, **kwargs)
         response = HttpResponse(content_type='text/plain; charset="utf-8"')
         html = render_to_string(**kwargs)
-        soup = BeautifulSoup(html, "html.parser")
-        plain_text_soup = soup.find(id="plain-text-marker")
-        with tempfile.NamedTemporaryFile() as temp:
-            temp.write(plain_text_soup.encode("utf-8"))
+        with tempfile.NamedTemporaryFile(mode="w+t") as temp:
+            temp.write(html)
             output = subprocess.run(
                 ["pandoc", "-f", "html", temp.name, "-t", "plain",],
                 encoding="utf-8",

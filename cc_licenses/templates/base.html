@@ -16,8 +16,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/css/vocabulary.css">
 </head>
 <body typeoff="cc:License">
-  {% include 'includes/header.html' %}
+  {% if not is_plain_text %}
+    {% include 'includes/header.html' %}
+  {% endif %}
   <main>
+    {% if not is_plain_text %}
     <div class="level padding-{% start %}-big padding-{% end %}-large padding-vertical-normal">
           {% include 'includes/skiplink.html' %}
           <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
@@ -31,12 +34,17 @@
             {% include "includes/languages_dropdown.html" %}
           {% endif %}
     </div>
+    {% endif %}
     <section id="content" class="padding-horizontal-larger">
-      {% block next_btn_section %}{% endblock %}
+      {% if not is_plain_text %}
+        {% block next_btn_section %}{% endblock %}
+      {% endif %}
       {% block content %}{% endblock %}
     </section>
   </main>
-  {% include 'includes/footer.html' %}
+  {% if not is_plain_text %}
+    {% include 'includes/footer.html' %}
+  {% endif %}
 
   <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
 
