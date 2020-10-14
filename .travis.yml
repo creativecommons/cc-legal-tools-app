@@ -21,7 +21,8 @@ env:
 addons:
     apt:
       packages:
-        - pandoc-2.10.1
+        - pandoc
+      update: true
 
 install:
   - pip install -U pip wheel
