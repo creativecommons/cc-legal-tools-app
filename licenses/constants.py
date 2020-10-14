@@ -5,7 +5,7 @@ EXCLUDED_LANGUAGE_IDENTIFIERS = ["nso", "oci-es", "x-i18n", "st"]
 # no other "1.0" licenses yet. We just won't create any other "1.0" License or
 # LegalCode objects until we're ready for the other "1.0" licenses.
 # This list is the versions we are *completely* excluding.
-EXCLUDED_LICENSE_VERSIONS = ["3.0", "2.5", "2.1", "2.0"]
-INCLUDED_LICENSE_VERSIONS = ["4.0", "1.0"]
+EXCLUDED_LICENSE_VERSIONS = ["2.5", "2.1", "2.0"]
+INCLUDED_LICENSE_VERSIONS = ["3.0", "4.0", "1.0"]
 # All Versions
 LICENSE_VERSIONS = EXCLUDED_LICENSE_VERSIONS + INCLUDED_LICENSE_VERSIONS

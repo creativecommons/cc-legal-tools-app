@@ -75,9 +75,9 @@ class LicenseAdmin(admin.ModelAdmin):
     ]
     inlines = [LegalCodeInline]
     list_display = [
+        "license_code",
         "title_english",
         "version",
-        "license_code",
         "jurisdiction_code",
     ]
     list_filter = [
