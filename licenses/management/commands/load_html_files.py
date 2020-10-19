@@ -318,7 +318,6 @@ class Command(BaseCommand):
         # Finally the Limitations header, no intro text, and an ol with 4 items.
         # <p><strong>4. Limitations and Disclaimers.</strong></p>
         s4 = paragraphs[6]  # <p><strong>4. Limitations...
-        print(f"s4={s4}")
         messages["s4_title"] = nested_text(s4)
 
         # In English, s4 is followed by an ol with 4 items.
@@ -333,7 +332,6 @@ class Command(BaseCommand):
             text = nested_text(p4)
             parts = text.split("<br />")
             for i, part in enumerate(parts):
-                print(part)
                 messages[f"s4_part_{i}"] = str(part)
 
         # And that's it. The CC0 "license" is relatively short.
