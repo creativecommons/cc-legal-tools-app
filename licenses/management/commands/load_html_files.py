@@ -182,7 +182,8 @@ class Command(BaseCommand):
                     )
                 except LegalCode.DoesNotExist:
                     continue
-                version = legalcode.license.version
+                license = legalcode.license
+                version = license.version
 
                 print(legalcode.html_file)
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
@@ -267,6 +268,8 @@ class Command(BaseCommand):
                 print(f"Created {files}")
 
     def import_cc0_license_html(self, *, content, language_code, license):
+        assert license.version == "1.0", f"{license.version} is not '1.0'"
+        assert license.license_code == "CC0", f"{license.license_code} is not 'CC0'"
         messages = {}
         raw_html = content
         # Parse the raw HTML to a BeautifulSoup object.
@@ -346,6 +349,9 @@ class Command(BaseCommand):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
+        assert license.version == "4.0", f"{license.version} is not '4.0'"
+        assert license.license_code.startswith("by")
+
         messages = {}
         print(f"Importing {license_code} {language_code}")
         raw_html = content

@@ -209,7 +209,7 @@ class ViewLicenseTest(TestCase):
         url = lc.license_url()
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed(rsp, "legalcode_40_page.html")
+        self.assertTemplateUsed(rsp, "legalcode_page.html")
         self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
         context = rsp.context
         self.assertContains(rsp, f'''lang="{language_code}"''')
@@ -221,7 +221,7 @@ class ViewLicenseTest(TestCase):
             url = lc.license_url()
             rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
-            self.assertTemplateUsed(rsp, "legalcode_40_page.html")
+            self.assertTemplateUsed(rsp, "legalcode_page.html")
             self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
             context = rsp.context
             self.assertEqual(lc, context["legalcode"])

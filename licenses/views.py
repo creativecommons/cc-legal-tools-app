@@ -108,7 +108,7 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
     with active_translation(translation):
         return render(
             request,
-            "legalcode_40_page.html",
+            "legalcode_page.html",
             {
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
