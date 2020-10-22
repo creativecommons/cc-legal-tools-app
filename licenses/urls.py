@@ -154,24 +154,6 @@ urlpatterns = [
         kwargs=dict(language_code=DEFAULT_LANGUAGE_CODE, jurisdiction=""),
     ),
     path(
-        # Jurisdiction empty:
-        # e.g. /licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
-        "<code:license_code>/<version:version>/legalcode.<lang:language_code>.txt",
-        view_license,
-        kwargs=dict(jurisdiction="", is_plain_text=True),
-        name="view_40_license_txt",
-    ),
-    path(
-        # Jurisdiction and language empty (default to English):
-        # e.g. /licenses/by/4.0/legalcode - license BY 4.0 English
-        "<code:license_code>/<version:version>/legalcode/index.txt",
-        view_license,
-        name="licenses_default_jurisdiction_and_language_txt",
-        kwargs=dict(
-            language_code=DEFAULT_LANGUAGE_CODE, jurisdiction="", is_plain_text=True
-        ),
-    ),
-    path(
         # Language empty (default to THE JURISDICTION'S LANGUAGE):
         # e.g. /licenses/by-nc-sa/3.0/de/legalcode
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode",
