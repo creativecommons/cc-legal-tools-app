@@ -1,14 +1,44 @@
+import io
+import os
 import posixpath
 import re
 import urllib
 from base64 import b64encode
+from urllib.parse import urlparse
 
 from bs4 import NavigableString
+from django.test import Client
 from polib import POEntry, POFile
 
-from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
+from i18n import LANGUAGE_CODE_REGEX
 
-from .constants import EXCLUDED_LICENSE_VERSIONS
+
+def save_url_as_static_file(output_dir, url, open_func=io.open):
+    """
+    Get the output from the URL and save it in an appropriate file
+    under output_dir. For making static files from a site.
+
+    Pass in open_func just for testing, not in regular use.
+    """
+    print(url)
+    parts = urlparse(url)
+    path = parts.path
+    path = path.lstrip("/")
+    # We'll put EVERYTHING as an index.html file under a directory named for the URL.
+    # That way the URLs are right, and the web server *knows* these are HTML
+    # files.
+    output_filename = os.path.join(output_dir, path, "index.html")
+    dirname = os.path.dirname(output_filename)
+    if os.path.isfile(dirname):
+        os.remove(dirname)
+    os.makedirs(dirname, mode=0o755, exist_ok=True)
+    client = Client()
+    rsp = client.get(url)
+    if rsp.status_code != 200:
+        raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
+
+    with open_func(output_filename, "wb") as f:
+        f.write(rsp.content)  # Bytes
 
 
 def get_code_from_jurisdiction_url(url):
@@ -113,52 +143,6 @@ def parse_legalcode_filename(filename):
     )
 
     return data
-
-
-# Django Distill Utility Functions
-
-
-def get_licenses_code_and_version():
-    """Returns an iterable of license dictionaries that have English Legalcode
-    (not an issue except during tests, really).
-    dictionary keys:
-        - license_code
-        - version
-    """
-    from licenses.models import LegalCode
-
-    for legalcode in LegalCode.objects.filter(
-        language_code=DEFAULT_LANGUAGE_CODE
-    ).exclude(license__version__in=EXCLUDED_LICENSE_VERSIONS):
-        license = legalcode.license
-        yield {
-            "license_code": license.license_code,
-            "version": license.version,
-        }
-
-
-def get_licenses_code_version_language_code():
-    """Returns an iterable of license dictionaries
-    dictionary keys:
-        - license_code
-        - version
-        - language_code (
-            value is a translated license's
-            language_code
-        )
-    """
-    from licenses.models import LegalCode
-
-    for legalcode in LegalCode.objects.exclude(
-        license__version__in=EXCLUDED_LICENSE_VERSIONS
-    ):
-        license = legalcode.license
-        item = {
-            "license_code": license.license_code,
-            "version": license.version,
-            "language_code": legalcode.language_code,
-        }
-        yield item
 
 
 def compute_about_url(license_code, version, jurisdiction_code):

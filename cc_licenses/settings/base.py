@@ -34,10 +34,6 @@ INSTALLED_APPS = [
     "i18n",
 ]
 
-THIRD_PARTY_APPS = ["django_distill"]
-
-INSTALLED_APPS += THIRD_PARTY_APPS
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

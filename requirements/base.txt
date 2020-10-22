@@ -10,7 +10,6 @@ lxml==4.5.2  # For use by beautifulsoup (but not a stated dependency)
 polib==1.1.0
 psycopg2-binary==2.8.5
 whitenoise==4.1.4
-django-distill==1.9
 
 # DEPENDENCIES
 gitdb==4.0.5              # via gitpython

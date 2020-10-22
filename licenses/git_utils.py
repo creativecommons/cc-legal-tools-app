@@ -8,20 +8,25 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def setup_to_call_git():
+def setup_to_call_git(env=None):
     """
     Call this to set the environment before starting to use git.
     Safe to call any number of times.
+
+    If env is none, it'll use os.environ, which is the usual case.
+    You can pass a dictionary as env for testing.
     """
+    if env is None:
+        env = os.environ
     # Use custom ssh command to use the deploy key when pushing
-    if "GIT_SSH" not in os.environ:
-        os.environ["GIT_SSH"] = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
-    if "TRANSLATION_REPOSITORY_DEPLOY_KEY" not in os.environ:
-        os.environ[
+    if "GIT_SSH" not in env:
+        env["GIT_SSH"] = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
+    if "TRANSLATION_REPOSITORY_DEPLOY_KEY" not in env:
+        env[
             "TRANSLATION_REPOSITORY_DEPLOY_KEY"
         ] = settings.TRANSLATION_REPOSITORY_DEPLOY_KEY
-    if "PROJECT_ROOT" not in os.environ:
-        os.environ["PROJECT_ROOT"] = settings.ROOT_DIR
+    if "PROJECT_ROOT" not in env:
+        env["PROJECT_ROOT"] = settings.ROOT_DIR
 
 
 def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str):

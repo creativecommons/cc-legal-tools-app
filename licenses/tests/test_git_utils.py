@@ -3,7 +3,28 @@ from unittest import mock
 import git
 from django.test import TestCase, override_settings
 
-from licenses.git_utils import commit_and_push_changes, setup_local_branch
+from licenses.git_utils import (
+    commit_and_push_changes,
+    setup_local_branch,
+    setup_to_call_git,
+)
+
+
+class SetupToCallGitTest(TestCase):
+    @override_settings(
+        TRANSLATION_REPOSITORY_DEPLOY_KEY="/keyfile", ROOT_DIR="/rootdir"
+    )
+    def test_setup_to_call_git_nothing_in_env(self):
+        testenv = {}
+        setup_to_call_git(testenv)
+        self.assertEqual(
+            {
+                "GIT_SSH": "/rootdir/ssh_wrapper.sh",
+                "PROJECT_ROOT": "/rootdir",
+                "TRANSLATION_REPOSITORY_DEPLOY_KEY": "/keyfile",
+            },
+            testenv,
+        )
 
 
 class Dummy:

@@ -319,9 +319,7 @@ class TransifexHelper:
         # There's otherwise no need or reason for it.
         from licenses.models import LegalCode
 
-        legalcodes = LegalCode.objects.filter(
-            license__version="4.0", license__license_code__startswith="by"
-        ).exclude(language_code=DEFAULT_LANGUAGE_CODE)
+        legalcodes = LegalCode.valid().exclude(language_code=DEFAULT_LANGUAGE_CODE)
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             return self.check_for_translation_updates_with_repo_and_legalcodes(
                 repo, legalcodes
