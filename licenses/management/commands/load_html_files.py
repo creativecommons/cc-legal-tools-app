@@ -204,12 +204,8 @@ class Command(BaseCommand):
                     print(
                         f"Importing {legalcode.html_file} {license_code} lang={language_code}"
                     )
-                license = legalcode.license
-                version = license.version
-
-                print(legalcode.html_file)
-                with open(legalcode.html_file, "r", encoding="utf-8") as f:
-                    content = f.read()
+                    with open(legalcode.html_file, "r", encoding="utf-8") as f:
+                        content = f.read()
 
                     if version == "4.0":
                         messages_text = self.import_by_40_license_html(
