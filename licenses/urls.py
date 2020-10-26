@@ -131,8 +131,6 @@ urlpatterns = [
     # LICENSE PAGES
     #
     path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
-        # BUT there are no non-40 licenses we can distill, so just make this a regular URL path,
-        # not a path.
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
         view_license,
         name="view_40_license",

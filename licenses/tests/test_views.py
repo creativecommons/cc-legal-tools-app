@@ -199,6 +199,24 @@ class LicensesTestsMixin:
 
 
 class ViewLicenseTest(TestCase):
+    def test_view_license_with_jurisdiction_without_language_specified(self):
+        lc = LegalCodeFactory(
+            license__version="4.0", language_code="de", license__jurisdiction_code="de",
+        )
+        url = reverse(
+            "licenses_default_language_with_jurisdiction",
+            kwargs=dict(
+                version="4.0", jurisdiction="de", license_code=lc.license.license_code
+            ),
+        )
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed(rsp, "legalcode_page.html")
+        self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
+        context = rsp.context
+        self.assertContains(rsp, f'''lang="de"''')
+        self.assertEqual(lc, context["legalcode"])
+
     def test_view_license_identifying_jurisdiction_default_language(self):
         language_code = "de"
         lc = LegalCodeFactory(
