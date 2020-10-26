@@ -1,27 +1,93 @@
+import os
+from unittest import mock
 from unittest.mock import MagicMock
 
 from bs4 import BeautifulSoup
-from django.test import TestCase
+from django.test import Client, TestCase
 from polib import POEntry
 
-from i18n import DEFAULT_LANGUAGE_CODE
-from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
-from licenses.models import LegalCode, License
+from licenses.models import License
 from licenses.utils import (
     cleanup_current_branch_output,
     compute_about_url,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
-    get_licenses_code_and_version,
-    get_licenses_code_version_language_code,
     parse_legalcode_filename,
     save_dict_to_pofile,
+    save_url_as_static_file,
     strip_list_whitespace,
     validate_dictionary_is_all_text,
     validate_list_is_all_text,
 )
 
 from .factories import LegalCodeFactory, LicenseFactory
+
+
+class SaveURLAsStaticFileTest(TestCase):
+    def test_save_url_as_static_file_not_200(self):
+        output_dir = "/output"
+        url = "/some/url"
+        with mock.patch.object(os, "makedirs") as mock_makedirs:
+            with self.assertRaisesMessage(ValueError, "Status 404"):
+                save_url_as_static_file(output_dir, url)
+        self.assertEqual(
+            [mock.call("/output/some/url", mode=0o755, exist_ok=True)],
+            mock_makedirs.call_args_list,
+        )
+
+    def test_save_url_as_static_file_200(self):
+        output_dir = "/output"
+        url = "/"
+        file_content = b"xxxxx"
+
+        # sigh - why is this such a pain?
+
+        class MockFilehandle:
+            enter_called = 0
+            write_called = 0
+
+            def __enter__(self):
+                self.enter_called += 1
+                return self
+
+            def write(self, *a, **k):
+                self.write_called += 1
+                assert a == (file_content,)
+
+            def __exit__(self, *a, **k):
+                pass
+
+        mock_filehandle = MockFilehandle()
+
+        class MockOpen:
+            called = 0
+
+            def __call__(self, *a, **k):
+                assert a == (f"{output_dir}/index.html", "wb")
+                self.called += 1
+                return mock_filehandle
+
+        class MockResponse:
+            content = file_content
+            status_code = 200
+
+        mock_open = MockOpen()
+        with mock.patch.object(os, "makedirs") as mock_makedirs:
+            with mock.patch.object(Client, "get") as mock_get:
+                mock_get.return_value = MockResponse()
+
+                save_url_as_static_file(output_dir, url, mock_open)
+
+        self.assertEqual(
+            [mock.call(output_dir, mode=0o755, exist_ok=True)],
+            mock_makedirs.call_args_list,
+        )
+        self.assertEqual(
+            [mock.call(url)], mock_get.call_args_list,
+        )
+        self.assertEqual(1, mock_filehandle.enter_called)
+        self.assertEqual(1, mock_filehandle.write_called)
+        self.assertEqual(1, mock_open.called)
 
 
 class GetJurisdictionCodeTest(TestCase):
@@ -204,45 +270,6 @@ class GetLicenseUtilityTest(TestCase):
         for license in License.objects.all():
             LegalCodeFactory(license=license, language_code="en")
             LegalCodeFactory(license=license, language_code="fr")
-
-    def test_get_licenses_code_and_version(self):
-        """Should return an iterable of license dictionaries
-        for licenses that have English legalcode,
-        with the dictionary keys (license_code, version)
-        """
-        licenses = list(
-            License.objects.filter(
-                legal_codes__language_code=DEFAULT_LANGUAGE_CODE
-            ).exclude(version__in=EXCLUDED_LICENSE_VERSIONS)
-        )
-        list_of_licenses_dict = [
-            {"license_code": l.license_code, "version": l.version} for l in licenses
-        ]
-        yielded_licenses = get_licenses_code_and_version()
-        yielded_license_list = list(yielded_licenses)
-        self.assertCountEqual(list_of_licenses_dict, yielded_license_list)
-
-    def test_get_licenses_code_version_lang(self):
-        """Should return an iterable of license dictionaries
-        with the dictionary keys (license_code, version, target_lang)
-        """
-        list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_language_code()
-        yielded_license_list = list(yielded_licenses)
-        for legalcode in LegalCode.objects.exclude(
-            license__version__in=EXCLUDED_LICENSE_VERSIONS
-        ):
-            language_code = legalcode.language_code
-            license = legalcode.license
-            if language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
-                list_of_licenses_dict.append(
-                    {
-                        "license_code": license.license_code,
-                        "version": license.version,
-                        "language_code": language_code,
-                    }
-                )
-        self.assertEqual(list_of_licenses_dict, yielded_license_list)
 
 
 class TestComputeAboutURL(TestCase):
