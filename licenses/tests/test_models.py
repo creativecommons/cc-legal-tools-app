@@ -5,7 +5,6 @@ import polib
 from django.test import TestCase, override_settings
 from django.utils.translation import override
 
-import i18n.utils
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.models import LegalCode, License
@@ -141,7 +140,6 @@ class LegalCodeModelTest(TestCase):
             license__version="4.0", license__license_code="by-sa", language_code="de"
         )
 
-        i18n.utils.get_translation_object.cache_clear()
         with mock.patch("licenses.models.get_translation_object") as mock_djt:
             legalcode.get_translation_object()
         mock_djt.assert_called_with(domain="by-sa_40", language_code="de")
