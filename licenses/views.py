@@ -35,9 +35,8 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 def home(request):
     # Get the list of license codes and languages that occur among the licenses
     # to let the template iterate over them as it likes.
-    versions = reversed(sorted(INCLUDED_LICENSE_VERSIONS))
     licenses_by_version = []
-    for version in versions:
+    for version in INCLUDED_LICENSE_VERSIONS:
         codes = (
             License.objects.filter(version=version)
             .order_by("license_code")
@@ -54,10 +53,6 @@ def home(request):
 
     context = {
         "licenses_by_version": licenses_by_version,
-        # "licenses_by_code": licenses_by_code,
-        "legalcodes": LegalCode.objects.filter(license__version__in=versions).order_by(
-            "license__license_code", "language_code"
-        ),
     }
     return render(request, "home.html", context)
 

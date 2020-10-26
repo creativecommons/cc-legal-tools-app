@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 
 from bs4 import BeautifulSoup, Tag
 from django.core.management import BaseCommand
-from django.db.models import Q
 from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
@@ -16,7 +15,7 @@ from licenses.bs_utils import (
     nested_text,
     text_up_to,
 )
-from licenses.models import LegalCode, License
+from licenses.models import BY_LICENSE_CODES, CC0_LICENSE_CODES, LegalCode, License
 from licenses.utils import (
     clean_string,
     parse_legalcode_filename,
@@ -52,25 +51,6 @@ class Command(BaseCommand):
 
         licenses_created = 0
         legalcodes_created = 0
-
-        # We'll create LegalCode and License objects for all the by* HTML files,
-        # and the zero_1.0 ones.
-        # We're just doing these license codes and versions for now:
-        # by* 4.0
-        # by* 3.0 - UNPORTED ONLY
-        # cc 1.0
-        # (by4 and by3 have the same license codes)
-        BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
-        CC0_LICENSE_CODES = ["CC0"]
-
-        # Queries for legalcode objects
-        # FOR NOW, omitting ports
-        BY4_QUERY = Q(license__version="4.0",)
-        BY3_UNPORTED_QUERY = Q(
-            license__version="3.0", license__jurisdiction_code="",  # omit ports
-        )
-        # There's only one version of CC0.
-        CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
 
         # Get list of html filenames for CC0 and any BY license (any version).
         # We'll filter out the filenames for unwanted versions later.
@@ -171,9 +151,7 @@ class Command(BaseCommand):
         )
 
         # NOW parse the HTML and output message files
-        relevant_legalcodes = LegalCode.objects.filter(
-            BY4_QUERY | BY3_UNPORTED_QUERY | CC0_QUERY
-        ).order_by("language_code")
+        relevant_legalcodes = LegalCode.objects.valid().order_by("language_code")
 
         if versions_to_include is not None:
             relevant_legalcodes = relevant_legalcodes.filter(
@@ -194,93 +172,86 @@ class Command(BaseCommand):
         # something to fall back to.
         language_codes.remove("en")
         for language_code in ["en"] + language_codes:
-            for license_code in CC0_LICENSE_CODES + BY_LICENSE_CODES:
-                # We might not have every license code in every language overall
-                for legalcode in relevant_legalcodes.filter(
-                    license__license_code=license_code, language_code=language_code,
-                ):
-                    license = legalcode.license
-                    version = license.version
-                    print(
-                        f"Importing {legalcode.html_file} {license_code} lang={language_code}"
+            for legalcode in relevant_legalcodes.filter(language_code=language_code,):
+                license = legalcode.license
+                license_code = license.license_code
+                version = license.version
+                print(
+                    f"Importing {legalcode.html_file} {license_code} lang={language_code}"
+                )
+                with open(legalcode.html_file, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                if version == "4.0":
+                    messages_text = self.import_by_40_license_html(
+                        content=content,
+                        license_code=license_code,
+                        language_code=language_code,
+                        license=license,
                     )
-                    with open(legalcode.html_file, "r", encoding="utf-8") as f:
-                        content = f.read()
+                elif version == "3.0":
+                    messages_text = self.import_by_30_license_html(
+                        content=content, language_code=language_code, license=license,
+                    )
+                elif license_code == "CC0":
+                    messages_text = self.import_cc0_license_html(
+                        content=content, language_code=language_code, license=license,
+                    )
+                else:
+                    raise NotImplementedError(
+                        f"Have not implemented parsing for {license_code} {version} licenses."
+                    )
 
-                    if version == "4.0":
-                        messages_text = self.import_by_40_license_html(
-                            content=content,
-                            license_code=license_code,
-                            language_code=language_code,
-                            license=license,
-                        )
-                    elif version == "3.0":
-                        messages_text = self.import_by_30_license_html(
-                            content=content,
-                            language_code=language_code,
-                            license=license,
-                        )
-                    elif license_code == "CC0":
-                        messages_text = self.import_cc0_license_html(
-                            content=content,
-                            language_code=language_code,
-                            license=license,
-                        )
-                    else:
-                        raise NotImplementedError(
-                            f"Have not implemented parsing for {license_code} {version} licenses."
-                        )
+                key = license_code
+                if language_code == "en":
+                    english_by_license_code[key] = messages_text
+                english_messages = english_by_license_code[key]
 
-                    key = license_code
+                pofile = POFile()
+                # The syntax used to wrap messages in a .po file is difficult if you ever
+                # want to copy/paste the messages, so if --unwrapped was passed, set a
+                # wrap width that will essentially disable wrapping.
+                if self.unwrapped:
+                    pofile.wrapwidth = 999999
+                pofile.metadata = {
+                    "Project-Id-Version": f"{license_code}-{version}",
+                    # 'Report-Msgid-Bugs-To': 'you@example.com',
+                    # 'POT-Creation-Date': '2007-10-18 14:00+0100',
+                    # 'PO-Revision-Date': '2007-10-18 14:00+0100',
+                    # 'Last-Translator': 'you <you@example.com>',
+                    # 'Language-Team': 'English <yourteam@example.com>',
+                    "Language": language_code,
+                    "MIME-Version": "1.0",
+                    "Content-Type": "text/plain; charset=utf-8",
+                    "Content-Transfer-Encoding": "8bit",
+                }
+
+                # Use the English message text as the message key
+                for internal_key, translation in messages_text.items():
                     if language_code == "en":
-                        english_by_license_code[key] = messages_text
-                    english_messages = english_by_license_code[key]
+                        message_key = translation.strip()
+                        message_value = ""
+                    else:
+                        message_key = english_messages[internal_key]
+                        message_value = translation
 
-                    pofile = POFile()
-                    # The syntax used to wrap messages in a .po file is difficult if you ever
-                    # want to copy/paste the messages, so if --unwrapped was passed, set a
-                    # wrap width that will essentially disable wrapping.
-                    if self.unwrapped:
-                        pofile.wrapwidth = 999999
-                    pofile.metadata = {
-                        "Project-Id-Version": f"{license_code}-{version}",
-                        # 'Report-Msgid-Bugs-To': 'you@example.com',
-                        # 'POT-Creation-Date': '2007-10-18 14:00+0100',
-                        # 'PO-Revision-Date': '2007-10-18 14:00+0100',
-                        # 'Last-Translator': 'you <you@example.com>',
-                        # 'Language-Team': 'English <yourteam@example.com>',
-                        "Language": language_code,
-                        "MIME-Version": "1.0",
-                        "Content-Type": "text/plain; charset=utf-8",
-                        "Content-Transfer-Encoding": "8bit",
-                    }
-
-                    # Use the English message text as the message key
-                    for internal_key, translation in messages_text.items():
-                        if language_code == "en":
-                            message_key = translation.strip()
-                            message_value = ""
-                        else:
-                            message_key = english_messages[internal_key]
-                            message_value = translation
-
-                        pofile.append(
-                            POEntry(
-                                msgid=clean_string(message_key),
-                                msgstr=clean_string(message_value),
-                            )
+                    pofile.append(
+                        POEntry(
+                            msgid=clean_string(message_key),
+                            msgstr=clean_string(message_value),
                         )
+                    )
 
-                    po_filename = legalcode.translation_filename()
-                    dir = os.path.dirname(po_filename)
-                    if not os.path.isdir(dir):
-                        os.makedirs(dir)
-                    # Save mofile ourself. We could call 'compilemessages' but it wants to
-                    # compile everything, which is both overkill and can fail if the venv
-                    # or project source is not writable. We know this dir is writable, so
-                    # just save this pofile and mofile ourselves.
-                    files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
-                    print(f"Created {files}")
+                po_filename = legalcode.translation_filename()
+                dir = os.path.dirname(po_filename)
+                if not os.path.isdir(dir):
+                    os.makedirs(dir)
+                # Save mofile ourself. We could call 'compilemessages' but it wants to
+                # compile everything, which is both overkill and can fail if the venv
+                # or project source is not writable. We know this dir is writable, so
+                # just save this pofile and mofile ourselves.
+                files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
+                print(f"Created {files}")
 
     def import_cc0_license_html(self, *, content, language_code, license):
         assert license.version == "1.0", f"{license.version} is not '1.0'"
@@ -486,7 +457,6 @@ class Command(BaseCommand):
         assert license.license_code.startswith("by")
 
         messages = {}
-        print(f"Importing {license_code} {language_code}")
         raw_html = content
         # Some trivial making consistent - some translators changed 'strong' to 'b'
         # for some unknown reason.
