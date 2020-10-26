@@ -85,7 +85,9 @@ class Command(BaseCommand):
         print(f"Publishing branch {branch}")
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             if repo.is_dirty():
-                raise Exception("Repo is dirty, will not publish")
+                raise Exception(
+                    "Git repository has uncommited changes, will not publish"
+                )
             setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
 
             self.run_django_distill()
