@@ -10,6 +10,7 @@ from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import active_translation, get_language_for_jurisdiction
+from licenses.constants import INCLUDED_LICENSE_VERSIONS
 from licenses.git_utils import setup_local_branch
 from licenses.models import LegalCode, License, TranslationBranch
 
@@ -32,31 +33,31 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def home(request):
-    # Get the list of license codes and languages that occur among the 4.0 licenses
+    # Get the list of license codes and languages that occur among the licenses
     # to let the template iterate over them as it likes.
-    codes_for_40 = (
-        License.objects.filter(version="4.0")
-        .order_by("license_code")
-        .distinct("license_code")
-        .values_list("license_code", flat=True)
-    )
-    languages_for_40 = (
-        LegalCode.objects.filter(license__version="4.0")
-        .order_by("language_code")
-        .distinct("language_code")
-        .values_list("language_code", flat=True)
-    )
-
-    licenses_by_version = [
-        ("4.0", codes_for_40, languages_for_40),
-    ]
+    versions = reversed(sorted(INCLUDED_LICENSE_VERSIONS))
+    licenses_by_version = []
+    for version in versions:
+        codes = (
+            License.objects.filter(version=version)
+            .order_by("license_code")
+            .distinct("license_code")
+            .values_list("license_code", flat=True)
+        )
+        languages = (
+            LegalCode.objects.filter(license__version=version)
+            .order_by("language_code")
+            .distinct("language_code")
+            .values_list("language_code", flat=True)
+        )
+        licenses_by_version.append((version, codes, languages))
 
     context = {
         "licenses_by_version": licenses_by_version,
         # "licenses_by_code": licenses_by_code,
-        "legalcodes": LegalCode.objects.filter(
-            license__version="4.0", language_code__in=["en", "es", "ar", "de"]
-        ).order_by("license__license_code", "language_code"),
+        "legalcodes": LegalCode.objects.filter(license__version__in=versions).order_by(
+            "license__license_code", "language_code"
+        ),
     }
     return render(request, "home.html", context)
 
@@ -107,11 +108,12 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
     with active_translation(translation):
         return render(
             request,
-            "legalcode_40_page.html",
+            "legalcode_page.html",
             {
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
+                "license": legalcode.license,
             },
         )
 
@@ -128,17 +130,27 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         license__jurisdiction_code=jurisdiction or "",
         language_code=language_code,
     )
+    license = legalcode.license
     languages_and_links = get_languages_and_links_for_legalcodes(
-        legalcode.license.legal_codes.all(), language_code, "deed"
+        license.legal_codes.all(), language_code, "deed"
     )
+
+    if license.license_code == "CC0":
+        body_template = "includes/deed_cc0_body.html"
+    elif license.version == "4.0":
+        body_template = "includes/deed_40_body.html"
+    else:
+        # Default to 4.0 - or maybe we should just fail?
+        body_template = "includes/deed_40_body.html"
 
     translation = legalcode.get_translation_object()
     with active_translation(translation):
         return render(
             request,
-            "deed_40.html",
+            "deed.html",
             {
                 "additional_classes": "",
+                "body_template": body_template,
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,

@@ -55,6 +55,19 @@ class Command(BaseCommand):
         parser.add_argument(
             "--nopush", action="store_true", help="Do not push upstream",
         )
+        parser.add_argument(
+            "--nogit",
+            action="store_true",
+            help="Don't do anything with git, just build the pages and exit.",
+        )
+        parser.add_argument(
+            "--output_dir",
+            help=(
+                f'Put output here instead of {getattr(settings, "DISTILL_DIR", None)}. '
+                f"(Warning: will delete whatever is there first.)"
+            ),
+            default=getattr(settings, "DISTILL_DIR", None),
+        )
 
     def _quiet(self, *args, **kwargs):
         pass
@@ -88,21 +101,17 @@ class Command(BaseCommand):
                 raise Exception(
                     "Git repository has uncommited changes, will not publish"
                 )
-            setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
-
+            if self.use_git:
+                setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
             self.run_django_distill()
-
-            if repo.is_dirty():
-                repo.index.add(["build"])
-                if self.options["nopush"]:
-                    # Just commit
-                    repo.index.commit("Updated built HTML files")
-                else:
-                    commit_and_push_changes(repo, "Updated built HTML files")
+            if self.use_git:
                 if repo.is_dirty():
-                    raise Exception("Something went wrong, the repo is still dirty")
-            else:
-                print(f"\n{branch} build dir is up to date.\n")
+                    repo.index.add(["build"])
+                    commit_and_push_changes(repo, "Updated built HTML files")
+                    if repo.is_dirty():
+                        raise Exception("Something went wrong, the repo is still dirty")
+                else:
+                    print(f"\n{branch} build dir is up to date.\n")
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir
@@ -116,7 +125,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.options = options
-        if options.get("list_branches"):
+        self.output_dir = options["output_dir"]
+        self.use_git = True
+        if options["nogit"]:
+            self.use_git = False
+            self.publish_branch(None)
+        elif options.get("list_branches"):
             list_open_branches()
         elif options.get("branch_name"):
             self.publish_branch(options["branch_name"])

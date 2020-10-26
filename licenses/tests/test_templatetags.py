@@ -1,10 +1,36 @@
 from django.test import TestCase
 from django.urls import get_resolver
 
-from licenses.templatetags.license_tags import build_deed_url, build_license_url
+from licenses.templatetags.license_tags import (
+    build_deed_url,
+    build_license_url,
+    home_box,
+)
+from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 
 
 class LicenseTagsTest(TestCase):
+    def test_home_box_no_licenses(self):
+        # We don't create any licenses for home_box to link to
+        out = home_box("nope", "0.0", "klingon")
+        self.assertEqual("", out)
+
+    def test_home_box_two_legalcodes(self):
+        license_code = "by"
+        version = "4.0"
+        language_code = "es"
+        license = LicenseFactory(license_code=license_code, version=version)
+        l1 = LegalCodeFactory(license=license, language_code=language_code)
+        LegalCodeFactory(license=license, language_code=language_code)
+        out = home_box(license_code, version, language_code)
+        deed_link = l1.deed_url()
+        license_link = l1.license_url()
+        expected = (
+            f"""<a href="{deed_link}">Deed</a> <a href="{license_link}">License</a>"""
+        )
+        expected = expected + "<br/>" + expected
+        self.assertEqual(expected, out)
+
     def test_build_license_url(self):
         # https://creativecommons.org/licenses/by/3.0/es/legalcode.es
         data = [

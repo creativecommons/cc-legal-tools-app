@@ -280,7 +280,11 @@ def clean_string(s):
     Get a string into a canonical form - no whitespace at either end,
     no newlines, no double-spaces.
     """
-    return s.strip().replace("\n", " ").replace("  ", " ")
+    s = s.strip().replace("\n", " ").replace("  ", " ")
+    while "  " in s:
+        # If there were longer strings of spaces, need to iterate to replace... I guess.
+        s = s.replace("  ", " ")
+    return s
 
 
 def b64encode_string(s: str) -> str:
