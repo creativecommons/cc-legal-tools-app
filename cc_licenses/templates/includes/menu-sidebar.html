@@ -2,11 +2,34 @@
 
 <div class="column is-one-quarter sidebar-container">
   <aside class="menu sidebar-menu">
-    <a class="link has-text-black is-block padding-bottom-normal" href="#legal-code-body">{% include 'includes/snippet/license_medium_title.html' %}</a>
+    <a class="link has-text-black is-block padding-bottom-normal" href="#legal-code-body">{% trans license.title_english %}</a>
     <ul class="menu-list" >
       <li>
         <ul>
           {# replace with list of section links for the license legal code #}
+        {% if license.license_code == "CC0" %}
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#sop">{% blocktrans trimmed %}Statement of Purpose{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#copyright">{% blocktrans trimmed %}Copyright and Related Rights{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#waiver">{% blocktrans trimmed %}Waiver{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#fallback">{% blocktrans trimmed %}Public License Fallback{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#limitations">{% blocktrans trimmed %}Limitations and Disclaimers{% endblocktrans %}</a>
+          </li>
+
+        {% elif license.version == "4.0" %}
           <li class="columns">
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class="is-block column" href="#s1">{% blocktrans trimmed %}Section 1 – Definitions.{% endblocktrans %}</a>
@@ -39,6 +62,7 @@
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class=" is-block column" href="#s8">{% blocktrans trimmed %}Section 8 – Interpretation.{% endblocktrans %}</a>
           </li>
+        {% endif %}
         </ul>
       </li>
     </ul>
