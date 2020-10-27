@@ -1,0 +1,19 @@
+{% load i18n license_tags %}
+{# For the PORTED 3.0 licenses, we've just stored their HTML in the database for now. #}
+<div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
+  {% include 'includes/snippet/icon_header_snippet.html' %}
+  <div>
+    <h3 class="padding-bottom-normal b-header">{% trans "Creative Commons" %} {{ legalcode.title }}</h3>
+
+    {# ################ #}
+    {# INTRO/DISCLAIMER #}
+    {# ################ #}
+
+    <p class="body-big padding-bottom-larger">{% blocktrans %}CREATIVE COMMONS CORPORATION IS NOT A LAW FIRM AND DOES NOT PROVIDE LEGAL SERVICES. DISTRIBUTION OF THIS LICENSE DOES NOT CREATE AN ATTORNEY-CLIENT RELATIONSHIP. CREATIVE COMMONS PROVIDES THIS INFORMATION ON AN "AS-IS" BASIS. CREATIVE COMMONS MAKES NO WARRANTIES REGARDING THE INFORMATION PROVIDED, AND DISCLAIMS LIABILITY FOR DAMAGES RESULTING FROM ITS USE.{% endblocktrans %}</p>
+
+
+    {# ################ #}
+    {# "License"        #}
+    {# ################ #}
+    {{ legalcode.html|safe }}
+</div> {#  end legal-code-body #}

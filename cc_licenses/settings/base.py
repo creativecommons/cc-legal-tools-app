@@ -140,6 +140,12 @@ LANG_INFO["zh-Hans"] = {
 LANG_INFO["zh-Hant"] = {
     "fallback": ["zh-hant"],
 }
+LANG_INFO["oci"] = {  # Occitan? https://iso639-3.sil.org/code/oci
+    "bidi": False,
+    "code": "oci",
+    "name": "Occitan",
+    "name_local": "Occitan",
+}
 
 
 # Local time zone for this installation. Choices can be found here:

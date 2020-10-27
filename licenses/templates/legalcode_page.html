@@ -24,7 +24,7 @@
 </div>
 {% endblock %}
 
-{% block title %}{% trans license.title_english %}{% endblock %}
+{% block title %}{{ legalcode.title }}{% endblock %}
 
 {% block content %}
   <div class="columns">
@@ -35,8 +35,10 @@
       {% include 'includes/use_of_licenses.html' %}
       {% if license.version == "4.0" %}
         {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
-      {% elif license.version == "3.0" %}
-        {% include 'includes/legalcode_30_unported_license.html' %}  {# <<< THE ACTUAL 3.0 LICENSE TEXT #}
+      {% elif license.version == "3.0" and not license.jurisdiction_code %}
+        {% include 'includes/legalcode_30_unported_license.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
+      {% elif license.version == "3.0" and license.jurisdiction_code %}
+        {% include "includes/legalcode_30_ported_license.html" %}  {# <<< THE ACTUAL 3.0 ported LICENSE TEXT #}
       {% elif license.license_code == "CC0" %}
         {% include 'includes/legalcode_cc0_license.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
       {% endif %}

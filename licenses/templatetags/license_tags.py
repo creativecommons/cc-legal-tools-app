@@ -2,7 +2,6 @@ import string
 from threading import local
 
 from django import template
-from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -15,21 +14,13 @@ register = template.Library()
 next_letter_data = local()
 
 
-@register.simple_tag
-def home_box(license_code, version, language_code):
-    from licenses.models import LegalCode
-
-    result = []
-    for legalcode in LegalCode.objects.filter(
-        license__license_code=license_code,
-        license__version=version,
-        language_code=language_code,
-    ):
-        result.append(
-            f"""<a href="{legalcode.deed_url()}">Deed</a> """
-            f"""<a href="{legalcode.license_url()}">License</a>"""
-        )
-    return mark_safe("<br/>".join(result))
+@register.filter
+def license_codes(legalcodes):
+    """
+    Return sorted list of the unique license codes for the given
+    dictionaries representing legalcodes
+    """
+    return sorted(set(lc["license_code"] for lc in legalcodes))
 
 
 @register.simple_tag

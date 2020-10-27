@@ -141,10 +141,7 @@ def get_pofile_content(pofile: polib.POFile) -> str:
 def get_language_for_jurisdiction(
     jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE
 ):
-    langs = DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, [])
-    if len(langs) == 1:
-        return langs[0]
-    return default_language
+    return DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, default_language)
 
 
 def get_locale_text_orientation(locale_identifier: str) -> str:

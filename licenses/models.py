@@ -49,22 +49,20 @@ class LegalCodeQuerySet(models.QuerySet):
         # and the zero_1.0 ones.
         # We're just doing these license codes and versions for now:
         # by* 4.0
-        # by* 3.0 - UNPORTED ONLY
+        # by* 3.0 - including ported
         # cc 1.0
 
         # Queries for legalcode objects
         BY4_QUERY = Q(
             license__version="4.0", license__license_code__in=BY_LICENSE_CODES,
         )
-        BY3_UNPORTED_QUERY = Q(
-            license__version="3.0",
-            license__jurisdiction_code="",  # FIXME: omit ports for now
-            license__license_code__in=BY_LICENSE_CODES,
+        BY3_QUERY = Q(
+            license__version="3.0", license__license_code__in=BY_LICENSE_CODES,
         )
         # There's only one version of CC0.
         CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
 
-        return self.filter(BY4_QUERY | BY3_UNPORTED_QUERY | CC0_QUERY).exclude(
+        return self.filter(BY4_QUERY | BY3_QUERY | CC0_QUERY).exclude(
             language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
         )
 
@@ -86,6 +84,14 @@ class LegalCode(models.Model):
         null=True,
         default=None,
     )
+
+    title = models.TextField(
+        help_text="License title in this language, e.g. 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+        blank=True,
+        default="",
+    )
+
+    html = models.TextField(blank=True, default="")
 
     objects = LegalCodeQuerySet.as_manager()
 

@@ -2,7 +2,7 @@ from django.urls import path, register_converter
 
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
-from licenses.views import view_deed, view_license
+from licenses.views import all_licenses, view_deed, view_license
 
 """
 Example deeds at
@@ -127,6 +127,8 @@ def distill_wireframes():
 
 # DEEDS
 urlpatterns = [
+    # Debug page that displays all licenses
+    path("all/", all_licenses, name="all_licenses"),
     #
     # LICENSE PAGES
     #

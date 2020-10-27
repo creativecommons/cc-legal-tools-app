@@ -8,6 +8,7 @@ from polib import POEntry
 
 from licenses.models import License
 from licenses.utils import (
+    clean_string,
     cleanup_current_branch_output,
     compute_about_url,
     get_code_from_jurisdiction_url,
@@ -367,3 +368,13 @@ class TestMisc(TestCase):
         expected_list = ["some-branch", "another-branch", "develop"]
         unmodified_list = ["some-branch", "* another-branch", "develop"]
         self.assertEqual(cleanup_current_branch_output(unmodified_list), expected_list)
+
+    def test_clean_string(self):
+        data = [
+            ("abc", "abc"),
+            (" abc ", "abc"),
+            (" a   b c", "a b c"),
+        ]
+        for input, expected_output in data:
+            with self.subTest(input):
+                self.assertEqual(expected_output, clean_string(input))

@@ -190,11 +190,11 @@
 #     def test_english_is_default(self):
 #         with self.subTest("legal code"):
 #             # Here's a Legalcode that did not have a language in the RDF
-#             legal_code = LegalCode.objects.get(
+#             legalcode = LegalCode.objects.get(
 #                 url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"
 #             )
 #             # It should be using English
-#             self.assertEqual("en", legal_code.language_code)
+#             self.assertEqual("en", legalcode.language_code)
 #         with self.subTest("title"):
 #             bsd_license = License.objects.get(
 #                 about="http://creativecommons.org/licenses/BSD/"
