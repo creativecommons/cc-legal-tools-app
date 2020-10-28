@@ -5,6 +5,7 @@ from shutil import rmtree
 import git
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
+from django.urls import reverse
 
 from licenses.git_utils import commit_and_push_changes, setup_local_branch
 from licenses.models import LegalCode, TranslationBranch
@@ -12,8 +13,7 @@ from licenses.utils import save_url_as_static_file
 
 
 def list_open_branches():
-    """List of names of open local branches in cc-licenses-data repo
-    """
+    """List of names of open local branches in cc-licenses-data repo"""
     with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
         branches = [head.name for head in repo.branches]
     print("\n\nWhich branch are we publishing to?\n")
@@ -73,8 +73,7 @@ class Command(BaseCommand):
         pass
 
     def run_django_distill(self):
-        """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR
-        """
+        """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR"""
         output_dir = getattr(settings, "DISTILL_DIR", None)
         if not os.path.isdir(settings.STATIC_ROOT):
             e = "Static source directory does not exist, run collectstatic"
@@ -89,6 +88,7 @@ class Command(BaseCommand):
             save_url_as_static_file(output_dir, legalcode.license_url())
             save_url_as_static_file(output_dir, legalcode.deed_url())
         save_url_as_static_file(output_dir, "/")
+        save_url_as_static_file(output_dir, reverse("metadata"))
         save_url_as_static_file(output_dir, "/status/")
         for tbranch in TranslationBranch.objects.filter(complete=False).only("id"):
             save_url_as_static_file(output_dir, f"/status/{tbranch.id}/")
@@ -114,8 +114,7 @@ class Command(BaseCommand):
                     print(f"\n{branch} build dir is up to date.\n")
 
     def publish_all(self):
-        """Workflow for checking branches and updating their build dir
-        """
+        """Workflow for checking branches and updating their build dir"""
         branch_list = list_open_branches()
         print(
             f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
