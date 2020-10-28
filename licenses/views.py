@@ -3,13 +3,13 @@ from operator import itemgetter
 from typing import Iterable
 
 import git
+import yaml
 from django.conf import settings
 from django.core.cache import caches
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_info
 
-import yaml
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import active_translation, get_language_for_jurisdiction
 from licenses.constants import INCLUDED_LICENSE_VERSIONS
