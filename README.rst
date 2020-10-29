@@ -70,15 +70,7 @@ Create the Postgres database and run the initial migrate::
     (cc_licenses)$ createdb -E UTF-8 cc_licenses
     (cc_licenses)$ python manage.py migrate
 
-For outputting text files to work properly make sure to install the stable release of pandoc at version 2.10.1.
-For linux via homebrew:
-
-    (cc_licenses)$ brew install pandoc@2.10.1
-
-or for windows via chocolatey:
-
-    (cc_licenses)$ choco install pandoc --version 2.10.1
-
+For outputting text files to work properly make sure to [install](https://pandoc.org/installing.html) the stable release of pandoc at version 2.10.1.
 
 If you want to use `Travis <http://travis-ci.org>`_ to test your project,
 rename ``project.travis.yml`` to ``.travis.yml``, overwriting the ``.travis.yml``

@@ -115,15 +115,15 @@ def view_license(
     )
 
     kwargs = dict(
-        template_name="legalcode_40_page.html"
-        if not is_plain_text
-        else "legalcode_40_plain_text.html",
+        template_name="legalcode_40_plain_text.html"
+        if is_plain_text
+        else "legalcode_40_page.html",
         context={
             "fat_code": legalcode.license.fat_code(),
             "languages_and_links": languages_and_links,
-            "link_to_plain_text_file": f"{ legalcode.license_url() }.txt"
-            if not legalcode.license_url().endswith("legalcode")
-            else f"{ legalcode.license_url() }/index.txt",
+            "link_to_plain_text_file": f"{ legalcode.license_url() }/index.txt"
+            if legalcode.license_url().endswith("legalcode")
+            else f"{ legalcode.license_url() }.txt",
             "is_plain_text": is_plain_text,
             "legalcode": legalcode,
         },
@@ -131,19 +131,20 @@ def view_license(
 
     translation = legalcode.get_translation_object()
     with active_translation(translation):
-        if not is_plain_text:
-            return render(request, **kwargs)
-        response = HttpResponse(content_type='text/plain; charset="utf-8"')
-        html = render_to_string(**kwargs)
-        with tempfile.NamedTemporaryFile(mode="w+t") as temp:
-            temp.write(html)
-            output = subprocess.run(
-                ["pandoc", "-f", "html", temp.name, "-t", "plain",],
-                encoding="utf-8",
-                capture_output=True,
-            )
-            response.write(output.stdout)
-            return response
+        if is_plain_text:
+            response = HttpResponse(content_type='text/plain; charset="utf-8"')
+            html = render_to_string(**kwargs)
+            with tempfile.NamedTemporaryFile(mode="w+t") as temp:
+                temp.write(html)
+                output = subprocess.run(
+                    ["pandoc", "-f", "html", temp.name, "-t", "plain",],
+                    encoding="utf-8",
+                    capture_output=True,
+                )
+                response.write(output.stdout)
+                return response
+
+        return render(request, **kwargs)
 
 
 def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
