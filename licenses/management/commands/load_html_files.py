@@ -205,7 +205,6 @@ class Command(BaseCommand):
                 key = license_code
                 if language_code == "en":
                     english_by_license_code[key] = messages_text
-                english_messages = english_by_license_code[key]
 
                 pofile = POFile()
                 # The syntax used to wrap messages in a .po file is difficult if you ever
@@ -232,7 +231,21 @@ class Command(BaseCommand):
                         message_key = translation.strip()
                         message_value = ""
                     else:
-                        message_key = english_messages[internal_key]
+                        # WORKAROUND - by-nc-nd 4.0 NL has an extra item under s3a.
+                        if (
+                            internal_key == "s3a4_if_you_share_adapted_material"
+                            and internal_key
+                            not in english_by_license_code[license_code]
+                        ):
+                            message_key = (
+                                "If You Share Adapted Material You produce, the Adapter's "
+                                "License You apply must not prevent recipients of the Adapted "
+                                "Material from complying with this Public License."
+                            )
+                        else:
+                            message_key = english_by_license_code[license_code][
+                                internal_key
+                            ]
                         message_value = translation
 
                     pofile.append(
