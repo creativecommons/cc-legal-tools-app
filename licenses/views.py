@@ -3,15 +3,16 @@ from operator import itemgetter
 from typing import Iterable
 
 import git
+import yaml
 from django.conf import settings
 from django.core.cache import caches
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import active_translation, get_language_for_jurisdiction
 from licenses.constants import INCLUDED_LICENSE_VERSIONS
-from licenses.git_utils import setup_local_branch
 from licenses.models import LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -170,12 +171,14 @@ def branch_status_helper(repo, translation_branch):
     Mostly separated to help with test so we can readily
     mock the repo.
     """
+    repo.fetch()
     branch_name = translation_branch.branch_name
-    setup_local_branch(repo, branch_name, settings.OFFICIAL_GIT_BRANCH)
 
     # Put the commit data in a format that's easy for the template to use
     # Start by getting data about the last N + 1 commits
-    last_n_commits = list(repo.iter_commits(branch_name, max_count=1 + NUM_COMMITS))
+    last_n_commits = list(
+        repo.iter_commits(f"origin/{branch_name}", max_count=1 + NUM_COMMITS)
+    )
 
     # Copy the data we need into a list of dictionaries
     commits_for_template = [
@@ -217,3 +220,11 @@ def branch_status(request, id):
             result = render(request, "licenses/branch_status.html", context,)
         cache.set(cachekey, result, 5 * 60)
     return result
+
+
+def metadata_view(request):
+    data = [license.get_metadata() for license in License.objects.all()]
+    yaml_bytes = yaml.dump(
+        data, default_flow_style=False, encoding="utf-8", allow_unicode=True
+    )
+    return HttpResponse(yaml_bytes, content_type="text/yaml; charset=utf-8",)

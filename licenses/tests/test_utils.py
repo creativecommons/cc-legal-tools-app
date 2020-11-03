@@ -8,6 +8,7 @@ from polib import POEntry
 
 from licenses.models import License
 from licenses.utils import (
+    clean_string,
     cleanup_current_branch_output,
     compute_about_url,
     get_code_from_jurisdiction_url,
@@ -26,7 +27,7 @@ from .factories import LegalCodeFactory, LicenseFactory
 class SaveURLAsStaticFileTest(TestCase):
     def test_save_url_as_static_file_not_200(self):
         output_dir = "/output"
-        url = "/some/url"
+        url = "/some/url/"
         with mock.patch.object(os, "makedirs") as mock_makedirs:
             with self.assertRaisesMessage(ValueError, "Status 404"):
                 save_url_as_static_file(output_dir, url)
@@ -367,3 +368,19 @@ class TestMisc(TestCase):
         expected_list = ["some-branch", "another-branch", "develop"]
         unmodified_list = ["some-branch", "* another-branch", "develop"]
         self.assertEqual(cleanup_current_branch_output(unmodified_list), expected_list)
+
+
+class CleanStringTest(TestCase):
+    def test_clean_string(self):
+        data = [
+            # input, expected result
+            ("foo", "foo"),
+            ("foo bar", "foo bar"),
+            ("foo  bar", "foo bar"),
+            ("foo   bar", "foo bar"),
+            (" x ", "x"),
+            ("one\ntwo", "one two"),
+        ]
+        for input, expected in data:
+            with self.subTest(input):
+                self.assertEqual(expected, clean_string(input))

@@ -24,10 +24,15 @@ def save_url_as_static_file(output_dir, url, open_func=io.open):
     parts = urlparse(url)
     path = parts.path
     path = path.lstrip("/")
-    # We'll put EVERYTHING as an index.html file under a directory named for the URL.
-    # That way the URLs are right, and the web server *knows* these are HTML
-    # files.
-    output_filename = os.path.join(output_dir, path, "index.html")
+
+    if url.endswith("/"):
+        # We'll put the content as an index.html file under a directory named for the URL.
+        # That way the URLs are right, and the web server *knows* these are HTML
+        # files.
+        output_filename = os.path.join(output_dir, path, f"index.html")
+    else:
+        # URL includes a reasonable filename like metadata.yaml, just use it
+        output_filename = os.path.join(output_dir, path)
     dirname = os.path.dirname(output_filename)
     if os.path.isfile(dirname):
         os.remove(dirname)

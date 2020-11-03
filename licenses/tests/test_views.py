@@ -460,7 +460,7 @@ class BranchStatusViewTest(TestCase):
             result,
         )
         mock_repo.iter_commits.assert_called_with(
-            self.translation_branch.branch_name, max_count=4
+            f"origin/{self.translation_branch.branch_name}", max_count=4
         )
 
     def test_branch_helper_local_branch_does_not_exist_anywhere(self):
@@ -492,10 +492,7 @@ class BranchStatusViewTest(TestCase):
             result,
         )
         mock_repo.iter_commits.assert_called_with(
-            self.translation_branch.branch_name, max_count=4
-        )
-        mock_repo.create_head.assert_called_with(
-            self.translation_branch.branch_name, mock_parent_branch
+            f"origin/{self.translation_branch.branch_name}", max_count=4
         )
 
     def test_branch_helper_branch_only_upstream(self):
@@ -527,8 +524,7 @@ class BranchStatusViewTest(TestCase):
             },
             result,
         )
-        mock_repo.iter_commits.assert_called_with(branch_name, max_count=4)
-        mock_repo.create_head.assert_called_with(branch_name, f"origin/{branch_name}")
+        mock_repo.iter_commits.assert_called_with(f"origin/{branch_name}", max_count=4)
 
 
 class TranslationStatusViewTest(TestCase):
@@ -543,3 +539,14 @@ class TranslationStatusViewTest(TestCase):
         self.assertTemplateUsed(rsp, "licenses/translation_status.html")
         context = rsp.context
         self.assertEqual(3, len(context["branches"]))
+
+
+class MetadataViewTest(TestCase):
+    def test_metadata_view(self):
+        LicenseFactory()
+        with mock.patch.object(License, "get_metadata") as mock_get_metadata:
+            mock_get_metadata.return_value = {"foo": "bar"}
+            rsp = self.client.get(reverse("metadata"))
+        self.assertEqual(200, rsp.status_code)
+        mock_get_metadata.assert_called_with()
+        self.assertEqual(b"- foo: bar\n", rsp.content)

@@ -16,9 +16,10 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import translation
+from django.utils.translation import gettext
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import get_translation_object
+from i18n.utils import active_translation, get_translation_object
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from licenses.templatetags.license_tags import build_deed_url, build_license_url
@@ -293,6 +294,41 @@ class License(models.Model):
 
     def __str__(self):
         return f"License<{self.about}>"
+
+    def get_metadata(self):
+        """
+        Return a dictionary with the metadata for this license.
+        """
+        data = {
+            "license_code": self.license_code,
+            "version": self.version,
+            "title_english": self.title_english,
+        }
+        if self.jurisdiction_code:
+            data["jurisdiction"] = self.jurisdiction_code
+
+        data["permits_derivative_works"] = self.permits_derivative_works
+        data["permits_reproduction"] = self.permits_reproduction
+        data["permits_distribution"] = self.permits_distribution
+        data["permits_sharing"] = self.permits_sharing
+        data["requires_share_alike"] = self.requires_share_alike
+        data["requires_notice"] = self.requires_notice
+        data["requires_attribution"] = self.requires_attribution
+        data["requires_source_code"] = self.requires_source_code
+        data["prohibits_commercial_use"] = self.prohibits_commercial_use
+        data["prohibits_high_income_nation_use"] = self.prohibits_high_income_nation_use
+
+        data["translations"] = {}
+        for lc in self.legal_codes.order_by("language_code"):
+            language_code = lc.language_code
+            with active_translation(lc.get_translation_object()):
+                data["translations"][language_code] = {
+                    "license": lc.license_url(),
+                    "deed": lc.deed_url(),
+                    "title": gettext(self.title_english),
+                }
+
+        return data
 
     def logos(self):
         """
