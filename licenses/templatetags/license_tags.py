@@ -58,7 +58,16 @@ def next_letter():
     """
     next_letter = next_letter_data.letters[next_letter_data.index]
     next_letter_data.index += 1
+    next_letter_data.current_letter = next_letter
     return next_letter
+
+
+@register.simple_tag
+def current_letter():
+    """
+    Return same letter that next_letter last returned.
+    """
+    return next_letter_data.current_letter
 
 
 @register.filter

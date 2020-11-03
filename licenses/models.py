@@ -20,6 +20,7 @@ from django.utils import translation
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_translation_object
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
+from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from licenses.templatetags.license_tags import build_deed_url, build_license_url
 from licenses.transifex import TransifexHelper
 
@@ -31,6 +32,41 @@ DJANGO_LANGUAGE_CODES = {
     "zh-Hans": "zh_Hans",
     "zh-Hant": "zh_Hant",
 }
+
+# (by4 and by3 have the same license codes)
+BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
+CC0_LICENSE_CODES = ["CC0"]
+
+
+class LegalCodeQuerySet(models.QuerySet):
+    def valid(self):
+        """
+        Return a queryset of the LegalCode objects that exist and are valid
+        ones that we expect to work. This will change over time as we add
+        support for more licenses.
+        """
+        # We'll create LegalCode and License objects for all the by licenses,
+        # and the zero_1.0 ones.
+        # We're just doing these license codes and versions for now:
+        # by* 4.0
+        # by* 3.0 - UNPORTED ONLY
+        # cc 1.0
+
+        # Queries for legalcode objects
+        BY4_QUERY = Q(
+            license__version="4.0", license__license_code__in=BY_LICENSE_CODES,
+        )
+        BY3_UNPORTED_QUERY = Q(
+            license__version="3.0",
+            license__jurisdiction_code="",  # FIXME: omit ports for now
+            license__license_code__in=BY_LICENSE_CODES,
+        )
+        # There's only one version of CC0.
+        CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
+
+        return self.filter(BY4_QUERY | BY3_UNPORTED_QUERY | CC0_QUERY).exclude(
+            language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+        )
 
 
 class LegalCode(models.Model):
@@ -51,43 +87,13 @@ class LegalCode(models.Model):
         default=None,
     )
 
+    objects = LegalCodeQuerySet.as_manager()
+
     class Meta:
         ordering = ["license__about"]
 
     def __str__(self):
         return f"LegalCode<{self.language_code}, {self.license.about}>"
-
-    @classmethod
-    def valid(cls):
-        """
-        Return a queryset of the LegalCode objects that exist and are valid
-        ones that we expect to work. This will change over time as we add
-        support for more licenses.
-        """
-        # We'll create LegalCode and License objects for all the by licenses,
-        # and the zero_1.0 ones.
-        # We're just doing these license codes and versions for now:
-        # by* 4.0
-        # by* 3.0 - UNPORTED ONLY, not in this branch yet.
-        # cc 1.0
-        # (by4 and by3 have the same license codes)
-        BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
-        CC0_LICENSE_CODES = ["CC0"]
-
-        # Queries for legalcode objects
-        # FOR NOW, omitting ports
-        BY4_QUERY = Q(
-            license__version="4.0", license__license_code__in=BY_LICENSE_CODES,
-        )
-        # BY3_UNPORTED_QUERY = Q(  # not in this branch yet.
-        #     license__version="3.0",
-        #     license__jurisdiction_code="",  # omit ports
-        #     license__license_code__in=BY_LICENSE_CODES,
-        # )
-        # There's only one version of CC0.
-        CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
-
-        return cls.objects.filter(BY4_QUERY | CC0_QUERY)
 
     @property
     def django_language_code(self):
@@ -96,6 +102,15 @@ class LegalCode(models.Model):
         uses for the same case.
         """
         return DJANGO_LANGUAGE_CODES.get(self.language_code, self.language_code)
+
+    def has_english(self):
+        """
+        Return True if there's an English translation for the same license.
+        """
+        return (
+            self.language_code == "en"
+            or self.license.legal_codes.filter(language_code="en").exists()
+        )
 
     def branch_name(self):
         """
@@ -386,6 +401,18 @@ class License(models.Model):
         helper.upload_messages_to_transifex(legalcode=en_legalcode)
         for legalcode in self.legal_codes.exclude(language_code=DEFAULT_LANGUAGE_CODE):
             helper.upload_messages_to_transifex(legalcode=legalcode)
+
+    @property
+    def nc(self):
+        return "nc" in self.license_code
+
+    @property
+    def nd(self):
+        return "nd" in self.license_code
+
+    @property
+    def sa(self):
+        return "sa" in self.license_code
 
 
 class TranslationBranch(models.Model):

@@ -4,12 +4,34 @@ from django.urls import get_resolver
 from licenses.templatetags.license_tags import (
     build_deed_url,
     build_license_url,
+    current_letter,
     home_box,
+    next_letter,
+    reset_letters,
 )
 from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 
 
 class LicenseTagsTest(TestCase):
+    def test_reset_letters(self):
+        reset_letters("lowercase")
+        self.assertEqual("a", next_letter())
+        reset_letters("uppercase")
+        self.assertEqual("A", next_letter())
+
+    def test_next_letter(self):
+        reset_letters("lowercase")
+        self.assertEqual("a", next_letter())
+        self.assertEqual("b", next_letter())
+
+    def test_current_letter(self):
+        reset_letters("lowercase")
+        self.assertEqual("a", next_letter())
+        self.assertEqual("a", current_letter())
+        self.assertEqual("a", current_letter())
+        self.assertEqual("b", next_letter())
+        self.assertEqual("b", current_letter())
+
     def test_home_box_no_licenses(self):
         # We don't create any licenses for home_box to link to
         out = home_box("nope", "0.0", "klingon")

@@ -161,11 +161,70 @@ class LegalCodeModelTest(TestCase):
         )
         self.assertEqual("other-35-de-xyz", legalcode.branch_name())
 
+    def test_has_english(self):
+        license = LicenseFactory()
+        lc_fr = LegalCodeFactory(license=license, language_code="fr")
+        self.assertFalse(lc_fr.has_english())
+        lc_en = LegalCodeFactory(license=license, language_code="en")
+        self.assertTrue(lc_fr.has_english())
+        self.assertTrue(lc_en.has_english())
+
 
 # Many of these tests mostly are based on whether the metadata import worked right, and
 # we're not importing metadata for the time being.
 class LicenseModelTest(TestCase):
     # fixtures = ["licenses.json"]
+
+    def test_logos(self):
+        self.assertEqual(["cc-logo"], LicenseFactory().logos())
+        self.assertEqual(
+            ["cc-logo", "cc-zero"], LicenseFactory(license_code="CC0").logos()
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-by"],
+            LicenseFactory(
+                version="4.0",
+                prohibits_commercial_use=False,
+                requires_share_alike=False,
+                permits_derivative_works=True,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-by", "cc-nc"],
+            LicenseFactory(
+                version="4.0",
+                prohibits_commercial_use=True,
+                requires_share_alike=False,
+                permits_derivative_works=True,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-by", "cc-nd"],
+            LicenseFactory(
+                version="4.0",
+                prohibits_commercial_use=False,
+                requires_share_alike=False,
+                permits_derivative_works=False,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-by", "cc-sa"],
+            LicenseFactory(
+                version="4.0",
+                prohibits_commercial_use=False,
+                requires_share_alike=True,
+                permits_derivative_works=True,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-by", "cc-nc", "cc-sa"],
+            LicenseFactory(
+                version="4.0",
+                prohibits_commercial_use=True,
+                requires_share_alike=True,
+                permits_derivative_works=True,
+            ).logos(),
+        )
 
     def test_get_legalcode_for_language_code(self):
         license = LicenseFactory()

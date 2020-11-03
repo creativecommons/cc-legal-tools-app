@@ -85,7 +85,7 @@ class Command(BaseCommand):
             rmtree(output_dir)
         os.makedirs(output_dir)
 
-        for legalcode in LegalCode.valid():
+        for legalcode in LegalCode.objects.valid():
             save_url_as_static_file(output_dir, legalcode.license_url())
             save_url_as_static_file(output_dir, legalcode.deed_url())
         save_url_as_static_file(output_dir, "/")

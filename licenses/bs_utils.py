@@ -78,3 +78,16 @@ def name_and_text(tag: Tag):
         "name": str(top_level_children[0].string),
         "text": de_newlined,
     }
+
+
+def direct_children_with_tag(element: Tag, name: str):
+    """
+    Return list of the elements that are direct children of the
+    given element and have the requested tag name.
+    """
+    result = [
+        child
+        for child in list(element)
+        if isinstance(child, Tag) and child.name == name
+    ]
+    return result

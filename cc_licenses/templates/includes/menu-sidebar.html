@@ -29,6 +29,39 @@
             <a class="is-block column" href="#limitations">{% blocktrans trimmed %}Limitations and Disclaimers{% endblocktrans %}</a>
           </li>
 
+        {% elif license.version == "3.0" and license.jurisdiction_code == "" %}
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#definitions">{% blocktrans trimmed %}1. Definitions{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#fairdealing">{% blocktrans trimmed %}2. Fair Dealing Rights.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#grant">{% blocktrans trimmed %}3. License Grant.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#restrictions">{% blocktrans trimmed %}4. Restrictions.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#representations">{% blocktrans trimmed %}5. Representations, Warranties and Disclaimer{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#liability">{% blocktrans trimmed %}6. Limitation on Liability.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#termination">{% blocktrans trimmed %}7. Termination{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#misc">{% blocktrans trimmed %}8. Miscellaneous{% endblocktrans %}</a>
+          </li>
         {% elif license.version == "4.0" %}
           <li class="columns">
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
