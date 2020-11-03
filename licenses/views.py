@@ -171,7 +171,7 @@ def branch_status_helper(repo, translation_branch):
     Mostly separated to help with test so we can readily
     mock the repo.
     """
-    repo.fetch()
+    repo.remotes.origin.fetch()
     branch_name = translation_branch.branch_name
 
     # Put the commit data in a format that's easy for the template to use
