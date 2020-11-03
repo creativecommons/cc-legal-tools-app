@@ -170,10 +170,61 @@ class LegalCodeModelTest(TestCase):
         self.assertTrue(lc_en.has_english())
 
 
-# Many of these tests mostly are based on whether the metadata import worked right, and
-# we're not importing metadata for the time being.
 class LicenseModelTest(TestCase):
-    # fixtures = ["licenses.json"]
+    def test_get_metadata(self):
+        license = LicenseFactory(
+            **{
+                "license_code": "by-nc",
+                "version": "3.0",
+                "title_english": "The Title",
+                "jurisdiction_code": "xyz",
+                "permits_derivative_works": False,
+                "permits_reproduction": False,
+                "permits_distribution": True,
+                "permits_sharing": True,
+                "requires_share_alike": True,
+                "requires_notice": True,
+                "requires_attribution": True,
+                "requires_source_code": True,
+                "prohibits_commercial_use": True,
+                "prohibits_high_income_nation_use": False,
+            }
+        )
+
+        LegalCodeFactory(license=license, language_code="pt")
+        LegalCodeFactory(license=license, language_code="en")
+
+        data = license.get_metadata()
+        expected_data = {
+            "license_code": "by-nc",
+            "version": "3.0",
+            "title_english": "The Title",
+            "jurisdiction": "xyz",
+            "permits_derivative_works": False,
+            "permits_reproduction": False,
+            "permits_distribution": True,
+            "permits_sharing": True,
+            "requires_share_alike": True,
+            "requires_notice": True,
+            "requires_attribution": True,
+            "requires_source_code": True,
+            "prohibits_commercial_use": True,
+            "prohibits_high_income_nation_use": False,
+            "translations": {
+                "en": {
+                    "license": "/licenses/by-nc/3.0/xyz/legalcode",
+                    "deed": "/licenses/by-nc/3.0/xyz/",
+                    "title": "The Title",
+                },
+                "pt": {
+                    "license": "/licenses/by-nc/3.0/xyz/legalcode.pt",
+                    "deed": "/licenses/by-nc/3.0/xyz/deed.pt",
+                    "title": "The Title",
+                },
+            },
+        }
+
+        self.assertEqual(expected_data, data)
 
     def test_logos(self):
         self.assertEqual(["cc-logo"], LicenseFactory().logos())
