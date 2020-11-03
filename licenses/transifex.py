@@ -12,6 +12,7 @@ import polib
 import requests
 import requests.auth
 from django.conf import settings
+from django.core.management import call_command
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content, save_content_as_pofile_and_mofile
@@ -247,6 +248,7 @@ class TransifexHelper:
 
     def handle_updated_translation_branch(self, repo, legalcodes):
         # legalcodes whose translations have been updated and all belong to the same translation branch
+        # if we update the branch, we'll also publish updates to its static files.
         if not legalcodes:
             return
         branch_name = legalcodes[0].branch_name()
@@ -268,6 +270,16 @@ class TransifexHelper:
         )
         for legalcode in legalcodes:
             self.update_branch_for_legalcode(repo, legalcode, branch_object)
+
+        self.say(2, "Publishing static files")
+        call_command("publish", branch_name=branch_name)
+        repo.index.add(
+            [
+                os.path.relpath(
+                    settings.DISTILL_DIR, settings.TRANSLATION_REPOSITORY_DIRECTORY
+                )
+            ]
+        )
 
         # Commit and push this branch
         self.say(2, "Committing and pushing")
@@ -307,9 +319,9 @@ class TransifexHelper:
         # There's otherwise no need or reason for it.
         from licenses.models import LegalCode
 
-        legalcodes = LegalCode.objects.filter(
-            license__version="4.0", license__license_code__startswith="by"
-        ).exclude(language_code=DEFAULT_LANGUAGE_CODE)
+        legalcodes = LegalCode.objects.valid().exclude(
+            language_code=DEFAULT_LANGUAGE_CODE
+        )
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             return self.check_for_translation_updates_with_repo_and_legalcodes(
                 repo, legalcodes

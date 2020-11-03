@@ -2,7 +2,7 @@
 {% load i18n static %}
 
 {% block about %}{{ license.about }}{% endblock %}
-{% block title %}Creative Commons &mdash; {{ title }} {% endblock %}
+{% block title %}Creative Commons &mdash; {% trans license.title_english %} {% endblock %}
 
 {% block active-breadcrumb-li %}
 <li class="is-active"><a href="{{ legalcode.deed_url }}" aria-current="page displayed">{% trans "License Deed for" %} {{ legalcode.fat_code }}</a></li>
@@ -18,11 +18,27 @@
 
 {% block content %}
   <div class="container">
-    {% include 'includes/deed_body.html' %}
-    {% include 'includes/disclaimer.html' %}
+    {% include body_template %}
+    {% if license.version == "4.0" %}
+      {% include 'includes/disclaimer_40.html' %}
+    {% elif license.license_code == "CC0" %}
+      {% include 'includes/disclaimer_cc0.html' %}
+    {% endif %}
     <div class="columns margin-top-normal is-vcentered" >
       {% include 'includes/related_links.html' with show_standard_deed=True %}
       {% include 'includes/newsletter.html' %}
     </div>
   </div>
+
+
+<style>
+  #deed-body {
+    background-color: rgb(255, 255, 255);
+    border-top: 10px solid rgb(60, 92, 153);
+    border-bottom: 5px solid rgb(176, 176, 176);
+    border-left: 5px solid rgb(176, 176, 176);
+    border-right: 5px solid rgb(176, 176, 176);
+  }
+</style>
+
 {% endblock %}

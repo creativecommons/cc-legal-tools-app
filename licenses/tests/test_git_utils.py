@@ -1,9 +1,15 @@
+import os
 from unittest import mock
 
 import git
+from django.conf import settings
 from django.test import TestCase, override_settings
 
-from licenses.git_utils import commit_and_push_changes, setup_local_branch
+from licenses.git_utils import (
+    commit_and_push_changes,
+    setup_local_branch,
+    setup_to_call_git,
+)
 
 
 class Dummy:
@@ -124,3 +130,40 @@ class CommitAndPushChangesTest(TestCase):
 
         mock_repo.index.commit.assert_called_with(commit_msg)
         mock_repo.remotes.origin.push.assert_called_with(f"{branch_name}:{branch_name}")
+
+
+class SetupToCallGitTest(TestCase):
+    def test_setup_to_call_git_empty_env(self):
+        # Use defaults if nothing in env already
+        with mock.patch.object(os, "environ", new={}):
+            for name in [
+                "GIT_SSH",
+                "TRANSLATION_REPOSITORY_DEPLOY_KEY",
+                "PROJECT_ROOT",
+            ]:
+                if name in os.environ:
+                    del os.environ[name]
+            setup_to_call_git()
+            self.assertEqual(
+                os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh"), os.environ["GIT_SSH"]
+            )
+            self.assertEqual(
+                settings.TRANSLATION_REPOSITORY_DEPLOY_KEY,
+                os.environ["TRANSLATION_REPOSITORY_DEPLOY_KEY"],
+            )
+            self.assertEqual(settings.ROOT_DIR, os.environ["PROJECT_ROOT"])
+
+    def test_setup_to_call_git_full_env(self):
+        # If value in env, use them
+        mock_env = {
+            "GIT_SSH": "mock_git",
+            "TRANSLATION_REPOSITORY_DEPLOY_KEY": "mock_key",
+            "PROJECT_ROOT": "mock_root",
+        }
+        with mock.patch.object(os, "environ", new=mock_env):
+            setup_to_call_git()
+            self.assertEqual("mock_git", os.environ["GIT_SSH"])
+            self.assertEqual(
+                "mock_key", os.environ["TRANSLATION_REPOSITORY_DEPLOY_KEY"]
+            )
+            self.assertEqual("mock_root", os.environ["PROJECT_ROOT"])

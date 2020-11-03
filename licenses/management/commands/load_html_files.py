@@ -8,8 +8,14 @@ from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import save_pofile_as_pofile_and_mofile
-from licenses.bs_utils import inner_html, name_and_text, nested_text, text_up_to
-from licenses.models import LegalCode, License
+from licenses.bs_utils import (
+    direct_children_with_tag,
+    inner_html,
+    name_and_text,
+    nested_text,
+    text_up_to,
+)
+from licenses.models import BY_LICENSE_CODES, CC0_LICENSE_CODES, LegalCode, License
 from licenses.utils import (
     clean_string,
     parse_legalcode_filename,
@@ -26,19 +32,34 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: ArgumentParser):
         parser.add_argument("input_directory")
+        parser.add_argument(
+            "--versions",
+            help="comma-separated license versions to include, e.g. '1.0,3.0,4.0'",
+        )
+        parser.add_argument(
+            "--unwrapped",
+            action="store_true",
+            help="Do not wrap lines in output .po files. Helpful if you need to copy messages. Don't commit the unwrapped files.",
+        )
 
     def handle(self, input_directory, **options):
-        # We're just doing the BY 4.0 licenses for now
+        if options["versions"]:
+            versions_to_include = options["versions"].split(",")
+        else:
+            versions_to_include = None
+        self.unwrapped = options["unwrapped"]
+
         licenses_created = 0
         legalcodes_created = 0
 
-        # We'll create LegalCode and License objects for all the by* HTML files.
-        # (We're only going to parse the HTML for the 4.0 ones for now, though.)
+        # Get list of html filenames for CC0 and any BY license (any version).
+        # We'll filter out the filenames for unwanted versions later.
         html_filenames = sorted(
             [
                 f
                 for f in os.listdir(input_directory)
-                if f.startswith("by") and f.endswith(".html")
+                if (f.startswith("by") or f.startswith("zero_1.0"))
+                and f.endswith(".html")
             ]
         )
         for filename in html_filenames:
@@ -51,6 +72,20 @@ class Command(BaseCommand):
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
             language_code = metadata["language_code"] or DEFAULT_LANGUAGE_CODE
+
+            # Just BY 3.0 & 4.0, and CC0
+            include = (
+                license_code in BY_LICENSE_CODES and version in {"3.0", "4.0"}
+            ) or license_code in CC0_LICENSE_CODES
+            # If --versions was given, exclude other versions
+            include = include and (
+                versions_to_include is None or version in versions_to_include
+            )
+            # We're not yet doing any ported licenses
+            include = include and not jurisdiction_code
+            if not include:
+                continue
+
             about_url = metadata["about_url"]
 
             # These are valid for BY only
@@ -66,6 +101,18 @@ class Command(BaseCommand):
                 requires_source_code = False  # GPL, LGPL only, I think
                 prohibits_commercial_use = "nc" in license_code_parts
                 prohibits_high_income_nation_use = False  # Not any BY 4.0 license
+            elif license_code == "CC0":
+                # permits anything, requires nothing, prohibits nothing
+                permits_derivative_works = True
+                permits_reproduction = True
+                permits_distribution = True
+                permits_sharing = True
+                requires_share_alike = False
+                requires_notice = False
+                requires_attribution = False
+                requires_source_code = False
+                prohibits_commercial_use = False
+                prohibits_high_income_nation_use = False
             else:
                 raise NotImplementedError(basename)
 
@@ -104,19 +151,18 @@ class Command(BaseCommand):
         )
 
         # NOW parse the HTML and output message files
+        relevant_legalcodes = LegalCode.objects.valid().order_by("language_code")
 
-        # We're just doing these license codes and version 4.0 for now.
-        LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
-        version = "4.0"
+        if versions_to_include is not None:
+            relevant_legalcodes = relevant_legalcodes.filter(
+                license__version__in=versions_to_include
+            )
 
         # What are the language codes we have translations for?
         language_codes = list(
-            LegalCode.objects.filter(
-                license__version=version, license__license_code__startswith="by"
+            relevant_legalcodes.distinct("language_code").values_list(
+                "language_code", flat=True
             )
-            .order_by("language_code")
-            .distinct("language_code")
-            .values_list("language_code", flat=True)
         )
 
         english_by_license_code = {}
@@ -126,25 +172,46 @@ class Command(BaseCommand):
         # something to fall back to.
         language_codes.remove("en")
         for language_code in ["en"] + language_codes:
-            for license_code in LICENSE_CODES:
-                legalcode = LegalCode.objects.get(
-                    license__license_code=license_code,
-                    license__version=version,
-                    language_code=language_code,
+            for legalcode in relevant_legalcodes.filter(language_code=language_code,):
+                license = legalcode.license
+                license_code = license.license_code
+                version = license.version
+                print(
+                    f"Importing {legalcode.html_file} {license_code} lang={language_code}"
                 )
-
-                print(legalcode.html_file)
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                messages_text = self.import_by_40_license_html(
-                    content, license_code, language_code
-                )
+                if version == "4.0":
+                    messages_text = self.import_by_40_license_html(
+                        content=content,
+                        license_code=license_code,
+                        language_code=language_code,
+                        license=license,
+                    )
+                elif version == "3.0":
+                    messages_text = self.import_by_30_license_html(
+                        content=content, language_code=language_code, license=license,
+                    )
+                elif license_code == "CC0":
+                    messages_text = self.import_cc0_license_html(
+                        content=content, language_code=language_code, license=license,
+                    )
+                else:
+                    raise NotImplementedError(
+                        f"Have not implemented parsing for {license_code} {version} licenses."
+                    )
 
+                key = license_code
                 if language_code == "en":
-                    english_by_license_code[license_code] = messages_text
+                    english_by_license_code[key] = messages_text
 
                 pofile = POFile()
+                # The syntax used to wrap messages in a .po file is difficult if you ever
+                # want to copy/paste the messages, so if --unwrapped was passed, set a
+                # wrap width that will essentially disable wrapping.
+                if self.unwrapped:
+                    pofile.wrapwidth = 999999
                 pofile.metadata = {
                     "Project-Id-Version": f"{license_code}-{version}",
                     # 'Report-Msgid-Bugs-To': 'you@example.com',
@@ -158,6 +225,7 @@ class Command(BaseCommand):
                     "Content-Transfer-Encoding": "8bit",
                 }
 
+                # Use the English message text as the message key
                 for internal_key, translation in messages_text.items():
                     if language_code == "en":
                         message_key = translation.strip()
@@ -198,12 +266,210 @@ class Command(BaseCommand):
                 files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
                 print(f"Created {files}")
 
-    def import_by_40_license_html(self, content, license_code, language_code):
+    def import_cc0_license_html(self, *, content, language_code, license):
+        assert license.version == "1.0", f"{license.version} is not '1.0'"
+        assert license.license_code == "CC0", f"{license.license_code} is not 'CC0'"
+        messages = {}
+        raw_html = content
+        # Parse the raw HTML to a BeautifulSoup object.
+        soup = BeautifulSoup(raw_html, "lxml")
+        deed_main_content = soup.find(id="deed-main-content")
+        messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
+
+        if language_code == "en":
+            license.title_english = messages["license_medium"]
+            license.save()
+
+        # Big disclaimer (all caps)
+        messages["disclaimer"] = clean_string(nested_text(deed_main_content.blockquote))
+
+        # Statement of Purpose section: "<h3><em>Statement of Purpose</em></h3>"
+        messages["statement_of_purpose"] = nested_text(deed_main_content.h3)
+
+        # SOP section is formatted as paragraphs
+        paragraphs = deed_main_content.find_all("p")
+
+        # First 3 paragraphs in the SOP section are just text
+        messages["sop_p1"] = nested_text(paragraphs[0])
+        messages["sop_p2"] = nested_text(paragraphs[1])
+        messages["sop_p3"] = nested_text(paragraphs[2])
+
+        # Next paragraph is a bold term, and its definition
+        # <p><strong>1. Copyright and Related Rights.</strong>
+        # A Work... </p>
+        nt = name_and_text(paragraphs[3])
+        messages["s1_title"] = nt["name"]
+        messages["s1_par"] = nt["text"]
+
+        # Followed by an ordered list with 7 items
+        ol = paragraphs[3].find_next_sibling("ol")
+        for i, part in enumerate(ol.find_all("li")):
+            messages[f"s1_item{i}"] = nested_text(part)
+
+        # Then two more numbered paragraphs that are definitions
+        # <p><strong>2. Waiver.</strong> To the ...</p>
+        nt = name_and_text(paragraphs[4])
+        messages["s2_title"] = nt["name"]
+        messages["s2_text"] = nt["text"]
+
+        # <p><strong>3. Public License Fallback.</strong> Should...</p>
+        nt = name_and_text(paragraphs[5])
+        messages["s3_title"] = nt["name"]
+        messages["s3_text"] = nt["text"]
+
+        # Finally the Limitations header, no intro text, and an ol with 4 items.
+        # <p><strong>4. Limitations and Disclaimers.</strong></p>
+        s4 = paragraphs[6]  # <p><strong>4. Limitations...
+        messages["s4_title"] = nested_text(s4)
+
+        # In English, s4 is followed by an ol with 4 items.
+        # In .el, s4 is followed by a <p class="tab"> with
+        # 3 <br/> dividing the 4 parts.
+        ol = s4.find_next_sibling("ol")
+        if ol:
+            for i, part in enumerate(ol.find_all("li")):
+                messages[f"s4_part_{i}"] = nested_text(part)
+        else:
+            p4 = s4.find_next_sibling("p", class_="tab")
+            text = nested_text(p4)
+            parts = text.split("<br />")
+            for i, part in enumerate(parts):
+                messages[f"s4_part_{i}"] = str(part)
+
+        # And that's it. The CC0 "license" is relatively short.
+
+        validate_dictionary_is_all_text(messages)
+
+        return messages
+
+    def import_by_30_license_html(self, *, content, language_code, license):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
         messages = {}
-        print(f"Importing {license_code} {language_code}")
+        raw_html = content
+        # Some trivial making consistent - some translators changed 'strong' to 'b'
+        # for some unknown reason.
+        raw_html = raw_html.replace("<b>", "<strong>").replace("</b>", "</strong>")
+        raw_html = raw_html.replace("<B>", "<strong>").replace("</B>", "</strong>")
+
+        # Parse the raw HTML to a BeautifulSoup object.
+        soup = BeautifulSoup(raw_html, "lxml")
+        messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
+        if language_code == "en":
+            license.title_english = messages["license_medium"]
+            license.save()
+
+        deed_main_content = soup.find(id="deed-main-content")
+
+        messages["not_a_law_firm"] = nested_text(deed_main_content.blockquote)
+        # <h3><em>License</em></h3>
+        messages["license"] = nested_text(deed_main_content.h3)
+
+        # Top level paragraphs
+        def paragraphs_generator():
+            for p in direct_children_with_tag(deed_main_content, "p"):
+                yield p
+
+        paragraphs = paragraphs_generator()
+
+        def ols_generator():
+            for ol in direct_children_with_tag(deed_main_content, "ol"):
+                yield ol
+
+        ordered_lists = ols_generator()
+
+        # Two paragraphs of introduction
+        messages["par1"] = nested_text(next(paragraphs))
+        messages["par2"] = nested_text(next(paragraphs))
+
+        # <p><strong>1. Definitions</strong></p>
+        messages["definitions"] = nested_text(next(paragraphs))
+
+        # An ordered list of definitions
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            nt = name_and_text(li)
+            name = nt["name"]
+            text = nt["text"]
+            messages[f"def{i}name"] = name
+            messages[f"def{i}text"] = text
+
+        # <p><strong>2. Fair Dealing Rights.</strong> Nothing ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["fair_dealing_rights"] = nt["name"]
+        messages["fair_dealing_rights_text"] = nt["text"]
+
+        # <p><strong>3. License Grant.</strong> Subject ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["grant"] = nt["name"]
+        messages["grant_text"] = nt["text"]
+
+        # another ol
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"grant{i}"] = nested_text(li)
+
+        messages["par5"] = nested_text(next(paragraphs))
+
+        # <p><strong>4. Restrictions.</strong> The ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["restrictions"] = nt["name"]
+        messages["restrictions_text"] = nt["text"]
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            # Most of these li's just have text.
+            # one has a <p></p> followed by another ordered list
+            if li.p:
+                messages["restrictions avoid doubt"] = nested_text(li.p)
+                ol2 = li.ol
+                for j, li2 in enumerate(direct_children_with_tag(ol2, "li")):
+                    nt = name_and_text(li2)
+                    messages[f"restrictions name {i};{j}"] = nt["name"]
+                    messages[f"restrictions text {i};{j}"] = nt["text"]
+            else:
+                messages[f"restrictions{i}"] = nested_text(li)
+
+        # <p><strong>5. Representations, Warranties and Disclaimer</strong></p>
+        messages["reps_and_disclaimer"] = nested_text(next(paragraphs))
+        messages["unless_mutual"] = nested_text(next(paragraphs))
+
+        # <p><strong>6. Limitation on Liability.</strong> EXCEPT ...</p>
+        nt = name_and_text(next(paragraphs))
+        messages["Limitation"] = nt["name"]
+        messages["Limitation_text"] = nt["text"]
+
+        # <p><strong>7. Termination</strong></p>
+        messages["termination"] = nested_text(next(paragraphs))
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"termination{i}"] = nested_text(li)
+
+        # <p><strong>8. Miscellaneous</strong></p>
+        messages["misc"] = nested_text(next(paragraphs))
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"misc{i}"] = nested_text(li)
+
+        # That's it for the license. The rest is disclaimer that we're handling elsewhere.
+
+        validate_dictionary_is_all_text(messages)
+
+        return messages
+
+    def import_by_40_license_html(
+        self, *, content, license, license_code, language_code
+    ):
+        """
+        Returns a dictionary mapping our internal keys to strings.
+        """
+        assert license.version == "4.0", f"{license.version} is not '4.0'"
+        assert license.license_code.startswith("by")
+
+        messages = {}
         raw_html = content
         # Some trivial making consistent - some translators changed 'strong' to 'b'
         # for some unknown reason.
@@ -217,6 +483,9 @@ class Command(BaseCommand):
 
         deed_main_content = soup.find(id="deed-main-content")
         messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
+        if language_code == "en":
+            license.title_english = messages["license_medium"]
+            license.save()
         messages["license_long"] = inner_html(deed_main_content.h3)
         messages["license_intro"] = inner_html(
             deed_main_content.h3.find_next_sibling("p")

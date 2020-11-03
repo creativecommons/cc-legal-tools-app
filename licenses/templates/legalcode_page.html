@@ -24,6 +24,8 @@
 </div>
 {% endblock %}
 
+{% block title %}{% trans license.title_english %}{% endblock %}
+
 {% block content %}
   <div class="columns">
     {% include 'includes/menu-sidebar.html' %}
@@ -31,12 +33,29 @@
       {% include 'includes/licenses_header.html' %}
       {% include 'includes/about_cc_and_license.html' %}
       {% include 'includes/use_of_licenses.html' %}
-      {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL LICENSE TEXT #}
+      {% if license.version == "4.0" %}
+        {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
+      {% elif license.version == "3.0" %}
+        {% include 'includes/legalcode_30_unported_license.html' %}  {# <<< THE ACTUAL 3.0 LICENSE TEXT #}
+      {% elif license.license_code == "CC0" %}
+        {% include 'includes/legalcode_cc0_license.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
+      {% endif %}
       {% include 'includes/view_legal_code_link_plain_text.html' %}
       {% include 'includes/about_cc.html' %}
       {% include 'includes/related_links.html' %}
     </div>
   </div>
+
+
+<style>
+  #legal-code-body {
+    background-color: rgb(255, 255, 255);
+    border-top: 10px solid rgb(60, 92, 153);
+    border-bottom: 5px solid rgb(176, 176, 176);
+    border-left: 5px solid rgb(176, 176, 176);
+    border-right: 5px solid rgb(176, 176, 176);
+  }
+</style>
 {% endblock %}
 
 {% block extra-js%}

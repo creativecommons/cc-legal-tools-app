@@ -14,11 +14,14 @@ import os
 import polib
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.utils import translation
+from django.utils.translation import gettext
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import get_translation_object
+from i18n.utils import active_translation, get_translation_object
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
+from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from licenses.templatetags.license_tags import build_deed_url, build_license_url
 from licenses.transifex import TransifexHelper
 
@@ -30,6 +33,41 @@ DJANGO_LANGUAGE_CODES = {
     "zh-Hans": "zh_Hans",
     "zh-Hant": "zh_Hant",
 }
+
+# (by4 and by3 have the same license codes)
+BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
+CC0_LICENSE_CODES = ["CC0"]
+
+
+class LegalCodeQuerySet(models.QuerySet):
+    def valid(self):
+        """
+        Return a queryset of the LegalCode objects that exist and are valid
+        ones that we expect to work. This will change over time as we add
+        support for more licenses.
+        """
+        # We'll create LegalCode and License objects for all the by licenses,
+        # and the zero_1.0 ones.
+        # We're just doing these license codes and versions for now:
+        # by* 4.0
+        # by* 3.0 - UNPORTED ONLY
+        # cc 1.0
+
+        # Queries for legalcode objects
+        BY4_QUERY = Q(
+            license__version="4.0", license__license_code__in=BY_LICENSE_CODES,
+        )
+        BY3_UNPORTED_QUERY = Q(
+            license__version="3.0",
+            license__jurisdiction_code="",  # FIXME: omit ports for now
+            license__license_code__in=BY_LICENSE_CODES,
+        )
+        # There's only one version of CC0.
+        CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
+
+        return self.filter(BY4_QUERY | BY3_UNPORTED_QUERY | CC0_QUERY).exclude(
+            language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+        )
 
 
 class LegalCode(models.Model):
@@ -50,6 +88,8 @@ class LegalCode(models.Model):
         default=None,
     )
 
+    objects = LegalCodeQuerySet.as_manager()
+
     class Meta:
         ordering = ["license__about"]
 
@@ -63,6 +103,15 @@ class LegalCode(models.Model):
         uses for the same case.
         """
         return DJANGO_LANGUAGE_CODES.get(self.language_code, self.language_code)
+
+    def has_english(self):
+        """
+        Return True if there's an English translation for the same license.
+        """
+        return (
+            self.language_code == "en"
+            or self.license.legal_codes.filter(language_code="en").exists()
+        )
 
     def branch_name(self):
         """
@@ -191,6 +240,12 @@ class License(models.Model):
         default="",
     )
 
+    title_english = models.TextField(
+        help_text="License title in English, e.g. 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+        blank=True,
+        default="",
+    )
+
     source = models.ForeignKey(
         "self",
         null=True,
@@ -240,9 +295,63 @@ class License(models.Model):
     def __str__(self):
         return f"License<{self.about}>"
 
+    def get_metadata(self):
+        """
+        Return a dictionary with the metadata for this license.
+        """
+        data = {
+            "license_code": self.license_code,
+            "version": self.version,
+            "title_english": self.title_english,
+        }
+        if self.jurisdiction_code:
+            data["jurisdiction"] = self.jurisdiction_code
+
+        data["permits_derivative_works"] = self.permits_derivative_works
+        data["permits_reproduction"] = self.permits_reproduction
+        data["permits_distribution"] = self.permits_distribution
+        data["permits_sharing"] = self.permits_sharing
+        data["requires_share_alike"] = self.requires_share_alike
+        data["requires_notice"] = self.requires_notice
+        data["requires_attribution"] = self.requires_attribution
+        data["requires_source_code"] = self.requires_source_code
+        data["prohibits_commercial_use"] = self.prohibits_commercial_use
+        data["prohibits_high_income_nation_use"] = self.prohibits_high_income_nation_use
+
+        data["translations"] = {}
+        for lc in self.legal_codes.order_by("language_code"):
+            language_code = lc.language_code
+            with active_translation(lc.get_translation_object()):
+                data["translations"][language_code] = {
+                    "license": lc.license_url(),
+                    "deed": lc.deed_url(),
+                    "title": gettext(self.title_english),
+                }
+
+        return data
+
+    def logos(self):
+        """
+        Return an iterable of the codes for the logos that should be
+        displayed with this license. E.g.:
+        ["cc-logo", "cc-zero", "cc-by"]
+        """
+        result = ["cc-logo"]  # Everybody gets this
+        if self.license_code == "CC0":
+            result.append("cc-zero")
+        elif self.version == "4.0":
+            result.append("cc-by")  # All the 4.0 licenses are BY
+            if self.prohibits_commercial_use:
+                result.append("cc-nc")
+            if self.requires_share_alike:
+                result.append("cc-sa")
+            if not self.permits_derivative_works:
+                result.append("cc-nd")
+        return result
+
     def get_legalcode_for_language_code(self, language_code):
         """
-        Return the legalcode for this license and language.
+        Return the LegalCode object for this license and language.
         If language_code has a "-" and we don't find it, try
         without the "-*" part (to handle e.g. "en-us").
         """
@@ -266,12 +375,13 @@ class License(models.Model):
         # Transifex translation resource slug for this license.
         # letters, numbers, underscores or hyphens.
         # No periods.
+        # All lowercase.
         if self.jurisdiction_code:
             slug = f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
         else:
             slug = f"{self.license_code}_{self.version}"
         slug = slug.replace(".", "")
-        return slug
+        return slug.lower()
 
     def rdf(self):
         """Generate RDF for this license?"""
@@ -327,6 +437,18 @@ class License(models.Model):
         helper.upload_messages_to_transifex(legalcode=en_legalcode)
         for legalcode in self.legal_codes.exclude(language_code=DEFAULT_LANGUAGE_CODE):
             helper.upload_messages_to_transifex(legalcode=legalcode)
+
+    @property
+    def nc(self):
+        return "nc" in self.license_code
+
+    @property
+    def nd(self):
+        return "nd" in self.license_code
+
+    @property
+    def sa(self):
+        return "sa" in self.license_code
 
 
 class TranslationBranch(models.Model):

@@ -1,14 +1,64 @@
+import os
 import posixpath
 import re
 import urllib
 from base64 import b64encode
+from urllib.parse import urlparse
 
 from bs4 import NavigableString
+from django.urls import get_resolver
 from polib import POEntry, POFile
 
-from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
+from i18n import LANGUAGE_CODE_REGEX
 
-from .constants import EXCLUDED_LICENSE_VERSIONS
+
+def generate_filename_to_save_static_view_output(output_dir, url):
+    """
+    Return absolute path where we want to save the output from the given url
+    """
+    print(url)
+    parts = urlparse(url)
+    path = parts.path
+    path = path.lstrip("/")
+
+    if url.endswith("/"):
+        # We'll put the content as an index.html file under a directory named for the URL.
+        # That way the URLs are right, and the web server *knows* these are HTML
+        # files.
+        output_filename = os.path.join(output_dir, path, f"index.html")
+    else:
+        # URL includes a reasonable filename like metadata.yaml, just use it
+        output_filename = os.path.join(output_dir, path)
+    return output_filename
+
+
+def save_bytes_to_file(bytes, output_filename):
+    dirname = os.path.dirname(output_filename)
+    if os.path.isfile(dirname):
+        os.remove(dirname)
+    os.makedirs(dirname, mode=0o755, exist_ok=True)
+    with open(output_filename, "wb") as f:
+        f.write(bytes)  # Bytes
+
+
+def save_url_as_static_file(output_dir, url):
+    """
+    Get the output from the URL and save it in an appropriate file
+    under output_dir. For making static files from a site.
+
+    Pass in open_func just for testing, not in regular use.
+    """
+    output_filename = generate_filename_to_save_static_view_output(output_dir, url)
+
+    # Was using test Client, but it runs middleware and fails at runtime because the
+    # request host wasn't in the ALLOWED_HOSTS. So, resolve the URL and call the view
+    # directly.
+    resolver = get_resolver()
+    match = resolver.resolve(url)  # ResolverMatch
+    rsp = match.func(request=None, *match.args, **match.kwargs)
+    if rsp.status_code != 200:
+        raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
+    save_bytes_to_file(rsp.content, output_filename)
 
 
 def get_code_from_jurisdiction_url(url):
@@ -113,52 +163,6 @@ def parse_legalcode_filename(filename):
     )
 
     return data
-
-
-# Django Distill Utility Functions
-
-
-def get_licenses_code_and_version():
-    """Returns an iterable of license dictionaries that have English Legalcode
-    (not an issue except during tests, really).
-    dictionary keys:
-        - license_code
-        - version
-    """
-    from licenses.models import LegalCode
-
-    for legalcode in LegalCode.objects.filter(
-        language_code=DEFAULT_LANGUAGE_CODE
-    ).exclude(license__version__in=EXCLUDED_LICENSE_VERSIONS):
-        license = legalcode.license
-        yield {
-            "license_code": license.license_code,
-            "version": license.version,
-        }
-
-
-def get_licenses_code_version_language_code():
-    """Returns an iterable of license dictionaries
-    dictionary keys:
-        - license_code
-        - version
-        - language_code (
-            value is a translated license's
-            language_code
-        )
-    """
-    from licenses.models import LegalCode
-
-    for legalcode in LegalCode.objects.exclude(
-        license__version__in=EXCLUDED_LICENSE_VERSIONS
-    ):
-        license = legalcode.license
-        item = {
-            "license_code": license.license_code,
-            "version": license.version,
-            "language_code": legalcode.language_code,
-        }
-        yield item
 
 
 def compute_about_url(license_code, version, jurisdiction_code):
@@ -296,7 +300,11 @@ def clean_string(s):
     Get a string into a canonical form - no whitespace at either end,
     no newlines, no double-spaces.
     """
-    return s.strip().replace("\n", " ").replace("  ", " ")
+    s = s.strip().replace("\n", " ").replace("  ", " ")
+    while "  " in s:
+        # If there were longer strings of spaces, need to iterate to replace... I guess.
+        s = s.replace("  ", " ")
+    return s
 
 
 def b64encode_string(s: str) -> str:

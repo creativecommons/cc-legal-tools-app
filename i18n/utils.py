@@ -1,4 +1,3 @@
-import functools
 import os
 import re
 from contextlib import contextmanager
@@ -52,7 +51,10 @@ JURISDICTION_CURRENCY_LOOKUP = {
 }
 
 
-@functools.lru_cache(maxsize=500)
+# This function looks like a good candidate for caching, but we might be
+# changing the translated files while running and need to be sure we always
+# read and use the one that's there right now. Anyway, this site doesn't
+# need to perform all that well, since it just generates static files.
 def get_translation_object(*, language_code: str, domain: str) -> DjangoTranslation:
     """
     Return a DjangoTranslation object suitable to activate

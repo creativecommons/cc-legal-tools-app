@@ -17,7 +17,7 @@
         {% for license in license_versions %}
           <li>
             <a href="{{ license.about }}">
-              <b>{% include "includes/snippet/license_medium_title.html" %}</b>
+              <b>{% trans license.title_english %}</b>
             </a>
           </li>
         {% endfor %}

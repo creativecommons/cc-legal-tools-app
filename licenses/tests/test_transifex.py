@@ -437,6 +437,8 @@ class CheckForTranslationUpdatesTest(TestCase):
         with mp("licenses.transifex.setup_local_branch") as mock_setup, mpo(
             helper, "update_branch_for_legalcode"
         ) as mock_update_branch, mp(
+            "licenses.transifex.call_command"
+        ) as mock_call_command, mp(
             "licenses.transifex.commit_and_push_changes"
         ) as mock_commit:
             # setup_local_branch
@@ -450,6 +452,11 @@ class CheckForTranslationUpdatesTest(TestCase):
         mock_setup.assert_called_with(
             dummy_repo, legalcode1.branch_name(), settings.OFFICIAL_GIT_BRANCH
         )
+        # Should have published static files for this branch
+        expected = [
+            mock.call("publish", branch_name=legalcode1.branch_name()),
+        ]
+        self.assertEqual(expected, mock_call_command.call_args_list)
         trb = TranslationBranch.objects.get()
         expected = [
             mock.call(dummy_repo, legalcode1, trb),

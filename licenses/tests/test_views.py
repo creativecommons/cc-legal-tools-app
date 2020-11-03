@@ -33,8 +33,7 @@ strings_to_lambdas = {
     "You do not have to comply with the license for elements of "
     "the material in the public domain": lambda l: l.license_code
     not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
-    "The licensor cannot revoke these freedoms as long as you follow the license terms.": lambda l: l.license_code
-    not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
+    "The licensor cannot revoke these freedoms as long as you follow the license terms.": always,
     "appropriate credit": lambda l: l.requires_attribution
     and l.license_code not in DEED_TEMPLATE_MAPPING,
     "You may do so in any reasonable manner, but not in any way that "
@@ -51,8 +50,8 @@ strings_to_lambdas = {
     and l.license_code not in DEED_TEMPLATE_MAPPING,
     "you may not distribute the modified material.": lambda l: not l.permits_derivative_works,
     "NoDerivatives": lambda l: not l.permits_derivative_works,
-    "This license is acceptable for Free Cultural Works.": lambda l: l.license_code
-    in ["by", "by-sa", "publicdomain", "CC0"],
+    # It was decided NOT to include the "free cultural works" icon/text
+    "This license is acceptable for Free Cultural Works.": never,
     "for any purpose, even commercially.": lambda l: l.license_code
     not in DEED_TEMPLATE_MAPPING
     and not l.prohibits_commercial_use,
@@ -103,7 +102,121 @@ class HomeViewTest(TestCase):
         self.assertTemplateUsed("home.html")
 
 
+class LicensesTestsMixin:
+    # Create some licenses to test in setUp
+    def setUp(self):
+        self.by = LicenseFactory(
+            license_code="by",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nc = LicenseFactory(
+            license_code="by-nc",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=True,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nc_nd = LicenseFactory(
+            license_code="by-nc-nd",
+            version="4.0",
+            permits_derivative_works=False,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=True,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nc_sa = LicenseFactory(
+            license_code="by-nc-sa",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=True,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_nd = LicenseFactory(
+            license_code="by-nd",
+            version="4.0",
+            permits_derivative_works=False,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        self.by_sa = LicenseFactory(
+            license_code="by-sa",
+            version="4.0",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+
+        for license in License.objects.all():
+            LegalCodeFactory(license=license, language_code="en")
+            LegalCodeFactory(license=license, language_code="es")
+            LegalCodeFactory(license=license, language_code="fr")
+
+        super().setUp()
+
+
 class ViewLicenseTest(TestCase):
+    def test_view_license_with_jurisdiction_without_language_specified(self):
+        lc = LegalCodeFactory(
+            license__version="4.0", language_code="de", license__jurisdiction_code="de",
+        )
+        url = reverse(
+            "licenses_default_language_with_jurisdiction",
+            kwargs=dict(
+                version="4.0", jurisdiction="de", license_code=lc.license.license_code
+            ),
+        )
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed(rsp, "legalcode_page.html")
+        self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
+        context = rsp.context
+        self.assertContains(rsp, f'''lang="de"''')
+        self.assertEqual(lc, context["legalcode"])
+
     def test_view_license_identifying_jurisdiction_default_language(self):
         language_code = "de"
         lc = LegalCodeFactory(
@@ -114,7 +227,7 @@ class ViewLicenseTest(TestCase):
         url = lc.license_url()
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed(rsp, "legalcode_40_page.html")
+        self.assertTemplateUsed(rsp, "legalcode_page.html")
         self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
         context = rsp.context
         self.assertContains(rsp, f'''lang="{language_code}"''')
@@ -129,7 +242,7 @@ class ViewLicenseTest(TestCase):
                 plain_text_link = f"{ url }/index.txt"
             rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
-            self.assertTemplateUsed(rsp, "legalcode_40_page.html")
+            self.assertTemplateUsed(rsp, "legalcode_page.html")
             self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
             context = rsp.context
             self.assertEqual(lc, context["legalcode"])
@@ -160,10 +273,10 @@ class ViewLicenseTest(TestCase):
             self.assertGreater(len(rsp.content.decode()), 0)
 
 
-class LicenseDeedViewTest(TestCase):
+class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     def validate_deed_text(self, rsp, license):
         self.assertEqual(200, rsp.status_code)
-        self.assertEqual("en", rsp.context["target_lang"])
+        self.assertEqual("en", rsp.context["legalcode"].language_code)
         text = rsp.content.decode("utf-8")
         if "INVALID_VARIABLE" in text:  # Some unresolved variable in the template
             msgs = ["INVALID_VARIABLE in output"]
@@ -185,7 +298,7 @@ class LicenseDeedViewTest(TestCase):
     def test_text_in_deeds(self):
         LicenseFactory()
         for license in License.objects.filter(version="4.0"):
-            with self.subTest(license.about):
+            with self.subTest(license.fat_code):
                 # Test in English and for 4.0 since that's how we've set up the strings to test for
                 url = build_deed_url(
                     license.license_code,
@@ -370,7 +483,7 @@ class BranchStatusViewTest(TestCase):
             result,
         )
         mock_repo.iter_commits.assert_called_with(
-            self.translation_branch.branch_name, max_count=4
+            f"origin/{self.translation_branch.branch_name}", max_count=4
         )
 
     def test_branch_helper_local_branch_does_not_exist_anywhere(self):
@@ -402,10 +515,7 @@ class BranchStatusViewTest(TestCase):
             result,
         )
         mock_repo.iter_commits.assert_called_with(
-            self.translation_branch.branch_name, max_count=4
-        )
-        mock_repo.create_head.assert_called_with(
-            self.translation_branch.branch_name, mock_parent_branch
+            f"origin/{self.translation_branch.branch_name}", max_count=4
         )
 
     def test_branch_helper_branch_only_upstream(self):
@@ -437,8 +547,7 @@ class BranchStatusViewTest(TestCase):
             },
             result,
         )
-        mock_repo.iter_commits.assert_called_with(branch_name, max_count=4)
-        mock_repo.create_head.assert_called_with(branch_name, f"origin/{branch_name}")
+        mock_repo.iter_commits.assert_called_with(f"origin/{branch_name}", max_count=4)
 
 
 class TranslationStatusViewTest(TestCase):
@@ -453,3 +562,14 @@ class TranslationStatusViewTest(TestCase):
         self.assertTemplateUsed(rsp, "licenses/translation_status.html")
         context = rsp.context
         self.assertEqual(3, len(context["branches"]))
+
+
+class MetadataViewTest(TestCase):
+    def test_metadata_view(self):
+        LicenseFactory()
+        with mock.patch.object(License, "get_metadata") as mock_get_metadata:
+            mock_get_metadata.return_value = {"foo": "bar"}
+            rsp = self.client.get(reverse("metadata"))
+        self.assertEqual(200, rsp.status_code)
+        mock_get_metadata.assert_called_with()
+        self.assertEqual(b"- foo: bar\n", rsp.content)

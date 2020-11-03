@@ -74,6 +74,12 @@ class LicenseAdmin(admin.ModelAdmin):
         "prohibits_high_income_nation_use",
     ]
     inlines = [LegalCodeInline]
+    list_display = [
+        "license_code",
+        "title_english",
+        "version",
+        "jurisdiction_code",
+    ]
     list_filter = [
         "license_code",
         "version",

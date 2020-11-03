@@ -1,27 +1,103 @@
-from unittest.mock import MagicMock
+import os
+import tempfile
+from unittest import mock
+from unittest.mock import MagicMock, call
 
 from bs4 import BeautifulSoup
 from django.test import TestCase
+from django.urls import Resolver404, URLResolver
 from polib import POEntry
 
-from i18n import DEFAULT_LANGUAGE_CODE
-from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS, EXCLUDED_LICENSE_VERSIONS
-from licenses.models import LegalCode, License
+from licenses.models import License
 from licenses.utils import (
+    clean_string,
     cleanup_current_branch_output,
     compute_about_url,
+    generate_filename_to_save_static_view_output,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
-    get_licenses_code_and_version,
-    get_licenses_code_version_language_code,
     parse_legalcode_filename,
+    save_bytes_to_file,
     save_dict_to_pofile,
+    save_url_as_static_file,
     strip_list_whitespace,
     validate_dictionary_is_all_text,
     validate_list_is_all_text,
 )
 
 from .factories import LegalCodeFactory, LicenseFactory
+
+
+class SaveURLAsStaticFileTest(TestCase):
+    def test_save_bytes_to_file(self):
+        filepath = None
+        try:
+            tmpfile = tempfile.NamedTemporaryFile()
+            filename = tmpfile.name
+            save_bytes_to_file(b"abcxyz", filename)
+            tmpfile.seek(0)
+            content = tmpfile.read()
+            self.assertEqual(b"abcxyz", content)
+        finally:
+            if filepath is not None:
+                os.remove(filepath)
+
+    def test_generate_filename_to_save_static_view_output(self):
+        output_dir = "/output"
+        self.assertEqual(
+            "/output/foo/index.html",
+            generate_filename_to_save_static_view_output(output_dir, "/foo/"),
+        )
+        self.assertEqual(
+            "/output/foo.html",
+            generate_filename_to_save_static_view_output(output_dir, "/foo.html"),
+        )
+
+    def test_save_url_as_static_file_not_200(self):
+        output_dir = "/output"
+        url = "/some/url/"
+        with self.assertRaises(Resolver404):
+            save_url_as_static_file(output_dir, url)
+
+    def test_save_url_as_static_file_200(self):
+        output_dir = "/output"
+        url = "/licenses/metadata.yaml"
+        file_content = b"xxxxx"
+
+        class MockResponse:
+            content = file_content
+            status_code = 200
+
+        class MockResolverMatch:
+            def __init__(self, func):
+                self.func = func
+                self.args = []
+                self.kwargs = {}
+
+        mock_metadata_view = MagicMock()
+        mock_metadata_view.return_value = MockResponse()
+
+        with mock.patch(
+            "licenses.utils.generate_filename_to_save_static_view_output"
+        ) as mock_gen_filename:
+            mock_gen_filename.return_value = "/output/licenses/metadata.yaml"
+            with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
+                with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                    mock_resolve.return_value = MockResolverMatch(
+                        func=mock_metadata_view
+                    )
+                    save_url_as_static_file(output_dir, url)
+
+        self.assertEqual([call(url)], mock_resolve.call_args_list)
+        self.assertEqual([call(request=None)], mock_metadata_view.call_args_list)
+        self.assertEqual(
+            [call("/output", "/licenses/metadata.yaml")],
+            mock_gen_filename.call_args_list,
+        )
+        self.assertEqual(
+            [call(file_content, "/output/licenses/metadata.yaml")],
+            mock_save.call_args_list,
+        )
 
 
 class GetJurisdictionCodeTest(TestCase):
@@ -205,49 +281,6 @@ class GetLicenseUtilityTest(TestCase):
             LegalCodeFactory(license=license, language_code="en")
             LegalCodeFactory(license=license, language_code="fr")
 
-    def test_get_licenses_code_and_version(self):
-        """Should return an iterable of license dictionaries
-        for licenses that have English legalcode,
-        with the dictionary keys (license_code, version)
-
-        Excluding all versions other than 4.0 licenses
-        """
-        licenses = list(
-            License.objects.filter(
-                legal_codes__language_code=DEFAULT_LANGUAGE_CODE
-            ).exclude(version__in=EXCLUDED_LICENSE_VERSIONS)
-        )
-        list_of_licenses_dict = [
-            {"license_code": l.license_code, "version": l.version} for l in licenses
-        ]
-        yielded_licenses = get_licenses_code_and_version()
-        yielded_license_list = list(yielded_licenses)
-        self.assertCountEqual(list_of_licenses_dict, yielded_license_list)
-
-    def test_get_licenses_code_version_lang(self):
-        """Should return an iterable of license dictionaries
-        with the dictionary keys (license_code, version, target_lang)
-
-        Excluding all versions other than 4.0 licenses
-        """
-        list_of_licenses_dict = []
-        yielded_licenses = get_licenses_code_version_language_code()
-        yielded_license_list = list(yielded_licenses)
-        for legalcode in LegalCode.objects.exclude(
-            license__version__in=EXCLUDED_LICENSE_VERSIONS
-        ):
-            language_code = legalcode.language_code
-            license = legalcode.license
-            if language_code not in EXCLUDED_LANGUAGE_IDENTIFIERS:
-                list_of_licenses_dict.append(
-                    {
-                        "license_code": license.license_code,
-                        "version": license.version,
-                        "language_code": language_code,
-                    }
-                )
-        self.assertEqual(list_of_licenses_dict, yielded_license_list)
-
 
 class TestComputeAboutURL(TestCase):
     def test_by_nc_40(self):
@@ -344,3 +377,19 @@ class TestMisc(TestCase):
         expected_list = ["some-branch", "another-branch", "develop"]
         unmodified_list = ["some-branch", "* another-branch", "develop"]
         self.assertEqual(cleanup_current_branch_output(unmodified_list), expected_list)
+
+
+class CleanStringTest(TestCase):
+    def test_clean_string(self):
+        data = [
+            # input, expected result
+            ("foo", "foo"),
+            ("foo bar", "foo bar"),
+            ("foo  bar", "foo bar"),
+            ("foo   bar", "foo bar"),
+            (" x ", "x"),
+            ("one\ntwo", "one two"),
+        ]
+        for input, expected in data:
+            with self.subTest(input):
+                self.assertEqual(expected, clean_string(input))

@@ -5,6 +5,8 @@ from operator import itemgetter
 from typing import Iterable
 
 import git
+import yaml
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import caches
 from django.http import HttpResponse
@@ -14,7 +16,7 @@ from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import active_translation, get_language_for_jurisdiction
-from licenses.git_utils import setup_local_branch
+from licenses.constants import INCLUDED_LICENSE_VERSIONS
 from licenses.models import LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -36,31 +38,26 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def home(request):
-    # Get the list of license codes and languages that occur among the 4.0 licenses
+    # Get the list of license codes and languages that occur among the licenses
     # to let the template iterate over them as it likes.
-    codes_for_40 = (
-        License.objects.filter(version="4.0")
-        .order_by("license_code")
-        .distinct("license_code")
-        .values_list("license_code", flat=True)
-    )
-    languages_for_40 = (
-        LegalCode.objects.filter(license__version="4.0")
-        .order_by("language_code")
-        .distinct("language_code")
-        .values_list("language_code", flat=True)
-    )
-
-    licenses_by_version = [
-        ("4.0", codes_for_40, languages_for_40),
-    ]
+    licenses_by_version = []
+    for version in INCLUDED_LICENSE_VERSIONS:
+        codes = (
+            License.objects.filter(version=version)
+            .order_by("license_code")
+            .distinct("license_code")
+            .values_list("license_code", flat=True)
+        )
+        languages = (
+            LegalCode.objects.filter(license__version=version)
+            .order_by("language_code")
+            .distinct("language_code")
+            .values_list("language_code", flat=True)
+        )
+        licenses_by_version.append((version, codes, languages))
 
     context = {
         "licenses_by_version": licenses_by_version,
-        # "licenses_by_code": licenses_by_code,
-        "legalcodes": LegalCode.objects.filter(
-            license__version="4.0", language_code__in=["en", "es", "ar", "de"]
-        ).order_by("license__license_code", "language_code"),
     }
     return render(request, "home.html", context)
 
@@ -115,17 +112,15 @@ def view_license(
     )
 
     kwargs = dict(
-        template_name="legalcode_40_plain_text.html"
-        if is_plain_text
-        else "legalcode_40_page.html",
+        template_name="legalcode_page.html",
         context={
             "fat_code": legalcode.license.fat_code(),
             "languages_and_links": languages_and_links,
             "link_to_plain_text_file": f"{ legalcode.license_url() }/index.txt"
             if legalcode.license_url().endswith("legalcode")
             else f"{ legalcode.license_url() }.txt",
-            "is_plain_text": is_plain_text,
             "legalcode": legalcode,
+            "license": legalcode.license
         },
     )
 
@@ -134,8 +129,10 @@ def view_license(
         if is_plain_text:
             response = HttpResponse(content_type='text/plain; charset="utf-8"')
             html = render_to_string(**kwargs)
-            with tempfile.NamedTemporaryFile(mode="w+t") as temp:
-                temp.write(html)
+            soup = BeautifulSoup(html, "lxml")
+            plain_text_soup = soup.find(id="plain-text-marker")
+            with tempfile.NamedTemporaryFile(mode="w+b") as temp:
+                temp.write(plain_text_soup.encode("utf-8"))
                 output = subprocess.run(
                     ["pandoc", "-f", "html", temp.name, "-t", "plain",],
                     encoding="utf-8",
@@ -159,16 +156,27 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         license__jurisdiction_code=jurisdiction or "",
         language_code=language_code,
     )
+    license = legalcode.license
     languages_and_links = get_languages_and_links_for_legalcodes(
-        legalcode.license.legal_codes.all(), language_code, "deed"
+        license.legal_codes.all(), language_code, "deed"
     )
+
+    if license.license_code == "CC0":
+        body_template = "includes/deed_cc0_body.html"
+    elif license.version == "4.0":
+        body_template = "includes/deed_40_body.html"
+    else:
+        # Default to 4.0 - or maybe we should just fail?
+        body_template = "includes/deed_40_body.html"
 
     translation = legalcode.get_translation_object()
     with active_translation(translation):
         return render(
             request,
-            "deed_40.html",
+            "deed.html",
             {
+                "additional_classes": "",
+                "body_template": body_template,
                 "fat_code": legalcode.license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
@@ -193,12 +201,14 @@ def branch_status_helper(repo, translation_branch):
     Mostly separated to help with test so we can readily
     mock the repo.
     """
+    repo.remotes.origin.fetch()
     branch_name = translation_branch.branch_name
-    setup_local_branch(repo, branch_name, settings.OFFICIAL_GIT_BRANCH)
 
     # Put the commit data in a format that's easy for the template to use
     # Start by getting data about the last N + 1 commits
-    last_n_commits = list(repo.iter_commits(branch_name, max_count=1 + NUM_COMMITS))
+    last_n_commits = list(
+        repo.iter_commits(f"origin/{branch_name}", max_count=1 + NUM_COMMITS)
+    )
 
     # Copy the data we need into a list of dictionaries
     commits_for_template = [
@@ -240,3 +250,11 @@ def branch_status(request, id):
             result = render(request, "licenses/branch_status.html", context,)
         cache.set(cachekey, result, 5 * 60)
     return result
+
+
+def metadata_view(request):
+    data = [license.get_metadata() for license in License.objects.all()]
+    yaml_bytes = yaml.dump(
+        data, default_flow_style=False, encoding="utf-8", allow_unicode=True
+    )
+    return HttpResponse(yaml_bytes, content_type="text/yaml; charset=utf-8",)
