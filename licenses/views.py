@@ -120,7 +120,7 @@ def view_license(
             if legalcode.license_url().endswith("legalcode")
             else f"{ legalcode.license_url() }.txt",
             "legalcode": legalcode,
-            "license": legalcode.license
+            "license": legalcode.license,
         },
     )
 
