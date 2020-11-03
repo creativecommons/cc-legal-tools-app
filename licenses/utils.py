@@ -1,4 +1,3 @@
-import io
 import os
 import posixpath
 import re
@@ -7,18 +6,15 @@ from base64 import b64encode
 from urllib.parse import urlparse
 
 from bs4 import NavigableString
-from django.test import Client
+from django.urls import get_resolver
 from polib import POEntry, POFile
 
 from i18n import LANGUAGE_CODE_REGEX
 
 
-def save_url_as_static_file(output_dir, url, open_func=io.open):
+def generate_filename_to_save_static_view_output(output_dir, url):
     """
-    Get the output from the URL and save it in an appropriate file
-    under output_dir. For making static files from a site.
-
-    Pass in open_func just for testing, not in regular use.
+    Return absolute path where we want to save the output from the given url
     """
     print(url)
     parts = urlparse(url)
@@ -33,17 +29,36 @@ def save_url_as_static_file(output_dir, url, open_func=io.open):
     else:
         # URL includes a reasonable filename like metadata.yaml, just use it
         output_filename = os.path.join(output_dir, path)
+    return output_filename
+
+
+def save_bytes_to_file(bytes, output_filename):
     dirname = os.path.dirname(output_filename)
     if os.path.isfile(dirname):
         os.remove(dirname)
     os.makedirs(dirname, mode=0o755, exist_ok=True)
-    client = Client()
-    rsp = client.get(url)
+    with open(output_filename, "wb") as f:
+        f.write(bytes)  # Bytes
+
+
+def save_url_as_static_file(output_dir, url):
+    """
+    Get the output from the URL and save it in an appropriate file
+    under output_dir. For making static files from a site.
+
+    Pass in open_func just for testing, not in regular use.
+    """
+    output_filename = generate_filename_to_save_static_view_output(output_dir, url)
+
+    # Was using test Client, but it runs middleware and fails at runtime because the
+    # request host wasn't in the ALLOWED_HOSTS. So, resolve the URL and call the view
+    # directly.
+    resolver = get_resolver()
+    match = resolver.resolve(url)  # ResolverMatch
+    rsp = match.func(request=None, *match.args, **match.kwargs)
     if rsp.status_code != 200:
         raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
-
-    with open_func(output_filename, "wb") as f:
-        f.write(rsp.content)  # Bytes
+    save_bytes_to_file(rsp.content, output_filename)
 
 
 def get_code_from_jurisdiction_url(url):
