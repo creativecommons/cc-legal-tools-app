@@ -252,15 +252,21 @@ class Command(BaseCommand):
                     if language_code == "en":
                         message_key = translation.strip()
                         message_value = ""
-                    elif internal_key in english_messages:
-                        message_key = english_messages[internal_key]
-                        message_value = translation
-                    elif internal_key == "s3a4_if_you_share_adapted_material":
-                        # FIXME: Bug in by-nc-nd 4.0 NL translation, see
-                        # https://github.com/creativecommons/creativecommons.org/pull/1160
-                        pass
                     else:
-                        raise ValueError(f"No English text for key {internal_key}")
+                        # WORKAROUND - by-nc-nd 4.0 NL has an extra item under s3a.
+                        # https://github.com/creativecommons/creativecommons.org/pull/1160
+                        if (
+                            internal_key == "s3a4_if_you_share_adapted_material"
+                            and internal_key not in english_messages
+                        ):
+                            message_key = (
+                                "If You Share Adapted Material You produce, the Adapter's "
+                                "License You apply must not prevent recipients of the Adapted "
+                                "Material from complying with this Public License."
+                            )
+                        else:
+                            message_key = english_messages[internal_key]
+                        message_value = translation
 
                     pofile.append(
                         POEntry(
