@@ -1,9 +1,11 @@
 import os
+import tempfile
 from unittest import mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 from bs4 import BeautifulSoup
-from django.test import Client, TestCase
+from django.test import TestCase
+from django.urls import Resolver404, URLResolver
 from polib import POEntry
 
 from licenses.models import License
@@ -11,9 +13,11 @@ from licenses.utils import (
     clean_string,
     cleanup_current_branch_output,
     compute_about_url,
+    generate_filename_to_save_static_view_output,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
     parse_legalcode_filename,
+    save_bytes_to_file,
     save_dict_to_pofile,
     save_url_as_static_file,
     strip_list_whitespace,
@@ -25,70 +29,75 @@ from .factories import LegalCodeFactory, LicenseFactory
 
 
 class SaveURLAsStaticFileTest(TestCase):
+    def test_save_bytes_to_file(self):
+        filepath = None
+        try:
+            tmpfile = tempfile.NamedTemporaryFile()
+            filename = tmpfile.name
+            save_bytes_to_file(b"abcxyz", filename)
+            tmpfile.seek(0)
+            content = tmpfile.read()
+            self.assertEqual(b"abcxyz", content)
+        finally:
+            if filepath is not None:
+                os.remove(filepath)
+
+    def test_generate_filename_to_save_static_view_output(self):
+        output_dir = "/output"
+        self.assertEqual(
+            "/output/foo/index.html",
+            generate_filename_to_save_static_view_output(output_dir, "/foo/"),
+        )
+        self.assertEqual(
+            "/output/foo.html",
+            generate_filename_to_save_static_view_output(output_dir, "/foo.html"),
+        )
+
     def test_save_url_as_static_file_not_200(self):
         output_dir = "/output"
         url = "/some/url/"
-        with mock.patch.object(os, "makedirs") as mock_makedirs:
-            with self.assertRaisesMessage(ValueError, "Status 404"):
-                save_url_as_static_file(output_dir, url)
-        self.assertEqual(
-            [mock.call("/output/some/url", mode=0o755, exist_ok=True)],
-            mock_makedirs.call_args_list,
-        )
+        with self.assertRaises(Resolver404):
+            save_url_as_static_file(output_dir, url)
 
     def test_save_url_as_static_file_200(self):
         output_dir = "/output"
-        url = "/"
+        url = "/licenses/metadata.yaml"
         file_content = b"xxxxx"
-
-        # sigh - why is this such a pain?
-
-        class MockFilehandle:
-            enter_called = 0
-            write_called = 0
-
-            def __enter__(self):
-                self.enter_called += 1
-                return self
-
-            def write(self, *a, **k):
-                self.write_called += 1
-                assert a == (file_content,)
-
-            def __exit__(self, *a, **k):
-                pass
-
-        mock_filehandle = MockFilehandle()
-
-        class MockOpen:
-            called = 0
-
-            def __call__(self, *a, **k):
-                assert a == (f"{output_dir}/index.html", "wb")
-                self.called += 1
-                return mock_filehandle
 
         class MockResponse:
             content = file_content
             status_code = 200
 
-        mock_open = MockOpen()
-        with mock.patch.object(os, "makedirs") as mock_makedirs:
-            with mock.patch.object(Client, "get") as mock_get:
-                mock_get.return_value = MockResponse()
+        class MockResolverMatch:
+            def __init__(self, func):
+                self.func = func
+                self.args = []
+                self.kwargs = {}
 
-                save_url_as_static_file(output_dir, url, mock_open)
+        mock_metadata_view = MagicMock()
+        mock_metadata_view.return_value = MockResponse()
 
+        with mock.patch(
+            "licenses.utils.generate_filename_to_save_static_view_output"
+        ) as mock_gen_filename:
+            mock_gen_filename.return_value = "/output/licenses/metadata.yaml"
+            with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
+                with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                    mock_resolve.return_value = MockResolverMatch(
+                        func=mock_metadata_view
+                    )
+                    save_url_as_static_file(output_dir, url)
+
+        self.assertEqual([call(url)], mock_resolve.call_args_list)
+        self.assertEqual([call(request=None)], mock_metadata_view.call_args_list)
         self.assertEqual(
-            [mock.call(output_dir, mode=0o755, exist_ok=True)],
-            mock_makedirs.call_args_list,
+            [call("/output", "/licenses/metadata.yaml")],
+            mock_gen_filename.call_args_list,
         )
         self.assertEqual(
-            [mock.call(url)], mock_get.call_args_list,
+            [call(file_content, "/output/licenses/metadata.yaml")],
+            mock_save.call_args_list,
         )
-        self.assertEqual(1, mock_filehandle.enter_called)
-        self.assertEqual(1, mock_filehandle.write_called)
-        self.assertEqual(1, mock_open.called)
 
 
 class GetJurisdictionCodeTest(TestCase):
