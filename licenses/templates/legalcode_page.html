@@ -30,9 +30,13 @@
   <div class="columns">
     {% include 'includes/menu-sidebar.html' %}
     <div class="column">
-      {% include 'includes/licenses_header.html' %}
-      {% include 'includes/about_cc_and_license.html' %}
-      {% include 'includes/use_of_licenses.html' %}
+      {% include 'includes/licenses_header.html' %}  {#  Title and icons #}
+
+      {% if not license.jurisdiction_code %} {# The ported licenses include their own versions of these #}
+        {% include 'includes/about_cc_and_license.html' %}  {#  CC IS NOT A LAW FIRM #}
+        {% include 'includes/use_of_licenses.html' %}  {# Considerations... #}
+      {% endif %}
+
       {% if license.version == "4.0" %}
         {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
       {% elif license.version == "3.0" and not license.jurisdiction_code %}
@@ -42,6 +46,7 @@
       {% elif license.license_code == "CC0" %}
         {% include 'includes/legalcode_cc0_license.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
       {% endif %}
+
       {% include 'includes/view_legal_code_link_plain_text.html' %}
       {% include 'includes/about_cc.html' %}
       {% include 'includes/related_links.html' %}

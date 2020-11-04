@@ -37,7 +37,6 @@ of static files.
                 <th>{{ license_group.grouper }}</th>
                 {% for legalcode in license_group.list  %}
                   <td>
-                    {{ legalcode.license_code }}
                     <a href="{{ legalcode.deed_url }}">{% trans "Deed" %}</a>
                     <a href="{{ legalcode.license_url }}">{% trans "License" %}</a>
                   </td>

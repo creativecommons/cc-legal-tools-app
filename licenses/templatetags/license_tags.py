@@ -3,6 +3,8 @@ from threading import local
 
 from django import template
 
+from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
+
 register = template.Library()
 
 
@@ -77,12 +79,16 @@ def build_license_url(license_code, version, jurisdiction_code, language_code):
     # be complicated, but we have unit tests to determine if we've got it right.
     # See test_templatetags.py.
     if jurisdiction_code:
-        if language_code == "en" or not language_code:
+        default_language = DEFAULT_JURISDICTION_LANGUAGES.get(
+            jurisdiction_code, jurisdiction_code
+        )
+        if language_code == default_language or not language_code:
             return f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode"
         else:
             return f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode.{language_code}"
     else:
-        if language_code == "en" or not language_code:
+        default_language = DEFAULT_LANGUAGE_CODE
+        if language_code == default_language or not language_code:
             return f"/licenses/{license_code}/{version}/legalcode"
         else:
             return f"/licenses/{license_code}/{version}/legalcode.{language_code}"
