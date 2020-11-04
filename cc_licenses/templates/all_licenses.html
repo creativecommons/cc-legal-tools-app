@@ -10,7 +10,7 @@ of static files.
 
   <p><a href="{% url 'translation_status' %}">Translation status</a></p>
 
-  <p>Lcenses:</p>
+  <p>Licenses:</p>
 
   {% regroup legalcodes by version as version_list %}
 
@@ -47,7 +47,6 @@ of static files.
           </tbody>
         </table>
       {% endfor %}
-
     {% endwith %}
   {% endfor %}
 {% endblock content %}
