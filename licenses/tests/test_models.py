@@ -224,8 +224,6 @@ class LicenseModelTest(TestCase):
             },
         }
 
-        print(repr(data))
-
         self.assertEqual(expected_data, data)
 
     def test_logos(self):
