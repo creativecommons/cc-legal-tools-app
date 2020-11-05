@@ -2,7 +2,8 @@ import string
 from threading import local
 
 from django import template
-from django.utils.safestring import mark_safe
+
+from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
 
 register = template.Library()
 
@@ -15,21 +16,13 @@ register = template.Library()
 next_letter_data = local()
 
 
-@register.simple_tag
-def home_box(license_code, version, language_code):
-    from licenses.models import LegalCode
-
-    result = []
-    for legalcode in LegalCode.objects.filter(
-        license__license_code=license_code,
-        license__version=version,
-        language_code=language_code,
-    ):
-        result.append(
-            f"""<a href="{legalcode.deed_url()}">Deed</a> """
-            f"""<a href="{legalcode.license_url()}">License</a>"""
-        )
-    return mark_safe("<br/>".join(result))
+@register.filter
+def license_codes(legalcodes):
+    """
+    Return sorted list of the unique license codes for the given
+    dictionaries representing legalcodes
+    """
+    return sorted(set(lc["license_code"] for lc in legalcodes))
 
 
 @register.simple_tag
@@ -86,12 +79,16 @@ def build_license_url(license_code, version, jurisdiction_code, language_code):
     # be complicated, but we have unit tests to determine if we've got it right.
     # See test_templatetags.py.
     if jurisdiction_code:
-        if language_code == "en" or not language_code:
+        default_language = DEFAULT_JURISDICTION_LANGUAGES.get(
+            jurisdiction_code, jurisdiction_code
+        )
+        if language_code == default_language or not language_code:
             return f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode"
         else:
             return f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode.{language_code}"
     else:
-        if language_code == "en" or not language_code:
+        default_language = DEFAULT_LANGUAGE_CODE
+        if language_code == default_language or not language_code:
             return f"/licenses/{license_code}/{version}/legalcode"
         else:
             return f"/licenses/{license_code}/{version}/legalcode.{language_code}"

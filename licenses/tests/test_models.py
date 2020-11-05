@@ -235,7 +235,7 @@ class LicenseModelTest(TestCase):
             "prohibits_high_income_nation_use": False,
             "translations": {
                 "en": {
-                    "license": "/licenses/by-nc/3.0/xyz/legalcode",
+                    "license": "/licenses/by-nc/3.0/xyz/legalcode.en",
                     "deed": "/licenses/by-nc/3.0/xyz/",
                     "title": "The Title",
                 },

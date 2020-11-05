@@ -14,10 +14,9 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
-from i18n import DEFAULT_LANGUAGE_CODE
+from i18n import DEFAULT_LANGUAGE_CODE, JURISDICTION_NAMES
 from i18n.utils import active_translation, get_language_for_jurisdiction
-from licenses.constants import INCLUDED_LICENSE_VERSIONS
-from licenses.models import LegalCode, License, TranslationBranch
+from licenses.models import BY_LICENSE_CODES, LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
     # license_code : template name
@@ -37,29 +36,43 @@ NUM_COMMITS = 3
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
-def home(request):
+def all_licenses(request):
+    """
+    For test purposes, this displays all the available deeds and licenses in tables.
+    This is not intended for public use and should not be included in the generation
+    of static files.
+    """
+
     # Get the list of license codes and languages that occur among the licenses
     # to let the template iterate over them as it likes.
-    licenses_by_version = []
-    for version in INCLUDED_LICENSE_VERSIONS:
-        codes = (
-            License.objects.filter(version=version)
-            .order_by("license_code")
-            .distinct("license_code")
-            .values_list("license_code", flat=True)
+    legalcode_objects = (
+        LegalCode.objects.valid()
+        .select_related("license")
+        .order_by(
+            "-license__version",
+            "license__jurisdiction_code",
+            "language_code",
+            "license__license_code",
         )
-        languages = (
-            LegalCode.objects.filter(license__version=version)
-            .order_by("language_code")
-            .distinct("language_code")
-            .values_list("language_code", flat=True)
+    )
+    legalcodes = [
+        dict(
+            version=lc.license.version,
+            jurisdiction=JURISDICTION_NAMES.get(
+                lc.license.jurisdiction_code, lc.license.jurisdiction_code
+            ),
+            license_code=lc.license.license_code,
+            language_code=lc.language_code,
+            deed_url=lc.deed_url(),
+            license_url=lc.license_url(),
         )
-        licenses_by_version.append((version, codes, languages))
-
-    context = {
-        "licenses_by_version": licenses_by_version,
-    }
-    return render(request, "home.html", context)
+        for lc in legalcode_objects
+    ]
+    return render(
+        request,
+        "all_licenses.html",
+        {"legalcodes": legalcodes, "license_codes": sorted(BY_LICENSE_CODES)},
+    )
 
 
 def get_languages_and_links_for_legalcodes(

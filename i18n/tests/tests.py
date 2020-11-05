@@ -150,9 +150,7 @@ class I18NTest(TestCase):
     #         CACHED_APPLICABLE_LANGS.clear()
 
     def test_get_language_for_jurisdiction(self):
-        # There are 2 for "be" so we return the default instead
-        self.assertEqual("ar", get_language_for_jurisdiction("be", "ar"))
+        # 'be' default is "fr"
+        self.assertEqual("fr", get_language_for_jurisdiction("be", "ar"))
         # There is none for "xx" so we return the default instead
         self.assertEqual("ar", get_language_for_jurisdiction("xx", "ar"))
-        # If we have exactly one possibility, we return it
-        self.assertEqual("fr", get_language_for_jurisdiction("fr", "ar"))
