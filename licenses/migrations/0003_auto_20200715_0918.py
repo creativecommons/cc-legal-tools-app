@@ -10,7 +10,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterModelOptions(name="legalcode", options={"ordering": ["url"]},),
+        migrations.AlterModelOptions(
+            name="legalcode",
+            options={"ordering": ["url"]},
+        ),
         migrations.AlterModelOptions(
             name="license",
             options={"ordering": ["-version", "license_code", "jurisdiction_code"]},

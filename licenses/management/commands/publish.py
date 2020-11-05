@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.management import BaseCommand, CommandError
 from django.urls import reverse
 
-from licenses.git_utils import commit_and_push_changes, setup_local_branch
+from licenses.git_utils import commit_and_push_changes, kill_branch, setup_local_branch
 from licenses.models import LegalCode, TranslationBranch
 from licenses.utils import save_url_as_static_file
 
@@ -53,12 +53,9 @@ class Command(BaseCommand):
             help="A list of active branches in cc-licenses-data will be displayed",
         )
         parser.add_argument(
-            "--nopush", action="store_true", help="Do not push upstream",
-        )
-        parser.add_argument(
             "--nogit",
             action="store_true",
-            help="Don't do anything with git, just build the pages and exit.",
+            help="Don't do anything with git, just build the pages in the output directory and exit.",
         )
         parser.add_argument(
             "--output_dir",
@@ -79,14 +76,19 @@ class Command(BaseCommand):
             e = "Static source directory does not exist, run collectstatic"
             raise CommandError(e)
         output_dir = os.path.abspath(os.path.expanduser(output_dir))
-        print(f"output_dir={output_dir}. Will delete, then generate HTML files there.")
+        # print(f"output_dir={output_dir}. Will delete, then generate HTML files there.")
         if os.path.isdir(output_dir):
             rmtree(output_dir)
         os.makedirs(output_dir)
 
         for legalcode in LegalCode.objects.valid():
-            save_url_as_static_file(output_dir, legalcode.license_url())
-            save_url_as_static_file(output_dir, legalcode.deed_url())
+            # print(str(legalcode))
+            # e.g. URL https://creativecommons.org/licenses/by/3.0/ca/legalcode.en
+            # NOT https://creativecommons.org/licenses/by/3.0/ca
+            # NOT https://creativecommons.org/licenses/by/3.0/ca/
+            # NOT https://creativecommons.org/licenses/by/3.0/ca/legalcode.en-gb
+            save_url_as_static_file(output_dir, legalcode.license_url)
+            save_url_as_static_file(output_dir, legalcode.deed_url)
         save_url_as_static_file(output_dir, "/")
         save_url_as_static_file(output_dir, reverse("metadata"))
         save_url_as_static_file(output_dir, "/status/")
@@ -97,21 +99,20 @@ class Command(BaseCommand):
         """Workflow for publishing a single branch"""
         print(f"Publishing branch {branch}")
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
-            if repo.is_dirty():
-                raise Exception(
-                    "Git repository has uncommited changes, will not publish"
-                )
             if self.use_git:
                 setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
             self.run_django_distill()
             if self.use_git:
                 if repo.is_dirty():
+                    # Add any changes and new files under 'build'
                     repo.index.add(["build"])
                     commit_and_push_changes(repo, "Updated built HTML files")
                     if repo.is_dirty():
                         raise Exception("Something went wrong, the repo is still dirty")
                 else:
                     print(f"\n{branch} build dir is up to date.\n")
+                # Don't need local branch anymore
+                kill_branch(repo, branch)
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir"""

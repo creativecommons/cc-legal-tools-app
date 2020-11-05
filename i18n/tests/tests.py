@@ -3,7 +3,7 @@ import os
 from django.test import TestCase
 
 from i18n.utils import (
-    get_language_for_jurisdiction,
+    get_default_language_for_jurisdiction,
     get_locale_text_orientation,
     locale_to_lower_upper,
     rtl_context_stuff,
@@ -151,6 +151,6 @@ class I18NTest(TestCase):
 
     def test_get_language_for_jurisdiction(self):
         # 'be' default is "fr"
-        self.assertEqual("fr", get_language_for_jurisdiction("be", "ar"))
+        self.assertEqual("fr", get_default_language_for_jurisdiction("be", "ar"))
         # There is none for "xx" so we return the default instead
-        self.assertEqual("ar", get_language_for_jurisdiction("xx", "ar"))
+        self.assertEqual("ar", get_default_language_for_jurisdiction("xx", "ar"))

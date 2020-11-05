@@ -21,15 +21,32 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     # look like language codes, but they're not necessarily related. E.g. "ar" is the
     # language code for Arabic, but the jurisdiction code for Argentina.
     # See the "JURISDICTION_NAMES", just below this.
+    "am": "hy",  # Armenian - not in jurisdictions.rdf
     "ar": "es",
     "at": "de",
-    "au": "en-gb",
+    # jurisdictions.rdf says au is "en-gb", but:
+    # Deed: https://creativecommons.org/licenses/by/3.0/au/
+    # Deed: https://creativecommons.org/licenses/by/3.0/au/deed.en
+    # https://creativecommons.org/licenses/by/3.0/au/deed.en-gb
+    #   -> REDIRECTS to https://creativecommons.org/licenses/by/3.0/au/deed.en
+    # Valid: https://creativecommons.org/licenses/by/3.0/au/legalcode
+    # NOT: https://creativecommons.org/licenses/by/3.0/au/legalcode.en
+    # NOT: https://creativecommons.org/licenses/by/3.0/au/legalcode.en-gb
+    "au": "en",
     "az": "az",
     "be": "fr",
     "bg": "bg",
     "br": "pt-br",
-    "ca": "en-gb",
-    "ch": "de",
+    # For "ca", jurisdictions.rdf says "en-gb" but the filename is _en.html.
+    # and the URL is
+    # https://creativecommons.org/licenses/by/3.0/ca/legalcode.en
+    # NOT https://creativecommons.org/licenses/by/3.0/ca
+    # NOT https://creativecommons.org/licenses/by/3.0/ca/
+    # NOT https://creativecommons.org/licenses/by/3.0/ca/legalcode.en-gb
+    "ca": "en",
+    # NOT https://creativecommons.org/licenses/by/3.0/ch/legalcode
+    # YES https://creativecommons.org/licenses/by/3.0/ch/legalcode.de
+    "ch": "de",  # ch=Switzerland, default in jurisdictions.rdf=de
     "cl": "es",
     "cn": "zh",
     "co": "es",
@@ -40,11 +57,20 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "ec": "es",
     "ee": "et",
     "eg": "ar",
-    "es": "es-es",
+    # For "es", jurisdictions.rdf says "es-es".
+    # Deed https://creativecommons.org/licenses/by/3.0/es/ is valid
+    # NOT https://creativecommons.org/licenses/by/3.0/es/legalcode
+    # License https://creativecommons.org/licenses/by/3.0/es/legalcode.es is valid
+    # NOT https://creativecommons.org/licenses/by/3.0/es/legalcode.es-es
+    # BUT the filename is by-nc-nd_3.0_es_es ????
+    "es": "es",
     "fi": "fi",
     "fr": "fr",
+    "ge": "ka",  # Georgia not in jurisdictions.rdf. Georgian?
     "gr": "el",
     "gt": "es",
+    # Deed: https://creativecommons.org/licenses/by/3.0/hk/
+    # License: https://creativecommons.org/licenses/by/3.0/hk/legalcode
     "hk": "en-gb",
     "hr": "hr",
     "hu": "hu",

@@ -16,7 +16,7 @@ from django.core.management import call_command
 
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content, save_content_as_pofile_and_mofile
-from licenses.git_utils import commit_and_push_changes, setup_local_branch
+from licenses.git_utils import commit_and_push_changes, kill_branch, setup_local_branch
 from licenses.utils import b64encode_string
 
 logger = logging.getLogger(__name__)
@@ -50,7 +50,11 @@ class TransifexAuthRequests(requests.auth.AuthBase):
         self.token = token
 
     def __eq__(self, other):
-        return all([self.token == getattr(other, "token", None),])
+        return all(
+            [
+                self.token == getattr(other, "token", None),
+            ]
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -63,6 +67,10 @@ class TransifexAuthRequests(requests.auth.AuthBase):
 
 class TransifexHelper:
     def __init__(self, verbosity=1):
+        """
+        Important! Unless verbosity>1, only output errors.
+        Use .say(1, "ERROR") and .say(2, "INFO")
+        """
         self.verbosity = verbosity
         self.project_slug = settings.TRANSIFEX["PROJECT_SLUG"]
         self.organization_slug = settings.TRANSIFEX["ORGANIZATION_SLUG"]
@@ -199,6 +207,10 @@ class TransifexHelper:
             self._stats = self.get_transifex_resource_stats()
         return self._stats
 
+    def clear_transifex_stats(self):
+        if hasattr(self, "_stats"):
+            delattr(self, "_stats")
+
     def transifex_get_pofile_content(self, resource_slug, language_code) -> bytes:
         resource_url = (
             f"project/{self.project_slug}/resource/{resource_slug}"
@@ -289,12 +301,16 @@ class TransifexHelper:
             2, f"Updated branch {branch_name} with updated translations and pushed"
         )
 
+        # Don't need local branch anymore
+        kill_branch(repo, branch_name)
+
         # Now that we know the new changes are upstream, save the LegalCode
         # objects with their new translation_last_updates, and the branch object.
         from licenses.models import LegalCode
 
         LegalCode.objects.bulk_update(
-            legalcodes, fields=["translation_last_update"],
+            legalcodes,
+            fields=["translation_last_update"],
         )
         branch_object.save()
 
@@ -319,8 +335,10 @@ class TransifexHelper:
         # There's otherwise no need or reason for it.
         from licenses.models import LegalCode
 
-        legalcodes = LegalCode.objects.valid().exclude(
-            language_code=DEFAULT_LANGUAGE_CODE
+        legalcodes = (
+            LegalCode.objects.valid()
+            .translated()
+            .exclude(language_code=DEFAULT_LANGUAGE_CODE)
         )
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             return self.check_for_translation_updates_with_repo_and_legalcodes(
@@ -367,22 +385,37 @@ class TransifexHelper:
         for legalcode in legalcodes:
             language_code = legalcode.language_code
             resource_slug = legalcode.license.resource_slug
-            if (
-                resource_slug not in resource_slugs_on_transifex
-                or language_code not in self.stats[resource_slug]
-            ):
-                logger.error(
-                    f"Transifex has no translation for {resource_slug}"
+            if resource_slug not in resource_slugs_on_transifex:
+                self.say(2, f"Transifex has no resource {resource_slug}. Creating.")
+
+                # Create the resource
+                english_pofile = legalcode.get_english_pofile()
+                pofile_content = get_pofile_content(english_pofile)
+                self.create_resource(
+                    resource_slug=resource_slug,
+                    resource_name=legalcode.license.fat_code(),
+                    pofilename=os.path.basename(legalcode.translation_filename()),
+                    pofile_content=pofile_content,
+                )
+                self.clear_transifex_stats()
+
+            if language_code not in self.stats[resource_slug]:
+                self.say(
+                    2,
+                    f"Transifex has no {language_code} translation for {resource_slug}",
                 )  # pragma: no cover
-                print(
-                    f"ERROR: Transifex has no translation for {resource_slug}"
-                )  # pragma: no cover
-                continue
+
+                # Upload the language
+                self.upload_messages_to_transifex(legalcode)
+                self.clear_transifex_stats()
 
             # We have a translation in this language for this license on Transifex.
             # When was it last updated?
-            last_tx_update = iso8601.parse_date(
-                self.stats[resource_slug][language_code]["translated"]["last_activity"]
+            last_activity = self.stats[resource_slug][language_code]["translated"][
+                "last_activity"
+            ]
+            last_tx_update = (
+                iso8601.parse_date(last_activity) if last_activity else None
             )
 
             if legalcode.translation_last_update is None:

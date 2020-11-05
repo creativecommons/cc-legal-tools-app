@@ -121,10 +121,6 @@ register_converter(LangConverter, "lang")
 """
 
 
-def distill_wireframes():
-    return None
-
-
 # DEEDS
 urlpatterns = [
     # Debug page that displays all licenses

@@ -15,7 +15,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE, JURISDICTION_NAMES
-from i18n.utils import active_translation, get_language_for_jurisdiction
+from i18n.utils import active_translation, get_default_language_for_jurisdiction
 from licenses.models import BY_LICENSE_CODES, LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -63,8 +63,8 @@ def all_licenses(request):
             ),
             license_code=lc.license.license_code,
             language_code=lc.language_code,
-            deed_url=lc.deed_url(),
-            license_url=lc.license_url(),
+            deed_url=lc.deed_url,
+            license_url=lc.license_url,
         )
         for lc in legalcode_objects
     ]
@@ -89,9 +89,9 @@ def get_languages_and_links_for_legalcodes(
             "name_for_sorting": get_language_info(legal_code.language_code)[
                 "name_local"
             ].lower(),
-            "link": legal_code.license_url()
+            "link": legal_code.license_url
             if license_or_deed == "license"
-            else legal_code.deed_url(),
+            else legal_code.deed_url,
             "selected": selected_language_code == legal_code.language_code,
         }
         for legal_code in legalcodes
@@ -109,16 +109,19 @@ def view_license(
     is_plain_text=False,
 ):
     if language_code is None and jurisdiction:
-        language_code = get_language_for_jurisdiction(jurisdiction)
+        language_code = get_default_language_for_jurisdiction(jurisdiction)
     language_code = language_code or DEFAULT_LANGUAGE_CODE
 
-    legalcode = get_object_or_404(
-        LegalCode,
-        license__license_code=license_code,
-        license__version=version,
-        license__jurisdiction_code=jurisdiction or "",
-        language_code=language_code,
-    )
+    if is_plain_text:
+        legalcode = get_object_or_404(
+            LegalCode,
+            plain_text_url=request.path,
+        )
+    else:
+        legalcode = get_object_or_404(
+            LegalCode,
+            license_url=request.path,
+        )
 
     languages_and_links = get_languages_and_links_for_legalcodes(
         legalcode.license.legal_codes.all(), language_code, "license"
@@ -144,7 +147,14 @@ def view_license(
             with tempfile.NamedTemporaryFile(mode="w+b") as temp:
                 temp.write(plain_text_soup.encode("utf-8"))
                 output = subprocess.run(
-                    ["pandoc", "-f", "html", temp.name, "-t", "plain",],
+                    [
+                        "pandoc",
+                        "-f",
+                        "html",
+                        temp.name,
+                        "-t",
+                        "plain",
+                    ],
                     encoding="utf-8",
                     capture_output=True,
                 )
@@ -156,15 +166,12 @@ def view_license(
 
 def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
     if language_code is None and jurisdiction:
-        language_code = get_language_for_jurisdiction(jurisdiction)
+        language_code = get_default_language_for_jurisdiction(jurisdiction)
     language_code = language_code or DEFAULT_LANGUAGE_CODE
 
     legalcode = get_object_or_404(
         LegalCode,
-        license__license_code=license_code,
-        license__version=version,
-        license__jurisdiction_code=jurisdiction or "",
-        language_code=language_code,
+        deed_url=request.path,
     )
     license = legalcode.license
     languages_and_links = get_languages_and_links_for_legalcodes(
@@ -257,7 +264,11 @@ def branch_status(request, id):
     if result is None:
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             context = branch_status_helper(repo, translation_branch)
-            result = render(request, "licenses/branch_status.html", context,)
+            result = render(
+                request,
+                "licenses/branch_status.html",
+                context,
+            )
         cache.set(cachekey, result, 5 * 60)
     return result
 
@@ -267,4 +278,7 @@ def metadata_view(request):
     yaml_bytes = yaml.dump(
         data, default_flow_style=False, encoding="utf-8", allow_unicode=True
     )
-    return HttpResponse(yaml_bytes, content_type="text/yaml; charset=utf-8",)
+    return HttpResponse(
+        yaml_bytes,
+        content_type="text/yaml; charset=utf-8",
+    )

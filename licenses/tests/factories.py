@@ -64,6 +64,7 @@ class TranslationBranchFactory(factory.DjangoModelFactory):
             # Generate a random one with the right features
             self.legalcodes.add(
                 LegalCodeFactory(
-                    language_code=self.language_code, license__version=self.version,
+                    language_code=self.language_code,
+                    license__version=self.version,
                 )
             )

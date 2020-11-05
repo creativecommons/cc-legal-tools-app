@@ -6,7 +6,10 @@ from bs4 import BeautifulSoup, Tag
 from django.core.management import BaseCommand
 from polib import POEntry, POFile
 
-from i18n.utils import get_language_for_jurisdiction, save_pofile_as_pofile_and_mofile
+from i18n.utils import (
+    get_default_language_for_jurisdiction,
+    save_pofile_as_pofile_and_mofile,
+)
 from licenses.bs_utils import (
     direct_children_with_tag,
     inner_html,
@@ -82,9 +85,9 @@ class Command(BaseCommand):
             license_code = metadata["license_code"]
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
-            language_code = metadata["language_code"] or get_language_for_jurisdiction(
-                jurisdiction_code
-            )
+            language_code = metadata[
+                "language_code"
+            ] or get_default_language_for_jurisdiction(jurisdiction_code)
 
             # Just CC0, BY 3.0, & 4.0, and apply any command line options
             include = (
@@ -156,7 +159,9 @@ class Command(BaseCommand):
             legalcode, created = LegalCode.objects.get_or_create(
                 license=license,
                 language_code=language_code,
-                defaults=dict(html_file=fullpath,),
+                defaults=dict(
+                    html_file=fullpath,
+                ),
             )
 
             if created:
@@ -199,24 +204,28 @@ class Command(BaseCommand):
 
                 if version == "4.0":
                     messages_text = self.import_by_40_license_html(
-                        content=content, legalcode=legalcode,
+                        content=content,
+                        legalcode=legalcode,
                     )
                 elif version == "3.0":
                     if license.jurisdiction_code:
                         # Ported license: we just save the HTML for now
                         legalcode.html = self.import_by_30_ported_license_html(
-                            content=content, legalcode=legalcode,
+                            content=content,
+                            legalcode=legalcode,
                         )
                         legalcode.save()
                         continue
                     else:
                         # Unported license: we parse out the messages like 4.0
                         messages_text = self.import_by_30_unported_license_html(
-                            content=content, legalcode=legalcode,
+                            content=content,
+                            legalcode=legalcode,
                         )
                 elif license_code == "CC0":
                     messages_text = self.import_cc0_license_html(
-                        content=content, legalcode=legalcode,
+                        content=content,
+                        legalcode=legalcode,
                     )
                 else:
                     raise NotImplementedError(

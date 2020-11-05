@@ -124,7 +124,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "by",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "",
+                    "language_code": "en",
                 },
             ),
             (
@@ -157,7 +157,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "devnations",
                     "version": "2.0",
                     "jurisdiction_code": "",
-                    "language_code": "",
+                    "language_code": "en",
                 },
             ),
             (
@@ -168,7 +168,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "LGPL",
                     "version": "2.1",
                     "jurisdiction_code": "",
-                    "language_code": "",
+                    "language_code": "en",
                 },
             ),
             (
@@ -179,7 +179,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "",
+                    "language_code": "en",
                 },
             ),
             (
@@ -201,7 +201,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "nc-sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "",
+                    "language_code": "en",
                 },
             ),
         ]
@@ -287,7 +287,9 @@ class TestComputeAboutURL(TestCase):
         self.assertEqual(
             "http://creativecommons.org/licenses/by-nc/4.0/",
             compute_about_url(
-                license_code="by-nc", version="4.0", jurisdiction_code="",
+                license_code="by-nc",
+                version="4.0",
+                jurisdiction_code="",
             ),
         )
 
@@ -313,7 +315,9 @@ class TestComputeAboutURL(TestCase):
         self.assertEqual(
             "http://creativecommons.org/licenses/by/3.0/nl/",
             compute_about_url(
-                license_code="by", version="3.0", jurisdiction_code="nl",
+                license_code="by",
+                version="3.0",
+                jurisdiction_code="nl",
             ),
         )
 
