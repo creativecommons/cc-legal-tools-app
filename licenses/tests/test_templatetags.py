@@ -1,9 +1,8 @@
 from django.test import TestCase
 from django.urls import get_resolver
 
+from licenses.models import build_deed_url, build_license_url
 from licenses.templatetags.license_tags import (
-    build_deed_url,
-    build_license_url,
     current_letter,
     next_letter,
     reset_letters,
@@ -35,11 +34,23 @@ class LicenseTagsTest(TestCase):
         data = [
             # (license code, version, jurisdiction, language, expected result)
             ("by", "3.0", "es", "es", "/licenses/by/3.0/es/legalcode.es"),
-            ("by", "4.0", "", "", "/licenses/by/4.0/legalcode"),
+            ("by", "4.0", "", "en", "/licenses/by/4.0/legalcode"),
             ("by", "4.0", "", "xx", "/licenses/by/4.0/legalcode.xx"),
-            ("by-nc", "2.0", "zz", "", "/licenses/by-nc/2.0/zz/legalcode"),
             ("by-nc", "2.5", "", "xx", "/licenses/by-nc/2.5/legalcode.xx"),
             ("by-nc", "3.5", "yy", "xx", "/licenses/by-nc/3.5/yy/legalcode.xx"),
+            (
+                "by",
+                "3.0",
+                "am",
+                "hy",
+                "/licenses/by/3.0/am/legalcode",
+            ),  # hy is armenian
+            ("by", "3.0", "ge", "ka", "/licenses/by/3.0/ge/legalcode"),  # georgian
+            ("by", "3.0", "ca", "en", "/licenses/by/3.0/ca/legalcode.en"),  # canadian
+            ("by", "3.0", "ca", "fr", "/licenses/by/3.0/ca/legalcode.fr"),  # canadian
+            ("by", "3.0", "ch", "de", "/licenses/by/3.0/ch/legalcode.de"),
+            ("by", "3.0", "ch", "de", "/licenses/by/3.0/ch/legalcode.de"),
+            ("by", "3.0", "ch", "fr", "/licenses/by/3.0/ch/legalcode.fr"),
         ]
         resolver = get_resolver()
         for license_code, version, jurisdiction, language, expected_result in data:

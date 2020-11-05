@@ -138,7 +138,7 @@ def get_pofile_content(pofile: polib.POFile) -> str:
     return pofile.__unicode__()
 
 
-def get_language_for_jurisdiction(
+def get_default_language_for_jurisdiction(
     jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE
 ):
     return DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, default_language)

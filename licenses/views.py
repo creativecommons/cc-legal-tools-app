@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.translation import get_language_info
 
 from i18n import DEFAULT_LANGUAGE_CODE, JURISDICTION_NAMES
-from i18n.utils import active_translation, get_language_for_jurisdiction
+from i18n.utils import active_translation, get_default_language_for_jurisdiction
 from licenses.models import BY_LICENSE_CODES, LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -59,8 +59,8 @@ def all_licenses(request):
             ),
             license_code=lc.license.license_code,
             language_code=lc.language_code,
-            deed_url=lc.deed_url(),
-            license_url=lc.license_url(),
+            deed_url=lc.deed_url,
+            license_url=lc.license_url,
         )
         for lc in legalcode_objects
     ]
@@ -85,9 +85,9 @@ def get_languages_and_links_for_legalcodes(
             "name_for_sorting": get_language_info(legal_code.language_code)[
                 "name_local"
             ].lower(),
-            "link": legal_code.license_url()
+            "link": legal_code.license_url
             if license_or_deed == "license"
-            else legal_code.deed_url(),
+            else legal_code.deed_url,
             "selected": selected_language_code == legal_code.language_code,
         }
         for legal_code in legalcodes
@@ -98,8 +98,10 @@ def get_languages_and_links_for_legalcodes(
 
 def view_license(request, license_code, version, jurisdiction=None, language_code=None):
     if language_code is None and jurisdiction:
-        language_code = get_language_for_jurisdiction(jurisdiction)
+        language_code = get_default_language_for_jurisdiction(jurisdiction)
     language_code = language_code or DEFAULT_LANGUAGE_CODE
+
+    # print(f"{license_code} {version} {jurisdiction} {language_code}")
 
     legalcode = get_object_or_404(
         LegalCode,
@@ -129,8 +131,10 @@ def view_license(request, license_code, version, jurisdiction=None, language_cod
 
 def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
     if language_code is None and jurisdiction:
-        language_code = get_language_for_jurisdiction(jurisdiction)
+        language_code = get_default_language_for_jurisdiction(jurisdiction)
     language_code = language_code or DEFAULT_LANGUAGE_CODE
+
+    # print(f"{license_code} {version} {jurisdiction} {language_code}")
 
     legalcode = get_object_or_404(
         LegalCode,

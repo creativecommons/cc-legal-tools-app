@@ -1,4 +1,5 @@
 import os
+from tempfile import TemporaryDirectory
 from unittest import mock
 
 import git
@@ -6,7 +7,9 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 
 from licenses.git_utils import (
+    branch_exists,
     commit_and_push_changes,
+    push,
     setup_local_branch,
     setup_to_call_git,
 )
@@ -19,117 +22,138 @@ class Dummy:
     """
 
 
+class GitTestMixin:
+    file_num = 0
+
+    def setUp(self):
+        self.temp_dir = TemporaryDirectory(prefix="cc-git-tests.")
+        self.temp_dir_path = self.temp_dir.name
+
+        self.upstream_repo_path = os.path.join(self.temp_dir_path, "upstream")
+        os.makedirs(self.upstream_repo_path)
+        self.origin_repo = git.Repo.init(self.upstream_repo_path)
+        self.origin_repo.index.commit("Initial commit")
+        self.origin_repo.create_head("master", "HEAD")
+        # We want the develop branch to be a different commit from master so we can tell
+        # them apart, so add and commit a file.
+        self.origin_repo.create_head("develop", "HEAD")
+        # "checkout" develop
+        self.origin_repo.heads.develop.checkout()
+        self.add_file(self.origin_repo)
+
+        # Now clone the upstream repo and make master and develop branches
+        self.local_repo_path = os.path.join(self.temp_dir_path, "local")
+        self.local_repo = self.origin_repo.clone(self.local_repo_path)
+        self.local_repo.create_head("develop", "origin/develop")
+        self.local_repo.create_head("master", "origin/master")
+        super().setUp()
+
+    def add_file(self, repo):
+        # Create new file in repo and commit
+        self.file_num += 1
+        filename = f"test{self.file_num}.txt"
+        filepath = os.path.join(repo.working_tree_dir, filename)
+        with open(filepath, "w") as f:
+            f.write(filename)
+        repo.index.add([filepath])
+        repo.active_branch.commit = repo.index.commit(f"Add {filename}")
+        repo.head.reset(index=True, working_tree=True)
+
+
 @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
-class SetupLocalBranchTest(TestCase):
-    def test_branch_exists_nowhere(self):
-        mock_repo = mock.MagicMock()
-        mock_repo.branches = Dummy()  # won't have branchname as an attribute
-        mock_repo.heads = Dummy()
-        mock_branch = mock.MagicMock()
-        setattr(mock_repo.heads, "ourbranch", mock_branch)
-        mock_origin = mock.MagicMock()
-        mock_origin.refs = Dummy()  # similar
-        mock_parent_branch = mock.MagicMock()
-        setattr(mock_origin.refs, "parentbranch", mock_parent_branch)
-        mock_repo.remotes.origin = mock_origin
+class SetupLocalBranchTest(GitTestMixin, TestCase):
+    def test_cant_work_on_develop(self):
+        with self.assertRaisesMessage(
+            ValueError, "Should not be trying to work on branch develop"
+        ):
+            setup_local_branch(self.local_repo, "develop", "develop")
 
-        setup_local_branch(mock_repo, "ourbranch", "parentbranch")
+    def test_neither_branch_nor_parent_exist(self):
+        with self.assertRaisesMessage(
+            ValueError, "No such parent branch notthisoneeither"
+        ):
+            setup_local_branch(self.local_repo, "nosuchbranch", "notthisoneeither")
 
-        mock_origin.fetch.assert_called_with()
-        mock_repo.create_head.assert_called_with("ourbranch", mock_parent_branch)
-        mock_origin.pull.assert_not_called()
-        mock_branch.checkout.assert_called_with()
+    def test_branch_exists_nowhere_but_parent_does(self):
+        # No "ourbranch" locally or upstream, so we branch from origin/develop
+        setup_local_branch(self.local_repo, "ourbranch", "develop")
+
+        our_branch = self.local_repo.heads.ourbranch
+        self.assertEqual(self.origin_repo.heads.develop.commit, our_branch.commit)
+        self.assertNotEqual(self.origin_repo.heads.master.commit, our_branch.commit)
 
     def test_branch_exists_upstream(self):
-        mock_repo = mock.MagicMock()
-        mock_repo.branches = Dummy()  # won't have branchname as an attribute
-        mock_origin = mock.MagicMock()
-        mock_origin.refs = Dummy()  # similar
-        mock_branch = mock.MagicMock()
-        setattr(mock_repo.heads, "ourbranch", mock_branch)
-        mock_upstream_branch = mock.MagicMock()
-        setattr(mock_origin.refs, "ourbranch", mock_upstream_branch)
-        mock_parent_branch = mock.MagicMock()
-        setattr(mock_origin.refs, "parentbranch", mock_parent_branch)
-        mock_repo.remotes.origin = mock_origin
+        # There's an ourbranch upstream and we branch from that
+        self.origin_repo.create_head("ourbranch")
+        self.origin_repo.heads.ourbranch.checkout()
+        self.add_file(self.origin_repo)
+        self.origin_repo.heads.master.checkout()
+        assert branch_exists(self.origin_repo, "ourbranch")
 
-        setup_local_branch(mock_repo, "ourbranch", "parentbranch")
-
-        mock_origin.fetch.assert_called_with()
-        mock_repo.create_head.assert_called_with("ourbranch", "origin/ourbranch")
-        mock_origin.pull.assert_called_with("ourbranch:ourbranch")
-        mock_branch.checkout.assert_called_with()
+        setup_local_branch(self.local_repo, "ourbranch", "ourbranch")
+        our_branch = self.local_repo.heads.ourbranch
+        self.assertEqual(self.origin_repo.heads.ourbranch.commit, our_branch.commit)
+        self.assertNotEqual(self.origin_repo.heads.develop.commit, our_branch.commit)
+        self.assertNotEqual(self.origin_repo.heads.master.commit, our_branch.commit)
 
     def test_branch_exists_locally(self):
-        mock_branch = mock.MagicMock()
-        mock_repo = mock.MagicMock()
-        setattr(mock_repo.heads, "ourbranch", mock_branch)
-        mock_repo.branches = Dummy()
-        setattr(mock_repo.branches, "ourbranch", mock_branch)
-        mock_origin = mock.MagicMock()
-        mock_origin.refs = Dummy()  # similar
-        mock_branch = mock.MagicMock()
-        setattr(mock_repo.heads, "ourbranch", mock_branch)
-        mock_upstream_branch = mock.MagicMock()
-        setattr(mock_origin.refs, "ourbranch", mock_upstream_branch)
-        mock_parent_branch = mock.MagicMock()
-        setattr(mock_origin.refs, "parentbranch", mock_parent_branch)
-        mock_repo.remotes.origin = mock_origin
+        # We do NOT use the local branch
+        self.local_repo.create_head("ourbranch")
+        self.local_repo.heads.ourbranch.checkout()
+        self.add_file(self.local_repo)
+        old_local_repo_commit = self.local_repo.heads.ourbranch.commit
+        self.local_repo.heads.master.checkout()  # Switch to master
 
-        setup_local_branch(mock_repo, "ourbranch", "parentbranch")
+        # There's an ourbranch upstream and we branch from that
+        self.origin_repo.create_head("parentbranch")
+        self.origin_repo.heads.parentbranch.checkout()
+        self.add_file(self.origin_repo)
+        self.origin_repo.heads.master.checkout()
 
-        mock_origin.fetch.assert_called_with()
-        mock_repo.create_head.assert_not_called()
-        mock_origin.pull.assert_called_with("ourbranch:ourbranch")
-        mock_branch.checkout.assert_called_with()
+        setup_local_branch(self.local_repo, "ourbranch", "parentbranch")
+        our_branch = self.local_repo.heads.ourbranch
+        self.assertEqual(self.origin_repo.heads.parentbranch.commit, our_branch.commit)
+        self.assertNotEqual(old_local_repo_commit, our_branch.commit)
 
 
 @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
-class CommitAndPushChangesTest(TestCase):
+class CommitAndPushChangesTest(GitTestMixin, TestCase):
     def test_no_push_results_failure(self):
         """For bad failures, push returns an empty list"""
-        branch_name = "ourbranch"
-        commit_msg = "commit message"
-        mock_repo = mock.MagicMock()
-        mock_repo.remotes.origin.push.return_value = []
-        mock_repo.head.reference.name = branch_name
-
-        with self.assertRaisesMessage(Exception, "PUSH FAILED COMPLETELY"):
-            commit_and_push_changes(mock_repo, commit_msg)
-
-        mock_repo.index.commit.assert_called_with(commit_msg)
-        mock_repo.remotes.origin.push.assert_called_with(f"{branch_name}:{branch_name}")
+        with mock.patch("licenses.git_utils.push") as mock_push:
+            mock_push.return_value = []
+            with self.assertRaisesMessage(Exception, "PUSH FAILED COMPLETELY"):
+                commit_and_push_changes(self.local_repo, "commit")
 
     def test_good_push_results(self):
-        branch_name = "ourbranch"
         commit_msg = "commit message"
-        mock_repo = mock.MagicMock()
         mock_result = mock.MagicMock()
         mock_result.summary = "push result"
         mock_result.flags = 0
-        mock_repo.remotes.origin.push.return_value = [mock_result]
-        mock_repo.head.reference.name = branch_name
 
-        commit_and_push_changes(mock_repo, commit_msg)
-
-        mock_repo.index.commit.assert_called_with(commit_msg)
-        mock_repo.remotes.origin.push.assert_called_with(f"{branch_name}:{branch_name}")
+        with mock.patch("licenses.git_utils.push") as mock_push:
+            mock_push.return_value = [mock_result]
+            commit_and_push_changes(self.local_repo, commit_msg)
 
     def test_bad_push_results(self):
-        branch_name = "ourbranch"
         commit_msg = "commit message"
-        mock_repo = mock.MagicMock()
         mock_result = mock.MagicMock()
         mock_result.summary = "push result"
         mock_result.flags = git.PushInfo.ERROR
-        mock_repo.remotes.origin.push.return_value = [mock_result]
-        mock_repo.head.reference.name = branch_name
 
-        with self.assertRaisesMessage(Exception, "PUSH FAILED push result"):
-            commit_and_push_changes(mock_repo, commit_msg)
+        with mock.patch("licenses.git_utils.push") as mock_push:
+            mock_push.return_value = [mock_result]
+            with self.assertRaisesMessage(Exception, "PUSH FAILED push result"):
+                commit_and_push_changes(self.local_repo, commit_msg)
 
-        mock_repo.index.commit.assert_called_with(commit_msg)
-        mock_repo.remotes.origin.push.assert_called_with(f"{branch_name}:{branch_name}")
+    def test_push(self):
+        # Just make sure our helper function does what it should
+        mock_repo = mock.MagicMock()
+        mock_repo.head.reference = mock.MagicMock()
+        mock_repo.head.reference.name = "some name"
+        mock_repo.remotes.origin.push.return_value = ["something"]
+        out = push(mock_repo)
+        self.assertEqual(["something"], out)
 
 
 class SetupToCallGitTest(TestCase):

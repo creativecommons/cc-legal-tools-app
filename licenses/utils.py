@@ -9,14 +9,15 @@ from bs4 import NavigableString
 from django.urls import get_resolver
 from polib import POEntry, POFile
 
-from i18n import LANGUAGE_CODE_REGEX
+from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
+from i18n.utils import get_default_language_for_jurisdiction
 
 
 def generate_filename_to_save_static_view_output(output_dir, url):
     """
     Return absolute path where we want to save the output from the given url
     """
-    print(url)
+    # print(url)
     parts = urlparse(url)
     path = parts.path
     path = path.lstrip("/")
@@ -147,17 +148,25 @@ def parse_legalcode_filename(filename):
 
     if jurisdiction:
         url = posixpath.join(url, jurisdiction)
+        language_code = language or get_default_language_for_jurisdiction(
+            jurisdiction, ""
+        )
+    else:
+        language_code = language or DEFAULT_LANGUAGE_CODE
 
     if legalcode:
         url = posixpath.join(url, legalcode)
     else:
         url = f"{url}/"
 
+    if not language_code:
+        raise ValueError(f"What language? filename={filename}")
+
     data = dict(
         license_code=license_code_to_return,
         version=version,
         jurisdiction_code=jurisdiction or "",
-        language_code=language or "",
+        language_code=language_code,
         url=url,
         about_url=compute_about_url(license_code_for_url, version, jurisdiction or ""),
     )

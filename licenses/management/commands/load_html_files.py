@@ -6,7 +6,10 @@ from bs4 import BeautifulSoup, Tag
 from django.core.management import BaseCommand
 from polib import POEntry, POFile
 
-from i18n.utils import get_language_for_jurisdiction, save_pofile_as_pofile_and_mofile
+from i18n.utils import (
+    get_default_language_for_jurisdiction,
+    save_pofile_as_pofile_and_mofile,
+)
 from licenses.bs_utils import (
     direct_children_with_tag,
     inner_html,
@@ -82,9 +85,9 @@ class Command(BaseCommand):
             license_code = metadata["license_code"]
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
-            language_code = metadata["language_code"] or get_language_for_jurisdiction(
-                jurisdiction_code
-            )
+            language_code = metadata[
+                "language_code"
+            ] or get_default_language_for_jurisdiction(jurisdiction_code)
 
             # Just CC0, BY 3.0, & 4.0, and apply any command line options
             include = (

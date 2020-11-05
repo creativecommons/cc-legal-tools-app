@@ -1,5 +1,4 @@
 from unittest import mock
-from unittest.mock import call
 
 import polib
 from django.test import TestCase, override_settings
@@ -17,6 +16,86 @@ from licenses.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
 from licenses.transifex import TransifexHelper
 
 
+class LegalCodeQuerySetTest(TestCase):
+    def test_translated(self):
+        bylicense30ported = LicenseFactory(
+            license_code="by-nc", version="3.0", jurisdiction_code="ar"
+        )
+        bylicense30unported = LicenseFactory(
+            license_code="by-nc", version="3.0", jurisdiction_code=""
+        )
+
+        bylicense40 = LicenseFactory(
+            license_code="by-nc", version="4.0", jurisdiction_code=""
+        )
+
+        cc0v1license = LicenseFactory(
+            license_code="CC0", version="1.0", jurisdiction_code=""
+        )
+
+        should_be_translated = [
+            LegalCodeFactory(license=bylicense40),
+            LegalCodeFactory(license=cc0v1license),
+        ]
+        should_not_be_translated = [
+            LegalCodeFactory(license=bylicense30ported),
+            LegalCodeFactory(license=bylicense30unported),
+        ]
+        self.assertCountEqual(
+            should_be_translated, list(LegalCode.objects.translated())
+        )
+        self.assertCountEqual(
+            should_not_be_translated,
+            set(LegalCode.objects.all()) - set(LegalCode.objects.translated()),
+        )
+
+    def test_valid(self):
+        bylicense30ported = LicenseFactory(
+            license_code="by-nc", version="3.0", jurisdiction_code="ar"
+        )
+        bylicense30unported = LicenseFactory(
+            license_code="by-nc", version="3.0", jurisdiction_code=""
+        )
+        nonbylicense30ported = LicenseFactory(
+            license_code="xyz", version="3.0", jurisdiction_code="ar"
+        )
+        nonbylicense30unported = LicenseFactory(
+            license_code="xyz", version="3.0", jurisdiction_code=""
+        )
+
+        bylicense40 = LicenseFactory(
+            license_code="by-nc", version="4.0", jurisdiction_code=""
+        )
+        nonbylicense40 = LicenseFactory(
+            license_code="xyz", version="4.0", jurisdiction_code=""
+        )
+
+        cc0v1license = LicenseFactory(
+            license_code="CC0", version="1.0", jurisdiction_code=""
+        )
+        noncc0v1license = LicenseFactory(
+            license_code="xyz", version="1.0", jurisdiction_code=""
+        )
+
+        should_be_valid = [
+            LegalCodeFactory(license=bylicense30ported),
+            LegalCodeFactory(license=bylicense30unported),
+            LegalCodeFactory(license=bylicense40),
+            LegalCodeFactory(license=cc0v1license),
+        ]
+        should_not_be_valid = [
+            LegalCodeFactory(license=nonbylicense30ported),
+            LegalCodeFactory(license=nonbylicense30unported),
+            LegalCodeFactory(license=nonbylicense40),
+            LegalCodeFactory(license=noncc0v1license),
+        ]
+        self.assertCountEqual(should_be_valid, list(LegalCode.objects.valid()))
+        self.assertCountEqual(
+            should_not_be_valid,
+            set(LegalCode.objects.all()) - set(LegalCode.objects.valid()),
+        )
+
+
 class LegalCodeModelTest(TestCase):
     fixtures = ["licenses.json"]
 
@@ -24,7 +103,7 @@ class LegalCodeModelTest(TestCase):
         legal_code = LegalCode.objects.first()
         self.assertEqual(
             str(legal_code),
-            f"LegalCode<{legal_code.language_code}, {legal_code.license.about}>",
+            f"LegalCode<{legal_code.language_code}, {str(legal_code.license)}>",
         )
 
     def test_translation_domain(self):
@@ -71,38 +150,6 @@ class LegalCodeModelTest(TestCase):
                         license=license, language_code=language
                     ).translation_filename(),
                 )
-
-    def test_license_url(self):
-        lc = LegalCodeFactory()
-        with mock.patch("licenses.models.build_license_url") as mock_build:
-            lc.license_url()
-        self.assertEqual(
-            [
-                call(
-                    lc.license.license_code,
-                    lc.license.version,
-                    lc.license.jurisdiction_code,
-                    lc.language_code,
-                )
-            ],
-            mock_build.call_args_list,
-        )
-
-    def test_deed_url(self):
-        lc = LegalCodeFactory()
-        with mock.patch("licenses.models.build_deed_url") as mock_build:
-            lc.deed_url()
-        self.assertEqual(
-            [
-                call(
-                    lc.license.license_code,
-                    lc.license.version,
-                    lc.license.jurisdiction_code,
-                    lc.language_code,
-                )
-            ],
-            mock_build.call_args_list,
-        )
 
     def test_get_pofile(self):
         legalcode = LegalCodeFactory()
@@ -196,32 +243,32 @@ class LicenseModelTest(TestCase):
 
         data = license.get_metadata()
         expected_data = {
-            "license_code": "by-nc",
-            "version": "3.0",
-            "title_english": "The Title",
             "jurisdiction": "xyz",
+            "license_code": "by-nc",
             "permits_derivative_works": False,
-            "permits_reproduction": False,
             "permits_distribution": True,
+            "permits_reproduction": False,
             "permits_sharing": True,
-            "requires_share_alike": True,
-            "requires_notice": True,
-            "requires_attribution": True,
-            "requires_source_code": True,
             "prohibits_commercial_use": True,
             "prohibits_high_income_nation_use": False,
+            "requires_attribution": True,
+            "requires_notice": True,
+            "requires_share_alike": True,
+            "requires_source_code": True,
+            "title_english": "The Title",
             "translations": {
                 "en": {
-                    "license": "/licenses/by-nc/3.0/xyz/legalcode.en",
                     "deed": "/licenses/by-nc/3.0/xyz/",
+                    "license": "/licenses/by-nc/3.0/xyz/legalcode",
                     "title": "The Title",
                 },
                 "pt": {
-                    "license": "/licenses/by-nc/3.0/xyz/legalcode.pt",
                     "deed": "/licenses/by-nc/3.0/xyz/deed.pt",
+                    "license": "/licenses/by-nc/3.0/xyz/legalcode.pt",
                     "title": "The Title",
                 },
             },
+            "version": "3.0",
         }
 
         self.assertEqual(expected_data, data)
@@ -319,7 +366,10 @@ class LicenseModelTest(TestCase):
         license = LicenseFactory(
             license_code="bx-oh", version="1.3", jurisdiction_code="any"
         )
-        self.assertEqual(str(license), f"License<{license.about}>")
+        self.assertEqual(
+            str(license),
+            f"License<{license.license_code},{license.version},{license.jurisdiction_code}>",
+        )
 
     def test_rdf(self):
         license = LicenseFactory(
@@ -339,9 +389,9 @@ class LicenseModelTest(TestCase):
     #     # https://creativecommons.org/licenses/by/3.0/es/
     #     # https://creativecommons.org/licenses/by/3.0/es/deed.fr
     #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")
-    #     self.assertEqual("/licenses/bx-oh/1.3/ae/", license.get_deed_url())
+    #     self.assertEqual("/licenses/bx-oh/1.3/ae/", license.deed_url(
     #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="")
-    #     self.assertEqual("/licenses/bx-oh/1.3/", license.get_deed_url())
+    #     self.assertEqual("/licenses/bx-oh/1.3/", license.deed_url)
 
     # def test_get_deed_url_for_language(self):
     #     license = LicenseFactory(license_code="bx-oh", version="1.3", jurisdiction_code="ae")

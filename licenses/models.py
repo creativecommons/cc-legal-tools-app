@@ -19,10 +19,13 @@ from django.utils import translation
 from django.utils.translation import gettext
 
 from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import active_translation, get_translation_object
+from i18n.utils import (
+    active_translation,
+    get_default_language_for_jurisdiction,
+    get_translation_object,
+)
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
-from licenses.templatetags.license_tags import build_deed_url, build_license_url
 from licenses.transifex import TransifexHelper
 
 MAX_LANGUAGE_CODE_LENGTH = 8
@@ -40,6 +43,15 @@ CC0_LICENSE_CODES = ["CC0"]
 
 
 class LegalCodeQuerySet(models.QuerySet):
+    def translated(self):
+        """
+        Return a queryset of the LegalCode objects that we are doing the
+        translation process on.
+        """
+        # We are not translating the 3.0 unported licenses - they are English only
+        # We are not translating the 3.0 ported licenses - just storing their HTML as-is.
+        return self.exclude(license__version="3.0")
+
     def valid(self):
         """
         Return a queryset of the LegalCode objects that exist and are valid
@@ -94,13 +106,32 @@ class LegalCode(models.Model):
 
     html = models.TextField(blank=True, default="")
 
+    license_url = models.URLField()
+    deed_url = models.URLField()
+
     objects = LegalCodeQuerySet.as_manager()
 
     class Meta:
         ordering = ["license__about"]
 
     def __str__(self):
-        return f"LegalCode<{self.language_code}, {self.license.about}>"
+        return f"LegalCode<{self.language_code}, {self.license}>"
+
+    def save(self, *args, **kwargs):
+        license = self.license
+        self.license_url = build_license_url(
+            license.license_code,
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        )
+        self.deed_url = build_deed_url(
+            license.license_code,
+            license.version,
+            license.jurisdiction_code,
+            self.language_code,
+        )
+        super().save(*args, **kwargs)
 
     @property
     def django_language_code(self):
@@ -139,30 +170,6 @@ class LegalCode(models.Model):
             parts.append(license.jurisdiction_code)
         return "-".join(parts).replace("_", "-").replace(".", "").lower()
 
-    def license_url(self):
-        """
-        URL to view this translation of this license
-        """
-        license = self.license
-        return build_license_url(
-            license.license_code,
-            license.version,
-            license.jurisdiction_code,
-            self.language_code,
-        )
-
-    def deed_url(self):
-        """
-        URL to view this translation of this deed
-        """
-        license = self.license
-        return build_deed_url(
-            license.license_code,
-            license.version,
-            license.jurisdiction_code,
-            self.language_code,
-        )
-
     def fat_code(self):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
@@ -185,7 +192,7 @@ class LegalCode(models.Model):
     def get_english_pofile(self) -> polib.POFile:
         if self.language_code != DEFAULT_LANGUAGE_CODE:
             # Same license, just in English translation:
-            english_legalcode = License.get_legalcode_for_language_code(
+            english_legalcode = self.license.get_legalcode_for_language_code(
                 DEFAULT_LANGUAGE_CODE
             )
             return english_legalcode.get_pofile()
@@ -299,7 +306,7 @@ class License(models.Model):
         ordering = ["-version", "license_code", "jurisdiction_code"]
 
     def __str__(self):
-        return f"License<{self.about}>"
+        return f"License<{self.license_code},{self.version},{self.jurisdiction_code}>"
 
     def get_metadata(self):
         """
@@ -329,8 +336,8 @@ class License(models.Model):
             language_code = lc.language_code
             with active_translation(lc.get_translation_object()):
                 data["translations"][language_code] = {
-                    "license": lc.license_url(),
-                    "deed": lc.deed_url(),
+                    "license": lc.license_url,
+                    "deed": lc.deed_url,
                     "title": gettext(self.title_english),
                 }
 
@@ -501,3 +508,58 @@ class TranslationBranch(models.Model):
             "number_of_total_messages": number_of_total_messages,
             "percent_messages_translated": percent_messages_translated,
         }
+
+
+def build_license_url(license_code, version, jurisdiction_code, language_code):
+    """
+    Return a URL to view the license specified by the inputs. Jurisdiction
+    and language are optional.
+    """
+    # UGH. Is there any way we could do this with a simple url 'reverse'? The URL regex would
+    # be complicated, but we have unit tests to determine if we've got it right.
+    # See test_templatetags.py.
+    assert language_code
+    if version == "4.0":
+        assert not jurisdiction_code
+    if jurisdiction_code:
+        url = f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode"
+        default_language = get_default_language_for_jurisdiction(jurisdiction_code)
+        # A few exceptions to how URLs are formed:
+        include_language_anyway = (version == "3.0") and (
+            jurisdiction_code in ["es", "ca", "ch"]
+        )
+        if include_language_anyway or language_code != default_language:
+            url = f"{url}.{language_code}"
+        return url
+    else:
+        default_language = DEFAULT_LANGUAGE_CODE
+        if language_code == default_language or not language_code:
+            return f"/licenses/{license_code}/{version}/legalcode"
+        else:
+            return f"/licenses/{license_code}/{version}/legalcode.{language_code}"
+
+
+def build_deed_url(license_code, version, jurisdiction_code, language_code):
+    """
+    Return a URL to view the deed specified by the inputs. Jurisdiction
+    and language are optional.
+    """
+    # UGH. Is there any way we could do this with a simple url 'reverse'? The URL regex would
+    # be complicated, but we have unit tests to determine if we've got it right.
+    # See test_templatetags.py.
+
+    # https://creativecommons.org/licenses/by-sa/4.0/
+    # https://creativecommons.org/licenses/by-sa/4.0/deed.es
+    # https://creativecommons.org/licenses/by/3.0/es/
+    # https://creativecommons.org/licenses/by/3.0/es/deed.fr
+
+    if jurisdiction_code:
+        if language_code == "en" or not language_code:
+            return f"/licenses/{license_code}/{version}/{jurisdiction_code}/"
+        else:
+            return f"/licenses/{license_code}/{version}/{jurisdiction_code}/deed.{language_code}"
+    else:
+        if language_code == "en" or not language_code:
+            return f"/licenses/{license_code}/{version}/"
+        else:
+            return f"/licenses/{license_code}/{version}/deed.{language_code}"
