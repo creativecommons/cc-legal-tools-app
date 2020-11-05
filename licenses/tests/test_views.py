@@ -237,16 +237,12 @@ class ViewLicenseTest(TestCase):
         for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
             lc = LegalCodeFactory(license__version="4.0", language_code=language_code)
             url = lc.license_url()
-            plain_text_link = f"{ url }.txt"
-            if url.endswith("legalcode"):
-                plain_text_link = f"{ url }/index.txt"
             rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
             self.assertTemplateUsed(rsp, "legalcode_page.html")
             self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
             context = rsp.context
             self.assertEqual(lc, context["legalcode"])
-            self.assertEqual(plain_text_link, context["link_to_plain_text_file"])
             self.assertContains(rsp, f'''lang="{language_code}"''')
             if language_code == "es":
                 self.assertContains(rsp, '''dir="ltr"''')

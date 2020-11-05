@@ -116,9 +116,6 @@ def view_license(
         context={
             "fat_code": legalcode.license.fat_code(),
             "languages_and_links": languages_and_links,
-            "link_to_plain_text_file": f"{ legalcode.license_url() }/index.txt"
-            if legalcode.license_url().endswith("legalcode")
-            else f"{ legalcode.license_url() }.txt",
             "legalcode": legalcode,
             "license": legalcode.license,
         },
