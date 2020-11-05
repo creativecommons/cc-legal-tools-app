@@ -151,6 +151,15 @@ class LegalCode(models.Model):
             self.language_code,
         )
 
+    def plain_text_url(self):
+        """
+        URL to view the plain text translation of this license
+        """
+        license_url = self.license_url()
+        if license_url.endswith("legalcode"):
+            return f"{license_url}/index.txt"
+        return f"{license_url}.txt"
+
     def deed_url(self):
         """
         URL to view this translation of this deed

@@ -88,6 +88,29 @@ class LegalCodeModelTest(TestCase):
             mock_build.call_args_list,
         )
 
+    def test_plain_text_url(self):
+        lc = LegalCodeFactory(
+            license__license_code="by",
+            license__version="4.0",
+            license__jurisdiction_code="",
+            language_code="en",
+        )
+        lc1 = LegalCodeFactory(
+            license__license_code="by",
+            license__version="4.0",
+            license__jurisdiction_code="",
+            language_code="fr",
+        )
+        lc2 = LegalCodeFactory(
+            license__license_code="by",
+            license__version="4.0",
+            license__jurisdiction_code="",
+            language_code="ar",
+        )
+        self.assertEqual(lc.plain_text_url(), f"{lc.license_url()}/index.txt")
+        self.assertEqual(lc1.plain_text_url(), f"{lc1.license_url()}.txt")
+        self.assertEqual(lc2.plain_text_url(), f"{lc2.license_url()}.txt")
+
     def test_deed_url(self):
         lc = LegalCodeFactory()
         with mock.patch("licenses.models.build_deed_url") as mock_build:
