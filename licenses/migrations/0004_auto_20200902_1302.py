@@ -11,10 +11,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name="legalcode", options={"ordering": ["license__about"]},
+            name="legalcode",
+            options={"ordering": ["license__about"]},
         ),
-        migrations.RemoveField(model_name="legalcode", name="raw_html",),
-        migrations.RemoveField(model_name="legalcode", name="url",),
+        migrations.RemoveField(
+            model_name="legalcode",
+            name="raw_html",
+        ),
+        migrations.RemoveField(
+            model_name="legalcode",
+            name="url",
+        ),
         migrations.AddField(
             model_name="legalcode",
             name="html_file",

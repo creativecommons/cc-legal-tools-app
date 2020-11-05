@@ -178,7 +178,9 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"unique_together": {("license", "language_code")},},
+            options={
+                "unique_together": {("license", "language_code")},
+            },
         ),
         migrations.CreateModel(
             name="LegalCode",

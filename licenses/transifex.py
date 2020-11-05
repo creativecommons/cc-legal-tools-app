@@ -50,7 +50,11 @@ class TransifexAuthRequests(requests.auth.AuthBase):
         self.token = token
 
     def __eq__(self, other):
-        return all([self.token == getattr(other, "token", None),])
+        return all(
+            [
+                self.token == getattr(other, "token", None),
+            ]
+        )
 
     def __ne__(self, other):
         return not self == other
@@ -305,7 +309,8 @@ class TransifexHelper:
         from licenses.models import LegalCode
 
         LegalCode.objects.bulk_update(
-            legalcodes, fields=["translation_last_update"],
+            legalcodes,
+            fields=["translation_last_update"],
         )
         branch_object.save()
 

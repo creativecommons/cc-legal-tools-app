@@ -49,7 +49,9 @@ ROOT_URLCONF = "cc_licenses.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(PROJECT_DIR, "templates"),],
+        "DIRS": [
+            os.path.join(PROJECT_DIR, "templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -90,7 +92,9 @@ LOGGING = {
     "disable_existing_loggers": False,
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "formatters": {
-        "basic": {"format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",},
+        "basic": {
+            "format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",
+        },
     },
     "handlers": {
         "mail_admins": {
@@ -116,7 +120,12 @@ LOGGING = {
             "propagate": True,
         },
     },
-    "root": {"handlers": ["console",], "level": "INFO",},
+    "root": {
+        "handlers": [
+            "console",
+        ],
+        "level": "INFO",
+    },
 }
 
 # Internationalization
@@ -186,9 +195,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
 
 # Make things more secure by default. Run "python manage.py check --deploy"
@@ -201,7 +216,9 @@ X_FRAME_OPTIONS = "DENY"
 
 # template_fragments
 CACHES = {
-    "default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache",},
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
     "branchstatuscache": {
         # Use memory caching so template fragments get cached whether we have
         # memcached running or not.

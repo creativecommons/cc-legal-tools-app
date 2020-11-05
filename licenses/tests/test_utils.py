@@ -287,7 +287,9 @@ class TestComputeAboutURL(TestCase):
         self.assertEqual(
             "http://creativecommons.org/licenses/by-nc/4.0/",
             compute_about_url(
-                license_code="by-nc", version="4.0", jurisdiction_code="",
+                license_code="by-nc",
+                version="4.0",
+                jurisdiction_code="",
             ),
         )
 
@@ -313,7 +315,9 @@ class TestComputeAboutURL(TestCase):
         self.assertEqual(
             "http://creativecommons.org/licenses/by/3.0/nl/",
             compute_about_url(
-                license_code="by", version="3.0", jurisdiction_code="nl",
+                license_code="by",
+                version="3.0",
+                jurisdiction_code="nl",
             ),
         )
 

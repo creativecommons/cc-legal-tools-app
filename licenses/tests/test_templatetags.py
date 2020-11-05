@@ -54,7 +54,9 @@ class LicenseTagsTest(TestCase):
         ]
         resolver = get_resolver()
         for license_code, version, jurisdiction, language, expected_result in data:
-            with self.subTest((license_code, version, jurisdiction, language),):
+            with self.subTest(
+                (license_code, version, jurisdiction, language),
+            ):
                 result = build_license_url(
                     license_code, version, jurisdiction, language
                 )
@@ -79,6 +81,8 @@ class LicenseTagsTest(TestCase):
             ("by-nc", "3.5", "yy", "xx", "/licenses/by-nc/3.5/yy/deed.xx"),
         ]
         for license_code, version, jurisdiction, language, expected_result in data:
-            with self.subTest((license_code, version, jurisdiction, language),):
+            with self.subTest(
+                (license_code, version, jurisdiction, language),
+            ):
                 result = build_deed_url(license_code, version, jurisdiction, language)
                 self.assertEqual(expected_result, result)

@@ -11,9 +11,17 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterUniqueTogether(
-            name="translatedlicensename", unique_together=None,
+            name="translatedlicensename",
+            unique_together=None,
         ),
-        migrations.RemoveField(model_name="translatedlicensename", name="license",),
-        migrations.DeleteModel(name="LicenseLogo",),
-        migrations.DeleteModel(name="TranslatedLicenseName",),
+        migrations.RemoveField(
+            model_name="translatedlicensename",
+            name="license",
+        ),
+        migrations.DeleteModel(
+            name="LicenseLogo",
+        ),
+        migrations.DeleteModel(
+            name="TranslatedLicenseName",
+        ),
     ]

@@ -159,7 +159,9 @@ class Command(BaseCommand):
             legalcode, created = LegalCode.objects.get_or_create(
                 license=license,
                 language_code=language_code,
-                defaults=dict(html_file=fullpath,),
+                defaults=dict(
+                    html_file=fullpath,
+                ),
             )
 
             if created:
@@ -202,24 +204,28 @@ class Command(BaseCommand):
 
                 if version == "4.0":
                     messages_text = self.import_by_40_license_html(
-                        content=content, legalcode=legalcode,
+                        content=content,
+                        legalcode=legalcode,
                     )
                 elif version == "3.0":
                     if license.jurisdiction_code:
                         # Ported license: we just save the HTML for now
                         legalcode.html = self.import_by_30_ported_license_html(
-                            content=content, legalcode=legalcode,
+                            content=content,
+                            legalcode=legalcode,
                         )
                         legalcode.save()
                         continue
                     else:
                         # Unported license: we parse out the messages like 4.0
                         messages_text = self.import_by_30_unported_license_html(
-                            content=content, legalcode=legalcode,
+                            content=content,
+                            legalcode=legalcode,
                         )
                 elif license_code == "CC0":
                     messages_text = self.import_cc0_license_html(
-                        content=content, legalcode=legalcode,
+                        content=content,
+                        legalcode=legalcode,
                     )
                 else:
                     raise NotImplementedError(
