@@ -67,10 +67,12 @@ class LegalCodeQuerySet(models.QuerySet):
 
         # Queries for legalcode objects
         BY4_QUERY = Q(
-            license__version="4.0", license__license_code__in=BY_LICENSE_CODES,
+            license__version="4.0",
+            license__license_code__in=BY_LICENSE_CODES,
         )
         BY3_QUERY = Q(
-            license__version="3.0", license__license_code__in=BY_LICENSE_CODES,
+            license__version="3.0",
+            license__license_code__in=BY_LICENSE_CODES,
         )
         # There's only one version of CC0.
         CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
@@ -108,6 +110,7 @@ class LegalCode(models.Model):
 
     license_url = models.URLField()
     deed_url = models.URLField()
+    plain_text_url = models.URLField()
 
     objects = LegalCodeQuerySet.as_manager()
 
@@ -130,6 +133,12 @@ class LegalCode(models.Model):
             license.version,
             license.jurisdiction_code,
             self.language_code,
+        )
+        license_url = self.license_url
+        self.plain_text_url = (
+            f"{license_url}/index.txt"
+            if license_url.endswith("legalcode")
+            else f"{license_url}.txt"
         )
         super().save(*args, **kwargs)
 
@@ -169,15 +178,6 @@ class LegalCode(models.Model):
         if license.jurisdiction_code:
             parts.append(license.jurisdiction_code)
         return "-".join(parts).replace("_", "-").replace(".", "").lower()
-
-    def plain_text_url(self):
-        """
-        URL to view the plain text translation of this license
-        """
-        license_url = self.license_url
-        if license_url.endswith("legalcode"):
-            return f"{license_url}/index.txt"
-        return f"{license_url}.txt"
 
     def fat_code(self):
         """
@@ -484,7 +484,9 @@ class TranslationBranch(models.Model):
         help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
     )
     last_transifex_update = models.DateTimeField(
-        "Time when last updated on Transifex.", null=True, blank=True,
+        "Time when last updated on Transifex.",
+        null=True,
+        blank=True,
     )
     complete = models.BooleanField(default=False)
 

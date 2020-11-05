@@ -219,7 +219,9 @@ class LicensesTestsMixin:
 class ViewLicenseTest(TestCase):
     def test_view_license_with_jurisdiction_without_language_specified(self):
         lc = LegalCodeFactory(
-            license__version="3.0", language_code="de", license__jurisdiction_code="de",
+            license__version="3.0",
+            language_code="de",
+            license__jurisdiction_code="de",
         )
         url = reverse(
             "licenses_default_language_with_jurisdiction",
@@ -270,15 +272,7 @@ class ViewLicenseTest(TestCase):
     def test_view_license_plain_text(self):
         for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
             lc = LegalCodeFactory(license__version="4.0", language_code=language_code)
-            url = reverse(
-                "view_40_license_txt",
-                kwargs=dict(
-                    license_code=lc.license.license_code,
-                    version=lc.license.version,
-                    language_code=language_code,
-                    is_plain_text=True,
-                ),
-            )
+            url = lc.plain_text_url
             rsp = self.client.get(url)
             self.assertEqual(
                 'text/plain; charset="utf-8"', rsp._headers["content-type"][1]
@@ -329,14 +323,9 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
             license_code="by-nc", jurisdiction_code="es", version="3.0"
         )
         language_code = "fr"
-        LegalCodeFactory(license=license, language_code=language_code)
+        lc = LegalCodeFactory(license=license, language_code=language_code)
         # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>"
-        url = build_deed_url(
-            license.license_code,
-            version=license.version,
-            jurisdiction_code=license.jurisdiction_code,
-            language_code=language_code,
-        )
+        url = lc.deed_url
         # Mock 'get_translation_object' because we have no 3.0 translations imported yet
         # and we can't use 4.0 to test jurisdictions.
         translation_object = DjangoTranslation(language="fr")
@@ -347,16 +336,13 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
 
     def test_license_deed_view_code_version_jurisdiction(self):
         # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/"
-        LegalCodeFactory(
+        lc = LegalCodeFactory(
             license__license_code="by-sa",
             license__version="3.0",
             license__jurisdiction_code="es",
             language_code="es",
         )
-        url = reverse(
-            "license_deed_view_code_version_jurisdiction",
-            kwargs=dict(license_code="by-sa", version="3.0", jurisdiction="es",),
-        )
+        url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
@@ -422,7 +408,9 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
 
 class BranchStatusViewTest(TestCase):
     def setUp(self):
-        self.translation_branch = TranslationBranchFactory(language_code="fr",)
+        self.translation_branch = TranslationBranchFactory(
+            language_code="fr",
+        )
 
     def test_simple_branch(self):
         url = reverse("branch_status", kwargs=dict(id=self.translation_branch.id))

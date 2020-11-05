@@ -170,9 +170,9 @@ class LegalCodeModelTest(TestCase):
             license__jurisdiction_code="",
             language_code="ar",
         )
-        self.assertEqual(lc.plain_text_url(), f"{lc.license_url}/index.txt")
-        self.assertEqual(lc1.plain_text_url(), f"{lc1.license_url}.txt")
-        self.assertEqual(lc2.plain_text_url(), f"{lc2.license_url}.txt")
+        self.assertEqual(lc.plain_text_url, f"{lc.license_url}/index.txt")
+        self.assertEqual(lc1.plain_text_url, f"{lc1.license_url}.txt")
+        self.assertEqual(lc2.plain_text_url, f"{lc2.license_url}.txt")
 
     def test_get_pofile(self):
         legalcode = LegalCodeFactory()
@@ -241,6 +241,18 @@ class LegalCodeModelTest(TestCase):
 
 
 class LicenseModelTest(TestCase):
+    def test_nc(self):
+        self.assertFalse(LicenseFactory(license_code="xyz").nc)
+        self.assertTrue(LicenseFactory(license_code="by-nc-xyz").nc)
+
+    def test_nd(self):
+        self.assertFalse(LicenseFactory(license_code="xyz").nd)
+        self.assertTrue(LicenseFactory(license_code="by-nd-xyz").nd)
+
+    def test_sa(self):
+        self.assertFalse(LicenseFactory(license_code="xyz").sa)
+        self.assertTrue(LicenseFactory(license_code="xyz-sa").sa)
+
     def test_get_metadata(self):
         license = LicenseFactory(
             **{
@@ -473,6 +485,11 @@ class LicenseModelTest(TestCase):
 
 
 class TranslationBranchModelTest(TestCase):
+    def test_str(self):
+        tc = TranslationBranchFactory(complete=False)
+        expected = f"Translation branch {tc.branch_name}. In progress."
+        self.assertEqual(expected, str(tc))
+
     def test_stats(self):
         language_code = "es"
         lc1 = LegalCodeFactory(language_code=language_code)

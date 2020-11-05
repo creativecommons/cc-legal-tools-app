@@ -9,7 +9,6 @@ branch_name = "test_branch"
 
 class Command(BaseCommand):
     def handle(self, **options):
-        # FIXME by default only output errors
         TransifexHelper(  # assign to 'branches_updated' when lower part is uncommented
             verbosity=options["verbosity"]
         ).check_for_translation_updates()

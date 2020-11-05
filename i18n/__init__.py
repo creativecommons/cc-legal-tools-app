@@ -24,7 +24,7 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "am": "hy",  # Armenian - not in jurisdictions.rdf
     "ar": "es",
     "at": "de",
-    # jurisidctions.rdf says au is "en-gb", but:
+    # jurisdictions.rdf says au is "en-gb", but:
     # Deed: https://creativecommons.org/licenses/by/3.0/au/
     # Deed: https://creativecommons.org/licenses/by/3.0/au/deed.en
     # https://creativecommons.org/licenses/by/3.0/au/deed.en-gb

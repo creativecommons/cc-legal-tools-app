@@ -112,15 +112,16 @@ def view_license(
         language_code = get_default_language_for_jurisdiction(jurisdiction)
     language_code = language_code or DEFAULT_LANGUAGE_CODE
 
-    # print(f"{license_code} {version} {jurisdiction} {language_code}")
-
-    legalcode = get_object_or_404(
-        LegalCode,
-        license__license_code=license_code,
-        license__version=version,
-        license__jurisdiction_code=jurisdiction or "",
-        language_code=language_code,
-    )
+    if is_plain_text:
+        legalcode = get_object_or_404(
+            LegalCode,
+            plain_text_url=request.path,
+        )
+    else:
+        legalcode = get_object_or_404(
+            LegalCode,
+            license_url=request.path,
+        )
 
     languages_and_links = get_languages_and_links_for_legalcodes(
         legalcode.license.legal_codes.all(), language_code, "license"
@@ -146,7 +147,14 @@ def view_license(
             with tempfile.NamedTemporaryFile(mode="w+b") as temp:
                 temp.write(plain_text_soup.encode("utf-8"))
                 output = subprocess.run(
-                    ["pandoc", "-f", "html", temp.name, "-t", "plain",],
+                    [
+                        "pandoc",
+                        "-f",
+                        "html",
+                        temp.name,
+                        "-t",
+                        "plain",
+                    ],
                     encoding="utf-8",
                     capture_output=True,
                 )
@@ -161,14 +169,9 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
         language_code = get_default_language_for_jurisdiction(jurisdiction)
     language_code = language_code or DEFAULT_LANGUAGE_CODE
 
-    # print(f"{license_code} {version} {jurisdiction} {language_code}")
-
     legalcode = get_object_or_404(
         LegalCode,
-        license__license_code=license_code,
-        license__version=version,
-        license__jurisdiction_code=jurisdiction or "",
-        language_code=language_code,
+        deed_url=request.path,
     )
     license = legalcode.license
     languages_and_links = get_languages_and_links_for_legalcodes(
@@ -261,7 +264,11 @@ def branch_status(request, id):
     if result is None:
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             context = branch_status_helper(repo, translation_branch)
-            result = render(request, "licenses/branch_status.html", context,)
+            result = render(
+                request,
+                "licenses/branch_status.html",
+                context,
+            )
         cache.set(cachekey, result, 5 * 60)
     return result
 
@@ -271,4 +278,7 @@ def metadata_view(request):
     yaml_bytes = yaml.dump(
         data, default_flow_style=False, encoding="utf-8", allow_unicode=True
     )
-    return HttpResponse(yaml_bytes, content_type="text/yaml; charset=utf-8",)
+    return HttpResponse(
+        yaml_bytes,
+        content_type="text/yaml; charset=utf-8",
+    )
