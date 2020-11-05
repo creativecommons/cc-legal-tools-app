@@ -170,6 +170,15 @@ class LegalCode(models.Model):
             parts.append(license.jurisdiction_code)
         return "-".join(parts).replace("_", "-").replace(".", "").lower()
 
+    def plain_text_url(self):
+        """
+        URL to view the plain text translation of this license
+        """
+        license_url = self.license_url
+        if license_url.endswith("legalcode"):
+            return f"{license_url}/index.txt"
+        return f"{license_url}.txt"
+
     def fat_code(self):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
