@@ -93,13 +93,13 @@ for bits in range(8):  # We'll enumerate the variations
     license_codes.append("-".join(parts))
 
 
-class HomeViewTest(TestCase):
-    def test_home_view(self):
-        LicenseFactory()  # Have a license for it to display
-        url = reverse("home")
+class AllLicensesViewTest(TestCase):
+    def test_all_licenses_view(self):
+        LegalCodeFactory()  # Have a legalcode for it to display
+        url = reverse("all_licenses")
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("home.html")
+        self.assertTemplateUsed("all_licenses.html")
 
 
 class LicensesTestsMixin:
@@ -194,6 +194,25 @@ class LicensesTestsMixin:
             LegalCodeFactory(license=license, language_code="en")
             LegalCodeFactory(license=license, language_code="es")
             LegalCodeFactory(license=license, language_code="fr")
+
+        self.by_sa_30_es = LicenseFactory(
+            license_code="by-sa",
+            version="3.0",
+            jurisdiction_code="es",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        LegalCodeFactory(
+            license=self.by_sa_30_es, language_code="es-es"
+        )  # Default lang
 
         super().setUp()
 
@@ -309,25 +328,12 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         self.assertEqual(200, rsp.status_code)
 
     def test_license_deed_view_code_version_jurisdiction(self):
-        license = LicenseFactory(
-            license_code="by-nc", jurisdiction_code="es", version="3.0"
-        )
-        LegalCodeFactory(license=license, language_code=DEFAULT_LANGUAGE_CODE)
         # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/"
         url = reverse(
             "license_deed_view_code_version_jurisdiction",
-            kwargs=dict(
-                license_code=license.license_code,
-                version=license.version,
-                jurisdiction=license.jurisdiction_code,
-            ),
+            kwargs=dict(license_code="by-sa", version="3.0", jurisdiction="es",),
         )
-        # Mock 'get_translation_object' because we have no 3.0 translations imported yet
-        # and we can't use 4.0 to test jurisdictions.
-        translation_object = DjangoTranslation(language="fr")
-        with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
-            mock_gto.return_value = translation_object
-            rsp = self.client.get(url)
+        rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
     # def test_deed_for_superseded_license(self):

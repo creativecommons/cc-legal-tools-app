@@ -5,7 +5,7 @@ The UNPORTED 3.0 licenses are ONLY in ENGLISH.
 <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
   {% include 'includes/snippet/icon_header_snippet.html' %}
   <div>
-    <h3 class="padding-bottom-normal b-header">Creative Commons {{ license.title_english }}</h3>
+    <h3 class="padding-bottom-normal b-header">Creative Commons {{ legalcode.title }}</h3>
 
     {# ################ #}
     {# INTRO/DISCLAIMER #}
@@ -216,7 +216,7 @@ The UNPORTED 3.0 licenses are ONLY in ENGLISH.
             as requested.{% endif %}</p></li>
       {% if license.sa %}
         {# credit #}
-        <li class="padding-left-normal padding-bottom-normal" id="s4{% next_letter %}"><p>You may Distribute or Publicly Perform an Adaptation only under: (i) the terms of this License; (ii) a later version of this License with the same License Elements as this License; (iii) a Creative Commons jurisdiction license (either this or a later license version) that contains the same License Elements as this License (e.g., {{ license.title_english }}) ("Applicable License"). You must include a copy of, or the URI, for Applicable License with every copy of each Adaptation You Distribute or Publicly Perform. You may not offer or impose any terms on the Adaptation that restrict the terms of the Applicable License or the ability of the recipient of the Adaptation to exercise the rights granted to that recipient under the terms of the Applicable License. You must keep intact all notices that refer to the Applicable License and to the disclaimer of warranties with every copy of the Work as included in the Adaptation You Distribute or Publicly Perform. When You Distribute or Publicly Perform the Adaptation, You may not impose any effective technological measures on the Adaptation that restrict the ability of a recipient of the Adaptation from You to exercise the rights granted to that recipient under the terms of the Applicable License. This {#  giving credit #}
+        <li class="padding-left-normal padding-bottom-normal" id="s4{% next_letter %}"><p>You may Distribute or Publicly Perform an Adaptation only under: (i) the terms of this License; (ii) a later version of this License with the same License Elements as this License; (iii) a Creative Commons jurisdiction license (either this or a later license version) that contains the same License Elements as this License (e.g., {{ legalcode.title }}) ("Applicable License"). You must include a copy of, or the URI, for Applicable License with every copy of each Adaptation You Distribute or Publicly Perform. You may not offer or impose any terms on the Adaptation that restrict the terms of the Applicable License or the ability of the recipient of the Adaptation to exercise the rights granted to that recipient under the terms of the Applicable License. You must keep intact all notices that refer to the Applicable License and to the disclaimer of warranties with every copy of the Work as included in the Adaptation You Distribute or Publicly Perform. When You Distribute or Publicly Perform the Adaptation, You may not impose any effective technological measures on the Adaptation that restrict the ability of a recipient of the Adaptation from You to exercise the rights granted to that recipient under the terms of the Applicable License. This {#  giving credit #}
         {% if license.nc and license.sa %}{# d #}
           <a href="#s4d">Section 4(d)</a>,
         {% elif license.nc %}{# c #}

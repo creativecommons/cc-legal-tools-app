@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup, Tag
 from django.core.management import BaseCommand
 from polib import POEntry, POFile
 
-from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import save_pofile_as_pofile_and_mofile
+from i18n.utils import get_language_for_jurisdiction, save_pofile_as_pofile_and_mofile
 from licenses.bs_utils import (
     direct_children_with_tag,
     inner_html,
@@ -37,6 +36,13 @@ class Command(BaseCommand):
             help="comma-separated license versions to include, e.g. '1.0,3.0,4.0'",
         )
         parser.add_argument(
+            "--languages",
+            help="comma-separated language codes to include, e.g. 'fr,ar' "
+            "(English is unconditionally included for technical reasons).",
+            # We need to import English so we can figure out what the message keys should be,
+            # because they are just the English message text.
+        )
+        parser.add_argument(
             "--unwrapped",
             action="store_true",
             help="Do not wrap lines in output .po files. Helpful if you need to copy messages. Don't commit the unwrapped files.",
@@ -47,10 +53,15 @@ class Command(BaseCommand):
             versions_to_include = options["versions"].split(",")
         else:
             versions_to_include = None
+        if options["languages"]:
+            languages_to_include = set(["en"]) | set(options["languages"].split(","))
+        else:
+            languages_to_include = None
         self.unwrapped = options["unwrapped"]
 
         licenses_created = 0
         legalcodes_created = 0
+        legalcodes_to_import = []
 
         # Get list of html filenames for CC0 and any BY license (any version).
         # We'll filter out the filenames for unwanted versions later.
@@ -71,18 +82,22 @@ class Command(BaseCommand):
             license_code = metadata["license_code"]
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
-            language_code = metadata["language_code"] or DEFAULT_LANGUAGE_CODE
-
-            # Just BY 3.0 & 4.0, and CC0
-            include = (
-                license_code in BY_LICENSE_CODES and version in {"3.0", "4.0"}
-            ) or license_code in CC0_LICENSE_CODES
-            # If --versions was given, exclude other versions
-            include = include and (
-                versions_to_include is None or version in versions_to_include
+            language_code = metadata["language_code"] or get_language_for_jurisdiction(
+                jurisdiction_code
             )
-            # We're not yet doing any ported licenses
-            include = include and not jurisdiction_code
+
+            # Just CC0, BY 3.0, & 4.0, and apply any command line options
+            include = (
+                (
+                    (license_code in BY_LICENSE_CODES and version in {"3.0", "4.0"})
+                    or license_code in CC0_LICENSE_CODES
+                )
+                and (versions_to_include is None or version in versions_to_include)
+                and (
+                    languages_to_include is None
+                    or language_code in languages_to_include
+                )
+            )
             if not include:
                 continue
 
@@ -146,33 +161,33 @@ class Command(BaseCommand):
 
             if created:
                 legalcodes_created += 1
+            legalcodes_to_import.append(legalcode)
         print(
             f"Created {licenses_created} licenses and {legalcodes_created} translation objects"
         )
 
         # NOW parse the HTML and output message files
-        relevant_legalcodes = LegalCode.objects.valid().order_by("language_code")
-
-        if versions_to_include is not None:
-            relevant_legalcodes = relevant_legalcodes.filter(
-                license__version__in=versions_to_include
-            )
-
-        # What are the language codes we have translations for?
-        language_codes = list(
-            relevant_legalcodes.distinct("language_code").values_list(
-                "language_code", flat=True
-            )
+        legalcodes_to_import = LegalCode.objects.filter(
+            pk__in=[lc.pk for lc in legalcodes_to_import]
         )
 
-        english_by_license_code = {}
+        # What are the language codes we have HTML files for?
+        language_codes = sorted(set(lc.language_code for lc in legalcodes_to_import))
+
+        english_by_license_code_version = {}
 
         # We have to do English first. Django gets confused if you try to load
         # another language and it can't find English, I guess it's looking for
         # something to fall back to.
-        language_codes.remove("en")
+        language_codes.remove("en")  # If english isn't in this list, something is wrong
         for language_code in ["en"] + language_codes:
-            for legalcode in relevant_legalcodes.filter(language_code=language_code,):
+            for legalcode in legalcodes_to_import.filter(
+                language_code=language_code,
+            ).order_by(
+                "-license__version",
+                "license__license_code",
+                "license__jurisdiction_code",
+            ):
                 license = legalcode.license
                 license_code = license.license_code
                 version = license.version
@@ -184,27 +199,34 @@ class Command(BaseCommand):
 
                 if version == "4.0":
                     messages_text = self.import_by_40_license_html(
-                        content=content,
-                        license_code=license_code,
-                        language_code=language_code,
-                        license=license,
+                        content=content, legalcode=legalcode,
                     )
                 elif version == "3.0":
-                    messages_text = self.import_by_30_license_html(
-                        content=content, language_code=language_code, license=license,
-                    )
+                    if license.jurisdiction_code:
+                        # Ported license: we just save the HTML for now
+                        legalcode.html = self.import_by_30_ported_license_html(
+                            content=content, legalcode=legalcode,
+                        )
+                        legalcode.save()
+                        continue
+                    else:
+                        # Unported license: we parse out the messages like 4.0
+                        messages_text = self.import_by_30_unported_license_html(
+                            content=content, legalcode=legalcode,
+                        )
                 elif license_code == "CC0":
                     messages_text = self.import_cc0_license_html(
-                        content=content, language_code=language_code, license=license,
+                        content=content, legalcode=legalcode,
                     )
                 else:
                     raise NotImplementedError(
                         f"Have not implemented parsing for {license_code} {version} licenses."
                     )
 
-                key = license_code
+                key = f"{license_code}|{version}"
                 if language_code == "en":
-                    english_by_license_code[key] = messages_text
+                    english_by_license_code_version[key] = messages_text
+                english_messages = english_by_license_code_version[key]
 
                 pofile = POFile()
                 # The syntax used to wrap messages in a .po file is difficult if you ever
@@ -232,10 +254,10 @@ class Command(BaseCommand):
                         message_value = ""
                     else:
                         # WORKAROUND - by-nc-nd 4.0 NL has an extra item under s3a.
+                        # https://github.com/creativecommons/creativecommons.org/pull/1160
                         if (
                             internal_key == "s3a4_if_you_share_adapted_material"
-                            and internal_key
-                            not in english_by_license_code[license_code]
+                            and internal_key not in english_messages
                         ):
                             message_key = (
                                 "If You Share Adapted Material You produce, the Adapter's "
@@ -243,9 +265,7 @@ class Command(BaseCommand):
                                 "Material from complying with this Public License."
                             )
                         else:
-                            message_key = english_by_license_code[license_code][
-                                internal_key
-                            ]
+                            message_key = english_messages[internal_key]
                         message_value = translation
 
                     pofile.append(
@@ -266,7 +286,8 @@ class Command(BaseCommand):
                 files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
                 print(f"Created {files}")
 
-    def import_cc0_license_html(self, *, content, language_code, license):
+    def import_cc0_license_html(self, *, content, legalcode):
+        license = legalcode.license
         assert license.version == "1.0", f"{license.version} is not '1.0'"
         assert license.license_code == "CC0", f"{license.license_code} is not 'CC0'"
         messages = {}
@@ -275,10 +296,8 @@ class Command(BaseCommand):
         soup = BeautifulSoup(raw_html, "lxml")
         deed_main_content = soup.find(id="deed-main-content")
         messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
-
-        if language_code == "en":
-            license.title_english = messages["license_medium"]
-            license.save()
+        legalcode.title = messages["license_medium"]
+        legalcode.save()
 
         # Big disclaimer (all caps)
         messages["disclaimer"] = clean_string(nested_text(deed_main_content.blockquote))
@@ -342,7 +361,29 @@ class Command(BaseCommand):
 
         return messages
 
-    def import_by_30_license_html(self, *, content, language_code, license):
+    def import_by_30_ported_license_html(self, *, content, legalcode):
+        messages = {}
+        raw_html = content
+        # Some trivial making consistent - some translators changed 'strong' to 'b'
+        # for some unknown reason.
+        raw_html = raw_html.replace("<b>", "<strong>").replace("</b>", "</strong>")
+        raw_html = raw_html.replace("<B>", "<strong>").replace("</B>", "</strong>")
+
+        # Parse the raw HTML to a BeautifulSoup object.
+        soup = BeautifulSoup(raw_html, "lxml")
+        # Some translators seemed to think the title would look better split onto two lines.
+        title = inner_html(soup.find(id="deed-license").h2).replace("<br/>\n", " ")
+        assert "<" not in title, repr(title)
+        messages["license_medium"] = title
+        legalcode.title = title
+
+        main = soup.find(id="deed-main-content")
+
+        html = main.prettify()
+        assert isinstance(html, str)
+        return html
+
+    def import_by_30_unported_license_html(self, *, content, legalcode):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
@@ -356,9 +397,8 @@ class Command(BaseCommand):
         # Parse the raw HTML to a BeautifulSoup object.
         soup = BeautifulSoup(raw_html, "lxml")
         messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
-        if language_code == "en":
-            license.title_english = messages["license_medium"]
-            license.save()
+        legalcode.title = messages["license_medium"]
+        legalcode.save()
 
         deed_main_content = soup.find(id="deed-main-content")
 
@@ -460,12 +500,13 @@ class Command(BaseCommand):
 
         return messages
 
-    def import_by_40_license_html(
-        self, *, content, license, license_code, language_code
-    ):
+    def import_by_40_license_html(self, *, content, legalcode):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
+        license = legalcode.license
+        license_code = license.license_code
+        language_code = legalcode.language_code
         assert license.version == "4.0", f"{license.version} is not '4.0'"
         assert license.license_code.startswith("by")
 
@@ -482,10 +523,10 @@ class Command(BaseCommand):
         # Get the license titles and intro text.
 
         deed_main_content = soup.find(id="deed-main-content")
+
         messages["license_medium"] = inner_html(soup.find(id="deed-license").h2)
-        if language_code == "en":
-            license.title_english = messages["license_medium"]
-            license.save()
+        legalcode.title = messages["license_medium"]
+        legalcode.save()
         messages["license_long"] = inner_html(deed_main_content.h3)
         messages["license_intro"] = inner_html(
             deed_main_content.h3.find_next_sibling("p")

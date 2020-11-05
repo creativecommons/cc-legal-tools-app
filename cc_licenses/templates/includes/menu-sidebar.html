@@ -2,7 +2,10 @@
 
 <div class="column is-one-quarter sidebar-container">
   <aside class="menu sidebar-menu">
-    <a class="link has-text-black is-block padding-bottom-normal" href="#legal-code-body">{% trans license.title_english %}</a>
+    {# if we don't have any menu to show, don't show the title either #}
+    {% if license.version != "3.0" or license.jurisdiction_code == "" %}
+      <a class="link has-text-black is-block padding-bottom-normal" href="#legal-code-body">{{ legalcode.title }}</a>
+    {% endif %}
     <ul class="menu-list" >
       <li>
         <ul>
@@ -28,6 +31,9 @@
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class="is-block column" href="#limitations">{% blocktrans trimmed %}Limitations and Disclaimers{% endblocktrans %}</a>
           </li>
+
+        {% elif license.version == "3.0" and license.jurisdiction_code != "" %}
+          {# we have no way yet to link into the ported licenses' sections #}
 
         {% elif license.version == "3.0" and license.jurisdiction_code == "" %}
           <li class="columns">
