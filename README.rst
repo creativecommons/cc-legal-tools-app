@@ -1,10 +1,3 @@
-
-
-.. EDIT the below links to use the project's github repo path. Or just remove them.
-
-.. image:: https://requires.io/github/GITHUB_ORG/cc_licenses/requirements.svg?branch=master
-.. image:: https://requires.io/github/GITHUB_ORG/cc_licenses/requirements.svg?branch=develop
-
 Creative Commons Licenses
 =========================
 
@@ -13,16 +6,12 @@ project. To begin you should have the following applications installed on your
 local development system:
 
 - Python >= 3.7
-- NodeJS >= 10.16
 - `pip <http://www.pip-installer.org/>`_ >= 20
 - `virtualenv <http://www.virtualenv.org/>`_ >= 1.10
 - `virtualenvwrapper <http://pypi.python.org/pypi/virtualenvwrapper>`_ >= 3.0
 - Postgres >= 9.3
 - git >= 1.7
 - pandoc == 2.10.1
-
-Installing the proper NodeJS versions for each of your projects can be difficult. It's probably best
-to `use nvm <https://github.com/nvm-sh/nvm>`_.
 
 Django version
 ------------------------
@@ -35,11 +24,11 @@ Getting Started
 
 First clone the repository from Github and switch to the new directory::
 
-    $ git clone git@github.com:[ORGANIZATION]/cc_licenses.git
-    $ cd cc_licenses
+    $ git clone git@github.com:creativecommons/cc-licenses.git
+    $ cd cc-licenses
 
 To setup your local environment you can use the quickstart make target `setup`, which will
-install both Python and Javascript dependencies (via pip and npm) into a virtualenv named
+install Python dependencies (via pip) into a virtualenv named
 "cc_licenses", configure a local django settings file, and create a database via
 Postgres named "cc_licenses" with all migrations run::
 
@@ -70,11 +59,13 @@ Create the Postgres database and run the initial migrate::
     (cc_licenses)$ createdb -E UTF-8 cc_licenses
     (cc_licenses)$ python manage.py migrate
 
-For outputting text files to work properly make sure to [install](https://pandoc.org/installing.html) the stable release of pandoc at version 2.10.1.
+For outputting text files to work properly make sure to
+`install <https://pandoc.org/installing.html>`_ the stable release of pandoc at version 2.10.1.
 
 If you want to use `Travis <http://travis-ci.org>`_ to test your project,
 rename ``project.travis.yml`` to ``.travis.yml``, overwriting the ``.travis.yml``
-that currently exists.  (That one is for testing the template itself.)::
+that currently exists.  (That one is for testing the template itself.)
+The setup command does this for you::
 
     (cc_licenses)$ mv project.travis.yml .travis.yml
 
@@ -92,26 +83,148 @@ Or, on a custom port and address::
 Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
 
+Not the live site
+-----------------
+
+This project is not intended to serve the license and deed pages directly.
+Though if it's deployed on a public server it could do that, performance
+would probably not be acceptable.
+
+Instead, a command line tool can be used to save all the rendered HTML
+pages for licenses and deeds as files. Then those files are used as part
+of the real creativecommons.org site, just served as static files.
+See details farther down.
+
+Data
+----
+
+The license data is stored as follows.
+
+The license metadata is in a database. The metadata tracks which licenses exist, their translations,
+their ports, and their characteristics like what they permit, require, and prohibit.
+
+The metadata can be downloaded by visiting `/licenses/metadata.yaml`.
+
+There are two main models (that's Django terminology for tables).
+
+A License can be identified by a license code (e.g. BY, BY-NC-SA) which
+is a proxy for the complete set of permissions, requirements, and
+prohibitions; a version number (e.g. 4.0, 3.0), and an optional jurisdiction
+for ports. So we might refer to the license "BY 3.0 Armenia" which would be
+the 3.0 version of the BY license terms as ported to the Armenia jurisdiction.
+
+A License can exist in multiple languages or translations. Each one, including
+English, is represented by a LegalCode record. A LegalCode is identified by
+a license and a language, e.g. we might refer to the "BY 3.0 Armenia in Armenian"
+legalcode record.
+
+For some licenses, the text is in gettext files (.po and .mo) in the cc-licenses-data
+repository. For others, the text is stored in the database, directly in
+LegalCode records.
+
+The text that's in gettext files can be translated at
+https://www.transifex.com/creativecommons/CC/content/.
+The resources there are named for the license they contain text for.
+Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
+
 Importing the existing license text
 -----------------------------------
 
-Temporarily during development, we'll be importing the translated license text
-from HTML files.
+The process of getting the text into the site varies by license.
 
-First, clean up any old data by running::
+Note that once the site is up and running in production,
+the data in the site will become the canonical source, and
+the process described here should not need to be repeated after that.
+
+The implementation is the Django management command
+``load_html_files``, which reads from the existing HTML files
+in the creativecommons.org repository, and populates the
+database records and translation files.
+
+``load_html_files`` has custom code for each flavor of
+license. There's a method to parse BY* 4.0 HTML files, another
+for CC0, another
+for BY* 3.0 unported files, and another for BY* 3.0 ported.
+We would expect to add more such methods for other license
+flavors.
+
+Each parsing method uses BeautifulSoup4 to parse the HTML text
+into a tree representing the structure of the HTML, and picks out
+the part of the page that contains the license (as opposed
+to navigation, styling, and boilerplate text that occurs
+on many pages). Then it uses tag id's and classes and the
+structure of the HTML to pick out the text for each part of
+the license (generally a translatable phrase or paragraph)
+and organize it into translation files,
+or for the ported 3.0 licenses, just pretty-prints
+the HTML and saves it as-is.
+
+The BY* 4.0 licenses are the most straightforward. The text is
+the same from one license to the next (e.g. BY-NC, BY-SA) except
+where the actual license terms are different, and even then, the
+text specific to particular terms, say "NC", are pretty much the
+same in the licenses that have those terms.
+
+That means we were able to create a single Django HTML template
+to render any BY* 4.0 license, using conditionals to include or
+vary parts of the text as needed.
+
+The regularity of these licenses extends to the translated versions,
+so the English text in the Django template is marked for translation
+as usual in Django, and Django can substitute the appropriate
+translated text for each message as the page is rendered.
+
+CC0 (the public domain "license") works similarly.
+
+The 3.0 licenses are more complicated due to ports and less consistency
+in general.
+
+The unported (international) 3.0 licenses are not translated, and do have
+enough regularity that it was possible to create a single Django template
+to render the 3.0 unported licenses. Since these are not translated, and
+there's no expectation that they ever will be, the
+template just has the English text in it, not marked for translation.
+
+The ported 3.0 licenses are too varied to do something like that.
+Each port can have arbitrary differences from the unported version,
+so trying to capture those differences as conditionals in a template
+would be nearly impossible, and certainly unmanageable. As for
+translations, some of the ports do have multiple languages, although
+many don't have an English translation at all.
+
+So for the ported 3.0 licenses, at least for now, it was decided to
+just extract the part of the existing HTML pages that had the actual
+license text and store it in the LegalCode objects representing those
+ports in those languages. There is a template for 3.0 ported licenses,
+but it basically just inserts whatever HTML we've saved into the
+page.
+
+The older version licenses have not yet been looked at. Hopefully we
+can model importing those licenses on how we've done the 3.0
+licenses.
+
+Running the import
+------------------
+
+First, clean up any old data in the database by running::
 
     python manage.py clear_license_data
 
-Then, clone https://github.com/creativecommons/creativecommons.org next to this repo.
+Then, clone https://github.com/creativecommons/creativecommons.org
+and https://github.com/creativecommons/cc-licenses-data
+next to this repo.
+
 Then run::
 
     python manage.py load_html_files ../creativecommons.org/docroot/legalcode
 
 It will read the HTML files from the specified directory, populate the database
-with LegalCode and License records, and at least for the BY 4.0 licenses, create
-.po and .mo files under locale.licenses.
+with LegalCode and License records, and create
+.po and .mo files in cc-licenses-data.
 
-To clean things up ready to start over, you can run clear_license_data again.
+Now commit the changes from cc-licenses-data and push to Github.
+
+WRITE ME: how to push this data to transifex
 
 Translation
 -----------
@@ -126,7 +239,8 @@ be elsewhere, then you need to set TRANSLATION_REPOSITORY_DIRECTORY to its locat
 Be sure to clone using a URL that starts with "git@github..." and not "https://github...",
 or you won't be able to push to it.
 
-To enable pushing and pulling the licenses data repo with Github, create an ssh deploy
+When the site is deployed,
+to enable pushing and pulling the licenses data repo with Github, create an ssh deploy
 key for the cc-licenses-data repo with write permissions, and put the private key file (not password
 protected) somewhere safe, owned by www-data, and readable only by its owner (0o400).
 Then in settings, make TRANSLATION_REPOSITORY_DEPLOY_KEY be the full path to that
@@ -135,29 +249,6 @@ deploy key file.
 Now arrange for "python manage.py check_for_translation_updates" to be run hourly (with
 the appropriate virtualenv and env vars set).
 
-Deployment
-----------
-
-There are different ways to deploy, and `this document <http://caktus.github.io/developer-documentation/deploy-strategies.html>`_ outlines a few of them that could be used for cc_licenses.
-
-Deployment with fabric
-......................
-
-We use a library called `fabric <http://www.fabfile.org/>`_ as a wrapper around a lot of our deployment
-functionality. However, deployment is no longer fully set up in this template, and instead you'll need
-to do something like set up `Tequila <https://github.com/caktus/tequila>`_ for your project. Currently,
-best way to do that is to copy the configuration from an existing project. Once that is done, and the
-servers have been provisioned, you can deploy changes to a particular environment with the ``deploy``
-command::
-
-    $ fab staging deploy
-
-Deployment with Dokku
-.....................
-
-Alternatively, you can deploy the project using Dokku. See the
-`Caktus developer docs <http://caktus.github.io/developer-documentation/dokku.html>`_.
-
 How the license translation is implemented
 ------------------------------------------
 
@@ -165,8 +256,8 @@ First, note that translation uses two sets of files. Most things use the built-i
 Django translation support. But the translation of the actual legal text of the licenses
 is handled using a different set of files.
 
-Second note: the initial implementation focuses on the 4.0 by-*
-licenses. Others will be added as time allows.
+Second note: the initial implementation focuses on the 4.0 by-*,
+3.0 unported, and CC0 licenses. Others will be added as time allows.
 
 Also note: What Transifex calls a ``resource`` is what Django
 calls a ``domain``. I'll probably use the terms interchangeably.
@@ -207,15 +298,17 @@ We have the following structure in our translation data repo::
                  ...
 
 The language code used in the path to the files is *not* necessarily
-the same as what we're using to identify the licenses in the
-URLs. Good example? The translated files for
+the same as what we're using to identify the licenses in the site
+URLs. That's because the language codes used by Django don't always
+match what the site URLs are using, and we can't change either of them.
+
+For example, the translated files for
 ``https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans``
-are in the ``zh_Hans`` directory. That's because ``zh_Hans`` is what
-Django uses to identify that translation.
+are in the ``zh_Hans`` directory. In this case,
+``zh_Hans`` is what Django uses to identify that translation.
 
 The .po files are initially created from the existing HTML license files
-by running
-``python manage.py load_html_files <path to docroot/legalcode>``
+by running ``python manage.py load_html_files <path to docroot/legalcode>``,
 where ``<path to docroot/legalcode>`` is the path to
 the docroot/legalcode directory where the ``creativecommons.org``
 repo is checked out. (See also above.)
