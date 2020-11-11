@@ -139,6 +139,84 @@ class LegalCode(models.Model):
         )
         super().save(*args, **kwargs)
 
+    def _get_save_path(self):
+        """
+        If saving the deed or license as a static file, this returns
+        the relative path where the saved file should be, not including
+        the actual filename.
+        """
+        license = self.license
+        firstdir = (
+            "publicdomain" if license.license_code.lower() == "cc0" else "licenses"
+        )
+        if license.version == "3.0":
+            return os.path.join(
+                firstdir, license.version, license.jurisdiction_code or "xu"
+            )
+        else:
+            return os.path.join(firstdir, license.version)
+
+    def get_deed_path(self):
+        """
+        See get_license_path()
+        """
+        license = self.license
+        code = (
+            "zero"
+            if license.license_code.lower() == "cc0"
+            else license.license_code.lower()
+        )
+        return os.path.join(
+            self._get_save_path(),
+            f"{code}_deed_{self.language_code}.html",
+        )
+
+    def get_license_path(self):
+        """
+        If saving the license as a static file, this returns the relative
+        path of the file to save it as.
+
+        4.0 formula:
+        /licenses/VERSION/LICENSE_deed_LANGAUGE.html
+        /licenses/VERSION/LICENSE_legalcode_LANGAUGEhtml
+        4.0 examples:
+        /licenses/4.0/by-nc-nd_deed_en.html
+        /licenses/4.0/by-nc-nd_legalcode_en.html
+        /licenses/4.0/by_deed_en.html
+        /licenses/4.0/by_legalcode_en.html
+        /licenses/4.0/by_deed_zh-Hans.html
+        /licenses/4.0/by_legalcode_zh-Hans.html
+        3.0 formula:
+        /licenses/VERSION/JURISDICTION/LICENSE_deed_LANGAUGE.html
+        /licenses/VERSION/JURISDICTION/LICENSE_legalcode_LANGAUGE.html
+        3.0 examples:
+        /licenses/3.0/xu/by_deed_en.html
+        /licenses/3.0/xu/by_legalcode.en.html
+        /licenses/3.0/am/by_deed_hy.html
+        /licenses/3.0/am/by_legalcode_hy.html
+        /licenses/3.0/rs/by_deed_rs-Cyrl.html
+        /licenses/3.0/rs/by_legalcode_rs-Cyrl.html
+        For jurisdiction, I used “xu” to mean “unported”.
+        See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.
+        cc0 formula:
+        /publicdomain/VERSION/LICENSE_deed_LANGAUGE.html
+        /publicdomain/VERSION/LICENSE_legalcode_LANGAUGE.html
+        cc0 examples:
+        /publicdomain/1.0/zero_deed_en.html
+        /publicdomain/1.0/zero_legalcode_en.html
+        /publicdomain/1.0/zero_deed_ja.html
+        /publicdomain/1.0/zero_legalcode_ja.html"""
+        license = self.license
+        code = (
+            "zero"
+            if license.license_code.lower() == "cc0"
+            else license.license_code.lower()
+        )
+        return os.path.join(
+            self._get_save_path(),
+            f"{code}_legalcode_{self.language_code}.html",
+        )
+
     def has_english(self):
         """
         Return True if there's an English translation for the same license.
