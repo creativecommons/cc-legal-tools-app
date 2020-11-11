@@ -89,7 +89,7 @@ class SaveURLAsStaticFileTest(TestCase):
                     save_url_as_static_file(output_dir, url)
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
-        self.assertEqual([call(request=None)], mock_metadata_view.call_args_list)
+        self.assertEqual([call(request=mock.ANY)], mock_metadata_view.call_args_list)
         self.assertEqual(
             [call("/output", "/licenses/metadata.yaml")],
             mock_gen_filename.call_args_list,
@@ -124,7 +124,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "by",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -135,7 +135,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "es",
-                    "language_code": "ast",
+                    "cc_language_code": "ast",
                 },
             ),
             (
@@ -146,7 +146,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "rs",
-                    "language_code": "sr-Cyrl",
+                    "cc_language_code": "sr-Cyrl",
                 },
             ),
             (
@@ -157,7 +157,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "devnations",
                     "version": "2.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -168,7 +168,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "LGPL",
                     "version": "2.1",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -179,7 +179,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -190,7 +190,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "CC0",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "fi",
+                    "cc_language_code": "fi",
                 },
             ),
             (
@@ -201,7 +201,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "nc-sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
         ]

@@ -66,9 +66,6 @@ def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str
     If there's an upstream one, pull from it to make sure we're up to date.
     Check it out.
     """
-    if branch_name == "develop":
-        raise ValueError(f"Should not be trying to work on branch {branch_name}")
-
     if branch_exists(repo, branch_name):
         kill_branch(repo, branch_name)
 

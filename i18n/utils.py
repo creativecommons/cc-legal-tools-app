@@ -9,7 +9,12 @@ from django.utils.encoding import force_text
 from django.utils.translation import override, ugettext
 from django.utils.translation.trans_real import DjangoTranslation, translation
 
-from i18n import DEFAULT_JURISDICTION_LANGUAGES, DEFAULT_LANGUAGE_CODE
+from i18n import (
+    DEFAULT_JURISDICTION_LANGUAGES,
+    DEFAULT_LANGUAGE_CODE,
+    DJANGO_LANGUAGE_CODES,
+    FILENAME_LANGUAGE_CODES,
+)
 
 CACHED_APPLICABLE_LANGS = {}
 CACHED_WELL_TRANSLATED_LANGS = {}
@@ -55,7 +60,9 @@ JURISDICTION_CURRENCY_LOOKUP = {
 # changing the translated files while running and need to be sure we always
 # read and use the one that's there right now. Anyway, this site doesn't
 # need to perform all that well, since it just generates static files.
-def get_translation_object(*, language_code: str, domain: str) -> DjangoTranslation:
+def get_translation_object(
+    *, django_language_code: str, domain: str
+) -> DjangoTranslation:
     """
     Return a DjangoTranslation object suitable to activate
     when we're wanting to render templates for this language code and domain.
@@ -68,11 +75,11 @@ def get_translation_object(*, language_code: str, domain: str) -> DjangoTranslat
     )
     # Start with a translation object for the domain for this license.
     license_translation_object = DjangoTranslation(
-        language=language_code, domain=domain, localedirs=[license_locale_dir]
+        language=django_language_code, domain=domain, localedirs=[license_locale_dir]
     )
     # Add a fallback to the standard Django translation for this language. This gets us the
     # non-legalcode parts of the pages.
-    license_translation_object.add_fallback(translation(language_code))
+    license_translation_object.add_fallback(translation(django_language_code))
 
     return license_translation_object
 
@@ -138,9 +145,27 @@ def get_pofile_content(pofile: polib.POFile) -> str:
     return pofile.__unicode__()
 
 
+def cc_to_django_language_code(cc_language_code: str) -> str:
+    """
+    Given a CC language code, return the language code that Django
+    uses to represent that language.
+    """
+    return DJANGO_LANGUAGE_CODES.get(cc_language_code, cc_language_code)
+
+
+def cc_to_filename_language_code(cc_language_code: str) -> str:
+    """
+    Given a CC language code, return the language code to use
+    in its gettext translation files.
+    """
+    return FILENAME_LANGUAGE_CODES.get(cc_language_code, cc_language_code)
+
+
 def get_default_language_for_jurisdiction(
     jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE
 ):
+    # Input: a jurisdiction code
+    # Output: a CC language code
     return DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, default_language)
 
 

@@ -19,7 +19,9 @@ class TranslationTest(TestCase):
         with mock.patch("i18n.utils.DjangoTranslation") as mock_djt:
             mock_djt.return_value = translation_object
             with mock.patch("i18n.utils.translation") as mock_trans:
-                result = get_translation_object(language_code="code", domain="cnn.com")
+                result = get_translation_object(
+                    django_language_code="code", domain="cnn.com"
+                )
         mock_djt.assert_called_with(
             domain="cnn.com", language="code", localedirs=["/foo/bar/translations"]
         )

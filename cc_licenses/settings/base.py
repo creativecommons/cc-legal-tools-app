@@ -135,6 +135,7 @@ LOGGING = {
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
 
+# https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 # Teach Django about a few more languages
 mi = Locale.parse("mi")
 LANG_INFO["mi"] = {  # Maori
@@ -142,6 +143,12 @@ LANG_INFO["mi"] = {  # Maori
     "code": "mi",
     "name": mi.get_display_name("en"),  # in english
     "name_local": mi.get_display_name("mi"),  # in their own language
+}
+LANG_INFO["ms"] = {  # Malay
+    "bidi": False,
+    "code": "ms",
+    "name": "Malay",
+    "name_local": "Bahasa Melayu",  # ??
 }
 LANG_INFO["zh-Hans"] = {
     "fallback": ["zh-hans"],
