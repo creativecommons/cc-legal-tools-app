@@ -4,22 +4,24 @@ from shutil import rmtree
 
 import git
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management import BaseCommand, CommandError
 from django.urls import reverse
 
-from licenses.git_utils import commit_and_push_changes, kill_branch, setup_local_branch
+from licenses.git_utils import commit_and_push_changes, setup_local_branch
 from licenses.models import LegalCode, TranslationBranch
 from licenses.utils import save_url_as_static_file
 
 
-def list_open_branches():
-    """List of names of open local branches in cc-licenses-data repo"""
-    with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
-        branches = [head.name for head in repo.branches]
-    print("\n\nWhich branch are we publishing to?\n")
-    for b in branches:
-        print(b)
-    return branches
+def list_open_translation_branches():
+    """
+    Return list of names of open translation branches
+    """
+    return list(
+        TranslationBranch.objects.filter(complete=False).values_list(
+            "branch_name", flat=True
+        )
+    )
 
 
 class Command(BaseCommand):
@@ -41,81 +43,66 @@ class Command(BaseCommand):
             "-b",
             "--branch_name",
             help=(
-                "Branch name in cc-license-data to pull translations from "
-                "and push artifacts too. If not specified a list of active "
-                "branches in cc-licenses-data will be displayed"
+                "Translation branch name to pull translations from "
+                "and push artifacts to.  Use --list_branches to see "
+                "available branch names.  With no option, all active "
+                "branches are published."
             ),
         )
         parser.add_argument(
             "-l",
             "--list_branches",
             action="store_true",
-            help="A list of active branches in cc-licenses-data will be displayed",
+            help="A list of active translation branches will be displayed.",
         )
         parser.add_argument(
-            "--nogit",
+            "--nopush",
             action="store_true",
-            help="Don't do anything with git, just build the pages in the output directory and exit.",
-        )
-        parser.add_argument(
-            "--output_dir",
-            help=(
-                f'Put output here instead of {getattr(settings, "DISTILL_DIR", None)}. '
-                f"(Warning: will delete whatever is there first.)"
-            ),
-            default=getattr(settings, "DISTILL_DIR", None),
+            help="Update the local branches, but don't push upstream.",
         )
 
     def _quiet(self, *args, **kwargs):
         pass
 
     def run_django_distill(self):
-        """Outputs static files into the specified directory determined by settings.base.DISTILL_DIR"""
-        output_dir = getattr(settings, "DISTILL_DIR", None)
+        """Outputs static files into the output dir."""
         if not os.path.isdir(settings.STATIC_ROOT):
             e = "Static source directory does not exist, run collectstatic"
             raise CommandError(e)
-        output_dir = os.path.abspath(os.path.expanduser(output_dir))
-        # print(f"output_dir={output_dir}. Will delete, then generate HTML files there.")
+        output_dir = self.output_dir
         if os.path.isdir(output_dir):
             rmtree(output_dir)
         os.makedirs(output_dir)
 
+        save_url_as_static_file(output_dir, "/status/")
+        tbranches = TranslationBranch.objects.filter(complete=False)
+        for branch_id in tbranches.values_list("id", flat=True):
+            save_url_as_static_file(output_dir, f"/status/{branch_id}/")
+        save_url_as_static_file(output_dir, reverse("metadata"))
         for legalcode in LegalCode.objects.valid():
-            # print(str(legalcode))
-            # e.g. URL https://creativecommons.org/licenses/by/3.0/ca/legalcode.en
-            # NOT https://creativecommons.org/licenses/by/3.0/ca
-            # NOT https://creativecommons.org/licenses/by/3.0/ca/
-            # NOT https://creativecommons.org/licenses/by/3.0/ca/legalcode.en-gb
             save_url_as_static_file(output_dir, legalcode.license_url)
             save_url_as_static_file(output_dir, legalcode.deed_url)
-        save_url_as_static_file(output_dir, reverse("metadata"))
-        save_url_as_static_file(output_dir, "/status/")
-        for tbranch in TranslationBranch.objects.filter(complete=False).only("id"):
-            save_url_as_static_file(output_dir, f"/status/{tbranch.id}/")
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
         print(f"Publishing branch {branch}")
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
-            if self.use_git:
-                setup_local_branch(repo, branch, settings.OFFICIAL_GIT_BRANCH)
+            setup_local_branch(repo, branch)
             self.run_django_distill()
-            if self.use_git:
-                if repo.is_dirty():
-                    # Add any changes and new files under 'build'
-                    repo.index.add(["build"])
-                    commit_and_push_changes(repo, "Updated built HTML files")
-                    if repo.is_dirty():
-                        raise Exception("Something went wrong, the repo is still dirty")
-                else:
-                    print(f"\n{branch} build dir is up to date.\n")
-                # Don't need local branch anymore
-                kill_branch(repo, branch)
+            if repo.is_dirty(untracked_files=True):
+                # Add any changes and new files
+
+                commit_and_push_changes(
+                    repo, "Updated built HTML files", self.relpath, push=self.push
+                )
+                if repo.is_dirty(untracked_files=True):
+                    raise Exception("Something went wrong, the repo is still dirty")
+            else:
+                print(f"\n{branch} build dir is up to date.\n")
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir"""
-        branch_list = list_open_branches()
+        branch_list = list_open_translation_branches()
         print(
             f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
         )
@@ -124,13 +111,25 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.options = options
-        self.output_dir = options["output_dir"]
-        self.use_git = True
-        if options["nogit"]:
-            self.use_git = False
-            self.publish_branch(None)
-        elif options.get("list_branches"):
-            list_open_branches()
+        self.output_dir = os.path.abspath(settings.DISTILL_DIR)
+        git_dir = os.path.abspath(settings.TRANSLATION_REPOSITORY_DIRECTORY)
+
+        if not self.output_dir.startswith(git_dir):
+            raise ImproperlyConfigured(
+                f"In Django settings, DISTILL_DIR must be inside "
+                f"TRANSLATION_REPOSITORY_DIRECTORY, "
+                f"but DISTILL_DIR={self.output_dir} is outside "
+                f"TRANSLATION_REPOSITORY_DIRECTORY={git_dir}."
+            )
+
+        self.relpath = os.path.relpath(self.output_dir, git_dir)
+        self.push = not options["nopush"]
+
+        if options.get("list_branches"):
+            branches = list_open_translation_branches()
+            print("\n\nWhich branch are we publishing to?\n")
+            for b in branches:
+                print(b)
         elif options.get("branch_name"):
             self.publish_branch(options["branch_name"])
         else:

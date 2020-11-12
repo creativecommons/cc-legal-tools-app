@@ -18,6 +18,9 @@ def generate_filename_to_save_static_view_output(output_dir, url):
     """
     Return absolute path where we want to save the output from the given url
     """
+    if url == "/":
+        return os.path.join(output_dir, "index.html")
+
     # print(url)
     parts = urlparse(url)
     path = parts.path
@@ -69,7 +72,7 @@ def save_url_as_static_file(output_dir, url):
     if hasattr(rsp, "render"):
         rsp.render()
     output_filename = generate_filename_to_save_static_view_output(output_dir, url)
-    print(f"{url} -> {output_filename}")
+    # print(f"{url} -> {output_filename}")
     save_bytes_to_file(rsp.content, output_filename)
 
 

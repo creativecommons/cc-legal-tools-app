@@ -59,6 +59,58 @@ class SaveURLAsStaticFileTest(TestCase):
         with self.assertRaises(Resolver404):
             save_url_as_static_file(output_dir, url)
 
+    def test_save_url_as_static_file_500(self):
+        output_dir = "/output"
+        url = "/licenses/metadata.yaml"
+        file_content = b"xxxxx"
+
+        class MockResponse:
+            content = file_content
+            status_code = 500
+
+        class MockResolverMatch:
+            def __init__(self, func):
+                self.func = func
+                self.args = []
+                self.kwargs = {}
+
+        mock_metadata_view = MagicMock()
+        mock_metadata_view.return_value = MockResponse()
+
+        with mock.patch(
+            "licenses.utils.generate_filename_to_save_static_view_output"
+        ) as mock_gen_filename:
+            mock_gen_filename.return_value = "/output/licenses/metadata.yaml"
+            with mock.patch("licenses.utils.save_bytes_to_file"):
+                with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                    mock_resolve.return_value = MockResolverMatch(
+                        func=mock_metadata_view
+                    )
+                    with self.assertRaisesMessage(
+                        ValueError, "ERROR: Status 500 for url /licenses/metadata.yaml"
+                    ):
+                        save_url_as_static_file(output_dir, url)
+
+    def test_save_url_as_static_file_home(self):
+        """
+        home is a TemplateView, which needs to be rendered before
+        we can look at its content?
+        """
+        output_dir = "/output"
+        url = "/"
+
+        with mock.patch(
+            "licenses.utils.generate_filename_to_save_static_view_output"
+        ) as mock_gen_filename:
+            mock_gen_filename.return_value = "/output/home.html"
+            with mock.patch("licenses.utils.save_bytes_to_file"):
+                save_url_as_static_file(output_dir, url)
+
+        self.assertEqual(
+            [call("/output", "/")],
+            mock_gen_filename.call_args_list,
+        )
+
     def test_save_url_as_static_file_200(self):
         output_dir = "/output"
         url = "/licenses/metadata.yaml"
@@ -211,6 +263,10 @@ class ParseLegalcodeFilenameTest(TestCase):
                 if result != expected_result:
                     print(repr(result))
                 self.assertEqual(expected_result, result)
+        with self.assertRaisesMessage(ValueError, "Invalid language_code="):
+            parse_legalcode_filename("by_3.0_es_aaa")
+        with self.assertRaisesMessage(ValueError, "What language? "):
+            parse_legalcode_filename("by_3.0_zz")
 
 
 class GetLicenseURLFromLegalCodeURLTest(TestCase):

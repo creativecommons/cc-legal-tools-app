@@ -269,7 +269,7 @@ class TransifexHelper:
 
         self.say(2, f"Updating branch {branch_name}")
 
-        setup_local_branch(repo, branch_name, settings.OFFICIAL_GIT_BRANCH)
+        setup_local_branch(repo, branch_name)
 
         # Track the translation update using a TranslationBranch object
         from licenses.models import TranslationBranch
@@ -295,7 +295,9 @@ class TransifexHelper:
 
         # Commit and push this branch
         self.say(2, "Committing and pushing")
-        commit_and_push_changes(repo, "Translation changes from Transifex.")
+        commit_and_push_changes(
+            repo, "Translation changes from Transifex.", "", push=True
+        )
 
         self.say(
             2, f"Updated branch {branch_name} with updated translations and pushed"
