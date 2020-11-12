@@ -78,7 +78,7 @@ class Command(BaseCommand):
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
             save_url_as_static_file(
-                output_dir, f"/status/{tbranch_id}/", f"/status/{tbranch_id}.html"
+                output_dir, f"/status/{tbranch_id}/", f"status/{tbranch_id}.html"
             )
 
         for legalcode in LegalCode.objects.valid():
