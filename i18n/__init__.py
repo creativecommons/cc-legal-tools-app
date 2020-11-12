@@ -192,6 +192,7 @@ DJANGO_LANGUAGE_CODES = {
     "en-GB": "en-gb",
     "sr-Cyrl": "sr",
     "sr-Latn": "sr-latn",
+    "zh": "zh-hans",  # Assume mainland china
     "zh-Hans": "zh-hans",  # "zh_Hans",
     "zh-Hant": "zh-hant",  # "zh_Hant",
 }
