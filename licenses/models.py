@@ -144,12 +144,17 @@ class LegalCode(models.Model):
         If saving the deed or license as a static file, this returns
         the relative path where the saved file should be, not including
         the actual filename.
+
+        For unported, uses "xu" as the "jurisdiction" in the filename.
+
+        E.g. "publicdomain/3.0/xu" or "licenses/4.0"
         """
         license = self.license
         firstdir = (
             "publicdomain" if license.license_code.lower() == "cc0" else "licenses"
         )
         if license.version == "3.0":
+            # "xu" for "unported"
             return os.path.join(
                 firstdir, license.version, license.jurisdiction_code or "xu"
             )

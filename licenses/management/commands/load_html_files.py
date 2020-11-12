@@ -304,8 +304,7 @@ class Command(BaseCommand):
                     # compile everything, which is both overkill and can fail if the venv
                     # or project source is not writable. We know this dir is writable, so
                     # just save this pofile and mofile ourselves.
-                    files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
-                    # print(f"Created {files}")
+                    save_pofile_as_pofile_and_mofile(pofile, po_filename)
 
     def import_cc0_license_html(self, *, content, legalcode):
         license = legalcode.license
