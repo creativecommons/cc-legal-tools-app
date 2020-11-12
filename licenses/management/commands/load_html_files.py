@@ -80,7 +80,7 @@ class Command(BaseCommand):
             ]
         )
         for filename in html_filenames:
-            print(filename)
+            # print(filename)
             metadata = parse_legalcode_filename(filename)
 
             basename = os.path.splitext(filename)[0]
@@ -175,9 +175,9 @@ class Command(BaseCommand):
             if created:
                 legalcodes_created += 1
             legalcodes_to_import.append(legalcode)
-        print(
-            f"Created {licenses_created} licenses and {legalcodes_created} translation objects"
-        )
+        # print(
+        #     f"Created {licenses_created} licenses and {legalcodes_created} translation objects"
+        # )
 
         # NOW parse the HTML and output message files
         legalcodes_to_import = LegalCode.objects.filter(
@@ -206,9 +206,9 @@ class Command(BaseCommand):
                 license = legalcode.license
                 license_code = license.license_code
                 version = license.version
-                print(
-                    f"Importing {legalcode.html_file} {license_code} lang={cc_language_code}"
-                )
+                # print(
+                #     f"Importing {legalcode.html_file} {license_code} lang={cc_language_code}"
+                # )
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
@@ -305,7 +305,7 @@ class Command(BaseCommand):
                     # or project source is not writable. We know this dir is writable, so
                     # just save this pofile and mofile ourselves.
                     files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
-                    print(f"Created {files}")
+                    # print(f"Created {files}")
 
     def import_cc0_license_html(self, *, content, legalcode):
         license = legalcode.license
