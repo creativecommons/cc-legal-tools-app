@@ -2,8 +2,8 @@ import os
 import posixpath
 import re
 import urllib
+import urllib.parse
 from base64 import b64encode
-from urllib.parse import urlparse
 
 from bs4 import NavigableString
 from django.conf import settings
@@ -12,29 +12,6 @@ from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
 from i18n.utils import cc_to_django_language_code, get_default_language_for_jurisdiction
-
-
-def generate_filename_to_save_static_view_output(output_dir, url):
-    """
-    Return absolute path where we want to save the output from the given url
-    """
-    if url == "/":
-        return os.path.join(output_dir, "index.html")
-
-    # print(url)
-    parts = urlparse(url)
-    path = parts.path
-    path = path.lstrip("/")
-
-    if url.endswith("/") or "/deed." in url or "/legalcode" in url:
-        # We'll put the content as an index.html file under a directory named for the URL.
-        # That way the URLs are right, and the web server *knows* these are HTML
-        # files.
-        output_filename = os.path.join(output_dir, path, f"index.html")
-    else:
-        # Just use the path from the URL.
-        output_filename = os.path.join(output_dir, path)
-    return output_filename
 
 
 def save_bytes_to_file(bytes, output_filename):
@@ -54,7 +31,7 @@ class MockRequest:
         self.path = path
 
 
-def save_url_as_static_file(output_dir, url):
+def save_url_as_static_file(output_dir, url, relpath):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
@@ -71,8 +48,8 @@ def save_url_as_static_file(output_dir, url):
         raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
     if hasattr(rsp, "render"):
         rsp.render()
-    output_filename = generate_filename_to_save_static_view_output(output_dir, url)
-    # print(f"{url} -> {output_filename}")
+    output_filename = os.path.join(output_dir, relpath)
+    print(f"{url} -> {output_filename}")
     save_bytes_to_file(rsp.content, output_filename)
 
 

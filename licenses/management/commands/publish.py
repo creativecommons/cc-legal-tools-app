@@ -74,14 +74,23 @@ class Command(BaseCommand):
             rmtree(output_dir)
         os.makedirs(output_dir)
 
-        save_url_as_static_file(output_dir, "/status/")
+        save_url_as_static_file(output_dir, "/status/", "status/index.html")
         tbranches = TranslationBranch.objects.filter(complete=False)
-        for branch_id in tbranches.values_list("id", flat=True):
-            save_url_as_static_file(output_dir, f"/status/{branch_id}/")
-        save_url_as_static_file(output_dir, reverse("metadata"))
+        for tbranch_id in tbranches.values_list("id", flat=True):
+            save_url_as_static_file(
+                output_dir, f"/status/{tbranch_id}/", f"/status/{tbranch_id}.html"
+            )
+
         for legalcode in LegalCode.objects.valid():
-            save_url_as_static_file(output_dir, legalcode.license_url)
-            save_url_as_static_file(output_dir, legalcode.deed_url)
+            save_url_as_static_file(
+                output_dir, legalcode.license_url, legalcode.get_license_path()
+            )
+            save_url_as_static_file(
+                output_dir, legalcode.deed_url, legalcode.get_deed_path()
+            )
+        save_url_as_static_file(
+            output_dir, reverse("metadata"), "licenses/metadata.yaml"
+        )
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
