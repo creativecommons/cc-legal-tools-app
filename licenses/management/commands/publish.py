@@ -89,7 +89,6 @@ class Command(BaseCommand):
             # NOT https://creativecommons.org/licenses/by/3.0/ca/legalcode.en-gb
             save_url_as_static_file(output_dir, legalcode.license_url)
             save_url_as_static_file(output_dir, legalcode.deed_url)
-        save_url_as_static_file(output_dir, "/")
         save_url_as_static_file(output_dir, reverse("metadata"))
         save_url_as_static_file(output_dir, "/status/")
         for tbranch in TranslationBranch.objects.filter(complete=False).only("id"):

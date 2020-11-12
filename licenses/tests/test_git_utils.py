@@ -62,12 +62,6 @@ class GitTestMixin:
 
 @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
 class SetupLocalBranchTest(GitTestMixin, TestCase):
-    def test_cant_work_on_develop(self):
-        with self.assertRaisesMessage(
-            ValueError, "Should not be trying to work on branch develop"
-        ):
-            setup_local_branch(self.local_repo, "develop", "develop")
-
     def test_neither_branch_nor_parent_exist(self):
         with self.assertRaisesMessage(
             ValueError, "No such parent branch notthisoneeither"

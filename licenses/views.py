@@ -14,8 +14,8 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
-from i18n import DEFAULT_LANGUAGE_CODE, JURISDICTION_NAMES
-from i18n.utils import active_translation, get_default_language_for_jurisdiction
+from i18n import JURISDICTION_NAMES
+from i18n.utils import active_translation, cc_to_django_language_code
 from licenses.models import BY_LICENSE_CODES, LegalCode, License, TranslationBranch
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
@@ -75,20 +75,25 @@ def all_licenses(request):
     )
 
 
+def name_local(legal_code):
+    return get_language_info(cc_to_django_language_code(legal_code.language_code))[
+        "name_local"
+    ]
+
+
 def get_languages_and_links_for_legalcodes(
     legalcodes: Iterable[LegalCode], selected_language_code: str, license_or_deed: str
 ):
     """
     license_or_deed should be "license" or "deed", controlling which kind of page we link to.
+    selected_language_code is a CC language code
     """
     languages_and_links = [
         {
-            "language_code": legal_code.language_code,
+            "cc_language_code": legal_code.language_code,
             # name_local: name of language in its own language
-            "name_local": get_language_info(legal_code.language_code)["name_local"],
-            "name_for_sorting": get_language_info(legal_code.language_code)[
-                "name_local"
-            ].lower(),
+            "name_local": name_local(legal_code),
+            "name_for_sorting": name_local(legal_code).lower(),
             "link": legal_code.license_url
             if license_or_deed == "license"
             else legal_code.deed_url,
@@ -105,13 +110,9 @@ def view_license(
     license_code,
     version,
     jurisdiction=None,
-    language_code=None,
+    language_code=None,  # CC language code
     is_plain_text=False,
 ):
-    if language_code is None and jurisdiction:
-        language_code = get_default_language_for_jurisdiction(jurisdiction)
-    language_code = language_code or DEFAULT_LANGUAGE_CODE
-
     if is_plain_text:
         legalcode = get_object_or_404(
             LegalCode,
@@ -123,6 +124,7 @@ def view_license(
             license_url=request.path,
         )
 
+    language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
         legalcode.license.legal_codes.all(), language_code, "license"
     )
@@ -165,15 +167,12 @@ def view_license(
 
 
 def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
-    if language_code is None and jurisdiction:
-        language_code = get_default_language_for_jurisdiction(jurisdiction)
-    language_code = language_code or DEFAULT_LANGUAGE_CODE
-
     legalcode = get_object_or_404(
         LegalCode,
         deed_url=request.path,
     )
     license = legalcode.license
+    language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
         license.legal_codes.all(), language_code, "deed"
     )

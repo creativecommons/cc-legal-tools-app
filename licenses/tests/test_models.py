@@ -97,9 +97,8 @@ class LegalCodeQuerySetTest(TestCase):
 
 
 class LegalCodeModelTest(TestCase):
-    fixtures = ["licenses.json"]
-
     def test_str(self):
+        LegalCodeFactory()
         legal_code = LegalCode.objects.first()
         self.assertEqual(
             str(legal_code),
@@ -212,7 +211,7 @@ class LegalCodeModelTest(TestCase):
 
         with mock.patch("licenses.models.get_translation_object") as mock_djt:
             legalcode.get_translation_object()
-        mock_djt.assert_called_with(domain="by-sa_40", language_code="de")
+        mock_djt.assert_called_with(domain="by-sa_40", django_language_code="de")
 
     def test_branch_name(self):
         legalcode = LegalCodeFactory(
@@ -309,7 +308,8 @@ class LicenseModelTest(TestCase):
         self.assertEqual(expected_data, data)
 
     def test_logos(self):
-        self.assertEqual(["cc-logo"], LicenseFactory().logos())
+        # Every license includes "cc-logo"
+        self.assertIn("cc-logo", LicenseFactory().logos())
         self.assertEqual(
             ["cc-logo", "cc-zero"], LicenseFactory(license_code="CC0").logos()
         )

@@ -21,6 +21,8 @@ from django.utils.translation import gettext
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     active_translation,
+    cc_to_django_language_code,
+    cc_to_filename_language_code,
     get_default_language_for_jurisdiction,
     get_translation_object,
 )
@@ -29,13 +31,6 @@ from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from licenses.transifex import TransifexHelper
 
 MAX_LANGUAGE_CODE_LENGTH = 8
-
-
-DJANGO_LANGUAGE_CODES = {
-    # CC language code: django language code
-    "zh-Hans": "zh_Hans",
-    "zh-Hant": "zh_Hant",
-}
 
 # (by4 and by3 have the same license codes)
 BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
@@ -88,7 +83,9 @@ class LegalCode(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive? "
+        "This is the language code used by CC, which might be a little "
+        "different from the Django language code.",
     )
     html_file = models.CharField(
         max_length=300, help_text="HTML file we got this from", blank=True, default=""
@@ -108,9 +105,9 @@ class LegalCode(models.Model):
 
     html = models.TextField(blank=True, default="")
 
-    license_url = models.URLField()
-    deed_url = models.URLField()
-    plain_text_url = models.URLField()
+    license_url = models.URLField(unique=True)
+    deed_url = models.URLField(unique=True)
+    plain_text_url = models.URLField(unique=True)
 
     objects = LegalCodeQuerySet.as_manager()
 
@@ -141,14 +138,6 @@ class LegalCode(models.Model):
             else f"{license_url}.txt"
         )
         super().save(*args, **kwargs)
-
-    @property
-    def django_language_code(self):
-        """A few of the language codes as used to identify the license
-        translations 'officially' are a little different from what Dango
-        uses for the same case.
-        """
-        return DJANGO_LANGUAGE_CODES.get(self.language_code, self.language_code)
 
     def has_english(self):
         """
@@ -191,7 +180,10 @@ class LegalCode(models.Model):
 
     def get_translation_object(self):
         domain = self.license.resource_slug
-        return get_translation_object(language_code=self.language_code, domain=domain)
+        return get_translation_object(
+            django_language_code=cc_to_django_language_code(self.language_code),
+            domain=domain,
+        )
 
     def get_pofile(self) -> polib.POFile:
         with open(self.translation_filename(), "rb") as f:
@@ -227,7 +219,7 @@ class LegalCode(models.Model):
         fullpath = os.path.join(
             settings.TRANSLATION_REPOSITORY_DIRECTORY,
             "legalcode",
-            self.django_language_code,
+            cc_to_filename_language_code(self.language_code),
             "LC_MESSAGES",
             filename,
         )
@@ -481,7 +473,8 @@ class TranslationBranch(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive? "
+        "This is a CC language code, which might differ from Django.",
     )
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",
@@ -525,6 +518,7 @@ def build_license_url(license_code, version, jurisdiction_code, language_code):
     """
     Return a URL to view the license specified by the inputs. Jurisdiction
     and language are optional.
+    language_code is a CC language code.
     """
     # UGH. Is there any way we could do this with a simple url 'reverse'? The URL regex would
     # be complicated, but we have unit tests to determine if we've got it right.
@@ -554,6 +548,7 @@ def build_deed_url(license_code, version, jurisdiction_code, language_code):
     """
     Return a URL to view the deed specified by the inputs. Jurisdiction
     and language are optional.
+    language_code is a CC language code.
     """
     # UGH. Is there any way we could do this with a simple url 'reverse'? The URL regex would
     # be complicated, but we have unit tests to determine if we've got it right.
