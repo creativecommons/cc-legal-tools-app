@@ -13,7 +13,6 @@ from licenses.utils import (
     clean_string,
     cleanup_current_branch_output,
     compute_about_url,
-    generate_filename_to_save_static_view_output,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
     parse_legalcode_filename,
@@ -42,27 +41,17 @@ class SaveURLAsStaticFileTest(TestCase):
             if filepath is not None:
                 os.remove(filepath)
 
-    def test_generate_filename_to_save_static_view_output(self):
-        output_dir = "/output"
-        self.assertEqual(
-            "/output/foo/index.html",
-            generate_filename_to_save_static_view_output(output_dir, "/foo/"),
-        )
-        self.assertEqual(
-            "/output/foo.html",
-            generate_filename_to_save_static_view_output(output_dir, "/foo.html"),
-        )
-
     def test_save_url_as_static_file_not_200(self):
         output_dir = "/output"
         url = "/some/url/"
         with self.assertRaises(Resolver404):
-            save_url_as_static_file(output_dir, url)
+            save_url_as_static_file(output_dir, url, "")
 
     def test_save_url_as_static_file_200(self):
         output_dir = "/output"
         url = "/licenses/metadata.yaml"
         file_content = b"xxxxx"
+        relpath = "licenses/metadata.yaml"
 
         class MockResponse:
             content = file_content
@@ -77,23 +66,13 @@ class SaveURLAsStaticFileTest(TestCase):
         mock_metadata_view = MagicMock()
         mock_metadata_view.return_value = MockResponse()
 
-        with mock.patch(
-            "licenses.utils.generate_filename_to_save_static_view_output"
-        ) as mock_gen_filename:
-            mock_gen_filename.return_value = "/output/licenses/metadata.yaml"
-            with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
-                with mock.patch.object(URLResolver, "resolve") as mock_resolve:
-                    mock_resolve.return_value = MockResolverMatch(
-                        func=mock_metadata_view
-                    )
-                    save_url_as_static_file(output_dir, url)
+        with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
+            with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                mock_resolve.return_value = MockResolverMatch(func=mock_metadata_view)
+                save_url_as_static_file(output_dir, url, relpath)
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
         self.assertEqual([call(request=mock.ANY)], mock_metadata_view.call_args_list)
-        self.assertEqual(
-            [call("/output", "/licenses/metadata.yaml")],
-            mock_gen_filename.call_args_list,
-        )
         self.assertEqual(
             [call(file_content, "/output/licenses/metadata.yaml")],
             mock_save.call_args_list,

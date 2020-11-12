@@ -87,12 +87,20 @@ class Command(BaseCommand):
             # NOT https://creativecommons.org/licenses/by/3.0/ca
             # NOT https://creativecommons.org/licenses/by/3.0/ca/
             # NOT https://creativecommons.org/licenses/by/3.0/ca/legalcode.en-gb
-            save_url_as_static_file(output_dir, legalcode.license_url)
-            save_url_as_static_file(output_dir, legalcode.deed_url)
-        save_url_as_static_file(output_dir, reverse("metadata"))
-        save_url_as_static_file(output_dir, "/status/")
+            save_url_as_static_file(
+                output_dir, legalcode.license_url, legalcode.get_license_path()
+            )
+            save_url_as_static_file(
+                output_dir, legalcode.deed_url, legalcode.get_deed_path()
+            )
+        save_url_as_static_file(
+            output_dir, reverse("metadata"), "licenses/metadata.yaml"
+        )
+        save_url_as_static_file(output_dir, "/status/", "status/index.html")
         for tbranch in TranslationBranch.objects.filter(complete=False).only("id"):
-            save_url_as_static_file(output_dir, f"/status/{tbranch.id}/")
+            save_url_as_static_file(
+                output_dir, f"/status/{tbranch.id}/", f"/status/{tbranch.id}.html"
+            )
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
