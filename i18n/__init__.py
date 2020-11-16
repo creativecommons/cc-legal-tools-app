@@ -16,6 +16,8 @@ DEFAULT_LANGUAGE_CODE = "en"
 
 # The DEFAULT_JURISDICTION_LANGUAGES and JURISDICTION_NAMES are largely based
 # on jurisdictions.rdf in the cc.licenserdf repo.
+# The language codes here are CC language codes, which sometimes differ from
+# Django language codes.
 DEFAULT_JURISDICTION_LANGUAGES = {
     # Map jurisdiction code to language code. IMPORTANT: Some of the jurisdiction codes
     # look like language codes, but they're not necessarily related. E.g. "ar" is the
@@ -48,7 +50,7 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     # YES https://creativecommons.org/licenses/by/3.0/ch/legalcode.de
     "ch": "de",  # ch=Switzerland, default in jurisdictions.rdf=de
     "cl": "es",
-    "cn": "zh",
+    "cn": "zh-Hans",  # "cn" is China Mainland, language is simplified Chinese = zh-Hans
     "co": "es",
     "cr": "es",
     "cz": "cs",
@@ -185,3 +187,19 @@ JURISDICTION_NAMES = {
 
 LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
 LANGUAGE_CODE_REGEX = re.compile(LANGUAGE_CODE_REGEX_STRING)
+DJANGO_LANGUAGE_CODES = {
+    # CC language code: django language code
+    "en-GB": "en-gb",
+    "sr-Cyrl": "sr",
+    "sr-Latn": "sr-latn",
+    "zh": "zh-hans",  # Assume mainland china
+    "zh-Hans": "zh-hans",  # "zh_Hans",
+    "zh-Hant": "zh-hant",  # "zh_Hant",
+}
+FILENAME_LANGUAGE_CODES = {
+    # CC language code: language code for path to translation files
+    # (Don't ask me why... this just seems to be how it is.)
+    "en-GB": "en",
+    "zh-Hans": "zh_Hans",
+    "zh-Hant": "zh_Hant",
+}

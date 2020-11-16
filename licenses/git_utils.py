@@ -1,5 +1,6 @@
 import logging
 import os
+import subprocess
 from typing import List
 
 import git
@@ -7,6 +8,13 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+def run_git(repo: git.Repo, command: List[str]):
+    # print(" ".join(command))
+    result = subprocess.run(command, cwd=repo.working_tree_dir)
+    if result.returncode != 0:
+        raise Exception("Something went wrong running git")
 
 
 def setup_to_call_git(env=None):
@@ -41,6 +49,24 @@ def remote_branch_names(remote: git.Remote) -> List[str]:
     return [name[prefix_length:] for name in full_branch_names]
 
 
+def get_branch(repo_or_remote, name):
+    """
+    Get a branch for a repo or remote.
+    Returns a branch (head)
+    Or none if there's no such branch there.
+    """
+    if isinstance(repo_or_remote, git.Remote):
+        remote = repo_or_remote
+        prefix_length = len(remote.name) + 1  # "origin/"
+        for ref in remote.refs:
+            full_name = ref.name
+            if full_name[prefix_length:] == name:
+                return ref
+    else:
+        repo = repo_or_remote
+        return getattr(repo.heads, name)
+
+
 def branch_exists(repo_or_remote, name):
     if isinstance(repo_or_remote, git.Remote):
         return name in remote_branch_names(repo_or_remote)
@@ -57,54 +83,63 @@ def kill_branch(repo, name):
     repo.delete_head(name, force=True)
 
 
-def setup_local_branch(repo: git.Repo, branch_name: str, parent_branch_name: str):
+def setup_local_branch(repo: git.Repo, branch_name: str):
     """
-    Ensure we have a local branch named 'branch_name'.  WARNING: If there's
-    already such a branch, we first DELETE it. The local repo is considered
-    a temporary working place. The upstream repo is authoritative.
-    Then we pull from upstream ('origin'), or create as a branch from parent_branch_name.
-    If there's an upstream one, pull from it to make sure we're up to date.
-    Check it out.
+    Ensure we have a local branch named 'branch_name', it's at the same
+    state as its upstream parent, and checked out.
+
+    THIS DISCARDS ANY LOCAL CHANGES!!!!
     """
-    if branch_name == "develop":
-        raise ValueError(f"Should not be trying to work on branch {branch_name}")
-
-    if branch_exists(repo, branch_name):
-        kill_branch(repo, branch_name)
-
-    origin = getattr(repo.remotes, "origin")
+    origin = repo.remotes.origin
     origin.fetch()
-    if not branch_exists(origin, parent_branch_name):
-        raise ValueError(f"No such parent branch {parent_branch_name} on origin")
 
-    # Now create branch fresh. Does upstream already have a branch with this name?
-    if branch_exists(origin, branch_name):
-        # Create locally, based on upstream
-        repo.create_head(branch_name, f"origin/{branch_name}")
+    # Hard reset in case the repo is dirty
+    repo.head.reset(index=True, working_tree=True)
+
+    if not branch_exists(repo, branch_name):
+        # Is there an upstream branch with the same name?
+        if branch_exists(origin, branch_name):
+            repo.create_head(branch_name, get_branch(origin, branch_name))
+            branch = get_branch(repo, branch_name)
+            if not branch.tracking_branch():
+                branch.set_tracking_branch(get_branch(origin, branch_name))
+            assert branch.tracking_branch()
+            branch.checkout(force=True)
+        else:
+            # No upstream branch either. Branch from the official branch upstream, but don't track it.
+            upstream = get_branch(origin, settings.OFFICIAL_GIT_BRANCH)
+            repo.create_head(branch_name, upstream)
+            branch = get_branch(repo, branch_name)
+            assert not branch.tracking_branch()
+            branch.checkout(force=True)
     else:
-        # Nope, need to create from scratch from the upstream with "parent_branch_name"
-        parent_branch = getattr(origin.refs, parent_branch_name)
-        repo.create_head(branch_name, parent_branch)
+        # branch exists.
+        branch = get_branch(repo, branch_name)
+        branch.checkout(force=True)
+        if branch.tracking_branch():
+            # Use upstream branch tip commit
+            repo.head.reset(f"origin/{branch_name}", index=True, working_tree=True)
+        return
 
-    # Checkout the branch
-    branch = getattr(repo.heads, branch_name)
-    branch.checkout()
 
-
-def push(repo: git.Repo):
+def push_current_branch(repo: git.Repo):
     # Separate function just so we can mock it for testing
-    current_branch = repo.head.reference
-    branch_name = current_branch.name
-    return repo.remotes.origin.push(f"{branch_name}:{branch_name}")
+    current_branch = repo.active_branch
+    run_git(repo, ["git", "push", "-u", "origin", current_branch.name])
 
 
-def commit_and_push_changes(repo: git.Repo, commit_msg: str):
-    """Commit new translation changes to current branch, and push upstream"""
-    index = repo.index
-    index.commit(commit_msg)
-    results = push(repo)
-    if len(results) == 0:
-        raise Exception("PUSH FAILED COMPLETELY - add more info to this message")
-    for result in results:
-        if git.PushInfo.ERROR & result.flags:
-            raise Exception(f"PUSH FAILED {result.summary}")
+def commit_and_push_changes(repo: git.Repo, commit_msg: str, relpath: str, push: bool):
+    """Commit all changes under relpath to current branch, and maybe push upstream"""
+    untracked_to_add = [
+        path for path in repo.untracked_files if path.startswith(relpath)
+    ]
+    if untracked_to_add:
+        run_git(repo, ["git", "add", "--force"] + untracked_to_add)
+
+    run_git(repo, ["git", "commit", "--quiet", "-am", commit_msg])
+    run_git(
+        repo,
+        ["git", "status", "--untracked", "--short"],
+    )
+    if push:
+        push_current_branch(repo)

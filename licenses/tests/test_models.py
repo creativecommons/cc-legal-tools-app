@@ -97,9 +97,8 @@ class LegalCodeQuerySetTest(TestCase):
 
 
 class LegalCodeModelTest(TestCase):
-    fixtures = ["licenses.json"]
-
     def test_str(self):
+        LegalCodeFactory()
         legal_code = LegalCode.objects.first()
         self.assertEqual(
             str(legal_code),
@@ -212,7 +211,7 @@ class LegalCodeModelTest(TestCase):
 
         with mock.patch("licenses.models.get_translation_object") as mock_djt:
             legalcode.get_translation_object()
-        mock_djt.assert_called_with(domain="by-sa_40", language_code="de")
+        mock_djt.assert_called_with(domain="by-sa_40", django_language_code="de")
 
     def test_branch_name(self):
         legalcode = LegalCodeFactory(
@@ -238,6 +237,106 @@ class LegalCodeModelTest(TestCase):
         lc_en = LegalCodeFactory(license=license, language_code="en")
         self.assertTrue(lc_fr.has_english())
         self.assertTrue(lc_en.has_english())
+
+    def test_get_deed_or_license_path(self):
+        """
+        4.0 formula:
+        /licenses/VERSION/LICENSE_deed_LANGAUGE.html
+        /licenses/VERSION/LICENSE_legalcode_LANGAUGEhtml
+        4.0 examples:
+        /licenses/4.0/by-nc-nd_deed_en.html
+        /licenses/4.0/by-nc-nd_legalcode_en.html
+        /licenses/4.0/by_deed_en.html
+        /licenses/4.0/by_legalcode_en.html
+        /licenses/4.0/by_deed_zh-Hans.html
+        /licenses/4.0/by_legalcode_zh-Hans.html
+        3.0 formula:
+        /licenses/VERSION/JURISDICTION/LICENSE_deed_LANGAUGE.html
+        /licenses/VERSION/JURISDICTION/LICENSE_legalcode_LANGAUGE.html
+        3.0 examples:
+        /licenses/3.0/xu/by_deed_en.html
+        /licenses/3.0/xu/by_legalcode_en.html
+        /licenses/3.0/am/by_deed_hy.html
+        /licenses/3.0/am/by_legalcode_hy.html
+        /licenses/3.0/rs/by_deed_rs-Cyrl.html
+        /licenses/3.0/rs/by_legalcode_rs-Cyrl.html
+        For jurisdiction, I used “xu” to mean “unported”.
+        See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.
+        cc0 formula:
+        /publicdomain/VERSION/LICENSE_deed_LANGAUGE.html
+        /publicdomain/VERSION/LICENSE_legalcode_LANGAUGE.html
+        cc0 examples:
+        /publicdomain/1.0/zero_deed_en.html
+        /publicdomain/1.0/zero_legalcode_en.html
+        /publicdomain/1.0/zero_deed_ja.html
+        /publicdomain/1.0/zero_legalcode_ja.html
+        """
+        data = [
+            (
+                "4.0",
+                "by-nc-nd",
+                "",
+                "en",
+                "licenses/4.0/by-nc-nd_deed_en.html",
+                "licenses/4.0/by-nc-nd_legalcode_en.html",
+            ),
+            (
+                "4.0",
+                "by",
+                "",
+                "en",
+                "licenses/4.0/by_deed_en.html",
+                "licenses/4.0/by_legalcode_en.html",
+            ),
+            (
+                "4.0",
+                "by",
+                "",
+                "zh-Hans",
+                "licenses/4.0/by_deed_zh-Hans.html",
+                "licenses/4.0/by_legalcode_zh-Hans.html",
+            ),
+            (
+                "3.0",
+                "by",
+                "",
+                "en",
+                "licenses/3.0/xu/by_deed_en.html",
+                "licenses/3.0/xu/by_legalcode_en.html",
+            ),
+            (
+                "1.0",
+                "CC0",
+                "",
+                "en",
+                "publicdomain/1.0/zero_deed_en.html",
+                "publicdomain/1.0/zero_legalcode_en.html",
+            ),
+            (
+                "1.0",
+                "CC0",
+                "",
+                "ja",
+                "publicdomain/1.0/zero_deed_ja.html",
+                "publicdomain/1.0/zero_legalcode_ja.html",
+            ),
+        ]
+        for (
+            version,
+            license_code,
+            jurisdiction_code,
+            language_code,
+            expected_deed_path,
+            expected_license_path,
+        ) in data:
+            license = LicenseFactory(
+                license_code=license_code,
+                version=version,
+                jurisdiction_code=jurisdiction_code,
+            )
+            legalcode = LegalCodeFactory(license=license, language_code=language_code)
+            self.assertEqual(expected_deed_path, legalcode.get_deed_path())
+            self.assertEqual(expected_license_path, legalcode.get_license_path())
 
 
 class LicenseModelTest(TestCase):
@@ -309,7 +408,8 @@ class LicenseModelTest(TestCase):
         self.assertEqual(expected_data, data)
 
     def test_logos(self):
-        self.assertEqual(["cc-logo"], LicenseFactory().logos())
+        # Every license includes "cc-logo"
+        self.assertIn("cc-logo", LicenseFactory().logos())
         self.assertEqual(
             ["cc-logo", "cc-zero"], LicenseFactory(license_code="CC0").logos()
         )

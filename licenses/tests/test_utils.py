@@ -13,7 +13,6 @@ from licenses.utils import (
     clean_string,
     cleanup_current_branch_output,
     compute_about_url,
-    generate_filename_to_save_static_view_output,
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
     parse_legalcode_filename,
@@ -42,27 +41,56 @@ class SaveURLAsStaticFileTest(TestCase):
             if filepath is not None:
                 os.remove(filepath)
 
-    def test_generate_filename_to_save_static_view_output(self):
-        output_dir = "/output"
-        self.assertEqual(
-            "/output/foo/index.html",
-            generate_filename_to_save_static_view_output(output_dir, "/foo/"),
-        )
-        self.assertEqual(
-            "/output/foo.html",
-            generate_filename_to_save_static_view_output(output_dir, "/foo.html"),
-        )
-
     def test_save_url_as_static_file_not_200(self):
         output_dir = "/output"
         url = "/some/url/"
         with self.assertRaises(Resolver404):
-            save_url_as_static_file(output_dir, url)
+            save_url_as_static_file(output_dir, url, "")
+
+    def test_save_url_as_static_file_500(self):
+        output_dir = "/output"
+        url = "/licenses/metadata.yaml"
+        file_content = b"xxxxx"
+
+        class MockResponse:
+            content = file_content
+            status_code = 500
+
+        class MockResolverMatch:
+            def __init__(self, func):
+                self.func = func
+                self.args = []
+                self.kwargs = {}
+
+        mock_metadata_view = MagicMock()
+        mock_metadata_view.return_value = MockResponse()
+
+        with mock.patch("licenses.utils.save_bytes_to_file"):
+            with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                mock_resolve.return_value = MockResolverMatch(func=mock_metadata_view)
+                with self.assertRaisesMessage(
+                    ValueError, "ERROR: Status 500 for url /licenses/metadata.yaml"
+                ):
+                    save_url_as_static_file(
+                        output_dir, url, "/output/licenses/metadata.yaml"
+                    )
+
+    def test_save_url_as_static_file_home(self):
+        """
+        home is a TemplateView, which needs to be rendered before
+        we can look at its content?
+        """
+        output_dir = "/output"
+        url = "/"
+
+        with mock.patch("licenses.utils.save_bytes_to_file"):
+            save_url_as_static_file(output_dir, url, "/output/home.html")
 
     def test_save_url_as_static_file_200(self):
         output_dir = "/output"
         url = "/licenses/metadata.yaml"
         file_content = b"xxxxx"
+        relpath = "licenses/metadata.yaml"
 
         class MockResponse:
             content = file_content
@@ -77,23 +105,13 @@ class SaveURLAsStaticFileTest(TestCase):
         mock_metadata_view = MagicMock()
         mock_metadata_view.return_value = MockResponse()
 
-        with mock.patch(
-            "licenses.utils.generate_filename_to_save_static_view_output"
-        ) as mock_gen_filename:
-            mock_gen_filename.return_value = "/output/licenses/metadata.yaml"
-            with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
-                with mock.patch.object(URLResolver, "resolve") as mock_resolve:
-                    mock_resolve.return_value = MockResolverMatch(
-                        func=mock_metadata_view
-                    )
-                    save_url_as_static_file(output_dir, url)
+        with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
+            with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                mock_resolve.return_value = MockResolverMatch(func=mock_metadata_view)
+                save_url_as_static_file(output_dir, url, relpath)
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
-        self.assertEqual([call(request=None)], mock_metadata_view.call_args_list)
-        self.assertEqual(
-            [call("/output", "/licenses/metadata.yaml")],
-            mock_gen_filename.call_args_list,
-        )
+        self.assertEqual([call(request=mock.ANY)], mock_metadata_view.call_args_list)
         self.assertEqual(
             [call(file_content, "/output/licenses/metadata.yaml")],
             mock_save.call_args_list,
@@ -124,7 +142,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "by",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -135,7 +153,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "es",
-                    "language_code": "ast",
+                    "cc_language_code": "ast",
                 },
             ),
             (
@@ -146,7 +164,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "rs",
-                    "language_code": "sr-Cyrl",
+                    "cc_language_code": "sr-Cyrl",
                 },
             ),
             (
@@ -157,7 +175,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "devnations",
                     "version": "2.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -168,7 +186,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "LGPL",
                     "version": "2.1",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -179,7 +197,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
             (
@@ -190,7 +208,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "CC0",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "fi",
+                    "cc_language_code": "fi",
                 },
             ),
             (
@@ -201,7 +219,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "license_code": "nc-sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
-                    "language_code": "en",
+                    "cc_language_code": "en",
                 },
             ),
         ]
@@ -211,6 +229,10 @@ class ParseLegalcodeFilenameTest(TestCase):
                 if result != expected_result:
                     print(repr(result))
                 self.assertEqual(expected_result, result)
+        with self.assertRaisesMessage(ValueError, "Invalid language_code="):
+            parse_legalcode_filename("by_3.0_es_aaa")
+        with self.assertRaisesMessage(ValueError, "What language? "):
+            parse_legalcode_filename("by_3.0_zz")
 
 
 class GetLicenseURLFromLegalCodeURLTest(TestCase):

@@ -3,10 +3,12 @@ import sys
 from argparse import ArgumentParser
 
 from bs4 import BeautifulSoup, Tag
+from django.conf import settings
 from django.core.management import BaseCommand
 from polib import POEntry, POFile
 
 from i18n.utils import (
+    cc_to_django_language_code,
     get_default_language_for_jurisdiction,
     save_pofile_as_pofile_and_mofile,
 )
@@ -41,6 +43,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "--languages",
             help="comma-separated language codes to include, e.g. 'fr,ar' "
+            "using the codes from the CC site URLs (which sometimes differ from Django's) "
             "(English is unconditionally included for technical reasons).",
             # We need to import English so we can figure out what the message keys should be,
             # because they are just the English message text.
@@ -77,6 +80,7 @@ class Command(BaseCommand):
             ]
         )
         for filename in html_filenames:
+            # print(filename)
             metadata = parse_legalcode_filename(filename)
 
             basename = os.path.splitext(filename)[0]
@@ -85,9 +89,13 @@ class Command(BaseCommand):
             license_code = metadata["license_code"]
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
-            language_code = metadata[
-                "language_code"
+            cc_language_code = metadata[
+                "cc_language_code"
             ] or get_default_language_for_jurisdiction(jurisdiction_code)
+            # Make sure this is a valid language code (one we know about)
+            django_language_code = cc_to_django_language_code(cc_language_code)
+            if django_language_code not in settings.LANG_INFO:
+                raise ValueError(f"Invalid language_code={cc_language_code}")
 
             # Just CC0, BY 3.0, & 4.0, and apply any command line options
             include = (
@@ -98,7 +106,7 @@ class Command(BaseCommand):
                 and (versions_to_include is None or version in versions_to_include)
                 and (
                     languages_to_include is None
-                    or language_code in languages_to_include
+                    or cc_language_code in languages_to_include
                 )
             )
             if not include:
@@ -158,7 +166,7 @@ class Command(BaseCommand):
             # Find or create a LegalCode object
             legalcode, created = LegalCode.objects.get_or_create(
                 license=license,
-                language_code=language_code,
+                language_code=cc_language_code,
                 defaults=dict(
                     html_file=fullpath,
                 ),
@@ -167,9 +175,9 @@ class Command(BaseCommand):
             if created:
                 legalcodes_created += 1
             legalcodes_to_import.append(legalcode)
-        print(
-            f"Created {licenses_created} licenses and {legalcodes_created} translation objects"
-        )
+        # print(
+        #     f"Created {licenses_created} licenses and {legalcodes_created} translation objects"
+        # )
 
         # NOW parse the HTML and output message files
         legalcodes_to_import = LegalCode.objects.filter(
@@ -177,17 +185,19 @@ class Command(BaseCommand):
         )
 
         # What are the language codes we have HTML files for?
-        language_codes = sorted(set(lc.language_code for lc in legalcodes_to_import))
+        cc_language_codes = sorted(set(lc.language_code for lc in legalcodes_to_import))
 
         english_by_license_code_version = {}
 
         # We have to do English first. Django gets confused if you try to load
         # another language and it can't find English, I guess it's looking for
         # something to fall back to.
-        language_codes.remove("en")  # If english isn't in this list, something is wrong
-        for language_code in ["en"] + language_codes:
+        cc_language_codes.remove(
+            "en"
+        )  # If english isn't in this list, something is wrong
+        for cc_language_code in ["en"] + cc_language_codes:
             for legalcode in legalcodes_to_import.filter(
-                language_code=language_code,
+                language_code=cc_language_code,
             ).order_by(
                 "-license__version",
                 "license__license_code",
@@ -196,9 +206,9 @@ class Command(BaseCommand):
                 license = legalcode.license
                 license_code = license.license_code
                 version = license.version
-                print(
-                    f"Importing {legalcode.html_file} {license_code} lang={language_code}"
-                )
+                # print(
+                #     f"Importing {legalcode.html_file} {license_code} lang={cc_language_code}"
+                # )
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
@@ -232,68 +242,69 @@ class Command(BaseCommand):
                         f"Have not implemented parsing for {license_code} {version} licenses."
                     )
 
-                key = f"{license_code}|{version}"
-                if language_code == "en":
-                    english_by_license_code_version[key] = messages_text
-                english_messages = english_by_license_code_version[key]
+                if version != "3.0":
+                    # 3.0 doesn't have any translation files - might be the same for other versions
+                    key = f"{license_code}|{version}"
+                    if cc_language_code == "en":
+                        english_by_license_code_version[key] = messages_text
+                    english_messages = english_by_license_code_version[key]
 
-                pofile = POFile()
-                # The syntax used to wrap messages in a .po file is difficult if you ever
-                # want to copy/paste the messages, so if --unwrapped was passed, set a
-                # wrap width that will essentially disable wrapping.
-                if self.unwrapped:
-                    pofile.wrapwidth = 999999
-                pofile.metadata = {
-                    "Project-Id-Version": f"{license_code}-{version}",
-                    # 'Report-Msgid-Bugs-To': 'you@example.com',
-                    # 'POT-Creation-Date': '2007-10-18 14:00+0100',
-                    # 'PO-Revision-Date': '2007-10-18 14:00+0100',
-                    # 'Last-Translator': 'you <you@example.com>',
-                    # 'Language-Team': 'English <yourteam@example.com>',
-                    "Language": language_code,
-                    "MIME-Version": "1.0",
-                    "Content-Type": "text/plain; charset=utf-8",
-                    "Content-Transfer-Encoding": "8bit",
-                }
+                    pofile = POFile()
+                    # The syntax used to wrap messages in a .po file is difficult if you ever
+                    # want to copy/paste the messages, so if --unwrapped was passed, set a
+                    # wrap width that will essentially disable wrapping.
+                    if self.unwrapped:
+                        pofile.wrapwidth = 999999
+                    pofile.metadata = {
+                        "Project-Id-Version": f"{license_code}-{version}",
+                        # 'Report-Msgid-Bugs-To': 'you@example.com',
+                        # 'POT-Creation-Date': '2007-10-18 14:00+0100',
+                        # 'PO-Revision-Date': '2007-10-18 14:00+0100',
+                        # 'Last-Translator': 'you <you@example.com>',
+                        # 'Language-Team': 'English <yourteam@example.com>',
+                        "Language": cc_language_code,
+                        "MIME-Version": "1.0",
+                        "Content-Type": "text/plain; charset=utf-8",
+                        "Content-Transfer-Encoding": "8bit",
+                    }
 
-                # Use the English message text as the message key
-                for internal_key, translation in messages_text.items():
-                    if language_code == "en":
-                        message_key = translation.strip()
-                        message_value = ""
-                    else:
-                        # WORKAROUND - by-nc-nd 4.0 NL has an extra item under s3a.
-                        # https://github.com/creativecommons/creativecommons.org/pull/1160
-                        if (
-                            internal_key == "s3a4_if_you_share_adapted_material"
-                            and internal_key not in english_messages
-                        ):
-                            message_key = (
-                                "If You Share Adapted Material You produce, the Adapter's "
-                                "License You apply must not prevent recipients of the Adapted "
-                                "Material from complying with this Public License."
-                            )
+                    # Use the English message text as the message key
+                    for internal_key, translation in messages_text.items():
+                        if cc_language_code == "en":
+                            message_key = translation.strip()
+                            message_value = ""
                         else:
-                            message_key = english_messages[internal_key]
-                        message_value = translation
+                            # WORKAROUND - by-nc-nd 4.0 NL has an extra item under s3a.
+                            # https://github.com/creativecommons/creativecommons.org/pull/1160
+                            if (
+                                internal_key == "s3a4_if_you_share_adapted_material"
+                                and internal_key not in english_messages
+                            ):
+                                message_key = (
+                                    "If You Share Adapted Material You produce, the Adapter's "
+                                    "License You apply must not prevent recipients of the Adapted "
+                                    "Material from complying with this Public License."
+                                )
+                            else:
+                                message_key = english_messages[internal_key]
+                            message_value = translation
 
-                    pofile.append(
-                        POEntry(
-                            msgid=clean_string(message_key),
-                            msgstr=clean_string(message_value),
+                        pofile.append(
+                            POEntry(
+                                msgid=clean_string(message_key),
+                                msgstr=clean_string(message_value),
+                            )
                         )
-                    )
 
-                po_filename = legalcode.translation_filename()
-                dir = os.path.dirname(po_filename)
-                if not os.path.isdir(dir):
-                    os.makedirs(dir)
-                # Save mofile ourself. We could call 'compilemessages' but it wants to
-                # compile everything, which is both overkill and can fail if the venv
-                # or project source is not writable. We know this dir is writable, so
-                # just save this pofile and mofile ourselves.
-                files = save_pofile_as_pofile_and_mofile(pofile, po_filename)
-                print(f"Created {files}")
+                    po_filename = legalcode.translation_filename()
+                    dir = os.path.dirname(po_filename)
+                    if not os.path.isdir(dir):
+                        os.makedirs(dir)
+                    # Save mofile ourself. We could call 'compilemessages' but it wants to
+                    # compile everything, which is both overkill and can fail if the venv
+                    # or project source is not writable. We know this dir is writable, so
+                    # just save this pofile and mofile ourselves.
+                    save_pofile_as_pofile_and_mofile(pofile, po_filename)
 
     def import_cc0_license_html(self, *, content, legalcode):
         license = legalcode.license

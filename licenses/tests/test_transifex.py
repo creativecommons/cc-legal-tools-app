@@ -550,9 +550,7 @@ class CheckForTranslationUpdatesTest(TestCase):
                 dummy_repo, [legalcode1, legalcode2]
             )
         self.assertIsNone(result)
-        mock_setup.assert_called_with(
-            dummy_repo, legalcode1.branch_name(), settings.OFFICIAL_GIT_BRANCH
-        )
+        mock_setup.assert_called_with(dummy_repo, legalcode1.branch_name())
         # Should have published static files for this branch
         expected = [
             mock.call("publish", branch_name=legalcode1.branch_name()),
@@ -565,7 +563,7 @@ class CheckForTranslationUpdatesTest(TestCase):
         ]
         self.assertEqual(expected, mock_update_branch.call_args_list)
         mock_commit.assert_called_with(
-            dummy_repo, "Translation changes from Transifex."
+            dummy_repo, "Translation changes from Transifex.", "", push=True
         )
 
     def test_update_branch_for_legalcode(self):

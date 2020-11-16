@@ -1,5 +1,4 @@
 {% load bidi i18n %}
-{% get_current_language as LANGUAGE_CODE %}
 
 <div class="locale level-right level-item has-text-black" >
   {% trans "Languages available" %}
@@ -11,9 +10,9 @@
 
         {% for option in languages_and_links %}
           <option
-            id="option-{{ option.language_code }}"
+            id="option-{{ option.cc_language_code }}"
             {% if option.selected %}selected{% endif %}
-            value="{{ option.language_code }}"
+            value="{{ option.cc_language_code }}"
             data-link="{{ option.link }}"
           >
             {{ option.name_local }}

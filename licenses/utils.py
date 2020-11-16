@@ -2,35 +2,16 @@ import os
 import posixpath
 import re
 import urllib
+import urllib.parse
 from base64 import b64encode
-from urllib.parse import urlparse
 
 from bs4 import NavigableString
+from django.conf import settings
 from django.urls import get_resolver
 from polib import POEntry, POFile
 
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
-from i18n.utils import get_default_language_for_jurisdiction
-
-
-def generate_filename_to_save_static_view_output(output_dir, url):
-    """
-    Return absolute path where we want to save the output from the given url
-    """
-    # print(url)
-    parts = urlparse(url)
-    path = parts.path
-    path = path.lstrip("/")
-
-    if url.endswith("/"):
-        # We'll put the content as an index.html file under a directory named for the URL.
-        # That way the URLs are right, and the web server *knows* these are HTML
-        # files.
-        output_filename = os.path.join(output_dir, path, f"index.html")
-    else:
-        # URL includes a reasonable filename like metadata.yaml, just use it
-        output_filename = os.path.join(output_dir, path)
-    return output_filename
+from i18n.utils import cc_to_django_language_code, get_default_language_for_jurisdiction
 
 
 def save_bytes_to_file(bytes, output_filename):
@@ -42,23 +23,33 @@ def save_bytes_to_file(bytes, output_filename):
         f.write(bytes)  # Bytes
 
 
-def save_url_as_static_file(output_dir, url):
+class MockRequest:
+    method = "GET"
+    META = {}
+
+    def __init__(self, path):
+        self.path = path
+
+
+def save_url_as_static_file(output_dir, url, relpath):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
 
     Pass in open_func just for testing, not in regular use.
     """
-    output_filename = generate_filename_to_save_static_view_output(output_dir, url)
-
     # Was using test Client, but it runs middleware and fails at runtime because the
     # request host wasn't in the ALLOWED_HOSTS. So, resolve the URL and call the view
     # directly.
     resolver = get_resolver()
     match = resolver.resolve(url)  # ResolverMatch
-    rsp = match.func(request=None, *match.args, **match.kwargs)
+    rsp = match.func(request=MockRequest(url), *match.args, **match.kwargs)
     if rsp.status_code != 200:
         raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
+    if hasattr(rsp, "render"):
+        rsp.render()
+    output_filename = os.path.join(output_dir, relpath)
+    print(f"{url} -> {output_filename}")
     save_bytes_to_file(rsp.content, output_filename)
 
 
@@ -148,25 +139,32 @@ def parse_legalcode_filename(filename):
 
     if jurisdiction:
         url = posixpath.join(url, jurisdiction)
-        language_code = language or get_default_language_for_jurisdiction(
+        cc_language_code = language or get_default_language_for_jurisdiction(
             jurisdiction, ""
         )
     else:
-        language_code = language or DEFAULT_LANGUAGE_CODE
+        cc_language_code = language or DEFAULT_LANGUAGE_CODE
 
     if legalcode:
         url = posixpath.join(url, legalcode)
     else:
         url = f"{url}/"
 
-    if not language_code:
+    if not cc_language_code:
         raise ValueError(f"What language? filename={filename}")
+
+    # Make sure this is a valid language code (one we know about)
+    django_language_code = cc_to_django_language_code(cc_language_code)
+    if django_language_code not in settings.LANG_INFO:
+        raise ValueError(
+            f"Invalid language_code={cc_language_code} dj={django_language_code}"
+        )
 
     data = dict(
         license_code=license_code_to_return,
         version=version,
         jurisdiction_code=jurisdiction or "",
-        language_code=language_code,
+        cc_language_code=cc_language_code,
         url=url,
         about_url=compute_about_url(license_code_for_url, version, jurisdiction or ""),
     )
