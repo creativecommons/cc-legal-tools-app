@@ -224,7 +224,8 @@ with LegalCode and License records, and create
 
 Now commit the changes from cc-licenses-data and push to Github.
 
-WRITE ME: how to push this data to transifex
+It's simplest to do this part on a development machine. It gets too complicated trying
+to run on the server and authenticate properly to GitHub from the command line.
 
 Translation
 -----------
@@ -256,7 +257,7 @@ First, note that translation uses two sets of files. Most things use the built-i
 Django translation support. But the translation of the actual legal text of the licenses
 is handled using a different set of files.
 
-Second note: the initial implementation focuses on the 4.0 by-*,
+Second note: the initial implementation focuses on the 4.0 by-X,
 3.0 unported, and CC0 licenses. Others will be added as time allows.
 
 Also note: What Transifex calls a ``resource`` is what Django
@@ -271,10 +272,12 @@ or setting the ``TRANSLATION_REPOSITORY_DIRECTORY`` environment variable.
 For the common web site stuff, and translated text outside of the actual legal
 code of the licenses, the messages use the standard Django translation
 domain ``django``, and the resource name on Transifex for those messages is
-``django-po``. These files are also in the cc-licenses-data repo.
+``django-po``. These files are also in the cc-licenses-data repo,
+under ``locale``.
 
 For the license legal code, for each combination of license code, version, and
-jurisdiction code, there's another separate domain.
+jurisdiction code, there's another separate domain. These are all in
+cc-licenses-data under ``legalcode``.
 
 Transifex requires the resource slug to consist solely of letters, digits, underscores,
 and hyphens. So we define the resource slug by joining the license code,
@@ -321,3 +324,36 @@ Anytime ``.po`` files are created or changed, run
 ``python manage.py compilemessages`` to update the ``.mo`` files.
 
 .. important:: If the ``.mo`` files are not updated, Django will not use the updated translations!
+
+Saving the site as static files
+-------------------------------
+
+This is most easily done from a developer environment.
+
+Check out the https://github.com/creativecommons/cc-licenses-data repository
+next to your ``cc-licenses`` working tree.
+
+Decide what branch you want to generate the site from, e.g. "develop".
+
+In the cc-licenses-data working directory, check out that branch and make sure
+it's up-to-date, e.g.::
+
+    $ git checkout develop
+    $ git pull origin develop
+
+Then change back to the cc-licenses tree, and run the publish management
+command, probably starting with "--nopush"::
+
+    $ python manage.py publish --nopush --branch=develop
+
+This will write the HTML files in the cc-licenses-data tree under ``build``
+and commit the changes, but won't push them up to GitHub. You can do that
+manually after checking the results.
+
+Alternatively you can leave off ``no-push`` and *if* the publish makes
+changes, it'll both commit and push them. Just be aware that it won't try
+to push unless it has just committed some changes, so if upstream is
+already behind and running publish doesn't make any new changes, you'll
+still have to push manually to get upstream updated.
+
+
