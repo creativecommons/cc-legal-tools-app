@@ -250,6 +250,35 @@ deploy key file.
 Now arrange for "python manage.py check_for_translation_updates" to be run hourly (with
 the appropriate virtualenv and env vars set).
 
+
+When translations have been updated in Transifex
+------------------------------------------------
+
+The hourly run of ``check_for_translation_updates`` looks to see if any of the translation
+files in Transifex have newer last modification times than we know about. If so, it will:
+
+* Determine which translation branch the changes should be tracked under. For example,
+  if a French translation file for BY 4.0 has changed, the branch name will be cc4-fr.
+* Check out the latest version of the cc4-fr branch in the cc-licenses-data repo beside
+  the cc-licenses repo, or create a new branch from develop with that name.
+* Download the updated translation file, compile it, and save both to cc-licenses-data.
+* Commit that change and push it upstream.
+* For each branch that has been updated, publish its static files into cc-licenses-data,
+  commit, and push upstream.
+
+If you knew that translation files in Transifex had changed, you could do the equivalent
+steps manually::
+
+* In cc-licenses-data, checkout or create the appropriate branch.
+* Download the updated .po files from Transifex to the appropriate place in
+  cc-licenses-data.
+* In cc-licenses, run "python manage.py compilemessages".
+  *This is important and easy to forget,* but without it, Django will keep using the
+  old translations.
+* In cc-licenses-data, commit and push the changes.
+* In cc-licenses, run "python manage.py publish --branch=<branchname>" (see
+  farther down for more about publishing).
+
 How the license translation is implemented
 ------------------------------------------
 
@@ -328,6 +357,10 @@ Anytime ``.po`` files are created or changed, run
 Saving the site as static files
 -------------------------------
 
+We've been calling this process "publishing", but that's a little misleading, since
+this process does nothing to make its results visible on the Internet. It just
+updates the static HTML files in the -data directory.
+
 This is most easily done from a developer environment.
 
 Check out the https://github.com/creativecommons/cc-licenses-data repository
@@ -355,5 +388,3 @@ changes, it'll both commit and push them. Just be aware that it won't try
 to push unless it has just committed some changes, so if upstream is
 already behind and running publish doesn't make any new changes, you'll
 still have to push manually to get upstream updated.
-
-
