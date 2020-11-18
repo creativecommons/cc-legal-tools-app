@@ -118,9 +118,16 @@ English, is represented by a LegalCode record. A LegalCode is identified by
 a license and a language, e.g. we might refer to the "BY 3.0 Armenia in Armenian"
 legalcode record.
 
-For some licenses, the text is in gettext files (.po and .mo) in the cc-licenses-data
-repository. For others, the text is stored in the database, directly in
-LegalCode records.
+Right now there are three places the text of licenses could be.
+
+For licenses that we are translating, like BY 4.0 and CC0, the text is in
+gettext files (.po and .mo) in the cc-licenses-data repository.
+
+For the 3.0 unported licenses that are English-only, the text is in
+a Django template.
+
+For the 3.0 ported licenses, we've just got the HTML in the database in
+the LegalCode records, and insert it as-is into the page.
 
 The text that's in gettext files can be translated at
 https://www.transifex.com/creativecommons/CC/content/.
@@ -221,6 +228,9 @@ Then run::
 It will read the HTML files from the specified directory, populate the database
 with LegalCode and License records, and create
 .po and .mo files in cc-licenses-data.
+
+Once you've done that, you might want to update the static HTML files for the site;
+see "Saving the site as static files" farther on.
 
 Now commit the changes from cc-licenses-data and push to Github.
 
