@@ -416,6 +416,7 @@ class LicenseModelTest(TestCase):
         self.assertEqual(
             ["cc-logo", "cc-by"],
             LicenseFactory(
+                license_code="by",
                 version="4.0",
                 prohibits_commercial_use=False,
                 requires_share_alike=False,
@@ -425,7 +426,8 @@ class LicenseModelTest(TestCase):
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-nc"],
             LicenseFactory(
-                version="4.0",
+                license_code="by-nc",
+                version="3.0",
                 prohibits_commercial_use=True,
                 requires_share_alike=False,
                 permits_derivative_works=True,
@@ -434,6 +436,7 @@ class LicenseModelTest(TestCase):
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-nd"],
             LicenseFactory(
+                license_code="by-nd",
                 version="4.0",
                 prohibits_commercial_use=False,
                 requires_share_alike=False,
@@ -443,6 +446,7 @@ class LicenseModelTest(TestCase):
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-sa"],
             LicenseFactory(
+                license_code="by-sa",
                 version="4.0",
                 prohibits_commercial_use=False,
                 requires_share_alike=True,
@@ -452,7 +456,18 @@ class LicenseModelTest(TestCase):
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-nc", "cc-sa"],
             LicenseFactory(
+                license_code="by-nc-sa",
                 version="4.0",
+                prohibits_commercial_use=True,
+                requires_share_alike=True,
+                permits_derivative_works=True,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-by", "cc-nc", "cc-sa"],
+            LicenseFactory(
+                license_code="by-nc-sa",
+                version="3.0",
                 prohibits_commercial_use=True,
                 requires_share_alike=True,
                 permits_derivative_works=True,
