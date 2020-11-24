@@ -13,7 +13,10 @@
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
     <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/css/vocabulary.css">
+    {# We're pinning vocabulary v2020.11.1 because v2020.11.2 had a change that broke headers for this site. #}
+    {# So far, I've been unable to find any documentation about it other than the warning in the release #}
+    {# notes that there was a breaking change. #}
+    <link rel="stylesheet" href="https://unpkg.com/@creativecommons/vocabulary@v2020.11.1/css/vocabulary.css">
 </head>
 <body typeoff="cc:License">
   {% include 'includes/header.html' %}
@@ -38,7 +41,7 @@
   </main>
   {% include 'includes/footer.html' %}
 
-  <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary/js/vocabulary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@v2020.11.1/js/vocabulary.js"></script>
 
   <script>
       /**
@@ -51,7 +54,7 @@
       const getFullyQualifiedUrl = (version, path) => {
       //   let baseUrl = 'https://unpkg.com/@creativecommons/vocabulary'
         // If you prefer jsDelivr instead, use
-        let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary'
+        let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@v2020.11.1'
         return `${baseUrl}@${version}/${path}`
       }
 
