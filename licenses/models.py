@@ -436,8 +436,8 @@ class License(models.Model):
         result = ["cc-logo"]  # Everybody gets this
         if self.license_code == "CC0":
             result.append("cc-zero")
-        elif self.version == "4.0":
-            result.append("cc-by")  # All the 4.0 licenses are BY
+        elif self.license_code.startswith("by"):
+            result.append("cc-by")
             if self.prohibits_commercial_use:
                 result.append("cc-nc")
             if self.requires_share_alike:
