@@ -279,12 +279,15 @@ class ViewLicenseTest(TestCase):
             )
             self.assertEqual(200, rsp.status_code)
             self.assertGreater(len(rsp.content.decode()), 0)
-        lc = LegalCodeFactory(license__version="3.0", language_code="fr", license__license_code="by", license__jurisdiction_code="ch")
+        lc = LegalCodeFactory(
+            license__version="3.0",
+            language_code="fr",
+            license__license_code="by",
+            license__jurisdiction_code="ch",
+        )
         url = lc.plain_text_url
         rsp = self.client.get(url)
-        self.assertEqual(
-            'text/plain; charset="utf-8"', rsp._headers["content-type"][1]
-        )
+        self.assertEqual('text/plain; charset="utf-8"', rsp._headers["content-type"][1])
         self.assertEqual(200, rsp.status_code)
         self.assertGreater(len(rsp.content.decode()), 0)
 
