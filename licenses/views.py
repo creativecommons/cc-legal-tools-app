@@ -146,6 +146,7 @@ def view_license(
             html = render_to_string(**kwargs)
             soup = BeautifulSoup(html, "lxml")
             plain_text_soup = soup.find(id="plain-text-marker")
+            # FIXME: prune the "img" tags from this before saving again.
             with tempfile.NamedTemporaryFile(mode="w+b") as temp:
                 temp.write(plain_text_soup.encode("utf-8"))
                 output = subprocess.run(

@@ -175,6 +175,14 @@ urlpatterns = [
         view_license,
         name="licenses_default_language_with_jurisdiction",
     ),
+    path(
+        # Jurisdiction and language set
+        # e.g. /licenses/by-nc-sa/3.0/de/legalcode
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>.txt",
+        view_license,
+        name="licenses_default_language_with_jurisdiction",
+        kwargs=dict(is_plain_text=True),
+    ),
     #
     # DEED PAGES
     #
