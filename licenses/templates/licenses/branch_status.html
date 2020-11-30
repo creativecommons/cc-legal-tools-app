@@ -1,0 +1,85 @@
+{# detailed status for a translation branch #}
+{% extends "base.html" %}
+{% block content %}
+  <p><a href="{% url 'translation_status' %}">Back to overall translation status</a></p>
+
+  <h1>Translation branch: {{ branch.branch_name }}</h1>
+
+  <ul>
+  <li>Github branch:
+    <a href="https://github.com/creativecommons/cc-licenses-data/tree/{{ branch.branch_name }}" target="_blank">
+      {{ branch.branch_name }}
+    </a>
+  </li>
+  <li>Language: {{ branch.language_code }}</li>
+  <li>Version: {{ branch.version }}</li>
+  <li>Diff from official git branch:
+    <a href="https://github.com/creativecommons/cc-licenses-data/compare/{{ official_git_branch }}..{{ branch.branch_name }}" target="_blank">
+      compare
+    </a>
+  </li>
+  <li><a href="#">This will be a link to a preview site.</a></li>
+  </ul>
+
+  <h2>Licenses with changed translations</h2>
+  <table border="1">
+  <thead>
+  <tr>
+    <th>License</th>
+    <th>Last updated in Transifex</th>
+    <th># of translated messages</th>
+    <th>Total # of messages</th>
+    <th>% translated</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for code in branch.legalcodes.all %}
+    {% with pofile=code.get_pofile %}
+      <tr>
+      <td>{{ code.license.fat_code }}</td>
+      <td>{{ code.translation_last_update|default_if_none:"-" }}</td>
+      <td>{{ pofile.translated_entries|length }}</td>
+      <td>{{ pofile|length }}</td>
+      <td>
+        {% if pofile|length %}{# display % translated, but only if there are messages to translate #}
+          {{ pofile.percent_translated }}%</td>
+        {% else %}
+          -
+        {% endif %}
+      </tr>
+    {% endwith %}
+  {% endfor %}
+  </tbody>
+  </table>
+
+  <h2>Commits on branch (most recent first)</h2>
+  <table border="1">
+  <tbody>
+  {% for commit in commits %}
+  <tr>
+    <td>{{ forloop.counter }}.</td>
+    <td>
+      {# https://github.com/creativecommons/cc-licenses/commit/cf8c615c55770046bb408df8b9648d33f5e012a9 #}
+      <a href="https://github.com/creativecommons/cc-licenses-data/commit/{{ commit.hexsha }}" target="_blank">
+      {{ commit.shorthash }}
+      </a>
+    </td>
+  <td>
+      {{ commit.committed_datetime }}<br>{{ commit.committer }}
+  </td>
+    <td>{{ commit.message|linebreaks }}</td>
+      {% if commit != last_commit %}
+        <td>
+        <a href="https://github.com/creativecommons/cc-licenses-data/compare/{{ commit.shorthash }}..{{ last_commit.shorthash }}" target="_blank">Compare to most recent commit</a>
+          {% if not forloop.last %}
+          <br>
+        <a href="https://github.com/creativecommons/cc-licenses-data/compare/{{ commit.previous.shorthash }}..{{ last_commit.shorthash }}" target="_blank">Compare to previous commit</a>
+            {% endif %}
+        </td>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+{% endblock content %}

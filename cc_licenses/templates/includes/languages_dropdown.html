@@ -1,0 +1,39 @@
+{% load bidi i18n %}
+
+<div class="locale level-right level-item has-text-black" >
+  {% trans "Languages available" %}
+  <div class="control margin-{% start %}-small">
+    <div class="select">
+      <select id="languages-dropdown">
+        {% block lang-options %}
+        <option disabled>{% trans "Select" %}</option>
+
+        {% for option in languages_and_links %}
+          <option
+            id="option-{{ option.cc_language_code }}"
+            {% if option.selected %}selected{% endif %}
+            value="{{ option.cc_language_code }}"
+            data-link="{{ option.link }}"
+          >
+            {{ option.name_local }}
+          </option>
+        {% endfor %}
+
+        {% endblock lang-options %}
+      </select>
+    </div>
+    <div class="icon is-small is-{% start %}">
+      <!-- TODO Add icons here -->
+    </div>
+  </div>
+</div>
+
+<script>
+  const select = document.getElementById("languages-dropdown")
+
+  select.addEventListener("input", function () {
+    const language_code = select.value
+    const option = document.getElementById("option-" + language_code)
+    window.location.href = option.dataset.link
+  })
+</script>

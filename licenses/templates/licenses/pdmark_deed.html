@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block license_name %}
-  <span property="dc:title dct:title" style="display: inline;">{{ license.translated_title }}</span>
+  <span property="dc:title dct:title" style="display: inline;">{% trans license.title_english %}</span>
 {% endblock %}
 
 {% block body %}

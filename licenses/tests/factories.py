@@ -1,21 +1,11 @@
 import factory.fuzzy
-from django.utils import translation
-from factory import post_generation
 
-from licenses.models import (
-    License,
-    LegalCode,
-    TranslatedLicenseName,
-    LicenseLogo,
+from licenses.models import LegalCode, License, TranslationBranch
+
+# The language codes we already have translations for
+language_codes = "ar,cs,de,el,en,es,eu,fi,fr,hr,id,it,ja,ko,lt,kv,mi,nl,no,pl,pt,ro,ru,sl,sv,tr,uk,zh_Hans,zh_Hant".split(
+    ","
 )
-
-
-class LegalCodeFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = LegalCode
-
-    url = factory.Faker("url")
-    language_code = "de"
 
 
 class LicenseFactory(factory.DjangoModelFactory):
@@ -23,6 +13,10 @@ class LicenseFactory(factory.DjangoModelFactory):
         model = License
 
     about = factory.Faker("url")
+    license_code = factory.fuzzy.FuzzyChoice(
+        ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa", "zero"]
+    )
+    version = factory.Faker("numerify", text="#.#")
     permits_derivative_works = factory.fuzzy.FuzzyChoice([False, True])
     permits_reproduction = factory.fuzzy.FuzzyChoice([False, True])
     permits_distribution = factory.fuzzy.FuzzyChoice([False, True])
@@ -37,26 +31,40 @@ class LicenseFactory(factory.DjangoModelFactory):
     creator_url = factory.Faker("url")
     license_class_url = factory.Faker("url")
 
-    @post_generation
-    def post(obj, create, extracted, **kwargs):
-        if not obj.names.count():
-            TranslatedLicenseNameFactory(
-                license=obj, language_code=translation.get_language()
+
+class LegalCodeFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = LegalCode
+
+    language_code = factory.fuzzy.FuzzyChoice(language_codes)
+    license = factory.SubFactory(LicenseFactory)
+
+
+class TranslationBranchFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = TranslationBranch
+
+    language_code = factory.fuzzy.FuzzyChoice(language_codes)
+    version = "4.0"
+    branch_name = factory.LazyAttribute(
+        lambda o: f"cc4-{o.language_code}".lower().replace("_", "-")
+    )
+
+    @factory.post_generation
+    def legalcodes(self, create, extracted, **kwargs):
+        if not create:
+            # Simple build, do nothing.
+            return
+
+        if extracted:
+            # A list of legalcodes were passed in, use them
+            for group in extracted:
+                self.legalcodes.add(group)
+        else:
+            # Generate a random one with the right features
+            self.legalcodes.add(
+                LegalCodeFactory(
+                    language_code=self.language_code,
+                    license__version=self.version,
+                )
             )
-
-
-class LicenseLogoFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = LicenseLogo
-
-    license = factory.SubFactory(LicenseFactory)
-    image = factory.Faker("name")
-
-
-class TranslatedLicenseNameFactory(factory.DjangoModelFactory):
-    class Meta:
-        model = TranslatedLicenseName
-
-    license = factory.SubFactory(LicenseFactory)
-    language_code = "pt"
-    name = factory.Faker("name")

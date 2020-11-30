@@ -8,4 +8,6 @@ class Command(LabelCommand):
     def handle_label(self, label, *args, **options):
         filename = label
         print(f"Populating database with license data from {filename}")
-        MetadataImporter(LegalCode, License, LicenseLogo, TranslatedLicenseName).import_metadata(open(filename, "rb"))
+        MetadataImporter(
+            LegalCode, License, LicenseLogo, TranslatedLicenseName
+        ).import_metadata(open(filename, "rb"))

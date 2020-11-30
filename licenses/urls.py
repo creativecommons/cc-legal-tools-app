@@ -1,17 +1,8 @@
-from django.urls import path
-from django.urls import register_converter
+from django.urls import path, register_converter
 
-from i18n import LANGUAGE_CODE_REGEX
-from licenses.views import (
-    license_deed_view_code_version_english,
-    license_deed_view_code_version_language,
-    license_deed_view_code_version_jurisdiction_language,
-    license_deed_view_code_version_jurisdiction,
-    license_detail,
-    sampling_detail,
-    deed_detail,
-)
-
+from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
+from licenses import VERSION_REGEX_STRING
+from licenses.views import all_licenses, metadata_view, view_deed, view_license
 
 """
 Example deeds at
@@ -63,13 +54,8 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 
 class VersionConverter:
-    """
-    These mostly APPEAR to have the format X.Y, where X and Y are digits.
-    To be forgiving, we accept any mix of digits and ".".
-    There's also at least one with an empty version (MIT).
-    """
 
-    regex = r"[0-9.]+|"
+    regex = VERSION_REGEX_STRING
 
     def to_python(self, value):
         return value
@@ -96,7 +82,7 @@ class LangConverter:
     (Why underscores? Because of en_GB being used some places.)
     """
 
-    regex = LANGUAGE_CODE_REGEX
+    regex = LANGUAGE_CODE_REGEX_STRING
 
     def to_python(self, value):
         return value
@@ -134,35 +120,82 @@ register_converter(LangConverter, "lang")
 /licenses/by-sa/2.0/uk/legalcode - license for BY-SA 2.0, jurisdiction England and Wales, in English
 """
 
+
 # DEEDS
 urlpatterns = [
-    path(
-        "license/", license_detail, name="license_detail"
+    # Debug page that displays all licenses
+    path("all/", all_licenses, name="all_licenses"),
+    path("metadata.yaml", metadata_view, name="metadata"),
+    #
+    # LICENSE PAGES
+    #
+    path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
+        view_license,
+        name="view_40_license",
     ),
     path(
-        "sampling/", sampling_detail, name="sampling_detail"
+        # Jurisdiction empty:
+        # e.g. /licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
+        "<code:license_code>/<version:version>/legalcode.<lang:language_code>",
+        view_license,
+        kwargs=dict(jurisdiction=""),
+        name="view_40_license",
     ),
     path(
-        "deed/", deed_detail, name="deed_detail"
+        # Jurisdiction and language empty (default to English):
+        # e.g. /licenses/by/4.0/legalcode - license BY 4.0 English
+        "<code:license_code>/<version:version>/legalcode",
+        view_license,
+        name="licenses_default_jurisdiction_and_language",
+        kwargs=dict(language_code=DEFAULT_LANGUAGE_CODE, jurisdiction=""),
     ),
     path(
-        "<code:license_code>/<version:version>",
-        license_deed_view_code_version_english,
+        # Jurisdiction empty:
+        # e.g. /licenses/by/4.0/legalcode.es.txt - license BY 4.0 Spanish Plain Text
+        "<code:license_code>/<version:version>/legalcode.<lang:language_code>.txt",
+        view_license,
+        kwargs=dict(jurisdiction="", is_plain_text=True),
+        name="view_40_license_txt",
+    ),
+    path(
+        # Jurisdiction and language empty (default to English):
+        # e.g. /licenses/by/4.0/legalcode/index.txt - license BY 4.0 English Plain Text
+        "<code:license_code>/<version:version>/legalcode/index.txt",
+        view_license,
+        name="licenses_default_jurisdiction_and_language_txt",
+        kwargs=dict(
+            language_code=DEFAULT_LANGUAGE_CODE, jurisdiction="", is_plain_text=True
+        ),
+    ),
+    path(
+        # Language empty (default to THE JURISDICTION'S LANGUAGE):
+        # e.g. /licenses/by-nc-sa/3.0/de/legalcode
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode",
+        view_license,
+        name="licenses_default_language_with_jurisdiction",
+    ),
+    #
+    # DEED PAGES
+    #
+    path(
+        "<code:license_code>/<version:version>/",
+        view_deed,
         name="license_deed_view_code_version_english",
     ),
     path(
-        "<code:license_code>/<version:version>/deed.<lang:target_lang>",
-        license_deed_view_code_version_language,
+        "<code:license_code>/<version:version>/deed.<lang:language_code>",
+        view_deed,
         name="license_deed_view_code_version_language",
     ),
     path(
         "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
-        license_deed_view_code_version_jurisdiction,
+        view_deed,
         name="license_deed_view_code_version_jurisdiction",
     ),
     path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>",
-        license_deed_view_code_version_jurisdiction_language,
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:language_code>",
+        view_deed,
         name="license_deed_view_code_version_jurisdiction_language",
     ),
 ]

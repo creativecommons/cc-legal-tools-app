@@ -7,13 +7,13 @@
 {% endblock %}
 
 {% block license_name %}
-  <span property="dc:title dct:title" style="display:inline !important;">{{ license.translated_title }}</span>
+  <span property="dc:title dct:title" style="display:inline !important;">{% trans license.title_english %}</span>
   (<span property="dc:identifier dct:identifier" style="display:inline !important;">CC0 1.0</span>)<br>
   {% blocktrans %}Public Domain Dedication{% endblocktrans %}
 {% endblock %}
 
 {% block body %}
-  <div id="deed-rights" 
+  <div id="deed-rights"
        dir="{{ get_ltr_rtl }}" style="{{ is_rtl_align }}" class="row">
 
     <div class="col-sm-offset-2 col-sm-8">

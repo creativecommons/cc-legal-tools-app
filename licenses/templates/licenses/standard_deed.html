@@ -1,7 +1,7 @@
 {% extends "macros_templates/deed.html" %}
 {% load i18n static %}
 {% block title %}
-  Creative Commons &mdash; {{ license.translated_title }}
+  Creative Commons &mdash; {% trans license.title_english %}
   &mdash; CC {{license.license_code.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %}
 {% endblock title %}
 
@@ -12,7 +12,7 @@
 {% endblock page_top %}
 
 {% block license_name %}
-  <span class="cc-license-title" property="dc:title dct:title">{{ license.translated_title }}</span>
+  <span class="cc-license-title" property="dc:title dct:title">{% trans license.title_english %}</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC {{ license.license_code.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %})
   </span>
@@ -82,7 +82,7 @@
         </div>
       {% endif %}
     {% endwith %}
-  </div>  
+  </div>
 
   <div class="row">
     <ul id="license-freedoms-no-icons" style="text-align: center" class="col-sm-offset-2 col-sm-8">

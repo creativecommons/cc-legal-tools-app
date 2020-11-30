@@ -1,15 +1,24 @@
 import re
-import urllib.parse
+import subprocess
+import tempfile
+from operator import itemgetter
+from typing import Iterable
 
-from django.shortcuts import render
-from django.utils import translation
+import git
+import yaml
+from bs4 import BeautifulSoup
+from django.conf import settings
+from django.core.cache import caches
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+from django.utils.translation import get_language_info
 
-from i18n import DEFAULT_LANGUAGE_CODE
-from i18n.utils import rtl_context_stuff, get_language_for_jurisdiction
-from licenses.models import License
+from i18n import JURISDICTION_NAMES
+from i18n.utils import active_translation, cc_to_django_language_code
+from licenses.models import BY_LICENSE_CODES, LegalCode, License, TranslationBranch
 
-
-DEED_TEMPLATE_MAPPING = {
+DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
     # license_code : template name
     "sampling": "licenses/sampling_deed.html",
     "sampling+": "licenses/sampling_deed.html",
@@ -21,109 +30,254 @@ DEED_TEMPLATE_MAPPING = {
     # others use "licenses/standard_deed.html"
 }
 
+NUM_COMMITS = 3
 
 # For removing the deed.foo section of a deed url
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
-def home(request):
-    # Make a nested set of dictionaries organizing the license deeds by
-    # license code, version, and jurisdiction. See the home.html template
-    # for how it's used.
-    licenses_by_code = {}
-    for license in License.objects.order_by(
-        "license_code", "-version", "jurisdiction_code"
-    ):
-        licenses_by_code.setdefault(license.license_code, {})
-        licenses_by_code[license.license_code].setdefault(license.version, {})
-        licenses_by_code[license.license_code][license.version].setdefault(
-            license.jurisdiction_code, []
+def all_licenses(request):
+    """
+    For test purposes, this displays all the available deeds and licenses in tables.
+    This is not intended for public use and should not be included in the generation
+    of static files.
+    """
+
+    # Get the list of license codes and languages that occur among the licenses
+    # to let the template iterate over them as it likes.
+    legalcode_objects = (
+        LegalCode.objects.valid()
+        .select_related("license")
+        .order_by(
+            "-license__version",
+            "license__jurisdiction_code",
+            "language_code",
+            "license__license_code",
         )
-        licenses_by_code[license.license_code][license.version][
-            license.jurisdiction_code
-        ].append(license)
+    )
+    legalcodes = [
+        dict(
+            version=lc.license.version,
+            jurisdiction=JURISDICTION_NAMES.get(
+                lc.license.jurisdiction_code, lc.license.jurisdiction_code
+            ),
+            license_code=lc.license.license_code,
+            language_code=lc.language_code,
+            deed_url=lc.deed_url,
+            license_url=lc.license_url,
+        )
+        for lc in legalcode_objects
+    ]
+    return render(
+        request,
+        "all_licenses.html",
+        {"legalcodes": legalcodes, "license_codes": sorted(BY_LICENSE_CODES)},
+    )
 
-    context = {
-        "licenses_by_code": licenses_by_code,
+
+def name_local(legal_code):
+    return get_language_info(cc_to_django_language_code(legal_code.language_code))[
+        "name_local"
+    ]
+
+
+def get_languages_and_links_for_legalcodes(
+    legalcodes: Iterable[LegalCode], selected_language_code: str, license_or_deed: str
+):
+    """
+    license_or_deed should be "license" or "deed", controlling which kind of page we link to.
+    selected_language_code is a CC language code
+    """
+    languages_and_links = [
+        {
+            "cc_language_code": legal_code.language_code,
+            # name_local: name of language in its own language
+            "name_local": name_local(legal_code),
+            "name_for_sorting": name_local(legal_code).lower(),
+            "link": legal_code.license_url
+            if license_or_deed == "license"
+            else legal_code.deed_url,
+            "selected": selected_language_code == legal_code.language_code,
+        }
+        for legal_code in legalcodes
+    ]
+    languages_and_links.sort(key=itemgetter("name_for_sorting"))
+    return languages_and_links
+
+
+def view_license(
+    request,
+    license_code,
+    version,
+    jurisdiction=None,
+    language_code=None,  # CC language code
+    is_plain_text=False,
+):
+    if is_plain_text:
+        legalcode = get_object_or_404(
+            LegalCode,
+            plain_text_url=request.path,
+        )
+    else:
+        legalcode = get_object_or_404(
+            LegalCode,
+            license_url=request.path,
+        )
+
+    language_code = legalcode.language_code  # CC language code
+    languages_and_links = get_languages_and_links_for_legalcodes(
+        legalcode.license.legal_codes.all(), language_code, "license"
+    )
+
+    kwargs = dict(
+        template_name="legalcode_page.html",
+        context={
+            "fat_code": legalcode.license.fat_code(),
+            "languages_and_links": languages_and_links,
+            "legalcode": legalcode,
+            "license": legalcode.license,
+        },
+    )
+
+    translation = legalcode.get_translation_object()
+    with active_translation(translation):
+        if is_plain_text:
+            response = HttpResponse(content_type='text/plain; charset="utf-8"')
+            html = render_to_string(**kwargs)
+            soup = BeautifulSoup(html, "lxml")
+            plain_text_soup = soup.find(id="plain-text-marker")
+            with tempfile.NamedTemporaryFile(mode="w+b") as temp:
+                temp.write(plain_text_soup.encode("utf-8"))
+                output = subprocess.run(
+                    [
+                        "pandoc",
+                        "-f",
+                        "html",
+                        temp.name,
+                        "-t",
+                        "plain",
+                    ],
+                    encoding="utf-8",
+                    capture_output=True,
+                )
+                response.write(output.stdout)
+                return response
+
+        return render(request, **kwargs)
+
+
+def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
+    legalcode = get_object_or_404(
+        LegalCode,
+        deed_url=request.path,
+    )
+    license = legalcode.license
+    language_code = legalcode.language_code  # CC language code
+    languages_and_links = get_languages_and_links_for_legalcodes(
+        license.legal_codes.all(), language_code, "deed"
+    )
+
+    if license.license_code == "CC0":
+        body_template = "includes/deed_cc0_body.html"
+    elif license.version == "4.0":
+        body_template = "includes/deed_40_body.html"
+    else:
+        # Default to 4.0 - or maybe we should just fail?
+        body_template = "includes/deed_40_body.html"
+
+    translation = legalcode.get_translation_object()
+    with active_translation(translation):
+        return render(
+            request,
+            "deed.html",
+            {
+                "additional_classes": "",
+                "body_template": body_template,
+                "fat_code": legalcode.license.fat_code(),
+                "languages_and_links": languages_and_links,
+                "legalcode": legalcode,
+                "license": legalcode.license,
+            },
+        )
+
+
+def translation_status(request):
+    # with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+    # repo.remotes.origin.fetch()  # Make sure we know about all the upstream branches
+    # heads = repo.remotes.origin.refs
+    # branches = [head.name[len("origin/") :] for head in heads]
+
+    branches = TranslationBranch.objects.exclude(complete=True)
+    return render(request, "licenses/translation_status.html", {"branches": branches})
+
+
+def branch_status_helper(repo, translation_branch):
+    """
+    Returns some of the context for the branch_status view.
+    Mostly separated to help with test so we can readily
+    mock the repo.
+    """
+    repo.remotes.origin.fetch()
+    branch_name = translation_branch.branch_name
+
+    # Put the commit data in a format that's easy for the template to use
+    # Start by getting data about the last N + 1 commits
+    last_n_commits = list(
+        repo.iter_commits(f"origin/{branch_name}", max_count=1 + NUM_COMMITS)
+    )
+
+    # Copy the data we need into a list of dictionaries
+    commits_for_template = [
+        {
+            "shorthash": c.hexsha[:7],
+            "hexsha": c.hexsha,
+            "message": c.message,
+            "committed_datetime": c.committed_datetime,
+            "committer": c.committer,
+        }
+        for c in last_n_commits
+    ]
+
+    # Add a little more data to most of them.
+    for i, c in enumerate(commits_for_template):
+        if i < NUM_COMMITS and (i + 1) < len(commits_for_template):
+            c["previous"] = commits_for_template[i + 1]
+    return {
+        "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
+        "branch": translation_branch,
+        "commits": commits_for_template[:NUM_COMMITS],
+        "last_commit": commits_for_template[0] if commits_for_template else None,
     }
-    return render(request, "home.html", context)
 
 
-def license_deed_view(request, license, target_lang):
-    """
-    Display the page for the deed for this license, in the specified language.
-    (There's no URL for this; the other views use this after figuring out which
-    license and language to use.)
-    """
-    template = DEED_TEMPLATE_MAPPING.get(
-        license.license_code, "licenses/standard_deed.html"
+# using cache_page seems to break django-distill (weird error about invalid
+# host "testserver"). Do our caching more directly.
+# @cache_page(timeout=5 * 60, cache="branchstatuscache")
+def branch_status(request, id):
+    translation_branch = get_object_or_404(TranslationBranch, id=id)
+    cache = caches["branchstatuscache"]
+    cachekey = (
+        f"{settings.TRANSLATION_REPOSITORY_DIRECTORY}-{translation_branch.branch_name}"
     )
-    context = {
-        "license": license,
-        "target_lang": target_lang,
-        "get_this": "/choose/results-one?license_code=%s&amp;jurisdiction=%s&amp;version=%s&amp;lang=%s"
-        % (
-            urllib.parse.quote(license.license_code),
-            license.jurisdiction_code,
-            license.version,
-            target_lang,
-        ),
-    }
-    context.update(rtl_context_stuff(target_lang))
-    with translation.override(target_lang):
-        return render(request, template, context)
+    result = cache.get(cachekey)
+    if result is None:
+        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+            context = branch_status_helper(repo, translation_branch)
+            result = render(
+                request,
+                "licenses/branch_status.html",
+                context,
+            )
+        cache.set(cachekey, result, 5 * 60)
+    return result
 
 
-def license_deed_view_code_version_jurisdiction_language(
-    request, license_code, version, jurisdiction, target_lang
-):
-    # Any license with this code, version, and jurisdiction will do.
-    # Then we'll render the deed template in the target lang.
-    license = License.objects.filter(
-        license_code=license_code, version=version, jurisdiction_code=jurisdiction,
-    ).first()
-    return license_deed_view(request, license, target_lang)
-
-
-def license_deed_view_code_version_jurisdiction(
-    request, license_code, version, jurisdiction
-):
-    """
-    If no language specified, but jurisdiction default language is not english,
-    use that language instead of english.
-    """
-    target_lang = get_language_for_jurisdiction(jurisdiction)
-    return license_deed_view_code_version_jurisdiction_language(
-        request, license_code, version, jurisdiction, target_lang
+def metadata_view(request):
+    data = [license.get_metadata() for license in License.objects.all()]
+    yaml_bytes = yaml.dump(
+        data, default_flow_style=False, encoding="utf-8", allow_unicode=True
     )
-
-
-def license_deed_view_code_version_language(
-    request, license_code, version, target_lang
-):
-    # Any license with this code and version, and no jurisdiction, will do.
-    # Then we'll render the deed template in the target lang.
-    license = License.objects.filter(
-        license_code=license_code, version=version, jurisdiction_code="",
-    ).first()
-    return license_deed_view(request, license, target_lang)
-
-
-def license_deed_view_code_version_english(request, license_code, version):
-    target_lang = DEFAULT_LANGUAGE_CODE
-    return license_deed_view_code_version_language(
-        request, license_code, version, target_lang
+    return HttpResponse(
+        yaml_bytes,
+        content_type="text/yaml; charset=utf-8",
     )
-
-
-# ################# 4.0 Styled Pages ########################
-def license_detail(request):
-    return render(request, "licenses/licenses_detail.html")
-
-
-def sampling_detail(request):
-    return render(request, "licenses/sampling_deed_detail.html")
-
-
-def deed_detail(request):
-    return render(request, "licenses/deed_detail.html")

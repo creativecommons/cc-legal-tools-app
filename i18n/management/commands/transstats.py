@@ -11,7 +11,7 @@ import os
 import polib
 from django.core.management import BaseCommand
 
-from i18n import CSV_HEADERS, DEFAULT_INPUT_DIR, DEFAULT_CSV_FILE
+from i18n import CSV_HEADERS, DEFAULT_CSV_FILE, DEFAULT_INPUT_DIR
 
 
 def gen_statistics(input_dir, output_file):
