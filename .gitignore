@@ -1,3 +1,12 @@
+# Please reference the following when adding new entries to minimize the delta
+# between them and this file:
+# - https://github.com/github/gitignore/blob/master/Python.gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Environments
 .env
 .venv
@@ -8,31 +17,11 @@ env.bak/
 venv.bak/
 
 # Django
-__pycache__/
-.pyc
-*.sw[po]
-*.py[co]
-.project
-.pydevproject
-*~
-*.db
-*.orig
-*.DS_Store
-.coverage
-coverage
-.vagrant
 */settings/local.py
-public/static/
-public/media/
-conf/pillar/*/deploy
-*.priv
-.env
-node_modules
-*/static/js/bundle.js
-*/static/js/vendors.js
-*/static/libs/modernizr.js
-*/static/css
 build/
-build/licenses/
-build/static/
-docs/_build/
+log/
+public/
+
+# Editor
+*.sw[po]
+*~
