@@ -17,9 +17,10 @@ env.bak/
 venv.bak/
 
 # Django
+*/settings/local.py
 build/
-docroot/
 log/
+public/
 
 # Editor
 *.sw[po]
