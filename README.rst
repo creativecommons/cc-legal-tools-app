@@ -258,7 +258,107 @@ Then in settings, make TRANSLATION_REPOSITORY_DEPLOY_KEY be the full path to tha
 deploy key file.
 
 Now arrange for "python manage.py check_for_translation_updates" to be run hourly (with
-the appropriate virtualenv and env vars set).
+the appropriate virtualenv and env vars set), probably from cron.
+
+Importing license text initially
+................................
+
+When adding new licenses to the site, we are getting the license text into the site
+by running "load_html_files" to parse the existing HTML files from the creativecommons.org
+repository, both English and translations. Then we run "upload_license_messages"
+to upload them to Transifex, and also add them in git::
+
+    $ cd path-to/cc-licenses
+    $ python manage.py load_html_files ...path-to-creativecommons.org/docroot/legalcode
+    $ python manage.py upload_license_messages
+    $ cd ../cc-licenses-data
+    $ ... git commit the new .po and .mo files to whatever branch you're using ...
+
+We then construct a template or templates using the English text, styled for the
+new site, and with each piece of text to be translated marked as such. For example,
+``cc_licenses/templates/includes/legalcode_40_license.html``.  That template is
+passed a LegalCode object as ``legalcode`` and can use it to conditionally include
+different parts of the license. This works pretty well for the 4.0 BY licenses, which
+are very similar and can share one template.
+
+Importing non-license text initially
+....................................
+
+All text in the site that is not in the licenses can be gathered using Django's
+"makemessages" into django.po files, *but* we need to exclude the Django templates
+that actually include the English license text, because the actual legal text is
+in different .po files from the non-legal text.
+
+That will end up looking something like::
+
+    $ python manage.py makemessages --ignore legalcode_40_license.html [--ignore anothertemplate...]
+
+Then we upload the English django.po files to Transifex with::
+
+    $ tx push -r CC.django-po -s
+
+When license translations change
+................................
+
+When license translations are changed on Transifex, the ``check_for_translation_updates``
+periodic job will create a translation branch on the cc-licenses-data repo. Someone will
+manually create a pull request, review the translation, and if the changes are approved,
+merge the changed translation pull request.
+
+Then someone will need to pull the updated cc-licenses-data branch from the web server,
+build the updated HTML files, commit the changes, and push that back upstream so the
+static files used for the production site will be up-to-date again::
+
+    $ cd path-to/cc-licenses-data
+    $ git checkout develop (or whatever the approved branch is)
+    $ cd ../cc-licenses
+    $ python manage.py publish --branch_name develop (or whatever the approved branch is)
+    $ cd ../cc-licenses-data
+    $ ... git add, commit, push
+
+When non-license translations change
+....................................
+
+There's other text on the site, like the deed page, navigation, button text, etc etc.
+Those are in the "django-po" resource on Transifex. When those translations have
+changed, someone should create a new branch in their cc-licenses-data working tree,
+then from cc-licenses, "tx pull -r CC.django-po", which will update the .po files
+in cc-licenses-data. Then run "python manage.py compilemessages" to compile the .po
+files to .mo files in cc-licenses-data. Now commit the changes, push the branch and
+open a pull request. When the pull request is merged, repeat the steps from above of
+pulling cc-licenses-data, building the static files, committing the updated HTML files,
+and pushing::
+
+    $ cd path-to/cc-licenses-data
+    $ git checkout -b new-branch-name
+    $ cd ../cc-licenses
+    $ tx pull -r CC.django-po
+    $ python manage.py compilemessages
+    $ cd ../cc-licenses-data
+    $ git add locale
+    $ git commit -m "Commit message..."
+    $ git push
+
+Note that we ONLY include changes under "locale". Transifex might pull down some
+changes under "legalcode" but we want to ignore those for this particular operation.
+Just commit the changes under "locale".
+
+When license text changes
+.........................
+
+If the English text of a license changes (seems unlikely, but possible)... we need to
+figure out what to do. "compilemessages" isn't flexible enough to update the right
+.po files.
+
+If this is really rare, it might be sufficient to manually edit the affected English
+.po files, then push those .po files to
+Transifex for the translators to update their translations. From there, the
+*when license translations change* workflow should apply.
+
+When non-license text changes
+.............................
+
+If non-license English text changes, just repeat *Importing non-license text initially*.
 
 
 When translations have been updated in Transifex
