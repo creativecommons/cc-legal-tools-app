@@ -88,7 +88,7 @@ SESSION_COOKIE_SECURE = True
 
 SESSION_COOKIE_HTTPONLY = True
 
-ALLOWED_HOSTS = [os.environ["DOMAIN"]]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", os.environ["DOMAIN"]]
 
 # Use template caching on deployed servers
 for backend in TEMPLATES:
