@@ -1,89 +1,66 @@
 # Creative Commons Licenses
 
-Below you will find basic setup and deployment instructions for the
-cc_licenses project. To begin you should have the following applications
-installed on your local development system:
 
--   Python == 3.7
--   [pip][pip] >= 20
--   [virtualenv][virtualenv] >= 1.10
--   [virtualenvwrapper][virtualenvwrapper] >= 3.0
--   Postgres >= 9.3
--   git >= 1.7
--   pandoc == 2.10.1
-
-[pip]: https://www.pip-installer.org/
-[virtualenv]: https://www.virtualenv.org/
-[virtualenvwrapper]: https://pypi.python.org/pypi/virtualenvwrapper
-
-
-## Django version
+## Software Versions
 
 The Django version configured in this template is conservative. If you
-want to use a newer version, edit `requirements/base.txt`.
+want to use a newer version, edit `Pipfile`.
+
+Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 
 ## Getting Started
 
-First clone the repository from Github and switch to the new directory:
+> :warning: This project is in the progress of moving from Make file with
+> pip/virtualenv to pipenv. Also see [Python Guidelines — Creative Commons Open
+> Source][ccpyguide].
 
-    $ git clone git@github.com:creativecommons/cc-licenses.git
-    $ cd cc-licenses
+- The `Pipfile` may not be 100% complete. The dependencies have been removed so
+  they can be managed via pipenv. If a `No module named` error is encountered,
+  see the modules listed in `requirements/`.
 
-To setup your local environment you can use the quickstart make target setup,
-which will install Python dependencies (via pip) into a virtualenv named
-"cc_licenses", configure a local django settings file, and create a database
-via Postgres named "cc_licenses" with all migrations run:
+[ccpyguide]: https://opensource.creativecommons.org/contributing-code/python-guidelines/
 
-    $ make setup
-    $ workon cc_licenses
 
-If you require a non-standard setup, you can walk through the manual setup
-steps below making adjustments as necessary to your needs.
+### macOS
 
-To setup your local environment you should create a virtualenv and install the
-necessary requirements:
-
-    # Check that you have python3.7 installed
-    $ which python3.7
-    $ mkvirtualenv cc_licenses -p `which python3.7`
-    (cc_licenses)$ pip install -r requirements/dev.txt
-
-Next, we'll set up our local environment variables. We use
-[django-dotenv](https://github.com/jpadilla/django-dotenv) to help with this.
-It reads environment variables located in a file name `.env` in the top level
-directory of the project. The only variable we need to start is
-`DJANGO_SETTINGS_MODULE`:
-
-    (cc_licenses)$ cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
-    (cc_licenses)$ echo "DJANGO_SETTINGS_MODULE=cc_licenses.settings.local" > .env
-
-Create the Postgres database and run the initial migrate:
-
-    (cc_licenses)$ createdb -E UTF-8 cc_licenses
-    (cc_licenses)$ python manage.py migrate
-
-For outputting text files to work properly make sure to
-[install](https://pandoc.org/installing.html) the stable release of pandoc at
-version 2.10.1.
-
-If you want to use [Travis](http://travis-ci.org) to test your project, rename
-`project.travis.yml` to `.travis.yml`, overwriting the `.travis.yml` that
-currently exists. (That one is for testing the template itself.) The setup
-command does this for you:
-
-    (cc_licenses)$ mv project.travis.yml .travis.yml
+1. Install dependencies via brew
+    ```shell
+    brew install pandoc postgresql python@3.7
+    ```
+2. Install Python 3.7 environment via pipenv
+    ```shell
+    pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
+    ```
+3. Create local settings file
+    ```shell
+    cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+    ```
+4. Start PostgrSQL server
+    ```shell
+    brew services run postgres
+    ```
+5. Create project database
+    ```shell
+    createdb -E UTF-8 cc_licenses
+    ```
+6. Load database schema
+    ```shell
+    pipenv run ./manage.py migrate
+    ```
 
 
 ## Development
 
 You should be able to run the development server via:
-
-    (cc_licenses)$ python manage.py runserver
+```shell
+pipenv run ./manage.py runserver
+```
 
 Or, on a custom port and address:
-
-    (cc_licenses)$ python manage.py runserver 0.0.0.0:8001
+```shell
+pipenv run ./manage.py runserver 0.0.0.0:8001
+```
 
 Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
@@ -210,16 +187,16 @@ importing those licenses on how we've done the 3.0 licenses.
 
 ## Running the import
 
-First, clean up any old data in the database by running:
-
-    python manage.py clear_license_data
-
-Then, clone [creativecommons/creativecommons.org][[repoccorg]] and
-[creativecommons/cc-licenses-data][repodata] next to this repo.
-
-Then run:
-
-    python manage.py load_html_files ../creativecommons.org/docroot/legalcode
+1. Clean up any old data in the database:
+    ```shell
+    pipenv run ./manage.py clear_license_data
+    ```
+2. Clone [creativecommons/creativecommons.org][repoccorg] and
+   [creativecommons/cc-licenses-data][repodata] next to this repo
+3. Load HTML files:
+    ```shell
+    pipenv run ./manage.py load_html_files ../creativecommons.org/docroot/legalcode
+    ```
 
 It will read the HTML files from the specified directory, populate the database
 with LegalCode and License records, and create .po and .mo files in
@@ -258,8 +235,9 @@ safe, owned by www-data, and readable only by its owner (0o400). Then in
 settings, make TRANSLATION_REPOSITORY_DEPLOY_KEY be the full path to that
 deploy key file.
 
-Now arrange for "python manage.py check_for_translation_updates" to be
-run hourly (with the appropriate virtualenv and env vars set).
+Now arrange for `pipenv run ./manage.py check_for_translation_updates` to be
+run hourly (or the equivalent with the appropriate virtualenv and env
+variarables set).
 
 
 ## When translations have been updated in Transifex
@@ -285,12 +263,12 @@ equivalent steps manually:
 - In cc-licenses-data, checkout or create the appropriate branch.
 - Download the updated .po files from Transifex to the appropriate place in
   cc-licenses-data.
-- In cc-licenses, run "python manage.py compilemessages". *This is important
-  and easy to forget,* but without it, Django will keep using the old
+- In cc-licenses, run `pipenv run ./manage.py compilemessages`. *This is
+  important and easy to forget,* but without it, Django will keep using the old
   translations.
 - In cc-licenses-data, commit and push the changes.
-- In cc-licenses, run `python manage.py publish --branch=<branchname>` (see
-  farther down for more about publishing).
+- In cc-licenses, run `pipenv run ./manage.py publish --branch=<branchname>`
+  (see farther down for more about publishing).
 
 
 ## How the license translation is implemented
@@ -354,7 +332,7 @@ For example, the translated files for
 that translation.
 
 The .po files are initially created from the existing HTML license files by
-running `python manage.py load_html_files <path to docroot/legalcode>`, where
+running `pipenv run ./manage.py load_html_files <path to docroot/legalcode>`, where
 `<path to docroot/legalcode>` is the path to the docroot/legalcode directory
 where the `creativecommons.org` repo is checked out. (See also above.)
 
@@ -362,7 +340,7 @@ After this is done and merged to the main branch, it should not be done again.
 Instead, edit the HTML license template files to change the English text, and
 use Transifex to update the translation files.
 
-Anytime `.po` files are created or changed, run `python manage.py
+Anytime `.po` files are created or changed, run `pipenv run ./manage.py
 compilemessages` to update the `.mo` files.
 
 > :warning: **Important:** If the `.mo` files are not updated, Django will not
@@ -384,14 +362,16 @@ Decide what branch you want to generate the site from, e.g. "develop".
 
 In the cc-licenses-data working directory, check out that branch and make sure
 it's up-to-date, e.g.:
-
-    $ git checkout develop
-    $ git pull origin develop
+```shell
+git checkout develop
+git pull origin develop
+```
 
 Then change back to the cc-licenses tree, and run the publish management
 command, probably starting with "\--nopush":
-
-    $ python manage.py publish --nopush --branch=develop
+```shell
+pipenv run ./manage.py publish --nopush --branch=develop
+```
 
 This will write the HTML files in the cc-licenses-data tree under `build` and
 commit the changes, but won't push them up to GitHub. You can do that manually
