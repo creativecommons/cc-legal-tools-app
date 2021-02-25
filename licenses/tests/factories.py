@@ -8,7 +8,7 @@ language_codes = "ar,cs,de,el,en,es,eu,fi,fr,hr,id,it,ja,ko,lt,kv,mi,nl,no,pl,pt
 )
 
 
-class LicenseFactory(factory.DjangoModelFactory):
+class LicenseFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = License
 
@@ -32,7 +32,7 @@ class LicenseFactory(factory.DjangoModelFactory):
     license_class_url = factory.Faker("url")
 
 
-class LegalCodeFactory(factory.DjangoModelFactory):
+class LegalCodeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = LegalCode
 
@@ -40,7 +40,7 @@ class LegalCodeFactory(factory.DjangoModelFactory):
     license = factory.SubFactory(LicenseFactory)
 
 
-class TranslationBranchFactory(factory.DjangoModelFactory):
+class TranslationBranchFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = TranslationBranch
 
