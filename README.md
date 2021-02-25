@@ -11,16 +11,6 @@ Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 ## Getting Started
 
-> :warning: This project is in the progress of moving from Make file with
-> pip/virtualenv to pipenv. Also see [Python Guidelines — Creative Commons Open
-> Source][ccpyguide].
-
-- The `Pipfile` may not be 100% complete. The dependencies have been removed so
-  they can be managed via pipenv. If a `No module named` error is encountered,
-  see the modules listed in `requirements/`.
-
-[ccpyguide]: https://opensource.creativecommons.org/contributing-code/python-guidelines/
-
 
 ### macOS
 

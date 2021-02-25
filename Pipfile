@@ -10,19 +10,22 @@ GitPython = "*"
 PyYAML = "*"
 beautifulsoup4 = "*"
 dealer = "*"
-django-debug-toolbar = "*"
-factory-boy = "*"
+dj-database-url = "*"
 iso8601 = "*"
-link-checker = {file = "https://github.com/creativecommons/cc-link-checker/archive/v2020.09.1.zip"}
+lxml = "*"  # For use by beautifulsoup4 (but not a stated dependency)
 polib = "*"
 psycopg2-binary = "*"
 urllib3 = "*"
+whitenoise = "*"
 
 [dev-packages]
 black = "==20.8b1"
 coverage = "*"
+django-debug-toolbar = "*"
+factory-boy = "*"
 flake8 = "*"
 isort = "*"
+link-checker = {file = "https://github.com/creativecommons/cc-link-checker/archive/v2020.09.1.zip"}
 pre-commit = "*"
 
 [requires]
