@@ -12,35 +12,41 @@ Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 ## Getting Started
 
 
-### macOS
+### macOS Development
 
-1. Install dependencies via brew
+1. Development Environment
+   1. Install dependencies via [Homebrew](https://brew.sh/)
     ```shell
     brew install pandoc postgresql python@3.7
     ```
-2. Install Python 3.7 environment via pipenv
+   2. Install Python 3.7 environment and modules via pipenv
     ```shell
     pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
     ```
-3. Create local settings file
+   3. Install pre-commit hooks
+    ```shell
+    pipenv run pre-commit install
+    ```
+2. Configure Django and PostgreSQL
+   1. Create local settings file
     ```shell
     cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
     ```
-4. Start PostgrSQL server
+   2. Start PostgrSQL server
     ```shell
     brew services run postgres
     ```
-5. Create project database
+   3. Create project database
     ```shell
     createdb -E UTF-8 cc_licenses
     ```
-6. Load database schema
+   4. Load database schema
     ```shell
     pipenv run ./manage.py migrate
     ```
 
 
-## Development
+## Development Server
 
 You should be able to run the development server via:
 ```shell
@@ -54,15 +60,6 @@ pipenv run ./manage.py runserver 0.0.0.0:8001
 
 Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
-
-
-### Check for Issues
-
-1. Ensure the development server is runing
-2. Run pre-commit:
-    ```shell
-    pipenv run pre-commit run -v -a
-    ```
 
 
 ### Tooling
