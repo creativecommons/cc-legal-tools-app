@@ -59,8 +59,8 @@ class Command(BaseCommand):
                     )
                 except License.DoesNotExist:
                     print(
-                        f"Did not find any license with the same code/version/jurisdiction. Will "
-                        f"look for another with that code and copy it to make a new one."
+                        "Did not find any license with the same code/version/jurisdiction. Will "
+                        "look for another with that code and copy it to make a new one."
                     )
                     # Try to gen one up
                     # Copy one with the same license_code so all the permissions are correct.
