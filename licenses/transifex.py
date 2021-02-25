@@ -14,6 +14,7 @@ import requests.auth
 from django.conf import settings
 from django.core.management import call_command
 
+import licenses.models
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content, save_content_as_pofile_and_mofile
 from licenses.git_utils import commit_and_push_changes, kill_branch, setup_local_branch

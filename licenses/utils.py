@@ -207,14 +207,14 @@ def compute_about_url(license_code, version, jurisdiction_code):
     return mostly
 
 
-def validate_list_is_all_text(l):
+def validate_list_is_all_text(list_):
     """
     Just for sanity, make sure all the elements of a list are types that
     we expect to be in there.  Convert it all to str and return the
     result.
     """
     newlist = []
-    for i, value in enumerate(l):
+    for i, value in enumerate(list_):
         if type(value) == NavigableString:
             newlist.append(str(value))
             continue

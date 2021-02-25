@@ -1,14 +1,55 @@
 [tool.black]
-# line-length default is 88.
-# NOTE that at present, there are lines Black will not reformat to fit in 88 chars,
-# and so we're telling flake8 to allow longer lines. But 88 is a good length for
-# when Black can achieve it.
-line-length = 88
-target_version = ['py37']
 exclude = '''
-
 (
   /node_modules/
   | /venv/
 )
 '''
+line-length = 88
+target_version = ['py37']
+
+
+[tool.coverage.run]
+branch = true
+omit = [
+    '*/management/commands/*',
+    '*/migrations/*',
+    '*/settings/*',
+    '*/tests/*',
+    '*/urls.py',
+    '*/wsgi.py',
+    '.direnv/*',
+    'env/*',
+    'fabfile.py',
+    'manage.py',
+    'venv/*',
+]
+source = [
+    '.',
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+
+# [tool.flake8]
+#   config: .flake8
+# also see: https://gitlab.com/pycqa/flake8/-/issues/428
+
+
+[tool.isort]
+#import_heading_firstparty = "First-party"
+#import_heading_localfolder = "Local"
+#import_heading_stdlib = "Standard library"
+#import_heading_thirdparty = "Third-party"
+line_length = 88
+multi_line_output = 3
+profile = 'black'
+skip = [
+    '.direnv',
+    'docs',
+    'migrations',
+    'node_modules',
+    'venv',
+]

@@ -16,11 +16,11 @@ from licenses.tests.factories import (
 from licenses.views import DEED_TEMPLATE_MAPPING, NUM_COMMITS, branch_status_helper
 
 
-def never(l):
+def never(lic_obj):
     return False
 
 
-def always(l):
+def always(lic_obj):
     return True
 
 
@@ -28,49 +28,55 @@ strings_to_lambdas = {
     # Conditions under which we expect to see these strings in a deed page.
     # The lambda is called with a License object
     "INVALID_VARIABLE": never,  # Should never appear
-    "You are free to:": lambda l: l.license_code not in DEED_TEMPLATE_MAPPING,
+    "You are free to:": lambda lic_ob: lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
     "You do not have to comply with the license for elements of "
-    "the material in the public domain": lambda l: l.license_code
+    "the material in the public domain": lambda lic_ob: lic_ob.license_code
     not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
     "The licensor cannot revoke these freedoms as long as you follow the license terms.": always,
-    "appropriate credit": lambda l: l.requires_attribution
-    and l.license_code not in DEED_TEMPLATE_MAPPING,
+    "appropriate credit": lambda lic_ob: lic_ob.requires_attribution
+    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
     "You may do so in any reasonable manner, but not in any way that "
-    "suggests the licensor endorses you or your use.": lambda l: l.requires_attribution
-    and l.license_code not in DEED_TEMPLATE_MAPPING,
+    "suggests the licensor endorses you or your use.": lambda lic_ob: lic_ob.requires_attribution
+    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
     "We never expect to see this string in a license deed.": never,
-    "you must distribute your contributions under the": lambda l: l.requires_share_alike,
-    "ShareAlike": lambda l: l.requires_share_alike,
-    "same license": lambda l: l.requires_share_alike,
-    "as the original.": lambda l: l.requires_share_alike,
-    "Adapt": lambda l: l.permits_derivative_works
-    and l.license_code not in DEED_TEMPLATE_MAPPING,
-    "remix, transform, and build upon the material": lambda l: l.permits_derivative_works
-    and l.license_code not in DEED_TEMPLATE_MAPPING,
-    "you may not distribute the modified material.": lambda l: not l.permits_derivative_works,
-    "NoDerivatives": lambda l: not l.permits_derivative_works,
+    "you must distribute your contributions under the": lambda lic_ob: lic_ob.requires_share_alike,
+    "ShareAlike": lambda lic_ob: lic_ob.requires_share_alike,
+    "same license": lambda lic_ob: lic_ob.requires_share_alike,
+    "as the original.": lambda lic_ob: lic_ob.requires_share_alike,
+    "Adapt": lambda lic_ob: lic_ob.permits_derivative_works
+    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    "remix, transform, and build upon the material": lambda lic_ob: lic_ob.permits_derivative_works
+    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    "you may not distribute the modified material.": lambda lic_ob: not lic_ob.permits_derivative_works,
+    "NoDerivatives": lambda lic_ob: not lic_ob.permits_derivative_works,
     # It was decided NOT to include the "free cultural works" icon/text
     "This license is acceptable for Free Cultural Works.": never,
-    "for any purpose, even commercially.": lambda l: l.license_code
+    "for any purpose, even commercially.": lambda lic_ob: lic_ob.license_code
     not in DEED_TEMPLATE_MAPPING
-    and not l.prohibits_commercial_use,
-    "You may not use the material for": lambda l: l.prohibits_commercial_use
-    and l.license_code not in DEED_TEMPLATE_MAPPING,
-    ">commercial purposes<": lambda l: l.prohibits_commercial_use
-    and l.license_code not in DEED_TEMPLATE_MAPPING,
-    "When the Licensor is an intergovernmental organization": lambda l: l.jurisdiction_code
+    and not lic_ob.prohibits_commercial_use,
+    "You may not use the material for": lambda lic_ob: lic_ob.prohibits_commercial_use
+    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    ">commercial purposes<": lambda lic_ob: lic_ob.prohibits_commercial_use
+    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    "When the Licensor is an intergovernmental organization": lambda lic_ob: lic_ob.jurisdiction_code
     == "igo",
-    "of this license is available. You should use it for new works,": lambda l: l.superseded,
-    """href="/worldwide/""": lambda l: l.jurisdiction_code != ""
-    and l.jurisdiction_code not in ["", "es", "igo"]
-    and l.license_code not in DEED_TEMPLATE_MAPPING,
+    "of this license is available. You should use it for new works,": lambda lic_ob: lic_ob.superseded,
+    """href="/worldwide/""": lambda lic_ob: lic_ob.jurisdiction_code != ""
+    and lic_ob.jurisdiction_code not in ["", "es", "igo"]
+    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
 }
 
 
 def expected_and_unexpected_strings_for_license(license):
-    expected = [s for s in strings_to_lambdas.keys() if strings_to_lambdas[s](license)]
+    expected = [
+        string_
+        for string_ in strings_to_lambdas.keys()
+        if strings_to_lambdas[string_](license)
+    ]
     unexpected = [
-        s for s in strings_to_lambdas.keys() if not strings_to_lambdas[s](license)
+        string_
+        for string_ in strings_to_lambdas.keys()
+        if not strings_to_lambdas[string_](license)
     ]
     return expected, unexpected
 
@@ -234,7 +240,7 @@ class ViewLicenseTest(TestCase):
         self.assertTemplateUsed(rsp, "legalcode_page.html")
         self.assertTemplateUsed(rsp, "includes/legalcode_30_ported_license.html")
         context = rsp.context
-        self.assertContains(rsp, f'''lang="de"''')
+        self.assertContains(rsp, '''lang="de"''')
         self.assertEqual(lc, context["legalcode"])
 
     def test_view_license_identifying_jurisdiction_default_language(self):
