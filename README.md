@@ -66,6 +66,25 @@ Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
 
 
+### Tooling
+
+- **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
+- [Black][black]: the uncompromising Python code formatter
+- [Coverage.py][coveragepy]: Code coverage measurement for Python
+- [flake8][flake8]: a python tool that glues together pep8, pyflakes, mccabe,
+  and third-party plugins to check the style and quality of some python code.
+- [isort][isort]: A Python utility / library to sort imports. 
+- [pre-commit][precommit]: A framework for managing and maintaining
+  multi-language pre-commit hooks.
+
+[ccospyguide]: https://opensource.creativecommons.org/contributing-code/python-guidelines/
+[black]: https://github.com/psf/black
+[coveragepy]: https://github.com/nedbat/coveragepy
+[flake8]: https://gitlab.com/pycqa/flake8
+[isort]: https://pycqa.github.io/isort/
+[precommit]: https://pre-commit.com/
+
+
 ## Not the live site
 
 This project is not intended to serve the license and deed pages directly.
