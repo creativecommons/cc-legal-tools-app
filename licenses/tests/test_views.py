@@ -240,7 +240,7 @@ class ViewLicenseTest(TestCase):
         self.assertTemplateUsed(rsp, "legalcode_page.html")
         self.assertTemplateUsed(rsp, "includes/legalcode_30_ported_license.html")
         context = rsp.context
-        self.assertContains(rsp, f'''lang="de"''')
+        self.assertContains(rsp, '''lang="de"''')
         self.assertEqual(lc, context["legalcode"])
 
     def test_view_license_identifying_jurisdiction_default_language(self):
