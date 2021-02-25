@@ -1,15 +1,29 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 exclude: \\.coverage
+default_language_version:
+  python: python3.7
+
 repos:
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.3.0
+    rev: v3.4.0
     hooks:
-      - id: trailing-whitespace
-      - id: end-of-file-fixer
-      - id: check-yaml
       - id: check-added-large-files
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
       - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: destroyed-symlinks
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args:
+        - --fix=no
+      - id: trailing-whitespace
 
   - repo: local
     hooks:
@@ -17,29 +31,29 @@ repos:
         name: "Black"
         entry: pipenv run black --check
         language: system
-        pass_filenames: true
-        types: ["python"]
+        #pass_filenames: false
+        types: ["file", "python", "text"]
 
       - id: flake8
         name: "Flake8"
         entry: pipenv run flake8
         language: system
-        pass_filenames: true
-        types: ["python"]
+        #pass_filenames: false
+        types: ["file", "python", "text"]
 
       - id: isort
         name: "isort"
-        entry: pipenv run isort --check
+        entry: pipenv run isort --check --filter-files
         language: system
-        pass_filenames: true
-        types: ["python"]
+        #pass_filenames: false
+        types: ["file", "python", "text"]
 
       - id: missing-migrations
         name: 'Missing migrations'
         entry: pipenv run ./manage.py makemigrations --check
         language: system
         pass_filenames: false
-        types: ["file", "python"]
+        types: ["file", "python", "text"]
 
       # This test fails if web server is not running
       - id: python-test
@@ -47,11 +61,11 @@ repos:
         entry: pipenv run coverage run manage.py test --noinput --keepdb
         language: system
         pass_filenames: false
-        types: ["file", "python"]
+        types: ["file", "python", "text"]
 
       - id: coverage
         name: 'Confirm test coverage'
         entry: pipenv run coverage report -m --fail-under 98
         language: system
         pass_filenames: false
-        types: ["file", "python"]
+        types: ["file", "python", "text"]
