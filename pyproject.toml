@@ -9,6 +9,30 @@ line-length = 88
 target_version = ['py37']
 
 
+[tool.coverage.run]
+branch = true
+omit = [
+    '*/management/commands/*',
+    '*/migrations/*',
+    '*/settings/*',
+    '*/tests/*',
+    '*/urls.py',
+    '*/wsgi.py',
+    '.direnv/*',
+    'env/*',
+    'fabfile.py',
+    'manage.py',
+    'venv/*',
+]
+source = [
+    '.',
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+
 # [tool.flake8]
 #   config: .flake8
 # also see: https://gitlab.com/pycqa/flake8/-/issues/428
@@ -21,5 +45,11 @@ target_version = ['py37']
 #import_heading_thirdparty = "Third-party"
 line_length = 88
 multi_line_output = 3
-profile = "black"
-skip_glob=docs,migrations,node_modules,venv,.direnv
+profile = 'black'
+skip = [
+    '.direnv',
+    'docs',
+    'migrations',
+    'node_modules',
+    'venv',
+]
