@@ -1,11 +1,13 @@
 """
 Deal with Transifex
 """
+# Standard library
 import logging
 import os
 from collections import defaultdict
 from typing import Iterable
 
+# Third-party
 import git
 import iso8601
 import polib
@@ -14,6 +16,7 @@ import requests.auth
 from django.conf import settings
 from django.core.management import call_command
 
+# First-party/Local
 import licenses.models
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content, save_content_as_pofile_and_mofile
@@ -273,6 +276,7 @@ class TransifexHelper:
         setup_local_branch(repo, branch_name)
 
         # Track the translation update using a TranslationBranch object
+        # First-party/Local
         from licenses.models import TranslationBranch
 
         branch_object, _ = TranslationBranch.objects.get_or_create(
@@ -309,6 +313,7 @@ class TransifexHelper:
 
         # Now that we know the new changes are upstream, save the LegalCode
         # objects with their new translation_last_updates, and the branch object.
+        # First-party/Local
         from licenses.models import LegalCode
 
         LegalCode.objects.bulk_update(
@@ -336,6 +341,7 @@ class TransifexHelper:
     def check_for_translation_updates(self):
         # This calling of a second function is just to make testing easier.
         # There's otherwise no need or reason for it.
+        # First-party/Local
         from licenses.models import LegalCode
 
         legalcodes = (

@@ -1,3 +1,4 @@
+# Standard library
 import re
 
 default_app_config = "licenses.apps.LicensesConfig"

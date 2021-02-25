@@ -1,5 +1,7 @@
+# Third-party
 from django.core.management.base import LabelCommand
 
+# First-party/Local
 from licenses.import_metadata_from_rdf import MetadataImporter
 from licenses.models import LegalCode, License, LicenseLogo, TranslatedLicenseName
 

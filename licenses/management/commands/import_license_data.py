@@ -1,8 +1,11 @@
+# Standard library
 import os
 from argparse import ArgumentParser
 
+# Third-party
 from django.core.management import BaseCommand
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.models import LegalCode, License
 from licenses.utils import get_license_url_from_legalcode_url, parse_legalcode_filename

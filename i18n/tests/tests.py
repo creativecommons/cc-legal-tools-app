@@ -1,7 +1,10 @@
+# Standard library
 import os
 
+# Third-party
 from django.test import TestCase
 
+# First-party/Local
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_locale_text_orientation,

@@ -1,11 +1,14 @@
+# Standard library
 from unittest import mock
 
+# Third-party
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation.trans_real import DjangoTranslation
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.models import LegalCode, License, build_deed_url
 from licenses.tests.factories import (

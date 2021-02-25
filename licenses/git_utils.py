@@ -1,8 +1,10 @@
+# Standard library
 import logging
 import os
 import subprocess
 from typing import List
 
+# Third-party
 import git
 from django.conf import settings
 

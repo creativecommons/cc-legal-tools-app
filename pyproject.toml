@@ -39,13 +39,18 @@ skip_covered = true
 
 
 [tool.isort]
-#import_heading_firstparty = "First-party"
-#import_heading_localfolder = "Local"
-#import_heading_stdlib = "Standard library"
-#import_heading_thirdparty = "Third-party"
+import_heading_firstparty = 'First-party/Local'
+import_heading_future = 'Future'
+import_heading_stdlib = 'Standard library'
+import_heading_thirdparty = 'Third-party'
 line_length = 88
 multi_line_output = 3
+no_lines_before = 'LOCALFOLDER'
 profile = 'black'
 skip_glob = [
     '*/migrations/*',
 ]
+
+
+# [tool.pre-commit]
+# config: .pre-commit-config.yaml

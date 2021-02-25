@@ -1,5 +1,7 @@
+# Third-party
 from django.core.management import BaseCommand
 
+# First-party/Local
 from licenses.models import LegalCode, License
 
 

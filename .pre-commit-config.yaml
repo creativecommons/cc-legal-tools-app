@@ -53,7 +53,7 @@ repos:
         pass_filenames: false
 
       # This test fails if web server is not running
-      - id: python-test
+      - id: coverage-test
         name: 'Run Django tests'
         entry: pipenv run coverage run manage.py test --noinput --keepdb
         language: system
@@ -61,7 +61,7 @@ repos:
         pass_filenames: false
         require_serial: true
 
-      - id: coverage
+      - id: coverage-report
         name: 'Confirm test coverage'
         entry: pipenv run coverage report -m --fail-under 98
         language: system
