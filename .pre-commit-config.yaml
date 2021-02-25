@@ -11,44 +11,47 @@ repos:
       - id: check-added-large-files
       - id: check-json
 
-  - repo: https://github.com/psf/black
-    rev: 20.8b1
-    hooks:
-      - id: black
-
   - repo: local
     hooks:
-      - id: isort
-        name: "Isort"
-        entry: isort
+      - id: black
+        name: "Black"
+        entry: pipenv run black --check
         language: system
         pass_filenames: true
         types: ["python"]
 
       - id: flake8
         name: "Flake8"
-        entry: flake8
+        entry: pipenv run flake8
+        language: system
+        pass_filenames: true
+        types: ["python"]
+
+      - id: isort
+        name: "isort"
+        entry: pipenv run isort --check
         language: system
         pass_filenames: true
         types: ["python"]
 
       - id: missing-migrations
         name: 'Missing migrations'
-        entry: python manage.py makemigrations --check
+        entry: pipenv run ./manage.py makemigrations --check
         language: system
         pass_filenames: false
         types: ["file", "python"]
 
+      # This test fails if web server is not running
       - id: python-test
         name: 'Run Django tests'
-        entry: coverage run manage.py test --noinput --keepdb
+        entry: pipenv run coverage run manage.py test --noinput --keepdb
         language: system
         pass_filenames: false
         types: ["file", "python"]
 
       - id: coverage
         name: 'Confirm test coverage'
-        entry: coverage report -m --fail-under 98
+        entry: pipenv run coverage report -m --fail-under 98
         language: system
         pass_filenames: false
         types: ["file", "python"]

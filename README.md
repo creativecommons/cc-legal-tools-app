@@ -56,6 +56,15 @@ Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
 
 
+### Check for Issues
+
+1. Ensure the development server is runing
+2. Run pre-commit:
+    ```shell
+    pipenv run pre-commit run -v -a
+    ```
+
+
 ### Tooling
 
 - **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
@@ -63,7 +72,7 @@ long as the development server is running.
 - [Coverage.py][coveragepy]: Code coverage measurement for Python
 - [flake8][flake8]: a python tool that glues together pep8, pyflakes, mccabe,
   and third-party plugins to check the style and quality of some python code.
-- [isort][isort]: A Python utility / library to sort imports. 
+- [isort][isort]: A Python utility / library to sort imports.
 - [pre-commit][precommit]: A framework for managing and maintaining
   multi-language pre-commit hooks.
 
