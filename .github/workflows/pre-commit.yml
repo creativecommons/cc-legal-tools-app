@@ -13,8 +13,8 @@ jobs:
       postgres:
         image: postgres:12.3-alpine
         env:
-          POSTGRES_USER: ''
-          POSTGRES_PASSWORD: ''
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: cc_licenses
         ports:
           - 5432:5432
