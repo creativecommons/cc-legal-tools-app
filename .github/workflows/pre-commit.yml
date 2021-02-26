@@ -12,6 +12,7 @@ jobs:
     env:
       DJANGO_SETTINGS_MODULE: cc_licenses.settings.deploy
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      ENVIRONMENT: testing
 
     services:
       postgres:
@@ -43,16 +44,15 @@ jobs:
     - name: Install pipenv
       run: |
         python -m pip install --upgrade pip
-        pip install pipenv
+        python -m pip install pipenv
 
     - name: Install dependencies
       run: |
-        pipenv install --dev
+        pipenv sync --dev
 
     - name: Generate secret key
       run: |
         echo secret_key=$RANDOM$RANDOM$RANDOM$RANDOM$RANDOM >> $GITHUB_ENV
-        echo ${{ env.secret_key }}
 
     - name: Load database schema
       env:
