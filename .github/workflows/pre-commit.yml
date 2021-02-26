@@ -11,9 +11,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
-      DJANGO_SETTINGS_MODULE: cc_licenses.settings.deploy
-      DOMAIN: localhost
-      ENVIRONMENT: testing
+      DJANGO_SETTINGS_MODULE: cc_licenses.settings.ephemeral
 
     services:
       postgres:
@@ -57,10 +55,6 @@ jobs:
     - name: Install Python dependencies
       run: |
         pipenv sync --dev
-
-    - name: Generate secret key
-      run: |
-        echo DJANGO_SECRET_KEY=$RANDOM$RANDOM$RANDOM$RANDOM >> $GITHUB_ENV
 
     - name: Update Django database schema
       run: |
