@@ -38,10 +38,15 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y pandoc
 
-      # https://github.com/actions/checkout
+    # https://github.com/actions/checkout
     - uses: actions/checkout@v2
 
-      # https://github.com/actions/setup-python
+    - name: Configure testing git identity
+      run: |
+        git config user.email "testing_user@localhost"
+        git config user.name "Testing User"
+
+    # https://github.com/actions/setup-python
     - name: actions/setup-python@v2 Python 3.7
       uses: actions/setup-python@v2
       with:
