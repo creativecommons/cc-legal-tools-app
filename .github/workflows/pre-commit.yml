@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DJANGO_SETTINGS_MODULE: cc_licenses.settings.deploy
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      DJANGO_SETTINGS_MODULE: cc_licenses.settings.deploy
+      DOMAIN: localhost
       ENVIRONMENT: testing
 
     services:
@@ -36,7 +37,7 @@ jobs:
     - uses: actions/checkout@v2
 
       # https://github.com/actions/setup-python
-    - name: Set up Python 3.7
+    - name: actions/setup-python@v2 Python 3.7
       uses: actions/setup-python@v2
       with:
         python-version: "3.7"
@@ -46,7 +47,7 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install pipenv
 
-    - name: Install dependencies
+    - name: Install Python dependencies
       run: |
         pipenv sync --dev
 
@@ -54,13 +55,13 @@ jobs:
       run: |
         echo secret_key=$RANDOM$RANDOM$RANDOM$RANDOM$RANDOM >> $GITHUB_ENV
 
-    - name: Load database schema
+    - name: Update Django database schema
       env:
         DJANGO_SECRET_KEY: ${{ env.secret_key }}
       run: |
         pipenv run ./manage.py migrate
 
-    - name: Start development server
+    - name: Start Django development web server
       env:
         DJANGO_SECRET_KEY: ${{ env.secret_key }}
       run: |
