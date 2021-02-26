@@ -49,6 +49,10 @@ jobs:
       run: |
         pipenv run ./manage.py migrate
 
+    - name: Create settings file
+      run: |
+        cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+
     - name: Start development server
       run: |
         pipenv run ./manage.py runserver
