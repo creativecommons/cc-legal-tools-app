@@ -45,13 +45,13 @@ jobs:
       run: |
         pipenv install --dev
 
-    - name: Load database schema
-      run: |
-        pipenv run ./manage.py migrate
-
     - name: Create settings file
       run: |
         cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+
+    - name: Load database schema
+      run: |
+        pipenv run ./manage.py migrate
 
     - name: Start development server
       run: |
