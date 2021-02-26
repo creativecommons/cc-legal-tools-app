@@ -9,13 +9,17 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
 
+    env:
+      DJANGO_SETTINGS_MODULE: cc_licenses.settings.deploy
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+
     services:
       postgres:
         image: postgres:12.3-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: cc_licenses
+          POSTGRES_DB: postgres
         ports:
           - 5432:5432
         # Set health checks to wait until postgres has started
@@ -45,17 +49,24 @@ jobs:
       run: |
         pipenv install --dev
 
-    - name: Create settings file
+    - name: Generate secret key
       run: |
-        cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+        echo secret_key=$RANDOM$RANDOM$RANDOM$RANDOM$RANDOM >> $GITHUB_ENV
+        echo ${{ env.secret_key }}
 
     - name: Load database schema
+      env:
+        DJANGO_SECRET_KEY: ${{ env.secret_key }}
       run: |
         pipenv run ./manage.py migrate
 
     - name: Start development server
+      env:
+        DJANGO_SECRET_KEY: ${{ env.secret_key }}
       run: |
         pipenv run ./manage.py runserver
 
     # https://github.com/pre-commit/action
     - uses: pre-commit/action@v2.0.0
+      env:
+        DJANGO_SECRET_KEY: ${{ env.secret_key }}
