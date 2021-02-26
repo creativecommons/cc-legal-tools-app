@@ -1,5 +1,7 @@
+# Third-party
 from django.contrib import admin
 
+# First-party/Local
 from licenses.models import LegalCode, License, TranslationBranch
 
 

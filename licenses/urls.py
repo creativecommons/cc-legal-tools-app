@@ -1,9 +1,3 @@
-from django.urls import path, register_converter
-
-from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
-from licenses import VERSION_REGEX_STRING
-from licenses.views import all_licenses, metadata_view, view_deed, view_license
-
 """
 Example deeds at
 
@@ -13,6 +7,14 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/
 https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
 
 """
+
+# Third-party
+from django.urls import path, register_converter
+
+# First-party/Local
+from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
+from licenses import VERSION_REGEX_STRING
+from licenses.views import all_licenses, metadata_view, view_deed, view_license
 
 
 class LicenseCodeConverter:
@@ -93,32 +95,50 @@ class LangConverter:
 
 register_converter(LangConverter, "lang")
 
-"""
-/licenses/ - overview and links to the licenses (part of this project?)
-/licenses/?lang=es - overview and links to the licenses (part of this project?) in Spanish
 
-/licenses/by/4.0 - deed for BY 4.0 English
-/licenses/by/4.0/deed.es - deed for BY 4.0 Spanish
-/licenses/by/4.0/legalcode - license BY 4.0 English
-/licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
-...
-/licenses/by/3.0/ - deed for BY 3.0 Unported in English
-/licenses/by/3.0/legalcode - license for BY 3.0 Unported in English
-
-/licenses/by-nc-sa/3.0/de/ - deed for by-nc-sa, 3.0, jurisdiction Germany, in German
-/licenses/by-nc-sa/3.0/de/deed.it - deed for by-nc-sa, 3.0, jurisdiction Germany, in Italian
-/licenses/by-nc-sa/3.0/de/legalcode - license for by-nc-sa, 3.0, jurisdiction Germany, in German
-(I CANNOT find license for by-nc-sa 3.0 jurisdiction Germany in other languages (/legalcode.it is a 404))
-
-/licenses/by-sa/2.5/ca/ - deed for BY-SA 2.5, jurisdiction Canada, in English
-/licenses/by-sa/2.5/ca/deed.it - deed for BY-SA 2.5, jurisdiction Canada, in Italian
-/licenses/by-sa/2.5/ca/legalcode.en - license for BY-SA 2.5, jurisdiction Canada, in English
-/licenses/by-sa/2.5/ca/legalcode.fr - license for BY-SA 2.5, jurisdiction Canada, in French
-
-/licenses/by-sa/2.0/uk/ - deed for BY-SA 2.0, jurisdiction England and Wales, in English
-/licenses/by-sa/2.0/uk/deed.es - deed for BY-SA 2.0, jurisdiction England and Wales, in Spanish
-/licenses/by-sa/2.0/uk/legalcode - license for BY-SA 2.0, jurisdiction England and Wales, in English
-"""
+# /licenses/
+#       overview and links to the licenses (part of this project?)
+# /licenses/?lang=es
+#       overview and links to the licenses (part of this project?) in Spanish
+#
+# /licenses/by/4.0
+#       deed for BY 4.0 English
+# /licenses/by/4.0/deed.es
+#       deed for BY 4.0 Spanish
+# /licenses/by/4.0/legalcode
+#       license BY 4.0 English
+# /licenses/by/4.0/legalcode.es
+#       license BY 4.0 Spanish
+#
+# /licenses/by/3.0/
+#       deed for BY 3.0 Unported in English
+# /licenses/by/3.0/legalcode
+#       license for BY 3.0 Unported in English
+#
+# /licenses/by-nc-sa/3.0/de/
+#       deed for by-nc-sa, 3.0, jurisdiction Germany, in German
+# /licenses/by-nc-sa/3.0/de/deed.it
+#       deed for by-nc-sa, 3.0, jurisdiction Germany, in Italian
+# /licenses/by-nc-sa/3.0/de/legalcode
+#       license for by-nc-sa, 3.0, jurisdiction Germany, in German
+#       (I CANNOT find license for by-nc-sa 3.0 jurisdiction Germany in other
+#       languages (/legalcode.it is a 404))
+#
+# /licenses/by-sa/2.5/ca/
+#       deed for BY-SA 2.5, jurisdiction Canada, in English
+# /licenses/by-sa/2.5/ca/deed.it
+#       deed for BY-SA 2.5, jurisdiction Canada, in Italian
+# /licenses/by-sa/2.5/ca/legalcode.en
+#       license for BY-SA 2.5, jurisdiction Canada, in English
+# /licenses/by-sa/2.5/ca/legalcode.fr
+#       license for BY-SA 2.5, jurisdiction Canada, in French
+#
+# /licenses/by-sa/2.0/uk/
+#       deed for BY-SA 2.0, jurisdiction England and Wales, in English
+# /licenses/by-sa/2.0/uk/deed.es
+#       deed for BY-SA 2.0, jurisdiction England and Wales, in Spanish
+# /licenses/by-sa/2.0/uk/legalcode
+#       license for BY-SA 2.0, jurisdiction England and Wales, in English
 
 
 # DEEDS

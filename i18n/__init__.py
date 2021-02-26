@@ -1,7 +1,9 @@
+# Standard library
 import logging
 import os
 import re
 
+# Third-party
 from django.conf import settings
 
 logger = logging.getLogger(__name__)

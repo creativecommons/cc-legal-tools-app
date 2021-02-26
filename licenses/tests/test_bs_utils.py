@@ -1,6 +1,8 @@
+# Third-party
 from bs4 import BeautifulSoup
 from django.test import TestCase
 
+# First-party/Local
 from licenses.bs_utils import (
     direct_children_with_tag,
     inner_html,

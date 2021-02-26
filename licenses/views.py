@@ -1,9 +1,11 @@
+# Standard library
 import re
 import subprocess
 import tempfile
 from operator import itemgetter
 from typing import Iterable
 
+# Third-party
 import git
 import yaml
 from bs4 import BeautifulSoup
@@ -14,6 +16,7 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
+# First-party/Local
 from i18n import JURISDICTION_NAMES
 from i18n.utils import active_translation, cc_to_django_language_code
 from licenses.models import BY_LICENSE_CODES, LegalCode, License, TranslationBranch

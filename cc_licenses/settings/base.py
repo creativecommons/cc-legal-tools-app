@@ -1,8 +1,10 @@
 """
 Django settings for cc_licenses project.
 """
+# Standard library
 import os
 
+# Third-party
 from babel import Locale
 from django.conf.locale import LANG_INFO
 

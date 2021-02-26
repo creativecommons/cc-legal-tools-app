@@ -5,12 +5,15 @@ The CSV written will be in the format of:
   lang,num_messages,num_trans,num_fuzzy,percent_trans
 """
 
+# Standard library
 import csv
 import os
 
+# Third-party
 import polib
 from django.core.management import BaseCommand
 
+# First-party/Local
 from i18n import CSV_HEADERS, DEFAULT_CSV_FILE, DEFAULT_INPUT_DIR
 
 

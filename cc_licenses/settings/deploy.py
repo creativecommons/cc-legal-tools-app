@@ -1,6 +1,7 @@
 # flake8: noqa
 
 # Settings for live deployed environments: vagrant, staging, production, etc
+# Standard library
 import os
 
 from .base import *  # noqa
@@ -18,6 +19,7 @@ if "DATABASE_URL" in os.environ:
     # Dokku
     SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 
+    # Third-party
     import dj_database_url
 
     # Update database configuration with $DATABASE_URL.

@@ -1,6 +1,8 @@
+# Third-party
 from django.test import TestCase
 from django.urls import get_resolver
 
+# First-party/Local
 from licenses.models import build_deed_url, build_license_url
 from licenses.templatetags.license_tags import (
     current_letter,

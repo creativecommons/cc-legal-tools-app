@@ -1,6 +1,8 @@
+# Standard library
 import string
 from threading import local
 
+# Third-party
 from django import template
 
 register = template.Library()

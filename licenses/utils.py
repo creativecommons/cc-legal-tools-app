@@ -1,3 +1,4 @@
+# Standard library
 import os
 import posixpath
 import re
@@ -5,11 +6,13 @@ import urllib
 import urllib.parse
 from base64 import b64encode
 
+# Third-party
 from bs4 import NavigableString
 from django.conf import settings
 from django.urls import get_resolver
 from polib import POEntry, POFile
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
 from i18n.utils import cc_to_django_language_code, get_default_language_for_jurisdiction
 

@@ -1,8 +1,10 @@
 """
 Little utility methods for use with BeautifulSoup4
 """
+# Standard library
 from itertools import takewhile
 
+# Third-party
 from bs4 import NavigableString, Tag
 
 

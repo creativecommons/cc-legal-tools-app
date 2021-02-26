@@ -1,7 +1,9 @@
+# Standard library
 import os
 import re
 from contextlib import contextmanager
 
+# Third-party
 import polib
 from babel import Locale, UnknownLocaleError
 from django.conf import settings
@@ -9,6 +11,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import override, ugettext
 from django.utils.translation.trans_real import DjangoTranslation, translation
 
+# First-party/Local
 from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
     DEFAULT_LANGUAGE_CODE,
@@ -104,6 +107,7 @@ def active_translation(translation: DjangoTranslation):
     """
     # import non-public value here to keep its scope
     # as limited as possible:
+    # Third-party
     from django.utils.translation.trans_real import _active
 
     # Either _active.value points at a DjangoTranslation

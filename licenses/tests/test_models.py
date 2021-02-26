@@ -1,9 +1,12 @@
+# Standard library
 from unittest import mock
 
+# Third-party
 import polib
 from django.test import TestCase, override_settings
 from django.utils.translation import override
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.models import LegalCode, License
