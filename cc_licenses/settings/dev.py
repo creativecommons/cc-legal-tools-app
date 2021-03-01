@@ -1,7 +1,9 @@
 # flake8: noqa
+# Standard library
 import os
 import sys
 
+# First-party/Local
 from cc_licenses.settings.base import *  # noqa
 
 DEBUG = True

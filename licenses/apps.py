@@ -1,5 +1,7 @@
+# Third-party
 from django.apps import AppConfig
 
+# First-party/Local
 from licenses.git_utils import setup_to_call_git
 
 

@@ -9,8 +9,10 @@ with the url in the dc:source's rdf:resource attribute.
 Some licenses ahve a dcq:isReplacedBy element.
 
 """
+# Standard library
 import os
 
+# Third-party
 import polib
 from django.conf import settings
 from django.db import models
@@ -18,6 +20,7 @@ from django.db.models import Q
 from django.utils import translation
 from django.utils.translation import gettext
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     active_translation,

@@ -1,12 +1,15 @@
+# Standard library
 import os
 import subprocess
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+# Third-party
 import git
 from django.conf import settings
 from django.test import TestCase, override_settings
 
+# First-party/Local
 from licenses.git_utils import (
     branch_exists,
     commit_and_push_changes,

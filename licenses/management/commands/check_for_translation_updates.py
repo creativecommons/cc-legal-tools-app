@@ -1,5 +1,7 @@
+# Third-party
 from django.core.management import BaseCommand, call_command
 
+# First-party/Local
 from licenses.transifex import TransifexHelper
 
 TOP_BRANCH = "develop"

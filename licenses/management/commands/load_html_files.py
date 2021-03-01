@@ -1,12 +1,15 @@
+# Standard library
 import os
 import sys
 from argparse import ArgumentParser
 
+# Third-party
 from bs4 import BeautifulSoup, Tag
 from django.conf import settings
 from django.core.management import BaseCommand
 from polib import POEntry, POFile
 
+# First-party/Local
 from i18n.utils import (
     cc_to_django_language_code,
     get_default_language_for_jurisdiction,

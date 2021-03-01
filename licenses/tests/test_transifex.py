@@ -1,8 +1,10 @@
+# Standard library
 import datetime
 import os
 from unittest import mock
 from unittest.mock import MagicMock, call
 
+# Third-party
 import git
 import polib
 import requests
@@ -10,6 +12,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from django.utils.timezone import now, utc
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content
 from licenses.models import LegalCode, TranslationBranch

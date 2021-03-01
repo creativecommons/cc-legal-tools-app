@@ -1,13 +1,16 @@
+# Standard library
 import os
 import tempfile
 from unittest import mock
 from unittest.mock import MagicMock, call
 
+# Third-party
 from bs4 import BeautifulSoup
 from django.test import TestCase
 from django.urls import Resolver404, URLResolver
 from polib import POEntry
 
+# First-party/Local
 from licenses.models import License
 from licenses.utils import (
     clean_string,
@@ -23,7 +26,6 @@ from licenses.utils import (
     validate_dictionary_is_all_text,
     validate_list_is_all_text,
 )
-
 from .factories import LegalCodeFactory, LicenseFactory
 
 

@@ -1,5 +1,7 @@
+# Third-party
 import factory.fuzzy
 
+# First-party/Local
 from licenses.models import LegalCode, License, TranslationBranch
 
 # The language codes we already have translations for

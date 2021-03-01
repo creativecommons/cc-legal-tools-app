@@ -1,9 +1,12 @@
+# Standard library
 import os
 from unittest import mock
 from unittest.mock import MagicMock
 
+# Third-party
 from django.test import TestCase, override_settings
 
+# First-party/Local
 from i18n.utils import get_translation_object, save_content_as_pofile_and_mofile
 
 TEST_POFILE = os.path.join(
