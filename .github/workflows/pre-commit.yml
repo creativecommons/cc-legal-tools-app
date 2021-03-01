@@ -1,0 +1,73 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      DJANGO_SETTINGS_MODULE: cc_licenses.settings.ephemeral
+
+    services:
+      postgres:
+        image: postgres:12.3-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+
+    - name: Install system dependencies
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y pandoc
+
+    # https://github.com/actions/checkout
+    - uses: actions/checkout@v2
+
+    - name: Configure testing git identity
+      run: |
+        git config --global user.email "testing_user@localhost"
+        git config --global user.name "Testing User"
+
+    # https://github.com/actions/setup-python
+    - name: actions/setup-python@v2 Python 3.7
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.7"
+
+    - name: Install pipenv
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install pipenv
+
+    - name: Install Python dependencies
+      run: |
+        pipenv sync --dev
+
+    - name: Update Django database schema
+      run: |
+        pipenv run ./manage.py migrate
+
+    - name: Start Django development web server
+      run: |
+        pipenv run ./manage.py runserver &>/dev/null &
+
+    # https://github.com/pre-commit/action
+    - uses: pre-commit/action@v2.0.0

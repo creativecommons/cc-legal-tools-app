@@ -62,6 +62,12 @@ Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
 
 
+### Error building trees
+
+If you encounter an `error: Error building trees` error from pre-commit when
+you commit, try adding your files (`git add <FILES>`) prior to committing them.
+
+
 ### Tooling
 
 - **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
