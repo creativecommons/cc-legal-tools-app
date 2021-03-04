@@ -48,7 +48,9 @@ if "DATABASE_URL" in os.environ:
 
     # Simplified static file serving.
     # https://warehouse.python.org/project/whitenoise/
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STATICFILES_STORAGE = (
+        "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    )
 
 else:
     SECRET_KEY = os.environ["SECRET_KEY"]
@@ -81,7 +83,9 @@ EMAIL_PORT = os.environ.get("EMAIL_PORT", default_smtp_port)
 EMAIL_SUBJECT_PREFIX = os.getenv(
     "EMAIL_SUBJECT_PREFIX", "[CC-Licenses %s] " % ENVIRONMENT.title()
 )
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@%(DOMAIN)s" % os.environ)
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL", "noreply@%(DOMAIN)s" % os.environ
+)
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 CSRF_COOKIE_SECURE = True
@@ -99,7 +103,9 @@ for backend in TEMPLATES:
     if backend["BACKEND"] == "django.template.backends.django.DjangoTemplates":
         default_loaders = ["django.template.loaders.filesystem.Loader"]
         if backend.get("APP_DIRS", False):
-            default_loaders.append("django.template.loaders.app_directories.Loader")
+            default_loaders.append(
+                "django.template.loaders.app_directories.Loader"
+            )
             # Django gets annoyed if you both set APP_DIRS True and specify your own loaders
             backend["APP_DIRS"] = False
         loaders = backend["OPTIONS"].get("loaders", default_loaders)

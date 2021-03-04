@@ -20,7 +20,11 @@ from django.core.management import call_command
 import licenses.models
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content, save_content_as_pofile_and_mofile
-from licenses.git_utils import commit_and_push_changes, kill_branch, setup_local_branch
+from licenses.git_utils import (
+    commit_and_push_changes,
+    kill_branch,
+    setup_local_branch,
+)
 from licenses.utils import b64encode_string
 
 logger = logging.getLogger(__name__)
@@ -109,32 +113,54 @@ class TransifexHelper:
         return r
 
     def get_transifex_resources(self):
-        """Returns list of dictionaries with return data from querying resources"""
-        RESOURCES_API_25 = f"organizations/{self.organization_slug}/projects/{self.project_slug}/resources/"
+        """
+        Returns list of dictionaries with return data from querying resources
+        """
+        RESOURCES_API_25 = (
+            f"organizations/{self.organization_slug}/projects/"
+            f"{self.project_slug}/resources/"
+        )
         return self.request25("get", RESOURCES_API_25).json()
 
     def files_argument(self, name, filename, content):
         """
         Return a valid value for the "files" argument to requests.put or .post
-        to upload the given content as the given filename, as the given argument
-        name.
+        to upload the given content as the given filename, as the given
+        argument name.
         """
         return [
-            (name, (os.path.basename(filename), content, "application/octet-stream"))
+            (
+                name,
+                (
+                    os.path.basename(filename),
+                    content,
+                    "application/octet-stream",
+                ),
+            )
         ]
 
-    def create_resource(self, resource_slug, resource_name, pofilename, pofile_content):
+    def create_resource(
+        self, resource_slug, resource_name, pofilename, pofile_content
+    ):
         # Create the resource in Transifex
-        # API 2.5 does not support writing to resources so stuck with 2.0 for that.
+        # API 2.5 does not support writing to resources so stuck with 2.0 for
+        # that.
         # data args for creating the resource
-        data = dict(slug=resource_slug, name=resource_name, i18n_type=I18N_FILE_TYPE)
+        data = dict(
+            slug=resource_slug, name=resource_name, i18n_type=I18N_FILE_TYPE
+        )
         # the "source messages" uploaded as the content of a pofile
         files = self.files_argument("content", pofilename, pofile_content)
         self.request20(
-            "post", f"project/{self.project_slug}/resources/", data=data, files=files
+            "post",
+            f"project/{self.project_slug}/resources/",
+            data=data,
+            files=files,
         )
 
-    def update_source_messages(self, resource_slug, pofilename, pofile_content):
+    def update_source_messages(
+        self, resource_slug, pofilename, pofile_content
+    ):
         # Update the source messages on Transifex from our local .pofile.
         files = self.files_argument("content", pofilename, pofile_content)
         self.request20(
@@ -150,15 +176,19 @@ class TransifexHelper:
         files = self.files_argument("file", pofilename, pofile_content)
         self.request20(
             "put",
-            f"project/{self.project_slug}/resource/{resource_slug}/translation/{language_code}/",
+            f"project/{self.project_slug}/resource/{resource_slug}/"
+            f"translation/{language_code}/",
             files=files,
         )
 
-    def upload_messages_to_transifex(self, legalcode, pofile: polib.POFile = None):
+    def upload_messages_to_transifex(
+        self, legalcode, pofile: polib.POFile = None
+    ):
         """
         We get the metadata from the legalcode object.
         You can omit the pofile and we'll get it using legalcode.get_pofile().
-        We allow passing it in separately because it makes writing tests so much easier.
+        We allow passing it in separately because it makes writing tests so
+        much easier.
         """
         language_code = legalcode.language_code
         resource_slug = legalcode.license.resource_slug
@@ -176,21 +206,27 @@ class TransifexHelper:
         if resource_slug not in resource_slugs:
             if language_code != DEFAULT_LANGUAGE_CODE:
                 raise ValueError(
-                    f"The resource {resource_slug} does not yet exist in Transifex. Must upload English first to create it."
+                    f"The resource {resource_slug} does not yet exist in"
+                    " Transifex. Must upload English first to create it."
                 )
             self.create_resource(
                 resource_slug, resource_name, pofilename, pofile_content
             )
         elif language_code == DEFAULT_LANGUAGE_CODE:
             # We're doing English, which is the source language.
-            self.update_source_messages(resource_slug, pofilename, pofile_content)
+            self.update_source_messages(
+                resource_slug, pofilename, pofile_content
+            )
         else:
             self.update_translations(
                 resource_slug, language_code, pofilename, pofile_content
             )
 
     def get_transifex_resource_stats(self):
-        fetch_resources_url = f"organizations/{self.organization_slug}/projects/{self.project_slug}/resources/"
+        fetch_resources_url = (
+            f"organizations/{self.organization_slug}/projects/"
+            f"{self.project_slug}/resources/"
+        )
 
         r = self.request25("get", fetch_resources_url)
         resource_slugs_on_transifex = [item["slug"] for item in r.json()]
@@ -205,7 +241,8 @@ class TransifexHelper:
 
     @property
     def stats(self):
-        # Return cached stats. We create a new TransifexHelper whenever we start doing
+        # Return cached stats. We create a new TransifexHelper whenever we
+        # start doing
         # some stuff with Transifex, so this won't have time to get stale.
         if not hasattr(self, "_stats"):
             self._stats = self.get_transifex_resource_stats()
@@ -215,7 +252,9 @@ class TransifexHelper:
         if hasattr(self, "_stats"):
             delattr(self, "_stats")
 
-    def transifex_get_pofile_content(self, resource_slug, language_code) -> bytes:
+    def transifex_get_pofile_content(
+        self, resource_slug, language_code
+    ) -> bytes:
         resource_url = (
             f"project/{self.project_slug}/resource/{resource_slug}"
             f"/translation/{language_code}/"
@@ -255,16 +294,22 @@ class TransifexHelper:
         pofile_content = self.transifex_get_pofile_content(
             resource_slug, legalcode.language_code
         )
-        filenames = save_content_as_pofile_and_mofile(pofile_path, pofile_content)
+        filenames = save_content_as_pofile_and_mofile(
+            pofile_path, pofile_content
+        )
         relpaths = [
-            os.path.relpath(filename, settings.TRANSLATION_REPOSITORY_DIRECTORY)
+            os.path.relpath(
+                filename, settings.TRANSLATION_REPOSITORY_DIRECTORY
+            )
             for filename in filenames
         ]
         repo.index.add(relpaths)
 
     def handle_updated_translation_branch(self, repo, legalcodes):
-        # legalcodes whose translations have been updated and all belong to the same translation branch
-        # if we update the branch, we'll also publish updates to its static files.
+        # Legalcodes whose translations have been updated and all belong to the
+        # same translation branch.
+        # If we update the branch, we'll also publish updates to its static
+        # files.
         if not legalcodes:
             return
         branch_name = legalcodes[0].branch_name()
@@ -293,7 +338,8 @@ class TransifexHelper:
         repo.index.add(
             [
                 os.path.relpath(
-                    settings.DISTILL_DIR, settings.TRANSLATION_REPOSITORY_DIRECTORY
+                    settings.DISTILL_DIR,
+                    settings.TRANSLATION_REPOSITORY_DIRECTORY,
                 )
             ]
         )
@@ -305,14 +351,17 @@ class TransifexHelper:
         )
 
         self.say(
-            2, f"Updated branch {branch_name} with updated translations and pushed"
+            2,
+            f"Updated branch {branch_name} with updated translations and"
+            " pushed",
         )
 
         # Don't need local branch anymore
         kill_branch(repo, branch_name)
 
         # Now that we know the new changes are upstream, save the LegalCode
-        # objects with their new translation_last_updates, and the branch object.
+        # objects with their new translation_last_updates, and the branch
+        # object.
         # First-party/Local
         from licenses.models import LegalCode
 
@@ -358,19 +407,20 @@ class TransifexHelper:
         self, repo: git.Repo, legalcodes: Iterable["licenses.models.LegalCode"]
     ):
         """
-        Use the Transifex API to find the last update timestamp for all our translations.
-        If translations are updated, we'll create a branch if there isn't already one
-        for that translation, then update it with the updated translations, rebuild the
-        HTML, commit all the changes, and push it upstream.
+        Use the Transifex API to find the last update timestamp for all our
+        translations.  If translations are updated, we'll create a branch if
+        there isn't already one for that translation, then update it with the
+        updated translations, rebuild the HTML, commit all the changes, and
+        push it upstream.
 
-        Return a list of the names of all local branches that have been updated, that
-        can be used e.g. to run publish on those branches.
+        Return a list of the names of all local branches that have been
+        updated, that can be used e.g. to run publish on those branches.
         """
         self.say(3, "check if repo is dirty")
         if repo.is_dirty():
             raise Exception(
-                f"Git repo at {settings.TRANSLATION_REPOSITORY_DIRECTORY} is dirty. "
-                f"We cannot continue."
+                f"Git repo at {settings.TRANSLATION_REPOSITORY_DIRECTORY} is"
+                " dirty. We cannot continue."
             )
         self.say(2, "Fetch to update repo")
         repo.remotes.origin.fetch()
@@ -383,8 +433,9 @@ class TransifexHelper:
         # (Except English)
 
         # Gather the files we need to update in git.
-        # This is a dict with keys = branch names, and values dictionaries mapping
-        # relative paths of files to update, to their contents (bytes).
+        # This is a dict with keys = branch names, and values dictionaries
+        # mapping relative paths of files to update, to their contents
+        # (bytes).
         self.branches_to_update = defaultdict(_empty_branch_object)
         self.legalcodes_to_update = []
         self.branch_objects_to_update = []
@@ -395,7 +446,9 @@ class TransifexHelper:
             language_code = legalcode.language_code
             resource_slug = legalcode.license.resource_slug
             if resource_slug not in resource_slugs_on_transifex:
-                self.say(2, f"Transifex has no resource {resource_slug}. Creating.")
+                self.say(
+                    2, f"Transifex has no resource {resource_slug}. Creating."
+                )
 
                 # Create the resource
                 english_pofile = legalcode.get_english_pofile()
@@ -403,7 +456,9 @@ class TransifexHelper:
                 self.create_resource(
                     resource_slug=resource_slug,
                     resource_name=legalcode.license.fat_code(),
-                    pofilename=os.path.basename(legalcode.translation_filename()),
+                    pofilename=os.path.basename(
+                        legalcode.translation_filename()
+                    ),
                     pofile_content=pofile_content,
                 )
                 self.clear_transifex_stats()
@@ -411,18 +466,20 @@ class TransifexHelper:
             if language_code not in self.stats[resource_slug]:
                 self.say(
                     2,
-                    f"Transifex has no {language_code} translation for {resource_slug}",
+                    f"Transifex has no {language_code} translation for"
+                    f" {resource_slug}",
                 )  # pragma: no cover
 
                 # Upload the language
                 self.upload_messages_to_transifex(legalcode)
                 self.clear_transifex_stats()
 
-            # We have a translation in this language for this license on Transifex.
+            # We have a translation in this language for this license on
+            # Transifex.
             # When was it last updated?
-            last_activity = self.stats[resource_slug][language_code]["translated"][
-                "last_activity"
-            ]
+            last_activity = self.stats[resource_slug][language_code][
+                "translated"
+            ]["last_activity"]
             last_tx_update = (
                 iso8601.parse_date(last_activity) if last_activity else None
             )

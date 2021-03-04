@@ -28,8 +28,9 @@ def list_open_translation_branches():
 
 
 class Command(BaseCommand):
-    """Command to push the static files in the build directory to a specified branch
-    in cc-licenses-data repository
+    """
+    Command to push the static files in the build directory to a specified
+    branch in cc-licenses-data repository
 
     Arguments:
         branch_name - Branch name in cc-license-data to pull translations from
@@ -81,7 +82,9 @@ class Command(BaseCommand):
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
             save_url_as_static_file(
-                output_dir, f"/status/{tbranch_id}/", f"status/{tbranch_id}.html"
+                output_dir,
+                f"/status/{tbranch_id}/",
+                f"status/{tbranch_id}.html",
             )
 
         for legalcode in LegalCode.objects.valid():
@@ -105,10 +108,15 @@ class Command(BaseCommand):
                 # Add any changes and new files
 
                 commit_and_push_changes(
-                    repo, "Updated built HTML files", self.relpath, push=self.push
+                    repo,
+                    "Updated built HTML files",
+                    self.relpath,
+                    push=self.push,
                 )
                 if repo.is_dirty(untracked_files=True):
-                    raise Exception("Something went wrong, the repo is still dirty")
+                    raise Exception(
+                        "Something went wrong, the repo is still dirty"
+                    )
             else:
                 print(f"\n{branch} build dir is up to date.\n")
 
@@ -116,7 +124,8 @@ class Command(BaseCommand):
         """Workflow for checking branches and updating their build dir"""
         branch_list = list_open_translation_branches()
         print(
-            f"\n\nChecking and updating build dirs for {len(branch_list)} translation branches\n\n"
+            f"\n\nChecking and updating build dirs for {len(branch_list)}"
+            " translation branches\n\n"
         )
         for b in branch_list:
             self.publish_branch(b)

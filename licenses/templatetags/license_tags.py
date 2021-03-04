@@ -37,7 +37,9 @@ def reset_letters(whichcase):
     elif whichcase == "uppercase":
         next_letter_data.letters = string.ascii_uppercase
     else:
-        raise ValueError("Arg to reset_letters should be 'lowercase' or 'uppercase'")
+        raise ValueError(
+            "Arg to reset_letters should be 'lowercase' or 'uppercase'"
+        )
     # Return value is inserted into the template, so return empty string.
     return ""
 

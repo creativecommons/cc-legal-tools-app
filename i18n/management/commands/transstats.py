@@ -60,7 +60,9 @@ def gen_statistics(input_dir, output_file):
                     "num_messages": len(pofile),
                     "num_trans": translated,
                     "num_fuzzy": fuzzies,
-                    "percent_trans": int((float(translated) / len(pofile)) * 100),
+                    "percent_trans": int(
+                        (float(translated) / len(pofile)) * 100
+                    ),
                 }
             )
 
@@ -73,7 +75,8 @@ class Command(BaseCommand):
             "-i",
             "--input_dir",
             dest="input_dir",
-            help="Directory to search for .po files to generate statistics on.",
+            help="Directory to search for .po files to generate statistics"
+            " on.",
             default=DEFAULT_INPUT_DIR,
         )
         parser.add_argument(
