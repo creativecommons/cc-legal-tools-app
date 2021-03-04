@@ -3,8 +3,7 @@
 # filters
 force-exclude = '''
 (
-  /licenses/migrations/
-  | /node_modules/
+  /node_modules/
   | /venv/
 )
 '''
@@ -50,9 +49,6 @@ line_length = 79
 multi_line_output = 3
 no_lines_before = 'LOCALFOLDER'
 profile = 'black'
-skip_glob = [
-    '*/migrations/*',
-]
 
 
 # [tool.pre-commit]

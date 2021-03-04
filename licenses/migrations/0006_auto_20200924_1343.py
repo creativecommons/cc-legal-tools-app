@@ -1,3 +1,5 @@
+# flake8: noqa: E501
+# Third-party
 from django.db import migrations, models
 
 
@@ -13,7 +15,8 @@ class Migration(migrations.Migration):
             name="translation_last_update",
             field=models.DateTimeField(
                 default=None,
-                help_text="The last_updated field from Transifex for this translation",
+                help_text="The last_updated field from Transifex for this"
+                " translation",
                 null=True,
             ),
         ),
@@ -42,7 +45,8 @@ class Migration(migrations.Migration):
                 (
                     "language_code",
                     models.CharField(
-                        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?",
+                        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'."
+                        " Case-sensitive?",
                         max_length=8,
                     ),
                 ),
@@ -57,10 +61,14 @@ class Migration(migrations.Migration):
                 (
                     "complete",
                     models.BooleanField(
-                        default=False, verbose_name="Only one incomplete per branch"
+                        default=False,
+                        verbose_name="Only one incomplete per branch",
                     ),
                 ),
-                ("legalcodes", models.ManyToManyField(to="licenses.LegalCode")),
+                (
+                    "legalcodes",
+                    models.ManyToManyField(to="licenses.LegalCode"),
+                ),
             ],
         ),
     ]
