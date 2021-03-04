@@ -57,9 +57,9 @@ Updating messages on Transifex
 Anytime there have been changes to the messages in the code or templates,
 a developer should update the messages on Transifex as follows:
 
-1. Make sure you have the latest code from develop::
+1. Make sure you have the latest code from main::
 
-     git checkout develop
+     git checkout main
      git pull
 
 #. regenerate the English (only) .po files::
@@ -68,7 +68,7 @@ a developer should update the messages on Transifex as follows:
 
 #. Run ``git diff`` and make sure the changes look reasonable.
 
-#. If so, commit the updated .po file to develop and push it upstream::
+#. If so, commit the updated .po file to main and push it upstream::
 
      git commit -m "Updated messages" locale/en/LC_MESSAGES/*.po
      git push
@@ -84,11 +84,11 @@ Updating translations from Transifex
 ------------------------------------
 
 Anytime translations on Transifex have been updated, someone should update our
-translation files on the develop branch as follows:
+translation files on the main branch as follows:
 
-1. Make sure you have the latest code from develop::
+1. Make sure you have the latest code from main::
 
-     git checkout develop
+     git checkout main
      git pull
 
 #. `Pull <http://support.transifex.com/customer/portal/articles/996157-getting-translations>`_

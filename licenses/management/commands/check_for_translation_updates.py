@@ -4,7 +4,7 @@ from django.core.management import BaseCommand, call_command
 # First-party/Local
 from licenses.transifex import TransifexHelper
 
-TOP_BRANCH = "develop"
+TOP_BRANCH = "main"
 
 branch_name = "test_branch"
 

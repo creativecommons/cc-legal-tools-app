@@ -296,13 +296,13 @@ def cleanup_current_branch_output(branch_list: list) -> list:
 
     for example: git branch --list
         some-branch
-        * develop
+        * main
 
-        branch-list = ['some-branch', '* develop']
+        branch-list = ['some-branch', '* main']
 
     The asterisks is attached to the current branch, and we want to remove
     this:
-        branch-list = ['some-branch' 'develop']
+        branch-list = ['some-branch' 'main']
 
     Arguments:
         branch-list (list) list of git branches.
