@@ -14,7 +14,10 @@ from polib import POEntry, POFile
 
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
-from i18n.utils import cc_to_django_language_code, get_default_language_for_jurisdiction
+from i18n.utils import (
+    cc_to_django_language_code,
+    get_default_language_for_jurisdiction,
+)
 
 
 def save_bytes_to_file(bytes, output_filename):
@@ -41,9 +44,9 @@ def save_url_as_static_file(output_dir, url, relpath):
 
     Pass in open_func just for testing, not in regular use.
     """
-    # Was using test Client, but it runs middleware and fails at runtime because the
-    # request host wasn't in the ALLOWED_HOSTS. So, resolve the URL and call the view
-    # directly.
+    # Was using test Client, but it runs middleware and fails at runtime
+    # because the request host wasn't in the ALLOWED_HOSTS. So, resolve the URL
+    # and call the view directly.
     resolver = get_resolver()
     match = resolver.resolve(url)  # ResolverMatch
     rsp = match.func(request=MockRequest(url), *match.args, **match.kwargs)
@@ -97,7 +100,7 @@ def parse_legalcode_filename(filename):
     The filename should not include any path. A trailing .html is okay.
 
     COPIED FROM
-    https://github.com/creativecommons/cc-link-checker/blob/6bb2eae4151c5f7949b73f8d066c309f2413c4a5/link_checker.py#L231
+    https://github.com/creativecommons/cc-link-checker/blob/6bb2eae4151c5f7949b73f8d066c309f2413c4a5/link_checker.py#L231  # noqa: E501
     and modified a great deal.
     """
 
@@ -160,7 +163,8 @@ def parse_legalcode_filename(filename):
     django_language_code = cc_to_django_language_code(cc_language_code)
     if django_language_code not in settings.LANG_INFO:
         raise ValueError(
-            f"Invalid language_code={cc_language_code} dj={django_language_code}"
+            f"Invalid language_code={cc_language_code}"
+            f" dj={django_language_code}"
         )
 
     data = dict(
@@ -169,7 +173,9 @@ def parse_legalcode_filename(filename):
         jurisdiction_code=jurisdiction or "",
         cc_language_code=cc_language_code,
         url=url,
-        about_url=compute_about_url(license_code_for_url, version, jurisdiction or ""),
+        about_url=compute_about_url(
+            license_code_for_url, version, jurisdiction or ""
+        ),
     )
 
     return data
@@ -177,9 +183,9 @@ def parse_legalcode_filename(filename):
 
 def compute_about_url(license_code, version, jurisdiction_code):
     """
-    Compute the canonical unique "about" URL for a license with the given attributes.
-    Note that a "license" is language-independent, unlike a LegalCode
-    but it can have a jurisdiction.q
+    Compute the canonical unique "about" URL for a license with the given
+    attributes.  Note that a "license" is language-independent, unlike a
+    LegalCode but it can have a jurisdiction.q
 
     E.g.
 
@@ -203,7 +209,11 @@ def compute_about_url(license_code, version, jurisdiction_code):
         return f"{base}/licenses/{license_code}/"
     if "GPL" in license_code:
         return f"{base}/licenses/{license_code}/{version}/"
-    prefix = "publicdomain" if license_code in ["CC0", "zero", "mark"] else "licenses"
+    prefix = (
+        "publicdomain"
+        if license_code in ["CC0", "zero", "mark"]
+        else "licenses"
+    )
     mostly = f"{base}/{prefix}/{license_code}/{version}/"
     if jurisdiction_code:
         return f"{mostly}{jurisdiction_code}/"
@@ -222,7 +232,9 @@ def validate_list_is_all_text(list_):
             newlist.append(str(value))
             continue
         elif type(value) not in (str, list, dict):
-            raise ValueError(f"Not a str, list, or dict: {type(value)}: {value}")
+            raise ValueError(
+                f"Not a str, list, or dict: {type(value)}: {value}"
+            )
         if isinstance(value, list):
             newlist.append(validate_list_is_all_text(value))
         elif isinstance(value, dict):
@@ -234,8 +246,8 @@ def validate_list_is_all_text(list_):
 
 def validate_dictionary_is_all_text(d):
     """
-    Just for sanity, make sure all the keys and values of a dictionary are types that
-    we expect to be in there.
+    Just for sanity, make sure all the keys and values of a dictionary are
+    types that we expect to be in there.
     """
     newdict = dict()
     for k, v in d.items():
@@ -312,7 +324,8 @@ def clean_string(s):
     """
     s = s.strip().replace("\n", " ").replace("  ", " ")
     while "  " in s:
-        # If there were longer strings of spaces, need to iterate to replace... I guess.
+        # If there were longer strings of spaces, need to iterate to replace...
+        # I guess.
         s = s.replace("  ", " ")
     return s
 

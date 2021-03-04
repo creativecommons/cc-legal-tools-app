@@ -16,7 +16,11 @@ from licenses.tests.factories import (
     LicenseFactory,
     TranslationBranchFactory,
 )
-from licenses.views import DEED_TEMPLATE_MAPPING, NUM_COMMITS, branch_status_helper
+from licenses.views import (
+    DEED_TEMPLATE_MAPPING,
+    NUM_COMMITS,
+    branch_status_helper,
+)
 
 
 def never(lic_obj):
@@ -31,39 +35,40 @@ strings_to_lambdas = {
     # Conditions under which we expect to see these strings in a deed page.
     # The lambda is called with a License object
     "INVALID_VARIABLE": never,  # Should never appear
-    "You are free to:": lambda lic_ob: lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    "You are free to:": lambda lic_ob: lic_ob.license_code
+    not in DEED_TEMPLATE_MAPPING,
     "You do not have to comply with the license for elements of "
     "the material in the public domain": lambda lic_ob: lic_ob.license_code
     not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
-    "The licensor cannot revoke these freedoms as long as you follow the license terms.": always,
+    "The licensor cannot revoke these freedoms as long as you follow the license terms.": always,  # noqa: E501
     "appropriate credit": lambda lic_ob: lic_ob.requires_attribution
     and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
     "You may do so in any reasonable manner, but not in any way that "
-    "suggests the licensor endorses you or your use.": lambda lic_ob: lic_ob.requires_attribution
+    "suggests the licensor endorses you or your use.": lambda lic_ob: lic_ob.requires_attribution  # noqa: E501
     and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
     "We never expect to see this string in a license deed.": never,
-    "you must distribute your contributions under the": lambda lic_ob: lic_ob.requires_share_alike,
+    "you must distribute your contributions under the": lambda lic_ob: lic_ob.requires_share_alike,  # noqa: E501
     "ShareAlike": lambda lic_ob: lic_ob.requires_share_alike,
     "same license": lambda lic_ob: lic_ob.requires_share_alike,
     "as the original.": lambda lic_ob: lic_ob.requires_share_alike,
     "Adapt": lambda lic_ob: lic_ob.permits_derivative_works
     and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
-    "remix, transform, and build upon the material": lambda lic_ob: lic_ob.permits_derivative_works
+    "remix, transform, and build upon the material": lambda lic_ob: lic_ob.permits_derivative_works  # noqa: E501
     and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
-    "you may not distribute the modified material.": lambda lic_ob: not lic_ob.permits_derivative_works,
+    "you may not distribute the modified material.": lambda lic_ob: not lic_ob.permits_derivative_works,  # noqa: E501
     "NoDerivatives": lambda lic_ob: not lic_ob.permits_derivative_works,
     # It was decided NOT to include the "free cultural works" icon/text
     "This license is acceptable for Free Cultural Works.": never,
     "for any purpose, even commercially.": lambda lic_ob: lic_ob.license_code
     not in DEED_TEMPLATE_MAPPING
     and not lic_ob.prohibits_commercial_use,
-    "You may not use the material for": lambda lic_ob: lic_ob.prohibits_commercial_use
+    "You may not use the material for": lambda lic_ob: lic_ob.prohibits_commercial_use  # noqa: E501
     and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
     ">commercial purposes<": lambda lic_ob: lic_ob.prohibits_commercial_use
     and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
-    "When the Licensor is an intergovernmental organization": lambda lic_ob: lic_ob.jurisdiction_code
+    "When the Licensor is an intergovernmental organization": lambda lic_ob: lic_ob.jurisdiction_code  # noqa: E501
     == "igo",
-    "of this license is available. You should use it for new works,": lambda lic_ob: lic_ob.superseded,
+    "of this license is available. You should use it for new works,": lambda lic_ob: lic_ob.superseded,  # noqa: E501
     """href="/worldwide/""": lambda lic_ob: lic_ob.jurisdiction_code != ""
     and lic_ob.jurisdiction_code not in ["", "es", "igo"]
     and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
@@ -84,9 +89,9 @@ def expected_and_unexpected_strings_for_license(license):
     return expected, unexpected
 
 
-# All the valid license codes. They all start with "by", and have various combinations
-# of "nc", "nd", and "sa", in that order. But not all combinations are valid,
-# e.g. "nd" and "sa" are not compatible.
+# All the valid license codes. They all start with "by", and have various
+# combinations of "nc", "nd", and "sa", in that order. But not all combinations
+# are valid, e.g. "nd" and "sa" are not compatible.
 license_codes = []
 for bits in range(8):  # We'll enumerate the variations
     parts = ["by"]
@@ -235,13 +240,17 @@ class ViewLicenseTest(TestCase):
         url = reverse(
             "licenses_default_language_with_jurisdiction",
             kwargs=dict(
-                version="3.0", jurisdiction="de", license_code=lc.license.license_code
+                version="3.0",
+                jurisdiction="de",
+                license_code=lc.license.license_code,
             ),
         )
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed(rsp, "legalcode_page.html")
-        self.assertTemplateUsed(rsp, "includes/legalcode_30_ported_license.html")
+        self.assertTemplateUsed(
+            rsp, "includes/legalcode_30_ported_license.html"
+        )
         context = rsp.context
         self.assertContains(rsp, '''lang="de"''')
         self.assertEqual(lc, context["legalcode"])
@@ -257,14 +266,18 @@ class ViewLicenseTest(TestCase):
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed(rsp, "legalcode_page.html")
-        self.assertTemplateUsed(rsp, "includes/legalcode_30_ported_license.html")
+        self.assertTemplateUsed(
+            rsp, "includes/legalcode_30_ported_license.html"
+        )
         context = rsp.context
         self.assertContains(rsp, f'''lang="{language_code}"''')
         self.assertEqual(lc, context["legalcode"])
 
     def test_view_license(self):
         for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
-            lc = LegalCodeFactory(license__version="4.0", language_code=language_code)
+            lc = LegalCodeFactory(
+                license__version="4.0", language_code=language_code
+            )
             url = lc.license_url
             rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
@@ -280,7 +293,9 @@ class ViewLicenseTest(TestCase):
 
     def test_view_license_plain_text(self):
         for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
-            lc = LegalCodeFactory(license__version="4.0", language_code=language_code)
+            lc = LegalCodeFactory(
+                license__version="4.0", language_code=language_code
+            )
             url = lc.plain_text_url
             rsp = self.client.get(url)
             self.assertEqual(
@@ -296,7 +311,9 @@ class ViewLicenseTest(TestCase):
         )
         url = lc.plain_text_url
         rsp = self.client.get(url)
-        self.assertEqual('text/plain; charset="utf-8"', rsp._headers["content-type"][1])
+        self.assertEqual(
+            'text/plain; charset="utf-8"', rsp._headers["content-type"][1]
+        )
         self.assertEqual(200, rsp.status_code)
         self.assertGreater(len(rsp.content.decode()), 0)
 
@@ -306,28 +323,37 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         self.assertEqual(200, rsp.status_code)
         self.assertEqual("en", rsp.context["legalcode"].language_code)
         text = rsp.content.decode("utf-8")
-        if "INVALID_VARIABLE" in text:  # Some unresolved variable in the template
+        if (
+            "INVALID_VARIABLE" in text
+        ):  # Some unresolved variable in the template
             msgs = ["INVALID_VARIABLE in output"]
             for line in text.splitlines():
                 if "INVALID_VARIABLE" in line:
                     msgs.append(line)
             self.fail("\n".join(msgs))
 
-        expected, unexpected = expected_and_unexpected_strings_for_license(license)
+        expected, unexpected = expected_and_unexpected_strings_for_license(
+            license
+        )
         for s in expected:
-            with self.subTest("|".join([license.license_code, license.version, s])):
+            with self.subTest(
+                "|".join([license.license_code, license.version, s])
+            ):
                 if s not in text:
                     print(text)
                 self.assertContains(rsp, s)
         for s in unexpected:
-            with self.subTest("|".join([license.license_code, license.version, s])):
+            with self.subTest(
+                "|".join([license.license_code, license.version, s])
+            ):
                 self.assertNotContains(rsp, s)
 
     def test_text_in_deeds(self):
         LicenseFactory()
         for license in License.objects.filter(version="4.0"):
             with self.subTest(license.fat_code):
-                # Test in English and for 4.0 since that's how we've set up the strings to test for
+                # Test in English and for 4.0 since that's how we've set up the
+                # strings to test for
                 url = build_deed_url(
                     license.license_code,
                     license.version,
@@ -344,12 +370,15 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         )
         language_code = "fr"
         lc = LegalCodeFactory(license=license, language_code=language_code)
-        # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:target_lang>"
+        # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>
+        #  /deed.<lang:target_lang>"
         url = lc.deed_url
-        # Mock 'get_translation_object' because we have no 3.0 translations imported yet
-        # and we can't use 4.0 to test jurisdictions.
+        # Mock 'get_translation_object' because we have no 3.0 translations
+        # imported yet and we can't use 4.0 to test jurisdictions.
         translation_object = DjangoTranslation(language="fr")
-        with mock.patch.object(LegalCode, "get_translation_object") as mock_gto:
+        with mock.patch.object(
+            LegalCode, "get_translation_object"
+        ) as mock_gto:
             mock_gto.return_value = translation_object
             rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
@@ -380,7 +409,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     #     license.save()
     #     rsp = self.client.get(license.deed_url)
     #     self.validate_deed_text(rsp, license)
-
+    #
     # def test_jurisdictions(self):
     #     for code in ["es", "igo"]:
     #         with self.subTest(code):
@@ -400,7 +429,9 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     # def test_language(self):
     #     license = (
     #         License.objects.filter(
-    #             license_code="by-nd", version="4.0", legal_codes__language_code="es",
+    #             license_code="by-nd",
+    #             version="4.0",
+    #             legal_codes__language_code="es",
     #         )
     #         .first()
     #     )
@@ -409,10 +440,13 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     #
     # def test_use_jurisdiction_default_language(self):
     #     """
-    #     If no language specified, but jurisdiction default language is not english,
-    #     use that language instead of english.
+    #     If no language specified, but jurisdiction default language is not
+    #     english, use that language instead of english.
     #     """
-    #     license = License.objects.filter(version="3.0", jurisdiction_code="fr").first()
+    #     license = License.objects.filter(
+    #         version="3.0",
+    #         jurisdiction_code="fr"
+    #     ).first()
     #     url = reverse(
     #         "license_deed_view_code_version_jurisdiction",
     #         kwargs=dict(
@@ -433,10 +467,14 @@ class BranchStatusViewTest(TestCase):
         )
 
     def test_simple_branch(self):
-        url = reverse("branch_status", kwargs=dict(id=self.translation_branch.id))
+        url = reverse(
+            "branch_status", kwargs=dict(id=self.translation_branch.id)
+        )
         with mock.patch("licenses.views.git"):
             with mock.patch.object(LegalCode, "get_pofile"):
-                with mock.patch("licenses.views.branch_status_helper") as mock_helper:
+                with mock.patch(
+                    "licenses.views.branch_status_helper"
+                ) as mock_helper:
                     mock_helper.return_value = {
                         "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
                         "branch": self.translation_branch,
@@ -448,7 +486,9 @@ class BranchStatusViewTest(TestCase):
         self.assertTemplateUsed(r, "licenses/branch_status.html")
         context = r.context
         self.assertEqual(self.translation_branch, context["branch"])
-        self.assertEqual(settings.OFFICIAL_GIT_BRANCH, context["official_git_branch"])
+        self.assertEqual(
+            settings.OFFICIAL_GIT_BRANCH, context["official_git_branch"]
+        )
 
     def test_branch_helper_local_branch_exists(self):
         mock_repo = mock.MagicMock()
@@ -505,7 +545,9 @@ class BranchStatusViewTest(TestCase):
         mock_repo = mock.MagicMock()
 
         # Our mock repo should act like this branch does not exist anywhere
-        mock_repo.branches = object()  # Will not have an attribute named 'branch_name'
+        mock_repo.branches = (
+            object()
+        )  # Will not have an attribute named 'branch_name'
 
         origin = mock_repo.remotes.origin
 
@@ -539,7 +581,9 @@ class BranchStatusViewTest(TestCase):
         mock_repo = mock.MagicMock()
 
         # Our mock repo should act like this branch does not exist here
-        mock_repo.branches = object()  # Will not have an attribute named 'branch_name'
+        mock_repo.branches = (
+            object()
+        )  # Will not have an attribute named 'branch_name'
 
         # But it does exist upstream
         origin = mock_repo.remotes.origin
@@ -562,7 +606,9 @@ class BranchStatusViewTest(TestCase):
             },
             result,
         )
-        mock_repo.iter_commits.assert_called_with(f"origin/{branch_name}", max_count=4)
+        mock_repo.iter_commits.assert_called_with(
+            f"origin/{branch_name}", max_count=4
+        )
 
 
 class TranslationStatusViewTest(TestCase):

@@ -15,7 +15,9 @@ from django.core.wsgi import get_wsgi_application
 
 if "DATABASE_URL" in os.environ:
     # Dokku or similar
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cc_licenses.settings.deploy")
+    os.environ.setdefault(
+        "DJANGO_SETTINGS_MODULE", "cc_licenses.settings.deploy"
+    )
 else:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cc_licenses.settings")
 

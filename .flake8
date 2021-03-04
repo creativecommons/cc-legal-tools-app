@@ -1,9 +1,3 @@
 [flake8]
-exclude=docs,node_modules,venv,cc_licenses/settings/local.py
-# For compatibility with 'black'
-#   https://black.readthedocs.io/en/stable/compatible_configs.html#flake8)
-# Allowing 130 because black doesn't seem yet to be able to fix long lines
-# with long string literals on them, and we have plenty...
-max-line-length = 130
-# E231 missing whitespace after ','
-extend-ignore = E203, E231, W50
+extend-exclude=docs/,node_modules/,venv/
+max-line-length = 79

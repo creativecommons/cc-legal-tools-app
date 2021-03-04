@@ -37,8 +37,9 @@ register_converter(LicenseCodeConverter, "code")
 
 class JurisdictionConverter:
     """
-    jurisdiction should be ISO 3166-1 alpha-2 country code (ISO 3166-1 alpha-2 - Wikipedia)
-    https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+    jurisdiction should be ISO 3166-1 alpha-2 country code
+        ISO 3166-1 alpha-2 - Wikipedia
+        https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 
     BUT it also looks as if we use "igo" and "scotland".
     """
@@ -77,9 +78,9 @@ class LangConverter:
     Some of the language tags are based on older specs.
 
     A more specific RFC 5646 regex might be
-    ^((?:(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?:([A-Za-z]{2,3}(-(?:[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?:[A-Za-z]{4}))?(-(?:[A-Za-z]{2}|[0-9]{3}))?(-(?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?:[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?:x(-[A-Za-z0-9]{1,8})+))?)|(?:x(-[A-Za-z0-9]{1,8})+))$
-    but that might exclude some older tags, so let's just keep it simple for now
-    and match any combination of letters, underscores, and dashes.
+    ^((?:(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?:([A-Za-z]{2,3}(-(?:[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?:[A-Za-z]{4}))?(-(?:[A-Za-z]{2}|[0-9]{3}))?(-(?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?:[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?:x(-[A-Za-z0-9]{1,8})+))?)|(?:x(-[A-Za-z0-9]{1,8})+))$  # noqa: E501
+    but that might exclude some older tags, so let's just keep it simple for
+    now and match any combination of letters, underscores, and dashes.
 
     (Why underscores? Because of en_GB being used some places.)
     """
@@ -150,7 +151,8 @@ urlpatterns = [
     # LICENSE PAGES
     #
     path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
+        "/legalcode.<lang:language_code>",
         view_license,
         name="view_40_license",
     ),
@@ -172,33 +174,40 @@ urlpatterns = [
     ),
     path(
         # Jurisdiction empty:
-        # e.g. /licenses/by/4.0/legalcode.es.txt - license BY 4.0 Spanish Plain Text
-        "<code:license_code>/<version:version>/legalcode.<lang:language_code>.txt",
+        # e.g. /licenses/by/4.0/legalcode.es.txt - license BY 4.0 Spanish Plain
+        # Text
+        "<code:license_code>/<version:version>/legalcode.<lang:language_code>"
+        ".txt",
         view_license,
         kwargs=dict(jurisdiction="", is_plain_text=True),
         name="view_40_license_txt",
     ),
     path(
         # Jurisdiction and language empty (default to English):
-        # e.g. /licenses/by/4.0/legalcode/index.txt - license BY 4.0 English Plain Text
+        # e.g. /licenses/by/4.0/legalcode/index.txt - license BY 4.0 English
+        # Plain Text
         "<code:license_code>/<version:version>/legalcode/index.txt",
         view_license,
         name="licenses_default_jurisdiction_and_language_txt",
         kwargs=dict(
-            language_code=DEFAULT_LANGUAGE_CODE, jurisdiction="", is_plain_text=True
+            language_code=DEFAULT_LANGUAGE_CODE,
+            jurisdiction="",
+            is_plain_text=True,
         ),
     ),
     path(
         # Language empty (default to THE JURISDICTION'S LANGUAGE):
         # e.g. /licenses/by-nc-sa/3.0/de/legalcode
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode",
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
+        "/legalcode",
         view_license,
         name="licenses_default_language_with_jurisdiction",
     ),
     path(
         # Jurisdiction and language set
         # e.g. /licenses/by-nc-sa/3.0/de/legalcode
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>.txt",
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
+        "/legalcode.<lang:language_code>.txt",
         view_license,
         name="licenses_default_language_with_jurisdiction",
         kwargs=dict(is_plain_text=True),
@@ -222,7 +231,8 @@ urlpatterns = [
         name="license_deed_view_code_version_jurisdiction",
     ),
     path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/deed.<lang:language_code>",
+        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
+        "/deed.<lang:language_code>",
         view_deed,
         name="license_deed_view_code_version_jurisdiction_language",
     ),

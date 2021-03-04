@@ -65,7 +65,8 @@ def name_and_text(tag: Tag):
 
     E.g. "<strong>Truck</strong> is a <strong>heavy</strong> vehicle."
 
-    Returns a dictionary {"name": "Truck", "text": "is a <strong>heavy</strong> vehicle."}
+    Returns a dictionary:
+        {"name": "Truck", "text": "is a <strong>heavy</strong> vehicle."}
     """
     top_level_children = list(tag.children)
 

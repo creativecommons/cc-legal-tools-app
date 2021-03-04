@@ -39,8 +39,8 @@ class GitTestMixin:
         self.origin_repo = git.Repo.init(self.upstream_repo_path)
         self.origin_repo.index.commit("Initial commit")
         self.origin_repo.create_head("master", "HEAD")
-        # We want the develop branch to be a different commit from master so we can tell
-        # them apart, so add and commit a file.
+        # We want the develop branch to be a different commit from master so we
+        # can tell them apart, so add and commit a file.
         self.origin_repo.create_head("develop", "HEAD")
         # "checkout" develop
         self.origin_repo.heads.develop.checkout()
@@ -73,8 +73,12 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         setup_local_branch(self.local_repo, "ourbranch")
 
         our_branch = self.local_repo.heads.ourbranch
-        self.assertEqual(self.origin_repo.heads.develop.commit, our_branch.commit)
-        self.assertNotEqual(self.origin_repo.heads.master.commit, our_branch.commit)
+        self.assertEqual(
+            self.origin_repo.heads.develop.commit, our_branch.commit
+        )
+        self.assertNotEqual(
+            self.origin_repo.heads.master.commit, our_branch.commit
+        )
 
     def test_branch_exists_upstream(self):
         # There's an ourbranch upstream and we branch from that
@@ -86,9 +90,15 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
 
         setup_local_branch(self.local_repo, "ourbranch")
         our_branch = self.local_repo.heads.ourbranch
-        self.assertEqual(self.origin_repo.heads.ourbranch.commit, our_branch.commit)
-        self.assertNotEqual(self.origin_repo.heads.develop.commit, our_branch.commit)
-        self.assertNotEqual(self.origin_repo.heads.master.commit, our_branch.commit)
+        self.assertEqual(
+            self.origin_repo.heads.ourbranch.commit, our_branch.commit
+        )
+        self.assertNotEqual(
+            self.origin_repo.heads.develop.commit, our_branch.commit
+        )
+        self.assertNotEqual(
+            self.origin_repo.heads.master.commit, our_branch.commit
+        )
 
     def test_branch_exists_locally_and_upstream(self):
         # There's an ourbranch upstream
@@ -101,7 +111,9 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         # We use the local branch, but update to the upstream tip
         self.local_repo.remotes.origin.fetch()
         self.local_repo.create_head("ourbranch")
-        upstream_branch = get_branch(self.local_repo.remotes.origin, "ourbranch")
+        upstream_branch = get_branch(
+            self.local_repo.remotes.origin, "ourbranch"
+        )
         self.local_repo.heads.ourbranch.set_tracking_branch(upstream_branch)
         self.local_repo.heads.ourbranch.checkout()
         self.add_file(self.local_repo)
@@ -124,7 +136,8 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
         with mock.patch("licenses.git_utils.run_git") as mock_run_git:
             push_current_branch(mock_repo)
         mock_run_git.assert_called_with(
-            mock_repo, ["git", "push", "-u", "origin", mock_repo.active_branch.name]
+            mock_repo,
+            ["git", "push", "-u", "origin", mock_repo.active_branch.name],
         )
 
     def test_commit_with_push(self):
@@ -134,11 +147,22 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
             commit_and_push_changes(mock_repo, "commit msg", "", push=True)
         self.assertEqual(
             [
-                mock.call(mock_repo, ["git", "commit", "--quiet", "-am", "commit msg"]),
-                mock.call(mock_repo, ["git", "status", "--untracked", "--short"]),
                 mock.call(
                     mock_repo,
-                    ["git", "push", "-u", "origin", mock_repo.active_branch.name],
+                    ["git", "commit", "--quiet", "-am", "commit msg"],
+                ),
+                mock.call(
+                    mock_repo, ["git", "status", "--untracked", "--short"]
+                ),
+                mock.call(
+                    mock_repo,
+                    [
+                        "git",
+                        "push",
+                        "-u",
+                        "origin",
+                        mock_repo.active_branch.name,
+                    ],
                 ),
             ],
             mock_run_git.call_args_list,
@@ -161,7 +185,9 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
         with open(path_to_change, "w") as f:
             f.write("Now this file has different content")
 
-        commit_and_push_changes(self.local_repo, "Add and remove test", "", push=False)
+        commit_and_push_changes(
+            self.local_repo, "Add and remove test", "", push=False
+        )
 
         subprocess.run(
             ["git", "status"],
@@ -181,7 +207,8 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
         self.assertTrue(os.path.exists(path_to_add))
         self.assertTrue(os.path.exists(path_to_change))
         self.assertEqual(
-            "Now this file has different content", open(path_to_change, "r").read()
+            "Now this file has different content",
+            open(path_to_change, "r").read(),
         )
         self.assertFalse(os.path.exists(path_to_delete))
 
@@ -199,7 +226,8 @@ class SetupToCallGitTest(TestCase):
                     del os.environ[name]
             setup_to_call_git()
             self.assertEqual(
-                os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh"), os.environ["GIT_SSH"]
+                os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh"),
+                os.environ["GIT_SSH"],
             )
             self.assertEqual(
                 settings.TRANSLATION_REPOSITORY_DEPLOY_KEY,
