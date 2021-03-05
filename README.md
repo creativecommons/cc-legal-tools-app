@@ -62,8 +62,142 @@ long as the development server is running.
 2. Run pre-commit:
     ```shell
     pipenv run pre-commit run -v -a
+  
+   ```
+   
+## Setting up a developement environment on linux based systems like ubuntu
+
+## Installing Python 3.7:
+This project uses the 3.7 version of python, so it’s important to install that. This can be done easily using the apt-get command
+```shell
+sudo apt install python3.7
+```
+Also, make sure you have django installed. If not, run python -m pip install django
+
+## Setting up a python virtual environment:
+This is not a necessary step, but it is good to do all your work on a particular project insid
+e the virtual environment created specifically for that particular project. It helps in keeping all the dependencies and versions of the languages and software used in check.
+
+There are multiple ways to create a virtual environment, but the most convenient way is probably by using the “mkvirtualenv” command.
+The installation instructions are as follows:
+1. If you’ve never created a virtual env before, you might want to create a new directory inside the root directory, create:
+    ```shell
+    mkdir .virtualenv
+    ```
+2. Install pip for python3, that is pip3:
+    ```shell
+    sudo apt install python3-pip
+    ```
+3. Now use pip3 to install virtualenv:
+    ```shell
+    pip3 install virtualenv
+    ```
+    ```shell
+    pip3 install virtualenvwrapper
+    ```
+    
+4. The command “which virtualenvwrapper.sh” will provide an address where the wrapper was installed. 
+You’d most likely need to run
+    ```shell
+    source `which virtualenvwrapper.sh`   
+    ```
+   before being able to create and use a virtual environment.
+5. Now create your virtual environment and specify the version of python:
+    ```shell
+    mkvirtualenv cc --python=/usr/bin/python3.7
+    ```
+   where cc is the name of the virtual environment.You can use any other name you want. 
+   The default python version for this virtual env is set to 3.7 
+   as this is what the project uses.
+6. Start and deactivate this virtual environment using:
+    ```shell
+    workon cc
+    deactivate
+    ```
+## Installing "pandoc":
+    ```shell
+    sudo apt-get install pandoc
     ```
 
+## Setting up PostgreSQL:
+1. ```shell
+   sudo apt update
+   ```
+2. Install the required software:
+   ```shell
+   sudo apt install postgresql postgresql-contrib
+   ```
+(If you already have postgresql installed on your system, Just skip to the next part).
+It is also ok if you don’t want to create a new user account for using postgresql, 
+it by default has a superuser “postgres” which has all the permissions. 
+But if you want to create a different account for the sake of the project, 
+visit https://www.postgresql.org/docs/
+And look at the official manual for instructions.
+
+You need to set a password if you haven’t used postgres on the system before
+
+   ```shell
+   sudo -u <name of the account> psql
+   \password <name of the account>
+   ```
+
+Enter the password
+
+Now move on to setting up your development environment for the project. 
+You can exit the postgres server or “log out”, which you activated in step 3 by simply entering “exit”.
+
+### Cloning and setting up the cc-licenses github repo:
+Fork the official repo, in your command line, cd to the directory you wish to keep all the files in and 
+clone your forked repo using the git clone command. Somewhat like
+   ```shell
+   git clone https://github.com/<your github username>/cc-licenses.git
+   ```
+
+Next create local settings file. Cd to the cc-licenses directory after it is finished cloning, 
+and type the following command:
+   ```shell
+   cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+   ```
+#Installing further dependencies:
+All the requirements are written in the files of “Deprecated” directory, 
+so while in that directory, cd to “requirements” directory
+Simply enter:
+   ```shell
+   python -m pip3 install -r base.txt
+   python -m pip3 install -r dev.txt
+   python -m pip3 install -r production.txt
+   ```
+That should take care of everything
+If you run into some sort of error while installing any of the dependencies, search for that error code online, 
+if the error code contains something like “couldn’t find ‘python.h’”, 
+you need to install "python3.7-dev" using apt-get.
+
+You need to make sure that postgres server is running. To do that, use “service” command
+Enter: 
+   ```shell
+   service postgresql start
+   ```
+To create the database for the project, you need to switch the account to postgres 
+(or any other account you’ve created with the permissions to create and manipulate a database)
+   ```shell
+   sudo su <account name>
+   ```
+
+Now create the database: 
+   ```shell
+   createdb -E UTF-8 cc_licenses
+   ```
+(you can switch back to your home user account now)
+To load content in the database, you need to perform migration. Do so using 
+   ```shell
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+Now you can run the development server using 
+   ```shell
+   python manage.py runserver
+   ```
 
 ### Tooling
 
