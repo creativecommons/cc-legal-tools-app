@@ -46,12 +46,9 @@ class Command(BaseCommand):
         parser.add_argument(
             "-b",
             "--branch_name",
-            help=(
-                "Translation branch name to pull translations from "
-                "and push artifacts to.  Use --list_branches to see "
-                "available branch names.  With no option, all active "
-                "branches are published."
-            ),
+            help="Translation branch name to pull translations from and push"
+            " artifacts to. Use --list_branches to see available branch names."
+            " With no option, all active branches are published.",
         )
         parser.add_argument(
             "-l",
@@ -63,6 +60,12 @@ class Command(BaseCommand):
             "--nopush",
             action="store_true",
             help="Update the local branches, but don't push upstream.",
+        )
+        parser.add_argument(
+            "--nogit",
+            action="store_true",
+            help="Update the local files without any attempt to manage them in"
+            " git (implies --nopush)",
         )
 
     def _quiet(self, *args, **kwargs):
@@ -134,7 +137,8 @@ class Command(BaseCommand):
         self.options = options
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         git_dir = os.path.abspath(settings.TRANSLATION_REPOSITORY_DIRECTORY)
-
+        print(f"git_dir: {git_dir}")
+        print(f"self.output_dir: {self.output_dir}")
         if not self.output_dir.startswith(git_dir):
             raise ImproperlyConfigured(
                 f"In Django settings, DISTILL_DIR must be inside "
@@ -144,6 +148,7 @@ class Command(BaseCommand):
             )
 
         self.relpath = os.path.relpath(self.output_dir, git_dir)
+        print(f"self.relpath: {self.relpath}")
         self.push = not options["nopush"]
 
         if options.get("list_branches"):
@@ -151,6 +156,8 @@ class Command(BaseCommand):
             print("\n\nWhich branch are we publishing to?\n")
             for b in branches:
                 print(b)
+        elif options.get("nogit"):
+            self.run_django_distill()
         elif options.get("branch_name"):
             self.publish_branch(options["branch_name"])
         else:
