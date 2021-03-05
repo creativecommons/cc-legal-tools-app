@@ -103,7 +103,7 @@ class Command(BaseCommand):
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
-        print(f"Publishing branch {branch}")
+        self.stdout.write(f"Publishing branch {branch}")
         with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
             setup_local_branch(repo, branch)
             self.run_django_distill()
@@ -121,12 +121,12 @@ class Command(BaseCommand):
                         "Something went wrong, the repo is still dirty"
                     )
             else:
-                print(f"\n{branch} build dir is up to date.\n")
+                self.stdout.write(f"\n{branch} build dir is up to date.\n")
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir"""
         branch_list = list_open_translation_branches()
-        print(
+        self.stdout.write(
             f"\n\nChecking and updating build dirs for {len(branch_list)}"
             " translation branches\n\n"
         )
@@ -137,8 +137,8 @@ class Command(BaseCommand):
         self.options = options
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         git_dir = os.path.abspath(settings.TRANSLATION_REPOSITORY_DIRECTORY)
-        print(f"git_dir: {git_dir}")
-        print(f"self.output_dir: {self.output_dir}")
+        self.stdout.write(f"git_dir: {git_dir}")
+        self.stdout.write(f"self.output_dir: {self.output_dir}")
         if not self.output_dir.startswith(git_dir):
             raise ImproperlyConfigured(
                 f"In Django settings, DISTILL_DIR must be inside "
@@ -148,14 +148,14 @@ class Command(BaseCommand):
             )
 
         self.relpath = os.path.relpath(self.output_dir, git_dir)
-        print(f"self.relpath: {self.relpath}")
+        self.stdout.write(f"self.relpath: {self.relpath}")
         self.push = not options["nopush"]
 
         if options.get("list_branches"):
             branches = list_open_translation_branches()
-            print("\n\nWhich branch are we publishing to?\n")
+            self.stdout.write("\n\nWhich branch are we publishing to?\n")
             for b in branches:
-                print(b)
+                self.stdout.write(b)
         elif options.get("nogit"):
             self.run_django_distill()
         elif options.get("branch_name"):
