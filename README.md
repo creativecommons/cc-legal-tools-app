@@ -379,19 +379,19 @@ This is most easily done from a developer environment.
 Check out the [creativecommons/cc-licenses-data][repodata] repository next to
 your `cc-licenses` working tree.
 
-Decide what branch you want to generate the site from, e.g. "develop".
+Decide what branch you want to generate the site from, e.g. "main".
 
 In the cc-licenses-data working directory, check out that branch and make sure
 it's up-to-date, e.g.:
 ```shell
-git checkout develop
-git pull origin develop
+git checkout main
+git pull origin main
 ```
 
 Then change back to the cc-licenses tree, and run the publish management
-command, probably starting with "\--nopush":
+command, probably starting with "--nopush":
 ```shell
-pipenv run ./manage.py publish --nopush --branch=develop
+pipenv run ./manage.py publish --nopush --branch=main
 ```
 
 This will write the HTML files in the cc-licenses-data tree under `build` and

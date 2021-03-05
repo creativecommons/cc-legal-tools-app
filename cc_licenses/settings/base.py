@@ -285,7 +285,7 @@ TRANSIFEX = {
 
 # The git branch where the official, approved, used in production translations
 # are.
-OFFICIAL_GIT_BRANCH = "develop"
+OFFICIAL_GIT_BRANCH = "main"
 
 # Path to private keyfile to use when pushing up to data repo
 TRANSLATION_REPOSITORY_DEPLOY_KEY = os.getenv(

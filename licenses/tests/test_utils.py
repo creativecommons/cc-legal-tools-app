@@ -458,8 +458,8 @@ class TestMisc(TestCase):
         )
 
     def test_cleanup_current_branch_output(self):
-        expected_list = ["some-branch", "another-branch", "develop"]
-        unmodified_list = ["some-branch", "* another-branch", "develop"]
+        expected_list = ["some-branch", "another-branch", "main"]
+        unmodified_list = ["some-branch", "* another-branch", "main"]
         self.assertEqual(
             cleanup_current_branch_output(unmodified_list), expected_list
         )

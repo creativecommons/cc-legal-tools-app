@@ -36,14 +36,13 @@ Change to the new directory for the rest of these steps::
 
     $ cd cc-licenses
 
-Check out the "develop" branch if you're wanting to test things still
-in development, or "master" for production::
+Check out the "main" branch::
 
-    $ git checkout develop
+    $ git checkout main
 
 Do a ``git pull`` to make sure you have the latest from upstream::
 
-    $ git pull origin develop
+    $ git pull origin main
 
 A word to the wise: I often forget that these things change, and have
 to remind myself to use the documentation from the version of the code
@@ -63,7 +62,7 @@ Activate the venv::
     $ . /somepath/cc-licenses-venv/bin/activate
 
 Install the Python requirements for production into the virtual
-environment. (This is the same whether deploying develop or master.)::
+environment::
 
     $ pip install -r requirements/production.txt
 
