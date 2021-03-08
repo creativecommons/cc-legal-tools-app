@@ -10,37 +10,88 @@ Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 
 ## Getting Started
+If You are using Linux, install pip3 and pipenv using:
+```shell
+sudo apt install python3-pip
+pip3 install pipenv
+```
 
+### Setting up the Project
 
-### macOS
-
-1. Install dependencies via brew
+1. Development Environment
+   1. Fork and clone the project, cd to the project directory.
+   2. Install dependencies via [Homebrew](https://brew.sh/) for macOS
     ```shell
     brew install pandoc postgresql python@3.7
     ```
-2. Install Python 3.7 environment via pipenv
+       For Linux:
+    ```shell
+    sudo apt-get install pandoc postgresql postgresql-contrib python3.7 python3.7-dev
+    ```
+   3. Install Python 3.7 environment and modules via pipenv
     ```shell
     pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
     ```
-3. Create local settings file
+    This will create a virtual env by the name of the project.
+    
+    On Linux if you still see the default python version as not 3.7:
+    To set the default python version as python3.7 run:
+    ```shell
+    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
+    sudo update-alternatives --config python
+    ```
+
+   4. Install pre-commit hooks
+    ```shell
+    pipenv run pre-commit install
+    ```
+2. Configure Django and PostgreSQL
+   1. Create local settings file
     ```shell
     cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
     ```
-4. Start PostgrSQL server
+   2. Start PostgrSQL server
+    MacOS:
     ```shell
     brew services run postgres
     ```
-5. Create project database
+    Linux:
+    ```shell
+    service postgresql start
+    ```
+    ### Using Postgresql:
+    It’s completely fine to not make a specific postgresql account.
+    But if you do wish to create a different user account for the project,
+    Please refer to the official documentation. https://www.postgresql.org/docs   /current/tutorial-install.html
+
+   3. Create project database
+   
+    To be able to create and manipulate databases in postgresql
+    You need to work with a user account that has permissions to do so.
+    For that On linux, run:
+    ```shell
+    sudo -i -u <your account name>
+    ```
+    Then run
     ```shell
     createdb -E UTF-8 cc_licenses
     ```
-6. Load database schema
+    To create the database. (you can now switch back to the virtual env using “logout”     command)
+
+   6. Make sure to have installed all the dependencies which are in the “requirements” directory:
+    ```shell
+    cd DEPRECATED/requirements
+    python -m pip install -r base.txt
+    python -m pip install -r dev.txt
+    python -m pip install -r production.txt
+    ```
+   5. Load database schema
     ```shell
     pipenv run ./manage.py migrate
     ```
 
 
-## Development
+## Development Server
 
 You should be able to run the development server via:
 ```shell
@@ -55,149 +106,17 @@ pipenv run ./manage.py runserver 0.0.0.0:8001
 Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
 
+## If you get any error messages while running manage.py commands using pipenv:
+1. Make sure that you have installed all the dependencies in “requirements”
+2. Make sure that you are using python3.7 and “pip” has been upgraded to python3.7 or higher version
+3. Check if pipenv has been installed globally, if not do so using a sudo command,
+And set the installation in “~/.local/bin” directory (check if you find the pipenv module file inside this directory)
 
-### Check for Issues
+### Error building trees
 
-1. Ensure the development server is runing
-2. Run pre-commit:
-    ```shell
-    pipenv run pre-commit run -v -a
-  
-   ```
-   
-## Setting up a developement environment on linux based systems like ubuntu
+If you encounter an `error: Error building trees` error from pre-commit when
+you commit, try adding your files (`git add <FILES>`) prior to committing them.
 
-## Installing Python 3.7:
-This project uses the 3.7 version of python, so it’s important to install that. This can be done easily using the apt-get command
-```shell
-sudo apt install python3.7
-```
-Also, make sure you have django installed. If not, run python -m pip install django
-
-## Setting up a python virtual environment:
-This is not a necessary step, but it is good to do all your work on a particular project insid
-e the virtual environment created specifically for that particular project. It helps in keeping all the dependencies and versions of the languages and software used in check.
-
-There are multiple ways to create a virtual environment, but the most convenient way is probably by using the “mkvirtualenv” command.
-The installation instructions are as follows:
-1. If you’ve never created a virtual env before, you might want to create a new directory inside the root directory, create:
-    ```shell
-    mkdir .virtualenv
-    ```
-2. Install pip for python3, that is pip3:
-    ```shell
-    sudo apt install python3-pip
-    ```
-3. Now use pip3 to install virtualenv:
-    ```shell
-    pip3 install virtualenv
-    ```
-    ```shell
-    pip3 install virtualenvwrapper
-    ```
-    
-4. The command “which virtualenvwrapper.sh” will provide an address where the wrapper was installed. 
-You’d most likely need to run
-    ```shell
-    source `which virtualenvwrapper.sh`   
-    ```
-   before being able to create and use a virtual environment.
-5. Now create your virtual environment and specify the version of python:
-    ```shell
-    mkvirtualenv cc --python=/usr/bin/python3.7
-    ```
-   where cc is the name of the virtual environment.You can use any other name you want. 
-   The default python version for this virtual env is set to 3.7 
-   as this is what the project uses.
-6. Start and deactivate this virtual environment using:
-    ```shell
-    workon cc
-    deactivate
-    ```
-## Installing "pandoc":
-    ```shell
-    sudo apt-get install pandoc
-    ```
-
-## Setting up PostgreSQL:
-1. ```shell
-   sudo apt update
-   ```
-2. Install the required software:
-   ```shell
-   sudo apt install postgresql postgresql-contrib
-   ```
-(If you already have postgresql installed on your system, Just skip to the next part).
-It is also ok if you don’t want to create a new user account for using postgresql, 
-it by default has a superuser “postgres” which has all the permissions. 
-But if you want to create a different account for the sake of the project, 
-visit https://www.postgresql.org/docs/
-And look at the official manual for instructions.
-
-You need to set a password if you haven’t used postgres on the system before
-
-   ```shell
-   sudo -u <name of the account> psql
-   \password <name of the account>
-   ```
-
-Enter the password
-
-Now move on to setting up your development environment for the project. 
-You can exit the postgres server or “log out”, which you activated in step 3 by simply entering “exit”.
-
-### Cloning and setting up the cc-licenses github repo:
-Fork the official repo, in your command line, cd to the directory you wish to keep all the files in and 
-clone your forked repo using the git clone command. Somewhat like
-   ```shell
-   git clone https://github.com/<your github username>/cc-licenses.git
-   ```
-
-Next create local settings file. Cd to the cc-licenses directory after it is finished cloning, 
-and type the following command:
-   ```shell
-   cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
-   ```
-#Installing further dependencies:
-All the requirements are written in the files of “Deprecated” directory, 
-so while in that directory, cd to “requirements” directory
-Simply enter:
-   ```shell
-   python -m pip3 install -r base.txt
-   python -m pip3 install -r dev.txt
-   python -m pip3 install -r production.txt
-   ```
-That should take care of everything
-If you run into some sort of error while installing any of the dependencies, search for that error code online, 
-if the error code contains something like “couldn’t find ‘python.h’”, 
-you need to install "python3.7-dev" using apt-get.
-
-You need to make sure that postgres server is running. To do that, use “service” command
-Enter: 
-   ```shell
-   service postgresql start
-   ```
-To create the database for the project, you need to switch the account to postgres 
-(or any other account you’ve created with the permissions to create and manipulate a database)
-   ```shell
-   sudo su <account name>
-   ```
-
-Now create the database: 
-   ```shell
-   createdb -E UTF-8 cc_licenses
-   ```
-(you can switch back to your home user account now)
-To load content in the database, you need to perform migration. Do so using 
-   ```shell
-   python manage.py makemigrations
-   python manage.py migrate
-   ```
-
-Now you can run the development server using 
-   ```shell
-   python manage.py runserver
-   ```
 
 ### Tooling
 
@@ -510,19 +429,19 @@ This is most easily done from a developer environment.
 Check out the [creativecommons/cc-licenses-data][repodata] repository next to
 your `cc-licenses` working tree.
 
-Decide what branch you want to generate the site from, e.g. "develop".
+Decide what branch you want to generate the site from, e.g. "main".
 
 In the cc-licenses-data working directory, check out that branch and make sure
 it's up-to-date, e.g.:
 ```shell
-git checkout develop
-git pull origin develop
+git checkout main
+git pull origin main
 ```
 
 Then change back to the cc-licenses tree, and run the publish management
-command, probably starting with "\--nopush":
+command, probably starting with "--nopush":
 ```shell
-pipenv run ./manage.py publish --nopush --branch=develop
+pipenv run ./manage.py publish --nopush --branch=main
 ```
 
 This will write the HTML files in the cc-licenses-data tree under `build` and
@@ -541,3 +460,9 @@ manually to get upstream updated.
 - [`LICENSE`](LICENSE) (Expat/[MIT][mit] License)
 
 [mit]: http://www.opensource.org/licenses/MIT "The MIT License | Open Source Initiative"
+
+
+
+
+
+
