@@ -9,21 +9,33 @@ want to use a newer version, edit `Pipfile`.
 Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 
-## Getting Started
-
-
-### macOS Development
+### Setting up the Project
 
 1. Development Environment
-   1. Install dependencies via [Homebrew](https://brew.sh/)
-    ```shell
-    brew install pandoc postgresql python@3.7
-    ```
-   2. Install Python 3.7 environment and modules via pipenv
-    ```shell
-    pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
-    ```
-   3. Install pre-commit hooks
+   1. Fork and clone the project, cd to the project directory.
+   2. Install dependencies
+      - Linux:
+        ```shell
+        sudo apt-get install pandoc postgresql postgresql-contrib python3.7 python3.7-dev python3-pip
+        ```
+        ```shell
+        pip3 install pipenv
+        ```
+      - macOS: via [Homebrew](https://brew.sh/):
+        ```shell
+        brew install pandoc pipenv postgresql python@3.7
+        ```
+   3. Install Python 3.7 environment and modules via pipenv to create a
+      virtualenv
+      - Linux:
+        ```shell
+        pipenv install --dev --python /usr/bin/python3.7
+        ```
+      - macOS: via [Homebrew](https://brew.sh/):
+        ```shell
+        pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
+        ```
+   4. Install pre-commit hooks
     ```shell
     pipenv run pre-commit install
     ```
@@ -33,13 +45,28 @@ Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
     cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
     ```
    2. Start PostgrSQL server
-    ```shell
-    brew services run postgres
-    ```
+      - It's completely fine to not make a specific postgresql account. But if
+        you do wish to create a different user account for the project, Please
+        refer to the official documentation.
+        https://www.postgresql.org/docs/current/tutorial-install.html
+      - Linux:
+        ```shell
+        sudo service postgresql start
+        ```
+      - macOS:
+        ```shell
+        brew services run postgres
+        ```
+
    3. Create project database
-    ```shell
-    createdb -E UTF-8 cc_licenses
-    ```
+      - Linux:
+        ```shell
+        sudo createdb -E UTF-8 cc_licenses
+        ```
+      - macOS:
+        ```shell
+        createdb -E UTF-8 cc_licenses
+        ```
    4. Load database schema
     ```shell
     pipenv run ./manage.py migrate
