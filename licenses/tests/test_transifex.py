@@ -1,8 +1,10 @@
+# Standard library
 import datetime
 import os
 from unittest import mock
 from unittest.mock import MagicMock, call
 
+# Third-party
 import git
 import polib
 import requests
@@ -10,6 +12,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from django.utils.timezone import now, utc
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content
 from licenses.models import LegalCode, TranslationBranch
@@ -69,7 +72,9 @@ class TestTransifex(TestCase):
                 path="foo/bar", method="get", data={"a": 1}, files=[(1, 2)]
             )
         mock_get.assert_called_with(
-            "https://www.transifex.com/api/2/foo/bar", data={"a": 1}, files=[(1, 2)]
+            "https://www.transifex.com/api/2/foo/bar",
+            data={"a": 1},
+            files=[(1, 2)],
         )
 
     def test_request25_success(self):
@@ -94,7 +99,9 @@ class TestTransifex(TestCase):
                     path="foo/bar", method="get", data={"a": 1}, files=[(1, 2)]
                 )
         mock_get.assert_called_with(
-            "https://www.transifex.com/api/2/foo/bar", data={"a": 1}, files=[(1, 2)]
+            "https://www.transifex.com/api/2/foo/bar",
+            data={"a": 1},
+            files=[(1, 2)],
         )
 
     def test_request25_failure(self):
@@ -123,28 +130,48 @@ class TestTransifex(TestCase):
 
     def test_files_argument(self):
         result = self.helper.files_argument("foo", "bar", "baz")
-        self.assertEqual([("foo", ("bar", "baz", "application/octet-stream"))], result)
+        self.assertEqual(
+            [("foo", ("bar", "baz", "application/octet-stream"))], result
+        )
 
     def test_create_resource(self):
         with mpo(self.helper, "request20") as mock_request:
-            self.helper.create_resource("slug", "name", "pofilename", "pofilecontent")
+            self.helper.create_resource(
+                "slug", "name", "pofilename", "pofilecontent"
+            )
         mock_request.assert_called_with(
             "post",
             "project/proj/resources/",
             data={"slug": "slug", "name": "name", "i18n_type": "PO"},
             files=[
-                ("content", ("pofilename", "pofilecontent", "application/octet-stream"))
+                (
+                    "content",
+                    (
+                        "pofilename",
+                        "pofilecontent",
+                        "application/octet-stream",
+                    ),
+                )
             ],
         )
 
     def test_update_source_messages(self):
         with mpo(self.helper, "request20") as mock_request:
-            self.helper.update_source_messages("slug", "pofilename", "pofilecontent")
+            self.helper.update_source_messages(
+                "slug", "pofilename", "pofilecontent"
+            )
         mock_request.assert_called_with(
             "put",
             "project/proj/resource/slug/content/",
             files=[
-                ("content", ("pofilename", "pofilecontent", "application/octet-stream"))
+                (
+                    "content",
+                    (
+                        "pofilename",
+                        "pofilecontent",
+                        "application/octet-stream",
+                    ),
+                )
             ],
         )
 
@@ -157,7 +184,14 @@ class TestTransifex(TestCase):
             "put",
             "project/proj/resource/slug/translation/lang/",
             files=[
-                ("file", ("pofilename", "pofilecontent", "application/octet-stream"))
+                (
+                    "file",
+                    (
+                        "pofilename",
+                        "pofilecontent",
+                        "application/octet-stream",
+                    ),
+                )
             ],
         )
 
@@ -189,7 +223,9 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             with mpo(self.helper, "create_resource") as mock_create_resource:
                 with mpo(legalcode, "get_pofile") as mock_gpwem:
                     mock_gpwem.return_value = english_pofile
-                    with mp("licenses.transifex.get_pofile_content") as mock_gpc:
+                    with mp(
+                        "licenses.transifex.get_pofile_content"
+                    ) as mock_gpc:
                         mock_gpc.return_value = "not really"
                         self.helper.upload_messages_to_transifex(legalcode)
 
@@ -213,7 +249,9 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             mock_gtr.return_value = []
             with mpo(legalcode, "get_pofile") as mock_gpwem:
                 mock_gpwem.return_value = test_pofile
-                with self.assertRaisesMessage(ValueError, "Must upload English first"):
+                with self.assertRaisesMessage(
+                    ValueError, "Must upload English first"
+                ):
                     self.helper.upload_messages_to_transifex(legalcode)
 
         mock_gtr.assert_called_with()
@@ -237,7 +275,9 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             with mp("licenses.transifex.get_pofile_content") as mock_gpc:
                 mock_gpc.return_value = "not really"
                 with mpo(self.helper, "update_source_messages") as mock_usm:
-                    self.helper.upload_messages_to_transifex(legalcode, test_pofile)
+                    self.helper.upload_messages_to_transifex(
+                        legalcode, test_pofile
+                    )
 
         mock_gtr.assert_called_with()
         mock_gpc.assert_called_with(test_pofile)
@@ -248,7 +288,8 @@ msgstr "Attribution-NoDerivatives 4.0 International"
         )
 
     def test_upload_messages_non_english_resource_exists(self):
-        # non-English because it's not the source messages and is handled differently
+        # non-English because it's not the source messages and is handled
+        # differently
         license = LicenseFactory(license_code="by-nd", version="4.0")
         legalcode = LegalCodeFactory(license=license, language_code="fr")
         test_resources = [
@@ -262,7 +303,9 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             with mp("licenses.transifex.get_pofile_content") as mock_gpc:
                 mock_gpc.return_value = "not really"
                 with mpo(self.helper, "update_translations") as mock_ut:
-                    self.helper.upload_messages_to_transifex(legalcode, test_pofile)
+                    self.helper.upload_messages_to_transifex(
+                        legalcode, test_pofile
+                    )
 
         mock_gtr.assert_called_with()
         mock_gpc.assert_called_with(test_pofile)
@@ -274,7 +317,8 @@ msgstr "Attribution-NoDerivatives 4.0 International"
         )
 
     def test_get_transifex_resource_stats(self):
-        # First call returns a response whose json value is a list of dicts with slug keys
+        # First call returns a response whose json value is a list of dicts
+        # with slug keys
         call0_response = MagicMock()
         call0_response.json.return_value = [{"slug": "slug0"}]
 
@@ -310,7 +354,9 @@ class CheckForTranslationUpdatesTest(TestCase):
         with mock.patch.object(git, "Repo") as mock_Repo:
             mock_Repo.return_value.__enter__.return_value = mock_repo
             helper = TransifexHelper()
-            with self.assertRaisesMessage(Exception, "is dirty. We cannot continue."):
+            with self.assertRaisesMessage(
+                Exception, "is dirty. We cannot continue."
+            ):
                 helper.check_for_translation_updates()
 
     def test_check_for_translation_updates_with_no_legalcodes(self):
@@ -328,15 +374,21 @@ class CheckForTranslationUpdatesTest(TestCase):
 
     def test_check_for_translation_updates_first_time(self):
         # We don't have a 'translation_last_update' yet to compare to.
-        self.help_test_check_for_translation_updates(first_time=True, changed=None)
+        self.help_test_check_for_translation_updates(
+            first_time=True, changed=None
+        )
 
     def test_check_for_translation_updates_unchanged(self):
         # The translation update timestamp has not changed
-        self.help_test_check_for_translation_updates(first_time=False, changed=False)
+        self.help_test_check_for_translation_updates(
+            first_time=False, changed=False
+        )
 
     def test_check_for_translation_updates_changed(self):
         # 'translation' is newer than translation_last_update
-        self.help_test_check_for_translation_updates(first_time=False, changed=True)
+        self.help_test_check_for_translation_updates(
+            first_time=False, changed=True
+        )
 
     def test_check_for_translation_updates_create_resource(self):
         # the resource isn't (yet) on transifex
@@ -354,7 +406,8 @@ class CheckForTranslationUpdatesTest(TestCase):
         self, first_time, changed, resource_exists=True, language_exists=True
     ):
         """
-        Helper to test several conditions, since all the setup is so convoluted.
+        Helper to test several conditions, since all the setup is so
+        convoluted.
         """
         language_code = "zh-Hans"
         license = LicenseFactory(version="4.0", license_code="by-nd")
@@ -401,8 +454,8 @@ class CheckForTranslationUpdatesTest(TestCase):
         legalcodes = [legalcode]
         dummy_repo = DummyRepo("/trans/repo")
 
-        # A couple of places use git.Repo(path) to get a git repo object. Have them
-        # all get back our same dummy repo.
+        # A couple of places use git.Repo(path) to get a git repo object. Have
+        # them all get back our same dummy repo.
         def dummy_repo_factory(path):
             return dummy_repo
 
@@ -470,7 +523,9 @@ class CheckForTranslationUpdatesTest(TestCase):
                 resource_slug=resource_slug,
                 resource_name=legalcode.license.fat_code(),
                 pofilename=os.path.basename(legalcode.translation_filename()),
-                pofile_content=get_pofile_content(mock_get_pofile.return_value),
+                pofile_content=get_pofile_content(
+                    mock_get_pofile.return_value
+                ),
             )
         else:
             # Not
@@ -486,12 +541,14 @@ class CheckForTranslationUpdatesTest(TestCase):
         if changed:
             # we mocked the actual processing, so...
             self.assertEqual(
-                first_translation_update_datetime, legalcode.translation_last_update
+                first_translation_update_datetime,
+                legalcode.translation_last_update,
             )
             mock_handle_legalcodes.assert_called_with(dummy_repo, [legalcode])
         else:
             self.assertEqual(
-                first_translation_update_datetime, legalcode.translation_last_update
+                first_translation_update_datetime,
+                legalcode.translation_last_update,
             )
             mock_handle_legalcodes.assert_called_with(dummy_repo, [])
         return
@@ -501,21 +558,29 @@ class CheckForTranslationUpdatesTest(TestCase):
         dummy_repo = DummyRepo("/trans/repo")
 
         # No legalcodes, shouldn't call anything or return anything
-        result = helper.handle_legalcodes_with_updated_translations(dummy_repo, [])
+        result = helper.handle_legalcodes_with_updated_translations(
+            dummy_repo, []
+        )
         self.assertEqual([], result)
 
         # legalcodes for two branches
         legalcode1 = LegalCodeFactory(
-            license__version="4.0", license__license_code="by-nc", language_code="fr"
+            license__version="4.0",
+            license__license_code="by-nc",
+            language_code="fr",
         )
         legalcode2 = LegalCodeFactory(
-            license__version="4.0", license__license_code="by-nd", language_code="de"
+            license__version="4.0",
+            license__license_code="by-nd",
+            language_code="de",
         )
         with mpo(helper, "handle_updated_translation_branch") as mock_handle:
             result = helper.handle_legalcodes_with_updated_translations(
                 dummy_repo, [legalcode1, legalcode2]
             )
-        self.assertEqual([legalcode1.branch_name(), legalcode2.branch_name()], result)
+        self.assertEqual(
+            [legalcode1.branch_name(), legalcode2.branch_name()], result
+        )
         self.assertEqual(
             [
                 mock.call(dummy_repo, [legalcode1]),
@@ -530,10 +595,14 @@ class CheckForTranslationUpdatesTest(TestCase):
         result = helper.handle_updated_translation_branch(dummy_repo, [])
         self.assertIsNone(result)
         legalcode1 = LegalCodeFactory(
-            license__version="4.0", license__license_code="by-nc", language_code="fr"
+            license__version="4.0",
+            license__license_code="by-nc",
+            language_code="fr",
         )
         legalcode2 = LegalCodeFactory(
-            license__version="4.0", license__license_code="by-nd", language_code="fr"
+            license__version="4.0",
+            license__license_code="by-nd",
+            language_code="fr",
         )
         with mp("licenses.transifex.setup_local_branch") as mock_setup, mpo(
             helper, "update_branch_for_legalcode"
@@ -570,7 +639,9 @@ class CheckForTranslationUpdatesTest(TestCase):
         helper = TransifexHelper()
         dummy_repo = DummyRepo("/trans/repo")
         legalcode = LegalCodeFactory(
-            license__version="4.0", license__license_code="by-nc", language_code="fr"
+            license__version="4.0",
+            license__license_code="by-nc",
+            language_code="fr",
         )
         helper._stats = {
             legalcode.license.resource_slug: {
@@ -590,12 +661,16 @@ class CheckForTranslationUpdatesTest(TestCase):
         content = b"wxyz"
         # transifex_get_pofile_content
         # save_content_as_pofile_and_mofile
-        with mpo(helper, "transifex_get_pofile_content") as mock_get_content, mp(
+        with mpo(
+            helper, "transifex_get_pofile_content"
+        ) as mock_get_content, mp(
             "licenses.transifex.save_content_as_pofile_and_mofile"
         ) as mock_save:
             mock_get_content.return_value = content
             mock_save.return_value = [legalcode.translation_filename()]
-            result = helper.update_branch_for_legalcode(dummy_repo, legalcode, trb)
+            result = helper.update_branch_for_legalcode(
+                dummy_repo, legalcode, trb
+            )
         self.assertIsNone(result)
         mock_get_content.assert_called_with(
             legalcode.license.resource_slug, legalcode.language_code
@@ -603,7 +678,8 @@ class CheckForTranslationUpdatesTest(TestCase):
         mock_save.assert_called_with(legalcode.translation_filename(), content)
         self.assertEqual({legalcode}, set(trb.legalcodes.all()))
         relpath = os.path.relpath(
-            legalcode.translation_filename(), settings.TRANSLATION_REPOSITORY_DIRECTORY
+            legalcode.translation_filename(),
+            settings.TRANSLATION_REPOSITORY_DIRECTORY,
         )
         dummy_repo.index.add.assert_called_with([relpath])
 
@@ -613,7 +689,9 @@ class CheckForTranslationUpdatesTest(TestCase):
             mock_req20.return_value = mock.MagicMock(content=b"xxxxxx")
             result = helper.transifex_get_pofile_content("slug", "lang")
         mock_req20.assert_called_with(
-            "get", "project/CC/resource/slug/translation/lang/?mode=translator&file=PO"
+            "get",
+            "project/CC/resource/slug/translation/lang/"
+            "?mode=translator&file=PO",
         )
         self.assertEqual(result, b"xxxxxx")
 
@@ -631,5 +709,6 @@ class TestTransifexAuthRequests(TestCase):
         result = auth(r)
         self.assertEqual(r, result)
         self.assertEqual(
-            {"Authorization": "Basic YXBpOmZyZW5jaGZyaWVkcG90YXRvZXM="}, result.headers
+            {"Authorization": "Basic YXBpOmZyZW5jaGZyaWVkcG90YXRvZXM="},
+            result.headers,
         )

@@ -1,16 +1,18 @@
 """
-Every license can be identified by a URL, e.g. "http://creativecommons.org/licenses/by-nc-sa/4.0/"
-or "http://creativecommons.org/licenses/by-nc-nd/2.0/tw/".  In the RDF, this is the rdf:about
-attribute on the cc:License element.
+Every license can be identified by a URL, e.g.
+"http://creativecommons.org/licenses/by-nc-sa/4.0/" or
+"http://creativecommons.org/licenses/by-nc-nd/2.0/tw/".  In the RDF, this is
+the rdf:about attribute on the cc:License element.
 
-If a license has a child dc:source element, then this license is a translation of the license
-with the url in the dc:source's rdf:resource attribute.
+If a license has a child dc:source element, then this license is a translation
+of the license with the url in the dc:source's rdf:resource attribute.
 
 Some licenses ahve a dcq:isReplacedBy element.
-
 """
+# Standard library
 import os
 
+# Third-party
 import polib
 from django.conf import settings
 from django.db import models
@@ -18,6 +20,7 @@ from django.db.models import Q
 from django.utils import translation
 from django.utils.translation import gettext
 
+# First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     active_translation,
@@ -43,8 +46,9 @@ class LegalCodeQuerySet(models.QuerySet):
         Return a queryset of the LegalCode objects that we are doing the
         translation process on.
         """
-        # We are not translating the 3.0 unported licenses - they are English only
-        # We are not translating the 3.0 ported licenses - just storing their HTML as-is.
+        # We are not translating the 3.0 unported licenses - they are English
+        # only We are not translating the 3.0 ported licenses - just storing
+        # their HTML as-is.
         return self.exclude(license__version="3.0")
 
     def valid(self):
@@ -79,16 +83,21 @@ class LegalCodeQuerySet(models.QuerySet):
 
 class LegalCode(models.Model):
     license = models.ForeignKey(
-        "licenses.License", on_delete=models.CASCADE, related_name="legal_codes"
+        "licenses.License",
+        on_delete=models.CASCADE,
+        related_name="legal_codes",
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive? "
-        "This is the language code used by CC, which might be a little "
-        "different from the Django language code.",
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?"
+        " This is the language code used by CC, which might be a little"
+        " different from the Django language code.",
     )
     html_file = models.CharField(
-        max_length=300, help_text="HTML file we got this from", blank=True, default=""
+        max_length=300,
+        help_text="HTML file we got this from",
+        blank=True,
+        default="",
     )
 
     translation_last_update = models.DateTimeField(
@@ -98,7 +107,8 @@ class LegalCode(models.Model):
     )
 
     title = models.TextField(
-        help_text="License title in this language, e.g. 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+        help_text="License title in this language, e.g."
+        " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
         blank=True,
         default="",
     )
@@ -151,7 +161,9 @@ class LegalCode(models.Model):
         """
         license = self.license
         firstdir = (
-            "publicdomain" if license.license_code.lower() == "cc0" else "licenses"
+            "publicdomain"
+            if license.license_code.lower() == "cc0"
+            else "licenses"
         )
         if license.version == "3.0":
             # "xu" for "unported"
@@ -184,6 +196,7 @@ class LegalCode(models.Model):
         4.0 formula:
         /licenses/VERSION/LICENSE_deed_LANGAUGE.html
         /licenses/VERSION/LICENSE_legalcode_LANGAUGEhtml
+
         4.0 examples:
         /licenses/4.0/by-nc-nd_deed_en.html
         /licenses/4.0/by-nc-nd_legalcode_en.html
@@ -191,9 +204,11 @@ class LegalCode(models.Model):
         /licenses/4.0/by_legalcode_en.html
         /licenses/4.0/by_deed_zh-Hans.html
         /licenses/4.0/by_legalcode_zh-Hans.html
+
         3.0 formula:
         /licenses/VERSION/JURISDICTION/LICENSE_deed_LANGAUGE.html
         /licenses/VERSION/JURISDICTION/LICENSE_legalcode_LANGAUGE.html
+
         3.0 examples:
         /licenses/3.0/xu/by_deed_en.html
         /licenses/3.0/xu/by_legalcode.en.html
@@ -201,16 +216,19 @@ class LegalCode(models.Model):
         /licenses/3.0/am/by_legalcode_hy.html
         /licenses/3.0/rs/by_deed_rs-Cyrl.html
         /licenses/3.0/rs/by_legalcode_rs-Cyrl.html
-        For jurisdiction, I used “xu” to mean “unported”.
-        See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.
+        For jurisdiction, I used "xu" to mean "unported".
+        See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
+
         cc0 formula:
         /publicdomain/VERSION/LICENSE_deed_LANGAUGE.html
         /publicdomain/VERSION/LICENSE_legalcode_LANGAUGE.html
+
         cc0 examples:
         /publicdomain/1.0/zero_deed_en.html
         /publicdomain/1.0/zero_legalcode_en.html
         /publicdomain/1.0/zero_deed_ja.html
-        /publicdomain/1.0/zero_legalcode_ja.html"""
+        /publicdomain/1.0/zero_legalcode_ja.html
+        """
         license = self.license
         code = (
             "zero"
@@ -234,11 +252,11 @@ class LegalCode(models.Model):
     def branch_name(self):
         """
         If this translation is modified, what is the name of the GitHub branch
-        we'll use to manage the modifications?
-        Basically its "{license code}-{version}-{language}[-{jurisdiction code}",
-        except that all the "by* 4.0" licenses use "cc4" for the license_code part.
-        This has to be a valid DNS domain, so we also change any _ to - and
-        remove any periods.
+        we'll use to manage the modifications?  Basically its "{license
+        code}-{version}-{language}[-{jurisdiction code}", except that all the
+        "by* 4.0" licenses use "cc4" for the license_code part.  This has to be
+        a valid DNS domain, so we also change any _ to - and remove any
+        periods.
         """
         license = self.license
         parts = []
@@ -264,7 +282,9 @@ class LegalCode(models.Model):
     def get_translation_object(self):
         domain = self.license.resource_slug
         return get_translation_object(
-            django_language_code=cc_to_django_language_code(self.language_code),
+            django_language_code=cc_to_django_language_code(
+                self.language_code
+            ),
             domain=domain,
         )
 
@@ -287,7 +307,8 @@ class LegalCode(models.Model):
         Return absolute path to the .po file with this translation.
         These are in the cc-licenses-data repository, in subdirectories:
           - "legalcode/"
-          - language code (should match what Django uses, not what Transifex uses)
+          - language code (should match what Django uses, not what Transifex
+            uses)
           - "LC_MESSAGES/"  (Django insists on this)
           - files
 
@@ -312,16 +333,21 @@ class LegalCode(models.Model):
 class License(models.Model):
     about = models.URLField(
         max_length=200,
-        help_text="The license's unique identifier, e.g. 'http://creativecommons.org/licenses/by-nd/2.0/br/'",
+        help_text="The license's unique identifier, e.g."
+        " 'http://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
     )
     license_code = models.CharField(
         max_length=40,
-        help_text="shorthand representation for which class of licenses this falls into.  "
-        "E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+', 'devnations', ...",
+        help_text="shorthand representation for which class of licenses this"
+        " falls into.  E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
+        " 'devnations', ...",
     )
     version = models.CharField(
-        max_length=3, help_text="E.g. '4.0'. Not required.", blank=True, default=""
+        max_length=3,
+        help_text="E.g. '4.0'. Not required.",
+        blank=True,
+        default="",
     )
     jurisdiction_code = models.CharField(max_length=9, blank=True, default="")
     creator_url = models.URLField(
@@ -338,7 +364,8 @@ class License(models.Model):
     )
 
     title_english = models.TextField(
-        help_text="License title in English, e.g. 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+        help_text="License title in English, e.g."
+        " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
         blank=True,
         default="",
     )
@@ -370,7 +397,8 @@ class License(models.Model):
     )
 
     deprecated_on = models.DateField(
-        null=True, help_text="if set, the date on which this license was deprecated"
+        null=True,
+        help_text="if set, the date on which this license was deprecated",
     )
 
     permits_derivative_works = models.BooleanField()
@@ -390,7 +418,10 @@ class License(models.Model):
         ordering = ["-version", "license_code", "jurisdiction_code"]
 
     def __str__(self):
-        return f"License<{self.license_code},{self.version},{self.jurisdiction_code}>"
+        return (
+            f"License<{self.license_code},{self.version},"
+            f"{self.jurisdiction_code}>"
+        )
 
     def get_metadata(self):
         """
@@ -413,7 +444,9 @@ class License(models.Model):
         data["requires_attribution"] = self.requires_attribution
         data["requires_source_code"] = self.requires_source_code
         data["prohibits_commercial_use"] = self.prohibits_commercial_use
-        data["prohibits_high_income_nation_use"] = self.prohibits_high_income_nation_use
+        data[
+            "prohibits_high_income_nation_use"
+        ] = self.prohibits_high_income_nation_use
 
         data["translations"] = {}
         for lc in self.legal_codes.order_by("language_code"):
@@ -474,7 +507,9 @@ class License(models.Model):
         # No periods.
         # All lowercase.
         if self.jurisdiction_code:
-            slug = f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
+            slug = (
+                f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
+            )
         else:
             slug = f"{self.license_code}_{self.version}"
         slug = slug.replace(".", "")
@@ -527,12 +562,17 @@ class License(models.Model):
         Upload the messages to Transifex,
         creating the resource if it doesn't already exist.
         """
-        # Have to do English first, they get uploaded differently as the "source" messages
-        # and are required if we need to first create the resource in Transifex.
-        en_legalcode = self.get_legalcode_for_language_code(DEFAULT_LANGUAGE_CODE)
+        # Have to do English first, they get uploaded differently as the
+        # "source" messages and are required if we need to first create the
+        # resource in Transifex.
+        en_legalcode = self.get_legalcode_for_language_code(
+            DEFAULT_LANGUAGE_CODE
+        )
         helper = TransifexHelper()
         helper.upload_messages_to_transifex(legalcode=en_legalcode)
-        for legalcode in self.legal_codes.exclude(language_code=DEFAULT_LANGUAGE_CODE):
+        for legalcode in self.legal_codes.exclude(
+            language_code=DEFAULT_LANGUAGE_CODE
+        ):
             helper.upload_messages_to_transifex(legalcode=legalcode)
 
     @property
@@ -552,12 +592,15 @@ class TranslationBranch(models.Model):
     branch_name = models.CharField(max_length=40)
     legalcodes = models.ManyToManyField("LegalCode")
     version = models.CharField(
-        max_length=3, help_text="E.g. '4.0'. Not required.", blank=True, default=""
+        max_length=3,
+        help_text="E.g. '4.0'. Not required.",
+        blank=True,
+        default="",
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive? "
-        "This is a CC language code, which might differ from Django.",
+        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?"
+        " This is a CC language code, which might differ from Django.",
     )
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",
@@ -570,7 +613,10 @@ class TranslationBranch(models.Model):
         verbose_name_plural = "translation branches"
 
     def __str__(self):
-        return f"Translation branch {self.branch_name}. {'Complete' if self.complete else 'In progress'}."
+        return (
+            f"Translation branch {self.branch_name}."
+            f" {'Complete' if self.complete else 'In progress'}."
+        )
 
     @property
     def stats(self):
@@ -578,14 +624,18 @@ class TranslationBranch(models.Model):
         number_of_translated_messages = 0
         for code in self.legalcodes.all():
             pofile = code.get_pofile()
-            number_of_untranslated_messages += len(pofile.untranslated_entries())
+            number_of_untranslated_messages += len(
+                pofile.untranslated_entries()
+            )
             number_of_translated_messages += len(pofile.translated_entries())
         number_of_total_messages = (
             number_of_untranslated_messages + number_of_translated_messages
         )
         if number_of_total_messages:
             percent_messages_translated = int(
-                number_of_translated_messages * 100 / float(number_of_total_messages)
+                number_of_translated_messages
+                * 100
+                / float(number_of_total_messages)
             )
         else:
             percent_messages_translated = 100
@@ -603,15 +653,19 @@ def build_license_url(license_code, version, jurisdiction_code, language_code):
     and language are optional.
     language_code is a CC language code.
     """
-    # UGH. Is there any way we could do this with a simple url 'reverse'? The URL regex would
-    # be complicated, but we have unit tests to determine if we've got it right.
-    # See test_templatetags.py.
+    # UGH. Is there any way we could do this with a simple url 'reverse'? The
+    # URL regex would be complicated, but we have unit tests to determine if
+    # we've got it right. See test_templatetags.py.
     assert language_code
     if version == "4.0":
         assert not jurisdiction_code
     if jurisdiction_code:
-        url = f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode"
-        default_language = get_default_language_for_jurisdiction(jurisdiction_code)
+        url = (
+            f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode"
+        )
+        default_language = get_default_language_for_jurisdiction(
+            jurisdiction_code
+        )
         # A few exceptions to how URLs are formed:
         include_language_anyway = (version == "3.0") and (
             jurisdiction_code in ["es", "ca", "ch"]
@@ -624,7 +678,9 @@ def build_license_url(license_code, version, jurisdiction_code, language_code):
         if language_code == default_language or not language_code:
             return f"/licenses/{license_code}/{version}/legalcode"
         else:
-            return f"/licenses/{license_code}/{version}/legalcode.{language_code}"
+            return (
+                f"/licenses/{license_code}/{version}/legalcode.{language_code}"
+            )
 
 
 def build_deed_url(license_code, version, jurisdiction_code, language_code):
@@ -633,10 +689,10 @@ def build_deed_url(license_code, version, jurisdiction_code, language_code):
     and language are optional.
     language_code is a CC language code.
     """
-    # UGH. Is there any way we could do this with a simple url 'reverse'? The URL regex would
-    # be complicated, but we have unit tests to determine if we've got it right.
-    # See test_templatetags.py.
-
+    # UGH. Is there any way we could do this with a simple url 'reverse'? The
+    # URL regex would be complicated, but we have unit tests to determine if
+    # we've got it right. See test_templatetags.py.
+    #
     # https://creativecommons.org/licenses/by-sa/4.0/
     # https://creativecommons.org/licenses/by-sa/4.0/deed.es
     # https://creativecommons.org/licenses/by/3.0/es/
@@ -646,7 +702,10 @@ def build_deed_url(license_code, version, jurisdiction_code, language_code):
         if language_code == "en" or not language_code:
             return f"/licenses/{license_code}/{version}/{jurisdiction_code}/"
         else:
-            return f"/licenses/{license_code}/{version}/{jurisdiction_code}/deed.{language_code}"
+            return (
+                f"/licenses/{license_code}/{version}/{jurisdiction_code}/"
+                f"deed.{language_code}"
+            )
     else:
         if language_code == "en" or not language_code:
             return f"/licenses/{license_code}/{version}/"

@@ -9,38 +9,32 @@ want to use a newer version, edit `Pipfile`.
 Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 
-## Getting Started
-If You are using Linux, install pip3 and pipenv using:
-```shell
-sudo apt install python3-pip
-pip3 install pipenv
-```
-
 ### Setting up the Project
 
 1. Development Environment
    1. Fork and clone the project, cd to the project directory.
-   2. Install dependencies via [Homebrew](https://brew.sh/) for macOS
-    ```shell
-    brew install pandoc postgresql python@3.7
-    ```
-       For Linux:
-    ```shell
-    sudo apt-get install pandoc postgresql postgresql-contrib python3.7 python3.7-dev
-    ```
-   3. Install Python 3.7 environment and modules via pipenv
-    ```shell
-    pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
-    ```
-    This will create a virtual env by the name of the project.
-    
-    On Linux if you still see the default python version as not 3.7:
-    To set the default python version as python3.7 run:
-    ```shell
-    sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.7 1
-    sudo update-alternatives --config python
-    ```
-
+   2. Install dependencies
+      - Linux:
+        ```shell
+        sudo apt-get install pandoc postgresql postgresql-contrib python3.7 python3.7-dev python3-pip
+        ```
+        ```shell
+        pip3 install pipenv
+        ```
+      - macOS: via [Homebrew](https://brew.sh/):
+        ```shell
+        brew install pandoc pipenv postgresql python@3.7
+        ```
+   3. Install Python 3.7 environment and modules via pipenv to create a
+      virtualenv
+      - Linux:
+        ```shell
+        pipenv install --dev --python /usr/bin/python3.7
+        ```
+      - macOS: via [Homebrew](https://brew.sh/):
+        ```shell
+        pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
+        ```
    4. Install pre-commit hooks
     ```shell
     pipenv run pre-commit install
@@ -51,41 +45,29 @@ pip3 install pipenv
     cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
     ```
    2. Start PostgrSQL server
-    MacOS:
-    ```shell
-    brew services run postgres
-    ```
-    Linux:
-    ```shell
-    service postgresql start
-    ```
-    ### Using Postgresql:
-    It’s completely fine to not make a specific postgresql account.
-    But if you do wish to create a different user account for the project,
-    Please refer to the official documentation. https://www.postgresql.org/docs   /current/tutorial-install.html
+      - It's completely fine to not make a specific postgresql account. But if
+        you do wish to create a different user account for the project, Please
+        refer to the official documentation.
+        https://www.postgresql.org/docs/current/tutorial-install.html
+      - Linux:
+        ```shell
+        sudo service postgresql start
+        ```
+      - macOS:
+        ```shell
+        brew services run postgres
+        ```
 
    3. Create project database
-   
-    To be able to create and manipulate databases in postgresql
-    You need to work with a user account that has permissions to do so.
-    For that On linux, run:
-    ```shell
-    sudo -i -u <your account name>
-    ```
-    Then run
-    ```shell
-    createdb -E UTF-8 cc_licenses
-    ```
-    To create the database. (you can now switch back to the virtual env using “logout”     command)
-
-   6. Make sure to have installed all the dependencies which are in the “requirements” directory:
-    ```shell
-    cd DEPRECATED/requirements
-    python -m pip install -r base.txt
-    python -m pip install -r dev.txt
-    python -m pip install -r production.txt
-    ```
-   5. Load database schema
+      - Linux:
+        ```shell
+        sudo createdb -E UTF-8 cc_licenses
+        ```
+      - macOS:
+        ```shell
+        createdb -E UTF-8 cc_licenses
+        ```
+   4. Load database schema
     ```shell
     pipenv run ./manage.py migrate
     ```
@@ -106,11 +88,6 @@ pipenv run ./manage.py runserver 0.0.0.0:8001
 Any changes made to Python will be detected and rebuilt transparently as
 long as the development server is running.
 
-## If you get any error messages while running manage.py commands using pipenv:
-1. Make sure that you have installed all the dependencies in “requirements”
-2. Make sure that you are using python3.7 and “pip” has been upgraded to python3.7 or higher version
-3. Check if pipenv has been installed globally, if not do so using a sudo command,
-And set the installation in “~/.local/bin” directory (check if you find the pipenv module file inside this directory)
 
 ### Error building trees
 
@@ -460,9 +437,3 @@ manually to get upstream updated.
 - [`LICENSE`](LICENSE) (Expat/[MIT][mit] License)
 
 [mit]: http://www.opensource.org/licenses/MIT "The MIT License | Open Source Initiative"
-
-
-
-
-
-

@@ -1,12 +1,15 @@
+# Standard library
 import os
 import subprocess
 from tempfile import TemporaryDirectory
 from unittest import mock
 
+# Third-party
 import git
 from django.conf import settings
 from django.test import TestCase, override_settings
 
+# First-party/Local
 from licenses.git_utils import (
     branch_exists,
     commit_and_push_changes,
@@ -35,19 +38,19 @@ class GitTestMixin:
         os.makedirs(self.upstream_repo_path)
         self.origin_repo = git.Repo.init(self.upstream_repo_path)
         self.origin_repo.index.commit("Initial commit")
-        self.origin_repo.create_head("master", "HEAD")
-        # We want the develop branch to be a different commit from master so we can tell
-        # them apart, so add and commit a file.
-        self.origin_repo.create_head("develop", "HEAD")
-        # "checkout" develop
-        self.origin_repo.heads.develop.checkout()
+        self.origin_repo.create_head("otherbranch", "HEAD")
+        self.origin_repo.create_head("main", "HEAD")
+        # "checkout" main
+        self.origin_repo.heads.main.checkout()
+        # We want the main branch to be a different commit from otherbranch so
+        # we can tell them apart, so add and commit a file.
         self.add_file(self.origin_repo)
 
-        # Now clone the upstream repo and make master and develop branches
+        # Now clone the upstream repo and make otherbranch and main branches
         self.local_repo_path = os.path.join(self.temp_dir_path, "local")
         self.local_repo = self.origin_repo.clone(self.local_repo_path)
-        self.local_repo.create_head("develop", "origin/develop")
-        self.local_repo.create_head("master", "origin/master")
+        self.local_repo.create_head("main", "origin/main")
+        self.local_repo.create_head("otherbranch", "origin/otherbranch")
         super().setUp()
 
     def add_file(self, repo):
@@ -66,26 +69,37 @@ class GitTestMixin:
 @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
 class SetupLocalBranchTest(GitTestMixin, TestCase):
     def test_branch_exists_nowhere_but_parent_does(self):
-        # No "ourbranch" locally or upstream, so we branch from origin/develop
+        # No "ourbranch" locally or upstream, so we branch from origin/main
+        #
+        # setup_local_branch uses settings.OFFICIAL_GIT_BRANCH. This function
+        # will fail if that value is not "main".
         setup_local_branch(self.local_repo, "ourbranch")
 
         our_branch = self.local_repo.heads.ourbranch
-        self.assertEqual(self.origin_repo.heads.develop.commit, our_branch.commit)
-        self.assertNotEqual(self.origin_repo.heads.master.commit, our_branch.commit)
+        self.assertEqual(self.origin_repo.heads.main.commit, our_branch.commit)
+        self.assertNotEqual(
+            self.origin_repo.heads.otherbranch.commit, our_branch.commit
+        )
 
     def test_branch_exists_upstream(self):
         # There's an ourbranch upstream and we branch from that
         self.origin_repo.create_head("ourbranch")
         self.origin_repo.heads.ourbranch.checkout()
         self.add_file(self.origin_repo)
-        self.origin_repo.heads.master.checkout()
+        self.origin_repo.heads.otherbranch.checkout()
         assert branch_exists(self.origin_repo, "ourbranch")
 
         setup_local_branch(self.local_repo, "ourbranch")
         our_branch = self.local_repo.heads.ourbranch
-        self.assertEqual(self.origin_repo.heads.ourbranch.commit, our_branch.commit)
-        self.assertNotEqual(self.origin_repo.heads.develop.commit, our_branch.commit)
-        self.assertNotEqual(self.origin_repo.heads.master.commit, our_branch.commit)
+        self.assertEqual(
+            self.origin_repo.heads.ourbranch.commit, our_branch.commit
+        )
+        self.assertNotEqual(
+            self.origin_repo.heads.main.commit, our_branch.commit
+        )
+        self.assertNotEqual(
+            self.origin_repo.heads.otherbranch.commit, our_branch.commit
+        )
 
     def test_branch_exists_locally_and_upstream(self):
         # There's an ourbranch upstream
@@ -93,17 +107,19 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         self.origin_repo.heads.ourbranch.checkout()
         self.add_file(self.origin_repo)
         upstream_commit = self.origin_repo.heads.ourbranch.commit
-        self.origin_repo.heads.master.checkout()  # Switch to master
+        self.origin_repo.heads.otherbranch.checkout()  # Switch to otherbranch
 
         # We use the local branch, but update to the upstream tip
         self.local_repo.remotes.origin.fetch()
         self.local_repo.create_head("ourbranch")
-        upstream_branch = get_branch(self.local_repo.remotes.origin, "ourbranch")
+        upstream_branch = get_branch(
+            self.local_repo.remotes.origin, "ourbranch"
+        )
         self.local_repo.heads.ourbranch.set_tracking_branch(upstream_branch)
         self.local_repo.heads.ourbranch.checkout()
         self.add_file(self.local_repo)
         old_local_repo_commit = self.local_repo.heads.ourbranch.commit
-        self.local_repo.heads.master.checkout()  # Switch to master
+        self.local_repo.heads.otherbranch.checkout()  # Switch to otherbranch
 
         setup_local_branch(self.local_repo, "ourbranch")
 
@@ -121,7 +137,8 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
         with mock.patch("licenses.git_utils.run_git") as mock_run_git:
             push_current_branch(mock_repo)
         mock_run_git.assert_called_with(
-            mock_repo, ["git", "push", "-u", "origin", mock_repo.active_branch.name]
+            mock_repo,
+            ["git", "push", "-u", "origin", mock_repo.active_branch.name],
         )
 
     def test_commit_with_push(self):
@@ -131,18 +148,29 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
             commit_and_push_changes(mock_repo, "commit msg", "", push=True)
         self.assertEqual(
             [
-                mock.call(mock_repo, ["git", "commit", "--quiet", "-am", "commit msg"]),
-                mock.call(mock_repo, ["git", "status", "--untracked", "--short"]),
                 mock.call(
                     mock_repo,
-                    ["git", "push", "-u", "origin", mock_repo.active_branch.name],
+                    ["git", "commit", "--quiet", "-am", "commit msg"],
+                ),
+                mock.call(
+                    mock_repo, ["git", "status", "--untracked", "--short"]
+                ),
+                mock.call(
+                    mock_repo,
+                    [
+                        "git",
+                        "push",
+                        "-u",
+                        "origin",
+                        mock_repo.active_branch.name,
+                    ],
                 ),
             ],
             mock_run_git.call_args_list,
         )
 
     def test_changes_are_added(self):
-        self.local_repo.heads.master.checkout()
+        self.local_repo.heads.otherbranch.checkout()
         file_to_delete = self.add_file(
             self.local_repo
         )  # This is automatically committed
@@ -158,7 +186,9 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
         with open(path_to_change, "w") as f:
             f.write("Now this file has different content")
 
-        commit_and_push_changes(self.local_repo, "Add and remove test", "", push=False)
+        commit_and_push_changes(
+            self.local_repo, "Add and remove test", "", push=False
+        )
 
         subprocess.run(
             ["git", "status"],
@@ -167,18 +197,19 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
 
         self.assertFalse(self.local_repo.is_dirty())
 
-        # Switch to develop - these files don't exist
-        self.local_repo.heads.develop.checkout()
+        # Switch to main - these files don't exist
+        self.local_repo.heads.main.checkout()
         self.assertFalse(os.path.exists(path_to_add))
         self.assertFalse(os.path.exists(path_to_change))
         self.assertFalse(os.path.exists(path_to_delete))
 
-        # Switch to master - these files are as expected.
-        self.local_repo.heads.master.checkout()
+        # Switch to otherbranch - these files are as expected.
+        self.local_repo.heads.otherbranch.checkout()
         self.assertTrue(os.path.exists(path_to_add))
         self.assertTrue(os.path.exists(path_to_change))
         self.assertEqual(
-            "Now this file has different content", open(path_to_change, "r").read()
+            "Now this file has different content",
+            open(path_to_change, "r").read(),
         )
         self.assertFalse(os.path.exists(path_to_delete))
 
@@ -196,7 +227,8 @@ class SetupToCallGitTest(TestCase):
                     del os.environ[name]
             setup_to_call_git()
             self.assertEqual(
-                os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh"), os.environ["GIT_SSH"]
+                os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh"),
+                os.environ["GIT_SSH"],
             )
             self.assertEqual(
                 settings.TRANSLATION_REPOSITORY_DEPLOY_KEY,

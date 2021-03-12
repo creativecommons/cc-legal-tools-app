@@ -1,6 +1,8 @@
+# Third-party
 from bs4 import BeautifulSoup
 from django.test import TestCase
 
+# First-party/Local
 from licenses.bs_utils import (
     direct_children_with_tag,
     inner_html,
@@ -14,7 +16,9 @@ class TestBSUtils(TestCase):
     def test_inner_html(self):
         text = """<div id="foo"><strong><p>Foo</p></strong></div>"""
         soup = BeautifulSoup(text, "lxml")
-        self.assertEqual("<strong><p>Foo</p></strong>", inner_html(soup.find(id="foo")))
+        self.assertEqual(
+            "<strong><p>Foo</p></strong>", inner_html(soup.find(id="foo"))
+        )
 
     def test_nested_text(self):
         text = """<div id="foo"><strong><p>Foo</p></strong></div>"""
@@ -39,19 +43,23 @@ class TestBSUtils(TestCase):
         Given a tag, return the text of the immediate children up to,
         but not including the first child whose tagname is 'tagname'.
         """
-        text = """
-        <div id="top"><p>Child 1</p><p>Child 2</p><span>Foo</span><p>Child 4</p> </div>
-        """
+        text = (
+            '<div id="top"><p>Child 1</p><p>Child 2</p><span>Foo</span>'
+            "<p>Child 4</p> </div>"
+        )
         soup = BeautifulSoup(text, "lxml")
         self.assertEqual(
-            "<p>Child 1</p><p>Child 2</p>", text_up_to(soup.find(id="top"), "span")
+            "<p>Child 1</p><p>Child 2</p>",
+            text_up_to(soup.find(id="top"), "span"),
         )
         # Simpler - only one child before the 'up to'
         text = """
         <div id="top"><p>Child 1</p><span>Foo</span><p>Child 4</p> </div>
         """
         soup = BeautifulSoup(text, "lxml")
-        self.assertEqual("<p>Child 1</p>", text_up_to(soup.find(id="top"), "span"))
+        self.assertEqual(
+            "<p>Child 1</p>", text_up_to(soup.find(id="top"), "span")
+        )
 
     def test_name_and_text(self):
         """
@@ -64,9 +72,13 @@ class TestBSUtils(TestCase):
 
         E.g. "<strong>Truck</strong> is a <strong>heavy</strong> vehicle."
 
-        Returns a dictionary {"name": "Truck", "text": "is a <strong>heavy</strong> vehicle."}
+        Returns a dictionary:
+            {"name": "Truck", "text": "is a <strong>heavy</strong> vehicle."}
         """
-        text = """<div id="test"><strong>Truck</strong> is a <strong>heavy</strong> vehicle.</div>"""
+        text = (
+            '<div id="test"><strong>Truck</strong> is a <strong>heavy</strong>'
+            " vehicle.</div>"
+        )
         soup = BeautifulSoup(text, "lxml")
         self.assertEqual(
             {"name": "Truck", "text": "is a <strong>heavy</strong> vehicle."},

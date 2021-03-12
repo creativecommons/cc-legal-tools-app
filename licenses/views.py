@@ -1,9 +1,11 @@
+# Standard library
 import re
 import subprocess
 import tempfile
 from operator import itemgetter
 from typing import Iterable
 
+# Third-party
 import git
 import yaml
 from bs4 import BeautifulSoup
@@ -14,9 +16,15 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
+# First-party/Local
 from i18n import JURISDICTION_NAMES
 from i18n.utils import active_translation, cc_to_django_language_code
-from licenses.models import BY_LICENSE_CODES, LegalCode, License, TranslationBranch
+from licenses.models import (
+    BY_LICENSE_CODES,
+    LegalCode,
+    License,
+    TranslationBranch,
+)
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
     # license_code : template name
@@ -38,9 +46,9 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 def all_licenses(request):
     """
-    For test purposes, this displays all the available deeds and licenses in tables.
-    This is not intended for public use and should not be included in the generation
-    of static files.
+    For test purposes, this displays all the available deeds and licenses in
+    tables.  This is not intended for public use and should not be included in
+    the generation of static files.
     """
 
     # Get the list of license codes and languages that occur among the licenses
@@ -76,16 +84,19 @@ def all_licenses(request):
 
 
 def name_local(legal_code):
-    return get_language_info(cc_to_django_language_code(legal_code.language_code))[
-        "name_local"
-    ]
+    return get_language_info(
+        cc_to_django_language_code(legal_code.language_code)
+    )["name_local"]
 
 
 def get_languages_and_links_for_legalcodes(
-    legalcodes: Iterable[LegalCode], selected_language_code: str, license_or_deed: str
+    legalcodes: Iterable[LegalCode],
+    selected_language_code: str,
+    license_or_deed: str,
 ):
     """
-    license_or_deed should be "license" or "deed", controlling which kind of page we link to.
+    license_or_deed should be "license" or "deed", controlling which kind of
+    page we link to.
     selected_language_code is a CC language code
     """
     languages_and_links = [
@@ -167,7 +178,9 @@ def view_license(
         return render(request, **kwargs)
 
 
-def view_deed(request, license_code, version, jurisdiction=None, language_code=None):
+def view_deed(
+    request, license_code, version, jurisdiction=None, language_code=None
+):
     legalcode = get_object_or_404(
         LegalCode,
         deed_url=request.path,
@@ -204,12 +217,15 @@ def view_deed(request, license_code, version, jurisdiction=None, language_code=N
 
 def translation_status(request):
     # with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
-    # repo.remotes.origin.fetch()  # Make sure we know about all the upstream branches
+    # # Make sure we know about all the upstream branches
+    # repo.remotes.origin.fetch()
     # heads = repo.remotes.origin.refs
     # branches = [head.name[len("origin/") :] for head in heads]
 
     branches = TranslationBranch.objects.exclude(complete=True)
-    return render(request, "licenses/translation_status.html", {"branches": branches})
+    return render(
+        request, "licenses/translation_status.html", {"branches": branches}
+    )
 
 
 def branch_status_helper(repo, translation_branch):
@@ -247,7 +263,9 @@ def branch_status_helper(repo, translation_branch):
         "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
         "branch": translation_branch,
         "commits": commits_for_template[:NUM_COMMITS],
-        "last_commit": commits_for_template[0] if commits_for_template else None,
+        "last_commit": commits_for_template[0]
+        if commits_for_template
+        else None,
     }
 
 
@@ -258,7 +276,8 @@ def branch_status(request, id):
     translation_branch = get_object_or_404(TranslationBranch, id=id)
     cache = caches["branchstatuscache"]
     cachekey = (
-        f"{settings.TRANSLATION_REPOSITORY_DIRECTORY}-{translation_branch.branch_name}"
+        f"{settings.TRANSLATION_REPOSITORY_DIRECTORY}-"
+        f"{translation_branch.branch_name}"
     )
     result = cache.get(cachekey)
     if result is None:

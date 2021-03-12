@@ -1,12 +1,20 @@
+# Standard library
 import logging
 import os
 import re
 
+# Third-party
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-CSV_HEADERS = ["lang", "num_messages", "num_trans", "num_fuzzy", "percent_trans"]
+CSV_HEADERS = [
+    "lang",
+    "num_messages",
+    "num_trans",
+    "num_fuzzy",
+    "percent_trans",
+]
 DEFAULT_INPUT_DIR = settings.LOCALE_PATHS[0]
 DEFAULT_CSV_FILE = os.path.join(DEFAULT_INPUT_DIR, "transstats.csv")
 # If something has no language listed, that generally means it's English.
@@ -19,9 +27,10 @@ DEFAULT_LANGUAGE_CODE = "en"
 # The language codes here are CC language codes, which sometimes differ from
 # Django language codes.
 DEFAULT_JURISDICTION_LANGUAGES = {
-    # Map jurisdiction code to language code. IMPORTANT: Some of the jurisdiction codes
-    # look like language codes, but they're not necessarily related. E.g. "ar" is the
-    # language code for Arabic, but the jurisdiction code for Argentina.
+    # Map jurisdiction code to language code. IMPORTANT: Some of the
+    # jurisdiction codes look like language codes, but they're not necessarily
+    # related. E.g. "ar" is the language code for Arabic, but the jurisdiction
+    # code for Argentina.
     # See the "JURISDICTION_NAMES", just below this.
     "am": "hy",  # Armenian - not in jurisdictions.rdf
     "ar": "es",
@@ -50,7 +59,7 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     # YES https://creativecommons.org/licenses/by/3.0/ch/legalcode.de
     "ch": "de",  # ch=Switzerland, default in jurisdictions.rdf=de
     "cl": "es",
-    "cn": "zh-Hans",  # "cn" is China Mainland, language is simplified Chinese = zh-Hans
+    "cn": "zh-Hans",  # "cn" is China Mainland, language is simplified Chinese
     "co": "es",
     "cr": "es",
     "cz": "cs",
@@ -62,7 +71,8 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     # For "es", jurisdictions.rdf says "es-es".
     # Deed https://creativecommons.org/licenses/by/3.0/es/ is valid
     # NOT https://creativecommons.org/licenses/by/3.0/es/legalcode
-    # License https://creativecommons.org/licenses/by/3.0/es/legalcode.es is valid
+    # License https://creativecommons.org/licenses/by/3.0/es/legalcode.es is
+    # valid
     # NOT https://creativecommons.org/licenses/by/3.0/es/legalcode.es-es
     # BUT the filename is by-nc-nd_3.0_es_es ????
     "es": "es",

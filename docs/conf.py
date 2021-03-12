@@ -12,6 +12,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+# Standard library
 import os
 import sys
 
@@ -137,8 +138,8 @@ html_theme = "alabaster"
 # html_logo = None
 
 # The name of an image file (relative to this directory) to use as a favicon of
-# the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
-# pixels large.
+# the docs.  This file should be a Windows icon file (.ico) being 16x16 or
+# 32x32 pixels large.
 # html_favicon = None
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -260,7 +261,9 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "cc_licenses", "Cc_Licenses Documentation", [author], 1)]
+man_pages = [
+    (master_doc, "cc_licenses", "Cc_Licenses Documentation", [author], 1)
+]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False

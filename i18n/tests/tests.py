@@ -1,7 +1,10 @@
+# Standard library
 import os
 
+# Third-party
 from django.test import TestCase
 
+# First-party/Local
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_locale_text_orientation,
@@ -65,7 +68,10 @@ class I18NTest(TestCase):
     #     )
     #     # Alphabetized
     #     self.assertEqual(
-    #         [{"code": "en", "name": "English"}, {"code": "fr", "name": "français"}],
+    #         [
+    #             {"code": "en", "name": "English"},
+    #             {"code": "fr", "name": "français"},
+    #         ],
     #         result,
     #     )
 
@@ -86,7 +92,9 @@ class I18NTest(TestCase):
     #
     #     with self.subTest("Uses cached result"):
     #         CACHED_TRANS_STATS["unused filename"] = "ding dong"
-    #         self.assertEqual("ding dong", get_all_trans_stats("unused filename"))
+    #         self.assertEqual(
+    #             "ding dong", get_all_trans_stats("unused filename")
+    #         )
     #         CACHED_TRANS_STATS.clear()
     #
     #     with self.subTest("Nonexistent file raises exception"):
@@ -151,6 +159,10 @@ class I18NTest(TestCase):
 
     def test_get_language_for_jurisdiction(self):
         # 'be' default is "fr"
-        self.assertEqual("fr", get_default_language_for_jurisdiction("be", "ar"))
+        self.assertEqual(
+            "fr", get_default_language_for_jurisdiction("be", "ar")
+        )
         # There is none for "xx" so we return the default instead
-        self.assertEqual("ar", get_default_language_for_jurisdiction("xx", "ar"))
+        self.assertEqual(
+            "ar", get_default_language_for_jurisdiction("xx", "ar")
+        )

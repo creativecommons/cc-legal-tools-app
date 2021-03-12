@@ -1,11 +1,41 @@
+# Third-party
 import factory.fuzzy
 
+# First-party/Local
 from licenses.models import LegalCode, License, TranslationBranch
 
 # The language codes we already have translations for
-language_codes = "ar,cs,de,el,en,es,eu,fi,fr,hr,id,it,ja,ko,lt,kv,mi,nl,no,pl,pt,ro,ru,sl,sv,tr,uk,zh_Hans,zh_Hant".split(
-    ","
-)
+language_codes = [
+    "ar",
+    "cs",
+    "de",
+    "el",
+    "en",
+    "es",
+    "eu",
+    "fi",
+    "fr",
+    "hr",
+    "id",
+    "it",
+    "ja",
+    "ko",
+    "kv",
+    "lt",
+    "mi",
+    "nl",
+    "no",
+    "pl",
+    "pt",
+    "ro",
+    "ru",
+    "sl",
+    "sv",
+    "tr",
+    "uk",
+    "zh_Hans",
+    "zh_Hant",
+]
 
 
 class LicenseFactory(factory.django.DjangoModelFactory):

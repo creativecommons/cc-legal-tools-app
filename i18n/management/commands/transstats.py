@@ -5,12 +5,15 @@ The CSV written will be in the format of:
   lang,num_messages,num_trans,num_fuzzy,percent_trans
 """
 
+# Standard library
 import csv
 import os
 
+# Third-party
 import polib
 from django.core.management import BaseCommand
 
+# First-party/Local
 from i18n import CSV_HEADERS, DEFAULT_CSV_FILE, DEFAULT_INPUT_DIR
 
 
@@ -57,7 +60,9 @@ def gen_statistics(input_dir, output_file):
                     "num_messages": len(pofile),
                     "num_trans": translated,
                     "num_fuzzy": fuzzies,
-                    "percent_trans": int((float(translated) / len(pofile)) * 100),
+                    "percent_trans": int(
+                        (float(translated) / len(pofile)) * 100
+                    ),
                 }
             )
 
@@ -70,7 +75,8 @@ class Command(BaseCommand):
             "-i",
             "--input_dir",
             dest="input_dir",
-            help="Directory to search for .po files to generate statistics on.",
+            help="Directory to search for .po files to generate statistics"
+            " on.",
             default=DEFAULT_INPUT_DIR,
         )
         parser.add_argument(

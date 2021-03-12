@@ -1,15 +1,18 @@
 """
 Django settings for cc_licenses project.
 """
+# Standard library
 import os
 
+# Third-party
 from babel import Locale
 from django.conf.locale import LANG_INFO
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # SETTINGS_DIR is where this settings file is
 SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))
-# PROJECT_DIR is the directory under root that contains the settings directory, urls.py, and other global stuff.
+# PROJECT_DIR is the directory under root that contains the settings directory,
+#             urls.py, and other global stuff.
 PROJECT_DIR = os.path.dirname(SETTINGS_DIR)
 # ROOT_DIR is the top directory under source control
 ROOT_DIR = os.path.dirname(PROJECT_DIR)
@@ -90,7 +93,9 @@ MEDIA_URL = "/media/"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "filters": {
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}
+    },
     "formatters": {
         "basic": {
             "format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",
@@ -200,22 +205,33 @@ CELERYD_HIJACK_ROOT_LOGGER = False
 # https://docs.djangoproject.com/en/1.9/topics/auth/passwords/#password-validation
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": (
+            "django.contrib.auth."
+            "password_validation.UserAttributeSimilarityValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "NAME": (
+            "django.contrib.auth.password_validation.MinimumLengthValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        "NAME": (
+            "django.contrib.auth."
+            "password_validation.CommonPasswordValidator"
+        ),
     },
     {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        "NAME": (
+            "django.contrib.auth."
+            "password_validation.NumericPasswordValidator"
+        ),
     },
 ]
 
 # Make things more secure by default. Run "python manage.py check --deploy"
-# for even more suggestions that you might want to add to the settings, depending
-# on how the site uses SSL.
+# for even more suggestions that you might want to add to the settings,
+# depending on how the site uses SSL.
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 CSRF_COOKIE_HTTPONLY = True
@@ -242,17 +258,20 @@ if "CACHE_HOST" in os.environ:
 # Percent translated that languages should be at or above
 TRANSLATION_THRESHOLD = 80
 
-# Location of the translation data's repo. Look in env for TRANSLATION_REPOSITORY_DIRECTORY.
+# Location of the translation data's repo. Look in env for
+# TRANSLATION_REPOSITORY_DIRECTORY.
 # Default is next to this one.
 TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
-    "TRANSLATION_REPOSITORY_DIRECTORY", os.path.join(ROOT_DIR, "..", "cc-licenses-data")
+    "TRANSLATION_REPOSITORY_DIRECTORY",
+    os.path.join(ROOT_DIR, "..", "cc-licenses-data"),
 )
 
 # django-distill settings
 DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
 
 # Django translations are in the translation repo directory, under "locale".
-# License translations are in the translation repo directory, under "translations".
+# License translations are in the translation repo directory, under
+# "translations".
 LOCALE_PATHS = (
     os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),
     os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "legalcode"),
@@ -264,8 +283,11 @@ TRANSIFEX = {
     "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
 }
 
-# The git branch where the official, approved, used in production translations are.
-OFFICIAL_GIT_BRANCH = "develop"
+# The git branch where the official, approved, used in production translations
+# are.
+OFFICIAL_GIT_BRANCH = "main"
 
 # Path to private keyfile to use when pushing up to data repo
-TRANSLATION_REPOSITORY_DEPLOY_KEY = os.getenv("TRANSLATION_REPOSITORY_DEPLOY_KEY", "")
+TRANSLATION_REPOSITORY_DEPLOY_KEY = os.getenv(
+    "TRANSLATION_REPOSITORY_DEPLOY_KEY", ""
+)

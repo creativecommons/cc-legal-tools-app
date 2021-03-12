@@ -1,8 +1,10 @@
+# Standard library
 import logging
 import os
 import subprocess
 from typing import List
 
+# Third-party
 import git
 from django.conf import settings
 
@@ -40,11 +42,14 @@ def setup_to_call_git(env=None):
 
 def remote_branch_names(remote: git.Remote) -> List[str]:
     """
-    Return list of names of branches on the remote, without any leading remote name.
+    Return list of names of branches on the remote, without any leading remote
+    name.
     E.g. ["branch", "branch"], NOT ["origin/branch", "origin/branch"]
     """
 
-    full_branch_names = [ref.name for ref in remote.refs]  # ["origin/a", "origin/b"]
+    full_branch_names = [
+        ref.name for ref in remote.refs
+    ]  # ["origin/a", "origin/b"]
     prefix_length = len(remote.name) + 1  # "origin/"
     return [name[prefix_length:] for name in full_branch_names]
 
@@ -106,7 +111,8 @@ def setup_local_branch(repo: git.Repo, branch_name: str):
             assert branch.tracking_branch()
             branch.checkout(force=True)
         else:
-            # No upstream branch either. Branch from the official branch upstream, but don't track it.
+            # No upstream branch either. Branch from the official branch
+            # upstream, but don't track it.
             upstream = get_branch(origin, settings.OFFICIAL_GIT_BRANCH)
             repo.create_head(branch_name, upstream)
             branch = get_branch(repo, branch_name)
@@ -118,7 +124,9 @@ def setup_local_branch(repo: git.Repo, branch_name: str):
         branch.checkout(force=True)
         if branch.tracking_branch():
             # Use upstream branch tip commit
-            repo.head.reset(f"origin/{branch_name}", index=True, working_tree=True)
+            repo.head.reset(
+                f"origin/{branch_name}", index=True, working_tree=True
+            )
         return
 
 
@@ -128,8 +136,12 @@ def push_current_branch(repo: git.Repo):
     run_git(repo, ["git", "push", "-u", "origin", current_branch.name])
 
 
-def commit_and_push_changes(repo: git.Repo, commit_msg: str, relpath: str, push: bool):
-    """Commit all changes under relpath to current branch, and maybe push upstream"""
+def commit_and_push_changes(
+    repo: git.Repo, commit_msg: str, relpath: str, push: bool
+):
+    """
+    Commit all changes under relpath to current branch, and maybe push upstream
+    """
     untracked_to_add = [
         path for path in repo.untracked_files if path.startswith(relpath)
     ]

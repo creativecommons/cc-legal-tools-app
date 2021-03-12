@@ -1,13 +1,16 @@
+# Standard library
 import os
 import tempfile
 from unittest import mock
 from unittest.mock import MagicMock, call
 
+# Third-party
 from bs4 import BeautifulSoup
 from django.test import TestCase
 from django.urls import Resolver404, URLResolver
 from polib import POEntry
 
+# First-party/Local
 from licenses.models import License
 from licenses.utils import (
     clean_string,
@@ -23,7 +26,6 @@ from licenses.utils import (
     validate_dictionary_is_all_text,
     validate_list_is_all_text,
 )
-
 from .factories import LegalCodeFactory, LicenseFactory
 
 
@@ -67,9 +69,12 @@ class SaveURLAsStaticFileTest(TestCase):
 
         with mock.patch("licenses.utils.save_bytes_to_file"):
             with mock.patch.object(URLResolver, "resolve") as mock_resolve:
-                mock_resolve.return_value = MockResolverMatch(func=mock_metadata_view)
+                mock_resolve.return_value = MockResolverMatch(
+                    func=mock_metadata_view
+                )
                 with self.assertRaisesMessage(
-                    ValueError, "ERROR: Status 500 for url /licenses/metadata.yaml"
+                    ValueError,
+                    "ERROR: Status 500 for url /licenses/metadata.yaml",
                 ):
                     save_url_as_static_file(
                         output_dir, url, "/output/licenses/metadata.yaml"
@@ -107,11 +112,15 @@ class SaveURLAsStaticFileTest(TestCase):
 
         with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
             with mock.patch.object(URLResolver, "resolve") as mock_resolve:
-                mock_resolve.return_value = MockResolverMatch(func=mock_metadata_view)
+                mock_resolve.return_value = MockResolverMatch(
+                    func=mock_metadata_view
+                )
                 save_url_as_static_file(output_dir, url, relpath)
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
-        self.assertEqual([call(request=mock.ANY)], mock_metadata_view.call_args_list)
+        self.assertEqual(
+            [call(request=mock.ANY)], mock_metadata_view.call_args_list
+        )
         self.assertEqual(
             [call(file_content, "/output/licenses/metadata.yaml")],
             mock_save.call_args_list,
@@ -122,12 +131,15 @@ class GetJurisdictionCodeTest(TestCase):
     def test_get_code_from_jurisdiction_url(self):
         # Just returns the last portion of the path
         self.assertEqual(
-            "foo", get_code_from_jurisdiction_url("http://example.com/bar/foo/")
+            "foo",
+            get_code_from_jurisdiction_url("http://example.com/bar/foo/"),
         )
         self.assertEqual(
             "foo", get_code_from_jurisdiction_url("http://example.com/bar/foo")
         )
-        self.assertEqual("", get_code_from_jurisdiction_url("http://example.com"))
+        self.assertEqual(
+            "", get_code_from_jurisdiction_url("http://example.com")
+        )
 
 
 class ParseLegalcodeFilenameTest(TestCase):
@@ -148,8 +160,13 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_3.0_es_ast",
                 {
-                    "about_url": "http://creativecommons.org/licenses/by/3.0/es/",
-                    "url": "http://creativecommons.org/licenses/by/3.0/es/legalcode.ast",
+                    "about_url": (
+                        "http://creativecommons.org/licenses/by/3.0/es/"
+                    ),
+                    "url": (
+                        "http://creativecommons.org/licenses/by/3.0/es/"
+                        "legalcode.ast"
+                    ),
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "es",
@@ -159,8 +176,13 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_3.0_rs_sr-Cyrl.html",
                 {
-                    "about_url": "http://creativecommons.org/licenses/by/3.0/rs/",
-                    "url": "http://creativecommons.org/licenses/by/3.0/rs/legalcode.sr-Cyrl",
+                    "about_url": (
+                        "http://creativecommons.org/licenses/by/3.0/rs/"
+                    ),
+                    "url": (
+                        "http://creativecommons.org/licenses/by/3.0/rs/"
+                        "legalcode.sr-Cyrl"
+                    ),
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "rs",
@@ -170,8 +192,12 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "devnations_2.0.html",
                 {
-                    "about_url": "http://creativecommons.org/licenses/devnations/2.0/",
-                    "url": "http://creativecommons.org/licenses/devnations/2.0/",
+                    "about_url": (
+                        "http://creativecommons.org/licenses/devnations/2.0/"
+                    ),
+                    "url": (
+                        "http://creativecommons.org/licenses/devnations/2.0/"
+                    ),
                     "license_code": "devnations",
                     "version": "2.0",
                     "jurisdiction_code": "",
@@ -181,7 +207,9 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "LGPL_2.1.html",
                 {
-                    "about_url": "http://creativecommons.org/licenses/LGPL/2.1/",
+                    "about_url": (
+                        "http://creativecommons.org/licenses/LGPL/2.1/"
+                    ),
                     "url": "http://creativecommons.org/licenses/LGPL/2.1/",
                     "license_code": "LGPL",
                     "version": "2.1",
@@ -192,8 +220,12 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "samplingplus_1.0",
                 {
-                    "about_url": "http://creativecommons.org/licenses/sampling+/1.0/",
-                    "url": "http://creativecommons.org/licenses/sampling+/1.0/",
+                    "about_url": (
+                        "http://creativecommons.org/licenses/sampling+/1.0/"
+                    ),
+                    "url": (
+                        "http://creativecommons.org/licenses/sampling+/1.0/"
+                    ),
                     "license_code": "sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
@@ -203,8 +235,13 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "zero_1.0_fi.html",
                 {
-                    "about_url": "http://creativecommons.org/publicdomain/zero/1.0/",
-                    "url": "http://creativecommons.org/publicdomain/zero/1.0/legalcode.fi",
+                    "about_url": (
+                        "http://creativecommons.org/publicdomain/zero/1.0/"
+                    ),
+                    "url": (
+                        "http://creativecommons.org/publicdomain/zero/1.0/"
+                        "legalcode.fi"
+                    ),
                     "license_code": "CC0",
                     "version": "1.0",
                     "jurisdiction_code": "",
@@ -214,8 +251,13 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "nc-samplingplus_1.0.html",
                 {
-                    "about_url": "http://creativecommons.org/licenses/nc-sampling+/1.0/",
-                    "url": "http://creativecommons.org/licenses/nc-sampling+/1.0/",
+                    "about_url": (
+                        "http://creativecommons.org/licenses/nc-sampling+/"
+                        "1.0/"
+                    ),
+                    "url": (
+                        "http://creativecommons.org/licenses/nc-sampling+/1.0/"
+                    ),
                     "license_code": "nc-sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
@@ -252,7 +294,8 @@ class GetLicenseURLFromLegalCodeURLTest(TestCase):
                 "http://creativecommons.org/licenses/GPL/2.0/",
             ),
             (
-                "http://creativecommons.org/licenses/nc-sampling+/1.0/tw/legalcode",
+                "http://creativecommons.org/licenses/nc-sampling+/1.0/tw/"
+                "legalcode",
                 "http://creativecommons.org/licenses/nc-sampling+/1.0/tw/",
             ),
             # Exceptions:
@@ -318,19 +361,25 @@ class TestComputeAboutURL(TestCase):
     def test_bsd(self):
         self.assertEqual(
             "http://creativecommons.org/licenses/BSD/",
-            compute_about_url(license_code="BSD", version="", jurisdiction_code=""),
+            compute_about_url(
+                license_code="BSD", version="", jurisdiction_code=""
+            ),
         )
 
     def test_mit(self):
         self.assertEqual(
             "http://creativecommons.org/licenses/MIT/",
-            compute_about_url(license_code="MIT", version="", jurisdiction_code=""),
+            compute_about_url(
+                license_code="MIT", version="", jurisdiction_code=""
+            ),
         )
 
     def test_gpl20(self):
         self.assertEqual(
             "http://creativecommons.org/licenses/GPL/2.0/",
-            compute_about_url(license_code="GPL", version="2.0", jurisdiction_code=""),
+            compute_about_url(
+                license_code="GPL", version="2.0", jurisdiction_code=""
+            ),
         )
 
     def test_30_nl(self):
@@ -358,7 +407,9 @@ class TestMisc(TestCase):
         out = validate_list_is_all_text([navstring])
         self.assertEqual(["foo"], out)
         self.assertEqual([["foo"]], validate_list_is_all_text([[navstring]]))
-        self.assertEqual([{"a": "foo"}], validate_list_is_all_text([{"a": navstring}]))
+        self.assertEqual(
+            [{"a": "foo"}], validate_list_is_all_text([{"a": navstring}])
+        )
 
     def test_validate_dictionary_is_all_text(self):
         validate_dictionary_is_all_text({"1": "a", "2": "b"})
@@ -377,7 +428,8 @@ class TestMisc(TestCase):
             {"a": ["foo"]}, validate_dictionary_is_all_text({"a": [navstring]})
         )
         self.assertEqual(
-            {"a": {"b": "foo"}}, validate_dictionary_is_all_text({"a": {"b": "foo"}})
+            {"a": {"b": "foo"}},
+            validate_dictionary_is_all_text({"a": {"b": "foo"}}),
         )
 
     def test_save_dict_to_pofile(self):
@@ -395,14 +447,22 @@ class TestMisc(TestCase):
         left_list = [" left", " right", " center"]
         right_list = ["left ", "right ", "center "]
         center_list = [" left ", " right ", " center "]
-        self.assertEqual(strip_list_whitespace("left", left_list), expected_list)
-        self.assertEqual(strip_list_whitespace("right", right_list), expected_list)
-        self.assertEqual(strip_list_whitespace("center", center_list), expected_list)
+        self.assertEqual(
+            strip_list_whitespace("left", left_list), expected_list
+        )
+        self.assertEqual(
+            strip_list_whitespace("right", right_list), expected_list
+        )
+        self.assertEqual(
+            strip_list_whitespace("center", center_list), expected_list
+        )
 
     def test_cleanup_current_branch_output(self):
-        expected_list = ["some-branch", "another-branch", "develop"]
-        unmodified_list = ["some-branch", "* another-branch", "develop"]
-        self.assertEqual(cleanup_current_branch_output(unmodified_list), expected_list)
+        expected_list = ["some-branch", "another-branch", "main"]
+        unmodified_list = ["some-branch", "* another-branch", "main"]
+        self.assertEqual(
+            cleanup_current_branch_output(unmodified_list), expected_list
+        )
 
 
 class CleanStringTest(TestCase):

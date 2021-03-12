@@ -1,7 +1,9 @@
+# Standard library
 import os
 import re
 from contextlib import contextmanager
 
+# Third-party
 import polib
 from babel import Locale, UnknownLocaleError
 from django.conf import settings
@@ -9,6 +11,7 @@ from django.utils.encoding import force_text
 from django.utils.translation import override, ugettext
 from django.utils.translation.trans_real import DjangoTranslation, translation
 
+# First-party/Local
 from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
     DEFAULT_LANGUAGE_CODE,
@@ -30,7 +33,10 @@ CACHED_WELL_TRANSLATED_LANGS = {}
 #     Return list of locale names under our locale dir.
 #     """
 #     dir = settings.LOCALE_PATHS[0]
-#     return [item for item in os.listdir(dir) if os.path.isdir(os.path.join(dir, item))]
+#     return [
+#         item for item in os.listdir(dir)
+#         if os.path.isdir(os.path.join(dir, item))
+#     ]
 
 
 LANGUAGE_JURISDICTION_MAPPING = {}
@@ -75,10 +81,12 @@ def get_translation_object(
     )
     # Start with a translation object for the domain for this license.
     license_translation_object = DjangoTranslation(
-        language=django_language_code, domain=domain, localedirs=[license_locale_dir]
+        language=django_language_code,
+        domain=domain,
+        localedirs=[license_locale_dir],
     )
-    # Add a fallback to the standard Django translation for this language. This gets us the
-    # non-legalcode parts of the pages.
+    # Add a fallback to the standard Django translation for this language. This
+    # gets us the non-legalcode parts of the pages.
     license_translation_object.add_fallback(translation(django_language_code))
 
     return license_translation_object
@@ -104,6 +112,7 @@ def active_translation(translation: DjangoTranslation):
     """
     # import non-public value here to keep its scope
     # as limited as possible:
+    # Third-party
     from django.utils.translation.trans_real import _active
 
     # Either _active.value points at a DjangoTranslation
@@ -166,7 +175,9 @@ def get_default_language_for_jurisdiction(
 ):
     # Input: a jurisdiction code
     # Output: a CC language code
-    return DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, default_language)
+    return DEFAULT_JURISDICTION_LANGUAGES.get(
+        jurisdiction_code, default_language
+    )
 
 
 def get_locale_text_orientation(locale_identifier: str) -> str:
@@ -176,7 +187,9 @@ def get_locale_text_orientation(locale_identifier: str) -> str:
     try:
         locale = Locale.parse(locale_identifier, sep="-")
     except UnknownLocaleError:
-        raise ValueError("No locale found with identifier %r" % locale_identifier)
+        raise ValueError(
+            "No locale found with identifier %r" % locale_identifier
+        )
     return "ltr" if locale.character_order == "left-to-right" else "rtl"
 
 
@@ -309,7 +322,8 @@ CACHED_TRANS_STATS = {}
 #
 #     if not os.path.exists(trans_file):
 #         raise IOError(
-#             f"No such CSV file {trans_file}.  Maybe run `python manage.py transstats`?"
+#             f"No such CSV file {trans_file}. Maybe run"
+#             " `python manage.py transstats`?"
 #         )
 #
 #     reader = csv.DictReader(open(trans_file, "r"), CSV_HEADERS)

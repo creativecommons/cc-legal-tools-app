@@ -1,15 +1,18 @@
-# flake8: noqa
+# Standard library
 import os
 import sys
 
-from cc_licenses.settings.base import *  # noqa
+# First-party/Local
+from cc_licenses.settings.base import *  # noqa: F403
 
 DEBUG = True
 
-INSTALLED_APPS += [
+INSTALLED_APPS += [  # noqa: F405
     "debug_toolbar",
 ]
-MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
+MIDDLEWARE += (  # noqa: F405
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+)
 
 INTERNAL_IPS = ("127.0.0.1",)
 
@@ -33,7 +36,8 @@ if "test" in sys.argv:
         "django.contrib.auth.hashers.MD5PasswordHasher",
     )
 
-    LOGGING["root"]["handlers"] = []
+    LOGGING["root"]["handlers"] = []  # noqa: F405
 
 # Make it obvious if there are unresolved variables in templates
-TEMPLATES[0]["OPTIONS"]["string_if_invalid"] = "INVALID_VARIABLE(%s)"
+new_value = "INVALID_VARIABLE(%s)"
+TEMPLATES[0]["OPTIONS"]["string_if_invalid"] = new_value  # noqa: F405
