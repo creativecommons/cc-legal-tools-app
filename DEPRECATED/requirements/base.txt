@@ -3,7 +3,7 @@ babel==2.8.0
 beautifulsoup4==4.9.1
 dealer==2.1.0
 dj-database-url==0.5.0
-django==2.2.13
+django==2.2.19
 gitpython==3.1.11          # for our own use, also transifex_client in dev reqs
 iso8601==0.1.13
 lxml==4.6.2  # For use by beautifulsoup (but not a stated dependency)
