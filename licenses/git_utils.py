@@ -2,6 +2,7 @@
 import logging
 import os
 import subprocess
+import sys
 from typing import List
 
 # Third-party
@@ -91,7 +92,18 @@ def setup_local_branch(repo: git.Repo, branch_name: str):
     THIS DISCARDS ANY LOCAL CHANGES!!!!
     """
     origin = repo.remotes.origin
-    origin.fetch()
+    try:
+        origin.fetch()
+    except git.exc.GitCommandError as e:
+        if "protocol error" in e.stderr:
+            print(
+                f"ERROR: git origin.fetch() {e.stderr.strip()}."
+                " Check git remote access/authentication.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        else:
+            raise
 
     # Hard reset in case the repo is dirty
     repo.head.reset(index=True, working_tree=True)
