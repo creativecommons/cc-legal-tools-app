@@ -1,7 +1,6 @@
-{% load static from staticfiles %}
-{% load i18n bidi %}
-<!DOCTYPE html>
-{% get_current_language as LANGUAGE_CODE %}{# View will have set current language #}
+<!DOCTYPE html>{% load bidi i18n %}{% load static from staticfiles %}
+{# View will have set current language #}
+{% get_current_language as LANGUAGE_CODE %}
 {% get_language_info for LANGUAGE_CODE as lang %}
 <html lang="{{ lang.code }}" class="no-js" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
 <head about="{% block about %} {% endblock %}">
@@ -12,10 +11,12 @@
     <meta name="author" content="{% block meta-author %}{% endblock %}">
     <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
     <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-    {# We're pinning vocabulary v2020.11.1 because v2020.11.2 had a change that broke headers for this site. #}
-    {# So far, I've been unable to find any documentation about it other than the warning in the release #}
-    {# notes that there was a breaking change. #}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">{% comment %}{#
+    We're pinning vocabulary v2020.11.1 because v2020.11.2 had a change that
+    broke headers for this site. So far, I've been unable to find any
+    documentation about it other than the warning in the release notes that
+    there was a breaking change.
+    #}{% endcomment %}
     <link rel="stylesheet" href="https://unpkg.com/@creativecommons/vocabulary@v2020.11.1/css/vocabulary.css">
 </head>
 <body typeoff="cc:License">

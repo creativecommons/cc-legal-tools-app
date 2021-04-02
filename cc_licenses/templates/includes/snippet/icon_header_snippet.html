@@ -6,9 +6,7 @@
 <h3 class="is-hidden-touch">
   {# Icon Sections #}
     <span class="padding-{% end %}-bigger">
-      {% for code in license.logos %}
-        {% include 'includes/snippet/icon.html' with icon_type=code is_icon_header=True additional_classes='padding-bottom-small' %}
-      {% endfor %}
+{% for code in license.logos %}{% include 'includes/snippet/icon.html' with icon_type=code is_icon_header=True additional_classes='padding-bottom-small' %}{% endfor %}
     </span>
   {{ legalcode.fat_code }}
 </h3>
@@ -18,9 +16,7 @@
 <h3 class="is-hidden-desktop is-hidden-mobile">
   {# Icon Sections #}
     <span class="padding-{% end %}-big">
-      {% for code in license.logos %}
-        {% include 'includes/snippet/icon.html' with icon_type=code is_icon_header=True additional_classes='padding-bottom-small' %}
-      {% endfor %}
+{% for code in license.logos %}{% include 'includes/snippet/icon.html' with icon_type=code is_icon_header=True additional_classes='padding-bottom-small' %}{% endfor %}
     </span>
     {{ legalcode.fat_code }}
 </h3>
@@ -29,10 +25,7 @@
 <h3 class="is-hidden-tablet">
   {# Icon Sections #}
     <span>
-      {% for code in license.logos %}
-        {% include 'includes/snippet/icon.html' with icon_type=code is_icon_header=True additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' %}
-      {% endfor %}
-
+{% for code in license.logos %}{% include 'includes/snippet/icon.html' with icon_type=code is_icon_header=True additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' %}{% endfor %}
     </span>
 </h3>
 <h4 class="has-text-centered is-hidden-tablet padding-{% start %}-normal">{{ legalcode.fat_code }}</h4>
