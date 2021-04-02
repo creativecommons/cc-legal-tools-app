@@ -13,22 +13,17 @@ logger.setLevel(logging.DEBUG)
 
 
 def run_git(repo: git.Repo, command: List[str]):
-    # print(" ".join(command))
     result = subprocess.run(command, cwd=repo.working_tree_dir)
     if result.returncode != 0:
         raise Exception("Something went wrong running git")
 
 
-def setup_to_call_git(env=None):
+def setup_to_call_git():
     """
-    Call this to set the environment before starting to use git.
+    Call this to set the environment (os.environ) before starting to use git.
     Safe to call any number of times.
-
-    If env is none, it'll use os.environ, which is the usual case.
-    You can pass a dictionary as env for testing.
     """
-    if env is None:
-        env = os.environ
+    env = os.environ
     # Use custom ssh command to use the deploy key when pushing
     if "GIT_SSH" not in env:
         env["GIT_SSH"] = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
