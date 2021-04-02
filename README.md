@@ -268,24 +268,19 @@ command line.
 To upload/download translation files to/from Transifex, you'll need an account
 there with access to these translations. Then follow [these
 instructions](https://docs.transifex.com/api/introduction#authentication) to
-get an API token, and set TRANSIFEX_API_TOKEN in your environment with its
+get an API token, and set `TRANSIFEX_API_TOKEN` in your environment with its
 value.
 
-The cc-licenses-data repo should be cloned next to the cc-licenses repo.  (It
-can be elsewhere, then you need to set TRANSLATION_REPOSITORY_DIRECTORY to its
-location.) Be sure to clone using a URL that starts with `git@github...` and
-not `https://github...`, or you won't be able to push to it.
-
-When the site is deployed, to enable pushing and pulling the licenses data repo
-with Github, create an ssh deploy key for the cc-licenses-data repo with write
-permissions, and put the private key file (not password protected) somewhere
-safe, owned by www-data, and readable only by its owner (0o400). Then in
-settings, make TRANSLATION_REPOSITORY_DEPLOY_KEY be the full path to that
-deploy key file.
+The cc-licenses-data repo should be cloned next to the cc-licenses repo. (It
+can be elsewhere, then you need to set `TRANSLATION_REPOSITORY_DIRECTORY` to
+its location.) Be sure to clone using a URL that starts with `git@github...`
+and not `https://github...`, or you won't be able to push to it.
 
 Now arrange for `pipenv run ./manage.py check_for_translation_updates` to be
 run hourly (or the equivalent with the appropriate virtualenv and env
 variarables set).
+
+Also see [Publishing changes to git repo](#publishing-changes-to-git-repo).
 
 
 ## When translations have been updated in Transifex
@@ -430,6 +425,16 @@ it'll both commit and push them. Just be aware that it won't try to push unless
 it has just committed some changes, so if upstream is already behind and
 running publish doesn't make any new changes, you'll still have to push
 manually to get upstream updated.
+
+
+### Publishing changes to git repo
+
+When the site is deployed, to enable pushing and pulling the licenses data repo
+with Github, create an ssh deploy key for the cc-licenses-data repo with write
+permissions, and put the private key file (not password protected) somewhere
+safe, owned by www-data, and readable only by its owner (0o400). Then in
+settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be the full path to that
+deploy key file.
 
 
 ## License
