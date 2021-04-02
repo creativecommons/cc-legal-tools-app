@@ -133,7 +133,7 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
 class CommitAndPushChangesTest(GitTestMixin, TestCase):
     def test_run_git_exception(self):
         with self.assertRaises(Exception):
-            run_git(self.origin_repo, ["git", "invalidcommand"])
+            run_git(self.origin_repo, ["git", "TestInvalidCommand"])
 
     def test_push(self):
         # Just make sure our helper function does what it should
