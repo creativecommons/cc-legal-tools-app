@@ -15,6 +15,7 @@ from licenses.git_utils import (
     commit_and_push_changes,
     get_branch,
     push_current_branch,
+    run_git,
     setup_local_branch,
     setup_to_call_git,
 )
@@ -130,6 +131,10 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
 
 @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
 class CommitAndPushChangesTest(GitTestMixin, TestCase):
+    def test_run_git_exception(self):
+        with self.assertRaises(Exception):
+            run_git(self.origin_repo, ["git", "invalidcommand"])
+
     def test_push(self):
         # Just make sure our helper function does what it should
         mock_repo = mock.MagicMock()
