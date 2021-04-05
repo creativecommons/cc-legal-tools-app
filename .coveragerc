@@ -1,8 +1,0 @@
-[run]
-branch = true
-omit = .direnv/*, env/*, */tests/*, */migrations/*, */urls.py, */settings/*, */wsgi.py, manage.py, fabfile.py, venv/*, */management/commands/*
-source = .
-
-[report]
-show_missing = true
-skip_covered = true

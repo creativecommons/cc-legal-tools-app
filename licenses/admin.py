@@ -1,18 +1,36 @@
+# Third-party
 from django.contrib import admin
 
-from licenses.models import LegalCode, License
+# First-party/Local
+from licenses.models import LegalCode, License, TranslationBranch
+
+
+@admin.register(TranslationBranch)
+class TranslationBranchAdmin(admin.ModelAdmin):
+    list_display = [
+        "branch_name",
+        "version",
+        "language_code",
+        "last_transifex_update",
+        "complete",
+    ]
+    list_filter = [
+        "complete",
+        "version",
+        "language_code",
+    ]
+    raw_id_fields = [
+        "legalcodes",
+    ]
 
 
 @admin.register(LegalCode)
 class LegalCodeAdmin(admin.ModelAdmin):
     fields = [
         "license",
-        "url",
         "language_code",
-        "raw_html",
     ]
     list_display = [
-        "url",
         "language_code",
         "license",
     ]
@@ -58,6 +76,12 @@ class LicenseAdmin(admin.ModelAdmin):
         "prohibits_high_income_nation_use",
     ]
     inlines = [LegalCodeInline]
+    list_display = [
+        "license_code",
+        "title_english",
+        "version",
+        "jurisdiction_code",
+    ]
     list_filter = [
         "license_code",
         "version",

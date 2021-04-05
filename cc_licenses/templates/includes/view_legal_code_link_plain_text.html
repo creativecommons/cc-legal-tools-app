@@ -1,3 +1,5 @@
-<div id="legal-code-plain-text" style="font-weight: bold;" class="padding-vertical-normal">
-  <p class="body-big"><a href="#" class="link">View Legal Code as plain text</a></p>
+{% load i18n %}
+
+<div id="legal-code-plain-text" style="font-weight: bold;" class="padding-vertical-normal" >
+  <p class="body-big"><a id="view-plain-text" href="{{ legalcode.plain_text_url }}" class="link">{% trans "View Legal Code as plain text" %}</a></p>
 </div>

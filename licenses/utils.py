@@ -1,8 +1,62 @@
+# Standard library
+import os
 import posixpath
 import re
 import urllib
+import urllib.parse
+from base64 import b64encode
 
-from i18n import LANGUAGE_CODE_REGEX
+# Third-party
+from bs4 import NavigableString
+from django.conf import settings
+from django.urls import get_resolver
+from polib import POEntry, POFile
+
+# First-party/Local
+from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
+from i18n.utils import (
+    cc_to_django_language_code,
+    get_default_language_for_jurisdiction,
+)
+
+
+def save_bytes_to_file(bytes, output_filename):
+    dirname = os.path.dirname(output_filename)
+    if os.path.isfile(dirname):
+        os.remove(dirname)
+    os.makedirs(dirname, mode=0o755, exist_ok=True)
+    with open(output_filename, "wb") as f:
+        f.write(bytes)  # Bytes
+
+
+class MockRequest:
+    method = "GET"
+    META = {}
+
+    def __init__(self, path):
+        self.path = path
+
+
+def save_url_as_static_file(output_dir, url, relpath):
+    """
+    Get the output from the URL and save it in an appropriate file
+    under output_dir. For making static files from a site.
+
+    Pass in open_func just for testing, not in regular use.
+    """
+    # Was using test Client, but it runs middleware and fails at runtime
+    # because the request host wasn't in the ALLOWED_HOSTS. So, resolve the URL
+    # and call the view directly.
+    resolver = get_resolver()
+    match = resolver.resolve(url)  # ResolverMatch
+    rsp = match.func(request=MockRequest(url), *match.args, **match.kwargs)
+    if rsp.status_code != 200:
+        raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
+    if hasattr(rsp, "render"):
+        rsp.render()
+    output_filename = os.path.join(output_dir, relpath)
+    print(f"{url} -> {output_filename}")
+    save_bytes_to_file(rsp.content, output_filename)
 
 
 def get_code_from_jurisdiction_url(url):
@@ -46,7 +100,7 @@ def parse_legalcode_filename(filename):
     The filename should not include any path. A trailing .html is okay.
 
     COPIED FROM
-    https://github.com/creativecommons/cc-link-checker/blob/6bb2eae4151c5f7949b73f8d066c309f2413c4a5/link_checker.py#L231
+    https://github.com/creativecommons/cc-link-checker/blob/6bb2eae4151c5f7949b73f8d066c309f2413c4a5/link_checker.py#L231  # noqa: E501
     and modified a great deal.
     """
 
@@ -91,18 +145,198 @@ def parse_legalcode_filename(filename):
 
     if jurisdiction:
         url = posixpath.join(url, jurisdiction)
+        cc_language_code = language or get_default_language_for_jurisdiction(
+            jurisdiction, ""
+        )
+    else:
+        cc_language_code = language or DEFAULT_LANGUAGE_CODE
 
     if legalcode:
         url = posixpath.join(url, legalcode)
     else:
         url = f"{url}/"
 
+    if not cc_language_code:
+        raise ValueError(f"What language? filename={filename}")
+
+    # Make sure this is a valid language code (one we know about)
+    django_language_code = cc_to_django_language_code(cc_language_code)
+    if django_language_code not in settings.LANG_INFO:
+        raise ValueError(
+            f"Invalid language_code={cc_language_code}"
+            f" dj={django_language_code}"
+        )
+
     data = dict(
         license_code=license_code_to_return,
         version=version,
         jurisdiction_code=jurisdiction or "",
-        language_code=language or "",
+        cc_language_code=cc_language_code,
         url=url,
+        about_url=compute_about_url(
+            license_code_for_url, version, jurisdiction or ""
+        ),
     )
 
     return data
+
+
+def compute_about_url(license_code, version, jurisdiction_code):
+    """
+    Compute the canonical unique "about" URL for a license with the given
+    attributes.  Note that a "license" is language-independent, unlike a
+    LegalCode but it can have a jurisdiction.q
+
+    E.g.
+
+    http://creativecommons.org/licenses/BSD/
+    http://creativecommons.org/licenses/GPL/2.0/
+    http://creativecommons.org/licenses/LGPL/2.1/
+    http://creativecommons.org/licenses/MIT/
+    http://creativecommons.org/licenses/by/2.0/
+    http://creativecommons.org/licenses/publicdomain/
+    http://creativecommons.org/publicdomain/zero/1.0/
+    http://creativecommons.org/publicdomain/mark/1.0/
+    http://creativecommons.org/licenses/nc-sampling+/1.0/
+    http://creativecommons.org/licenses/devnations/2.0/
+    http://creativecommons.org/licenses/by/3.0/nl/
+    http://creativecommons.org/licenses/by-nc-nd/3.0/br/
+    http://creativecommons.org/licenses/by/4.0/
+    http://creativecommons.org/licenses/by-nc-nd/4.0/
+    """
+    base = "http://creativecommons.org"
+    if license_code in ["BSD", "MIT"]:
+        return f"{base}/licenses/{license_code}/"
+    if "GPL" in license_code:
+        return f"{base}/licenses/{license_code}/{version}/"
+    prefix = (
+        "publicdomain"
+        if license_code in ["CC0", "zero", "mark"]
+        else "licenses"
+    )
+    mostly = f"{base}/{prefix}/{license_code}/{version}/"
+    if jurisdiction_code:
+        return f"{mostly}{jurisdiction_code}/"
+    return mostly
+
+
+def validate_list_is_all_text(list_):
+    """
+    Just for sanity, make sure all the elements of a list are types that
+    we expect to be in there.  Convert it all to str and return the
+    result.
+    """
+    newlist = []
+    for i, value in enumerate(list_):
+        if type(value) == NavigableString:
+            newlist.append(str(value))
+            continue
+        elif type(value) not in (str, list, dict):
+            raise ValueError(
+                f"Not a str, list, or dict: {type(value)}: {value}"
+            )
+        if isinstance(value, list):
+            newlist.append(validate_list_is_all_text(value))
+        elif isinstance(value, dict):
+            newlist.append(validate_dictionary_is_all_text(value))
+        else:
+            newlist.append(value)
+    return newlist
+
+
+def validate_dictionary_is_all_text(d):
+    """
+    Just for sanity, make sure all the keys and values of a dictionary are
+    types that we expect to be in there.
+    """
+    newdict = dict()
+    for k, v in d.items():
+        assert isinstance(k, str)
+        if type(v) == NavigableString:
+            newdict[k] = str(v)
+            continue
+        elif type(v) not in (str, dict, list):
+            raise ValueError(f"Not a str: k={k} {type(v)}: {v}")
+        if isinstance(v, dict):
+            newdict[k] = validate_dictionary_is_all_text(v)
+        elif isinstance(v, list):
+            newdict[k] = validate_list_is_all_text(v)
+        else:
+            newdict[k] = v
+    return newdict
+
+
+def save_dict_to_pofile(pofile: POFile, messages: dict):
+    """
+    We have a dictionary mapping string message keys to string message values
+    or dictionaries of the same.
+    Write out a .po file of the data.
+    """
+    for message_key, value in messages.items():
+        pofile.append(POEntry(msgid=message_key, msgstr=value.strip()))
+
+
+def strip_list_whitespace(direction: str, list_of_str: list) -> list:
+    """Strips whitespace from strings in a list of strings
+
+    Arguments:
+        direction: (string) Determines whether to strip whitespace
+        to the left, right, or both sides of a string
+        list_of_str: (list) list of strings
+    """
+    if direction == "left":
+        return [s.lstrip() for s in list_of_str]
+    if direction == "right":
+        return [s.rstrip() for s in list_of_str]
+    return [s.strip() for s in list_of_str]
+
+
+def cleanup_current_branch_output(branch_list: list) -> list:
+    """cleanups the way git outputs the current branch
+
+    for example: git branch --list
+        some-branch
+        * main
+
+        branch-list = ['some-branch', '* main']
+
+    The asterisks is attached to the current branch, and we want to remove
+    this:
+        branch-list = ['some-branch' 'main']
+
+    Arguments:
+        branch-list (list) list of git branches.
+    """
+    cleaned_list = []
+    for branch in branch_list:
+        if "*" in branch:
+            cleaned_branch = branch.replace("* ", "")
+            cleaned_list.append(cleaned_branch)
+        else:
+            cleaned_list.append(branch)
+    return cleaned_list
+
+
+def clean_string(s):
+    """
+    Get a string into a canonical form - no whitespace at either end,
+    no newlines, no double-spaces.
+    """
+    s = s.strip().replace("\n", " ").replace("  ", " ")
+    while "  " in s:
+        # If there were longer strings of spaces, need to iterate to replace...
+        # I guess.
+        s = s.replace("  ", " ")
+    return s
+
+
+def b64encode_string(s: str) -> str:
+    """
+    b64encode the string and return the resulting string.
+    """
+    # This sequence is kind of counter-intuitive, so pull it out into
+    # a util function so we're not worrying about it in the rest of the logic.
+    bits = s.encode()
+    encoded_bits = b64encode(bits)
+    encoded_string = encoded_bits.decode()
+    return encoded_string

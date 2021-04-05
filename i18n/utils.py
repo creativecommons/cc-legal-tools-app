@@ -1,10 +1,23 @@
+# Standard library
+import os
+import re
+from contextlib import contextmanager
+
+# Third-party
+import polib
 from babel import Locale, UnknownLocaleError
-from django.utils import translation
+from django.conf import settings
 from django.utils.encoding import force_text
-from django.utils.translation import ugettext
+from django.utils.translation import override, ugettext
+from django.utils.translation.trans_real import DjangoTranslation, translation
 
-from i18n import DEFAULT_LANGUAGE_CODE, DEFAULT_JURISDICTION_LANGUAGES
-
+# First-party/Local
+from i18n import (
+    DEFAULT_JURISDICTION_LANGUAGES,
+    DEFAULT_LANGUAGE_CODE,
+    DJANGO_LANGUAGE_CODES,
+    FILENAME_LANGUAGE_CODES,
+)
 
 CACHED_APPLICABLE_LANGS = {}
 CACHED_WELL_TRANSLATED_LANGS = {}
@@ -20,7 +33,10 @@ CACHED_WELL_TRANSLATED_LANGS = {}
 #     Return list of locale names under our locale dir.
 #     """
 #     dir = settings.LOCALE_PATHS[0]
-#     return [item for item in os.listdir(dir) if os.path.isdir(os.path.join(dir, item))]
+#     return [
+#         item for item in os.listdir(dir)
+#         if os.path.isdir(os.path.join(dir, item))
+#     ]
 
 
 LANGUAGE_JURISDICTION_MAPPING = {}
@@ -46,11 +62,122 @@ JURISDICTION_CURRENCY_LOOKUP = {
 }
 
 
-def get_language_for_jurisdiction(jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE):
-    langs = DEFAULT_JURISDICTION_LANGUAGES.get(jurisdiction_code, [])
-    if len(langs) == 1:
-        return langs[0]
-    return default_language
+# This function looks like a good candidate for caching, but we might be
+# changing the translated files while running and need to be sure we always
+# read and use the one that's there right now. Anyway, this site doesn't
+# need to perform all that well, since it just generates static files.
+def get_translation_object(
+    *, django_language_code: str, domain: str
+) -> DjangoTranslation:
+    """
+    Return a DjangoTranslation object suitable to activate
+    when we're wanting to render templates for this language code and domain.
+    (The domain is typically specific to one or a few licenses that
+    have common translations.)
+    """
+
+    license_locale_dir = os.path.join(
+        settings.TRANSLATION_REPOSITORY_DIRECTORY, "translations"
+    )
+    # Start with a translation object for the domain for this license.
+    license_translation_object = DjangoTranslation(
+        language=django_language_code,
+        domain=domain,
+        localedirs=[license_locale_dir],
+    )
+    # Add a fallback to the standard Django translation for this language. This
+    # gets us the non-legalcode parts of the pages.
+    license_translation_object.add_fallback(translation(django_language_code))
+
+    return license_translation_object
+
+
+@contextmanager
+def active_translation(translation: DjangoTranslation):
+    """
+    Context manager to do stuff within its context with a
+    particular translation object set as the active translation.
+    (Use ``get_translation_object`` to get a translation
+    object to use with this.)
+
+    Bypasses all the language code stuff that Django does
+    when you use its ``activate(language_code)`` function.
+
+    The translation object should be a DjangoTranslation
+    (from django.utils.translation.trans_real) or a subclass.
+
+    Warning: this *does* make assumptions about the internals
+    of Django's translation system that could change on us.
+    It doesn't seem likely, though.
+    """
+    # import non-public value here to keep its scope
+    # as limited as possible:
+    # Third-party
+    from django.utils.translation.trans_real import _active
+
+    # Either _active.value points at a DjangoTranslation
+    # object, or _active has no 'value' attribute.
+    previous_translation = getattr(_active, "value", None)
+    _active.value = translation
+
+    yield
+
+    if previous_translation is None:
+        del _active.value
+    else:
+        _active.value = previous_translation
+
+
+def save_pofile_as_pofile_and_mofile(pofile: polib.POFile, pofile_path: str):
+    """Returns pofile_abspath, mofile_abspath"""
+    pofile.save(pofile_path)
+    mofilepath = re.sub(r"\.po$", ".mo", pofile_path)
+    pofile.save_as_mofile(mofilepath)
+    return (pofile_path, mofilepath)
+
+
+def save_content_as_pofile_and_mofile(path: str, content: bytes):
+    """Returns pofile_abspath, mofile_abspath"""
+    pofile = polib.pofile(pofile=content.decode(), encoding="utf-8")
+    return save_pofile_as_pofile_and_mofile(pofile, path)
+
+
+def get_pofile_content(pofile: polib.POFile) -> str:
+    """
+    Return the content of the pofile object - a string
+    that contains what would be in the po file on the disk
+    if we saved it.
+    """
+    # This isn't really worth its own function, except that mocking
+    # __unicode__ for tests is a pain, and it's easier to have this
+    # function so we can just mock it.
+    return pofile.__unicode__()
+
+
+def cc_to_django_language_code(cc_language_code: str) -> str:
+    """
+    Given a CC language code, return the language code that Django
+    uses to represent that language.
+    """
+    return DJANGO_LANGUAGE_CODES.get(cc_language_code, cc_language_code)
+
+
+def cc_to_filename_language_code(cc_language_code: str) -> str:
+    """
+    Given a CC language code, return the language code to use
+    in its gettext translation files.
+    """
+    return FILENAME_LANGUAGE_CODES.get(cc_language_code, cc_language_code)
+
+
+def get_default_language_for_jurisdiction(
+    jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE
+):
+    # Input: a jurisdiction code
+    # Output: a CC language code
+    return DEFAULT_JURISDICTION_LANGUAGES.get(
+        jurisdiction_code, default_language
+    )
 
 
 def get_locale_text_orientation(locale_identifier: str) -> str:
@@ -58,9 +185,11 @@ def get_locale_text_orientation(locale_identifier: str) -> str:
     Find out whether the locale is ltr or rtl
     """
     try:
-        locale = Locale.parse(locale_identifier)
+        locale = Locale.parse(locale_identifier, sep="-")
     except UnknownLocaleError:
-        raise ValueError("No locale found with identifier %r" % locale_identifier)
+        raise ValueError(
+            "No locale found with identifier %r" % locale_identifier
+        )
     return "ltr" if locale.character_order == "left-to-right" else "rtl"
 
 
@@ -159,7 +288,7 @@ def rtl_context_stuff(locale_identifier):
 
 def ugettext_for_locale(locale):
     def _wrapped_ugettext(message):
-        with translation.override(locale):
+        with override(locale):
             return force_text(ugettext(message))
 
     return _wrapped_ugettext
@@ -193,7 +322,8 @@ CACHED_TRANS_STATS = {}
 #
 #     if not os.path.exists(trans_file):
 #         raise IOError(
-#             f"No such CSV file {trans_file}.  Maybe run `python manage.py transstats`?"
+#             f"No such CSV file {trans_file}. Maybe run"
+#             " `python manage.py transstats`?"
 #         )
 #
 #     reader = csv.DictReader(open(trans_file, "r"), CSV_HEADERS)

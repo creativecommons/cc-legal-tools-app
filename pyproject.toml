@@ -1,0 +1,55 @@
+[tool.black]
+# Force exclude is used as pre-comit feeds individual file names based on
+# filters
+force-exclude = '''
+(
+  /node_modules/
+  | /venv/
+)
+'''
+line-length = 79
+target-version = ['py37', 'py38']
+
+
+[tool.coverage.run]
+branch = true
+omit = [
+    '*/management/commands/*',
+    '*/migrations/*',
+    '*/settings/*',
+    '*/tests/*',
+    '*/urls.py',
+    '*/wsgi.py',
+    '.direnv/*',
+    'env/*',
+    'fabfile.py',
+    'manage.py',
+    'venv/*',
+]
+source = [
+    '.',
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+
+# [tool.flake8]
+#   config: .flake8
+# also see: https://gitlab.com/pycqa/flake8/-/issues/428
+
+
+[tool.isort]
+import_heading_firstparty = 'First-party/Local'
+import_heading_future = 'Future'
+import_heading_stdlib = 'Standard library'
+import_heading_thirdparty = 'Third-party'
+line_length = 79
+multi_line_output = 3
+no_lines_before = 'LOCALFOLDER'
+profile = 'black'
+
+
+# [tool.pre-commit]
+# config: .pre-commit-config.yaml
