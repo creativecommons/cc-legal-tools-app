@@ -6,17 +6,33 @@ from django.urls import get_resolver
 from licenses.models import build_deed_url, build_license_url
 from licenses.templatetags.license_tags import (
     current_letter,
+    license_codes,
     next_letter,
     reset_letters,
 )
 
 
 class LicenseTagsTest(TestCase):
+    def test_license_codes(self):
+        expected = ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa"]
+        data = [
+            {"license_code": "by-nc-nd"},
+            {"license_code": "by-nc"},
+            {"license_code": "by-sa"},
+            {"license_code": "by"},
+            {"license_code": "by-nc-sa"},
+            {"license_code": "by"},
+            {"license_code": "by-nd"},
+        ]
+        self.assertEqual(expected, license_codes(data))
+
     def test_reset_letters(self):
         reset_letters("lowercase")
         self.assertEqual("a", next_letter())
         reset_letters("uppercase")
         self.assertEqual("A", next_letter())
+        with self.assertRaises(ValueError):
+            reset_letters("InvalidValue")
 
     def test_next_letter(self):
         reset_letters("lowercase")
