@@ -1,18 +1,24 @@
 #!/bin/sh
-
+#
 # We configure git to use this script instead of just /usr/bin/ssh.
 # This script is used so we can pass some options to ssh when git uses it.
-# We assume that we've previously set TRANSLATION_REPOSITORY_DEPLOY_KEY in the
-# environment to point to the key file.
+set -o errexit
+set -o nounset
 
-# ssh fumbles if it can't write to .ssh, so give it a .ssh it can do that with.
-export HOME=$PROJECT_ROOT
-mkdir -p $HOME/.ssh
-chmod 700 $HOME/.ssh
+# Ensure required environment variables are present
+[ -n "${PROJECT_ROOT}" ]
+[ -n "${TRANSLATION_REPOSITORY_DEPLOY_KEY}" ]
 
-if [ "$TRANSLATION_REPOSITORY_DEPLOY_KEY" = "" ] ; then
-  echo "$0 ERROR: TRANSLATION_REPOSITORY_DEPLOY_KEY is not set in the environment"
-  exit 1
-fi
+# Ensure SSH has a writable configuration directory (otherwise it will fail)
+export HOME="${PROJECT_ROOT}"
+mkdir -p "${HOME}/.ssh"
+chmod 700 "${HOME}/.ssh"
 
-exec ssh -o StrictHostKeyChecking=no -o CheckHostIP=no -i $TRANSLATION_REPOSITORY_DEPLOY_KEY "$@"
+ssh -i "${TRANSLATION_REPOSITORY_DEPLOY_KEY}" \
+    -o CheckHostIP=no -o StrictHostKeyChecking=no -T -x "${@}"
+
+
+# This wrapper can be tested like so:
+#
+# PROJECT_ROOT=. TRANSLATION_REPOSITORY_DEPLOY_KEY=/path/to/ssh/private/key \
+#     ./ssh_wrapper.sh git@github.com

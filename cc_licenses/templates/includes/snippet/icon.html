@@ -1,9 +1,9 @@
-{% load bidi %}
+{% load bidi %}{% comment %}{#
+This snippet handles media queries for the icons within deed_body and
+sampling_deed templates
 
-{# This snippet handles media queries for the icons within deed_body #}
-{# and sampling_deed templates #}
-
-{% if is_icon_header %}{# next to license title just above text of license itself #}
+next to license title just above text of license itself
+#}{% endcomment %}{% if is_icon_header %}
 <i
   class="{{ icon_type }} icon has-text-black has-background-white is-size-1 is-hidden-touch margin-normal {{ additional_classes }}"
 ></i>

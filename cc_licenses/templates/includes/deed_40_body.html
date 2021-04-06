@@ -31,7 +31,7 @@
   <div class="columns is-multiline">
     {# Forloop  - populate content from deed model#}
     <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-by' %}
+{% include 'includes/snippet/icon.html' with icon_type='cc-by' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
@@ -43,7 +43,7 @@
 
   {% if license.prohibits_commercial_use %}
     <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-nc' %}
+{% include 'includes/snippet/icon.html' with icon_type='cc-nc' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
@@ -55,7 +55,7 @@
 
   {% if license.requires_share_alike %}
     <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-sa' %}
+{% include 'includes/snippet/icon.html' with icon_type='cc-sa' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">
@@ -66,7 +66,7 @@
 
 {% if not license.permits_derivative_works %}
     <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-nd' %}
+{% include 'includes/snippet/icon.html' with icon_type='cc-nd' %}
     </div>
     <div class="column is-11">
       <p class="has-text-black body-big padding-bottom-normal">

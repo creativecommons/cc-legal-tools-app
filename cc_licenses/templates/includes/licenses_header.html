@@ -5,9 +5,7 @@
   <h2 class="is-vcentered">
     {# Icon Sections #}
     <span class="padding-{% end %}-bigger">
-      {% for code in license.logos %}
-        {% include 'includes/snippet/icon.html' with icon_type=code additional_classes='padding-bottom-small' is_license_header=True %}
-      {% endfor %}
+{% for code in license.logos %}{% include 'includes/snippet/icon.html' with icon_type=code additional_classes='padding-bottom-small' is_license_header=True %}{% endfor %}
     </span>
 
     {{ legalcode.fat_code }} {#  e.g. CC BY-NC 4.0 #}
@@ -20,9 +18,7 @@
   <h2 class="has-text-centered">
     {# Icon Sections #}
     <span>
-      {% for code in license.logos %}
-        {% include 'includes/snippet/icon.html' with icon_type=code additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_license_header=True %}
-      {% endfor %}
+{% for code in license.logos %}{% include 'includes/snippet/icon.html' with icon_type=code additional_classes='padding-bottom-small margin-horizontal-smaller margin-vertical-small' is_license_header=True %}{% endfor %}
       </span>
   </h2>
   <h2 class="has-text-centered is-hidden-touch is-hidden-desktop-only padding-{% start %}-normal">{{ legalcode.fat_code }}</h2>
