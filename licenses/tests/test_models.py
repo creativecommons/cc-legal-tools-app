@@ -80,6 +80,7 @@ class LegalCodeQuerySetTest(TestCase):
             license_code="xyz", version="1.0", jurisdiction_code=""
         )
 
+        # Test valid()
         should_be_valid = [
             LegalCodeFactory(license=bylicense30ported),
             LegalCodeFactory(license=bylicense30unported),
@@ -96,6 +97,22 @@ class LegalCodeQuerySetTest(TestCase):
         self.assertCountEqual(
             should_not_be_valid,
             set(LegalCode.objects.all()) - set(LegalCode.objects.valid()),
+        )
+        # Test validgroups()
+        self.assertCountEqual(
+            should_be_valid,
+            list(LegalCode.objects.validgroups()["by4.0"])
+            + list(LegalCode.objects.validgroups()["by3.0"])
+            + list(LegalCode.objects.validgroups()["zero1.0"]),
+        )
+        self.assertCountEqual(
+            should_not_be_valid,
+            set(LegalCode.objects.all())
+            - set(
+                list(LegalCode.objects.validgroups()["by4.0"])
+                + list(LegalCode.objects.validgroups()["by3.0"])
+                + list(LegalCode.objects.validgroups()["zero1.0"])
+            ),
         )
 
 
@@ -261,7 +278,35 @@ class LegalCodeModelTest(TestCase):
         self.assertTrue(lc_fr.has_english())
         self.assertTrue(lc_en.has_english())
 
-    def test_get_deed_or_license_path(self):
+    def _test_get_deed_or_license_path(self, data):
+        for (
+            version,
+            license_code,
+            jurisdiction_code,
+            language_code,
+            expected_deed_path,
+            expected_deed_symlinks,
+            expected_license_path,
+            expected_license_symlinks,
+        ) in data:
+            license = LicenseFactory(
+                license_code=license_code,
+                version=version,
+                jurisdiction_code=jurisdiction_code,
+            )
+            legalcode = LegalCodeFactory(
+                license=license, language_code=language_code
+            )
+            self.assertEqual(
+                [expected_deed_path, expected_deed_symlinks],
+                legalcode.get_file_and_links("deed"),
+            )
+            self.assertEqual(
+                [expected_license_path, expected_license_symlinks],
+                legalcode.get_file_and_links("legalcode"),
+            )
+
+    def test_get_deed_or_license_path_by4(self):
         """
         4.0 formula:
         /licenses/VERSION/LICENSE_deed_LANGAUGE.html
@@ -274,7 +319,48 @@ class LegalCodeModelTest(TestCase):
         /licenses/4.0/by_legalcode_en.html
         /licenses/4.0/by_deed_zh-Hans.html
         /licenses/4.0/by_legalcode_zh-Hans.html
+        """
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "4.0",
+                    "by-nc-nd",
+                    "",
+                    "en",
+                    "licenses/by-nc-nd/4.0/deed.en",
+                    ["deed", "index.html"],
+                    "licenses/by-nc-nd/4.0/legalcode.en",
+                    ["legalcode"],
+                ),
+                (
+                    "4.0",
+                    "by",
+                    "",
+                    "en",
+                    "licenses/by/4.0/deed.en",
+                    ["deed", "index.html"],
+                    "licenses/by/4.0/legalcode.en",
+                    ["legalcode"],
+                ),
+            ]
+        )
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "4.0",
+                    "by",
+                    "",
+                    "zh-Hans",
+                    "licenses/by/4.0/deed.zh-Hans",
+                    [],
+                    "licenses/by/4.0/legalcode.zh-Hans",
+                    [],
+                ),
+            ]
+        )
 
+    def test_get_deed_or_license_path_by3(self):
+        """
         3.0 formula:
         /licenses/VERSION/JURISDICTION/LICENSE_deed_LANGAUGE.html
         /licenses/VERSION/JURISDICTION/LICENSE_legalcode_LANGAUGE.html
@@ -288,7 +374,73 @@ class LegalCodeModelTest(TestCase):
         /licenses/3.0/rs/by_legalcode_rs-Cyrl.html
         For jurisdiction, I used "xu" to mean "unported".
         See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
+        """
+        # Unported
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "3.0",
+                    "by",
+                    "",
+                    "en",
+                    "licenses/by/3.0/xu/deed.en",
+                    [
+                        "../licenses/by/3.0/xu/deed.en",
+                        "../deed",
+                        "../index.html",
+                    ],
+                    "licenses/by/3.0/xu/legalcode.en",
+                    ["../licenses/by/3.0/xu/legalcode.en", "../legalcode"],
+                ),
+            ]
+        )
+        # Ported with multiple languages
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "3.0",
+                    "by",
+                    "ca",
+                    "en",
+                    "licenses/by/3.0/ca/deed.en",
+                    ["deed", "index.html"],
+                    "licenses/by/3.0/ca/legalcode.en",
+                    ["legalcode"],
+                ),
+            ]
+        )
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "3.0",
+                    "by-sa",
+                    "ca",
+                    "fr",
+                    "licenses/by-sa/3.0/ca/deed.fr",
+                    [],
+                    "licenses/by-sa/3.0/ca/legalcode.fr",
+                    [],
+                ),
+            ]
+        )
+        # Ported with single language
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "3.0",
+                    "by-nc-nd",
+                    "am",
+                    "hy",
+                    "licenses/by-nc-nd/3.0/am/deed.hy",
+                    ["deed", "index.html"],
+                    "licenses/by-nc-nd/3.0/am/legalcode.hy",
+                    ["legalcode"],
+                ),
+            ]
+        )
 
+    def test_get_deed_or_license_path_cc0(self):
+        """
         cc0 formula:
         /publicdomain/VERSION/LICENSE_deed_LANGAUGE.html
         /publicdomain/VERSION/LICENSE_legalcode_LANGAUGE.html
@@ -299,76 +451,34 @@ class LegalCodeModelTest(TestCase):
         /publicdomain/1.0/zero_deed_ja.html
         /publicdomain/1.0/zero_legalcode_ja.html
         """
-        data = [
-            (
-                "4.0",
-                "by-nc-nd",
-                "",
-                "en",
-                "licenses/4.0/by-nc-nd_deed_en.html",
-                "licenses/4.0/by-nc-nd_legalcode_en.html",
-            ),
-            (
-                "4.0",
-                "by",
-                "",
-                "en",
-                "licenses/4.0/by_deed_en.html",
-                "licenses/4.0/by_legalcode_en.html",
-            ),
-            (
-                "4.0",
-                "by",
-                "",
-                "zh-Hans",
-                "licenses/4.0/by_deed_zh-Hans.html",
-                "licenses/4.0/by_legalcode_zh-Hans.html",
-            ),
-            (
-                "3.0",
-                "by",
-                "",
-                "en",
-                "licenses/3.0/xu/by_deed_en.html",
-                "licenses/3.0/xu/by_legalcode_en.html",
-            ),
-            (
-                "1.0",
-                "CC0",
-                "",
-                "en",
-                "publicdomain/1.0/zero_deed_en.html",
-                "publicdomain/1.0/zero_legalcode_en.html",
-            ),
-            (
-                "1.0",
-                "CC0",
-                "",
-                "ja",
-                "publicdomain/1.0/zero_deed_ja.html",
-                "publicdomain/1.0/zero_legalcode_ja.html",
-            ),
-        ]
-        for (
-            version,
-            license_code,
-            jurisdiction_code,
-            language_code,
-            expected_deed_path,
-            expected_license_path,
-        ) in data:
-            license = LicenseFactory(
-                license_code=license_code,
-                version=version,
-                jurisdiction_code=jurisdiction_code,
-            )
-            legalcode = LegalCodeFactory(
-                license=license, language_code=language_code
-            )
-            self.assertEqual(expected_deed_path, legalcode.get_deed_path())
-            self.assertEqual(
-                expected_license_path, legalcode.get_license_path()
-            )
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "1.0",
+                    "CC0",
+                    "",
+                    "en",
+                    "publicdomain/zero/1.0/deed.en",
+                    ["deed", "index.html"],
+                    "publicdomain/zero/1.0/legalcode.en",
+                    ["legalcode"],
+                ),
+            ]
+        )
+        self._test_get_deed_or_license_path(
+            [
+                (
+                    "1.0",
+                    "CC0",
+                    "",
+                    "ja",
+                    "publicdomain/zero/1.0/deed.ja",
+                    [],
+                    "publicdomain/zero/1.0/legalcode.ja",
+                    [],
+                ),
+            ]
+        )
 
 
 class LicenseModelTest(TestCase):
@@ -385,6 +495,7 @@ class LicenseModelTest(TestCase):
         self.assertTrue(LicenseFactory(license_code="xyz-sa").sa)
 
     def test_get_metadata(self):
+        # Ported
         license = LicenseFactory(
             **{
                 "license_code": "by-nc",
@@ -437,7 +548,57 @@ class LicenseModelTest(TestCase):
             "version": "3.0",
         }
 
-        self.assertEqual(expected_data, data)
+        for key in expected_data.keys():
+            self.assertEqual(expected_data[key], data[key])
+
+        # Unported
+        license = LicenseFactory(
+            **{
+                "license_code": "by-nc",
+                "version": "3.0",
+                "title_english": "The Title",
+                "jurisdiction_code": "",
+                "permits_derivative_works": False,
+                "permits_reproduction": False,
+                "permits_distribution": True,
+                "permits_sharing": True,
+                "requires_share_alike": True,
+                "requires_notice": True,
+                "requires_attribution": True,
+                "requires_source_code": True,
+                "prohibits_commercial_use": True,
+                "prohibits_high_income_nation_use": False,
+            }
+        )
+
+        LegalCodeFactory(license=license, language_code="en")
+
+        data = license.get_metadata()
+        expected_data = {
+            "license_code": "by-nc",
+            "permits_derivative_works": False,
+            "permits_distribution": True,
+            "permits_reproduction": False,
+            "permits_sharing": True,
+            "prohibits_commercial_use": True,
+            "prohibits_high_income_nation_use": False,
+            "requires_attribution": True,
+            "requires_notice": True,
+            "requires_share_alike": True,
+            "requires_source_code": True,
+            "title_english": "The Title",
+            "translations": {
+                "en": {
+                    "deed": "/licenses/by-nc/3.0/",
+                    "license": "/licenses/by-nc/3.0/legalcode",
+                    "title": "The Title",
+                },
+            },
+            "version": "3.0",
+        }
+
+        for key in expected_data.keys():
+            self.assertEqual(expected_data[key], data[key])
 
     def test_logos(self):
         # Every license includes "cc-logo"

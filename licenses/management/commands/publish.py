@@ -13,7 +13,7 @@ from django.urls import reverse
 # First-party/Local
 from licenses.git_utils import commit_and_push_changes, setup_local_branch
 from licenses.models import LegalCode, TranslationBranch
-from licenses.utils import save_url_as_static_file
+from licenses.utils import relative_symlink, save_url_as_static_file
 
 
 def list_open_translation_branches():
@@ -81,6 +81,7 @@ class Command(BaseCommand):
             rmtree(output_dir)
         os.makedirs(output_dir)
 
+        self.stdout.write(f"\n{self.output_dir}")
         save_url_as_static_file(output_dir, "/status/", "status/index.html")
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
@@ -90,13 +91,30 @@ class Command(BaseCommand):
                 f"status/{tbranch_id}.html",
             )
 
-        for legalcode in LegalCode.objects.valid():
-            save_url_as_static_file(
-                output_dir, legalcode.license_url, legalcode.get_license_path()
-            )
-            save_url_as_static_file(
-                output_dir, legalcode.deed_url, legalcode.get_deed_path()
-            )
+        legalcodes = LegalCode.objects.validgroups()
+        for group in legalcodes.keys():
+            self.stdout.write(f"\n{self.output_dir}")
+            for legalcode in legalcodes[group]:
+                # deed
+                filepath, symlinks = legalcode.get_file_and_links("deed")
+                save_url_as_static_file(
+                    output_dir,
+                    legalcode.deed_url,
+                    filepath,
+                )
+                for symlink in symlinks:
+                    relative_symlink(output_dir, filepath, symlink)
+                # legalcode
+                filepath, symlinks = legalcode.get_file_and_links("legalcode")
+                save_url_as_static_file(
+                    output_dir,
+                    legalcode.license_url,
+                    filepath,
+                )
+                for symlink in symlinks:
+                    relative_symlink(output_dir, filepath, symlink)
+
+        self.stdout.write(f"\n{self.output_dir}")
         save_url_as_static_file(
             output_dir, reverse("metadata"), "licenses/metadata.yaml"
         )
@@ -137,8 +155,6 @@ class Command(BaseCommand):
         self.options = options
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         git_dir = os.path.abspath(settings.TRANSLATION_REPOSITORY_DIRECTORY)
-        self.stdout.write(f"git_dir: {git_dir}")
-        self.stdout.write(f"self.output_dir: {self.output_dir}")
         if not self.output_dir.startswith(git_dir):
             raise ImproperlyConfigured(
                 f"In Django settings, DISTILL_DIR must be inside "
@@ -148,7 +164,6 @@ class Command(BaseCommand):
             )
 
         self.relpath = os.path.relpath(self.output_dir, git_dir)
-        self.stdout.write(f"self.relpath: {self.relpath}")
         self.push = not options["nopush"]
 
         if options.get("list_branches"):

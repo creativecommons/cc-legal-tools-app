@@ -55,8 +55,27 @@ def save_url_as_static_file(output_dir, url, relpath):
     if hasattr(rsp, "render"):
         rsp.render()
     output_filename = os.path.join(output_dir, relpath)
-    print(f"{url} -> {output_filename}")
+    print(f"    {relpath}")
     save_bytes_to_file(rsp.content, output_filename)
+
+
+def relative_symlink(src1, src2, dst):
+    padding = " " * len(os.path.dirname(src2))
+    src = os.path.abspath(os.path.join(src1, src2))
+    dir_path, src_file = os.path.split(src)
+    # Handle ../symlinks for xu jurisdiction
+    if dst.startswith("../"):
+        __, dst = os.path.split(dst)
+        os.path.split(src2)
+        dir_path, subdir = os.path.split(dir_path)
+        src_file = os.path.join(subdir, src_file)
+        padding = padding[:-3]
+    dir_fd = os.open(dir_path, os.O_RDONLY)
+    try:
+        os.symlink(src_file, dst, dir_fd=dir_fd)
+        print(f"    {padding}^{dst}")
+    finally:
+        os.close(dir_fd)
 
 
 def get_code_from_jurisdiction_url(url):

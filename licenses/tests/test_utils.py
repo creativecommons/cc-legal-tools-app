@@ -1,6 +1,7 @@
 # Standard library
 import os
 import tempfile
+from io import StringIO
 from unittest import mock
 from unittest.mock import MagicMock, call
 
@@ -19,6 +20,7 @@ from licenses.utils import (
     get_code_from_jurisdiction_url,
     get_license_url_from_legalcode_url,
     parse_legalcode_filename,
+    relative_symlink,
     save_bytes_to_file,
     save_dict_to_pofile,
     save_url_as_static_file,
@@ -36,14 +38,44 @@ class SaveURLAsStaticFileTest(TestCase):
             filename = os.path.join(tmpdir.name, "level1")
             save_bytes_to_file(b"abcxyz", filename)
             with open(filename, "rb") as f:
-                content = f.read()
-            self.assertEqual(b"abcxyz", content)
+                contents = f.read()
+            self.assertEqual(b"abcxyz", contents)
 
             filename = os.path.join(tmpdir.name, "level1", "level2")
             save_bytes_to_file(b"abcxyz", filename)
             with open(filename, "rb") as f:
-                content = f.read()
-            self.assertEqual(b"abcxyz", content)
+                contents = f.read()
+            self.assertEqual(b"abcxyz", contents)
+        finally:
+            tmpdir.cleanup()
+
+    def test_relative_symlink(self):
+        try:
+            tmpdir = tempfile.TemporaryDirectory()
+            # symlink link1 => source1 and verify by reading link1
+            contents1 = b"111"
+            source1 = os.path.join(tmpdir.name, "source1")
+            with open(source1, "wb") as f:
+                f.write(contents1)
+            with mock.patch("sys.stdout", new=StringIO()) as mock_out:
+                relative_symlink(tmpdir.name, source1, "link1")
+                self.assertEqual(mock_out.getvalue().strip(), "^link1")
+            with open(os.path.join(tmpdir.name, "link1"), "rb") as f:
+                contents = f.read()
+            self.assertEqual(contents1, contents)
+            # symlink link2 => xx/source2 and verify by reading link2
+            subdir = os.path.join(tmpdir.name, "xx")
+            os.makedirs(subdir, mode=0o755)
+            contents2 = b"222"
+            source2 = os.path.join(subdir, "source1")
+            with open(source2, "wb") as f:
+                f.write(contents2)
+            with mock.patch("sys.stdout", new=StringIO()) as mock_out:
+                relative_symlink(tmpdir.name, source2, "../link2")
+                self.assertEqual(mock_out.getvalue().strip(), "^link2")
+            with open(os.path.join(tmpdir.name, "link2"), "rb") as f:
+                contents = f.read()
+            self.assertEqual(contents2, contents)
         finally:
             tmpdir.cleanup()
 
@@ -93,7 +125,11 @@ class SaveURLAsStaticFileTest(TestCase):
         url = "/"
 
         with mock.patch("licenses.utils.save_bytes_to_file"):
-            save_url_as_static_file(output_dir, url, "/output/home.html")
+            with mock.patch("sys.stdout", new=StringIO()) as mock_out:
+                save_url_as_static_file(output_dir, url, "/output/home.html")
+                self.assertEqual(
+                    mock_out.getvalue().strip(), "/output/home.html"
+                )
 
     def test_save_url_as_static_file_200(self):
         output_dir = "/output"
@@ -119,7 +155,11 @@ class SaveURLAsStaticFileTest(TestCase):
                 mock_resolve.return_value = MockResolverMatch(
                     func=mock_metadata_view
                 )
-                save_url_as_static_file(output_dir, url, relpath)
+                with mock.patch("sys.stdout", new=StringIO()) as mock_out:
+                    save_url_as_static_file(output_dir, url, relpath)
+                    self.assertEqual(
+                        mock_out.getvalue().strip(), "licenses/metadata.yaml"
+                    )
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
         self.assertEqual(

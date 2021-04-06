@@ -267,7 +267,7 @@ TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
 )
 
 # django-distill settings
-DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/build/"
+DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/docs/"
 
 # Django translations are in the translation repo directory, under "locale".
 # License translations are in the translation repo directory, under
