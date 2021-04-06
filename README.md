@@ -75,7 +75,8 @@ Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 ## Development Server
 
-You should be able to run the development server via:
+You should be able to run the development server
+([127.0.0.1:8000](http://127.0.0.1:8000/)) via:
 ```shell
 pipenv run ./manage.py runserver
 ```
