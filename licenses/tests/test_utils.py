@@ -31,17 +31,21 @@ from .factories import LegalCodeFactory, LicenseFactory
 
 class SaveURLAsStaticFileTest(TestCase):
     def test_save_bytes_to_file(self):
-        filepath = None
         try:
-            tmpfile = tempfile.NamedTemporaryFile()
-            filename = tmpfile.name
+            tmpdir = tempfile.TemporaryDirectory()
+            filename = os.path.join(tmpdir.name, "level1")
             save_bytes_to_file(b"abcxyz", filename)
-            tmpfile.seek(0)
-            content = tmpfile.read()
+            with open(filename, "rb") as f:
+                content = f.read()
+            self.assertEqual(b"abcxyz", content)
+
+            filename = os.path.join(tmpdir.name, "level1", "level2")
+            save_bytes_to_file(b"abcxyz", filename)
+            with open(filename, "rb") as f:
+                content = f.read()
             self.assertEqual(b"abcxyz", content)
         finally:
-            if filepath is not None:
-                os.remove(filepath)
+            tmpdir.cleanup()
 
     def test_save_url_as_static_file_not_200(self):
         output_dir = "/output"
