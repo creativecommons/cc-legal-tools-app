@@ -794,7 +794,8 @@ class LicenseModelTest(TestCase):
         TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo",
     )
     def test_tx_upload_messages(self):
-        legalcode = LegalCodeFactory(language_code=DEFAULT_LANGUAGE_CODE)
+        language_code = "es"
+        legalcode = LegalCodeFactory(language_code=language_code)
         license = legalcode.license
         test_pofile = polib.POFile()
         with mock.patch.object(
