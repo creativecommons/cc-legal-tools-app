@@ -1,6 +1,7 @@
 # Standard library
 import os
 import subprocess
+from io import StringIO
 from tempfile import TemporaryDirectory
 from unittest import mock
 
@@ -131,9 +132,21 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
 
 @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
 class CommitAndPushChangesTest(GitTestMixin, TestCase):
-    def test_run_git_exception(self):
-        with self.assertRaises(Exception):
-            run_git(self.origin_repo, ["git", "TestInvalidCommand"])
+    def test_run_git_success(self):
+        with mock.patch("sys.stdout", new_callable=StringIO) as mock_out:
+            run_git(self.origin_repo, ["git", "--version"])
+            self.assertIn("git version", mock_out.getvalue())
+
+    def test_run_git_fail(self):
+        with self.assertRaises(Exception) as cm:
+            with mock.patch("sys.stderr", new_callable=StringIO) as mock_err:
+                run_git(self.origin_repo, ["git", "TestInvalidCommand"])
+                self.assertEqual(
+                    mock_err.getvalue().strip(),
+                    "git: 'TestInvalidCommand' is not a git command. See"
+                    " 'git --help'.",
+                )
+        self.assertEqual(str(cm.exception), "Something went wrong running git")
 
     def test_push(self):
         # Just make sure our helper function does what it should
@@ -198,6 +211,7 @@ class CommitAndPushChangesTest(GitTestMixin, TestCase):
         subprocess.run(
             ["git", "status"],
             cwd=self.local_repo_path,
+            stdout=subprocess.DEVNULL,
         )
 
         self.assertFalse(self.local_repo.is_dirty())
