@@ -252,7 +252,7 @@ class ViewLicenseTest(TestCase):
             rsp, "includes/legalcode_30_ported_license.html"
         )
         context = rsp.context
-        self.assertContains(rsp, '''lang="de"''')
+        self.assertContains(rsp, 'lang="de"')
         self.assertEqual(lc, context["legalcode"])
 
     def test_view_license_identifying_jurisdiction_default_language(self):
@@ -270,7 +270,7 @@ class ViewLicenseTest(TestCase):
             rsp, "includes/legalcode_30_ported_license.html"
         )
         context = rsp.context
-        self.assertContains(rsp, f'''lang="{language_code}"''')
+        self.assertContains(rsp, f'lang="{language_code}"')
         self.assertEqual(lc, context["legalcode"])
 
     def test_view_license(self):
@@ -285,11 +285,11 @@ class ViewLicenseTest(TestCase):
             self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
             context = rsp.context
             self.assertEqual(lc, context["legalcode"])
-            self.assertContains(rsp, f'''lang="{language_code}"''')
+            self.assertContains(rsp, f'lang="{language_code}"')
             if language_code == "es":
-                self.assertContains(rsp, '''dir="ltr"''')
+                self.assertContains(rsp, 'dir="ltr"')
             elif language_code == "ar":
-                self.assertContains(rsp, '''dir="rtl"''')
+                self.assertContains(rsp, 'dir="rtl"')
 
     def test_view_license_plain_text(self):
         for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
@@ -390,6 +390,16 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
             license__version="3.0",
             license__jurisdiction_code="es",
             language_code="es",
+        )
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+
+    def test_license_deed_view_cc0(self):
+        lc = LegalCodeFactory(
+            license__license_code="CC0",
+            license__version="1.0",
+            language_code="en",
         )
         url = lc.deed_url
         rsp = self.client.get(url)
