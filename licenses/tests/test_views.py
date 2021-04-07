@@ -492,6 +492,9 @@ class BranchStatusViewTest(TestCase):
                         "last_commit": None,
                     }
                     r = self.client.get(url)
+                    # Call a second time to test cache and fully exercise
+                    # branch_status()
+                    self.client.get(url)
         mock_helper.assert_called_with(mock.ANY, self.translation_branch)
         self.assertTemplateUsed(r, "licenses/branch_status.html")
         context = r.context
