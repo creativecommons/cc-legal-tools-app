@@ -70,6 +70,28 @@ class GitTestMixin:
 
 @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
 class SetupLocalBranchTest(GitTestMixin, TestCase):
+    def test_setup_local_branch_protocol_error(self):
+        with mock.patch("sys.stderr", new_callable=StringIO) as mock_err:
+            with self.assertRaises(SystemExit):
+                with mock.patch("git.remote.Remote.fetch") as mock_fetch:
+                    mock_fetch.side_effect = git.exc.GitCommandError(
+                        "Mock_Error", 1, stderr="protocol error"
+                    )
+                    setup_local_branch(self.local_repo, "branch_name")
+            self.assertEqual(
+                mock_err.getvalue().strip(),
+                "ERROR: git origin.fetch() stderr: 'protocol error'. Check git"
+                " remote access/authentication.",
+            )
+
+    def test_setup_local_branch_other_error(self):
+        with self.assertRaises(git.exc.GitCommandError):
+            with mock.patch("git.remote.Remote.fetch") as mock_fetch:
+                mock_fetch.side_effect = git.exc.GitCommandError(
+                    "Mock_Error", 1
+                )
+                setup_local_branch(self.local_repo, "branch_name")
+
     def test_branch_exists_nowhere_but_parent_does(self):
         # No "ourbranch" locally or upstream, so we branch from origin/main
         #
