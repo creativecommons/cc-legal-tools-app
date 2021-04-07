@@ -63,7 +63,7 @@ repos:
 
       - id: coverage-report
         name: 'Confirm test coverage'
-        entry: pipenv run coverage report -m --fail-under 98
+        entry: pipenv run coverage report
         language: system
         types: ["file", "python", "text"]
         pass_filenames: false
