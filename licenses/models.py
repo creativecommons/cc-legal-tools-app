@@ -38,9 +38,38 @@ MAX_LANGUAGE_CODE_LENGTH = 8
 # (by4 and by3 have the same license codes)
 BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
 CC0_LICENSE_CODES = ["CC0"]
+DEFAULT_LANGUAGE = {
+    "ca": "en",
+    "ch": "de",
+    "es": "es",
+    "igo": "en",
+    # Cyrillic selected as the default because "the alphabets are used
+    # interchangeably; except in the legal sphere, where Cyrillic is required"
+    # (https://en.wikipedia.org/wiki/Serbian_language)
+    "rs": "sr-Cyrl",
+}
 
 
 class LegalCodeQuerySet(models.QuerySet):
+    # We'll create LegalCode and License objects for all the by licenses,
+    # and the zero_1.0 ones.
+    # We're just doing these license codes and versions for now:
+    # by* 4.0
+    # by* 3.0 - including ported
+    # cc 1.0
+
+    # Queries for legalcode objects
+    BY4_QUERY = Q(
+        license__version="4.0",
+        license__license_code__in=BY_LICENSE_CODES,
+    )
+    BY3_QUERY = Q(
+        license__version="3.0",
+        license__license_code__in=BY_LICENSE_CODES,
+    )
+    # There's only one version of CC0.
+    CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
+
     def translated(self):
         """
         Return a queryset of the LegalCode objects that we are doing the
@@ -57,28 +86,29 @@ class LegalCodeQuerySet(models.QuerySet):
         ones that we expect to work. This will change over time as we add
         support for more licenses.
         """
-        # We'll create LegalCode and License objects for all the by licenses,
-        # and the zero_1.0 ones.
-        # We're just doing these license codes and versions for now:
-        # by* 4.0
-        # by* 3.0 - including ported
-        # cc 1.0
 
-        # Queries for legalcode objects
-        BY4_QUERY = Q(
-            license__version="4.0",
-            license__license_code__in=BY_LICENSE_CODES,
-        )
-        BY3_QUERY = Q(
-            license__version="3.0",
-            license__license_code__in=BY_LICENSE_CODES,
-        )
-        # There's only one version of CC0.
-        CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
+        return self.filter(
+            self.BY4_QUERY | self.BY3_QUERY | self.CC0_QUERY
+        ).exclude(language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS)
 
-        return self.filter(BY4_QUERY | BY3_QUERY | CC0_QUERY).exclude(
-            language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
-        )
+    def validgroups(self):
+        """
+        Return a queryset of the LegalCode objects that exist and are valid
+        ones that we expect to work. This will change over time as we add
+        support for more licenses.
+        """
+
+        return {
+            "by4.0": self.filter(self.BY4_QUERY).exclude(
+                language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+            ),
+            "by3.0": self.filter(self.BY3_QUERY).exclude(
+                language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+            ),
+            "zero1.0": self.filter(self.CC0_QUERY).exclude(
+                language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+            ),
+        }
 
 
 class LegalCode(models.Model):
@@ -157,39 +187,6 @@ class LegalCode(models.Model):
 
         For unported, uses "xu" as the "jurisdiction" in the filename.
 
-        E.g. "publicdomain/3.0/xu" or "licenses/4.0"
-        """
-        license = self.license
-        firstdir = (
-            "publicdomain"
-            if license.license_code.lower() == "cc0"
-            else "licenses"
-        )
-        if license.version == "3.0":
-            # "xu" for "unported"
-            return os.path.join(
-                firstdir, license.version, license.jurisdiction_code or "xu"
-            )
-        else:
-            return os.path.join(firstdir, license.version)
-
-    def get_deed_path(self):
-        """
-        See get_license_path()
-        """
-        license = self.license
-        code = (
-            "zero"
-            if license.license_code.lower() == "cc0"
-            else license.license_code.lower()
-        )
-        return os.path.join(
-            self._get_save_path(),
-            f"{code}_deed_{self.language_code}.html",
-        )
-
-    def get_license_path(self):
-        """
         If saving the license as a static file, this returns the relative
         path of the file to save it as.
 
@@ -229,16 +226,82 @@ class LegalCode(models.Model):
         /publicdomain/1.0/zero_deed_ja.html
         /publicdomain/1.0/zero_legalcode_ja.html
         """
+
         license = self.license
+        firstdir = (
+            "publicdomain"
+            if license.license_code.lower() == "cc0"
+            else "licenses"
+        )
         code = (
             "zero"
             if license.license_code.lower() == "cc0"
             else license.license_code.lower()
         )
-        return os.path.join(
+        if firstdir == "licenses" and license.version in [
+            "1.0",
+            "2.0",
+            "2.1",
+            "2.5",
+            "3.0",
+        ]:
+            # "xu" for "unported"
+            return os.path.join(
+                firstdir,  # licenses
+                code,  # by, by-nc-nd, etc.
+                license.version,  # 1.0, 2.0, etc.
+                license.jurisdiction_code or "xu",
+            )
+        else:
+            return os.path.join(
+                firstdir,  # licenses, publicdomain
+                code,  # by, by-nc-nd, zero, etc.
+                license.version,  # 1.0, 2.0, 4.0, etc.
+            )
+
+    def get_file_and_links(self, layer):
+        license = self.license
+        juris_code = license.jurisdiction_code
+        filename = os.path.join(
             self._get_save_path(),
-            f"{code}_legalcode_{self.language_code}.html",
+            f"{layer}.{self.language_code}",
         )
+        symlinks = []
+
+        # Symlink without English language for by*4.0 and zero
+        if (
+            license.license_code.lower() == "cc0" or license.version == "4.0"
+        ) and self.language_code == "en":
+            symlinks.append(f"{layer}")
+            if layer == "deed":
+                symlinks.append("index.html")
+        # by* 3.0 and earlier licenses
+        elif license.license_code.lower() != "cc0" and license.version in [
+            "1.0",
+            "2.0",
+            "2.1",
+            "2.5",
+            "3.0",
+        ]:
+            # Unported ("xu" jurisdiction) symlinks
+            if not license.jurisdiction_code:
+                symlinks.append(f"../{filename}")
+                symlinks.append(f"../{layer}")
+                if layer == "deed":
+                    symlinks.append("../index.html")
+            # Multiple languages in a jurisdiction
+            elif juris_code in DEFAULT_LANGUAGE:
+                if DEFAULT_LANGUAGE[juris_code] == self.language_code:
+                    symlinks.append(f"{layer}")
+                    if layer == "deed":
+                        symlinks.append("index.html")
+            # Single language in a jurisdiction
+            else:
+                symlinks.append(f"{layer}")
+                if layer == "deed":
+                    symlinks.append("index.html")
+
+        return [filename, symlinks]
 
     def has_english(self):
         """
