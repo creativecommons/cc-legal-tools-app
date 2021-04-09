@@ -1,5 +1,5 @@
 [tool.black]
-# Force exclude is used as pre-comit feeds individual file names based on
+# Force exclude is used as pre-commit feeds individual file names based on
 # filters
 force-exclude = '''
 (
@@ -31,6 +31,8 @@ source = [
 ]
 
 [tool.coverage.report]
+fail_under = 98.00
+precision = 2
 show_missing = true
 skip_covered = true
 
@@ -52,4 +54,4 @@ profile = 'black'
 
 
 # [tool.pre-commit]
-# config: .pre-commit-config.yaml
+#   config: .pre-commit-config.yaml

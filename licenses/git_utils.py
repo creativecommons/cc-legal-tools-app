@@ -14,8 +14,16 @@ logger.setLevel(logging.DEBUG)
 
 
 def run_git(repo: git.Repo, command: List[str]):
-    result = subprocess.run(command, cwd=repo.working_tree_dir)
-    if result.returncode != 0:
+    result = subprocess.run(
+        command,
+        cwd=repo.working_tree_dir,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    if result.returncode == 0:
+        print(result.stdout.decode("utf-8"), end="")
+    else:
+        print(result.stdout.decode("utf-8"), end="", file=sys.stderr)
         raise Exception("Something went wrong running git")
 
 

@@ -1,6 +1,7 @@
 # Standard library
 import datetime
 import os
+from io import StringIO
 from unittest import mock
 from unittest.mock import MagicMock, call
 
@@ -17,7 +18,12 @@ from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import get_pofile_content
 from licenses.models import LegalCode, TranslationBranch
 from licenses.tests.factories import LegalCodeFactory, LicenseFactory
-from licenses.transifex import TransifexAuthRequests, TransifexHelper
+from licenses.transifex import (
+    LEGALCODES_KEY,
+    TransifexAuthRequests,
+    TransifexHelper,
+    _empty_branch_object,
+)
 
 TEST_PROJECT_SLUG = "proj"
 TEST_ORGANIZATION_SLUG = "org"
@@ -64,6 +70,27 @@ class DummyRepo:
 class TestTransifex(TestCase):
     def setUp(self):
         self.helper = TransifexHelper()
+
+    def test__empty_branch_object(self):
+        empty = _empty_branch_object()
+        self.assertEquals(empty, {LEGALCODES_KEY: []})
+
+    def test_transifexhelper_say(self):
+        with mock.patch("sys.stdout", new_callable=StringIO) as mock_out:
+            self.helper.say(0, "loud")
+            self.assertEqual(mock_out.getvalue().strip(), "loud")
+        with mock.patch("sys.stdout", new_callable=StringIO) as mock_out:
+            self.helper.say(2, "quiet")
+            self.assertEqual(mock_out.getvalue().strip(), "")
+
+    def test_clear_transifex_stats(self):
+        with self.assertRaises(AttributeError):
+            self.helper._stats
+        self.helper.clear_transifex_stats()
+        self.helper._stats = 1
+        self.helper.clear_transifex_stats()
+        with self.assertRaises(AttributeError):
+            self.helper._stats
 
     def test_request20_success(self):
         with mpo(self.helper.api_v20, "get") as mock_get:
