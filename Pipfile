@@ -8,7 +8,7 @@ Babel = "*"
 beautifulsoup4 = "*"
 dealer = "*"
 dj-database-url = "*"
-Django = "==2.2.19"
+Django = ">=2.2.20,<3.0"
 GitPython = "*"
 iso8601 = "*"
 lxml = "*"  # For use by beautifulsoup4 (but not a stated dependency)
