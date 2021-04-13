@@ -39,7 +39,7 @@ skip_covered = true
 
 # [tool.flake8]
 #   config: .flake8
-# also see: https://gitlab.com/pycqa/flake8/-/issues/428
+# also see: https://github.com/PyCQA/flake8/issues/234
 
 
 [tool.isort]
