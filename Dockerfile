@@ -25,6 +25,5 @@ RUN useradd --create-home cc
 WORKDIR /home/cc
 USER cc
 
-
 # Install application into container
 COPY . .
