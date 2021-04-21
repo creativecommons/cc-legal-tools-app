@@ -234,7 +234,7 @@ The older version licenses have not yet been looked at. Hopefully we can model
 importing those licenses on how we've done the 3.0 licenses.
 
 
-## Running the import
+### Running the import
 
 1. Clean up any old data in the database:
     ```shell
@@ -282,7 +282,7 @@ variarables set).
 Also see [Publishing changes to git repo](#publishing-changes-to-git-repo).
 
 
-## When translations have been updated in Transifex
+### When translations have been updated in Transifex
 
 The hourly run of `check_for_translation_updates` looks to see if any of
 the translation files in Transifex have newer last modification times
@@ -313,7 +313,7 @@ equivalent steps manually:
   (see farther down for more about publishing).
 
 
-## How the license translation is implemented
+### How the license translation is implemented
 
 First, note that translation uses two sets of files. Most things use the
 built-in Django translation support. But the translation of the actual legal
