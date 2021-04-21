@@ -264,7 +264,7 @@ class LegalCode(models.Model):
         juris_code = license.jurisdiction_code
         filename = os.path.join(
             self._get_save_path(),
-            f"{layer}.{self.language_code}",
+            f"{layer}.{self.language_code}.html",
         )
         symlinks = []
 
@@ -272,7 +272,7 @@ class LegalCode(models.Model):
         if (
             license.license_code.lower() == "cc0" or license.version == "4.0"
         ) and self.language_code == "en":
-            symlinks.append(f"{layer}")
+            symlinks.append(f"{layer}.html")
             if layer == "deed":
                 symlinks.append("index.html")
         # by* 3.0 and earlier licenses
@@ -286,18 +286,18 @@ class LegalCode(models.Model):
             # Unported ("xu" jurisdiction) symlinks
             if not license.jurisdiction_code:
                 symlinks.append(f"../{filename}")
-                symlinks.append(f"../{layer}")
+                symlinks.append(f"../{layer}.html")
                 if layer == "deed":
                     symlinks.append("../index.html")
             # Multiple languages in a jurisdiction
             elif juris_code in DEFAULT_LANGUAGE:
                 if DEFAULT_LANGUAGE[juris_code] == self.language_code:
-                    symlinks.append(f"{layer}")
+                    symlinks.append(f"{layer}.html")
                     if layer == "deed":
                         symlinks.append("index.html")
             # Single language in a jurisdiction
             else:
-                symlinks.append(f"{layer}")
+                symlinks.append(f"{layer}.html")
                 if layer == "deed":
                     symlinks.append("index.html")
 
