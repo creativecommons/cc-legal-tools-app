@@ -28,13 +28,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # License HTML files are in
-        # https://github.com/creativecommons/creativecommons.org/tree/master/docroot/legalcode  # noqa: E501
-        # Let's just assume we've downloaded them somewhere, and pass the input
-        # directory.
-        # PER
-        # https://creativecommons.slack.com/archives/C014SUAT8Q2/p1594919397011700?thread_ts=1594817395.003200&cid=C014SUAT8Q2  # noqa: E501
-        # "the docroot/legalcode files are the primary source of truth"
-        # (these are the HTML files with the legal license text).
+        # https://github.com/creativecommons/cc-licenses-data/tree/main/legacy/legalcode  # noqa: E501
+        #
+        # That repository must be checked out and the appropriate directory
+        # passed given as the input_directory.
         input_directory = options["input_directory"]
         html_filenames = sorted(
             [f for f in os.listdir(input_directory) if f.endswith(".html")]

@@ -240,27 +240,25 @@ importing those licenses on how we've done the 3.0 licenses.
     ```shell
     pipenv run ./manage.py clear_license_data
     ```
-2. Clone [creativecommons/creativecommons.org][repoccorg] and
-   [creativecommons/cc-licenses-data][repodata] next to this repo
+2. Clone [creativecommons/cc-licenses-data][repodata] next to this repo
 3. Load HTML files:
     ```shell
-    pipenv run ./manage.py load_html_files ../creativecommons.org/docroot/legalcode
+    pipenv run ./manage.py load_html_files ../cc-licenses-data/legacy/legalcode
     ```
 
 It will read the HTML files from the specified directory, populate the database
-with LegalCode and License records, and create .po and .mo files in
-cc-licenses-data.
+with LegalCode and License records, and create `.po` and `.mo` files in
+[creativecommons/cc-licenses-data][repodata].
 
 Once you've done that, you might want to update the static HTML files
 for the site; see "Saving the site as static files" farther on.
 
-Now commit the changes from cc-licenses-data and push to Github.
+Now commit the changes from cc-licenses-data and push to GitHub.
 
 It's simplest to do this part on a development machine. It gets too complicated
 trying to run on the server and authenticate properly to GitHub from the
 command line.
 
-[repoccorg]: https://github.com/creativecommons/creativecommons.org
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
@@ -375,10 +373,11 @@ For example, the translated files for
 `zh_Hans` directory. In this case, `zh_Hans` is what Django uses to identify
 that translation.
 
-The .po files are initially created from the existing HTML license files by
-running `pipenv run ./manage.py load_html_files <path to docroot/legalcode>`, where
-`<path to docroot/legalcode>` is the path to the docroot/legalcode directory
-where the `creativecommons.org` repo is checked out. (See also above.)
+The `.po` files are initially created from the existing HTML license files by
+running `pipenv run ./manage.py load_html_files <path to legacy/legalcode>`,
+where `<path to legacy/legalcode>` is a local path to
+[creativecommons/cc-licenses-data][repodata]:
+[`legacy/legalcode`][legacylegalcode] (see also above).
 
 After this is done and merged to the main branch, it should not be done again.
 Instead, edit the HTML license template files to change the English text, and
@@ -389,6 +388,8 @@ compilemessages` to update the `.mo` files.
 
 > :warning: **Important:** If the `.mo` files are not updated, Django will not
 > use the updated translations!
+
+[legacylegalcode]: https://github.com/creativecommons/cc-licenses-data/tree/main/legacy/legalcode
 
 
 ## Saving the site as static files
@@ -431,7 +432,7 @@ manually to get upstream updated.
 ### Publishing changes to git repo
 
 When the site is deployed, to enable pushing and pulling the licenses data repo
-with Github, create an ssh deploy key for the cc-licenses-data repo with write
+with GitHub, create an ssh deploy key for the cc-licenses-data repo with write
 permissions, and put the private key file (not password protected) somewhere
 safe, owned by www-data, and readable only by its owner (0o400). Then in
 settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be the full path to that
