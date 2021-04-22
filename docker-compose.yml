@@ -1,5 +1,5 @@
 version: "3"
-   
+
 services:
   db:
     image: postgres
@@ -21,4 +21,3 @@ services:
       - db
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
-
