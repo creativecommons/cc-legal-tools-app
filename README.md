@@ -18,7 +18,7 @@ Use the following instructions to start the project with Docker compose.
 2. Build the containers
   - `docker-compose build`
 3. Run migrations
-  - `docker-compose run web python manage.py migrate --settings cc_licenses.settings.local`
+  - `docker-compose run web python manage.py migrate`
 4. Run the containers
   - `docker-compose up`
 
