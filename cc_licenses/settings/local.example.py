@@ -1,4 +1,4 @@
-# Python standard library
+# Standard library
 import os
 
 # Third-party
