@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  web:
+    build: .
+    image: cc_licenses
+    command: python manage.py runserver 0.0.0.0:8000 --settings cc_licenses.settings.local
+    volumes:
+      - .:/home/cc
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEV_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
