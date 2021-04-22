@@ -7,5 +7,9 @@ from cc_licenses.settings.dev import *  # noqa: F401, F403
 # Override settings here
 # TRANSLATION_REPOSITORY_DEPLOY_KEY = "/path/to/ssh/private/key"
 
-# DATABASE_URL environment variable must be set
-DATABASES["default"] = dj_database_url.config(conn_max_age=600)  # noqa: F405
+# If DATABASE_URL environment variable is not set, then localhost is assumed.
+# Also see DATABASES variable in settings base.by.
+if os.getenv("DATABASE_URL"):
+    DATABASES["default"] = dj_database_url.config(  # noqa: F405
+        conn_max_age=600
+    )
