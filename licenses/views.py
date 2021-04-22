@@ -97,7 +97,8 @@ def get_languages_and_links_for_legalcodes(
     """
     license_or_deed should be "license" or "deed", controlling which kind of
     page we link to.
-    selected_language_code is a CC language code
+
+    selected_language_code is a CC language code (RFC 5646 language tag)
     """
     languages_and_links = [
         {
