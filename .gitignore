@@ -30,3 +30,12 @@ venv.bak/
 # Editor
 *.sw[po]
 *~
+
+# Postgres data
+data/
+
+# Pyenv
+.python-version
+
+# IDE ignores
+.vscode
