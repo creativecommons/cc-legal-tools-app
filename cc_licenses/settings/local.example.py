@@ -1,3 +1,6 @@
+# Python standard library
+import os
+
 # Third-party
 import dj_database_url
 
