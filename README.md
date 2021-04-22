@@ -9,8 +9,21 @@ want to use a newer version, edit `Pipfile`.
 Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 
-### Setting up the Project
+## Setting up the Project
 
+### Docker compose
+Use the following instructions to start the project with Docker compose.
+
+1. Make sure you have configured `cc_licenses.settings.local.py`
+2. Build the containers
+  - `docker-compose build`
+3. Run migrations
+  - `docker-compose run web python manage.py migrate`
+4. Run the containers
+  - `docker-compose up`
+
+
+### Manual set-up
 1. Development Environment
    1. Fork and clone the project, cd to the project directory.
    2. Install dependencies
