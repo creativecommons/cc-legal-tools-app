@@ -9,23 +9,79 @@ want to use a newer version, edit `Pipfile`.
 Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 
+## Not the live site
+
+This project is not intended to serve the license and deed pages directly.
+Though if it's deployed on a public server it could do that, performance would
+probably not be acceptable.
+
+Instead, a command line tool can be used to save all the rendered HTML pages
+for licenses and deeds as files. Then those files are used as part of the real
+creativecommons.org site, just served as static files. See details farther
+down.
+
+
 ## Setting up the Project
 
-### Docker compose
+
+### Docker Compose Setup
+
 Use the following instructions to start the project with Docker compose.
 
-1. Make sure you have configured `cc_licenses.settings.local.py`
-2. Build the containers
-  - `docker-compose build`
-3. Run migrations
-  - `docker-compose run web python manage.py migrate`
-4. Run the containers
-  - `docker-compose up`
+1. Initial Setup
+   1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
+      into a directory adjacent to this one:
+        ```
+        parent_dir
+        ├── cc-licenses
+        └── cc-licenses-data
+        ```
+   2. Make sure you have configured
+        ```shell
+        cc_licenses.settings.local.py
+        ```
+   3. Build the containers
+        ```shell
+        docker-compose build
+        ```
+   4. Run database migrations
+        ```shell
+        docker-compose run web python manage.py migrate
+        ```
+   5. Clear data in the database
+        ```shell
+        docker-compose run web python manage.py clear_license_data
+        ```
+   6. Load legacy HTML in the database
+        ```shell
+        docker-compose run web python manage.py load_html_files ../cc-licenses-data/legacy/legalcode
+        ```
+2. Run the containers
+    ```shell
+    docker-compose up
+    ```
+
+The commands above will create 3 docker containers:
+1. **app** ([127.0.0.1:8000](http://127.0.0.1:8000/)): this Djano application
+   - Any changes made to Python will be detected and rebuilt transparently as
+     long as the development server is running.
+2. **db**: databse backend for this Django application
+3. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
+   serving [creativecommons/cc-licenses-data][repodata]/docs.
+
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
-### Manual set-up
+### Manual Setup
+
 1. Development Environment
-   1. Fork and clone the project, cd to the project directory.
+   1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
+      into a directory adjacent to this one:
+        ```
+        parent_dir
+        ├── cc-licenses
+        └── cc-licenses-data
+        ```
    2. Install dependencies
       - Linux:
         ```shell
@@ -84,29 +140,14 @@ Use the following instructions to start the project with Docker compose.
     ```shell
     pipenv run ./manage.py migrate
     ```
+3. Run development server ([127.0.0.1:8000](http://127.0.0.1:8000/))
+    ```shell
+    pipenv run ./manage.py runserver
+    ```
+   - Any changes made to Python will be detected and rebuilt transparently as
+     long as the development server is running.
 
-
-## Development Server
-
-You should be able to run the development server
-([127.0.0.1:8000](http://127.0.0.1:8000/)) via:
-```shell
-pipenv run ./manage.py runserver
-```
-
-Or, on a custom port and address:
-```shell
-pipenv run ./manage.py runserver 0.0.0.0:8001
-```
-
-Any changes made to Python will be detected and rebuilt transparently as
-long as the development server is running.
-
-
-### Error building trees
-
-If you encounter an `error: Error building trees` error from pre-commit when
-you commit, try adding your files (`git add <FILES>`) prior to committing them.
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 ### Tooling
@@ -128,16 +169,13 @@ you commit, try adding your files (`git add <FILES>`) prior to committing them.
 [precommit]: https://pre-commit.com/
 
 
-## Not the live site
+### Commit Errors
 
-This project is not intended to serve the license and deed pages directly.
-Though if it's deployed on a public server it could do that, performance would
-probably not be acceptable.
 
-Instead, a command line tool can be used to save all the rendered HTML pages
-for licenses and deeds as files. Then those files are used as part of the real
-creativecommons.org site, just served as static files. See details farther
-down.
+#### Error building trees
+
+If you encounter an `error: Error building trees` error from pre-commit when
+you commit, try adding your files (`git add <FILES>`) prior to committing them.
 
 
 ## Data
@@ -247,21 +285,11 @@ The older version licenses have not yet been looked at. Hopefully we can model
 importing those licenses on how we've done the 3.0 licenses.
 
 
-### Running the import
+#### Docker Import Process
 
-1. Clean up any old data in the database:
-    ```shell
-    pipenv run ./manage.py clear_license_data
-    ```
-2. Clone [creativecommons/cc-licenses-data][repodata] next to this repo
-3. Load HTML files:
-    ```shell
-    pipenv run ./manage.py load_html_files ../cc-licenses-data/legacy/legalcode
-    ```
-
-It will read the HTML files from the specified directory, populate the database
-with LegalCode and License records, and create `.po` and `.mo` files in
-[creativecommons/cc-licenses-data][repodata].
+This process will read the HTML files from the specified directory, populate
+the database with LegalCode and License records, and create `.po` and `.mo`
+files in [creativecommons/cc-licenses-data][repodata].
 
 Once you've done that, you might want to update the static HTML files
 for the site; see "Saving the site as static files" farther on.
@@ -272,7 +300,29 @@ It's simplest to do this part on a development machine. It gets too complicated
 trying to run on the server and authenticate properly to GitHub from the
 command line.
 
+1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
+   into a directory adjacent to this one:
+    ```
+    parent_dir
+    ├── cc-licenses
+    └── cc-licenses-data
+    ```
+2. Clear data in the database
+    ```shell
+    docker-compose run web python manage.py clear_license_data
+    ```
+3. Load legacy HTML in the database
+    ```shell
+    docker-compose run web python manage.py load_html_files ../cc-licenses-data/legacy/legalcode
+    ```
+
 [repodata]:https://github.com/creativecommons/cc-licenses-data
+
+
+#### Manual Import Process
+
+Follow the instructions above, but use `pipenv run ./manage.py` instead of
+`docker-compose run web python manage.py`.
 
 
 ## Translation
@@ -396,50 +446,69 @@ After this is done and merged to the main branch, it should not be done again.
 Instead, edit the HTML license template files to change the English text, and
 use Transifex to update the translation files.
 
-Anytime `.po` files are created or changed, run `pipenv run ./manage.py
-compilemessages` to update the `.mo` files.
-
 > :warning: **Important:** If the `.mo` files are not updated, Django will not
 > use the updated translations!
 
 [legacylegalcode]: https://github.com/creativecommons/cc-licenses-data/tree/main/legacy/legalcode
 
 
-## Saving the site as static files
+#### Docker Translation Update Process
+
+This process must be run any time the `.po` files are created or changed.
+
+1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
+   into a directory adjacent to this one:
+    ```
+    parent_dir
+    ├── cc-licenses
+    └── cc-licenses-data
+    ```
+2. Compile translation messages (update `.mo` files)
+    ```shell
+    docker-compose run web python manage.py compilemessages
+    ```
+
+[repodata]:https://github.com/creativecommons/cc-licenses-data
+
+
+#### Manual Translation Update Process
+
+Follow the instructions above, but use `pipenv run ./manage.py` instead of
+`docker-compose run web python manage.py`.
+
+
+## Generate Static Files
 
 We've been calling this process "publishing", but that's a little
 misleading, since this process does nothing to make its results visible on the
 Internet. It just updates the static HTML files in the -data directory.
 
-This is most easily done from a developer environment.
 
-Check out the [creativecommons/cc-licenses-data][repodata] repository next to
-your `cc-licenses` working tree.
+#### Docker Static Files Process
 
-Decide what branch you want to generate the site from, e.g. "main".
+This process will write the HTML files in the cc-licenses-data clone directory
+under `docs/`. It will not commit the changes (`--nogit`) and will not push any
+commits (`--nopush` is implied by `--nogit`).
 
-In the cc-licenses-data working directory, check out that branch and make sure
-it's up-to-date, e.g.:
-```shell
-git checkout main
-git pull origin main
-```
+1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
+   into a directory adjacent to this one:
+    ```
+    parent_dir
+    ├── cc-licenses
+    └── cc-licenses-data
+    ```
+2. Compile translation messages (update `.mo` files)
+    ```shell
+    docker-compose run web python manage.py publish --nogit --branch=main
+    ```
 
-Then change back to the cc-licenses tree, and run the publish management
-command, probably starting with "--nopush":
-```shell
-pipenv run ./manage.py publish --nopush --branch=main
-```
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
-This will write the HTML files in the cc-licenses-data tree under `build` and
-commit the changes, but won't push them up to GitHub. You can do that manually
-after checking the results.
 
-Alternatively you can leave off `no-push` and *if* the publish makes changes,
-it'll both commit and push them. Just be aware that it won't try to push unless
-it has just committed some changes, so if upstream is already behind and
-running publish doesn't make any new changes, you'll still have to push
-manually to get upstream updated.
+#### Manual Static Files Process
+
+Follow the instructions above, but use `pipenv run ./manage.py` instead of
+`docker-compose run web python manage.py`.
 
 
 ### Publishing changes to git repo

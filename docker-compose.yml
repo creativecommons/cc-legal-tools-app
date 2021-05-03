@@ -15,9 +15,16 @@ services:
     command: python manage.py runserver 0.0.0.0:8000 --settings cc_licenses.settings.local
     volumes:
       - .:/home/cc
+      - ../cc-licenses-data:/home/cc-licenses-data
     ports:
       - "8000:8000"
     depends_on:
       - db
     environment:
       - DEV_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+  static:
+    image: nginx
+    volumes:
+      - ../cc-licenses-data/docs/:/usr/share/nginx/html
+    ports:
+      - "8080:80"

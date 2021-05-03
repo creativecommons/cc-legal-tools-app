@@ -7,7 +7,7 @@ ENV PYTHONFAULTHANDLER 1
 RUN pip install --upgrade pip \
     && pip install --upgrade setuptools \
     && pip install --upgrade pipenv
-RUN apt-get update && apt-get install -y --no-install-recommends gcc
+RUN apt-get update && apt-get install -y --no-install-recommends gcc gettext
 
 # Install python dependencies
 COPY Pipfile .
