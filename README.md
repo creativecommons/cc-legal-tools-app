@@ -45,9 +45,9 @@ Use the following instructions to start the project with Docker compose.
    1. Ensure the [Data Repository](#data-repository) is in place
    2. Install Docker ([Install Docker Engine | Docker Documentation][installdocker])
    3. Create Django local settings file
-    ```shell
-    cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
-    ```
+        ```shell
+        cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+        ```
    4. Build the containers
         ```shell
         docker-compose build
