@@ -73,11 +73,12 @@ The commands above will create 3 docker containers:
 1. **app** ([127.0.0.1:8000](http://127.0.0.1:8000/)): this Djano application
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
-2. **db**: databse backend for this Django application
+2. **db**: PostgreSQL database backend for this Django application
 3. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
    serving [creativecommons/cc-licenses-data][repodata]/docs.
 
 [installdocker]: https://docs.docker.com/engine/install/
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 ### Manual Setup
@@ -148,8 +149,6 @@ The commands above will create 3 docker containers:
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
-
-[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 ### Manual Commands
@@ -464,6 +463,7 @@ use Transifex to update the translation files.
 > :warning: **Important:** If the `.mo` files are not updated, Django will not
 > use the updated translations!
 
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 [legacylegalcode]: https://github.com/creativecommons/cc-licenses-data/tree/main/legacy/legalcode
 
 
@@ -477,8 +477,6 @@ This process must be run any time the `.po` files are created or changed.
     ```shell
     docker-compose run app ./manage.py compilemessages
     ```
-
-[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 ## Generate Static Files
@@ -500,8 +498,6 @@ commits (`--nopush` is implied by `--nogit`).
     ```shell
     docker-compose run app ./manage.py publish --nogit --branch=main
     ```
-
-[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 ### Publishing changes to git repo
