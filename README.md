@@ -24,37 +24,45 @@ down.
 ## Setting up the Project
 
 
+### Data Repository
+
+The [creativecommons/cc-licenses-data][repodata] project repository must be
+cloned into a directory adjacent to this one:
+```
+PARENT_DIR
+├── cc-licenses
+└── cc-licenses-data
+```
+
+[repodata]:https://github.com/creativecommons/cc-licenses-data
+
+
 ### Docker Compose Setup
 
 Use the following instructions to start the project with Docker compose.
 
 1. Initial Setup
-   1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
-      into a directory adjacent to this one:
-        ```
-        parent_dir
-        ├── cc-licenses
-        └── cc-licenses-data
-        ```
-   2. Make sure you have configured
-        ```shell
-        cc_licenses.settings.local.py
-        ```
-   3. Build the containers
+   1. Ensure the [Data Repository](#data-repository) is in place
+   2. Install Docker ([Install Docker Engine | Docker Documentation][installdocker])
+   3. Create Django local settings file
+    ```shell
+    cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+    ```
+   4. Build the containers
         ```shell
         docker-compose build
         ```
-   4. Run database migrations
+   5. Run database migrations
         ```shell
-        docker-compose run web python manage.py migrate
+        docker-compose run app ./manage.py migrate
         ```
-   5. Clear data in the database
+   6. Clear data in the database
         ```shell
-        docker-compose run web python manage.py clear_license_data
+        docker-compose run app ./manage.py clear_license_data
         ```
-   6. Load legacy HTML in the database
+   7. Load legacy HTML in the database
         ```shell
-        docker-compose run web python manage.py load_html_files ../cc-licenses-data/legacy/legalcode
+        docker-compose run app ./manage.py load_html_files ../cc-licenses-data/legacy/legalcode
         ```
 2. Run the containers
     ```shell
@@ -69,19 +77,13 @@ The commands above will create 3 docker containers:
 3. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
    serving [creativecommons/cc-licenses-data][repodata]/docs.
 
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[installdocker]: https://docs.docker.com/engine/install/
 
 
 ### Manual Setup
 
 1. Development Environment
-   1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
-      into a directory adjacent to this one:
-        ```
-        parent_dir
-        ├── cc-licenses
-        └── cc-licenses-data
-        ```
+   1. Ensure the [Data Repository](#data-repository) is in place
    2. Install dependencies
       - Linux:
         ```shell
@@ -109,7 +111,7 @@ The commands above will create 3 docker containers:
     pipenv run pre-commit install
     ```
 2. Configure Django and PostgreSQL
-   1. Create local settings file
+   1. Create Django local settings file
     ```shell
     cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
     ```
@@ -150,6 +152,13 @@ The commands above will create 3 docker containers:
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
+### Manual Commands
+
+**NOTE:** The rest of the documentation assumes Docker. If you are using a
+manual setup, use `pipenv run` instead of `docker-compose run web` for the
+commands below.
+
+
 ### Tooling
 
 - **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
@@ -167,6 +176,22 @@ The commands above will create 3 docker containers:
 [flake8]: https://gitlab.com/pycqa/flake8
 [isort]: https://pycqa.github.io/isort/
 [precommit]: https://pre-commit.com/
+
+
+#### Coverage Tests and Report
+
+The coverage tests and report are run as part of pre-commit and as a GitHub
+Action. To run it manually:
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+2. Coverage test
+    ```shell
+    docker-compose run app coverage run manage.py test --noinput --keepdb
+    ```
+3. Coverage report
+    ```shell
+    docker-compose run app coverage report
+    ```
 
 
 ### Commit Errors
@@ -285,7 +310,7 @@ The older version licenses have not yet been looked at. Hopefully we can model
 importing those licenses on how we've done the 3.0 licenses.
 
 
-#### Docker Import Process
+#### Import Process
 
 This process will read the HTML files from the specified directory, populate
 the database with LegalCode and License records, and create `.po` and `.mo`
@@ -300,29 +325,18 @@ It's simplest to do this part on a development machine. It gets too complicated
 trying to run on the server and authenticate properly to GitHub from the
 command line.
 
-1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
-   into a directory adjacent to this one:
-    ```
-    parent_dir
-    ├── cc-licenses
-    └── cc-licenses-data
-    ```
-2. Clear data in the database
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+3. Clear data in the database
     ```shell
-    docker-compose run web python manage.py clear_license_data
+    docker-compose run app ./manage.py clear_license_data
     ```
-3. Load legacy HTML in the database
+4. Load legacy HTML in the database
     ```shell
-    docker-compose run web python manage.py load_html_files ../cc-licenses-data/legacy/legalcode
+    docker-compose run app ./manage.py load_html_files ../cc-licenses-data/legacy/legalcode
     ```
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
-
-
-#### Manual Import Process
-
-Follow the instructions above, but use `pipenv run ./manage.py` instead of
-`docker-compose run web python manage.py`.
 
 
 ## Translation
@@ -338,9 +352,9 @@ can be elsewhere, then you need to set `TRANSLATION_REPOSITORY_DIRECTORY` to
 its location.) Be sure to clone using a URL that starts with `git@github...`
 and not `https://github...`, or you won't be able to push to it.
 
-Now arrange for `pipenv run ./manage.py check_for_translation_updates` to be
-run hourly (or the equivalent with the appropriate virtualenv and env
-variarables set).
+Now arrange for `docker-compose run app ./manage.py
+check_for_translation_updates` to be run hourly (or the equivalent with the
+appropriate virtualenv and env variarables set).
 
 Also see [Publishing changes to git repo](#publishing-changes-to-git-repo).
 
@@ -368,11 +382,12 @@ equivalent steps manually:
 - In cc-licenses-data, checkout or create the appropriate branch.
 - Download the updated .po files from Transifex to the appropriate place in
   cc-licenses-data.
-- In cc-licenses, run `pipenv run ./manage.py compilemessages`. *This is
-  important and easy to forget,* but without it, Django will keep using the old
-  translations.
+- In cc-licenses, run `docker-compose run app ./manage.py compilemessages`.
+  *This is important and easy to forget,* but without it, Django will keep
+using the old translations.
 - In cc-licenses-data, commit and push the changes.
-- In cc-licenses, run `pipenv run ./manage.py publish --branch=<branchname>`
+- In cc-licenses, run `docker-compose run app ./manage.py publish
+  --branch=<branchname>`
   (see farther down for more about publishing).
 
 
@@ -437,8 +452,8 @@ For example, the translated files for
 that translation.
 
 The `.po` files are initially created from the existing HTML license files by
-running `pipenv run ./manage.py load_html_files <path to legacy/legalcode>`,
-where `<path to legacy/legalcode>` is a local path to
+running `docker-compose run app ./manage.py load_html_files <path to
+legacy/legalcode>`, where `<path to legacy/legalcode>` is a local path to
 [creativecommons/cc-licenses-data][repodata]:
 [`legacy/legalcode`][legacylegalcode] (see also above).
 
@@ -452,29 +467,18 @@ use Transifex to update the translation files.
 [legacylegalcode]: https://github.com/creativecommons/cc-licenses-data/tree/main/legacy/legalcode
 
 
-#### Docker Translation Update Process
+#### Translation Update Process
 
 This process must be run any time the `.po` files are created or changed.
 
-1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
-   into a directory adjacent to this one:
-    ```
-    parent_dir
-    ├── cc-licenses
-    └── cc-licenses-data
-    ```
-2. Compile translation messages (update `.mo` files)
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+3. Compile translation messages (update `.mo` files)
     ```shell
-    docker-compose run web python manage.py compilemessages
+    docker-compose run app ./manage.py compilemessages
     ```
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
-
-
-#### Manual Translation Update Process
-
-Follow the instructions above, but use `pipenv run ./manage.py` instead of
-`docker-compose run web python manage.py`.
 
 
 ## Generate Static Files
@@ -484,31 +488,20 @@ misleading, since this process does nothing to make its results visible on the
 Internet. It just updates the static HTML files in the -data directory.
 
 
-#### Docker Static Files Process
+#### Static Files Process
 
 This process will write the HTML files in the cc-licenses-data clone directory
 under `docs/`. It will not commit the changes (`--nogit`) and will not push any
 commits (`--nopush` is implied by `--nogit`).
 
-1. Ensure the [creativecommons/cc-licenses-data][repodata] project is cloned
-   into a directory adjacent to this one:
-    ```
-    parent_dir
-    ├── cc-licenses
-    └── cc-licenses-data
-    ```
-2. Compile translation messages (update `.mo` files)
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+3. Compile translation messages (update `.mo` files)
     ```shell
-    docker-compose run web python manage.py publish --nogit --branch=main
+    docker-compose run app ./manage.py publish --nogit --branch=main
     ```
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
-
-
-#### Manual Static Files Process
-
-Follow the instructions above, but use `pipenv run ./manage.py` instead of
-`docker-compose run web python manage.py`.
 
 
 ### Publishing changes to git repo
