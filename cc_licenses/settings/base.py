@@ -265,9 +265,8 @@ TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
     "TRANSLATION_REPOSITORY_DIRECTORY",
     os.path.join(ROOT_DIR, "..", "cc-licenses-data"),
 )
-
-# django-distill settings
-DISTILL_DIR = f"{TRANSLATION_REPOSITORY_DIRECTORY}/docs/"
+DISTILL_DIR = os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "docs")
+LEGACY_DIR = os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "legacy")
 
 # Django translations are in the translation repo directory, under "locale".
 # License translations are in the translation repo directory, under
