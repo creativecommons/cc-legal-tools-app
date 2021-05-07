@@ -62,7 +62,7 @@ Use the following instructions to start the project with Docker compose.
         ```
    7. Load legacy HTML in the database
         ```shell
-        docker-compose run app ./manage.py load_html_files ../cc-licenses-data/legacy/legalcode
+        docker-compose run app ./manage.py load_html_files
         ```
 2. Run the containers
     ```shell
@@ -260,13 +260,14 @@ to parse BY\* 4.0 HTML files, another for CC0, another for BY\* 3.0 unported
 files, and another for BY\* 3.0 ported. We would expect to add more such
 methods for other license flavors.
 
-Each parsing method uses BeautifulSoup4 to parse the HTML text into a tree
-representing the structure of the HTML, and picks out the part of the page that
-contains the license (as opposed to navigation, styling, and boilerplate text
-that occurs on many pages). Then it uses tag id's and classes and the structure
-of the HTML to pick out the text for each part of the license (generally a
-translatable phrase or paragraph) and organize it into translation files, or
-for the ported 3.0 licenses, just pretty-prints the HTML and saves it as-is.
+Each parsing method uses [BeautifulSoup4][bs4] to parse the HTML text into a
+tree representing the structure of the HTML, and picks out the part of the page
+that contains the license (as opposed to navigation, styling, and boilerplate
+text that occurs on many pages). Then it uses tag id's and classes and the
+structure of the HTML to pick out the text for each part of the license
+(generally a translatable phrase or paragraph) and organize it into translation
+files, or for the ported 3.0 licenses, just pretty-prints the HTML and saves it
+as-is.
 
 The BY\* 4.0 licenses are the most straightforward. The text is the same from
 one license to the next (e.g. BY-NC, BY-SA) except where the actual license
@@ -308,6 +309,8 @@ inserts whatever HTML we've saved into the page.
 The older version licenses have not yet been looked at. Hopefully we can model
 importing those licenses on how we've done the 3.0 licenses.
 
+[bs4]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+
 
 #### Import Process
 
@@ -332,7 +335,7 @@ command line.
     ```
 4. Load legacy HTML in the database
     ```shell
-    docker-compose run app ./manage.py load_html_files ../cc-licenses-data/legacy/legalcode
+    docker-compose run app ./manage.py load_html_files
     ```
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
@@ -430,15 +433,17 @@ For each domain, there's a file for each translation. The files are all named
 language.
 
 We have the following structure in our translation data repo:
-
-    legalcode/
-       <language>/
-           LC_MESSAGES/
-                 by_4.0.mo
-                 by_4.0.po
-                 by-nc_4.0.mo
-                 by-nc_4.0.po
-                 ...
+```
+legalcode/
+├── <language>
+│   └── LC_MESSAGES
+│       ├── by-nc-nd_40.mo
+│       ├── by-nc-nd_40.po
+│       ├── by-nc-sa_40.mo
+│       ...
+│       └── by_40.po
+...
+```
 
 The language code used in the path to the files is *not* necessarily the same
 as what we're using to identify the licenses in the site URLs.  That's because
@@ -451,10 +456,7 @@ For example, the translated files for
 that translation.
 
 The `.po` files are initially created from the existing HTML license files by
-running `docker-compose run app ./manage.py load_html_files <path to
-legacy/legalcode>`, where `<path to legacy/legalcode>` is a local path to
-[creativecommons/cc-licenses-data][repodata]:
-[`legacy/legalcode`][legacylegalcode] (see also above).
+running `docker-compose run app ./manage.py load_html_files`.
 
 After this is done and merged to the main branch, it should not be done again.
 Instead, edit the HTML license template files to change the English text, and
