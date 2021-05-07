@@ -131,11 +131,10 @@ class Command(BaseCommand):
             output_dir, reverse("metadata"), "licenses/metadata.yaml"
         )
 
-    def run_copy_legacy_files(self):
+    def run_copy_licenses_rdfs(self):
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
         output_dir = self.output_dir
-        # Licenses RDFs
         licenses_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
         licenses_rdfs = [
             rdf_file
@@ -156,8 +155,11 @@ class Command(BaseCommand):
             self.stdout.write(f"    {relative_name}")
             if relative_name.endswith("xu/rdf"):
                 relative_symlink(output_dir, relative_name, "../rdf")
-        # Meta RDFs
-        self.stdout.write(f"\n{hostname}:{output_dir}")
+
+    def run_copy_meta_rdfs(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
         meta_rdf_dir = os.path.join(legacy_dir, "rdf-meta")
         meta_files = [
             meta_file
@@ -167,6 +169,7 @@ class Command(BaseCommand):
         meta_files.sort()
         dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
+        self.stdout.write(f"\n{hostname}:{output_dir}")
         for meta_file in meta_files:
             dest_relative = os.path.join("rdf", meta_file)
             dest_full = os.path.join(output_dir, dest_relative)
@@ -200,10 +203,46 @@ class Command(BaseCommand):
                 finally:
                     os.close(dir_fd)
 
+    def run_copy_legalcode_plaintext(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
+        plaintext_dir = os.path.join(legacy_dir, "legalcode")
+        plaintext_files = [
+            text_file
+            for text_file in os.listdir(plaintext_dir)
+            if (
+                os.path.isfile(os.path.join(plaintext_dir, text_file))
+                and text_file.endswith(".txt")
+            )
+        ]
+        self.stdout.write(f"\n{hostname}:{output_dir}")
+        for text in plaintext_files:
+            if text.startswith("by"):
+                context = "licenses"
+            else:
+                context = "publicdomain"
+            name = text[:-4]
+            if "3.0" in text:
+                name = f"{name}_xu"
+            relative_name = os.path.join(
+                context,
+                *name.split("_"),
+                "legalcode.txt",
+            )
+            dest_file = os.path.join(output_dir, relative_name)
+            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
+            copyfile(os.path.join(plaintext_dir, text), dest_file)
+            self.stdout.write(f"    {relative_name}")
+            if relative_name.endswith("xu/legalcode.txt"):
+                relative_symlink(output_dir, relative_name, "../legalcode.txt")
+
     def distill_and_copy(self):
         self.run_clean_output_dir()
         self.run_django_distill()
-        self.run_copy_legacy_files()
+        self.run_copy_licenses_rdfs()
+        self.run_copy_meta_rdfs()
+        self.run_copy_legalcode_plaintext()
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
