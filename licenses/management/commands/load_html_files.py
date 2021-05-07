@@ -47,10 +47,15 @@ class Command(BaseCommand):
         default_input_dir = os.path.abspath(
             os.path.join(settings.LEGACY_DIR, "legalcode")
         )
+        relative_input_dir = os.path.relpath(
+            default_input_dir, start=os.path.abspath(settings.ROOT_DIR)
+        )
         parser.add_argument(
             "input_directory",
             nargs="?",
             default=default_input_dir,
+            help="directory containing legalcode legacy HTML files (if"
+            f" ommitted, the default is: {relative_input_dir})",
         )
         parser.add_argument(
             "--versions",
