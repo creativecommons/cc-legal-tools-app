@@ -21,7 +21,7 @@ TEST_POFILE = os.path.join(
 )
 
 
-@override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/foo/bar")
+@override_settings(DATA_REPOSITORY_DIR="/foo/bar")
 class TranslationTest(TestCase):
     def test_get_translation_object(self):
         translation_object = MagicMock()

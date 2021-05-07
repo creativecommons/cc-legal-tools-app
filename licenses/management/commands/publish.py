@@ -247,7 +247,7 @@ class Command(BaseCommand):
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
         self.stdout.write(f"Publishing branch {branch}")
-        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+        with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
             setup_local_branch(repo, branch)
             self.distill_and_copy()
             if repo.is_dirty(untracked_files=True):
@@ -280,13 +280,12 @@ class Command(BaseCommand):
         self.options = options
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.legacy_dir = os.path.abspath(settings.LEGACY_DIR)
-        git_dir = os.path.abspath(settings.TRANSLATION_REPOSITORY_DIRECTORY)
+        git_dir = os.path.abspath(settings.DATA_REPOSITORY_DIR)
         if not self.output_dir.startswith(git_dir):
             raise ImproperlyConfigured(
-                f"In Django settings, DISTILL_DIR must be inside "
-                f"TRANSLATION_REPOSITORY_DIRECTORY, "
-                f"but DISTILL_DIR={self.output_dir} is outside "
-                f"TRANSLATION_REPOSITORY_DIRECTORY={git_dir}."
+                "In Django settings, DISTILL_DIR must be inside"
+                f" DATA_REPOSITORY_DIR, but DISTILL_DIR={self.output_dir} is"
+                f" outside DATA_REPOSITORY_DIR={git_dir}."
             )
 
         self.relpath = os.path.relpath(self.output_dir, git_dir)

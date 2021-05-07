@@ -143,7 +143,7 @@ class LegalCodeModelTest(TestCase):
                 )
                 self.assertEqual(expected, legalcode.translation_domain)
 
-    @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/foo")
+    @override_settings(DATA_REPOSITORY_DIR="/foo")
     def test_translation_filename(self):
         data = [
             # (expected, license_code, version, jurisdiction, language)
@@ -212,7 +212,7 @@ class LegalCodeModelTest(TestCase):
         mock_pofile.assert_called_with("", encoding="utf-8")
         self.assertEqual(test_pofile, result)
 
-    @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/some/dir")
+    @override_settings(DATA_REPOSITORY_DIR="/some/dir")
     def test_get_english_pofile(self):
         legalcode = LegalCodeFactory(language_code="es")
         legalcode_en = LegalCodeFactory(
@@ -233,7 +233,7 @@ class LegalCodeModelTest(TestCase):
         mock_glfl.assert_called_with(DEFAULT_LANGUAGE_CODE)
         mock_gp.assert_called_with()
 
-    @override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/some/dir")
+    @override_settings(DATA_REPOSITORY_DIR="/some/dir")
     def test_get_translation_object(self):
         # get_translation_object on the model calls the
         # i18n.utils.get_translation_object.
@@ -794,7 +794,7 @@ class LicenseModelTest(TestCase):
 
     @override_settings(
         TRANSIFEX=TEST_TRANSIFEX_SETTINGS,
-        TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo",
+        DATA_REPOSITORY_DIR="/trans/repo",
     )
     def test_tx_upload_messages(self):
         language_code = "es"

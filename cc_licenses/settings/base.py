@@ -258,22 +258,21 @@ if "CACHE_HOST" in os.environ:
 # Percent translated that languages should be at or above
 TRANSLATION_THRESHOLD = 80
 
-# Location of the translation data's repo. Look in env for
-# TRANSLATION_REPOSITORY_DIRECTORY.
+# Location of the translation data's repo. Look in env for DATA_REPOSITORY_DIR.
 # Default is next to this one.
-TRANSLATION_REPOSITORY_DIRECTORY = os.getenv(
-    "TRANSLATION_REPOSITORY_DIRECTORY",
+DATA_REPOSITORY_DIR = os.getenv(
+    "DATA_REPOSITORY_DIR",
     os.path.join(ROOT_DIR, "..", "cc-licenses-data"),
 )
-DISTILL_DIR = os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "docs")
-LEGACY_DIR = os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "legacy")
+DISTILL_DIR = os.path.join(DATA_REPOSITORY_DIR, "docs")
+LEGACY_DIR = os.path.join(DATA_REPOSITORY_DIR, "legacy")
 
 # Django translations are in the translation repo directory, under "locale".
 # License translations are in the translation repo directory, under
 # "translations".
 LOCALE_PATHS = (
-    os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "locale"),
-    os.path.join(TRANSLATION_REPOSITORY_DIRECTORY, "legalcode"),
+    os.path.join(DATA_REPOSITORY_DIR, "locale"),
+    os.path.join(DATA_REPOSITORY_DIR, "legalcode"),
 )
 
 TRANSIFEX = {

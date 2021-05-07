@@ -68,7 +68,7 @@ class GitTestMixin:
         return filename
 
 
-@override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
+@override_settings(DATA_REPOSITORY_DIR="/trans/repo")
 class SetupLocalBranchTest(GitTestMixin, TestCase):
     def test_setup_local_branch_protocol_error(self):
         with mock.patch("sys.stderr", new_callable=StringIO) as mock_err:
@@ -152,7 +152,7 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         self.assertNotEqual(old_local_repo_commit, our_branch.commit)
 
 
-@override_settings(TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo")
+@override_settings(DATA_REPOSITORY_DIR="/trans/repo")
 class CommitAndPushChangesTest(GitTestMixin, TestCase):
     def test_run_git_success(self):
         with mock.patch("sys.stdout", new_callable=StringIO) as mock_out:

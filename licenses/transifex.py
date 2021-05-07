@@ -298,9 +298,7 @@ class TransifexHelper:
             pofile_path, pofile_content
         )
         relpaths = [
-            os.path.relpath(
-                filename, settings.TRANSLATION_REPOSITORY_DIRECTORY
-            )
+            os.path.relpath(filename, settings.DATA_REPOSITORY_DIR)
             for filename in filenames
         ]
         repo.index.add(relpaths)
@@ -339,7 +337,7 @@ class TransifexHelper:
             [
                 os.path.relpath(
                     settings.DISTILL_DIR,
-                    settings.TRANSLATION_REPOSITORY_DIRECTORY,
+                    settings.DATA_REPOSITORY_DIR,
                 )
             ]
         )
@@ -398,7 +396,7 @@ class TransifexHelper:
             .translated()
             .exclude(language_code=DEFAULT_LANGUAGE_CODE)
         )
-        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+        with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
             return self.check_for_translation_updates_with_repo_and_legalcodes(
                 repo, legalcodes
             )
@@ -419,8 +417,8 @@ class TransifexHelper:
         self.say(3, "check if repo is dirty")
         if repo.is_dirty():
             raise Exception(
-                f"Git repo at {settings.TRANSLATION_REPOSITORY_DIRECTORY} is"
-                " dirty. We cannot continue."
+                f"Git repo at {settings.DATA_REPOSITORY_DIR} is dirty. We"
+                " cannot continue."
             )
         self.say(2, "Fetch to update repo")
         repo.remotes.origin.fetch()

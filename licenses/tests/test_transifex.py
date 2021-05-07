@@ -65,7 +65,7 @@ class DummyRepo:
 
 @override_settings(
     TRANSIFEX=TEST_TRANSIFEX_SETTINGS,
-    TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo",
+    DATA_REPOSITORY_DIR="/trans/repo",
 )
 class TestTransifex(TestCase):
     def setUp(self):
@@ -371,7 +371,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
 
 
 @override_settings(
-    TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo",
+    DATA_REPOSITORY_DIR="/trans/repo",
 )
 class CheckForTranslationUpdatesTest(TestCase):
     def test_check_for_translation_updates_with_dirty_repo(self):
@@ -706,7 +706,7 @@ class CheckForTranslationUpdatesTest(TestCase):
         self.assertEqual({legalcode}, set(trb.legalcodes.all()))
         relpath = os.path.relpath(
             legalcode.translation_filename(),
-            settings.TRANSLATION_REPOSITORY_DIRECTORY,
+            settings.DATA_REPOSITORY_DIR,
         )
         dummy_repo.index.add.assert_called_with([relpath])
 
