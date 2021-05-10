@@ -347,9 +347,9 @@ get an API token, and set `TRANSIFEX_API_TOKEN` in your environment with its
 value.
 
 The cc-licenses-data repo should be cloned next to the cc-licenses repo. (It
-can be elsewhere, then you need to set `TRANSLATION_REPOSITORY_DIRECTORY` to
-its location.) Be sure to clone using a URL that starts with `git@github...`
-and not `https://github...`, or you won't be able to push to it.
+can be elsewhere, then you need to set `DATA_REPOSITORY_DIR` to its location.)
+Be sure to clone using a URL that starts with `git@github...` and not
+`https://github...`, or you won't be able to push to it.
 
 Now arrange for `docker-compose run app ./manage.py
 check_for_translation_updates` to be run hourly (or the equivalent with the
@@ -403,11 +403,11 @@ Also note: What Transifex calls a `resource` is what Django calls a `domain`.
 I'll probably use the terms interchangeably.
 
 The translation data consists of `.po` files, and they are managed in a
-separate repository from this code,
-`https://github.com/creativecommons/cc-licenses-data`. This is typically
-checked out beside the `cc-licenses` repo, but can be put anywhere by
-changing the Django `TRANSLATION_REPOSITORY_DIRECTORY` setting, or
-setting the `TRANSLATION_REPOSITORY_DIRECTORY` environment variable.
+separate repository from this code
+([creativecommons/cc-licenses-data][repodata]). This is typically checked out
+beside the `cc-licenses` repo, but can be put anywhere by changing the Django
+`DATA_REPOSITORY_DIR` setting, or setting the `DATA_REPOSITORY_DIR` environment
+variable.
 
 For the common web site stuff, and translated text outside of the actual legal
 code of the licenses, the messages use the standard Django translation domain

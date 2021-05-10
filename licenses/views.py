@@ -47,7 +47,7 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 def all_licenses(request):
     """
     For test purposes, this displays all the available deeds and licenses in
-    tables.  This is not intended for public use and should not be included in
+    tables. This is not intended for public use and should not be included in
     the generation of static files.
     """
 
@@ -216,7 +216,7 @@ def view_deed(
 
 
 def translation_status(request):
-    # with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+    # with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
     # # Make sure we know about all the upstream branches
     # repo.remotes.origin.fetch()
     # heads = repo.remotes.origin.refs
@@ -230,9 +230,8 @@ def translation_status(request):
 
 def branch_status_helper(repo, translation_branch):
     """
-    Returns some of the context for the branch_status view.
-    Mostly separated to help with test so we can readily
-    mock the repo.
+    Returns some of the context for the branch_status view. Mostly separated
+    to help with test so we can readily mock the repo.
     """
     repo.remotes.origin.fetch()
     branch_name = translation_branch.branch_name
@@ -276,12 +275,11 @@ def branch_status(request, id):
     translation_branch = get_object_or_404(TranslationBranch, id=id)
     cache = caches["branchstatuscache"]
     cachekey = (
-        f"{settings.TRANSLATION_REPOSITORY_DIRECTORY}-"
-        f"{translation_branch.branch_name}"
+        f"{settings.DATA_REPOSITORY_DIR}-{translation_branch.branch_name}"
     )
     result = cache.get(cachekey)
     if result is None:
-        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+        with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
             context = branch_status_helper(repo, translation_branch)
             result = render(
                 request,

@@ -384,7 +384,7 @@ class LegalCode(models.Model):
         """
         filename = f"{self.license.resource_slug}.po"
         fullpath = os.path.join(
-            settings.TRANSLATION_REPOSITORY_DIRECTORY,
+            settings.DATA_REPOSITORY_DIR,
             "legalcode",
             cc_to_filename_language_code(self.language_code),
             "LC_MESSAGES",
