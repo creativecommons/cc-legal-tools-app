@@ -1,12 +1,13 @@
 # Standard library
 import os
+import socket
 import sys
 from argparse import ArgumentParser
 
 # Third-party
 from bs4 import BeautifulSoup, Tag
 from django.conf import settings
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, CommandError
 from polib import POEntry, POFile
 
 # First-party/Local
@@ -43,7 +44,19 @@ class Command(BaseCommand):
     """
 
     def add_arguments(self, parser: ArgumentParser):
-        parser.add_argument("input_directory")
+        default_input_dir = os.path.abspath(
+            os.path.join(settings.LEGACY_DIR, "legalcode")
+        )
+        relative_input_dir = os.path.relpath(
+            default_input_dir, start=os.path.abspath(settings.ROOT_DIR)
+        )
+        parser.add_argument(
+            "input_directory",
+            nargs="?",
+            default=default_input_dir,
+            help="directory containing legalcode legacy HTML files (if"
+            f" ommitted, the default is: {relative_input_dir})",
+        )
         parser.add_argument(
             "--versions",
             help="comma-separated license versions to include, e.g."
@@ -51,8 +64,8 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--languages",
-            help="comma-separated language codes to include, e.g. 'fr,ar' "
-            "using the codes from the CC site URLs (which sometimes differ"
+            help="comma-separated language codes to include, e.g. 'fr,ar'"
+            " using the codes from the CC site URLs (which sometimes differ"
             " from Django's. English is unconditionally included for technical"
             " reasons).",
             # We need to import English so we can figure out what the message
@@ -66,6 +79,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, input_directory, **options):
+        hostname = socket.gethostname()
+        if not os.path.isdir(input_directory):
+            raise CommandError(f"invalid input_directory: {input_directory}")
         if options["versions"]:
             versions_to_include = options["versions"].split(",")
         else:
@@ -92,8 +108,9 @@ class Command(BaseCommand):
                 and f.endswith(".html")
             ]
         )
+        self.stdout.write(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
-            # print(filename)
+            self.stdout.write(f"    {filename}")
             metadata = parse_legalcode_filename(filename)
 
             basename = os.path.splitext(filename)[0]
