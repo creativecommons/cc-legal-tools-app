@@ -3,8 +3,9 @@
 # filters
 force-exclude = '''
 (
-  /node_modules/
-  | /venv/
+    /.local/
+    | /node_modules/
+    | /venv/
 )
 '''
 line-length = 79
@@ -21,6 +22,7 @@ omit = [
     '*/urls.py',
     '*/wsgi.py',
     '.direnv/*',
+    '.local/*',
     'env/*',
     'fabfile.py',
     'manage.py',
@@ -43,6 +45,9 @@ skip_covered = true
 
 
 [tool.isort]
+extend_skip = [
+    '.cache',
+]
 import_heading_firstparty = 'First-party/Local'
 import_heading_future = 'Future'
 import_heading_stdlib = 'Standard library'

@@ -21,6 +21,7 @@ public/
 
 # Environments
 .env
+.local
 .venv
 env/
 venv/
