@@ -63,18 +63,16 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--languages",
-            help="comma-separated language codes to include, e.g. 'fr,ar'"
+            help="comma-separated language codes to include, ex. 'ar,fr'"
             " using the codes from the CC site URLs (which sometimes differ"
-            " from Django's. English is unconditionally included for technical"
-            " reasons).",
-            # We need to import English so we can figure out what the message
-            # keys should be, because they are just the English message text.
+            " from Django's. English is unconditionally included as it is used"
+            " for the translation keys.)",
         )
         parser.add_argument(
             "--unwrapped",
             action="store_true",
             help="Do not wrap lines in output .po files. Helpful if you need"
-            " to copy messages. Don't commit the unwrapped files.",
+            " to copy messages. DON'T COMMIT THE UNWRAPPED FILES.",
         )
 
     def handle(self, input_directory, **options):
@@ -97,19 +95,14 @@ class Command(BaseCommand):
         legalcodes_created = 0
         legalcodes_to_import = []
 
-        # Get list of html filenames for CC0 and any BY license (any version).
-        # We'll filter out the filenames for unwanted versions later.
+        # Get list of html filenames. We'll filter out the filenames for
+        # unwanted versions later (see include variable).
         html_filenames = sorted(
-            [
-                f
-                for f in os.listdir(input_directory)
-                if (f.startswith("by") or f.startswith("zero_1.0"))
-                and f.endswith(".html")
-            ]
+            [f for f in os.listdir(input_directory) if f.endswith(".html")]
         )
         self.stdout.write(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
-            self.stdout.write(f"    {filename}")
+            self.stdout.write(f"    {filename}...", ending="")
             metadata = parse_legalcode_filename(filename)
 
             basename = os.path.splitext(filename)[0]
@@ -126,7 +119,7 @@ class Command(BaseCommand):
             if django_language_code not in settings.LANG_INFO:
                 raise ValueError(f"Invalid language_code={cc_language_code}")
 
-            # Just CC0, BY 3.0, & 4.0, and apply any command line options
+            # Just (CC0, BY 3.0, BY 4.0) and apply any command line options
             include = (
                 (
                     (
@@ -144,14 +137,17 @@ class Command(BaseCommand):
                     or cc_language_code in languages_to_include
                 )
             )
-            if not include:
+            if include:
+                self.stdout.write(" loading...")
+            else:
+                self.stdout.write(" skipped.")
                 continue
 
             about_url = metadata["about_url"]
 
-            # These are valid for BY only
             license_code_parts = license_code.split("-")
             if "by" in license_code_parts:
+                # These are valid for BY only
                 permits_derivative_works = "nd" not in license_code_parts
                 permits_reproduction = "nd" not in license_code_parts
                 permits_distribution = "nd" not in license_code_parts
