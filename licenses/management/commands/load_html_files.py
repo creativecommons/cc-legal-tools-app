@@ -1,7 +1,6 @@
 # Standard library
 import os
 import socket
-import sys
 from argparse import ArgumentParser
 
 # Third-party
@@ -600,6 +599,7 @@ class Command(BaseCommand):
         license = legalcode.license
         license_code = license.license_code
         language_code = legalcode.language_code
+        html_file = os.path.basename(legalcode.html_file)
         assert license.version == "4.0", f"{license.version} is not '4.0'"
         assert license.license_code.startswith("by")
 
@@ -697,16 +697,19 @@ class Command(BaseCommand):
         # Section 2 – Scope.
         messages["s2_scope"] = inner_html(soup.find(id="s2").strong)
 
-        # Section 2a - License Grant
-        # translation of "License grant"
+        # s2a: License grant.
         s2a = soup.find(id="s2a")
         if s2a.strong:
             messages["s2a_license_grant_title"] = inner_html(s2a.strong)
         elif s2a.b:
             messages["s2a_license_grant_title"] = inner_html(s2a.b)
         else:
-            self.stdout.write(f"How do I handle {s2a}?")
-            sys.exit(1)
+            initial_lines = "\n".join(str(s2a).split("\n")[0:5])
+            e = (
+                f"{html_file} Section 2a title is missing or HTML formatting"
+                f" does not match:\n{initial_lines}\n..."
+            )
+            raise CommandError(e)
 
         # s2a1: rights
         messages["s2a_license_grant_intro"] = str(
@@ -720,19 +723,19 @@ class Command(BaseCommand):
             list(soup.find(id="s2a1B"))[0]
         ).strip()
 
-        # s2a2: exceptions and limitations
+        # s2a2: Exceptions and Limitations.
         nt = name_and_text(soup.find(id="s2a2"))
         messages[
             "s2a2_license_grant_exceptions"
         ] = f"<strong>{nt['name']}</strong>{nt['text']}"
 
-        # s2a3: term
+        # s2a3: Term.
         nt = name_and_text(soup.find(id="s2a3"))
         messages[
             "s2a3_license_grant_term"
         ] = f"<strong>{nt['name']}</strong>{nt['text']}"
 
-        # s2a4: media
+        # s2a4: Media and formats; technical modifications allowed.
         nt = name_and_text(soup.find(id="s2a4"))
         messages[
             "s2a4_license_grant_media"
@@ -769,7 +772,7 @@ class Command(BaseCommand):
         messages["s2a6_license_grant_no_endorsement_name"] = nt["name"]
         messages["s2a6_license_grant_no_endorsement_text"] = nt["text"]
 
-        # s2b: other rights
+        # s2b: Other rights.
         s2b = soup.find(id="s2b")
         if s2b.p and s2b.p.strong:
             messages["s2b_other_rights_title"] = nested_text(s2b.p.strong)
@@ -778,8 +781,12 @@ class Command(BaseCommand):
         elif s2b.strong:
             messages["s2b_other_rights_title"] = nested_text(s2b.strong)
         else:
-            self.stdout.write(str(s2b))
-            raise ValueError("Where is s2b's title?")
+            initial_lines = "\n".join(str(s2b).split("\n")[0:5])
+            e = (
+                f"{html_file} Section 2b title is missing or HTML formatting"
+                f" does not match:\n{initial_lines}\n..."
+            )
+            raise CommandError(e)
         list_items = soup.find(id="s2b").ol.find_all("li", recursive=False)
         assert list_items[0].name == "li"
         messages["s2b1_other_rights_moral"] = nested_text(list_items[0])
@@ -813,8 +820,12 @@ class Command(BaseCommand):
         elif s3a.strong:
             messages["s3_conditions_attribution"] = nested_text(s3a.strong)
         else:
-            self.stdout.write(str(s3a))
-            raise ValueError("Fix s3a's attribution string")
+            initial_lines = "\n".join(str(s3a).split("\n")[0:5])
+            e = (
+                f"{html_file} Section 3a title is missing or HTML formatting"
+                f" does not match:\n{initial_lines}\n..."
+            )
+            raise CommandError(e)
 
         messages["s3_conditions_if_you_share"] = text_up_to(
             soup.find(id="s3a1"), "ol"
