@@ -118,9 +118,8 @@ def parse_legalcode_filename(filename):
 
     The filename should not include any path. A trailing .html is okay.
 
-    COPIED FROM
-    https://github.com/creativecommons/cc-link-checker/blob/6bb2eae4151c5f7949b73f8d066c309f2413c4a5/link_checker.py#L231  # noqa: E501
-    and modified a great deal.
+    Partially based on:
+    https://github.com/creativecommons/cc-link-checker/blob/a255d2b5d72df31b3e750b34dac2ac6effe7c792/link_checker/utils.py#L419-L469  # noqa: E501
     """
 
     basename = filename
@@ -141,11 +140,14 @@ def parse_legalcode_filename(filename):
 
     jurisdiction = None
     language = None
+    license_code_to_return = license
     if license.startswith("zero"):
-        license_code_to_return = "CC0"
         path_base = "publicdomain"
+        if license == "zero":
+            license_code_to_return = "CC0"
+        elif parts:
+            jurisdiction = parts.pop(0)
     else:
-        license_code_to_return = license
         path_base = "licenses"
         if parts and float(version) < 4.0:
             jurisdiction = parts.pop(0)
@@ -182,7 +184,7 @@ def parse_legalcode_filename(filename):
     django_language_code = cc_to_django_language_code(cc_language_code)
     if django_language_code not in settings.LANG_INFO:
         raise ValueError(
-            f"Invalid language_code={cc_language_code}"
+            f"{filename}: Invalid language_code={cc_language_code}"
             f" dj={django_language_code}"
         )
 
