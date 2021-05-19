@@ -119,13 +119,10 @@ class Command(BaseCommand):
             if django_language_code not in settings.LANG_INFO:
                 raise ValueError(f"Invalid language_code={cc_language_code}")
 
-            # Just (CC0, BY 3.0, BY 4.0) and apply any command line options
+            # Just (CC0, BY*) and apply any command line options
             include = (
                 (
-                    (
-                        license_code in BY_LICENSE_CODES
-                        and version in {"3.0", "4.0"}
-                    )
+                    (license_code in BY_LICENSE_CODES)
                     or license_code in CC0_LICENSE_CODES
                 )
                 and (
@@ -980,16 +977,26 @@ class Command(BaseCommand):
 
         # Parse the raw HTML to a BeautifulSoup object.
         soup = BeautifulSoup(raw_html, "lxml")
+
+        # Title
+        if version == "3.0":
+            title = inner_html(soup.find(id="deed-license").h2)
+        else:
+            title = inner_html(soup.find(id="deed").p.strong)
         # Clean-up: remove manual break
-        title = inner_html(soup.find(id="deed-license").h2).replace(
-            "<br/>\n", " "
-        )
+        title = title.replace("<br/>\n", " ")
+        # Clean-up: remove strong
+        title = title.replace("<strong>", "").replace("</strong>", "")
         assert "<" not in title, repr(title)
         messages["license_medium"] = title
         legalcode.title = title
 
-        main = soup.find(id="deed-main-content")
+        # Legalcode
+        if version == "3.0":
+            legalcode = soup.find(id="deed-main-content")
+        else:
+            legalcode = soup.find(id="deed")
 
-        html = main.prettify()
+        html = legalcode.prettify()
         assert isinstance(html, str)
         return html
