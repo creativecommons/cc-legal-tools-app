@@ -435,159 +435,6 @@ class Command(BaseCommand):
 
         return messages
 
-    def import_by_30_ported_license_html(self, *, content, legalcode):
-        messages = {}
-        raw_html = content
-        # Some trivial making consistent - some translators changed 'strong' to
-        # 'b' for some unknown reason.
-        raw_html = raw_html.replace("<b>", "<strong>").replace(
-            "</b>", "</strong>"
-        )
-        raw_html = raw_html.replace("<B>", "<strong>").replace(
-            "</B>", "</strong>"
-        )
-
-        # Parse the raw HTML to a BeautifulSoup object.
-        soup = BeautifulSoup(raw_html, "lxml")
-        # Some translators seemed to think the title would look better split
-        # onto two lines.
-        title = inner_html(soup.find(id="deed-license").h2).replace(
-            "<br/>\n", " "
-        )
-        assert "<" not in title, repr(title)
-        messages["license_medium"] = title
-        legalcode.title = title
-
-        main = soup.find(id="deed-main-content")
-
-        html = main.prettify()
-        assert isinstance(html, str)
-        return html
-
-    def import_by_30_unported_license_html(self, *, content, legalcode):
-        """
-        Returns a dictionary mapping our internal keys to strings.
-        """
-        messages = {}
-        raw_html = content
-        # Some trivial making consistent - some translators changed 'strong' to
-        # 'b' for some unknown reason.
-        raw_html = raw_html.replace("<b>", "<strong>").replace(
-            "</b>", "</strong>"
-        )
-        raw_html = raw_html.replace("<B>", "<strong>").replace(
-            "</B>", "</strong>"
-        )
-
-        # Parse the raw HTML to a BeautifulSoup object.
-        soup = BeautifulSoup(raw_html, "lxml")
-        messages["license_medium"] = inner_html(
-            soup.find(id="deed-license").h2
-        )
-        legalcode.title = messages["license_medium"]
-        legalcode.save()
-
-        deed_main_content = soup.find(id="deed-main-content")
-
-        messages["not_a_law_firm"] = nested_text(deed_main_content.blockquote)
-        # <h3><em>License</em></h3>
-        messages["license"] = nested_text(deed_main_content.h3)
-
-        # Top level paragraphs
-        def paragraphs_generator():
-            for p in direct_children_with_tag(deed_main_content, "p"):
-                yield p
-
-        paragraphs = paragraphs_generator()
-
-        def ols_generator():
-            for ol in direct_children_with_tag(deed_main_content, "ol"):
-                yield ol
-
-        ordered_lists = ols_generator()
-
-        # Two paragraphs of introduction
-        messages["par1"] = nested_text(next(paragraphs))
-        messages["par2"] = nested_text(next(paragraphs))
-
-        # <p><strong>1. Definitions</strong></p>
-        messages["definitions"] = nested_text(next(paragraphs))
-
-        # An ordered list of definitions
-        ol = next(ordered_lists)
-        for i, li in enumerate(direct_children_with_tag(ol, "li")):
-            nt = name_and_text(li)
-            name = nt["name"]
-            text = nt["text"]
-            messages[f"def{i}name"] = name
-            messages[f"def{i}text"] = text
-
-        # <p><strong>2. Fair Dealing Rights.</strong> Nothing ... </p>
-        nt = name_and_text(next(paragraphs))
-        messages["fair_dealing_rights"] = nt["name"]
-        messages["fair_dealing_rights_text"] = nt["text"]
-
-        # <p><strong>3. License Grant.</strong> Subject ... </p>
-        nt = name_and_text(next(paragraphs))
-        messages["grant"] = nt["name"]
-        messages["grant_text"] = nt["text"]
-
-        # another ol
-        ol = next(ordered_lists)
-        for i, li in enumerate(direct_children_with_tag(ol, "li")):
-            messages[f"grant{i}"] = nested_text(li)
-
-        messages["par5"] = nested_text(next(paragraphs))
-
-        # <p><strong>4. Restrictions.</strong> The ... </p>
-        nt = name_and_text(next(paragraphs))
-        messages["restrictions"] = nt["name"]
-        messages["restrictions_text"] = nt["text"]
-
-        ol = next(ordered_lists)
-        for i, li in enumerate(direct_children_with_tag(ol, "li")):
-            # Most of these li's just have text.
-            # one has a <p></p> followed by another ordered list
-            if li.p:
-                messages["restrictions avoid doubt"] = nested_text(li.p)
-                ol2 = li.ol
-                for j, li2 in enumerate(direct_children_with_tag(ol2, "li")):
-                    nt = name_and_text(li2)
-                    messages[f"restrictions name {i};{j}"] = nt["name"]
-                    messages[f"restrictions text {i};{j}"] = nt["text"]
-            else:
-                messages[f"restrictions{i}"] = nested_text(li)
-
-        # <p><strong>5. Representations, Warranties and Disclaimer</strong></p>
-        messages["reps_and_disclaimer"] = nested_text(next(paragraphs))
-        messages["unless_mutual"] = nested_text(next(paragraphs))
-
-        # <p><strong>6. Limitation on Liability.</strong> EXCEPT ...</p>
-        nt = name_and_text(next(paragraphs))
-        messages["Limitation"] = nt["name"]
-        messages["Limitation_text"] = nt["text"]
-
-        # <p><strong>7. Termination</strong></p>
-        messages["termination"] = nested_text(next(paragraphs))
-
-        ol = next(ordered_lists)
-        for i, li in enumerate(direct_children_with_tag(ol, "li")):
-            messages[f"termination{i}"] = nested_text(li)
-
-        # <p><strong>8. Miscellaneous</strong></p>
-        messages["misc"] = nested_text(next(paragraphs))
-
-        ol = next(ordered_lists)
-        for i, li in enumerate(direct_children_with_tag(ol, "li")):
-            messages[f"misc{i}"] = nested_text(li)
-
-        # That's it for the license. The rest is disclaimer that we're handling
-        # elsewhere.
-
-        validate_dictionary_is_all_text(messages)
-
-        return messages
-
     def import_by_40_license_html(self, *, content, legalcode):
         """
         Returns a dictionary mapping our internal keys to strings.
@@ -969,3 +816,156 @@ class Command(BaseCommand):
         validate_dictionary_is_all_text(messages)
 
         return messages
+
+    def import_by_30_unported_license_html(self, *, content, legalcode):
+        """
+        Returns a dictionary mapping our internal keys to strings.
+        """
+        messages = {}
+        raw_html = content
+        # Some trivial making consistent - some translators changed 'strong' to
+        # 'b' for some unknown reason.
+        raw_html = raw_html.replace("<b>", "<strong>").replace(
+            "</b>", "</strong>"
+        )
+        raw_html = raw_html.replace("<B>", "<strong>").replace(
+            "</B>", "</strong>"
+        )
+
+        # Parse the raw HTML to a BeautifulSoup object.
+        soup = BeautifulSoup(raw_html, "lxml")
+        messages["license_medium"] = inner_html(
+            soup.find(id="deed-license").h2
+        )
+        legalcode.title = messages["license_medium"]
+        legalcode.save()
+
+        deed_main_content = soup.find(id="deed-main-content")
+
+        messages["not_a_law_firm"] = nested_text(deed_main_content.blockquote)
+        # <h3><em>License</em></h3>
+        messages["license"] = nested_text(deed_main_content.h3)
+
+        # Top level paragraphs
+        def paragraphs_generator():
+            for p in direct_children_with_tag(deed_main_content, "p"):
+                yield p
+
+        paragraphs = paragraphs_generator()
+
+        def ols_generator():
+            for ol in direct_children_with_tag(deed_main_content, "ol"):
+                yield ol
+
+        ordered_lists = ols_generator()
+
+        # Two paragraphs of introduction
+        messages["par1"] = nested_text(next(paragraphs))
+        messages["par2"] = nested_text(next(paragraphs))
+
+        # <p><strong>1. Definitions</strong></p>
+        messages["definitions"] = nested_text(next(paragraphs))
+
+        # An ordered list of definitions
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            nt = name_and_text(li)
+            name = nt["name"]
+            text = nt["text"]
+            messages[f"def{i}name"] = name
+            messages[f"def{i}text"] = text
+
+        # <p><strong>2. Fair Dealing Rights.</strong> Nothing ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["fair_dealing_rights"] = nt["name"]
+        messages["fair_dealing_rights_text"] = nt["text"]
+
+        # <p><strong>3. License Grant.</strong> Subject ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["grant"] = nt["name"]
+        messages["grant_text"] = nt["text"]
+
+        # another ol
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"grant{i}"] = nested_text(li)
+
+        messages["par5"] = nested_text(next(paragraphs))
+
+        # <p><strong>4. Restrictions.</strong> The ... </p>
+        nt = name_and_text(next(paragraphs))
+        messages["restrictions"] = nt["name"]
+        messages["restrictions_text"] = nt["text"]
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            # Most of these li's just have text.
+            # one has a <p></p> followed by another ordered list
+            if li.p:
+                messages["restrictions avoid doubt"] = nested_text(li.p)
+                ol2 = li.ol
+                for j, li2 in enumerate(direct_children_with_tag(ol2, "li")):
+                    nt = name_and_text(li2)
+                    messages[f"restrictions name {i};{j}"] = nt["name"]
+                    messages[f"restrictions text {i};{j}"] = nt["text"]
+            else:
+                messages[f"restrictions{i}"] = nested_text(li)
+
+        # <p><strong>5. Representations, Warranties and Disclaimer</strong></p>
+        messages["reps_and_disclaimer"] = nested_text(next(paragraphs))
+        messages["unless_mutual"] = nested_text(next(paragraphs))
+
+        # <p><strong>6. Limitation on Liability.</strong> EXCEPT ...</p>
+        nt = name_and_text(next(paragraphs))
+        messages["Limitation"] = nt["name"]
+        messages["Limitation_text"] = nt["text"]
+
+        # <p><strong>7. Termination</strong></p>
+        messages["termination"] = nested_text(next(paragraphs))
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"termination{i}"] = nested_text(li)
+
+        # <p><strong>8. Miscellaneous</strong></p>
+        messages["misc"] = nested_text(next(paragraphs))
+
+        ol = next(ordered_lists)
+        for i, li in enumerate(direct_children_with_tag(ol, "li")):
+            messages[f"misc{i}"] = nested_text(li)
+
+        # That's it for the license. The rest is disclaimer that we're handling
+        # elsewhere.
+
+        validate_dictionary_is_all_text(messages)
+
+        return messages
+
+    def import_by_30_ported_license_html(self, *, content, legalcode):
+        messages = {}
+        raw_html = content
+        # Some trivial making consistent - some translators changed 'strong' to
+        # 'b' for some unknown reason.
+        raw_html = raw_html.replace("<b>", "<strong>").replace(
+            "</b>", "</strong>"
+        )
+        raw_html = raw_html.replace("<B>", "<strong>").replace(
+            "</B>", "</strong>"
+        )
+
+        # Parse the raw HTML to a BeautifulSoup object.
+        soup = BeautifulSoup(raw_html, "lxml")
+        # Some translators seemed to think the title would look better split
+        # onto two lines.
+        title = inner_html(soup.find(id="deed-license").h2).replace(
+            "<br/>\n", " "
+        )
+        assert "<" not in title, repr(title)
+        messages["license_medium"] = title
+        legalcode.title = title
+
+        main = soup.find(id="deed-main-content")
+
+        html = main.prettify()
+        assert isinstance(html, str)
+        return html
