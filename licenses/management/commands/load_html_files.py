@@ -213,7 +213,7 @@ class Command(BaseCommand):
             if created:
                 legalcodes_created += 1
             legalcodes_to_import.append(legalcode)
-        # print(
+        # self.stdout.write(
         #     f"Created {licenses_created} licenses and {legalcodes_created}"
         #     " translation objects"
         # )
@@ -247,7 +247,7 @@ class Command(BaseCommand):
                 license = legalcode.license
                 license_code = license.license_code
                 version = license.version
-                # print(
+                # self.stdout.write(
                 #     f"Importing {legalcode.html_file} {license_code}"
                 #     f" lang={cc_language_code}"
                 # )
@@ -705,7 +705,7 @@ class Command(BaseCommand):
         elif s2a.b:
             messages["s2a_license_grant_title"] = inner_html(s2a.b)
         else:
-            print(f"How do I handle {s2a}?")
+            self.stdout.write(f"How do I handle {s2a}?")
             sys.exit(1)
 
         # s2a1: rights
@@ -778,7 +778,7 @@ class Command(BaseCommand):
         elif s2b.strong:
             messages["s2b_other_rights_title"] = nested_text(s2b.strong)
         else:
-            print(str(s2b))
+            self.stdout.write(str(s2b))
             raise ValueError("Where is s2b's title?")
         list_items = soup.find(id="s2b").ol.find_all("li", recursive=False)
         assert list_items[0].name == "li"
@@ -813,7 +813,7 @@ class Command(BaseCommand):
         elif s3a.strong:
             messages["s3_conditions_attribution"] = nested_text(s3a.strong)
         else:
-            print(str(s3a))
+            self.stdout.write(str(s3a))
             raise ValueError("Fix s3a's attribution string")
 
         messages["s3_conditions_if_you_share"] = text_up_to(
