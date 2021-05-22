@@ -101,17 +101,17 @@ class LegalCodeQuerySetTest(TestCase):
         # Test validgroups()
         self.assertCountEqual(
             should_be_valid,
-            list(LegalCode.objects.validgroups()["by4.0"])
-            + list(LegalCode.objects.validgroups()["by3.0"])
-            + list(LegalCode.objects.validgroups()["zero1.0"]),
+            list(LegalCode.objects.validgroups()["Licenses 4.0"])
+            + list(LegalCode.objects.validgroups()["Licenses 3.0"])
+            + list(LegalCode.objects.validgroups()["Public Domain all"]),
         )
         self.assertCountEqual(
             should_not_be_valid,
             set(LegalCode.objects.all())
             - set(
-                list(LegalCode.objects.validgroups()["by4.0"])
-                + list(LegalCode.objects.validgroups()["by3.0"])
-                + list(LegalCode.objects.validgroups()["zero1.0"])
+                list(LegalCode.objects.validgroups()["Licenses 4.0"])
+                + list(LegalCode.objects.validgroups()["Licenses 3.0"])
+                + list(LegalCode.objects.validgroups()["Public Domain all"])
             ),
         )
 
@@ -178,7 +178,7 @@ class LegalCodeModelTest(TestCase):
                 )
 
     def test_plain_text_url(self):
-        lc = LegalCodeFactory(
+        lc0 = LegalCodeFactory(
             license__license_code="by",
             license__version="4.0",
             license__jurisdiction_code="",
@@ -196,9 +196,12 @@ class LegalCodeModelTest(TestCase):
             license__jurisdiction_code="",
             language_code="ar",
         )
-        self.assertEqual(lc.plain_text_url, f"{lc.license_url}/index.txt")
-        self.assertEqual(lc1.plain_text_url, f"{lc1.license_url}.txt")
-        self.assertEqual(lc2.plain_text_url, f"{lc2.license_url}.txt")
+        self.assertEqual(
+            lc0.plain_text_url,
+            f"{lc0.license_url.replace('legalcode.en', 'legalcode.txt')}",
+        )
+        self.assertEqual(lc1.plain_text_url, None)
+        self.assertEqual(lc2.plain_text_url, None)
 
     def test_get_pofile(self):
         legalcode = LegalCodeFactory()
@@ -280,6 +283,7 @@ class LegalCodeModelTest(TestCase):
 
     def _test_get_deed_or_license_path(self, data):
         for (
+            category,
             version,
             license_code,
             jurisdiction_code,
@@ -290,6 +294,7 @@ class LegalCodeModelTest(TestCase):
             expected_license_symlinks,
         ) in data:
             license = LicenseFactory(
+                category=category,
                 license_code=license_code,
                 version=version,
                 jurisdiction_code=jurisdiction_code,
@@ -323,6 +328,7 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "licenses",
                     "4.0",
                     "by-nc-nd",
                     "",
@@ -333,6 +339,7 @@ class LegalCodeModelTest(TestCase):
                     ["legalcode.html"],
                 ),
                 (
+                    "licenses",
                     "4.0",
                     "by",
                     "",
@@ -347,6 +354,7 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "licenses",
                     "4.0",
                     "by",
                     "",
@@ -379,18 +387,22 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "licenses",
                     "3.0",
                     "by",
                     "",
                     "en",
                     "licenses/by/3.0/xu/deed.en.html",
                     [
+                        "deed.html",
+                        "index.html",
                         "../licenses/by/3.0/xu/deed.en.html",
                         "../deed.html",
                         "../index.html",
                     ],
                     "licenses/by/3.0/xu/legalcode.en.html",
                     [
+                        "legalcode.html",
                         "../licenses/by/3.0/xu/legalcode.en.html",
                         "../legalcode.html",
                     ],
@@ -401,6 +413,7 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "licenses",
                     "3.0",
                     "by",
                     "ca",
@@ -415,6 +428,7 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "licenses",
                     "3.0",
                     "by-sa",
                     "ca",
@@ -430,6 +444,7 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "licenses",
                     "3.0",
                     "by-nc-nd",
                     "am",
@@ -457,6 +472,7 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "publicdomain",
                     "1.0",
                     "CC0",
                     "",
@@ -471,6 +487,7 @@ class LegalCodeModelTest(TestCase):
         self._test_get_deed_or_license_path(
             [
                 (
+                    "publicdomain",
                     "1.0",
                     "CC0",
                     "",
@@ -501,6 +518,8 @@ class LicenseModelTest(TestCase):
         # Ported
         license = LicenseFactory(
             **{
+                "about": "https://creativecommons.org/licenses/by-nc/3.0/xyz/",
+                "category": "licenses",
                 "license_code": "by-nc",
                 "version": "3.0",
                 "title_english": "The Title",
@@ -538,8 +557,8 @@ class LicenseModelTest(TestCase):
             "title_english": "The Title",
             "translations": {
                 "en": {
-                    "deed": "/licenses/by-nc/3.0/xyz/",
-                    "license": "/licenses/by-nc/3.0/xyz/legalcode",
+                    "deed": "/licenses/by-nc/3.0/xyz/deed.en",
+                    "license": "/licenses/by-nc/3.0/xyz/legalcode.en",
                     "title": "The Title",
                 },
                 "pt": {
@@ -557,6 +576,8 @@ class LicenseModelTest(TestCase):
         # Unported
         license = LicenseFactory(
             **{
+                "about": "https://creativecommons.org/licenses/by-nc/3.0/",
+                "category": "licenses",
                 "license_code": "by-nc",
                 "version": "3.0",
                 "title_english": "The Title",
@@ -579,6 +600,8 @@ class LicenseModelTest(TestCase):
         data = license.get_metadata()
         expected_data = {
             "license_code": "by-nc",
+            "version": "3.0",
+            "title_english": "The Title",
             "permits_derivative_works": False,
             "permits_distribution": True,
             "permits_reproduction": False,
@@ -589,15 +612,13 @@ class LicenseModelTest(TestCase):
             "requires_notice": True,
             "requires_share_alike": True,
             "requires_source_code": True,
-            "title_english": "The Title",
             "translations": {
                 "en": {
-                    "deed": "/licenses/by-nc/3.0/",
-                    "license": "/licenses/by-nc/3.0/legalcode",
+                    "deed": "/licenses/by-nc/3.0/deed.en",
+                    "license": "/licenses/by-nc/3.0/legalcode.en",
                     "title": "The Title",
                 },
             },
-            "version": "3.0",
         }
 
         for key in expected_data.keys():

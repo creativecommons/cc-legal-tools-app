@@ -29,12 +29,16 @@ class LegalCodeAdmin(admin.ModelAdmin):
     fields = [
         "license",
         "language_code",
+        "license_url",
+        "deed_url",
+        "plain_text_url",
     ]
     list_display = [
         "language_code",
         "license",
     ]
     list_filter = [
+        "license__license_code",
         "language_code",
     ]
     raw_id_fields = [
@@ -56,9 +60,10 @@ class LicenseAdmin(admin.ModelAdmin):
     fields = [
         "about",
         "license_code",
+        "title_english",
         "version",
         "creator_url",
-        "license_class_url",
+        "category",
         "jurisdiction_code",
         "source",
         "is_replaced_by",
@@ -86,7 +91,7 @@ class LicenseAdmin(admin.ModelAdmin):
         "license_code",
         "version",
         "creator_url",
-        "license_class_url",
+        "category",
         "jurisdiction_code",
     ]
     raw_id_fields = [

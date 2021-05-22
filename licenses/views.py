@@ -20,7 +20,8 @@ from django.utils.translation import get_language_info
 from i18n import JURISDICTION_NAMES
 from i18n.utils import active_translation, cc_to_django_language_code
 from licenses.models import (
-    BY_LICENSE_CODES,
+    UNITS_LICENSES,
+    UNITS_PUBLIC_DOMAIN,
     LegalCode,
     License,
     TranslationBranch,
@@ -63,23 +64,46 @@ def all_licenses(request):
             "license__license_code",
         )
     )
-    legalcodes = [
-        dict(
-            version=lc.license.version,
-            jurisdiction=JURISDICTION_NAMES.get(
-                lc.license.jurisdiction_code, lc.license.jurisdiction_code
-            ),
+    licenses = []
+    publicdomain = []
+    for lc in legalcode_objects:
+        category = lc.license.category
+        version = lc.license.version
+        jurisdiction = JURISDICTION_NAMES.get(
+            lc.license.jurisdiction_code, lc.license.jurisdiction_code
+        )
+        # For details on nomenclature for unported licenses, see:
+        # https://wiki.creativecommons.org/wiki/License_Versions
+        if lc.license.license_code == "CC0":
+            jurisdiction = "Universal"
+        elif category == "licenses" and jurisdiction.lower() == "unported":
+            if version == "4.0":
+                jurisdiction = "International"
+            elif version == "3.0":
+                jurisdiction = "International (unported)"
+            else:
+                jurisdiction = "Generic (unported)"
+        data = dict(
+            version=version,
+            jurisdiction=jurisdiction,
             license_code=lc.license.license_code,
             language_code=lc.language_code,
             deed_url=lc.deed_url,
             license_url=lc.license_url,
         )
-        for lc in legalcode_objects
-    ]
+        if category == "licenses":
+            licenses.append(data)
+        else:
+            publicdomain.append(data)
+
     return render(
         request,
         "all_licenses.html",
-        {"legalcodes": legalcodes, "license_codes": sorted(BY_LICENSE_CODES)},
+        {
+            "licenses": licenses,
+            "publicdomain": publicdomain,
+            "license_codes": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
+        },
     )
 
 
@@ -193,7 +217,7 @@ def view_deed(
 
     if license.license_code == "CC0":
         body_template = "includes/deed_cc0_body.html"
-    elif license.version == "4.0":
+    elif license.license_code in UNITS_LICENSES and license.version == "4.0":
         body_template = "includes/deed_40_body.html"
     else:
         # Default to 4.0 - or maybe we should just fail?

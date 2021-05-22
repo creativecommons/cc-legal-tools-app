@@ -38,6 +38,7 @@ urlpatterns = [
         name="translation_status",
     ),
     url(r"licenses/", include("licenses.urls")),
+    url(r"publicdomain/", include("licenses.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:

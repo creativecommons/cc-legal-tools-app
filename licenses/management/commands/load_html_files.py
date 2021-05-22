@@ -23,8 +23,8 @@ from licenses.bs_utils import (
     text_up_to,
 )
 from licenses.models import (
-    BY_LICENSE_CODES,
-    CC0_LICENSE_CODES,
+    UNITS_LICENSES,
+    UNITS_PUBLIC_DOMAIN,
     LegalCode,
     License,
 )
@@ -108,6 +108,7 @@ class Command(BaseCommand):
             basename = os.path.splitext(filename)[0]
             fullpath = os.path.join(input_directory, filename)
 
+            category = metadata["category"]
             license_code = metadata["license_code"]
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
@@ -119,11 +120,10 @@ class Command(BaseCommand):
             if django_language_code not in settings.LANG_INFO:
                 raise ValueError(f"Invalid language_code={cc_language_code}")
 
-            # Just (CC0, BY*) and apply any command line options
             include = (
                 (
-                    (license_code in BY_LICENSE_CODES)
-                    or license_code in CC0_LICENSE_CODES
+                    license_code in UNITS_LICENSES
+                    or license_code in UNITS_PUBLIC_DOMAIN
                 )
                 and (
                     versions_to_include is None
@@ -143,7 +143,7 @@ class Command(BaseCommand):
             about_url = metadata["about_url"]
 
             license_code_parts = license_code.split("-")
-            if "by" in license_code_parts:
+            if license_code in UNITS_LICENSES:
                 # These are valid for BY only
                 permits_derivative_works = "nd" not in license_code_parts
                 permits_reproduction = "nd" not in license_code_parts
@@ -157,7 +157,7 @@ class Command(BaseCommand):
                 prohibits_high_income_nation_use = (
                     False  # Not any BY 4.0 license
                 )
-            elif license_code == "CC0":
+            elif license_code in UNITS_PUBLIC_DOMAIN:
                 # permits anything, requires nothing, prohibits nothing
                 permits_derivative_works = True
                 permits_reproduction = True
@@ -175,6 +175,7 @@ class Command(BaseCommand):
             # Find or create a License object
             license, created = License.objects.get_or_create(
                 about=about_url,
+                category=category,
                 defaults=dict(
                     license_code=license_code,
                     version=version,
@@ -247,12 +248,7 @@ class Command(BaseCommand):
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                if (
-                    "by" in license_code
-                    or "nc" in license_code
-                    or "nd" in license_code
-                    or "sa" in license_code
-                ):
+                if license_code in UNITS_LICENSES:
                     if version == "4.0":
                         support_po_files = True
                         messages_text = self.import_by_40_license_html(
