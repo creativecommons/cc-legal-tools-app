@@ -53,16 +53,6 @@ UNITS_LICENSES = [
 UNITS_PUBLIC_DOMAIN = [
     "CC0",
 ]
-DEFAULT_LANGUAGE = {
-    "ca": "en",
-    "ch": "de",
-    "es": "es",
-    "igo": "en",
-    # Cyrillic selected as the default because "the alphabets are used
-    # interchangeably; except in the legal sphere, where Cyrillic is required"
-    # (https://en.wikipedia.org/wiki/Serbian_language)
-    "rs": "sr-Cyrl",
-}
 
 
 class LegalCodeQuerySet(models.QuerySet):
