@@ -12,7 +12,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
 from django.urls import path, register_converter
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
+from i18n import LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
 from licenses.views import all_licenses, metadata_view, view_deed, view_license
 
