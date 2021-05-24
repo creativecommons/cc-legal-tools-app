@@ -17,8 +17,12 @@ from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
 # First-party/Local
-from i18n import JURISDICTION_NAMES
-from i18n.utils import active_translation, cc_to_django_language_code
+from i18n import DEFAULT_LANGUAGE_CODE, JURISDICTION_NAMES
+from i18n.utils import (
+    active_translation,
+    cc_to_django_language_code,
+    get_default_language_for_jurisdiction,
+)
 from licenses.models import (
     UNITS_LICENSES,
     UNITS_PUBLIC_DOMAIN,
@@ -140,14 +144,28 @@ def get_languages_and_links_for_legalcodes(
     return languages_and_links
 
 
+def normalize_path_and_lang(request_path, jurisdiction, language_code):
+    if not language_code:
+        language_code = get_default_language_for_jurisdiction(
+            jurisdiction, DEFAULT_LANGUAGE_CODE
+        )
+    if not request_path.endswith(f".{language_code}"):
+        request_path = f"{request_path}.{language_code}"
+    return request_path, language_code
+
+
 def view_license(
     request,
     license_code,
     version,
+    category=None,
     jurisdiction=None,
     language_code=None,  # CC language code
     is_plain_text=False,
 ):
+    request.path, language_code = normalize_path_and_lang(
+        request.path, jurisdiction, language_code
+    )
     if is_plain_text:
         legalcode = get_object_or_404(
             LegalCode,
@@ -203,8 +221,16 @@ def view_license(
 
 
 def view_deed(
-    request, license_code, version, jurisdiction=None, language_code=None
+    request,
+    license_code,
+    version,
+    category=None,
+    jurisdiction=None,
+    language_code=None,
 ):
+    request.path, language_code = normalize_path_and_lang(
+        request.path, jurisdiction, language_code
+    )
     legalcode = get_object_or_404(
         LegalCode,
         deed_url=request.path,
