@@ -32,6 +32,7 @@ class LegalCodeAdmin(admin.ModelAdmin):
         "license_url",
         "deed_url",
         "plain_text_url",
+        "html",
     ]
     list_display = [
         "language_code",

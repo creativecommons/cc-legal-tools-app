@@ -37,17 +37,17 @@
         {% include 'includes/use_of_licenses.html' %}  {# Considerations... #}
       {% endif %}
 
-      {% if license.version == "4.0" %}
-        {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
-      {% elif license.version == "3.0" and not license.jurisdiction_code %}
-        {% include 'includes/legalcode_30_unported_license.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
-      {% elif license.version == "3.0" and license.jurisdiction_code %}
-        {% include "includes/legalcode_30_ported_license.html" %}  {# <<< THE ACTUAL 3.0 ported LICENSE TEXT #}
-      {% elif license.license_code == "CC0" %}
+      {% if license.category == "publicdomain" and license.license_code == "CC0" %}
         {% include 'includes/legalcode_cc0_license.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
+      {% elif license.category == "licenses" and license.version == "4.0" %}
+        {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
+      {% elif license.category == "licenses" and license.version == "3.0" and not license.jurisdiction_code %}
+        {% include 'includes/legalcode_30_unported_license.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
+      {% elif license.category == "licenses" %}
+        {% include "includes/legalcode_30_ported_license.html" %}  {# <<< THE ACTUAL 3.0 ported LICENSE TEXT #}
       {% endif %}
 
-      {% include 'includes/view_legal_code_link_plain_text.html' %}
+      {#{% include 'includes/view_legal_code_link_plain_text.html' %}#}
       {% include 'includes/about_cc.html' %}
       {% include 'includes/related_links.html' %}
     </div>

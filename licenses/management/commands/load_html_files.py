@@ -266,12 +266,11 @@ class Command(BaseCommand):
                         )
                     else:
                         # all others: we just save the HTML for now
-                        legalcode.html = self.simple_import_license_html(
+                        self.simple_import_license_html(
                             content=content,
                             legalcode=legalcode,
                             version=version,
                         )
-                        legalcode.save()
                         continue
                 elif license_code == "CC0":
                     support_po_files = True
@@ -961,7 +960,7 @@ class Command(BaseCommand):
         return messages
 
     def simple_import_license_html(self, *, content, legalcode, version):
-        messages = {}
+        html_file = os.path.basename(legalcode.html_file)
         raw_html = content
         # Clean-up: always use 'strong' instead of 'b'
         raw_html = raw_html.replace("<b>", "<strong>").replace(
@@ -984,15 +983,21 @@ class Command(BaseCommand):
         # Clean-up: remove strong
         title = title.replace("<strong>", "").replace("</strong>", "")
         assert "<" not in title, repr(title)
-        messages["license_medium"] = title
         legalcode.title = title
 
         # Legalcode
         if version == "3.0":
-            legalcode = soup.find(id="deed-main-content")
+            html = soup.find(id="deed-main-content")
         else:
-            legalcode = soup.find(id="deed")
+            html = soup.find(id="deed")
 
-        html = legalcode.prettify()
+        try:
+            html = html.prettify()
+        except AttributeError:
+            raise CommandError(
+                f"{html_file}: Unable to parse and extract legalcode"
+            )
+
         assert isinstance(html, str)
-        return html
+        legalcode.html = html
+        legalcode.save()

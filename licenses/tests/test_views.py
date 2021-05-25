@@ -343,6 +343,7 @@ class ViewLicenseTest(TestCase):
     def test_view_license_identifying_jurisdiction_default_language(self):
         language_code = "de"
         lc = LegalCodeFactory(
+            license__category="licenses",
             license__about="https://creativecommons.org/licenses/by/3.0/de/",
             license__version="3.0",
             license__jurisdiction_code="de",

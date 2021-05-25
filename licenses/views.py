@@ -1,19 +1,15 @@
 # Standard library
 import re
-import subprocess
-import tempfile
 from operator import itemgetter
 from typing import Iterable
 
 # Third-party
 import git
 import yaml
-from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import caches
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
-from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
 # First-party/Local
@@ -194,28 +190,30 @@ def view_license(
 
     translation = legalcode.get_translation_object()
     with active_translation(translation):
-        if is_plain_text:
-            response = HttpResponse(content_type='text/plain; charset="utf-8"')
-            html = render_to_string(**kwargs)
-            soup = BeautifulSoup(html, "lxml")
-            plain_text_soup = soup.find(id="plain-text-marker")
-            # FIXME: prune the "img" tags from this before saving again.
-            with tempfile.NamedTemporaryFile(mode="w+b") as temp:
-                temp.write(plain_text_soup.encode("utf-8"))
-                output = subprocess.run(
-                    [
-                        "pandoc",
-                        "-f",
-                        "html",
-                        temp.name,
-                        "-t",
-                        "plain",
-                    ],
-                    encoding="utf-8",
-                    capture_output=True,
-                )
-                response.write(output.stdout)
-                return response
+        # if is_plain_text:
+        #     response = HttpResponse(
+        #         content_type='text/plain; charset="utf-8"'
+        #     )
+        #     html = render_to_string(**kwargs)
+        #     soup = BeautifulSoup(html, "lxml")
+        #     plain_text_soup = soup.find(id="plain-text-marker")
+        #     # FIXME: prune the "img" tags from this before saving again.
+        #     with tempfile.NamedTemporaryFile(mode="w+b") as temp:
+        #         temp.write(plain_text_soup.encode("utf-8"))
+        #         output = subprocess.run(
+        #             [
+        #                 "pandoc",
+        #                 "-f",
+        #                 "html",
+        #                 temp.name,
+        #                 "-t",
+        #                 "plain",
+        #             ],
+        #             encoding="utf-8",
+        #             capture_output=True,
+        #         )
+        #         response.write(output.stdout)
+        #         return response
 
         return render(request, **kwargs)
 
