@@ -353,15 +353,14 @@ class ViewLicenseTest(TestCase):
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed(rsp, "legalcode_page.html")
-        self.assertTemplateUsed(
-            rsp, "includes/legalcode_crude_html.html"
-        )
+        self.assertTemplateUsed(rsp, "includes/legalcode_crude_html.html")
         context = rsp.context
         self.assertContains(rsp, f'lang="{language_code}"')
         self.assertEqual(lc, context["legalcode"])
 
     def test_view_license(self):
         license = LicenseFactory(
+            category="licenses",
             about="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
@@ -374,7 +373,9 @@ class ViewLicenseTest(TestCase):
             rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
             self.assertTemplateUsed(rsp, "legalcode_page.html")
-            self.assertTemplateUsed(rsp, "includes/legalcode_licenses_4.0.html")
+            self.assertTemplateUsed(
+                rsp, "includes/legalcode_licenses_4.0.html"
+            )
             context = rsp.context
             self.assertEqual(lc, context["legalcode"])
             self.assertContains(rsp, f'lang="{language_code}"')
