@@ -969,6 +969,11 @@ class Command(BaseCommand):
         raw_html = raw_html.replace("<B>", "<strong>").replace(
             "</B>", "</strong>"
         )
+        # Clean-up: "Creative Commons Legal Code" image URL
+        raw_html = raw_html.replace(
+            "https://creativecommons.org/images/deed/logo_code.gif",
+            "/images/deed/logo_code.gif"
+        )
 
         # Parse the raw HTML to a BeautifulSoup object.
         soup = BeautifulSoup(raw_html, "lxml")
@@ -984,6 +989,16 @@ class Command(BaseCommand):
         title = title.replace("<strong>", "").replace("</strong>", "")
         assert "<" not in title, repr(title)
         legalcode.title = title
+
+        # Remove "Creative Commons Legal Code" image
+        # 2.5, 2.1, 2.0, 1.0
+        logo_code = soup.find("img", src="/images/deed/logo_code.gif")
+        if logo_code:
+            div_center = logo_code.find_parent("div", align="center")
+            if div_center:
+                div_center.decompose()
+            else:
+                logo_code.decompose()
 
         # Remove Back to Commons Deed navigation link
         # 3.0
