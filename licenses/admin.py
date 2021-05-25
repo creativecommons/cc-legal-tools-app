@@ -27,11 +27,13 @@ class TranslationBranchAdmin(admin.ModelAdmin):
 @admin.register(LegalCode)
 class LegalCodeAdmin(admin.ModelAdmin):
     fields = [
+        "title",
         "license",
         "language_code",
         "license_url",
         "deed_url",
         "plain_text_url",
+        "html_file",
         "html",
     ]
     list_display = [

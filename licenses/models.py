@@ -1,7 +1,7 @@
 """
 Every license can be identified by a URL, e.g.
-"http://creativecommons.org/licenses/by-nc-sa/4.0/" or
-"http://creativecommons.org/licenses/by-nc-nd/2.0/tw/".  In the RDF, this is
+"https://creativecommons.org/licenses/by-nc-sa/4.0/" or
+"https://creativecommons.org/licenses/by-nc-nd/2.0/tw/". In the RDF, this is
 the rdf:about attribute on the cc:License element.
 
 If a license has a child dc:source element, then this license is a translation
@@ -171,7 +171,8 @@ class LegalCode(models.Model):
         null=True,
         default=None,
     )
-    title = models.TextField(
+    title = models.CharField(
+        max_length=100,
         help_text="License title in this language, e.g."
         " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
         blank=True,
@@ -320,7 +321,7 @@ class LegalCode(models.Model):
         If this translation is modified, what is the name of the GitHub branch
         we'll use to manage the modifications?  Basically its "{license
         code}-{version}-{language}[-{jurisdiction code}", except that all the
-        "by* 4.0" licenses use "cc4" for the license_code part.  This has to be
+        "by* 4.0" licenses use "cc4" for the license_code part. This has to be
         a valid DNS domain, so we also change any _ to - and remove any
         periods.
         """
@@ -400,13 +401,13 @@ class License(models.Model):
     about = models.URLField(
         max_length=200,
         help_text="The license's unique identifier, e.g."
-        " 'http://creativecommons.org/licenses/by-nd/2.0/br/'",
+        " 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
     )
     license_code = models.CharField(
         max_length=40,
         help_text="shorthand representation for which class of licenses this"
-        " falls into.  E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
+        " falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
         " 'devnations', ...",
     )
     version = models.CharField(
@@ -420,7 +421,7 @@ class License(models.Model):
         max_length=200,
         blank=True,
         default="",
-        help_text="E.g. http://creativecommons.org",
+        help_text="E.g. https://creativecommons.org",
     )
     category = models.CharField(
         max_length=13,
