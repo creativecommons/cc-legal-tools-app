@@ -38,13 +38,13 @@
       {% endif %}
 
       {% if license.category == "publicdomain" and license.license_code == "CC0" %}
-        {% include 'includes/legalcode_cc0_license.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
+        {% include 'includes/legalcode_cc0.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
       {% elif license.category == "licenses" and license.version == "4.0" %}
-        {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
+        {% include 'includes/legalcode_licenses_4.0.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
       {% elif license.category == "licenses" and license.version == "3.0" and not license.jurisdiction_code %}
-        {% include 'includes/legalcode_30_unported_license.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
-      {% elif license.category == "licenses" %}
-        {% include "includes/legalcode_30_ported_license.html" %}  {# <<< THE ACTUAL 3.0 ported LICENSE TEXT #}
+        {% include 'includes/legalcode_licenses_3.0_unported.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
+      {% else %}
+        {% include "includes/legalcode_crude_html.html" %}
       {% endif %}
 
       {#{% include 'includes/view_legal_code_link_plain_text.html' %}#}
@@ -106,3 +106,4 @@
 
   </script>
 {% endblock %}
+{# vim: ts=2 sw=2 sts=2 sr et #}

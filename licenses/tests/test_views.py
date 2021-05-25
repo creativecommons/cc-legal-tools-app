@@ -334,7 +334,7 @@ class ViewLicenseTest(TestCase):
     #        self.assertEqual(200, rsp.status_code)
     #        self.assertTemplateUsed(rsp, "legalcode_page.html")
     #        self.assertTemplateUsed(
-    #            rsp, "includes/legalcode_30_ported_license.html"
+    #            rsp, "includes/legalcode_crude_html.html"
     #        )
     #        context = rsp.context
     #        self.assertContains(rsp, 'lang="de"')
@@ -354,7 +354,7 @@ class ViewLicenseTest(TestCase):
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed(rsp, "legalcode_page.html")
         self.assertTemplateUsed(
-            rsp, "includes/legalcode_30_ported_license.html"
+            rsp, "includes/legalcode_crude_html.html"
         )
         context = rsp.context
         self.assertContains(rsp, f'lang="{language_code}"')
@@ -374,7 +374,7 @@ class ViewLicenseTest(TestCase):
             rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
             self.assertTemplateUsed(rsp, "legalcode_page.html")
-            self.assertTemplateUsed(rsp, "includes/legalcode_40_license.html")
+            self.assertTemplateUsed(rsp, "includes/legalcode_licenses_4.0.html")
             context = rsp.context
             self.assertEqual(lc, context["legalcode"])
             self.assertContains(rsp, f'lang="{language_code}"')
