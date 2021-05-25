@@ -45,7 +45,8 @@ class Migration(migrations.Migration):
             field=models.CharField(
                 blank=True,
                 default="",
-                help_text="License title in this language, e.g. 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+                help_text="License title in this language, e.g."
+                " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
                 max_length=112,
             ),
         ),
@@ -53,7 +54,8 @@ class Migration(migrations.Migration):
             model_name="license",
             name="about",
             field=models.URLField(
-                help_text="The license's unique identifier, e.g. 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
+                help_text="The license's unique identifier, e.g."
+                " 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
                 unique=True,
             ),
         ),
@@ -70,7 +72,9 @@ class Migration(migrations.Migration):
             model_name="license",
             name="license_code",
             field=models.CharField(
-                help_text="shorthand representation for which class of licenses this falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+', 'devnations', ...",
+                help_text="shorthand representation for which class of"
+                " licenses this falls into. E.g. 'by-nc-sa', or 'MIT',"
+                " 'nc-sampling+', 'devnations', ...",
                 max_length=40,
             ),
         ),
