@@ -978,12 +978,35 @@ class Command(BaseCommand):
             title = inner_html(soup.find(id="deed-license").h2)
         else:
             title = inner_html(soup.find(id="deed").p.strong)
-        # Clean-up: remove manual break
+        # Title clean-up: remove manual break
         title = title.replace("<br/>\n", " ")
-        # Clean-up: remove strong
+        # Title clean-up: remove strong
         title = title.replace("<strong>", "").replace("</strong>", "")
         assert "<" not in title, repr(title)
         legalcode.title = title
+
+        # Remove Back to Commons Deed navigation link
+        # 3.0
+        deed_foot = soup.find("div", id="deed-foot")
+        if deed_foot:
+            deed_foot.decompose()
+        # 2.5, 2.1, 2.0, 1.0
+        back_link = soup.find("a", href="./")
+        if back_link:
+            div_right = back_link.find_parent("div", align="right")
+            if div_right:
+                div_right.decompose()
+            p_right = back_link.find_parent("p", align="right")
+            if p_right:
+                p_right.decompose()
+            # RTL: 2.5 IL, 1.0 IL
+            div_left = back_link.find_parent(
+                "div",
+                align="left",
+                style="margin-bottom: 10px;",
+            )
+            if div_left:
+                div_left.decompose()
 
         # Legalcode
         if version == "3.0":
