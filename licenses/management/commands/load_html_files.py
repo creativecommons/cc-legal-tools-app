@@ -963,12 +963,10 @@ class Command(BaseCommand):
         html_file = os.path.basename(legalcode.html_file)
         raw_html = content
         # Clean-up: always use 'strong' instead of 'b'
-        raw_html = raw_html.replace("<b>", "<strong>").replace(
-            "</b>", "</strong>"
-        )
-        raw_html = raw_html.replace("<B>", "<strong>").replace(
-            "</B>", "</strong>"
-        )
+        raw_html = raw_html.replace("<b>", "<strong>")
+        raw_html = raw_html.replace("</b>", "<strong>")
+        raw_html = raw_html.replace("<B>", "<strong>")
+        raw_html = raw_html.replace("</B>", "</strong>")
         # Clean-up: "Creative Commons Legal Code" image URL
         raw_html = raw_html.replace(
             "https://creativecommons.org/images/deed/logo_code.gif",
@@ -982,9 +980,13 @@ class Command(BaseCommand):
         if version == "3.0":
             title = inner_html(soup.find(id="deed-license").h2)
         else:
-            title = inner_html(soup.find(id="deed").p.strong)
+            title_html = soup.find(id="deed").p.strong
+            title = inner_html(title_html)
+            title_html.find_parent("p").decompose()
+        # Title clean-up: whitespace
+        title = " ".join([line.strip() for line in title.split("\n")]).strip()
         # Title clean-up: remove manual break
-        title = title.replace("<br/>\n", " ")
+        title = title.replace("<br/>", "")
         # Title clean-up: remove strong
         title = title.replace("<strong>", "").replace("</strong>", "")
         assert "<" not in title, repr(title)
