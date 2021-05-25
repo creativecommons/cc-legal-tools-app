@@ -972,7 +972,7 @@ class Command(BaseCommand):
         # Clean-up: "Creative Commons Legal Code" image URL
         raw_html = raw_html.replace(
             "https://creativecommons.org/images/deed/logo_code.gif",
-            "/images/deed/logo_code.gif"
+            "/images/deed/logo_code.gif",
         )
 
         # Parse the raw HTML to a BeautifulSoup object.
