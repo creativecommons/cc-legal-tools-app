@@ -172,7 +172,7 @@ class LegalCode(models.Model):
         default=None,
     )
     title = models.CharField(
-        max_length=100,
+        max_length=112,
         help_text="License title in this language, e.g."
         " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
         blank=True,
