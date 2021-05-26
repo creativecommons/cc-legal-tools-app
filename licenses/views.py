@@ -45,7 +45,20 @@ NUM_COMMITS = 3
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
-def all_licenses(request):
+def get_category_and_category_title(category=None, license=None):
+    if not category:
+        if license:
+            category = category.license
+        else:
+            category = "license"
+    if category == "publicdomain":
+        category_title = "Public Domain"
+    else:
+        category_title = category.title()
+    return category, category_title
+
+
+def all_licenses(request, category=None):
     """
     For test purposes, this displays all the available deeds and licenses in
     tables. This is not intended for public use and should not be included in
@@ -64,10 +77,16 @@ def all_licenses(request):
             "license__license_code",
         )
     )
+    category, category_title = get_category_and_category_title(
+        category,
+        None,
+    )
+    if not category:
+        category = "licenses"
     licenses = []
     publicdomain = []
     for lc in legalcode_objects:
-        category = lc.license.category
+        lc_category = lc.license.category
         version = lc.license.version
         jurisdiction = JURISDICTION_NAMES.get(
             lc.license.jurisdiction_code, lc.license.jurisdiction_code
@@ -76,7 +95,7 @@ def all_licenses(request):
         # https://wiki.creativecommons.org/wiki/License_Versions
         if lc.license.license_code == "CC0":
             jurisdiction = "Universal"
-        elif category == "licenses" and jurisdiction.lower() == "unported":
+        elif lc_category == "licenses" and jurisdiction.lower() == "unported":
             if version == "4.0":
                 jurisdiction = "International"
             elif version == "3.0":
@@ -91,7 +110,7 @@ def all_licenses(request):
             deed_url=lc.deed_url,
             license_url=lc.license_url,
         )
-        if category == "licenses":
+        if lc_category == "licenses":
             licenses.append(data)
         else:
             publicdomain.append(data)
@@ -100,9 +119,11 @@ def all_licenses(request):
         request,
         "all_licenses.html",
         {
+            "category": category,
+            "category_title": category_title,
+            "license_codes": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
             "licenses": licenses,
             "publicdomain": publicdomain,
-            "license_codes": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
         },
     )
 
@@ -172,6 +193,11 @@ def view_license(
             LegalCode,
             license_url=request.path,
         )
+    license = legalcode.license
+    category, category_title = get_category_and_category_title(
+        category,
+        license,
+    )
 
     language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
@@ -181,10 +207,12 @@ def view_license(
     kwargs = dict(
         template_name="legalcode_page.html",
         context={
+            "category": category,
+            "category_title": category_title,
             "fat_code": legalcode.license.fat_code(),
             "languages_and_links": languages_and_links,
             "legalcode": legalcode,
-            "license": legalcode.license,
+            "license": license,
         },
     )
 
@@ -234,6 +262,10 @@ def view_deed(
         deed_url=request.path,
     )
     license = legalcode.license
+    category, category_title = get_category_and_category_title(
+        category,
+        license,
+    )
     language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
         license.legal_codes.all(), language_code, "deed"
@@ -255,10 +287,12 @@ def view_deed(
             {
                 "additional_classes": "",
                 "body_template": body_template,
-                "fat_code": legalcode.license.fat_code(),
+                "category": category,
+                "category_title": category_title,
+                "fat_code": license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
-                "license": legalcode.license,
+                "license": license,
             },
         )
 

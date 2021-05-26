@@ -163,8 +163,17 @@ register_converter(LangConverter, "lang")
 # DEEDS
 urlpatterns = [
     # Debug page that displays all licenses
-    path("licenses/all/", all_licenses, name="all_licenses"),
-    path("licenses/metadata.yaml", metadata_view, name="metadata"),
+    path(
+        "licenses/all/",
+        all_licenses,
+        kwargs=dict(category="licenses"),
+        name="all_licenses",
+    ),
+    path(
+        "licenses/metadata.yaml",
+        metadata_view,
+        name="metadata",
+    ),
     #
     # LICENSE PAGES
     #
