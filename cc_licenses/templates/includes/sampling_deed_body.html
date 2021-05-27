@@ -51,7 +51,7 @@
 
 {# 1 #}
 <!-- <ul class="license-properties">
-  {# {% if license.license_code == 'nc-sampling+' %} #}
+  {# {% if license.unit == 'nc-sampling+' %} #}
     <li class="license samplingplus">
       {# {% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for noncommercial purposes.{% endblocktrans %} #}
     </li>
@@ -61,7 +61,7 @@
     </li>
   {# {% endif %} #}
 
-  {# {% if license.license_code in ('nc-sampling+', 'sampling+') %} #}
+  {# {% if license.unit in ('nc-sampling+', 'sampling+') %} #}
     <li class="license samplingplus">
       {# {% blocktrans %}To perform, display, and distribute copies of this whole work for noncommercial purposes (e.g., file-sharing or noncommercial webcasting).{% endblocktrans %} #}
     </li>
@@ -76,7 +76,7 @@
     <li class="license by">
       {# {% blocktrans %}You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work).{% endblocktrans %} #}
     </li>
-    {# {% if license.license_code == 'nc-sampling+' %} #}
+    {# {% if license.unit == 'nc-sampling+' %} #}
       <li class="license nc">
         {# {% blocktrans %}You may not use this work for commercial purposes.{% endblocktrans %} #}
       </li>
@@ -86,7 +86,7 @@
       </li>
     {# {% endif %} #}
 
-    {# {% if license.license_code in ['nc-sampling+', 'sampling+'] %} #}
+    {# {% if license.unit in ['nc-sampling+', 'sampling+'] %} #}
       <li>
         {# {% blocktrans %}For any reuse or distribution, you must make clear to others the license terms of this work. The best way to do this is with a link to this web page.{% endblocktrans %} #}
       </li>

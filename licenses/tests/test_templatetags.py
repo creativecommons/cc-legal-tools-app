@@ -6,26 +6,26 @@ from django.urls import get_resolver
 from licenses.models import build_path
 from licenses.templatetags.license_tags import (
     current_letter,
-    license_codes,
     next_letter,
     reset_letters,
+    units,
 )
 from licenses.utils import compute_about_url
 
 
 class LicenseTagsTest(TestCase):
-    def test_license_codes(self):
+    def test_units(self):
         expected = ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa"]
         data = [
-            {"license_code": "by-nc-nd"},
-            {"license_code": "by-nc"},
-            {"license_code": "by-sa"},
-            {"license_code": "by"},
-            {"license_code": "by-nc-sa"},
-            {"license_code": "by"},
-            {"license_code": "by-nd"},
+            {"unit": "by-nc-nd"},
+            {"unit": "by-nc"},
+            {"unit": "by-sa"},
+            {"unit": "by"},
+            {"unit": "by-nc-sa"},
+            {"unit": "by"},
+            {"unit": "by-nd"},
         ]
-        self.assertEqual(expected, license_codes(data))
+        self.assertEqual(expected, units(data))
 
     def test_reset_letters(self):
         reset_letters("lowercase")
@@ -51,7 +51,7 @@ class LicenseTagsTest(TestCase):
     def test_build_license_url(self):
         # https://creativecommons.org/licenses/by/3.0/es/legalcode.es
         data = [
-            # (license code, version, jurisdiction, language, expected result)
+            # (unit, version, jurisdiction, language, expected result)
             (
                 "licenses",
                 "by",
@@ -174,7 +174,7 @@ class LicenseTagsTest(TestCase):
         # https://creativecommons.org/licenses/by/3.0/es/
         # https://creativecommons.org/licenses/by/3.0/es/deed.fr
         data = [
-            # (license code, version, jurisdiction, language, expected result)
+            # (unit, version, jurisdiction, language, expected result)
             ("licenses", "by-sa", "4.0", "", "", "/licenses/by-sa/4.0/deed"),
             (
                 "licenses",

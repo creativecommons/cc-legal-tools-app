@@ -139,10 +139,10 @@ def parse_legalcode_filename(filename):
 
     jurisdiction = None
     language = None
-    license_code_to_return = unit
+    unit_to_return = unit
     if unit == "zero":
         category = "publicdomain"
-        license_code_to_return = "CC0"
+        unit_to_return = "CC0"
     elif unit in licenses.models.UNITS_PUBLIC_DOMAIN:
         category = "publicdomain"
         jurisdiction = parts.pop(0)
@@ -176,7 +176,7 @@ def parse_legalcode_filename(filename):
 
     data = dict(
         category=category,
-        license_code=license_code_to_return,
+        unit=unit_to_return,
         version=version,
         jurisdiction_code=jurisdiction or "",
         cc_language_code=cc_language_code,
@@ -186,7 +186,7 @@ def parse_legalcode_filename(filename):
     return data
 
 
-def compute_about_url(category, license_code, version, jurisdiction_code):
+def compute_about_url(category, unit, version, jurisdiction_code):
     """
     Compute the canonical unique "about" URL for a license with the given
     attributes.  Note that a "license" is language-independent, unlike a
@@ -211,17 +211,17 @@ def compute_about_url(category, license_code, version, jurisdiction_code):
     """
     base = "https://creativecommons.org"
 
-    if license_code in ["BSD", "MIT"]:
+    if unit in ["BSD", "MIT"]:
         about_url = posixpath.join(
             base,
             category,
-            license_code,
+            unit,
         )
     else:
         about_url = posixpath.join(
             base,
             category,
-            license_code,
+            unit,
             version,
         )
     if jurisdiction_code:

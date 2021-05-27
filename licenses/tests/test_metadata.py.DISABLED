@@ -41,7 +41,7 @@ class MetadataTest(TestCase):
         ).import_metadata(open("index.rdf", "rb"))
 
     def test_mit_license(self):
-        license = License.objects.get(license_code="MIT")
+        license = License.objects.get(unit="MIT")
         self.assertEqual("", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/software",
@@ -60,7 +60,7 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
 
     def test_bsd(self):
-        license = License.objects.get(license_code="BSD")
+        license = License.objects.get(unit="BSD")
         self.assertEqual("", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/software",
@@ -79,7 +79,7 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
 
     def test_40_by_nc_nd(self):
-        license = License.objects.get(version="4.0", license_code="by-nc-nd")
+        license = License.objects.get(version="4.0", unit="by-nc-nd")
         self.assertEqual("http://creativecommons.org", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/", license.license_class_url
@@ -116,7 +116,7 @@ class MetadataTest(TestCase):
         )
 
     def test_40_by_sa(self):
-        license = License.objects.get(version="4.0", license_code="by-sa")
+        license = License.objects.get(version="4.0", unit="by-sa")
         self.assertEqual("http://creativecommons.org", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/", license.license_class_url

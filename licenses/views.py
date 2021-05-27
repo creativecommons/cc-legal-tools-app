@@ -28,7 +28,7 @@ from licenses.models import (
 )
 
 DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
-    # license_code : template name
+    # unit : template name
     "sampling": "licenses/sampling_deed.html",
     "sampling+": "licenses/sampling_deed.html",
     "nc-sampling+": "licenses/sampling_deed.html",
@@ -65,7 +65,7 @@ def all_licenses(request, category=None):
     the generation of static files.
     """
 
-    # Get the list of license codes and languages that occur among the licenses
+    # Get the list of units and languages that occur among the licenses
     # to let the template iterate over them as it likes.
     legalcode_objects = (
         LegalCode.objects.valid()
@@ -74,7 +74,7 @@ def all_licenses(request, category=None):
             "-license__version",
             "license__jurisdiction_code",
             "language_code",
-            "license__license_code",
+            "license__unit",
         )
     )
     category, category_title = get_category_and_category_title(
@@ -93,7 +93,7 @@ def all_licenses(request, category=None):
         )
         # For details on nomenclature for unported licenses, see:
         # https://wiki.creativecommons.org/wiki/License_Versions
-        if lc.license.license_code == "CC0":
+        if lc.license.unit == "CC0":
             jurisdiction = "Universal"
         elif lc_category == "licenses" and jurisdiction.lower() == "unported":
             if version == "4.0":
@@ -105,7 +105,7 @@ def all_licenses(request, category=None):
         data = dict(
             version=version,
             jurisdiction=jurisdiction,
-            license_code=lc.license.license_code,
+            unit=lc.license.unit,
             language_code=lc.language_code,
             deed_url=lc.deed_url,
             license_url=lc.license_url,
@@ -121,7 +121,7 @@ def all_licenses(request, category=None):
         {
             "category": category,
             "category_title": category_title,
-            "license_codes": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
+            "units": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
             "licenses": licenses,
             "publicdomain": publicdomain,
         },
@@ -173,7 +173,7 @@ def normalize_path_and_lang(request_path, jurisdiction, language_code):
 
 def view_license(
     request,
-    license_code,
+    unit,
     version,
     category=None,
     jurisdiction=None,
@@ -248,7 +248,7 @@ def view_license(
 
 def view_deed(
     request,
-    license_code,
+    unit,
     version,
     category=None,
     jurisdiction=None,
@@ -271,9 +271,9 @@ def view_deed(
         license.legal_codes.all(), language_code, "deed"
     )
 
-    if license.license_code == "CC0":
+    if license.unit == "CC0":
         body_template = "includes/deed_cc0_body.html"
-    elif license.license_code in UNITS_LICENSES and license.version == "4.0":
+    elif license.unit in UNITS_LICENSES and license.version == "4.0":
         body_template = "includes/deed_40_body.html"
     else:
         # Default to 4.0 - or maybe we should just fail?

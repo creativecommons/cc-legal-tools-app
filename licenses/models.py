@@ -58,42 +58,42 @@ UNITS_PUBLIC_DOMAIN = [
 class LegalCodeQuerySet(models.QuerySet):
     # We'll create LegalCode and License objects for all the by licenses,
     # and the zero_1.0 ones.
-    # We're just doing these license codes and versions for now:
+    # We're just doing these units and versions for now:
     # by* 4.0
     # by* 3.0 - including ported
     # cc 1.0
 
     # Queries for legalcode objects
     LICENSES_ALL_QUERY = Q(
-        license__license_code__in=UNITS_LICENSES,
+        license__unit__in=UNITS_LICENSES,
     )
     LICENSES_40_QUERY = Q(
         license__version="4.0",
-        license__license_code__in=UNITS_LICENSES,
+        license__unit__in=UNITS_LICENSES,
     )
     LICENSES_30_QUERY = Q(
         license__version="3.0",
-        license__license_code__in=UNITS_LICENSES,
+        license__unit__in=UNITS_LICENSES,
     )
     LICENSES_25_QUERY = Q(
         license__version="2.5",
-        license__license_code__in=UNITS_LICENSES,
+        license__unit__in=UNITS_LICENSES,
     )
     LICENSES_21_QUERY = Q(
         license__version="2.1",
-        license__license_code__in=UNITS_LICENSES,
+        license__unit__in=UNITS_LICENSES,
     )
     LICENSES_20_QUERY = Q(
         license__version="2.0",
-        license__license_code__in=UNITS_LICENSES,
+        license__unit__in=UNITS_LICENSES,
     )
     LICENSES_10_QUERY = Q(
         license__version="1.0",
-        license__license_code__in=UNITS_LICENSES,
+        license__unit__in=UNITS_LICENSES,
     )
 
     # There's only one version of CC0.
-    PUBLIC_DOMAIN_ALL_QUERY = Q(license__license_code__in=UNITS_PUBLIC_DOMAIN)
+    PUBLIC_DOMAIN_ALL_QUERY = Q(license__unit__in=UNITS_PUBLIC_DOMAIN)
 
     def translated(self):
         """
@@ -192,7 +192,7 @@ class LegalCode(models.Model):
         return f"LegalCode<{self.language_code}, {self.license}>"
 
     def save(self, *args, **kwargs):
-        unit = self.license.license_code
+        unit = self.license.unit
         self.deed_url = build_path(
             self.license.about,
             "deed",
@@ -263,11 +263,7 @@ class LegalCode(models.Model):
         """
 
         license = self.license
-        unit = (
-            "zero"
-            if license.license_code == "CC0"
-            else license.license_code.lower()
-        )
+        unit = "zero" if license.unit == "CC0" else license.unit.lower()
         if license.category == "licenses" and float(license.version) < 4.0:
             return os.path.join(
                 license.category,  # licenses
@@ -284,7 +280,7 @@ class LegalCode(models.Model):
 
     def get_file_and_links(self, document):
         license = self.license
-        unit = license.license_code
+        unit = license.unit
         juris_code = license.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
         filename = os.path.join(
@@ -319,18 +315,17 @@ class LegalCode(models.Model):
     def branch_name(self):
         """
         If this translation is modified, what is the name of the GitHub branch
-        we'll use to manage the modifications?  Basically its "{license
-        code}-{version}-{language}[-{jurisdiction code}", except that all the
-        "by* 4.0" licenses use "cc4" for the license_code part. This has to be
-        a valid DNS domain, so we also change any _ to - and remove any
-        periods.
+        we'll use to manage the modifications?  Basically its
+        "{unit}-{version}-{language}-{jurisdiction code}", except that all the
+        "by* 4.0" licenses use "cc4" for the unit part. This has to be a valid
+        DNS domain, so we also change any _ to - and remove any periods.
         """
         license = self.license
         parts = []
-        if license.license_code.startswith("by") and license.version == "4.0":
+        if license.unit.startswith("by") and license.version == "4.0":
             parts.append("cc4")
         else:
-            parts.extend([license.license_code, license.version])
+            parts.extend([license.unit, license.version])
         parts.append(self.language_code)
         if license.jurisdiction_code:
             parts.append(license.jurisdiction_code)
@@ -404,7 +399,7 @@ class License(models.Model):
         " 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
     )
-    license_code = models.CharField(
+    unit = models.CharField(
         max_length=40,
         help_text="shorthand representation for which class of licenses this"
         " falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
@@ -478,12 +473,11 @@ class License(models.Model):
     prohibits_high_income_nation_use = models.BooleanField()
 
     class Meta:
-        ordering = ["-version", "license_code", "jurisdiction_code"]
+        ordering = ["-version", "unit", "jurisdiction_code"]
 
     def __str__(self):
         return (
-            f"License<{self.license_code},{self.version},"
-            f"{self.jurisdiction_code}>"
+            f"License<{self.unit},{self.version}," f"{self.jurisdiction_code}>"
         )
 
     def get_metadata(self):
@@ -491,7 +485,7 @@ class License(models.Model):
         Return a dictionary with the metadata for this license.
         """
         data = {
-            "license_code": self.license_code,
+            "unit": self.unit,
             "version": self.version,
             "title_english": self.title_english,
         }
@@ -530,9 +524,9 @@ class License(models.Model):
         ["cc-logo", "cc-zero", "cc-by"]
         """
         result = ["cc-logo"]  # Everybody gets this
-        if self.license_code == "CC0":
+        if self.unit == "CC0":
             result.append("cc-zero")
-        elif self.license_code.startswith("by"):
+        elif self.unit.startswith("by"):
             result.append("cc-by")
             if self.prohibits_commercial_use:
                 result.append("cc-nc")
@@ -570,11 +564,9 @@ class License(models.Model):
         # No periods.
         # All lowercase.
         if self.jurisdiction_code:
-            slug = (
-                f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
-            )
+            slug = f"{self.unit}_{self.version}_{self.jurisdiction_code}"
         else:
-            slug = f"{self.license_code}_{self.version}"
+            slug = f"{self.unit}_{self.version}"
         slug = slug.replace(".", "")
         return slug.lower()
 
@@ -587,8 +579,8 @@ class License(models.Model):
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
         license = self
-        s = f"{license.license_code} {license.version}"
-        if license.license_code.startswith("by"):
+        s = f"{license.unit} {license.version}"
+        if license.unit.startswith("by"):
             s = f"CC {s}"
         if license.jurisdiction_code:
             s = f"{s} {license.jurisdiction_code}"
@@ -597,12 +589,12 @@ class License(models.Model):
 
     @property
     def level_of_freedom(self):
-        if self.license_code in ("devnations", "sampling"):
+        if self.unit in ("devnations", "sampling"):
             return FREEDOM_LEVEL_MIN
         elif (
-            self.license_code.find("sampling") > -1
-            or self.license_code.find("nc") > -1
-            or self.license_code.find("nd") > -1
+            self.unit.find("sampling") > -1
+            or self.unit.find("nc") > -1
+            or self.unit.find("nd") > -1
         ):
             return FREEDOM_LEVEL_MID
         else:
@@ -614,11 +606,11 @@ class License(models.Model):
 
     @property
     def sampling_plus(self):
-        return self.license_code in ("nc-sampling+", "sampling+")
+        return self.unit in ("nc-sampling+", "sampling+")
 
     @property
     def include_share_adapted_material_clause(self):
-        return self.license_code in ["by", "by-nc"]
+        return self.unit in ["by", "by-nc"]
 
     def tx_upload_messages(self):
         """
@@ -640,15 +632,15 @@ class License(models.Model):
 
     @property
     def nc(self):
-        return "nc" in self.license_code
+        return "nc" in self.unit
 
     @property
     def nd(self):
-        return "nd" in self.license_code
+        return "nd" in self.unit
 
     @property
     def sa(self):
-        return "sa" in self.license_code
+        return "sa" in self.unit
 
 
 class TranslationBranch(models.Model):

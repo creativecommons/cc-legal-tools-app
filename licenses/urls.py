@@ -34,9 +34,9 @@ class CategoryConverter:
 register_converter(CategoryConverter, "category")
 
 
-class LicenseCodeConverter:
+class UnitConverter:
     """
-    Licenses codes look like "MIT" or "by-sa" or "by-nc-nd" or "CC0".
+    Units look like "MIT" or "by-sa" or "by-nc-nd" or "CC0".
     We accept any mix of letters, digits, and dashes.
     """
 
@@ -49,7 +49,7 @@ class LicenseCodeConverter:
         return value
 
 
-register_converter(LicenseCodeConverter, "code")
+register_converter(UnitConverter, "unit")
 
 
 class JurisdictionConverter:
@@ -178,21 +178,21 @@ urlpatterns = [
     #
     # Legalcode: with Jurisdiction (ported), with language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>"
+        "<category:category>/<unit:unit>/<version:version>"
         "/<jurisdiction:jurisdiction>/legalcode.<language_code:language_code>",
         view_license,
         name="view_legalcode_ported_language_specified",
     ),
     # Legalcode: with Jurisdiction (ported), no language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>"
+        "<category:category>/<unit:unit>/<version:version>"
         "/<jurisdiction:jurisdiction>/legalcode",
         view_license,
         name="view_legalcode_ported",
     ),
     # Legalcode: no Jurisdiction (international/unported), with language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>/legalcode"
+        "<category:category>/<unit:unit>/<version:version>/legalcode"
         ".<language_code:language_code>",
         view_license,
         kwargs=dict(jurisdiction=""),
@@ -200,15 +200,14 @@ urlpatterns = [
     ),
     # Legalcode: no Jurisdiction (international/unported), no language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>/legalcode",
+        "<category:category>/<unit:unit>/<version:version>/legalcode",
         view_license,
         kwargs=dict(jurisdiction=""),
         name="view_legalcode_unported",
     ),
     # # Plaintext Legalcode: no Jurisdiction (int/unported), no language_code
     # path(
-    #     "<category:category>/<code:license_code>/<version:version>/legalcode"
-    #     ".txt",
+    #     "<category:category>/<unit:unit>/<version:version>/legalcode.txt",
     #     view_license,
     #     kwargs=dict(jurisdiction="", is_plain_text=True),
     #     name="view_legalcode_unported",
@@ -218,21 +217,21 @@ urlpatterns = [
     #
     # Deed: with Jurisdiction (ported), with language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>"
+        "<category:category>/<unit:unit>/<version:version>"
         "/<jurisdiction:jurisdiction>/deed.<language_code:language_code>",
         view_deed,
         name="view_deed_ported_language_specified",
     ),
     # Deed: with Jurisdiction (ported), no language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>"
+        "<category:category>/<unit:unit>/<version:version>"
         "/<jurisdiction:jurisdiction>/deed",
         view_deed,
         name="view_deed_ported",
     ),
     # Deed: no Jurisdiction (international/unported), with language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>/deed"
+        "<category:category>/<unit:unit>/<version:version>/deed"
         ".<language_code:language_code>",
         view_deed,
         kwargs=dict(jurisdiction=""),
@@ -240,7 +239,7 @@ urlpatterns = [
     ),
     # Deed: no Jurisdiction (international/unported), no language_code
     path(
-        "<category:category>/<code:license_code>/<version:version>/deed",
+        "<category:category>/<unit:unit>/<version:version>/deed",
         view_deed,
         kwargs=dict(jurisdiction=""),
         name="view_deed_unported",

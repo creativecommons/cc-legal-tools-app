@@ -196,7 +196,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "about_url": (
                         "https://creativecommons.org/licenses/by/1.0/"
                     ),
-                    "license_code": "by",
+                    "unit": "by",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
@@ -209,7 +209,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "about_url": (
                         "https://creativecommons.org/licenses/by/3.0/es/"
                     ),
-                    "license_code": "by",
+                    "unit": "by",
                     "version": "3.0",
                     "jurisdiction_code": "es",
                     "cc_language_code": "ast",
@@ -222,7 +222,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "about_url": (
                         "https://creativecommons.org/licenses/by/3.0/rs/"
                     ),
-                    "license_code": "by",
+                    "unit": "by",
                     "version": "3.0",
                     "jurisdiction_code": "rs",
                     "cc_language_code": "sr-Cyrl",
@@ -235,7 +235,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "about_url": (
                         "https://creativecommons.org/licenses/devnations/2.0/"
                     ),
-                    "license_code": "devnations",
+                    "unit": "devnations",
                     "version": "2.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
@@ -248,7 +248,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "about_url": (
                         "https://creativecommons.org/licenses/LGPL/2.1/"
                     ),
-                    "license_code": "LGPL",
+                    "unit": "LGPL",
                     "version": "2.1",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
@@ -261,7 +261,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "about_url": (
                         "https://creativecommons.org/licenses/sampling+/1.0/"
                     ),
-                    "license_code": "sampling+",
+                    "unit": "sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
@@ -274,7 +274,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "about_url": (
                         "https://creativecommons.org/publicdomain/zero/1.0/"
                     ),
-                    "license_code": "CC0",
+                    "unit": "CC0",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "fi",
@@ -288,7 +288,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                         "https://creativecommons.org/licenses/nc-sampling+/"
                         "1.0/"
                     ),
-                    "license_code": "nc-sampling+",
+                    "unit": "nc-sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
@@ -357,21 +357,21 @@ class GetLicenseUtilityTest(TestCase):
     """
 
     def setUp(self):
-        self.license1 = LicenseFactory(license_code="by", version="4.0")
-        self.license2 = LicenseFactory(license_code="by-nc", version="4.0")
+        self.license1 = LicenseFactory(unit="by", version="4.0")
+        self.license2 = LicenseFactory(unit="by-nc", version="4.0")
         self.license3 = LicenseFactory(
-            license_code="by-nd", version="3.0", jurisdiction_code="hk"
+            unit="by-nd", version="3.0", jurisdiction_code="hk"
         )
         self.license4 = LicenseFactory(
-            license_code="by-nc-sa", version="3.0", jurisdiction_code="us"
+            unit="by-nc-sa", version="3.0", jurisdiction_code="us"
         )
         self.license5 = LicenseFactory(
-            license_code="by-na", version="3.0", jurisdiction_code="nl"
+            unit="by-na", version="3.0", jurisdiction_code="nl"
         )
-        self.license6 = LicenseFactory(license_code="by", version="")  # zero
-        self.license7 = LicenseFactory(license_code="by", version="2.5")
-        self.license8 = LicenseFactory(license_code="by", version="2.0")
-        self.license9 = LicenseFactory(license_code="by", version="2.1")
+        self.license6 = LicenseFactory(unit="by", version="")  # zero
+        self.license7 = LicenseFactory(unit="by", version="2.5")
+        self.license8 = LicenseFactory(unit="by", version="2.0")
+        self.license9 = LicenseFactory(unit="by", version="2.1")
 
         for license in License.objects.all():
             LegalCodeFactory(license=license, language_code="en")
@@ -384,7 +384,7 @@ class TestComputeAboutURL(TestCase):
             "https://creativecommons.org/licenses/by-nc/4.0/",
             compute_about_url(
                 category="licenses",
-                license_code="by-nc",
+                unit="by-nc",
                 version="4.0",
                 jurisdiction_code="",
             ),
@@ -395,7 +395,7 @@ class TestComputeAboutURL(TestCase):
             "https://creativecommons.org/licenses/BSD/",
             compute_about_url(
                 category="licenses",
-                license_code="BSD",
+                unit="BSD",
                 version="",
                 jurisdiction_code="",
             ),
@@ -406,7 +406,7 @@ class TestComputeAboutURL(TestCase):
             "https://creativecommons.org/licenses/MIT/",
             compute_about_url(
                 category="licenses",
-                license_code="MIT",
+                unit="MIT",
                 version="",
                 jurisdiction_code="",
             ),
@@ -417,7 +417,7 @@ class TestComputeAboutURL(TestCase):
             "https://creativecommons.org/licenses/GPL/2.0/",
             compute_about_url(
                 category="licenses",
-                license_code="GPL",
+                unit="GPL",
                 version="2.0",
                 jurisdiction_code="",
             ),
@@ -428,7 +428,7 @@ class TestComputeAboutURL(TestCase):
             "https://creativecommons.org/licenses/by/3.0/nl/",
             compute_about_url(
                 category="licenses",
-                license_code="by",
+                unit="by",
                 version="3.0",
                 jurisdiction_code="nl",
             ),

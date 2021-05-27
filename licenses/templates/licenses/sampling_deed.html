@@ -19,7 +19,7 @@
 
     <h3>{% blocktrans %}You are free:{% endblocktrans %}</h3>
     <ul class="license-properties">
-      {% if license.license_code == 'nc-sampling+' %}
+      {% if license.unit == 'nc-sampling+' %}
         <li class="license samplingplus">
           {% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for noncommercial purposes.{% endblocktrans %}
         </li>
@@ -44,7 +44,7 @@
       <li class="license by">
         {% blocktrans %}You must attribute the work in the manner specified by the author or licensor (but not in any way that suggests that they endorse you or your use of the work).{% endblocktrans %}
       </li>
-      {% if license.license_code == 'nc-sampling+' %}
+      {% if license.unit == 'nc-sampling+' %}
         <li class="license nc">
           {% blocktrans %}You may not use this work for commercial purposes.{% endblocktrans %}
         </li>

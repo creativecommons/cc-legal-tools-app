@@ -312,7 +312,7 @@ class MetadataImporter:
         # Create the License object
         license = self.License(
             about=license_url,
-            license_code=get_element_text(license_element, "dc:identifier"),
+            unit=get_element_text(license_element, "dc:identifier"),
             version=get_element_text(license_element, "dcq:hasVersion", ""),
             jurisdiction_code=jurisdiction_code,
             creator_url=creator_url,

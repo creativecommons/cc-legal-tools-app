@@ -43,7 +43,7 @@ class LicenseFactory(factory.django.DjangoModelFactory):
         model = License
 
     about = factory.Faker("url")
-    license_code = factory.fuzzy.FuzzyChoice(
+    unit = factory.fuzzy.FuzzyChoice(
         ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa", "zero"]
     )
     version = factory.Faker("numerify", text="#.#")
