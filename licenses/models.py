@@ -161,6 +161,7 @@ class LegalCode(models.Model):
         " different from the Django language code.",
     )
     html_file = models.CharField(
+        "HTML file",
         max_length=300,
         help_text="HTML file we got this from",
         blank=True,
@@ -174,14 +175,14 @@ class LegalCode(models.Model):
     title = models.CharField(
         max_length=112,
         help_text="License title in this language, e.g."
-        " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+        " 'Atribución/Reconocimiento 4.0 Internacional'",
         blank=True,
         default="",
     )
-    html = models.TextField(blank=True, default="")
-    license_url = models.URLField(null=True, default=None)
-    deed_url = models.URLField(unique=True)
-    plain_text_url = models.URLField(null=True, default=None)
+    html = models.TextField("HTML", null=True, default=None)
+    license_url = models.URLField("License URL", null=True, default=None)
+    deed_url = models.URLField("Deed URL", unique=True)
+    plain_text_url = models.URLField("Plain text URL", null=True, default=None)
 
     objects = LegalCodeQuerySet.as_manager()
 
@@ -414,6 +415,7 @@ class License(models.Model):
     )
     jurisdiction_code = models.CharField(max_length=9, blank=True, default="")
     creator_url = models.URLField(
+        "Creator URL",
         max_length=200,
         blank=True,
         default="",
@@ -425,7 +427,8 @@ class License(models.Model):
         blank=True,
         default="",
     )
-    title_english = models.TextField(
+    title_english = models.CharField(
+        max_length=112,
         help_text="License title in English, e.g."
         " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
         blank=True,

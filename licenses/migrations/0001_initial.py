@@ -41,6 +41,7 @@ class Migration(migrations.Migration):
                         default="",
                         help_text="HTML file we got this from",
                         max_length=300,
+                        verbose_name="HTML file",
                     ),
                 ),
                 (
@@ -58,14 +59,41 @@ class Migration(migrations.Migration):
                         blank=True,
                         default="",
                         help_text="License title in this language, e.g."
-                        " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+                        " 'Atribución/Reconocimiento 4.0 Internacional'",
                         max_length=112,
                     ),
                 ),
-                ("html", models.TextField(blank=True, default="")),
-                ("license_url", models.URLField(default=None, null=True)),
-                ("deed_url", models.URLField(unique=True)),
-                ("plain_text_url", models.URLField(default=None, null=True)),
+                (
+                    "html",
+                    models.TextField(
+                        default=None,
+                        null=True,
+                        verbose_name="HTML",
+                    ),
+                ),
+                (
+                    "license_url",
+                    models.URLField(
+                        default=None,
+                        null=True,
+                        verbose_name="License URL",
+                    ),
+                ),
+                (
+                    "deed_url",
+                    models.URLField(
+                        unique=True,
+                        verbose_name="Deed URL",
+                    ),
+                ),
+                (
+                    "plain_text_url",
+                    models.URLField(
+                        default=None,
+                        null=True,
+                        verbose_name="Plain text URL",
+                    ),
+                ),
             ],
             options={
                 "ordering": ["license", "language_code"],
@@ -170,6 +198,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         default="",
                         help_text="E.g. https://creativecommons.org",
+                        verbose_name="Creator URL",
                     ),
                 ),
                 (
@@ -183,11 +212,12 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "title_english",
-                    models.TextField(
+                    models.CharField(
                         blank=True,
                         default="",
                         help_text="License title in English, e.g."
                         " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+                        max_length=112,
                     ),
                 ),
                 (
