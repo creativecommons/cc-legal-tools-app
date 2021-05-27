@@ -19,8 +19,7 @@ from licenses.views import all_licenses, metadata_view, view_deed, view_license
 
 class CategoryConverter:
     """
-    Licenses codes look like "MIT" or "by-sa" or "by-nc-nd" or "CC0".
-    We accept any mix of letters, digits, and dashes.
+    Category must be either "licenses" or "publicdomain".
     """
 
     regex = r"licenses|publicdomain"
@@ -112,7 +111,7 @@ class LangConverter:
         return value
 
 
-register_converter(LangConverter, "lang")
+register_converter(LangConverter, "language_code")
 
 
 # /licenses/
@@ -180,7 +179,7 @@ urlpatterns = [
     # Legalcode: with Jurisdiction (ported), with language_code
     path(
         "<category:category>/<code:license_code>/<version:version>"
-        "/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
+        "/<jurisdiction:jurisdiction>/legalcode.<language_code:language_code>",
         view_license,
         name="view_legalcode_ported_language_specified",
     ),
@@ -194,7 +193,7 @@ urlpatterns = [
     # Legalcode: no Jurisdiction (international/unported), with language_code
     path(
         "<category:category>/<code:license_code>/<version:version>/legalcode"
-        ".<lang:language_code>",
+        ".<language_code:language_code>",
         view_license,
         kwargs=dict(jurisdiction=""),
         name="view_legalcode_unported_language_specified",
@@ -220,7 +219,7 @@ urlpatterns = [
     # Deed: with Jurisdiction (ported), with language_code
     path(
         "<category:category>/<code:license_code>/<version:version>"
-        "/<jurisdiction:jurisdiction>/deed.<lang:language_code>",
+        "/<jurisdiction:jurisdiction>/deed.<language_code:language_code>",
         view_deed,
         name="view_deed_ported_language_specified",
     ),
@@ -234,7 +233,7 @@ urlpatterns = [
     # Deed: no Jurisdiction (international/unported), with language_code
     path(
         "<category:category>/<code:license_code>/<version:version>/deed"
-        ".<lang:language_code>",
+        ".<language_code:language_code>",
         view_deed,
         kwargs=dict(jurisdiction=""),
         name="view_deed_unported_language_specified",
