@@ -194,12 +194,12 @@ class LegalCode(models.Model):
     def save(self, *args, **kwargs):
         unit = self.license.unit
         self.deed_url = build_path(
-            self.license.about,
+            self.license.canonical_url,
             "deed",
             self.language_code,
         )
         self.license_url = build_path(
-            self.license.about,
+            self.license.canonical_url,
             "legalcode",
             self.language_code,
         )
@@ -208,7 +208,7 @@ class LegalCode(models.Model):
             or unit == "CC0"
         ) and self.language_code == "en":
             self.plain_text_url = build_path(
-                self.license.about,
+                self.license.canonical_url,
                 "legalcode.txt",
                 self.language_code,
             )
@@ -393,7 +393,8 @@ class LegalCode(models.Model):
 
 
 class License(models.Model):
-    about = models.URLField(
+    canonical_url = models.URLField(
+        "Canonical URL",
         max_length=200,
         help_text="The license's unique identifier, e.g."
         " 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
@@ -702,8 +703,8 @@ class TranslationBranch(models.Model):
         }
 
 
-def build_path(about, document, language_code):
-    path = about.replace("https://creativecommons.org", "")
+def build_path(canonical_url, document, language_code):
+    path = canonical_url.replace("https://creativecommons.org", "")
     if document == "legalcode.txt" or not language_code:
         path = posixpath.join(path, document)
     else:

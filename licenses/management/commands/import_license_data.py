@@ -90,7 +90,9 @@ class Command(BaseCommand):
                     license.source = (
                         license.is_replaced_by
                     ) = license.is_based_on = license.deprecated_on = None
-                    license.about = get_license_url_from_legalcode_url(url)
+                    license.canonical_url = get_license_url_from_legalcode_url(
+                        url
+                    )
                     license.save()
                 legal_code = LegalCode.objects.create(
                     url=url,

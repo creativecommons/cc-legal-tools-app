@@ -137,7 +137,7 @@ class Command(BaseCommand):
                 self.stdout.write(" skipped.")
                 continue
 
-            about_url = metadata["about_url"]
+            canonical_url = metadata["canonical_url"]
 
             unit_parts = unit.split("-")
             if unit in UNITS_LICENSES:
@@ -171,7 +171,7 @@ class Command(BaseCommand):
 
             # Find or create a License object
             license, created = License.objects.get_or_create(
-                about=about_url,
+                canonical_url=canonical_url,
                 category=category,
                 defaults=dict(
                     unit=unit,

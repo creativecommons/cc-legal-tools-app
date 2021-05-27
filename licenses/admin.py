@@ -61,7 +61,7 @@ class LegalCodeInline(admin.TabularInline):
 @admin.register(License)
 class LicenseAdmin(admin.ModelAdmin):
     fields = [
-        "about",
+        "canonical_url",
         "unit",
         "title_english",
         "version",
@@ -105,5 +105,5 @@ class LicenseAdmin(admin.ModelAdmin):
     search_fields = [
         "unit",
         "version",
-        "about",
+        "canonical_url",
     ]

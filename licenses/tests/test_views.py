@@ -110,7 +110,7 @@ class LicensesTestsMixin:
     # Create some licenses to test in setUp
     def setUp(self):
         self.by = LicenseFactory(
-            about="https://creativecommons.org/licenses/by/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by/4.0/",
             category="licenses",
             unit="by",
             version="4.0",
@@ -126,7 +126,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nc/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nc/4.0/",
             category="licenses",
             unit="by-nc",
             version="4.0",
@@ -142,7 +142,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc_nd = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nc-nd/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nc-nd/4.0/",
             category="licenses",
             unit="by-nc-nd",
             version="4.0",
@@ -158,7 +158,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc_sa = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nc-sa/4.0/",
             category="licenses",
             unit="by-nc-sa",
             version="4.0",
@@ -174,7 +174,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nd = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nd/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nd/4.0/",
             category="licenses",
             unit="by-nd",
             version="4.0",
@@ -190,7 +190,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_sa = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-sa/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-sa/4.0/",
             category="licenses",
             unit="by-sa",
             version="4.0",
@@ -206,7 +206,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by = LicenseFactory(
-            about="https://creativecommons.org/licenses/by/3.0/",
+            canonical_url="https://creativecommons.org/licenses/by/3.0/",
             category="licenses",
             unit="by",
             version="3.0",
@@ -222,7 +222,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by = LicenseFactory(
-            about="https://creativecommons.org/licenses/by/2.0/",
+            canonical_url="https://creativecommons.org/licenses/by/2.0/",
             category="licenses",
             unit="by",
             version="2.0",
@@ -238,7 +238,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.cc0 = LicenseFactory(
-            about="https://creativecommons.org/publicdomain/zero/1.0/",
+            canonical_url="https://creativecommons.org/publicdomain/zero/1.0/",
             category="publicdomain",
             unit="CC0",
             version="1.0",
@@ -260,7 +260,7 @@ class LicensesTestsMixin:
             LegalCodeFactory(license=license, language_code="fr")
 
         self.by_sa_30_es = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-sa/3.0/es/",
+            canonical_url="https://creativecommons.org/licenses/by-sa/3.0/es/",
             category="licenses",
             unit="by-sa",
             version="3.0",
@@ -281,7 +281,7 @@ class LicensesTestsMixin:
         )  # Default lang
 
         self.by_sa_20_es = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-sa/2.0/es/",
+            canonical_url="https://creativecommons.org/licenses/by-sa/2.0/es/",
             category="licenses",
             unit="by-sa",
             version="2.0",
@@ -344,7 +344,8 @@ class ViewLicenseTest(TestCase):
         language_code = "de"
         lc = LegalCodeFactory(
             license__category="licenses",
-            license__about="https://creativecommons.org/licenses/by/3.0/de/",
+            license__canonical_url="https://creativecommons.org"
+            "/licenses/by/3.0/de/",
             license__version="3.0",
             license__jurisdiction_code="de",
             language_code=language_code,
@@ -361,7 +362,7 @@ class ViewLicenseTest(TestCase):
     def test_view_license(self):
         license = LicenseFactory(
             category="licenses",
-            about="https://creativecommons.org/licenses/by/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
         for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
@@ -389,7 +390,7 @@ class ViewLicenseTest(TestCase):
 #
 #    def test_view_license_plain_text(self):
 #        license = LicenseFactory(
-#            about="https://creativecommons.org/licenses/by/4.0/",
+#            canonical_url="https://creativecommons.org/licenses/by/4.0/",
 #            version="4.0",
 #        )
 #        for language_code in [DEFAULT_LANGUAGE_CODE]:
@@ -452,7 +453,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
                 # Test in English and for 4.0 since that's how we've set up the
                 # strings to test for
                 url = build_path(
-                    license.about,
+                    license.canonical_url,
                     "deed",
                     "en",
                 )

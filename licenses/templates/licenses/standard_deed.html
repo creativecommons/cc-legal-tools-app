@@ -115,7 +115,7 @@
             <input id="license-unit" type="hidden"
                    value="CC {{ license.unit.upper }} {{ license.version }}" />
             <input id="license-url" type="hidden"
-                   value="{{ license.about }}" />
+                   value="{{ license.canonical_url }}" />
             <a href="" id="attribution_help" class="helpLink">
               <img src="{% static 'images/information.png' %}"
                    alt="{% blocktrans %}Information{% endblocktrans %}" />
@@ -185,7 +185,7 @@
       <div class="row">
       <div id="deed-newer" class="col-md-offset-2 col-md-8 alert alert-warning" tal:condition="">
         <p>
-          {% blocktrans with current_version_url=license.is_replaced_by.about %}A <a href="{{ current_version_url }}">new version</a> of this license is available. You should use it for new works, and you may want to relicense existing works under it. No works are <em>automatically</em> put under the new license, however.{% endblocktrans %}
+          {% blocktrans with current_version_url=license.is_replaced_by.canonical_url %}A <a href="{{ current_version_url }}">new version</a> of this license is available. You should use it for new works, and you may want to relicense existing works under it. No works are <em>automatically</em> put under the new license, however.{% endblocktrans %}
         </p>
       </div>
       </div>

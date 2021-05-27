@@ -49,7 +49,8 @@ namespaces = {
 
 # Map URL to LegalCode objects (mostly unsaved)
 LEGAL_CODE_CACHE = {}
-# Map of unsaved TranslatedLicenseName objects. key=license_about|lang_code.
+# Map of unsaved TranslatedLicenseName objects.
+# key=license_canonical_url|lang_code.
 TRANSLATED_LICENSE_NAME_CACHE = {}
 # List of unsaved LicenseLogo objects
 LICENSE_LOGOS = []
@@ -100,7 +101,7 @@ class MetadataImporter:
         )
 
     def get_translated_license_name(self, license, language_code, name):
-        key = f"{license.about}|{language_code}"
+        key = f"{license.canonical_url}|{language_code}"
         if key not in TRANSLATED_LICENSE_NAME_CACHE:
             TRANSLATED_LICENSE_NAME_CACHE[key] = self.TranslatedLicenseName(
                 license=license, language_code=language_code, name=name
@@ -129,7 +130,8 @@ class MetadataImporter:
         # Populate self.licenses with License objects that already exist in the
         # database
         self.licenses = {  # Maps urls to License objects
-            license.about: license for license in self.License.objects.all()
+            license.canonical_url: license
+            for license in self.License.objects.all()
         }
 
         print(
@@ -150,7 +152,7 @@ class MetadataImporter:
             "license"
         ):
             TRANSLATED_LICENSE_NAME_CACHE[
-                f"{tln.license.about}|{tln.language_code}"
+                f"{tln.license.canonical_url}|{tln.language_code}"
             ] = tln
 
         print("Reading RDF")
@@ -311,7 +313,7 @@ class MetadataImporter:
 
         # Create the License object
         license = self.License(
-            about=license_url,
+            canonical_url=license_url,
             unit=get_element_text(license_element, "dc:identifier"),
             version=get_element_text(license_element, "dcq:hasVersion", ""),
             jurisdiction_code=jurisdiction_code,
@@ -435,7 +437,7 @@ class MetadataImporter:
                 print(child)
             raise Exception("MISSED SOMETHING - see list just above this")
 
-        self.licenses[license.about] = license
+        self.licenses[license.canonical_url] = license
         return license
 
 

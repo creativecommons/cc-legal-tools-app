@@ -10,7 +10,7 @@ from licenses.templatetags.license_tags import (
     reset_letters,
     units,
 )
-from licenses.utils import compute_about_url
+from licenses.utils import compute_canonical_url
 
 
 class LicenseTagsTest(TestCase):
@@ -161,10 +161,10 @@ class LicenseTagsTest(TestCase):
             with self.subTest(
                 (unit, version, jurisdiction, language),
             ):
-                about = compute_about_url(
+                canonical_url = compute_canonical_url(
                     category, unit, version, jurisdiction
                 )
-                result = build_path(about, "legalcode", language)
+                result = build_path(canonical_url, "legalcode", language)
                 self.assertEqual(expected_result, result)
                 self.assertTrue(resolver.resolve(result))
 
@@ -231,8 +231,8 @@ class LicenseTagsTest(TestCase):
             with self.subTest(
                 (unit, version, jurisdiction, language),
             ):
-                about = compute_about_url(
+                canonical_url = compute_canonical_url(
                     category, unit, version, jurisdiction
                 )
-                result = build_path(about, "deed", language)
+                result = build_path(canonical_url, "deed", language)
                 self.assertEqual(expected_result, result)

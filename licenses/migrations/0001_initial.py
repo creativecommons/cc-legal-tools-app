@@ -133,12 +133,13 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "about",
+                    "canonical_url",
                     models.URLField(
                         help_text="The license's unique identifier, e.g."
                         " 'https://creativecommons.org/licenses/by-nd/2.0/"
                         "br/'",
                         unique=True,
+                        verbose_name="Canonical URL",
                     ),
                 ),
                 (

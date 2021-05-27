@@ -42,7 +42,7 @@ class LicenseFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = License
 
-    about = factory.Faker("url")
+    canonical_url = factory.Faker("url")
     unit = factory.fuzzy.FuzzyChoice(
         ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa", "zero"]
     )

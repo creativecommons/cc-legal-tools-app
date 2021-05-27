@@ -518,7 +518,9 @@ class LicenseModelTest(TestCase):
         # Ported
         license = LicenseFactory(
             **{
-                "about": "https://creativecommons.org/licenses/by-nc/3.0/xyz/",
+                "canonical_url": (
+                    "https://creativecommons.org/licenses/by-nc/3.0/xyz/"
+                ),
                 "category": "licenses",
                 "unit": "by-nc",
                 "version": "3.0",
@@ -576,7 +578,9 @@ class LicenseModelTest(TestCase):
         # Unported
         license = LicenseFactory(
             **{
-                "about": "https://creativecommons.org/licenses/by-nc/3.0/",
+                "canonical_url": (
+                    "https://creativecommons.org/licenses/by-nc/3.0/"
+                ),
                 "category": "licenses",
                 "unit": "by-nc",
                 "version": "3.0",
