@@ -25,15 +25,15 @@ from django.views.generic import TemplateView
 from licenses.views import branch_status, translation_status
 
 urlpatterns = [
-    re_path(r"^admin/", admin.site.urls),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    path("admin/", admin.site.urls),
     re_path(
-        r"status/(?P<id>\d+)/$",
+        r"^status/(?P<id>\d+)/$",
         branch_status,
         name="branch_status",
     ),
     re_path(
-        r"status/$",
+        r"^status/$",
         translation_status,
         name="translation_status",
     ),
