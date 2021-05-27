@@ -2,14 +2,16 @@
 
 <div class="column is-one-quarter sidebar-container">
   <aside class="menu sidebar-menu">
-    {# if we don't have any menu to show, don't show the title either #}
-    {% if license.version != "3.0" or license.jurisdiction_code == "" %}
+    {# Non-Menu for crude html #}
+    {% if legalcode.html %}
       <a class="link has-text-black is-block padding-bottom-normal" href="#legal-code-body">{{ legalcode.title }}</a>
     {% endif %}
+
+    {# Menu #}
     <ul class="menu-list" >
       <li>
         <ul>
-          {# replace with list of section links for the license legal code #}
+
         {% if license.license_code == "CC0" %}
           <li class="columns">
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
@@ -32,43 +34,7 @@
             <a class="is-block column" href="#limitations">{% blocktrans trimmed %}4. Limitations and Disclaimers.{% endblocktrans %}</a>
           </li>
 
-        {% elif license.version == "3.0" and license.jurisdiction_code != "" %}
-          {# we have no way yet to link into the ported licenses' sections #}
-
-        {% elif license.version == "3.0" and license.jurisdiction_code == "" %}
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#definitions">{% blocktrans trimmed %}1. Definitions{% endblocktrans %}</a>
-          </li>
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#fairdealing">{% blocktrans trimmed %}2. Fair Dealing Rights.{% endblocktrans %}</a>
-          </li>
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#grant">{% blocktrans trimmed %}3. License Grant.{% endblocktrans %}</a>
-          </li>
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#restrictions">{% blocktrans trimmed %}4. Restrictions.{% endblocktrans %}</a>
-          </li>
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#representations">{% blocktrans trimmed %}5. Representations, Warranties and Disclaimer{% endblocktrans %}</a>
-          </li>
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#liability">{% blocktrans trimmed %}6. Limitation on Liability.{% endblocktrans %}</a>
-          </li>
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#termination">{% blocktrans trimmed %}7. Termination{% endblocktrans %}</a>
-          </li>
-          <li class="columns">
-            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
-            <a class="is-block column" href="#misc">{% blocktrans trimmed %}8. Miscellaneous{% endblocktrans %}</a>
-          </li>
-        {% elif license.version == "4.0" %}
+        {% elif category == "licenses" and license.version == "4.0" %}
           <li class="columns">
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class="is-block column" href="#s1">{% blocktrans trimmed %}Section 1 – Definitions.{% endblocktrans %}</a>
@@ -101,6 +67,44 @@
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class=" is-block column" href="#s8">{% blocktrans trimmed %}Section 8 – Interpretation.{% endblocktrans %}</a>
           </li>
+
+        {% elif category == "licenses" and license.version == "3.0" and license.jurisdiction_code == "" %}
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#definitions">{% blocktrans trimmed %}1. Definitions{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#fairdealing">{% blocktrans trimmed %}2. Fair Dealing Rights.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#grant">{% blocktrans trimmed %}3. License Grant.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#restrictions">{% blocktrans trimmed %}4. Restrictions.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#representations">{% blocktrans trimmed %}5. Representations, Warranties and Disclaimer{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#liability">{% blocktrans trimmed %}6. Limitation on Liability.{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#termination">{% blocktrans trimmed %}7. Termination{% endblocktrans %}</a>
+          </li>
+          <li class="columns">
+            <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
+            <a class="is-block column" href="#misc">{% blocktrans trimmed %}8. Miscellaneous{% endblocktrans %}</a>
+          </li>
+
+        {% else %}
+            {# Other Licenses/Declarations are not yet supported. Also see Non-Menu section, above. #}
+
         {% endif %}
         </ul>
       </li>

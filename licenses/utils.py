@@ -13,6 +13,7 @@ from django.urls import get_resolver
 from polib import POEntry, POFile
 
 # First-party/Local
+import licenses.models
 from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
 from i18n.utils import (
     cc_to_django_language_code,
@@ -91,18 +92,18 @@ def get_license_url_from_legalcode_url(legalcode_url):
     """
     Return the URL of the license that this legalcode url is for.
     Legalcode URLs are like
-    http://creativecommons.org/licenses/by/4.0/legalcode
-    http://creativecommons.org/licenses/by/4.0/legalcode.es
+    https://creativecommons.org/licenses/by/4.0/legalcode
+    https://creativecommons.org/licenses/by/4.0/legalcode.es
     http://opensource.org/licenses/bsd-license.php
 
     License URLs are like
-    http://creativecommons.org/licenses/by-nc-nd/4.0/
-    http://creativecommons.org/licenses/BSD/
+    https://creativecommons.org/licenses/by-nc-nd/4.0/
+    https://creativecommons.org/licenses/BSD/
     """
     if legalcode_url == "http://opensource.org/licenses/bsd-license.php":
-        return "http://creativecommons.org/licenses/BSD/"
+        return "https://creativecommons.org/licenses/BSD/"
     if legalcode_url == "http://opensource.org/licenses/mit-license.php":
-        return "http://creativecommons.org/licenses/MIT/"
+        return "https://creativecommons.org/licenses/MIT/"
 
     regex = re.compile(r"^(.*)legalcode(\.%s)?" % LANGUAGE_CODE_REGEX)
     m = regex.match(legalcode_url)
@@ -118,9 +119,8 @@ def parse_legalcode_filename(filename):
 
     The filename should not include any path. A trailing .html is okay.
 
-    COPIED FROM
-    https://github.com/creativecommons/cc-link-checker/blob/6bb2eae4151c5f7949b73f8d066c309f2413c4a5/link_checker.py#L231  # noqa: E501
-    and modified a great deal.
+    Partially based on:
+    https://github.com/creativecommons/cc-link-checker/blob/a255d2b5d72df31b3e750b34dac2ac6effe7c792/link_checker/utils.py#L419-L469  # noqa: E501
     """
 
     basename = filename
@@ -129,51 +129,39 @@ def parse_legalcode_filename(filename):
 
     parts = basename.split("_")
 
-    license = parts.pop(0)
-    if license == "samplingplus":
-        license = "sampling+"
-    elif license == "nc-samplingplus":
-        license = "nc-sampling+"
-
-    license_code_for_url = license
+    unit = parts.pop(0)
+    if unit == "samplingplus":
+        unit = "sampling+"
+    elif unit == "nc-samplingplus":
+        unit = "nc-sampling+"
 
     version = parts.pop(0)
 
     jurisdiction = None
     language = None
-    if license.startswith("zero"):
+    license_code_to_return = unit
+    if unit == "zero":
+        category = "publicdomain"
         license_code_to_return = "CC0"
-        path_base = "publicdomain"
+    elif unit in licenses.models.UNITS_PUBLIC_DOMAIN:
+        category = "publicdomain"
+        jurisdiction = parts.pop(0)
     else:
-        license_code_to_return = license
-        path_base = "licenses"
+        category = "licenses"
         if parts and float(version) < 4.0:
             jurisdiction = parts.pop(0)
 
     if parts:
         language = parts.pop(0)
 
-    if language:
-        legalcode = f"legalcode.{language}"
-    else:
-        legalcode = False
-
-    url = posixpath.join("http://creativecommons.org", path_base)
-    url = posixpath.join(url, license_code_for_url)
-    url = posixpath.join(url, version)
+    about_url = compute_about_url(category, unit, version, jurisdiction)
 
     if jurisdiction:
-        url = posixpath.join(url, jurisdiction)
         cc_language_code = language or get_default_language_for_jurisdiction(
             jurisdiction, ""
         )
     else:
         cc_language_code = language or DEFAULT_LANGUAGE_CODE
-
-    if legalcode:
-        url = posixpath.join(url, legalcode)
-    else:
-        url = f"{url}/"
 
     if not cc_language_code:
         raise ValueError(f"What language? filename={filename}")
@@ -182,25 +170,23 @@ def parse_legalcode_filename(filename):
     django_language_code = cc_to_django_language_code(cc_language_code)
     if django_language_code not in settings.LANG_INFO:
         raise ValueError(
-            f"Invalid language_code={cc_language_code}"
+            f"{filename}: Invalid language_code={cc_language_code}"
             f" dj={django_language_code}"
         )
 
     data = dict(
+        category=category,
         license_code=license_code_to_return,
         version=version,
         jurisdiction_code=jurisdiction or "",
         cc_language_code=cc_language_code,
-        url=url,
-        about_url=compute_about_url(
-            license_code_for_url, version, jurisdiction or ""
-        ),
+        about_url=about_url,
     )
 
     return data
 
 
-def compute_about_url(license_code, version, jurisdiction_code):
+def compute_about_url(category, license_code, version, jurisdiction_code):
     """
     Compute the canonical unique "about" URL for a license with the given
     attributes.  Note that a "license" is language-independent, unlike a
@@ -208,35 +194,40 @@ def compute_about_url(license_code, version, jurisdiction_code):
 
     E.g.
 
-    http://creativecommons.org/licenses/BSD/
-    http://creativecommons.org/licenses/GPL/2.0/
-    http://creativecommons.org/licenses/LGPL/2.1/
-    http://creativecommons.org/licenses/MIT/
-    http://creativecommons.org/licenses/by/2.0/
-    http://creativecommons.org/licenses/publicdomain/
-    http://creativecommons.org/publicdomain/zero/1.0/
-    http://creativecommons.org/publicdomain/mark/1.0/
-    http://creativecommons.org/licenses/nc-sampling+/1.0/
-    http://creativecommons.org/licenses/devnations/2.0/
-    http://creativecommons.org/licenses/by/3.0/nl/
-    http://creativecommons.org/licenses/by-nc-nd/3.0/br/
-    http://creativecommons.org/licenses/by/4.0/
-    http://creativecommons.org/licenses/by-nc-nd/4.0/
+    https://creativecommons.org/licenses/BSD/
+    https://creativecommons.org/licenses/GPL/2.0/
+    https://creativecommons.org/licenses/LGPL/2.1/
+    https://creativecommons.org/licenses/MIT/
+    https://creativecommons.org/licenses/by/2.0/
+    https://creativecommons.org/licenses/publicdomain/
+    https://creativecommons.org/publicdomain/zero/1.0/
+    https://creativecommons.org/publicdomain/mark/1.0/
+    https://creativecommons.org/licenses/nc-sampling+/1.0/
+    https://creativecommons.org/licenses/devnations/2.0/
+    https://creativecommons.org/licenses/by/3.0/nl/
+    https://creativecommons.org/licenses/by-nc-nd/3.0/br/
+    https://creativecommons.org/licenses/by/4.0/
+    https://creativecommons.org/licenses/by-nc-nd/4.0/
     """
-    base = "http://creativecommons.org"
+    base = "https://creativecommons.org"
+
     if license_code in ["BSD", "MIT"]:
-        return f"{base}/licenses/{license_code}/"
-    if "GPL" in license_code:
-        return f"{base}/licenses/{license_code}/{version}/"
-    prefix = (
-        "publicdomain"
-        if license_code in ["CC0", "zero", "mark"]
-        else "licenses"
-    )
-    mostly = f"{base}/{prefix}/{license_code}/{version}/"
+        about_url = posixpath.join(
+            base,
+            category,
+            license_code,
+        )
+    else:
+        about_url = posixpath.join(
+            base,
+            category,
+            license_code,
+            version,
+        )
     if jurisdiction_code:
-        return f"{mostly}{jurisdiction_code}/"
-    return mostly
+        about_url = posixpath.join(about_url, jurisdiction_code)
+    about_url = posixpath.join(about_url, "")
+    return about_url
 
 
 def validate_list_is_all_text(list_):

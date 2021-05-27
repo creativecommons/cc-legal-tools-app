@@ -193,119 +193,106 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_1.0.html",
                 {
-                    "about_url": "http://creativecommons.org/licenses/by/1.0/",
-                    "url": "http://creativecommons.org/licenses/by/1.0/",
+                    "about_url": (
+                        "https://creativecommons.org/licenses/by/1.0/"
+                    ),
                     "license_code": "by",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
+                    "category": "licenses",
                 },
             ),
             (
                 "by_3.0_es_ast",
                 {
                     "about_url": (
-                        "http://creativecommons.org/licenses/by/3.0/es/"
-                    ),
-                    "url": (
-                        "http://creativecommons.org/licenses/by/3.0/es/"
-                        "legalcode.ast"
+                        "https://creativecommons.org/licenses/by/3.0/es/"
                     ),
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "es",
                     "cc_language_code": "ast",
+                    "category": "licenses",
                 },
             ),
             (
                 "by_3.0_rs_sr-Cyrl.html",
                 {
                     "about_url": (
-                        "http://creativecommons.org/licenses/by/3.0/rs/"
-                    ),
-                    "url": (
-                        "http://creativecommons.org/licenses/by/3.0/rs/"
-                        "legalcode.sr-Cyrl"
+                        "https://creativecommons.org/licenses/by/3.0/rs/"
                     ),
                     "license_code": "by",
                     "version": "3.0",
                     "jurisdiction_code": "rs",
                     "cc_language_code": "sr-Cyrl",
+                    "category": "licenses",
                 },
             ),
             (
                 "devnations_2.0.html",
                 {
                     "about_url": (
-                        "http://creativecommons.org/licenses/devnations/2.0/"
-                    ),
-                    "url": (
-                        "http://creativecommons.org/licenses/devnations/2.0/"
+                        "https://creativecommons.org/licenses/devnations/2.0/"
                     ),
                     "license_code": "devnations",
                     "version": "2.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
+                    "category": "licenses",
                 },
             ),
             (
                 "LGPL_2.1.html",
                 {
                     "about_url": (
-                        "http://creativecommons.org/licenses/LGPL/2.1/"
+                        "https://creativecommons.org/licenses/LGPL/2.1/"
                     ),
-                    "url": "http://creativecommons.org/licenses/LGPL/2.1/",
                     "license_code": "LGPL",
                     "version": "2.1",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
+                    "category": "licenses",
                 },
             ),
             (
                 "samplingplus_1.0",
                 {
                     "about_url": (
-                        "http://creativecommons.org/licenses/sampling+/1.0/"
-                    ),
-                    "url": (
-                        "http://creativecommons.org/licenses/sampling+/1.0/"
+                        "https://creativecommons.org/licenses/sampling+/1.0/"
                     ),
                     "license_code": "sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
+                    "category": "licenses",
                 },
             ),
             (
                 "zero_1.0_fi.html",
                 {
                     "about_url": (
-                        "http://creativecommons.org/publicdomain/zero/1.0/"
-                    ),
-                    "url": (
-                        "http://creativecommons.org/publicdomain/zero/1.0/"
-                        "legalcode.fi"
+                        "https://creativecommons.org/publicdomain/zero/1.0/"
                     ),
                     "license_code": "CC0",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "fi",
+                    "category": "publicdomain",
                 },
             ),
             (
                 "nc-samplingplus_1.0.html",
                 {
                     "about_url": (
-                        "http://creativecommons.org/licenses/nc-sampling+/"
+                        "https://creativecommons.org/licenses/nc-sampling+/"
                         "1.0/"
-                    ),
-                    "url": (
-                        "http://creativecommons.org/licenses/nc-sampling+/1.0/"
                     ),
                     "license_code": "nc-sampling+",
                     "version": "1.0",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
+                    "category": "licenses",
                 },
             ),
         ]
@@ -326,30 +313,30 @@ class GetLicenseURLFromLegalCodeURLTest(TestCase):
     def test_get_license_url_from_legalcode_url(self):
         data = [
             (
-                "http://creativecommons.org/licenses/by/4.0/legalcode",
-                "http://creativecommons.org/licenses/by/4.0/",
+                "https://creativecommons.org/licenses/by/4.0/legalcode",
+                "https://creativecommons.org/licenses/by/4.0/",
             ),
             (
-                "http://creativecommons.org/licenses/by/4.0/legalcode.es",
-                "http://creativecommons.org/licenses/by/4.0/",
+                "https://creativecommons.org/licenses/by/4.0/legalcode.es",
+                "https://creativecommons.org/licenses/by/4.0/",
             ),
             (
-                "http://creativecommons.org/licenses/GPL/2.0/legalcode",
-                "http://creativecommons.org/licenses/GPL/2.0/",
+                "https://creativecommons.org/licenses/GPL/2.0/legalcode",
+                "https://creativecommons.org/licenses/GPL/2.0/",
             ),
             (
-                "http://creativecommons.org/licenses/nc-sampling+/1.0/tw/"
+                "https://creativecommons.org/licenses/nc-sampling+/1.0/tw/"
                 "legalcode",
-                "http://creativecommons.org/licenses/nc-sampling+/1.0/tw/",
+                "https://creativecommons.org/licenses/nc-sampling+/1.0/tw/",
             ),
             # Exceptions:
             (
                 "http://opensource.org/licenses/bsd-license.php",
-                "http://creativecommons.org/licenses/BSD/",
+                "https://creativecommons.org/licenses/BSD/",
             ),
             (
                 "http://opensource.org/licenses/mit-license.php",
-                "http://creativecommons.org/licenses/MIT/",
+                "https://creativecommons.org/licenses/MIT/",
             ),
         ]
         for legalcode_url, expected_license_url in data:
@@ -394,8 +381,9 @@ class GetLicenseUtilityTest(TestCase):
 class TestComputeAboutURL(TestCase):
     def test_by_nc_40(self):
         self.assertEqual(
-            "http://creativecommons.org/licenses/by-nc/4.0/",
+            "https://creativecommons.org/licenses/by-nc/4.0/",
             compute_about_url(
+                category="licenses",
                 license_code="by-nc",
                 version="4.0",
                 jurisdiction_code="",
@@ -404,32 +392,42 @@ class TestComputeAboutURL(TestCase):
 
     def test_bsd(self):
         self.assertEqual(
-            "http://creativecommons.org/licenses/BSD/",
+            "https://creativecommons.org/licenses/BSD/",
             compute_about_url(
-                license_code="BSD", version="", jurisdiction_code=""
+                category="licenses",
+                license_code="BSD",
+                version="",
+                jurisdiction_code="",
             ),
         )
 
     def test_mit(self):
         self.assertEqual(
-            "http://creativecommons.org/licenses/MIT/",
+            "https://creativecommons.org/licenses/MIT/",
             compute_about_url(
-                license_code="MIT", version="", jurisdiction_code=""
+                category="licenses",
+                license_code="MIT",
+                version="",
+                jurisdiction_code="",
             ),
         )
 
     def test_gpl20(self):
         self.assertEqual(
-            "http://creativecommons.org/licenses/GPL/2.0/",
+            "https://creativecommons.org/licenses/GPL/2.0/",
             compute_about_url(
-                license_code="GPL", version="2.0", jurisdiction_code=""
+                category="licenses",
+                license_code="GPL",
+                version="2.0",
+                jurisdiction_code="",
             ),
         )
 
     def test_30_nl(self):
         self.assertEqual(
-            "http://creativecommons.org/licenses/by/3.0/nl/",
+            "https://creativecommons.org/licenses/by/3.0/nl/",
             compute_about_url(
+                category="licenses",
                 license_code="by",
                 version="3.0",
                 jurisdiction_code="nl",

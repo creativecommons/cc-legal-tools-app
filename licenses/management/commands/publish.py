@@ -105,7 +105,8 @@ class Command(BaseCommand):
 
         legalcodes = LegalCode.objects.validgroups()
         for group in legalcodes.keys():
-            self.stdout.write(f"\n{hostname}:{output_dir}")
+            self.stdout.write(f"\n{group}")
+            self.stdout.write(f"{hostname}:{output_dir}")
             for legalcode in legalcodes[group]:
                 # deed
                 filepath, symlinks = legalcode.get_file_and_links("deed")

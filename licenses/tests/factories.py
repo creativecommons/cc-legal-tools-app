@@ -59,7 +59,7 @@ class LicenseFactory(factory.django.DjangoModelFactory):
     prohibits_high_income_nation_use = factory.fuzzy.FuzzyChoice([False, True])
     jurisdiction_code = ""
     creator_url = factory.Faker("url")
-    license_class_url = factory.Faker("url")
+    category = factory.fuzzy.FuzzyChoice(["licenses", "publicdomain"])
 
 
 class LegalCodeFactory(factory.django.DjangoModelFactory):

@@ -12,9 +12,27 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
 from django.urls import path, register_converter
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX_STRING
+from i18n import LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
 from licenses.views import all_licenses, metadata_view, view_deed, view_license
+
+
+class CategoryConverter:
+    """
+    Licenses codes look like "MIT" or "by-sa" or "by-nc-nd" or "CC0".
+    We accept any mix of letters, digits, and dashes.
+    """
+
+    regex = r"licenses|publicdomain"
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+
+register_converter(CategoryConverter, "category")
 
 
 class LicenseCodeConverter:
@@ -145,95 +163,87 @@ register_converter(LangConverter, "lang")
 # DEEDS
 urlpatterns = [
     # Debug page that displays all licenses
-    path("all/", all_licenses, name="all_licenses"),
-    path("metadata.yaml", metadata_view, name="metadata"),
+    path(
+        "licenses/all/",
+        all_licenses,
+        kwargs=dict(category="licenses"),
+        name="all_licenses",
+    ),
+    path(
+        "licenses/metadata.yaml",
+        metadata_view,
+        name="metadata",
+    ),
     #
     # LICENSE PAGES
     #
-    path(  # All four specified: /licenses/by-sa/2.5/ca/legalcode.en
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
-        "/legalcode.<lang:language_code>",
-        view_license,
-        name="view_40_license",
-    ),
+    # Legalcode: with Jurisdiction (ported), with language_code
     path(
-        # Jurisdiction empty:
-        # e.g. /licenses/by/4.0/legalcode.es - license BY 4.0 Spanish
-        "<code:license_code>/<version:version>/legalcode.<lang:language_code>",
+        "<category:category>/<code:license_code>/<version:version>"
+        "/<jurisdiction:jurisdiction>/legalcode.<lang:language_code>",
+        view_license,
+        name="view_legalcode_ported_language_specified",
+    ),
+    # Legalcode: with Jurisdiction (ported), no language_code
+    path(
+        "<category:category>/<code:license_code>/<version:version>"
+        "/<jurisdiction:jurisdiction>/legalcode",
+        view_license,
+        name="view_legalcode_ported",
+    ),
+    # Legalcode: no Jurisdiction (international/unported), with language_code
+    path(
+        "<category:category>/<code:license_code>/<version:version>/legalcode"
+        ".<lang:language_code>",
         view_license,
         kwargs=dict(jurisdiction=""),
-        name="view_40_license",
+        name="view_legalcode_unported_language_specified",
     ),
+    # Legalcode: no Jurisdiction (international/unported), no language_code
     path(
-        # Jurisdiction and language empty (default to English):
-        # e.g. /licenses/by/4.0/legalcode - license BY 4.0 English
-        "<code:license_code>/<version:version>/legalcode",
+        "<category:category>/<code:license_code>/<version:version>/legalcode",
         view_license,
-        name="licenses_default_jurisdiction_and_language",
-        kwargs=dict(language_code=DEFAULT_LANGUAGE_CODE, jurisdiction=""),
+        kwargs=dict(jurisdiction=""),
+        name="view_legalcode_unported",
     ),
-    path(
-        # Jurisdiction empty:
-        # e.g. /licenses/by/4.0/legalcode.es.txt - license BY 4.0 Spanish Plain
-        # Text
-        "<code:license_code>/<version:version>/legalcode.<lang:language_code>"
-        ".txt",
-        view_license,
-        kwargs=dict(jurisdiction="", is_plain_text=True),
-        name="view_40_license_txt",
-    ),
-    path(
-        # Jurisdiction and language empty (default to English):
-        # e.g. /licenses/by/4.0/legalcode/index.txt - license BY 4.0 English
-        # Plain Text
-        "<code:license_code>/<version:version>/legalcode/index.txt",
-        view_license,
-        name="licenses_default_jurisdiction_and_language_txt",
-        kwargs=dict(
-            language_code=DEFAULT_LANGUAGE_CODE,
-            jurisdiction="",
-            is_plain_text=True,
-        ),
-    ),
-    path(
-        # Language empty (default to THE JURISDICTION'S LANGUAGE):
-        # e.g. /licenses/by-nc-sa/3.0/de/legalcode
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
-        "/legalcode",
-        view_license,
-        name="licenses_default_language_with_jurisdiction",
-    ),
-    path(
-        # Jurisdiction and language set
-        # e.g. /licenses/by-nc-sa/3.0/de/legalcode
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
-        "/legalcode.<lang:language_code>.txt",
-        view_license,
-        name="licenses_default_language_with_jurisdiction",
-        kwargs=dict(is_plain_text=True),
-    ),
+    # # Plaintext Legalcode: no Jurisdiction (int/unported), no language_code
+    # path(
+    #     "<category:category>/<code:license_code>/<version:version>/legalcode"
+    #     ".txt",
+    #     view_license,
+    #     kwargs=dict(jurisdiction="", is_plain_text=True),
+    #     name="view_legalcode_unported",
+    # ),
     #
     # DEED PAGES
     #
+    # Deed: with Jurisdiction (ported), with language_code
     path(
-        "<code:license_code>/<version:version>/",
+        "<category:category>/<code:license_code>/<version:version>"
+        "/<jurisdiction:jurisdiction>/deed.<lang:language_code>",
         view_deed,
-        name="license_deed_view_code_version_english",
+        name="view_deed_ported_language_specified",
     ),
+    # Deed: with Jurisdiction (ported), no language_code
     path(
-        "<code:license_code>/<version:version>/deed.<lang:language_code>",
+        "<category:category>/<code:license_code>/<version:version>"
+        "/<jurisdiction:jurisdiction>/deed",
         view_deed,
-        name="license_deed_view_code_version_language",
+        name="view_deed_ported",
     ),
+    # Deed: no Jurisdiction (international/unported), with language_code
     path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>/",
+        "<category:category>/<code:license_code>/<version:version>/deed"
+        ".<lang:language_code>",
         view_deed,
-        name="license_deed_view_code_version_jurisdiction",
+        kwargs=dict(jurisdiction=""),
+        name="view_deed_unported_language_specified",
     ),
+    # Deed: no Jurisdiction (international/unported), no language_code
     path(
-        "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>"
-        "/deed.<lang:language_code>",
+        "<category:category>/<code:license_code>/<version:version>/deed",
         view_deed,
-        name="license_deed_view_code_version_jurisdiction_language",
+        kwargs=dict(jurisdiction=""),
+        name="view_deed_unported",
     ),
 ]

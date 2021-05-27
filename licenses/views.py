@@ -1,26 +1,27 @@
 # Standard library
 import re
-import subprocess
-import tempfile
 from operator import itemgetter
 from typing import Iterable
 
 # Third-party
 import git
 import yaml
-from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import caches
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
-from django.template.loader import render_to_string
 from django.utils.translation import get_language_info
 
 # First-party/Local
-from i18n import JURISDICTION_NAMES
-from i18n.utils import active_translation, cc_to_django_language_code
+from i18n import DEFAULT_LANGUAGE_CODE, JURISDICTION_NAMES
+from i18n.utils import (
+    active_translation,
+    cc_to_django_language_code,
+    get_default_language_for_jurisdiction,
+)
 from licenses.models import (
-    BY_LICENSE_CODES,
+    UNITS_LICENSES,
+    UNITS_PUBLIC_DOMAIN,
     LegalCode,
     License,
     TranslationBranch,
@@ -44,7 +45,20 @@ NUM_COMMITS = 3
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
-def all_licenses(request):
+def get_category_and_category_title(category=None, license=None):
+    if not category:
+        if license:
+            category = category.license
+        else:
+            category = "license"
+    if category == "publicdomain":
+        category_title = "Public Domain"
+    else:
+        category_title = category.title()
+    return category, category_title
+
+
+def all_licenses(request, category=None):
     """
     For test purposes, this displays all the available deeds and licenses in
     tables. This is not intended for public use and should not be included in
@@ -63,23 +77,54 @@ def all_licenses(request):
             "license__license_code",
         )
     )
-    legalcodes = [
-        dict(
-            version=lc.license.version,
-            jurisdiction=JURISDICTION_NAMES.get(
-                lc.license.jurisdiction_code, lc.license.jurisdiction_code
-            ),
+    category, category_title = get_category_and_category_title(
+        category,
+        None,
+    )
+    if not category:
+        category = "licenses"
+    licenses = []
+    publicdomain = []
+    for lc in legalcode_objects:
+        lc_category = lc.license.category
+        version = lc.license.version
+        jurisdiction = JURISDICTION_NAMES.get(
+            lc.license.jurisdiction_code, lc.license.jurisdiction_code
+        )
+        # For details on nomenclature for unported licenses, see:
+        # https://wiki.creativecommons.org/wiki/License_Versions
+        if lc.license.license_code == "CC0":
+            jurisdiction = "Universal"
+        elif lc_category == "licenses" and jurisdiction.lower() == "unported":
+            if version == "4.0":
+                jurisdiction = "International"
+            elif version == "3.0":
+                jurisdiction = "International (unported)"
+            else:
+                jurisdiction = "Generic (unported)"
+        data = dict(
+            version=version,
+            jurisdiction=jurisdiction,
             license_code=lc.license.license_code,
             language_code=lc.language_code,
             deed_url=lc.deed_url,
             license_url=lc.license_url,
         )
-        for lc in legalcode_objects
-    ]
+        if lc_category == "licenses":
+            licenses.append(data)
+        else:
+            publicdomain.append(data)
+
     return render(
         request,
         "all_licenses.html",
-        {"legalcodes": legalcodes, "license_codes": sorted(BY_LICENSE_CODES)},
+        {
+            "category": category,
+            "category_title": category_title,
+            "license_codes": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
+            "licenses": licenses,
+            "publicdomain": publicdomain,
+        },
     )
 
 
@@ -116,14 +161,28 @@ def get_languages_and_links_for_legalcodes(
     return languages_and_links
 
 
+def normalize_path_and_lang(request_path, jurisdiction, language_code):
+    if not language_code:
+        language_code = get_default_language_for_jurisdiction(
+            jurisdiction, DEFAULT_LANGUAGE_CODE
+        )
+    if not request_path.endswith(f".{language_code}"):
+        request_path = f"{request_path}.{language_code}"
+    return request_path, language_code
+
+
 def view_license(
     request,
     license_code,
     version,
+    category=None,
     jurisdiction=None,
     language_code=None,  # CC language code
     is_plain_text=False,
 ):
+    request.path, language_code = normalize_path_and_lang(
+        request.path, jurisdiction, language_code
+    )
     if is_plain_text:
         legalcode = get_object_or_404(
             LegalCode,
@@ -134,6 +193,11 @@ def view_license(
             LegalCode,
             license_url=request.path,
         )
+    license = legalcode.license
+    category, category_title = get_category_and_category_title(
+        category,
+        license,
+    )
 
     language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
@@ -143,49 +207,65 @@ def view_license(
     kwargs = dict(
         template_name="legalcode_page.html",
         context={
+            "category": category,
+            "category_title": category_title,
             "fat_code": legalcode.license.fat_code(),
             "languages_and_links": languages_and_links,
             "legalcode": legalcode,
-            "license": legalcode.license,
+            "license": license,
         },
     )
 
     translation = legalcode.get_translation_object()
     with active_translation(translation):
-        if is_plain_text:
-            response = HttpResponse(content_type='text/plain; charset="utf-8"')
-            html = render_to_string(**kwargs)
-            soup = BeautifulSoup(html, "lxml")
-            plain_text_soup = soup.find(id="plain-text-marker")
-            # FIXME: prune the "img" tags from this before saving again.
-            with tempfile.NamedTemporaryFile(mode="w+b") as temp:
-                temp.write(plain_text_soup.encode("utf-8"))
-                output = subprocess.run(
-                    [
-                        "pandoc",
-                        "-f",
-                        "html",
-                        temp.name,
-                        "-t",
-                        "plain",
-                    ],
-                    encoding="utf-8",
-                    capture_output=True,
-                )
-                response.write(output.stdout)
-                return response
+        # if is_plain_text:
+        #     response = HttpResponse(
+        #         content_type='text/plain; charset="utf-8"'
+        #     )
+        #     html = render_to_string(**kwargs)
+        #     soup = BeautifulSoup(html, "lxml")
+        #     plain_text_soup = soup.find(id="plain-text-marker")
+        #     # FIXME: prune the "img" tags from this before saving again.
+        #     with tempfile.NamedTemporaryFile(mode="w+b") as temp:
+        #         temp.write(plain_text_soup.encode("utf-8"))
+        #         output = subprocess.run(
+        #             [
+        #                 "pandoc",
+        #                 "-f",
+        #                 "html",
+        #                 temp.name,
+        #                 "-t",
+        #                 "plain",
+        #             ],
+        #             encoding="utf-8",
+        #             capture_output=True,
+        #         )
+        #         response.write(output.stdout)
+        #         return response
 
         return render(request, **kwargs)
 
 
 def view_deed(
-    request, license_code, version, jurisdiction=None, language_code=None
+    request,
+    license_code,
+    version,
+    category=None,
+    jurisdiction=None,
+    language_code=None,
 ):
+    request.path, language_code = normalize_path_and_lang(
+        request.path, jurisdiction, language_code
+    )
     legalcode = get_object_or_404(
         LegalCode,
         deed_url=request.path,
     )
     license = legalcode.license
+    category, category_title = get_category_and_category_title(
+        category,
+        license,
+    )
     language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
         license.legal_codes.all(), language_code, "deed"
@@ -193,7 +273,7 @@ def view_deed(
 
     if license.license_code == "CC0":
         body_template = "includes/deed_cc0_body.html"
-    elif license.version == "4.0":
+    elif license.license_code in UNITS_LICENSES and license.version == "4.0":
         body_template = "includes/deed_40_body.html"
     else:
         # Default to 4.0 - or maybe we should just fail?
@@ -207,10 +287,12 @@ def view_deed(
             {
                 "additional_classes": "",
                 "body_template": body_template,
-                "fat_code": legalcode.license.fat_code(),
+                "category": category,
+                "category_title": category_title,
+                "fat_code": license.fat_code(),
                 "languages_and_links": languages_and_links,
                 "legalcode": legalcode,
-                "license": legalcode.license,
+                "license": license,
             },
         )
 

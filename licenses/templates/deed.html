@@ -5,7 +5,7 @@
 {% block title %}Creative Commons &mdash; {% trans license.title_english %} {% endblock %}
 
 {% block active-breadcrumb-li %}
-<li class="is-active"><a href="{{ legalcode.deed_url }}" aria-current="page displayed">{% trans "License Deed for" %} {{ legalcode.fat_code }}</a></li>
+<li class="is-active"><a href="{{ legalcode.deed_url }}" aria-current="page displayed">{{ legalcode.fat_code }} {% trans "Deed" %}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}

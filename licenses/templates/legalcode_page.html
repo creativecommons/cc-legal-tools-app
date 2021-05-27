@@ -3,7 +3,7 @@
 {% load bidi %}
 
 {% block active-breadcrumb-li %}
-  <li class="is-active"><a href="{{ legalcode.license_url }}" aria-current="page displayed">{% trans "Legal Code for" %} {{ legalcode.fat_code }}</a></li>
+  <li class="is-active"><a href="{{ legalcode.license_url }}" aria-current="page displayed">{{ legalcode.fat_code }} {% trans "Legal Code" %}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}
@@ -31,24 +31,24 @@
     {% include 'includes/menu-sidebar.html' %}
     <div class="column">
       {% include 'includes/licenses_header.html' %}  {#  Title and icons #}
-
-      {% if not license.jurisdiction_code %} {# The ported licenses include their own versions of these #}
+      {% if not legalcode.html %}
         {% include 'includes/about_cc_and_license.html' %}  {#  CC IS NOT A LAW FIRM #}
         {% include 'includes/use_of_licenses.html' %}  {# Considerations... #}
       {% endif %}
-
-      {% if license.version == "4.0" %}
-        {% include 'includes/legalcode_40_license.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
-      {% elif license.version == "3.0" and not license.jurisdiction_code %}
-        {% include 'includes/legalcode_30_unported_license.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
-      {% elif license.version == "3.0" and license.jurisdiction_code %}
-        {% include "includes/legalcode_30_ported_license.html" %}  {# <<< THE ACTUAL 3.0 ported LICENSE TEXT #}
-      {% elif license.license_code == "CC0" %}
-        {% include 'includes/legalcode_cc0_license.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
+      {% if license.category == "publicdomain" and license.license_code == "CC0" %}
+        {% include 'includes/legalcode_cc0.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
+      {% elif license.category == "licenses" and license.version == "4.0" %}
+        {% include 'includes/legalcode_licenses_4.0.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
+      {% elif license.category == "licenses" and license.version == "3.0" and not license.jurisdiction_code %}
+        {% include 'includes/legalcode_licenses_3.0_unported.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
+      {% else %}
+        {% include "includes/legalcode_crude_html.html" %}
       {% endif %}
 
-      {% include 'includes/view_legal_code_link_plain_text.html' %}
-      {% include 'includes/about_cc.html' %}
+      {#{% include 'includes/view_legal_code_link_plain_text.html' %}#}
+      {% if not legalcode.html %}
+        {% include 'includes/about_cc.html' %}
+      {% endif %}
       {% include 'includes/related_links.html' %}
     </div>
   </div>
@@ -106,3 +106,4 @@
 
   </script>
 {% endblock %}
+{# vim: ts=2 sw=2 sts=2 sr et #}
