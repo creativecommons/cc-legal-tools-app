@@ -35,43 +35,43 @@ strings_to_lambdas = {
     # Conditions under which we expect to see these strings in a deed page.
     # The lambda is called with a License object
     "INVALID_VARIABLE": never,  # Should never appear
-    "You are free to:": lambda lic_ob: lic_ob.license_code
+    "You are free to:": lambda lic_ob: lic_ob.unit
     not in DEED_TEMPLATE_MAPPING,
     "You do not have to comply with the license for elements of "
-    "the material in the public domain": lambda lic_ob: lic_ob.license_code
+    "the material in the public domain": lambda lic_ob: lic_ob.unit
     not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
     "The licensor cannot revoke these freedoms as long as you follow the license terms.": always,  # noqa: E501
     "appropriate credit": lambda lic_ob: lic_ob.requires_attribution
-    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
     "You may do so in any reasonable manner, but not in any way that "
     "suggests the licensor endorses you or your use.": lambda lic_ob: lic_ob.requires_attribution  # noqa: E501
-    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
     "We never expect to see this string in a license deed.": never,
     "you must distribute your contributions under the": lambda lic_ob: lic_ob.requires_share_alike,  # noqa: E501
     "ShareAlike": lambda lic_ob: lic_ob.requires_share_alike,
     "same license": lambda lic_ob: lic_ob.requires_share_alike,
     "as the original.": lambda lic_ob: lic_ob.requires_share_alike,
     "Adapt": lambda lic_ob: lic_ob.permits_derivative_works
-    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
     "remix, transform, and build upon the material": lambda lic_ob: lic_ob.permits_derivative_works  # noqa: E501
-    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
     "you may not distribute the modified material.": lambda lic_ob: not lic_ob.permits_derivative_works,  # noqa: E501
     "NoDerivatives": lambda lic_ob: not lic_ob.permits_derivative_works,
     # It was decided NOT to include the "free cultural works" icon/text
     "This license is acceptable for Free Cultural Works.": never,
-    "for any purpose, even commercially.": lambda lic_ob: lic_ob.license_code
+    "for any purpose, even commercially.": lambda lic_ob: lic_ob.unit
     not in DEED_TEMPLATE_MAPPING
     and not lic_ob.prohibits_commercial_use,
     "You may not use the material for": lambda lic_ob: lic_ob.prohibits_commercial_use  # noqa: E501
-    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
     ">commercial purposes<": lambda lic_ob: lic_ob.prohibits_commercial_use
-    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
     "When the Licensor is an intergovernmental organization": lambda lic_ob: lic_ob.jurisdiction_code  # noqa: E501
     == "igo",
     "of this license is available. You should use it for new works,": lambda lic_ob: lic_ob.superseded,  # noqa: E501
     """href="/worldwide/""": lambda lic_ob: lic_ob.jurisdiction_code != ""
     and lic_ob.jurisdiction_code not in ["", "es", "igo"]
-    and lic_ob.license_code not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
 }
 
 
@@ -89,10 +89,10 @@ def expected_and_unexpected_strings_for_license(license):
     return expected, unexpected
 
 
-# All the valid license codes. They all start with "by", and have various
+# All the valid units. They all start with "by", and have various
 # combinations of "nc", "nd", and "sa", in that order. But not all combinations
 # are valid, e.g. "nd" and "sa" are not compatible.
-license_codes = []
+units = []
 for bits in range(8):  # We'll enumerate the variations
     parts = ["by"]
     if bits & 1:
@@ -103,16 +103,16 @@ for bits in range(8):  # We'll enumerate the variations
         parts.append("sa")
     if "nd" in parts and "sa" in parts:
         continue  # Not compatible
-    license_codes.append("-".join(parts))
+    units.append("-".join(parts))
 
 
 class LicensesTestsMixin:
     # Create some licenses to test in setUp
     def setUp(self):
         self.by = LicenseFactory(
-            about="https://creativecommons.org/licenses/by/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by/4.0/",
             category="licenses",
-            license_code="by",
+            unit="by",
             version="4.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -126,9 +126,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nc/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nc/4.0/",
             category="licenses",
-            license_code="by-nc",
+            unit="by-nc",
             version="4.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -142,9 +142,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc_nd = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nc-nd/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nc-nd/4.0/",
             category="licenses",
-            license_code="by-nc-nd",
+            unit="by-nc-nd",
             version="4.0",
             permits_derivative_works=False,
             permits_reproduction=True,
@@ -158,9 +158,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc_sa = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nc-sa/4.0/",
             category="licenses",
-            license_code="by-nc-sa",
+            unit="by-nc-sa",
             version="4.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -174,9 +174,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nd = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-nd/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-nd/4.0/",
             category="licenses",
-            license_code="by-nd",
+            unit="by-nd",
             version="4.0",
             permits_derivative_works=False,
             permits_reproduction=True,
@@ -190,9 +190,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_sa = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-sa/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by-sa/4.0/",
             category="licenses",
-            license_code="by-sa",
+            unit="by-sa",
             version="4.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -206,9 +206,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by = LicenseFactory(
-            about="https://creativecommons.org/licenses/by/3.0/",
+            canonical_url="https://creativecommons.org/licenses/by/3.0/",
             category="licenses",
-            license_code="by",
+            unit="by",
             version="3.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -222,9 +222,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by = LicenseFactory(
-            about="https://creativecommons.org/licenses/by/2.0/",
+            canonical_url="https://creativecommons.org/licenses/by/2.0/",
             category="licenses",
-            license_code="by",
+            unit="by",
             version="2.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -238,9 +238,9 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.cc0 = LicenseFactory(
-            about="https://creativecommons.org/publicdomain/zero/1.0/",
+            canonical_url="https://creativecommons.org/publicdomain/zero/1.0/",
             category="publicdomain",
-            license_code="CC0",
+            unit="CC0",
             version="1.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -260,9 +260,9 @@ class LicensesTestsMixin:
             LegalCodeFactory(license=license, language_code="fr")
 
         self.by_sa_30_es = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-sa/3.0/es/",
+            canonical_url="https://creativecommons.org/licenses/by-sa/3.0/es/",
             category="licenses",
-            license_code="by-sa",
+            unit="by-sa",
             version="3.0",
             jurisdiction_code="es",
             permits_derivative_works=True,
@@ -281,9 +281,9 @@ class LicensesTestsMixin:
         )  # Default lang
 
         self.by_sa_20_es = LicenseFactory(
-            about="https://creativecommons.org/licenses/by-sa/2.0/es/",
+            canonical_url="https://creativecommons.org/licenses/by-sa/2.0/es/",
             category="licenses",
-            license_code="by-sa",
+            unit="by-sa",
             version="2.0",
             jurisdiction_code="es",
             permits_derivative_works=True,
@@ -327,7 +327,7 @@ class ViewLicenseTest(TestCase):
     #            kwargs=dict(
     #                version="3.0",
     #                jurisdiction="de",
-    #                license_code=lc.license.license_code,
+    #                unit=lc.license.unit,
     #            ),
     #        )
     #        rsp = self.client.get(url)
@@ -344,7 +344,8 @@ class ViewLicenseTest(TestCase):
         language_code = "de"
         lc = LegalCodeFactory(
             license__category="licenses",
-            license__about="https://creativecommons.org/licenses/by/3.0/de/",
+            license__canonical_url="https://creativecommons.org"
+            "/licenses/by/3.0/de/",
             license__version="3.0",
             license__jurisdiction_code="de",
             language_code=language_code,
@@ -361,7 +362,7 @@ class ViewLicenseTest(TestCase):
     def test_view_license(self):
         license = LicenseFactory(
             category="licenses",
-            about="https://creativecommons.org/licenses/by/4.0/",
+            canonical_url="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
         for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
@@ -389,7 +390,7 @@ class ViewLicenseTest(TestCase):
 #
 #    def test_view_license_plain_text(self):
 #        license = LicenseFactory(
-#            about="https://creativecommons.org/licenses/by/4.0/",
+#            canonical_url="https://creativecommons.org/licenses/by/4.0/",
 #            version="4.0",
 #        )
 #        for language_code in [DEFAULT_LANGUAGE_CODE]:
@@ -407,7 +408,7 @@ class ViewLicenseTest(TestCase):
 #        lc = LegalCodeFactory(
 #            license__version="3.0",
 #            language_code="fr",
-#            license__license_code="by",
+#            license__unit="by",
 #            license__jurisdiction_code="ch",
 #        )
 #        url = lc.plain_text_url
@@ -437,16 +438,12 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
             license
         )
         for s in expected:
-            with self.subTest(
-                "|".join([license.license_code, license.version, s])
-            ):
+            with self.subTest("|".join([license.unit, license.version, s])):
                 if s not in text:
                     print(text)
                 self.assertContains(rsp, s)
         for s in unexpected:
-            with self.subTest(
-                "|".join([license.license_code, license.version, s])
-            ):
+            with self.subTest("|".join([license.unit, license.version, s])):
                 self.assertNotContains(rsp, s)
 
     def test_text_in_deeds(self):
@@ -456,7 +453,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
                 # Test in English and for 4.0 since that's how we've set up the
                 # strings to test for
                 url = build_path(
-                    license.about,
+                    license.canonical_url,
                     "deed",
                     "en",
                 )
@@ -466,7 +463,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
 
     def test_license_deed_view_code_version_jurisdiction_language(self):
         lc = LegalCode.objects.filter(
-            license__license_code="by-sa",
+            license__unit="by-sa",
             license__version="3.0",
             license__jurisdiction_code="es",
         )[0]
@@ -474,7 +471,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
 
         language_code = "fr"
         lc = LegalCodeFactory(license=license, language_code=language_code)
-        # "<code:license_code>/<version:version>/<jurisdiction:jurisdiction>
+        # "<code:unit>/<version:version>/<jurisdiction:jurisdiction>
         #  /deed.<lang:target_lang>"
         url = lc.deed_url
         # Mock 'get_translation_object' because we have no 3.0 translations
@@ -489,7 +486,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
 
     def test_license_deed_view_code_version_jurisdiction(self):
         lc = LegalCode.objects.filter(
-            license__license_code="by-sa",
+            license__unit="by-sa",
             license__version="3.0",
             license__jurisdiction_code="es",
         )[0]
@@ -499,7 +496,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
 
     def test_license_deed_view_cc0(self):
         lc = LegalCode.objects.filter(
-            license__license_code="CC0",
+            license__unit="CC0",
             license__version="1.0",
             language_code="en",
         )[0]
@@ -508,14 +505,14 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         self.assertEqual(200, rsp.status_code)
 
     # def test_deed_for_superseded_license(self):
-    #     license_code = "by-nc-sa"
+    #     unit = "by-nc-sa"
     #     version = "2.0"  # No 4.0 licenses have been superseded
     #
     #     new_license = License.objects.get(
-    #         license_code=license_code, version="3.0", jurisdiction_code=""
+    #         unit=unit, version="3.0", jurisdiction_code=""
     #     )
     #     license = License.objects.get(
-    #         license_code=license_code, version=version, jurisdiction_code=""
+    #         unit=unit, version=version, jurisdiction_code=""
     #     )
     #     license.is_replaced_by = new_license
     #     license.save()
@@ -526,7 +523,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     #     for code in ["es", "igo"]:
     #         with self.subTest(code):
     #             license = LicenseFactory(
-    #                 license_code="by-nd-sa",
+    #                 unit="by-nd-sa",
     #                 jurisdiction_code="es",
     #                 version="3.7",
     #                 requires_share_alike=True,
@@ -541,7 +538,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     # def test_language(self):
     #     license = (
     #         License.objects.filter(
-    #             license_code="by-nd",
+    #             unit="by-nd",
     #             version="4.0",
     #             legal_codes__language_code="es",
     #         )
@@ -562,7 +559,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     #     url = reverse(
     #         "license_deed_view_code_version_jurisdiction",
     #         kwargs=dict(
-    #             license_code=license.license_code,
+    #             unit=license.unit,
     #             version=license.version,
     #             jurisdiction=license.jurisdiction_code,
     #         ),

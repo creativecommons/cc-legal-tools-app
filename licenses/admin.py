@@ -41,7 +41,7 @@ class LegalCodeAdmin(admin.ModelAdmin):
         "license",
     ]
     list_filter = [
-        "license__license_code",
+        "license__unit",
         "language_code",
     ]
     raw_id_fields = [
@@ -61,8 +61,8 @@ class LegalCodeInline(admin.TabularInline):
 @admin.register(License)
 class LicenseAdmin(admin.ModelAdmin):
     fields = [
-        "about",
-        "license_code",
+        "canonical_url",
+        "unit",
         "title_english",
         "version",
         "creator_url",
@@ -85,13 +85,13 @@ class LicenseAdmin(admin.ModelAdmin):
     ]
     inlines = [LegalCodeInline]
     list_display = [
-        "license_code",
+        "unit",
         "title_english",
         "version",
         "jurisdiction_code",
     ]
     list_filter = [
-        "license_code",
+        "unit",
         "version",
         "creator_url",
         "category",
@@ -103,7 +103,7 @@ class LicenseAdmin(admin.ModelAdmin):
         "is_based_on",
     ]
     search_fields = [
-        "license_code",
+        "unit",
         "version",
-        "about",
+        "canonical_url",
     ]

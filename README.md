@@ -214,7 +214,7 @@ The metadata can be downloaded by visiting URL path: /licenses/metadata.yaml
 
 There are two main models (that's Django terminology for tables).
 
-A License can be identified by a license code (e.g. BY, BY-NC-SA) which is a
+A License can be identified by a unit (e.g. BY, BY-NC-SA) which is a
 proxy for the complete set of permissions, requirements, and prohibitions; a
 version number (e.g. 4.0, 3.0), and an optional jurisdiction for ports. So we
 might refer to the license "BY 3.0 Armenia" which would be the 3.0 version of
@@ -417,13 +417,13 @@ code of the licenses, the messages use the standard Django translation domain
 `django`, and the resource name on Transifex for those messages is `django-po`.
 These files are also in the cc-licenses-data repo, under `locale`.
 
-For the license legal code, for each combination of license code, version, and
+For the license legal code, for each combination of unit, version, and
 jurisdiction code, there's another separate domain. These are all in
 cc-licenses-data under `legalcode`.
 
 Transifex requires the resource slug to consist solely of letters, digits,
-underscores, and hyphens. So we define the resource slug by joining the license
-code, version, and jurisdiction with underscores (`_`), then stripping out any
+underscores, and hyphens. So we define the resource slug by joining the unit,
+version, and jurisdiction with underscores (`_`), then stripping out any
 periods (`.`) from the resulting string.  Examples: `by-nc_40`,
 `by-nc-sa_30_es` (where `_es` represents the jurisdiction, not the
 translation).

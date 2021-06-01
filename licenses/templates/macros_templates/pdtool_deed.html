@@ -5,7 +5,7 @@
       xmlns:dct="http://purl.org/dc/terms/"
       xmlns:frbr="http://purl.org/vocab/frbr/core#"
       xml:lang="{{ target_lang }}">
-  <head about="{{ license.about }}">
+  <head about="{{ license.canonical_url }}">
     <meta http-equiv="Content-Type"
 	  content="application/xhtml+xml; charset=utf-8" />
     <title>
@@ -23,7 +23,7 @@
   </head>
 
   {# Translators: Change hide-banner to an empty string to show the complete site header and footer #}  <body typeof="cc:License"
-        about="{{ license.about }}"
+        about="{{ license.canonical_url }}"
         class="license {{ get_ltr_rtl }} {% if target_lang != 'en' %}{% blocktrans %}hide-banner{% endblocktrans %}{% endif %}">
     {% block page_top %}{% endblock %}
     <div id="page" class="site">

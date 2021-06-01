@@ -139,10 +139,10 @@ def parse_legalcode_filename(filename):
 
     jurisdiction = None
     language = None
-    license_code_to_return = unit
+    unit_to_return = unit
     if unit == "zero":
         category = "publicdomain"
-        license_code_to_return = "CC0"
+        unit_to_return = "CC0"
     elif unit in licenses.models.UNITS_PUBLIC_DOMAIN:
         category = "publicdomain"
         jurisdiction = parts.pop(0)
@@ -154,7 +154,9 @@ def parse_legalcode_filename(filename):
     if parts:
         language = parts.pop(0)
 
-    about_url = compute_about_url(category, unit, version, jurisdiction)
+    canonical_url = compute_canonical_url(
+        category, unit, version, jurisdiction
+    )
 
     if jurisdiction:
         cc_language_code = language or get_default_language_for_jurisdiction(
@@ -176,21 +178,21 @@ def parse_legalcode_filename(filename):
 
     data = dict(
         category=category,
-        license_code=license_code_to_return,
+        unit=unit_to_return,
         version=version,
         jurisdiction_code=jurisdiction or "",
         cc_language_code=cc_language_code,
-        about_url=about_url,
+        canonical_url=canonical_url,
     )
 
     return data
 
 
-def compute_about_url(category, license_code, version, jurisdiction_code):
+def compute_canonical_url(category, unit, version, jurisdiction_code):
     """
-    Compute the canonical unique "about" URL for a license with the given
-    attributes.  Note that a "license" is language-independent, unlike a
-    LegalCode but it can have a jurisdiction.q
+    Compute the unique canonical URL for a license with the given
+    attributes. Note that a "License" is language-independent, unlike a
+    "LegalCode" but it can have a jurisdiction.
 
     E.g.
 
@@ -211,23 +213,23 @@ def compute_about_url(category, license_code, version, jurisdiction_code):
     """
     base = "https://creativecommons.org"
 
-    if license_code in ["BSD", "MIT"]:
-        about_url = posixpath.join(
+    if unit in ["BSD", "MIT"]:
+        canonical_url = posixpath.join(
             base,
             category,
-            license_code,
+            unit,
         )
     else:
-        about_url = posixpath.join(
+        canonical_url = posixpath.join(
             base,
             category,
-            license_code,
+            unit,
             version,
         )
     if jurisdiction_code:
-        about_url = posixpath.join(about_url, jurisdiction_code)
-    about_url = posixpath.join(about_url, "")
-    return about_url
+        canonical_url = posixpath.join(canonical_url, jurisdiction_code)
+    canonical_url = posixpath.join(canonical_url, "")
+    return canonical_url
 
 
 def validate_list_is_all_text(list_):

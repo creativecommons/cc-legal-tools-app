@@ -1,3 +1,7 @@
+###############################################################################
+# DISABLED - NOT CURRENTLY USING ##############################################
+# vim: set ft=python ##########################################################
+###############################################################################
 # Standard library
 import os
 from argparse import ArgumentParser
@@ -55,12 +59,11 @@ class Command(BaseCommand):
             except LegalCode.DoesNotExist:
                 print(
                     f"NO LegalCode objects for {html_filename} {url}, looking"
-                    " for another for the same license"
-                    " code/version/jurisdiction."
+                    " for another for the same unit/version/jurisdiction."
                 )
                 try:
                     license = License.objects.get(
-                        license_code=data["license_code"],
+                        unit=data["unit"],
                         version=data["version"],
                         jurisdiction_code=data["jurisdiction_code"],
                     )
@@ -71,20 +74,18 @@ class Command(BaseCommand):
                         " with that code and copy it to make a new one."
                     )
                     # Try to gen one up
-                    # Copy one with the same license_code so all the
+                    # Copy one with the same unit so all the
                     # permissions are correct.
                     # print(
-                    #     "Looking for license with license code"
-                    #     f" {data['license_code']}"
+                    #     "Looking for license with unit"
+                    #     f" {data['unit']}"
                     # )
-                    license = License.objects.filter(
-                        license_code=data["license_code"]
-                    ).first()
+                    license = License.objects.filter(unit=data["unit"]).first()
                     if license is None:
                         print(f"{html_filename} {data}")
                         raise Exception(
                             f"There is no license for {data}, and no license"
-                            f" for license code {data['license_code']} to make"
+                            f" for unit {data['unit']} to make"
                             " one up from. Something needs to be fixed."
                         )
                     license.pk = None
@@ -93,7 +94,9 @@ class Command(BaseCommand):
                     license.source = (
                         license.is_replaced_by
                     ) = license.is_based_on = license.deprecated_on = None
-                    license.about = get_license_url_from_legalcode_url(url)
+                    license.canonical_url = get_license_url_from_legalcode_url(
+                        url
+                    )
                     license.save()
                 legal_code = LegalCode.objects.create(
                     url=url,

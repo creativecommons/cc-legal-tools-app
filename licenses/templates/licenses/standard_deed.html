@@ -2,7 +2,7 @@
 {% load i18n static %}
 {% block title %}
   Creative Commons &mdash; {% trans license.title_english %}
-  &mdash; CC {{license.license_code.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %}
+  &mdash; CC {{license.unit.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %}
 {% endblock title %}
 
 {% block page_top %}
@@ -14,7 +14,7 @@
 {% block license_name %}
   <span class="cc-license-title" property="dc:title dct:title">{% trans license.title_english %}</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
-    (CC {{ license.license_code.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %})
+    (CC {{ license.unit.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %})
   </span>
 {% endblock license_name %}
 
@@ -69,7 +69,7 @@
       </ul>
       </div>
 
-    {% with c=license.license_code %}
+    {% with c=license.unit %}
       {% if c == 'by' or c == 'by-sa' %}
         <div id="libre" class="col-sm-2">
           <a href="http://freedomdefined.org/" class="screen-only">
@@ -112,10 +112,10 @@
             <input id="work-attribution" value="" type="text"
                    readonly="readonly" onclick="this.select()"
                    onfocus="document.getElementById('work-attribution').select();"/>
-            <input id="license-code" type="hidden"
-                   value="CC {{ license.license_code.upper }} {{ license.version }}" />
+            <input id="license-unit" type="hidden"
+                   value="CC {{ license.unit.upper }} {{ license.version }}" />
             <input id="license-url" type="hidden"
-                   value="{{ license.about }}" />
+                   value="{{ license.canonical_url }}" />
             <a href="" id="attribution_help" class="helpLink">
               <img src="{% static 'images/information.png' %}"
                    alt="{% blocktrans %}Information{% endblocktrans %}" />
@@ -185,7 +185,7 @@
       <div class="row">
       <div id="deed-newer" class="col-md-offset-2 col-md-8 alert alert-warning" tal:condition="">
         <p>
-          {% blocktrans with current_version_url=license.is_replaced_by.about %}A <a href="{{ current_version_url }}">new version</a> of this license is available. You should use it for new works, and you may want to relicense existing works under it. No works are <em>automatically</em> put under the new license, however.{% endblocktrans %}
+          {% blocktrans with current_version_url=license.is_replaced_by.canonical_url %}A <a href="{{ current_version_url }}">new version</a> of this license is available. You should use it for new works, and you may want to relicense existing works under it. No works are <em>automatically</em> put under the new license, however.{% endblocktrans %}
         </p>
       </div>
       </div>

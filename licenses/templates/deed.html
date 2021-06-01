@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block about %}{{ license.about }}{% endblock %}
+{% block canonical_url %}{{ license.canonical_url }}{% endblock %}
 {% block title %}Creative Commons &mdash; {% trans license.title_english %} {% endblock %}
 
 {% block active-breadcrumb-li %}
@@ -21,7 +21,7 @@
     {% include body_template %}
     {% if license.version == "4.0" %}
       {% include 'includes/disclaimer_40.html' %}
-    {% elif license.license_code == "CC0" %}
+    {% elif license.unit == "CC0" %}
       {% include 'includes/disclaimer_cc0.html' %}
     {% endif %}
     <div class="columns margin-top-normal is-vcentered" >

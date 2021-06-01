@@ -109,7 +109,7 @@ class Command(BaseCommand):
             fullpath = os.path.join(input_directory, filename)
 
             category = metadata["category"]
-            license_code = metadata["license_code"]
+            unit = metadata["unit"]
             version = metadata["version"]
             jurisdiction_code = metadata["jurisdiction_code"]
             cc_language_code = metadata[
@@ -121,10 +121,7 @@ class Command(BaseCommand):
                 raise ValueError(f"Invalid language_code={cc_language_code}")
 
             include = (
-                (
-                    license_code in UNITS_LICENSES
-                    or license_code in UNITS_PUBLIC_DOMAIN
-                )
+                (unit in UNITS_LICENSES or unit in UNITS_PUBLIC_DOMAIN)
                 and (
                     versions_to_include is None
                     or version in versions_to_include
@@ -140,24 +137,24 @@ class Command(BaseCommand):
                 self.stdout.write(" skipped.")
                 continue
 
-            about_url = metadata["about_url"]
+            canonical_url = metadata["canonical_url"]
 
-            license_code_parts = license_code.split("-")
-            if license_code in UNITS_LICENSES:
+            unit_parts = unit.split("-")
+            if unit in UNITS_LICENSES:
                 # These are valid for BY only
-                permits_derivative_works = "nd" not in license_code_parts
-                permits_reproduction = "nd" not in license_code_parts
-                permits_distribution = "nd" not in license_code_parts
-                permits_sharing = "nd" not in license_code_parts
-                requires_share_alike = "sa" in license_code_parts
+                permits_derivative_works = "nd" not in unit_parts
+                permits_reproduction = "nd" not in unit_parts
+                permits_distribution = "nd" not in unit_parts
+                permits_sharing = "nd" not in unit_parts
+                requires_share_alike = "sa" in unit_parts
                 requires_notice = True
                 requires_attribution = True
                 requires_source_code = False  # GPL, LGPL only, I think
-                prohibits_commercial_use = "nc" in license_code_parts
+                prohibits_commercial_use = "nc" in unit_parts
                 prohibits_high_income_nation_use = (
                     False  # Not any BY 4.0 license
                 )
-            elif license_code in UNITS_PUBLIC_DOMAIN:
+            elif unit in UNITS_PUBLIC_DOMAIN:
                 # permits anything, requires nothing, prohibits nothing
                 permits_derivative_works = True
                 permits_reproduction = True
@@ -174,10 +171,10 @@ class Command(BaseCommand):
 
             # Find or create a License object
             license, created = License.objects.get_or_create(
-                about=about_url,
+                canonical_url=canonical_url,
                 category=category,
                 defaults=dict(
-                    license_code=license_code,
+                    unit=unit,
                     version=version,
                     jurisdiction_code=jurisdiction_code,
                     permits_derivative_works=permits_derivative_works,
@@ -221,7 +218,7 @@ class Command(BaseCommand):
             set(lc.language_code for lc in legalcodes_to_import)
         )
 
-        english_by_license_code_version = {}
+        english_by_unit_version = {}
 
         # We have to do English first. Django gets confused if you try to load
         # another language and it can't find English, I guess it's looking for
@@ -234,21 +231,21 @@ class Command(BaseCommand):
                 language_code=cc_language_code,
             ).order_by(
                 "-license__version",
-                "license__license_code",
+                "license__unit",
                 "license__jurisdiction_code",
             ):
                 license = legalcode.license
-                license_code = license.license_code
+                unit = license.unit
                 version = license.version
                 support_po_files = False
                 # self.stdout.write(
-                #     f"Importing {legalcode.html_file} {license_code}"
+                #     f"Importing {legalcode.html_file} {unit}"
                 #     f" lang={cc_language_code}"
                 # )
                 with open(legalcode.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                if license_code in UNITS_LICENSES:
+                if unit in UNITS_LICENSES:
                     if version == "4.0":
                         support_po_files = True
                         messages_text = self.import_by_40_license_html(
@@ -272,7 +269,7 @@ class Command(BaseCommand):
                             version=version,
                         )
                         continue
-                elif license_code == "CC0":
+                elif unit == "CC0":
                     support_po_files = True
                     messages_text = self.import_cc0_license_html(
                         content=content,
@@ -280,18 +277,18 @@ class Command(BaseCommand):
                     )
                 else:
                     raise NotImplementedError(
-                        f"Have not implemented parsing for {license_code}"
+                        f"Have not implemented parsing for {unit}"
                         f" {version} licenses."
                     )
 
                 if support_po_files:
                     if cc_language_code == "en":
-                        key = f"{license_code}|{version}"
-                        english_by_license_code_version[key] = messages_text
+                        key = f"{unit}|{version}"
+                        english_by_unit_version[key] = messages_text
                     self.write_po_files(
                         legalcode,
                         cc_language_code,
-                        english_by_license_code_version,
+                        english_by_unit_version,
                         messages_text,
                     )
 
@@ -299,15 +296,15 @@ class Command(BaseCommand):
         self,
         legalcode,
         cc_language_code,
-        english_by_license_code_version,
+        english_by_unit_version,
         messages_text,
     ):
         license = legalcode.license
-        license_code = license.license_code
+        unit = license.unit
         version = license.version
 
-        key = f"{license_code}|{version}"
-        english_messages = english_by_license_code_version[key]
+        key = f"{unit}|{version}"
+        english_messages = english_by_unit_version[key]
 
         pofile = POFile()
         # The syntax used to wrap messages in a .po file is
@@ -317,7 +314,7 @@ class Command(BaseCommand):
         if self.unwrapped:
             pofile.wrapwidth = 999999
         pofile.metadata = {
-            "Project-Id-Version": f"{license_code}-{version}",
+            "Project-Id-Version": f"{unit}-{version}",
             # 'Report-Msgid-Bugs-To': 'you@example.com',
             # 'POT-Creation-Date': '2007-10-18 14:00+0100',
             # 'PO-Revision-Date': '2007-10-18 14:00+0100',
@@ -374,9 +371,7 @@ class Command(BaseCommand):
     def import_cc0_license_html(self, *, content, legalcode):
         license = legalcode.license
         assert license.version == "1.0", f"{license.version} is not '1.0'"
-        assert (
-            license.license_code == "CC0"
-        ), f"{license.license_code} is not 'CC0'"
+        assert license.unit == "CC0", f"{license.unit} is not 'CC0'"
         messages = {}
         raw_html = content
         # Parse the raw HTML to a BeautifulSoup object.
@@ -458,11 +453,11 @@ class Command(BaseCommand):
         Returns a dictionary mapping our internal keys to strings.
         """
         license = legalcode.license
-        license_code = license.license_code
+        unit = license.unit
         language_code = legalcode.language_code
         html_file = os.path.basename(legalcode.html_file)
         assert license.version == "4.0", f"{license.version} is not '4.0'"
-        assert license.license_code.startswith("by")
+        assert license.unit.startswith("by")
 
         messages = {}
         raw_html = content
@@ -515,7 +510,7 @@ class Command(BaseCommand):
             i = expected_definitions.index(after_this)
             expected_definitions.insert(i + 1, what_to_insert)
 
-        if license_code == "by-sa":
+        if unit == "by-sa":
             insert_after("adapted_material", "adapters_license")
             insert_after("adapters_license", "by_sa_compatible_license")
             insert_after("exceptions_and_limitations", "license_elements_sa")
@@ -523,16 +518,16 @@ class Command(BaseCommand):
             # BY-SA 4.0 for "pt" has an extra definition. Work around for now.
             if language_code == "pt":
                 insert_after("you", "you2")
-        elif license_code == "by":
+        elif unit == "by":
             insert_after("adapted_material", "adapters_license")
-        elif license_code == "by-nc":
+        elif unit == "by-nc":
             insert_after("adapted_material", "adapters_license")
             insert_after("licensor", "noncommercial")
-        elif license_code == "by-nd":
+        elif unit == "by-nd":
             pass
-        elif license_code == "by-nc-nd":
+        elif unit == "by-nc-nd":
             insert_after("licensor", "noncommercial")
-        elif license_code == "by-nc-sa":
+        elif unit == "by-nc-sa":
             insert_after("adapted_material", "adapters_license")
             insert_after(
                 "exceptions_and_limitations", "license_elements_nc_sa"
@@ -613,7 +608,7 @@ class Command(BaseCommand):
             "offer",
             "no_restrictions",
         ]
-        if license_code in ["by-sa", "by-nc-sa"]:
+        if unit in ["by-sa", "by-nc-sa"]:
             expected_downstreams.insert(1, "adapted_material")
 
         # Process top-level "li" elements under the ol
@@ -724,7 +719,7 @@ class Command(BaseCommand):
             )
 
         # share-alike is only in some licenses
-        if license_code.endswith("-sa"):
+        if unit.endswith("-sa"):
             messages["sharealike_name"] = nested_text(
                 soup.find(id="s3b").strong
             )
@@ -743,13 +738,13 @@ class Command(BaseCommand):
         )
 
         s4a = nested_text(soup.find(id="s4a"))
-        if "nc" in license_code:
+        if "nc" in unit:
             messages["s4_sui_generics_database_rights_extract_reuse_nc"] = s4a
         else:
             messages["s4_sui_generics_database_rights_extract_reuse"] = s4a
 
         s4b = nested_text(soup.find(id="s4b"))
-        if license_code.endswith("-sa"):
+        if unit.endswith("-sa"):
             messages[
                 "s4_sui_generics_database_rights_adapted_material_sa"
             ] = s4b

@@ -35,7 +35,7 @@
         {% include 'includes/about_cc_and_license.html' %}  {#  CC IS NOT A LAW FIRM #}
         {% include 'includes/use_of_licenses.html' %}  {# Considerations... #}
       {% endif %}
-      {% if license.category == "publicdomain" and license.license_code == "CC0" %}
+      {% if license.category == "publicdomain" and license.unit == "CC0" %}
         {% include 'includes/legalcode_cc0.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
       {% elif license.category == "licenses" and license.version == "4.0" %}
         {% include 'includes/legalcode_licenses_4.0.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}

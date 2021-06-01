@@ -17,12 +17,12 @@ next_letter_data = local()
 
 
 @register.filter
-def license_codes(legalcodes):
+def units(legalcodes):
     """
-    Return sorted list of the unique license codes for the given
+    Return sorted list of the unique units for the given
     dictionaries representing legalcodes
     """
-    return sorted(set(lc["license_code"] for lc in legalcodes))
+    return sorted(set(lc["unit"] for lc in legalcodes))
 
 
 @register.simple_tag
@@ -68,4 +68,4 @@ def current_letter():
 @register.filter
 def is_one_of(legalcode, arg):
     codes = arg.split(",")
-    return legalcode.license.license_code in codes
+    return legalcode.license.unit in codes
