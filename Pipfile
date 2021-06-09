@@ -19,7 +19,7 @@ urllib3 = "*"
 whitenoise = "*"
 
 [dev-packages]
-black = "==20.8b1"
+black = "==21.5b2"
 coverage = "*"
 django-debug-toolbar = "*"
 factory-boy = "*"
