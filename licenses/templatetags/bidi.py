@@ -7,7 +7,7 @@ register = template.Library()
 
 @register.simple_tag
 def start():
-    """Returns 'left' if ltr language or 'right' if rtl language """
+    """Returns 'left' if ltr language or 'right' if rtl language"""
     return "right" if get_language_bidi() else "left"
 
 
