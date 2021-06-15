@@ -150,12 +150,13 @@ class Command(BaseCommand):
             else:
                 continue
             relative_name = os.path.join(*name.split("_"), "rdf")
+            # "xu" is a "user assigned code" meaning "unported"
+            # See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
+            relative_name = relative_name.replace("xu/", "")
             dest_file = os.path.join(output_dir, relative_name)
             os.makedirs(os.path.dirname(dest_file), exist_ok=True)
             copyfile(os.path.join(licenses_rdf_dir, rdf), dest_file)
             self.stdout.write(f"    {relative_name}")
-            if relative_name.endswith("xu/rdf"):
-                relative_symlink(output_dir, relative_name, "../rdf")
 
     def run_copy_meta_rdfs(self):
         hostname = socket.gethostname()
@@ -224,8 +225,6 @@ class Command(BaseCommand):
             else:
                 context = "publicdomain"
             name = text[:-4]
-            if "3.0" in text:
-                name = f"{name}_xu"
             relative_name = os.path.join(
                 context,
                 *name.split("_"),
@@ -235,8 +234,6 @@ class Command(BaseCommand):
             os.makedirs(os.path.dirname(dest_file), exist_ok=True)
             copyfile(os.path.join(plaintext_dir, text), dest_file)
             self.stdout.write(f"    {relative_name}")
-            if relative_name.endswith("xu/legalcode.txt"):
-                relative_symlink(output_dir, relative_name, "../legalcode.txt")
 
     def distill_and_copy(self):
         self.run_clean_output_dir()
