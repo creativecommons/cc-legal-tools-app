@@ -221,58 +221,47 @@ class LegalCode(models.Model):
         the relative path where the saved file should be, not including
         the actual filename.
 
-        For unported, uses "xu" as the "jurisdiction" in the filename.
-
         If saving the license as a static file, this returns the relative
         path of the file to save it as.
 
-        4.0 formula:
-        /licenses/VERSION/LICENSE_deed_LANGAUGE.html
-        /licenses/VERSION/LICENSE_legalcode_LANGAUGEhtml
+        ported Licenses 3.0 and earlier
+            Formula
+                CATEGORY/UNIT/VERSION/JURISDICTION
+            Examples
+                licenses/by/3.0/am
+                licenses/by-nc/3.0/pl
+                licenses/by-nc-nd/2.5/au
+                licenses/by-nc-sa/2.5/ch
+                licenses/by/2.1/es
+                licenses/by-nc/2.1/jp
+                licenses/by/2.0/kr
+                licenses/nd-nc/1.0/fi
 
-        4.0 examples:
-        /licenses/4.0/by-nc-nd_deed_en.html
-        /licenses/4.0/by-nc-nd_legalcode_en.html
-        /licenses/4.0/by_deed_en.html
-        /licenses/4.0/by_legalcode_en.html
-        /licenses/4.0/by_deed_zh-Hans.html
-        /licenses/4.0/by_legalcode_zh-Hans.html
-
-        3.0 formula:
-        /licenses/VERSION/JURISDICTION/LICENSE_deed_LANGAUGE.html
-        /licenses/VERSION/JURISDICTION/LICENSE_legalcode_LANGAUGE.html
-
-        3.0 examples:
-        /licenses/3.0/xu/by_deed_en.html
-        /licenses/3.0/xu/by_legalcode.en.html
-        /licenses/3.0/am/by_deed_hy.html
-        /licenses/3.0/am/by_legalcode_hy.html
-        /licenses/3.0/rs/by_deed_rs-Cyrl.html
-        /licenses/3.0/rs/by_legalcode_rs-Cyrl.html
-        For jurisdiction, I used "xu" to mean "unported".
-        See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
-
-        cc0 formula:
-        /publicdomain/VERSION/LICENSE_deed_LANGAUGE.html
-        /publicdomain/VERSION/LICENSE_legalcode_LANGAUGE.html
-
-        cc0 examples:
-        /publicdomain/1.0/zero_deed_en.html
-        /publicdomain/1.0/zero_legalcode_en.html
-        /publicdomain/1.0/zero_deed_ja.html
-        /publicdomain/1.0/zero_legalcode_ja.html
+        unported Licenses 3.0, Licenses 4.0, and Public Domain:
+            Formula
+                CATEGORY/UNIT/VERSION
+            Examples
+                publicdomain/zero/1.0
+                licenses/by-nc-nd/4.0/
+                licenses/by-nc-sa/4.0/
+                licenses/by-nc/4.0/
+                licenses/by-nd/4.0/
+                licenses/by-sa/4.0/
+                licenses/by/4.0/
         """
 
         license = self.license
         unit = "zero" if license.unit == "CC0" else license.unit.lower()
-        if license.category == "licenses" and float(license.version) < 4.0:
+        if license.jurisdiction_code:
+            # ported Licenses 3.0 and earlier
             return os.path.join(
                 license.category,  # licenses
                 unit,  # by, by-nc-nd, etc.
                 license.version,  # 1.0, 2.0, etc.
-                license.jurisdiction_code or "xu",  # "xu" for "unported"
+                license.jurisdiction_code,
             )
         else:
+            # unported Licenses 3.0, Licenses 4.0, and Public Domain:
             return os.path.join(
                 license.category,  # licenses, publicdomain
                 unit,  # by, by-nc-nd, zero, etc.
@@ -280,8 +269,13 @@ class LegalCode(models.Model):
             )
 
     def get_file_and_links(self, document):
+        """
+        1. Add document type ("deed" or "legalcode"), language, and HTML file
+           extension to filename to save content to.
+        2. Generate list of symlinks to ensure expected URLs function
+           correctly.
+        """
         license = self.license
-        unit = license.unit
         juris_code = license.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
         filename = os.path.join(
@@ -294,13 +288,6 @@ class LegalCode(models.Model):
             symlinks.append(f"{document}.html")
             if document == "deed":
                 symlinks.append("index.html")
-        if unit in UNITS_LICENSES and float(license.version) < 4.0:
-            # Symlink Unported ("xu" jurisdiction)
-            if not license.jurisdiction_code:
-                symlinks.append(f"../{filename}")
-                symlinks.append(f"../{document}.html")
-                if document == "deed":
-                    symlinks.append("../index.html")
 
         return [filename, symlinks]
 

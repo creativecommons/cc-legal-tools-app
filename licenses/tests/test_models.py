@@ -369,19 +369,21 @@ class LegalCodeModelTest(TestCase):
 
     def test_get_deed_or_license_path_by3(self):
         """
-        3.0 formula:
-        /licenses/VERSION/JURISDICTION/LICENSE_deed_LANGAUGE.html
-        /licenses/VERSION/JURISDICTION/LICENSE_legalcode_LANGAUGE.html
+        3.0 unported
+            Formula
+                CATEGORY/UNIT/VERSION/JURISDICTION/DOCUMENT.LANG.html
+            Examples
+                licenses/by/3.0/deed.en.html
+                licenses/by/3.0/legalcode.en.html
 
-        3.0 examples:
-        /licenses/3.0/xu/by_deed_en.html
-        /licenses/3.0/xu/by_legalcode_en.html
-        /licenses/3.0/am/by_deed_hy.html
-        /licenses/3.0/am/by_legalcode_hy.html
-        /licenses/3.0/rs/by_deed_rs-Cyrl.html
-        /licenses/3.0/rs/by_legalcode_rs-Cyrl.html
-        For jurisdiction, I used "xu" to mean "unported".
-        See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
+        3.0 ported
+            Formula
+                CATEGORY/UNIT/VERSION/JURISDICTION/DOCUMENT.LANG.html
+            Examples
+                licenses/by/3.0/ca/deed.en.html
+                licenses/by/3.0/ca/legalcode.en.html
+                licenses/by-sa/3.0/ca/deed.fr.html
+                licenses/by-sa/3.0/ca/legalcode.fr.html
         """
         # Unported
         self._test_get_deed_or_license_path(
@@ -392,20 +394,10 @@ class LegalCodeModelTest(TestCase):
                     "by",
                     "",
                     "en",
-                    "licenses/by/3.0/xu/deed.en.html",
-                    [
-                        "deed.html",
-                        "index.html",
-                        "../licenses/by/3.0/xu/deed.en.html",
-                        "../deed.html",
-                        "../index.html",
-                    ],
-                    "licenses/by/3.0/xu/legalcode.en.html",
-                    [
-                        "legalcode.html",
-                        "../licenses/by/3.0/xu/legalcode.en.html",
-                        "../legalcode.html",
-                    ],
+                    "licenses/by/3.0/deed.en.html",
+                    ["deed.html", "index.html"],
+                    "licenses/by/3.0/legalcode.en.html",
+                    ["legalcode.html"],
                 ),
             ]
         )
