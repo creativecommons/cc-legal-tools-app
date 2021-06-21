@@ -1,9 +1,8 @@
 {% extends "macros_templates/deed.html" %}{% load i18n %}
 
 {% block title %}
-  Creative Commons &mdash;
-  {% blocktrans %}Copyright-Only Dedication (based on United States law)
-or Public Domain Certification{% endblocktrans %}
+  {% blocktrans %}Copyright-Only Dedication (based on United States law) or Public Domain Certification{% endblocktrans %}
+  &mdash; Creative Commons
 {% endblock title %}
 
 {% block legalcode_block %}{% endblock %}
@@ -54,3 +53,4 @@ or Public Domain Certification{% endblocktrans %}
   <span rel="cc:permits" resource="http://creativecommons.org/ns#DerivativeWorks"></span>
   <span rel="cc:permits" resource="http://creativecommons.org/ns#Distribution"></span>
 {% endblock %}
+{# vim: ts=2 sw=2 sts=2 sr et #}

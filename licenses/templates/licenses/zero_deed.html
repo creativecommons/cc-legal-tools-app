@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block license_name %}
-  <span property="dc:title dct:title" style="display:inline !important;">{% trans license.title_english %}</span>
+  <span property="dc:title dct:title" style="display:inline !important;">{{ legalcode.title }}</span>
   (<span property="dc:identifier dct:identifier" style="display:inline !important;">CC0 1.0</span>)<br>
   {% blocktrans %}Public Domain Dedication{% endblocktrans %}
 {% endblock %}
@@ -202,3 +202,4 @@
   <span class="icon"><img alt="cc pd" src="/images/deed/zero_white_x2.png"></span>
 </span>
 {% endblock license_logos %}
+{# vim: ts=2 sw=2 sts=2 sr et #}

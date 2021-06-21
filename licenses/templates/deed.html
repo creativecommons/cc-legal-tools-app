@@ -2,7 +2,7 @@
 {% load i18n static %}
 
 {% block canonical_url %}{{ license.canonical_url }}{% endblock %}
-{% block title %}Creative Commons &mdash; {% trans license.title_english %} {% endblock %}
+{% block title %}{{ legalcode.title }} Deed &mdash; Creative Commons{% endblock %}
 
 {% block active-breadcrumb-li %}
 <li class="is-active"><a href="{{ legalcode.deed_url }}" aria-current="page displayed">{{ legalcode.fat_code }} {% trans "Deed" %}</a></li>
@@ -42,3 +42,4 @@
 </style>
 
 {% endblock %}
+{# vim: ts=2 sw=2 sts=2 sr et #}

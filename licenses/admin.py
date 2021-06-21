@@ -63,7 +63,6 @@ class LicenseAdmin(admin.ModelAdmin):
     fields = [
         "canonical_url",
         "unit",
-        "title_english",
         "version",
         "creator_url",
         "category",
@@ -86,7 +85,6 @@ class LicenseAdmin(admin.ModelAdmin):
     inlines = [LegalCodeInline]
     list_display = [
         "unit",
-        "title_english",
         "version",
         "jurisdiction_code",
     ]

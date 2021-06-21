@@ -23,6 +23,7 @@ from licenses.bs_utils import (
     text_up_to,
 )
 from licenses.models import (
+    UNITS_DEPRECATED,
     UNITS_LICENSES,
     UNITS_PUBLIC_DOMAIN,
     LegalCode,
@@ -57,9 +58,8 @@ class Command(BaseCommand):
             f" ommitted, the default is: {relative_input_dir})",
         )
         parser.add_argument(
-            "--versions",
-            help="comma-separated license versions to include, e.g."
-            " '1.0,3.0,4.0'",
+            "--category",
+            help="category to include (either 'licenses' or 'publicdomain')",
         )
         parser.add_argument(
             "--languages",
@@ -67,6 +67,11 @@ class Command(BaseCommand):
             " using the codes from the CC site URLs (which sometimes differ"
             " from Django's. English is unconditionally included as it is used"
             " for the translation keys.)",
+        )
+        parser.add_argument(
+            "--versions",
+            help="comma-separated license versions to include, e.g."
+            " '1.0,3.0,4.0'",
         )
         parser.add_argument(
             "--unwrapped",
@@ -79,17 +84,28 @@ class Command(BaseCommand):
         hostname = socket.gethostname()
         if not os.path.isdir(input_directory):
             raise CommandError(f"invalid input_directory: {input_directory}")
-        if options["versions"]:
-            versions_to_include = options["versions"].split(",")
+        self.unwrapped = options["unwrapped"]
+        # category_to_include
+        if options["category"]:
+            category_to_include = options["category"]
+            if category_to_include not in ("licenses", "publicdomain"):
+                raise CommandError(
+                    f"invalid category: '{category_to_include}'"
+                )
         else:
-            versions_to_include = None
+            category_to_include = None
+        # languagues_to_include
         if options["languages"]:
             languages_to_include = set(["en"]) | set(
                 options["languages"].split(",")
             )
         else:
             languages_to_include = None
-        self.unwrapped = options["unwrapped"]
+        # versions_to_include
+        if options["versions"]:
+            versions_to_include = options["versions"].split(",")
+        else:
+            versions_to_include = None
 
         licenses_created = 0
         legalcodes_created = 0
@@ -98,7 +114,11 @@ class Command(BaseCommand):
         # Get list of html filenames. We'll filter out the filenames for
         # unwanted versions later (see include variable).
         html_filenames = sorted(
-            [f for f in os.listdir(input_directory) if f.endswith(".html")]
+            [
+                filename
+                for filename in os.listdir(input_directory)
+                if filename.endswith(".html") and not os.path.islink(filename)
+            ]
         )
         self.stdout.write(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
@@ -123,12 +143,16 @@ class Command(BaseCommand):
             include = (
                 (unit in UNITS_LICENSES or unit in UNITS_PUBLIC_DOMAIN)
                 and (
-                    versions_to_include is None
-                    or version in versions_to_include
+                    category_to_include is None
+                    or category == category_to_include
                 )
                 and (
                     languages_to_include is None
                     or cc_language_code in languages_to_include
+                )
+                and (
+                    versions_to_include is None
+                    or version in versions_to_include
                 )
             )
             if include:
@@ -169,6 +193,10 @@ class Command(BaseCommand):
             else:
                 raise NotImplementedError(basename)
 
+            deprecated_on = None
+            if unit in UNITS_DEPRECATED:
+                deprecated_on = UNITS_DEPRECATED[unit]
+
             # Find or create a License object
             license, created = License.objects.get_or_create(
                 canonical_url=canonical_url,
@@ -177,6 +205,8 @@ class Command(BaseCommand):
                     unit=unit,
                     version=version,
                     jurisdiction_code=jurisdiction_code,
+                    creator_url="http://creativecommons.org",
+                    deprecated_on=deprecated_on,
                     permits_derivative_works=permits_derivative_works,
                     permits_reproduction=permits_reproduction,
                     permits_distribution=permits_distribution,
@@ -974,6 +1004,13 @@ class Command(BaseCommand):
         # Title
         if version == "3.0":
             title = inner_html(soup.find(id="deed-license").h2)
+        elif "sampling" in html_file:
+            title_html = soup.find("div", class_="tiny", align="center")
+            if title_html:
+                title_html = title_html.strong
+            else:
+                title_html = soup.find(id="deed").p.strong
+            title = inner_html(title_html)
         else:
             title_html = soup.find(id="deed").p.strong
             title = inner_html(title_html)
@@ -987,8 +1024,26 @@ class Command(BaseCommand):
         assert "<" not in title, repr(title)
         legalcode.title = title
 
+        # Remove legacy header images
+        images = [
+            # nc-sampling 1.0, sampling 1.0, samplingplus 1.0
+            "/icon/by/deed.gif",
+            "/icon/nc/deed.gif",
+            "/icon/sampling/deed.gif",
+            "/icon/sampling+/deed.gif",
+            # 2.5, 2.1, 2.0, 1.0
+            "/images/deed/logo_code.gif",
+        ]
+        for image in images:
+            image_html = soup.find("img", src=image)
+            if image_html:
+                div_center = image_html.find_parent("div", align="center")
+                if div_center and "sampling" not in html_file:
+                    div_center.decompose()
+                else:
+                    image_html.decompose()
+
         # Remove "Creative Commons Legal Code" image
-        # 2.5, 2.1, 2.0, 1.0
         logo_code = soup.find("img", src="/images/deed/logo_code.gif")
         if logo_code:
             div_center = logo_code.find_parent("div", align="center")

@@ -2,7 +2,7 @@
 
 {% block license_name %}
   <span property="dc:title"
-        style="display: inline;">{% trans license.title_english %}</span>
+        style="display: inline;">{{ legalcode.title }}</span>
 {% endblock %}
 
 {% block body %}
@@ -85,3 +85,4 @@
 
   <span id="referrer-metadata-container" />
 {% endblock %}
+{# vim: ts=2 sw=2 sts=2 sr et #}
