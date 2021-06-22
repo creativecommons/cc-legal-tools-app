@@ -305,11 +305,11 @@ class LicensesTestsMixin:
 
 
 class AllLicensesViewTest(LicensesTestsMixin, TestCase):
-    def test_all_licenses_view(self):
-        url = reverse("all_licenses")
+    def test_view_dev_home_view(self):
+        url = reverse("dev_home")
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("all_licenses.html")
+        self.assertTemplateUsed("dev_home.html")
 
 
 class ViewLicenseTest(TestCase):

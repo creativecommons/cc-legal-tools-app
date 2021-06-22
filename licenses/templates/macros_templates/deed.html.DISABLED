@@ -170,4 +170,4 @@ xmlns:frbr="http://purl.org/vocab/frbr/core#" xml:lang="{{ target_lang }}">
 
 </body>
 </html>
-{# vim: ts=2 sw=2 sts=2 sr et #}
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

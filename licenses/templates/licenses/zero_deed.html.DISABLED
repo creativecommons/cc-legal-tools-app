@@ -202,4 +202,4 @@
   <span class="icon"><img alt="cc pd" src="/images/deed/zero_white_x2.png"></span>
 </span>
 {% endblock license_logos %}
-{# vim: ts=2 sw=2 sts=2 sr et #}
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

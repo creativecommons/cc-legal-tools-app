@@ -27,16 +27,17 @@ from licenses.models import (
     TranslationBranch,
 )
 
-DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
+# DEED_TEMPLATE_MAPPING is currently only used by tests
+DEED_TEMPLATE_MAPPING = {
     # unit : template name
-    "sampling": "licenses/sampling_deed.html",
-    "sampling+": "licenses/sampling_deed.html",
-    "nc-sampling+": "licenses/sampling_deed.html",
-    "devnations": "licenses/devnations_deed.html",
-    "CC0": "licenses/zero_deed.html",
-    "mark": "licenses/pdmark_deed.html",
-    "publicdomain": "licenses/publicdomain_deed.html",
-    # others use "licenses/standard_deed.html"
+    "sampling": "licenses/sampling_deed.html",  # ......... DISABLED
+    "sampling+": "licenses/sampling_deed.html",  # ........ DISABLED
+    "nc-sampling+": "licenses/sampling_deed.html",  # ..... DISABLED
+    "devnations": "licenses/devnations_deed.html",  # ..... DISABLED
+    "CC0": "licenses/zero_deed.html",  # .................. DISABLED
+    "mark": "licenses/pdmark_deed.html",  # ............... DISABLED
+    "publicdomain": "licenses/publicdomain_deed.html",  # . DISABLED
+    # others use "licenses/standard_deed.html",  # ........ DISABLED
 }
 
 NUM_COMMITS = 3
@@ -60,7 +61,7 @@ def get_category_and_category_title(category=None, license=None):
     return category, category_title
 
 
-def all_licenses(request, category=None):
+def view_dev_home(request, category=None):
     """
     For test purposes, this displays all the available deeds and licenses in
     tables. This is not intended for public use and should not be included in
@@ -79,12 +80,6 @@ def all_licenses(request, category=None):
             "license__unit",
         )
     )
-    category, category_title = get_category_and_category_title(
-        category,
-        None,
-    )
-    if not category:
-        category = "licenses"
     licenses = []
     publicdomain = []
     for lc in legalcode_objects:
@@ -119,10 +114,10 @@ def all_licenses(request, category=None):
 
     return render(
         request,
-        "all_licenses.html",
+        "dev_home.html",
         {
-            "category": category,
-            "category_title": category_title,
+            "category": "dev",
+            "category_title": "Dev",
             "units": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
             "licenses": licenses,
             "publicdomain": publicdomain,
@@ -308,7 +303,13 @@ def view_translation_status(request):
 
     branches = TranslationBranch.objects.exclude(complete=True)
     return render(
-        request, "licenses/translation_status.html", {"branches": branches}
+        request,
+        template_name="licenses/translation_status.html",
+        context={
+            "category": "dev",
+            "category_title": "Dev",
+            "branches": branches,
+        },
     )
 
 
@@ -390,6 +391,7 @@ def view_page_not_found(request, exception, template_name="404.html"):
         request,
         template_name=template_name,
         context={
-            "category_title": "Error 404",
+            "category": "dev",
+            "category_title": "Dev",
         },
     )

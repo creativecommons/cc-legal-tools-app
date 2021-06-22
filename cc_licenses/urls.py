@@ -19,11 +19,12 @@ from django.conf.urls import re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView
 
 # First-party/Local
 from licenses.views import (
     view_branch_status,
+    view_dev_home,
     view_page_not_found,
     view_translation_status,
 )
@@ -34,20 +35,29 @@ def custom_page_not_found(request):
 
 
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    path("admin/", admin.site.urls),
+    path("", RedirectView.as_view(url="dev/")),
+    path(
+        "dev/",
+        view_dev_home,
+        name="dev_home",
+    ),
+    path("dev/admin/", admin.site.urls, name="dev_admin"),
     re_path(
-        r"^status/(?P<id>\d+)/$",
+        r"^dev/status/(?P<id>\d+)/$",
         view_branch_status,
         name="branch_status",
     ),
     re_path(
-        r"^status/$",
+        r"^dev/status/$",
         view_translation_status,
         name="translation_status",
     ),
+    path(
+        "dev/404",
+        custom_page_not_found,
+        name="dev_404",
+    ),
     path("", include("licenses.urls")),
-    path("dev/404", custom_page_not_found),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 handler404 = "licenses.views.view_page_not_found"
 

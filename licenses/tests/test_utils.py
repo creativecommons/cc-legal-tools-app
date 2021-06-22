@@ -118,11 +118,11 @@ class SaveURLAsStaticFileTest(TestCase):
 
     def test_save_url_as_static_file_home(self):
         """
-        home is a TemplateView, which needs to be rendered before
+        dev_home is a TemplateView, which needs to be rendered before
         we can look at its content?
         """
         output_dir = "/output"
-        url = "/"
+        url = "/dev/"
 
         with mock.patch("licenses.utils.save_bytes_to_file"):
             with mock.patch("sys.stdout", new=StringIO()) as mock_out:
