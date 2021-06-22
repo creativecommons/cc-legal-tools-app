@@ -738,7 +738,7 @@ class TranslationStatusViewTest(TestCase):
 
 
 class MetadataViewTest(TestCase):
-    def test_metadata_view(self):
+    def test_view_metadata(self):
         LicenseFactory()
         with mock.patch.object(License, "get_metadata") as mock_get_metadata:
             mock_get_metadata.return_value = {"foo": "bar"}

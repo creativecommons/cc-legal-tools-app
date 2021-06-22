@@ -14,7 +14,7 @@ from django.urls import path, register_converter
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
-from licenses.views import all_licenses, metadata_view, view_deed, view_license
+from licenses.views import all_licenses, view_deed, view_license, view_metadata
 
 
 class CategoryConverter:
@@ -170,7 +170,7 @@ urlpatterns = [
     ),
     path(
         "licenses/metadata.yaml",
-        metadata_view,
+        view_metadata,
         name="metadata",
     ),
     #

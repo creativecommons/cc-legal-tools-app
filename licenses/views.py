@@ -46,11 +46,13 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def get_category_and_category_title(category=None, license=None):
+    # category
     if not category:
         if license:
-            category = category.license
+            category = license.category
         else:
             category = "license"
+    # category_title
     if category == "publicdomain":
         category_title = "Public Domain"
     else:
@@ -297,7 +299,7 @@ def view_deed(
         )
 
 
-def translation_status(request):
+def view_translation_status(request):
     # with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
     # # Make sure we know about all the upstream branches
     # repo.remotes.origin.fetch()
@@ -353,7 +355,7 @@ def branch_status_helper(repo, translation_branch):
 # using cache_page seems to break django-distill (weird error about invalid
 # host "testserver"). Do our caching more directly.
 # @cache_page(timeout=5 * 60, cache="branchstatuscache")
-def branch_status(request, id):
+def view_branch_status(request, id):
     translation_branch = get_object_or_404(TranslationBranch, id=id)
     cache = caches["branchstatuscache"]
     cachekey = (
@@ -372,7 +374,7 @@ def branch_status(request, id):
     return result
 
 
-def metadata_view(request):
+def view_metadata(request):
     data = [license.get_metadata() for license in License.objects.all()]
     yaml_bytes = yaml.dump(
         data, default_flow_style=False, encoding="utf-8", allow_unicode=True
@@ -380,4 +382,14 @@ def metadata_view(request):
     return HttpResponse(
         yaml_bytes,
         content_type="text/yaml; charset=utf-8",
+    )
+
+
+def view_page_not_found(request, exception, template_name="404.html"):
+    return render(
+        request,
+        template_name=template_name,
+        context={
+            "category_title": "Error 404",
+        },
     )
