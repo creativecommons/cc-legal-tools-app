@@ -27,16 +27,17 @@ from licenses.models import (
     TranslationBranch,
 )
 
-DEED_TEMPLATE_MAPPING = {  # CURRENTLY UNUSED
+# DEED_TEMPLATE_MAPPING is currently only used by tests
+DEED_TEMPLATE_MAPPING = {
     # unit : template name
-    "sampling": "licenses/sampling_deed.html",
-    "sampling+": "licenses/sampling_deed.html",
-    "nc-sampling+": "licenses/sampling_deed.html",
-    "devnations": "licenses/devnations_deed.html",
-    "CC0": "licenses/zero_deed.html",
-    "mark": "licenses/pdmark_deed.html",
-    "publicdomain": "licenses/publicdomain_deed.html",
-    # others use "licenses/standard_deed.html"
+    "sampling": "licenses/sampling_deed.html",  # ......... DISABLED
+    "sampling+": "licenses/sampling_deed.html",  # ........ DISABLED
+    "nc-sampling+": "licenses/sampling_deed.html",  # ..... DISABLED
+    "devnations": "licenses/devnations_deed.html",  # ..... DISABLED
+    "CC0": "licenses/zero_deed.html",  # .................. DISABLED
+    "mark": "licenses/pdmark_deed.html",  # ............... DISABLED
+    "publicdomain": "licenses/publicdomain_deed.html",  # . DISABLED
+    # others use "licenses/standard_deed.html",  # ........ DISABLED
 }
 
 NUM_COMMITS = 3
@@ -46,11 +47,13 @@ REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
 def get_category_and_category_title(category=None, license=None):
+    # category
     if not category:
         if license:
-            category = category.license
+            category = license.category
         else:
             category = "license"
+    # category_title
     if category == "publicdomain":
         category_title = "Public Domain"
     else:
@@ -58,7 +61,7 @@ def get_category_and_category_title(category=None, license=None):
     return category, category_title
 
 
-def all_licenses(request, category=None):
+def view_dev_home(request, category=None):
     """
     For test purposes, this displays all the available deeds and licenses in
     tables. This is not intended for public use and should not be included in
@@ -77,12 +80,6 @@ def all_licenses(request, category=None):
             "license__unit",
         )
     )
-    category, category_title = get_category_and_category_title(
-        category,
-        None,
-    )
-    if not category:
-        category = "licenses"
     licenses = []
     publicdomain = []
     for lc in legalcode_objects:
@@ -117,10 +114,10 @@ def all_licenses(request, category=None):
 
     return render(
         request,
-        "all_licenses.html",
+        "dev_home.html",
         {
-            "category": category,
-            "category_title": category_title,
+            "category": "dev",
+            "category_title": "Dev",
             "units": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
             "licenses": licenses,
             "publicdomain": publicdomain,
@@ -297,7 +294,7 @@ def view_deed(
         )
 
 
-def translation_status(request):
+def view_translation_status(request):
     # with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
     # # Make sure we know about all the upstream branches
     # repo.remotes.origin.fetch()
@@ -306,7 +303,13 @@ def translation_status(request):
 
     branches = TranslationBranch.objects.exclude(complete=True)
     return render(
-        request, "licenses/translation_status.html", {"branches": branches}
+        request,
+        template_name="licenses/translation_status.html",
+        context={
+            "category": "dev",
+            "category_title": "Dev",
+            "branches": branches,
+        },
     )
 
 
@@ -353,7 +356,7 @@ def branch_status_helper(repo, translation_branch):
 # using cache_page seems to break django-distill (weird error about invalid
 # host "testserver"). Do our caching more directly.
 # @cache_page(timeout=5 * 60, cache="branchstatuscache")
-def branch_status(request, id):
+def view_branch_status(request, id):
     translation_branch = get_object_or_404(TranslationBranch, id=id)
     cache = caches["branchstatuscache"]
     cachekey = (
@@ -372,7 +375,7 @@ def branch_status(request, id):
     return result
 
 
-def metadata_view(request):
+def view_metadata(request):
     data = [license.get_metadata() for license in License.objects.all()]
     yaml_bytes = yaml.dump(
         data, default_flow_style=False, encoding="utf-8", allow_unicode=True
@@ -380,4 +383,15 @@ def metadata_view(request):
     return HttpResponse(
         yaml_bytes,
         content_type="text/yaml; charset=utf-8",
+    )
+
+
+def view_page_not_found(request, exception, template_name="404.html"):
+    return render(
+        request,
+        template_name=template_name,
+        context={
+            "category": "dev",
+            "category_title": "Dev",
+        },
     )

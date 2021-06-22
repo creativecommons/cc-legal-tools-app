@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{% block active-breadcrumb-li %}
+  <li class="is-active"><a href="{% url 'translation_status' %}" aria-current="page displayed">Translation Status</a></li>
+{% endblock %}
+
+
 {% block content %}
   <h1>Translation status</h1>
 
@@ -45,3 +50,4 @@
   </table>
 
 {% endblock %}
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

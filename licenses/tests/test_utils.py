@@ -100,13 +100,13 @@ class SaveURLAsStaticFileTest(TestCase):
                 self.args = []
                 self.kwargs = {}
 
-        mock_metadata_view = MagicMock()
-        mock_metadata_view.return_value = MockResponse()
+        mock_view_metadata = MagicMock()
+        mock_view_metadata.return_value = MockResponse()
 
         with mock.patch("licenses.utils.save_bytes_to_file"):
             with mock.patch.object(URLResolver, "resolve") as mock_resolve:
                 mock_resolve.return_value = MockResolverMatch(
-                    func=mock_metadata_view
+                    func=mock_view_metadata
                 )
                 with self.assertRaisesMessage(
                     ValueError,
@@ -118,11 +118,11 @@ class SaveURLAsStaticFileTest(TestCase):
 
     def test_save_url_as_static_file_home(self):
         """
-        home is a TemplateView, which needs to be rendered before
+        dev_home is a TemplateView, which needs to be rendered before
         we can look at its content?
         """
         output_dir = "/output"
-        url = "/"
+        url = "/dev/"
 
         with mock.patch("licenses.utils.save_bytes_to_file"):
             with mock.patch("sys.stdout", new=StringIO()) as mock_out:
@@ -147,13 +147,13 @@ class SaveURLAsStaticFileTest(TestCase):
                 self.args = []
                 self.kwargs = {}
 
-        mock_metadata_view = MagicMock()
-        mock_metadata_view.return_value = MockResponse()
+        mock_view_metadata = MagicMock()
+        mock_view_metadata.return_value = MockResponse()
 
         with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
             with mock.patch.object(URLResolver, "resolve") as mock_resolve:
                 mock_resolve.return_value = MockResolverMatch(
-                    func=mock_metadata_view
+                    func=mock_view_metadata
                 )
                 with mock.patch("sys.stdout", new=StringIO()) as mock_out:
                     save_url_as_static_file(output_dir, url, relpath)
@@ -163,7 +163,7 @@ class SaveURLAsStaticFileTest(TestCase):
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
         self.assertEqual(
-            [call(request=mock.ANY)], mock_metadata_view.call_args_list
+            [call(request=mock.ANY)], mock_view_metadata.call_args_list
         )
         self.assertEqual(
             [call(file_content, "/output/licenses/metadata.yaml")],
