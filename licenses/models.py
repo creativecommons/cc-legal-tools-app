@@ -19,7 +19,6 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import translation
-from django.utils.translation import gettext
 
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
@@ -37,22 +36,41 @@ from licenses.transifex import TransifexHelper
 MAX_LANGUAGE_CODE_LENGTH = 8
 
 UNITS_LICENSES = [
+    # Units are in all versions, unless otherwise noted:
     "by",
     "by-nc",
-    "by-nc-nd",  # in versions > 1.0
+    "by-nc-nd",  # ........ in versions: > 1.0
     "by-nc-sa",
     "by-nd",
-    "by-nd-nc",  # in version 1.0 unported, 1.0 ported
+    "by-nd-nc",  # ........ in versions: 1.0 unported, 1.0 ported
     "by-sa",
-    "nc",  # ..... in versions 2.0-jp, 1.0 unported, 1.0 ported
-    "nc-sa",  # .. in versions 2.0-jp, 1.0 unported, 1.0 ported
-    "nd",  # ..... in versions 2.0-jp, 1.0 unported, 1.0 ported
-    "nd-nc",  # .. in versions 2.0-jp, 1.0 unported, 1.0 ported
-    "sa",  # ..... in versions 2.0-jp, 1.0 unported, 1.0 ported
+    "devnations",  # ...... in versions: 2.0
+    "nc",  # .............. in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "nc-sa",  # ........... in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "nc-sampling+",  # .... in versions: 1.0 unported, 1.0 ported
+    "nd",  # .............. in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "nd-nc",  # ........... in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "sa",  # .............. in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "sampling",  # ........ in versions: 1.0 unported, 1.0 ported
+    "sampling+",  # ....... in versions: 1.0 unported, 1.0 ported
 ]
 UNITS_PUBLIC_DOMAIN = [
     "CC0",
 ]
+UNITS_DEPRECATED = {
+    # Sorted by date, ascending:
+    "nc": "2004-05-25",
+    "nc-sa": "2004-05-25",
+    "nc-sampling": "2004-05-25",
+    "nd": "2004-05-25",
+    "nd-nc": "2004-05-25",
+    "sa": "2004-05-25",
+    "devnations": "2007-06-04",
+    "sampling": "2007-06-04",
+    # public domain dedication and certification: "2010-10-11",
+    "nc-sampling+": "2011-09-12",
+    "sampling+": "2011-09-12",
+}
 
 
 class LegalCodeQuerySet(models.QuerySet):
@@ -179,10 +197,14 @@ class LegalCode(models.Model):
         blank=True,
         default="",
     )
-    html = models.TextField("HTML", null=True, default=None)
-    license_url = models.URLField("License URL", null=True, default=None)
+    html = models.TextField("HTML", blank=True, default="")
+    license_url = models.URLField("License URL", blank=True, default="")
     deed_url = models.URLField("Deed URL", unique=True)
-    plain_text_url = models.URLField("Plain text URL", null=True, default=None)
+    plain_text_url = models.URLField(
+        "Plain text URL",
+        blank=True,
+        default="",
+    )
 
     objects = LegalCodeQuerySet.as_manager()
 
@@ -400,7 +422,11 @@ class License(models.Model):
         blank=True,
         default="",
     )
-    jurisdiction_code = models.CharField(max_length=9, blank=True, default="")
+    jurisdiction_code = models.CharField(
+        max_length=9,
+        blank=True,
+        default="",
+    )
     creator_url = models.URLField(
         "Creator URL",
         max_length=200,
@@ -414,17 +440,9 @@ class License(models.Model):
         blank=True,
         default="",
     )
-    title_english = models.CharField(
-        max_length=112,
-        help_text="License title in English, e.g."
-        " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
-        blank=True,
-        default="",
-    )
     source = models.ForeignKey(
         "self",
         null=True,
-        blank=True,
         on_delete=models.CASCADE,
         related_name="source_of",
         help_text="another license that this is the translation of",
@@ -432,7 +450,6 @@ class License(models.Model):
     is_replaced_by = models.ForeignKey(
         "self",
         null=True,
-        blank=True,
         on_delete=models.CASCADE,
         related_name="replaces",
         help_text="another license that has replaced this one",
@@ -440,28 +457,28 @@ class License(models.Model):
     is_based_on = models.ForeignKey(
         "self",
         null=True,
-        blank=True,
         on_delete=models.CASCADE,
         related_name="base_of",
         help_text="another license that this one is based on",
     )
     deprecated_on = models.DateField(
         null=True,
+        default=None,
         help_text="if set, the date on which this license was deprecated",
     )
 
-    permits_derivative_works = models.BooleanField()
-    permits_reproduction = models.BooleanField()
-    permits_distribution = models.BooleanField()
-    permits_sharing = models.BooleanField()
+    permits_derivative_works = models.BooleanField(default=None)
+    permits_reproduction = models.BooleanField(default=None)
+    permits_distribution = models.BooleanField(default=None)
+    permits_sharing = models.BooleanField(default=None)
 
-    requires_share_alike = models.BooleanField()
-    requires_notice = models.BooleanField()
-    requires_attribution = models.BooleanField()
-    requires_source_code = models.BooleanField()
+    requires_share_alike = models.BooleanField(default=None)
+    requires_notice = models.BooleanField(default=None)
+    requires_attribution = models.BooleanField(default=None)
+    requires_source_code = models.BooleanField(default=None)
 
-    prohibits_commercial_use = models.BooleanField()
-    prohibits_high_income_nation_use = models.BooleanField()
+    prohibits_commercial_use = models.BooleanField(default=None)
+    prohibits_high_income_nation_use = models.BooleanField(default=None)
 
     class Meta:
         ordering = ["-version", "unit", "jurisdiction_code"]
@@ -478,7 +495,6 @@ class License(models.Model):
         data = {
             "unit": self.unit,
             "version": self.version,
-            "title_english": self.title_english,
         }
         if self.jurisdiction_code:
             data["jurisdiction"] = self.jurisdiction_code
@@ -498,12 +514,10 @@ class License(models.Model):
 
         data["translations"] = {}
         for lc in self.legal_codes.order_by("language_code"):
-            language_code = lc.language_code
             with active_translation(lc.get_translation_object()):
-                data["translations"][language_code] = {
+                data["translations"][lc.language_code] = {
                     "license": lc.license_url,
                     "deed": lc.deed_url,
-                    "title": gettext(self.title_english),
                 }
 
         return data
@@ -651,7 +665,7 @@ class TranslationBranch(models.Model):
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",
         null=True,
-        blank=True,
+        default=None,
     )
     complete = models.BooleanField(default=False)
 

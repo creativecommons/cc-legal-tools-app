@@ -200,8 +200,8 @@ class LegalCodeModelTest(TestCase):
             lc0.plain_text_url,
             f"{lc0.license_url.replace('legalcode.en', 'legalcode.txt')}",
         )
-        self.assertEqual(lc1.plain_text_url, None)
-        self.assertEqual(lc2.plain_text_url, None)
+        self.assertEqual(lc1.plain_text_url, "")
+        self.assertEqual(lc2.plain_text_url, "")
 
     def test_get_pofile(self):
         legalcode = LegalCodeFactory()
@@ -516,7 +516,6 @@ class LicenseModelTest(TestCase):
                 "category": "licenses",
                 "unit": "by-nc",
                 "version": "3.0",
-                "title_english": "The Title",
                 "jurisdiction_code": "xyz",
                 "permits_derivative_works": False,
                 "permits_reproduction": False,
@@ -548,17 +547,14 @@ class LicenseModelTest(TestCase):
             "requires_notice": True,
             "requires_share_alike": True,
             "requires_source_code": True,
-            "title_english": "The Title",
             "translations": {
                 "en": {
                     "deed": "/licenses/by-nc/3.0/xyz/deed.en",
                     "license": "/licenses/by-nc/3.0/xyz/legalcode.en",
-                    "title": "The Title",
                 },
                 "pt": {
                     "deed": "/licenses/by-nc/3.0/xyz/deed.pt",
                     "license": "/licenses/by-nc/3.0/xyz/legalcode.pt",
-                    "title": "The Title",
                 },
             },
             "version": "3.0",
@@ -576,7 +572,6 @@ class LicenseModelTest(TestCase):
                 "category": "licenses",
                 "unit": "by-nc",
                 "version": "3.0",
-                "title_english": "The Title",
                 "jurisdiction_code": "",
                 "permits_derivative_works": False,
                 "permits_reproduction": False,
@@ -597,7 +592,6 @@ class LicenseModelTest(TestCase):
         expected_data = {
             "unit": "by-nc",
             "version": "3.0",
-            "title_english": "The Title",
             "permits_derivative_works": False,
             "permits_distribution": True,
             "permits_reproduction": False,
@@ -612,7 +606,6 @@ class LicenseModelTest(TestCase):
                 "en": {
                     "deed": "/licenses/by-nc/3.0/deed.en",
                     "license": "/licenses/by-nc/3.0/legalcode.en",
-                    "title": "The Title",
                 },
             },
         }
