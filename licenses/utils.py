@@ -38,7 +38,7 @@ class MockRequest:
         self.path = path
 
 
-def save_url_as_static_file(output_dir, url, relpath):
+def save_url_as_static_file(output_dir, url, relpath, html=True):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
@@ -57,7 +57,11 @@ def save_url_as_static_file(output_dir, url, relpath):
     if hasattr(rsp, "render"):
         rsp.render()
     output_filename = os.path.join(output_dir, relpath)
-    content = bytes(BeautifulSoup(rsp.content).prettify(), "utf-8")
+    content = rsp.content
+    if html:
+        content = bytes(
+            BeautifulSoup(content, features="lxml").prettify(), "utf-8"
+        )
     save_bytes_to_file(content, output_filename)
 
 

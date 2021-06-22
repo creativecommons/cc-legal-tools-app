@@ -112,9 +112,13 @@ class SaveURLAsStaticFileTest(TestCase):
                     ValueError,
                     "ERROR: Status 500 for url /licenses/metadata.yaml",
                 ):
-                    save_url_as_static_file(
-                        output_dir, url, "/output/licenses/metadata.yaml"
-                    )
+                    with mock.patch("sys.stdout", new=StringIO()):
+                        save_url_as_static_file(
+                            output_dir,
+                            url,
+                            "/output/licenses/metadata.yaml",
+                            False,
+                        )
 
     def test_save_url_as_static_file_home(self):
         """
@@ -156,7 +160,7 @@ class SaveURLAsStaticFileTest(TestCase):
                     func=mock_view_metadata
                 )
                 with mock.patch("sys.stdout", new=StringIO()) as mock_out:
-                    save_url_as_static_file(output_dir, url, relpath)
+                    save_url_as_static_file(output_dir, url, relpath, False)
                     self.assertEqual(
                         mock_out.getvalue().strip(), "licenses/metadata.yaml"
                     )

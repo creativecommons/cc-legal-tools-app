@@ -131,7 +131,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f"\n{hostname}:{output_dir}")
         save_url_as_static_file(
-            output_dir, reverse("metadata"), "licenses/metadata.yaml"
+            output_dir, reverse("metadata"), "licenses/metadata.yaml", False
         )
 
     def run_copy_licenses_rdfs(self):
