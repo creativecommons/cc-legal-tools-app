@@ -137,6 +137,7 @@ class SaveURLAsStaticFileTest(TestCase):
                     output_dir,
                     url,
                     relpath="/output/home.html",
+                    html=True,
                 )
                 self.assertEqual(
                     mock_out.getvalue().strip(), "/output/home.html"
