@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% comment %}
+For Development purposes, this displays tables of all the available deeds and
+legalcode. This is not intended for public use and should not be included in
+the generation of static files.
+{% endcomment %}
+{% load i18n license_tags %}
+
+{% block active-breadcrumb-li %}
+  <li class="is-active"><a href="{% url 'dev_home' %}" aria-current="page displayed">Dev Home</a></li>
+{% endblock %}
+
+{% block content %}
+  <style>
+    h2, h3, h4 {
+      margin-top:1em;
+    }
+    th, td {
+      border:1px solid black;
+      padding:2px;
+    }
+  </style>
+  <div class="columns">
+    {# Menu #}
+
+    {# Content #}
+    <div class="column">
+      <h2 id="develoment">Development</h2>
+      <p><a href="/dev/admin/">Django administration</a></p>
+      <p><a href="{% url 'dev_404' %}">Error 404</a></p>
+
+      <h2 id="translations">Translation</h2>
+      <p><a href="{% url 'translation_status' %}">Translation status</a></p>
+
+      <h2 id="legal-tools">Legal Tools</h2>
+      <p>All Declarations &amp; Licenses</p>
+
+      <h3 id="public-domain">Public Domain</h3>
+      {% regroup publicdomain by version as version_list %}
+      {% for version_group in version_list %}
+        {% with version=version_group.grouper %}
+        <h4>{{ version }}</h4>
+          {% regroup version_group.list by jurisdiction as jurisdiction_list %}
+          {% for jurisdiction_group in jurisdiction_list %}
+            <h5>{{ jurisdiction_group.grouper }}</h5>
+            <table>
+              <thead>
+              <tr>
+                <th>Language</th>
+                {% for code in jurisdiction_group.list|units %}
+                  <th>{{ code }}</th>
+                {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+                {% regroup jurisdiction_group.list by language_code as language_list %}
+                {% for license_group in language_list %}
+                  <tr>
+                    <th>{{ license_group.grouper }}</th>
+                    {% for legalcode in license_group.list  %}
+                      <td>
+                        <a href="{{ legalcode.deed_url }}">{% trans "Deed" %}</a>,
+                        <a href="{{ legalcode.license_url }}">{% trans "License" %}</a>
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endfor %}
+          <p><a href="#top">^top</a></p>
+        {% endwith %}
+      {% endfor %}
+
+      <h3 id="licenses">Licenses</h3>
+      {% regroup licenses by version as version_list %}
+      {% for version_group in version_list %}
+        {% with version=version_group.grouper %}
+        <h4>{{ version }}</h4>
+          {% regroup version_group.list by jurisdiction as jurisdiction_list %}
+          {% for jurisdiction_group in jurisdiction_list %}
+            <h5>{{ jurisdiction_group.grouper }}</h5>
+            <table>
+              <thead>
+              <tr>
+                <th>Language</th>
+                {% for code in jurisdiction_group.list|units %}
+                  <th>{{ code }}</th>
+                {% endfor %}
+              </tr>
+              </thead>
+              <tbody>
+                {% regroup jurisdiction_group.list by language_code as language_list %}
+                {% for license_group in language_list %}
+                  <tr>
+                    <th>{{ license_group.grouper }}</th>
+                    {% for legalcode in license_group.list  %}
+                      <td>
+                        <a href="{{ legalcode.deed_url }}">{% trans "Deed" %}</a>,
+                        <a href="{{ legalcode.license_url }}">{% trans "License" %}</a>
+                      </td>
+                    {% endfor %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endfor %}
+          <p><a href="#top">^top</a></p>
+        {% endwith %}
+      {% endfor %}
+
+    </div>
+  </div>
+{% endblock content %}
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

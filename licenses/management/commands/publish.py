@@ -94,7 +94,9 @@ class Command(BaseCommand):
         output_dir = self.output_dir
 
         self.stdout.write(f"\n{hostname}:{output_dir}")
-        save_url_as_static_file(output_dir, "/status/", "status/index.html")
+        save_url_as_static_file(
+            output_dir, "/dev/status/", "status/index.html"
+        )
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
             save_url_as_static_file(

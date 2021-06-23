@@ -14,7 +14,7 @@ from django.urls import path, register_converter
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
-from licenses.views import all_licenses, metadata_view, view_deed, view_license
+from licenses.views import view_deed, view_license, view_metadata
 
 
 class CategoryConverter:
@@ -159,22 +159,49 @@ register_converter(LangConverter, "language_code")
 #       license for BY-SA 2.0, jurisdiction England and Wales, in English
 
 
-# DEEDS
 urlpatterns = [
-    # Debug page that displays all licenses
-    path(
-        "licenses/all/",
-        all_licenses,
-        kwargs=dict(category="licenses"),
-        name="all_licenses",
-    ),
+    #
+    # METADATA
+    #
     path(
         "licenses/metadata.yaml",
-        metadata_view,
+        view_metadata,
         name="metadata",
     ),
     #
-    # LICENSE PAGES
+    # DEED PAGES
+    #
+    # Deed: with Jurisdiction (ported), with language_code
+    path(
+        "<category:category>/<unit:unit>/<version:version>"
+        "/<jurisdiction:jurisdiction>/deed.<language_code:language_code>",
+        view_deed,
+        name="view_deed_ported_language_specified",
+    ),
+    # Deed: with Jurisdiction (ported), no language_code
+    path(
+        "<category:category>/<unit:unit>/<version:version>"
+        "/<jurisdiction:jurisdiction>/deed",
+        view_deed,
+        name="view_deed_ported",
+    ),
+    # Deed: no Jurisdiction (international/unported), with language_code
+    path(
+        "<category:category>/<unit:unit>/<version:version>/deed"
+        ".<language_code:language_code>",
+        view_deed,
+        kwargs=dict(jurisdiction=""),
+        name="view_deed_unported_language_specified",
+    ),
+    # Deed: no Jurisdiction (international/unported), no language_code
+    path(
+        "<category:category>/<unit:unit>/<version:version>/deed",
+        view_deed,
+        kwargs=dict(jurisdiction=""),
+        name="view_deed_unported",
+    ),
+    #
+    # LEGALCODE PAGES
     #
     # Legalcode: with Jurisdiction (ported), with language_code
     path(
@@ -213,35 +240,4 @@ urlpatterns = [
     #     name="view_legalcode_unported",
     # ),
     #
-    # DEED PAGES
-    #
-    # Deed: with Jurisdiction (ported), with language_code
-    path(
-        "<category:category>/<unit:unit>/<version:version>"
-        "/<jurisdiction:jurisdiction>/deed.<language_code:language_code>",
-        view_deed,
-        name="view_deed_ported_language_specified",
-    ),
-    # Deed: with Jurisdiction (ported), no language_code
-    path(
-        "<category:category>/<unit:unit>/<version:version>"
-        "/<jurisdiction:jurisdiction>/deed",
-        view_deed,
-        name="view_deed_ported",
-    ),
-    # Deed: no Jurisdiction (international/unported), with language_code
-    path(
-        "<category:category>/<unit:unit>/<version:version>/deed"
-        ".<language_code:language_code>",
-        view_deed,
-        kwargs=dict(jurisdiction=""),
-        name="view_deed_unported_language_specified",
-    ),
-    # Deed: no Jurisdiction (international/unported), no language_code
-    path(
-        "<category:category>/<unit:unit>/<version:version>/deed",
-        view_deed,
-        kwargs=dict(jurisdiction=""),
-        name="view_deed_unported",
-    ),
 ]
