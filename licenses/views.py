@@ -52,7 +52,7 @@ def get_category_and_category_title(category=None, license=None):
         if license:
             category = license.category
         else:
-            category = "license"
+            category = "licenses"
     # category_title
     if category == "publicdomain":
         category_title = "Public Domain"
