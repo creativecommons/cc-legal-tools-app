@@ -95,14 +95,18 @@ class Command(BaseCommand):
 
         self.stdout.write(f"\n{hostname}:{output_dir}")
         save_url_as_static_file(
-            output_dir, "/dev/status/", "status/index.html"
+            output_dir,
+            url="/dev/status/",
+            relpath="status/index.html",
+            html=True,
         )
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
             save_url_as_static_file(
                 output_dir,
-                f"/status/{tbranch_id}/",
-                f"status/{tbranch_id}.html",
+                url=f"/status/{tbranch_id}/",
+                relpath=f"status/{tbranch_id}.html",
+                html=True,
             )
 
         legalcodes = LegalCode.objects.validgroups()
@@ -114,8 +118,9 @@ class Command(BaseCommand):
                 filepath, symlinks = legalcode.get_file_and_links("deed")
                 save_url_as_static_file(
                     output_dir,
-                    legalcode.deed_url,
-                    filepath,
+                    url=legalcode.deed_url,
+                    relpath=filepath,
+                    html=True,
                 )
                 for symlink in symlinks:
                     relative_symlink(output_dir, filepath, symlink)
@@ -123,15 +128,18 @@ class Command(BaseCommand):
                 filepath, symlinks = legalcode.get_file_and_links("legalcode")
                 save_url_as_static_file(
                     output_dir,
-                    legalcode.license_url,
-                    filepath,
+                    url=legalcode.license_url,
+                    relpath=filepath,
+                    html=True,
                 )
                 for symlink in symlinks:
                     relative_symlink(output_dir, filepath, symlink)
 
         self.stdout.write(f"\n{hostname}:{output_dir}")
         save_url_as_static_file(
-            output_dir, reverse("metadata"), "licenses/metadata.yaml", False
+            output_dir,
+            url=reverse("metadata"),
+            relpath="licenses/metadata.yaml",
         )
 
     def run_copy_licenses_rdfs(self):

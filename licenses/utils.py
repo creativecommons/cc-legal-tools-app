@@ -38,10 +38,12 @@ class MockRequest:
         self.path = path
 
 
-def save_url_as_static_file(output_dir, url, relpath, html=True):
+def save_url_as_static_file(output_dir, url, relpath, html=False):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
+
+    If the file is a HTML file, use BeautifulSoup to prettify the contents.
 
     Pass in open_func just for testing, not in regular use.
     """

@@ -83,7 +83,11 @@ class SaveURLAsStaticFileTest(TestCase):
         output_dir = "/output"
         url = "/some/url/"
         with self.assertRaises(Resolver404):
-            save_url_as_static_file(output_dir, url, "")
+            save_url_as_static_file(
+                output_dir,
+                url,
+                relpath="",
+            )
 
     def test_save_url_as_static_file_500(self):
         output_dir = "/output"
@@ -116,8 +120,7 @@ class SaveURLAsStaticFileTest(TestCase):
                         save_url_as_static_file(
                             output_dir,
                             url,
-                            "/output/licenses/metadata.yaml",
-                            False,
+                            relpath="/output/licenses/metadata.yaml",
                         )
 
     def test_save_url_as_static_file_home(self):
@@ -130,7 +133,11 @@ class SaveURLAsStaticFileTest(TestCase):
 
         with mock.patch("licenses.utils.save_bytes_to_file"):
             with mock.patch("sys.stdout", new=StringIO()) as mock_out:
-                save_url_as_static_file(output_dir, url, "/output/home.html")
+                save_url_as_static_file(
+                    output_dir,
+                    url,
+                    relpath="/output/home.html",
+                )
                 self.assertEqual(
                     mock_out.getvalue().strip(), "/output/home.html"
                 )
@@ -160,7 +167,7 @@ class SaveURLAsStaticFileTest(TestCase):
                     func=mock_view_metadata
                 )
                 with mock.patch("sys.stdout", new=StringIO()) as mock_out:
-                    save_url_as_static_file(output_dir, url, relpath, False)
+                    save_url_as_static_file(output_dir, url, relpath)
                     self.assertEqual(
                         mock_out.getvalue().strip(), "licenses/metadata.yaml"
                     )
