@@ -180,16 +180,22 @@ def view_license(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    if is_plain_text:
-        legalcode = get_object_or_404(
-            LegalCode,
-            plain_text_url=request.path,
-        )
-    else:
-        legalcode = get_object_or_404(
-            LegalCode,
-            license_url=request.path,
-        )
+    # Plaintext disabled
+    # if is_plain_text:
+    #     legalcode = get_object_or_404(
+    #         LegalCode,
+    #         plain_text_url=request.path,
+    #     )
+    # else:
+    #     legalcode = get_object_or_404(
+    #         LegalCode,
+    #         license_url=request.path,
+    #     )
+    legalcode = get_object_or_404(
+        LegalCode,
+        license_url=request.path,
+    )
+
     license = legalcode.license
     category, category_title = get_category_and_category_title(
         category,
