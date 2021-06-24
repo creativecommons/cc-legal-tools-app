@@ -8,6 +8,7 @@ from django.test import TestCase, override_settings
 
 # First-party/Local
 from i18n.utils import (
+    active_translation,
     get_translation_object,
     save_content_as_pofile_and_mofile,
 )
@@ -39,6 +40,24 @@ class TranslationTest(TestCase):
         )
         mock_trans.assert_called_with("code")
         self.assertEqual(translation_object, result)
+
+    def test_active_translation(self):
+        # Third-party
+        from django.utils.translation.trans_real import _active
+
+        translation_object = getattr(_active, "value", None)
+        with active_translation(translation_object):
+            self.assertEqual(
+                getattr(_active, "value", None),
+                translation_object,
+            )
+        del _active.value
+        self.assertEqual(getattr(_active, "value", None), None)
+        with active_translation(translation_object):
+            self.assertEqual(
+                getattr(_active, "value", None),
+                translation_object,
+            )
 
 
 class PofileTest(TestCase):
