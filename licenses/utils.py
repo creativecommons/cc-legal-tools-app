@@ -7,7 +7,7 @@ import urllib.parse
 from base64 import b64encode
 
 # Third-party
-from bs4 import NavigableString
+from bs4 import BeautifulSoup, NavigableString
 from django.conf import settings
 from django.urls import get_resolver
 from polib import POEntry, POFile
@@ -38,16 +38,19 @@ class MockRequest:
         self.path = path
 
 
-def save_url_as_static_file(output_dir, url, relpath):
+def save_url_as_static_file(output_dir, url, relpath, html=False):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
+
+    If the file is a HTML file, use BeautifulSoup to prettify the contents.
 
     Pass in open_func just for testing, not in regular use.
     """
     # Was using test Client, but it runs middleware and fails at runtime
     # because the request host wasn't in the ALLOWED_HOSTS. So, resolve the URL
     # and call the view directly.
+    print(f"    {relpath}")
     resolver = get_resolver()
     match = resolver.resolve(url)  # ResolverMatch
     rsp = match.func(request=MockRequest(url), *match.args, **match.kwargs)
@@ -56,8 +59,12 @@ def save_url_as_static_file(output_dir, url, relpath):
     if hasattr(rsp, "render"):
         rsp.render()
     output_filename = os.path.join(output_dir, relpath)
-    print(f"    {relpath}")
-    save_bytes_to_file(rsp.content, output_filename)
+    content = rsp.content
+    if html:
+        content = bytes(
+            BeautifulSoup(content, features="lxml").prettify(), "utf-8"
+        )
+    save_bytes_to_file(content, output_filename)
 
 
 def relative_symlink(src1, src2, dst):
