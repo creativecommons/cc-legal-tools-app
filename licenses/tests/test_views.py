@@ -787,3 +787,11 @@ class ViewMetadataTest(TestCase):
         self.assertEqual(200, rsp.status_code)
         mock_get_metadata.assert_called_with()
         self.assertEqual(b"- foo: bar\n", rsp.content)
+
+
+class ViewPageNotFoundTest(TestCase):
+    def test_view_page_not_found(self):
+        url = "/does/not/exist"
+        rsp = self.client.get(url)
+        self.assertTemplateUsed("404.html")
+        self.assertEqual(rsp.status_code, 404)
