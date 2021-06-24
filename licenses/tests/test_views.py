@@ -21,7 +21,7 @@ from licenses.views import (
     NUM_COMMITS,
     branch_status_helper,
     get_category_and_category_title,
-    normalize_path_and_lang
+    normalize_path_and_lang,
 )
 
 
