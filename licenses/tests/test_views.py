@@ -21,6 +21,7 @@ from licenses.views import (
     NUM_COMMITS,
     branch_status_helper,
     get_category_and_category_title,
+    normalize_path_and_lang
 )
 
 
@@ -368,6 +369,17 @@ class ViewLicenseTest(TestCase):
         )
         self.assertEqual(category, "publicdomain")
         self.assertEqual(category_title, "Public Domain")
+
+    def test_normalize_path_and_lang(self):
+        request_path = "/licenses/by/3.0/de/legalcode"
+        jurisdiction = "de"
+        norm_request_path, norm_language_code = normalize_path_and_lang(
+            request_path,
+            jurisdiction,
+            language_code=None,
+        )
+        self.assertEqual(norm_request_path, f"{request_path}.de")
+        self.assertEqual(norm_language_code, "de")
 
     def test_view_license_identifying_jurisdiction_default_language(self):
         language_code = "de"
