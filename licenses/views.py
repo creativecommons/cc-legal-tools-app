@@ -400,4 +400,5 @@ def view_page_not_found(request, exception, template_name="404.html"):
             "category": "dev",
             "category_title": "Dev",
         },
+        status=404,
     )
