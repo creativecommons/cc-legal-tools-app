@@ -5,45 +5,67 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 Examples:
 Function views
     1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
+    2. Add a URL to urlpatterns:  re_path(r'^$', views.home, name='home')
 Class-based views
     1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
+    2. Add a URL to urlpatterns:  re_path(r'^$', Home.as_view(), name='home')
 Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
-    2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
+    2. Add a URL to urlpatterns:  re_path(r'^blog/', include(blog_urls))
 """
 # Third-party
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView
 
 # First-party/Local
-from licenses.views import branch_status, translation_status
+from licenses.views import (
+    view_branch_status,
+    view_dev_home,
+    view_page_not_found,
+    view_translation_status,
+)
+
+
+def custom_page_not_found(request):
+    return view_page_not_found(request, None)
+
 
 urlpatterns = [
-    url(r"^admin/", admin.site.urls),
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
-    url(
-        r"status/(?P<id>\d+)/$",
-        branch_status,
+    path("", RedirectView.as_view(url="dev/")),
+    path(
+        "dev/",
+        view_dev_home,
+        name="dev_home",
+    ),
+    path("dev/admin/", admin.site.urls, name="dev_admin"),
+    re_path(
+        r"^dev/status/(?P<id>\d+)/$",
+        view_branch_status,
         name="branch_status",
     ),
-    url(
-        r"status/$",
-        translation_status,
+    re_path(
+        r"^dev/status/$",
+        view_translation_status,
         name="translation_status",
     ),
-    url(r"licenses/", include("licenses.urls")),
+    path(
+        "dev/404",
+        custom_page_not_found,
+        name="dev_404",
+    ),
+    path("", include("licenses.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+handler404 = "licenses.views.view_page_not_found"
+
 
 if settings.DEBUG:
     # Third-party
     import debug_toolbar
 
     urlpatterns += [
-        url(r"^__debug__/", include(debug_toolbar.urls)),
+        re_path(r"^__debug__/", include(debug_toolbar.urls)),
     ]

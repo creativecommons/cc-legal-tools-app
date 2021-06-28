@@ -1,39 +1,44 @@
-<!DOCTYPE html>{% load bidi i18n %}{% load static from staticfiles %}
+<!DOCTYPE html>
+{% load bidi i18n %}
+{% load static from staticfiles %}
 {# View will have set current language #}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_language_info for LANGUAGE_CODE as lang %}
 <html lang="{{ lang.code }}" class="no-js" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
-<head about="{% block about %} {% endblock %}">
-    <meta charset="utf-8">
-    <title>{% block title %}{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{% block meta-description %}{% endblock %}">
-    <meta name="author" content="{% block meta-author %}{% endblock %}">
-    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
-    <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">{% comment %}{#
-    We're pinning vocabulary v2020.11.1 because v2020.11.2 had a change that
-    broke headers for this site. So far, I've been unable to find any
-    documentation about it other than the warning in the release notes that
-    there was a breaking change.
-    #}{% endcomment %}
-    <link rel="stylesheet" href="https://unpkg.com/@creativecommons/vocabulary@v2020.11.1/css/vocabulary.css">
+<head about="{% block canonical_url %} {% endblock %}">
+  <meta charset="utf-8">
+  <title>{% block title %}{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{% block meta-description %}{% endblock %}">
+  <meta name="author" content="{% block meta-author %}{% endblock %}">
+  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+  <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+{% comment %}
+{#
+We're pinning vocabulary v2020.11.1 because v2020.11.2 had a change that
+broke headers for this site. So far, I've been unable to find any
+documentation about it other than the warning in the release notes that
+there was a breaking change.
+#}
+{% endcomment %}
+  <link rel="stylesheet" href="https://unpkg.com/@creativecommons/vocabulary@v2020.11.1/css/vocabulary.css">
 </head>
 <body typeoff="cc:License">
   {% include 'includes/header.html' %}
   <main>
     <div class="level padding-{% start %}-big padding-{% end %}-large padding-vertical-normal">
-          {% include 'includes/skiplink.html' %}
-          <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
-            <ul>
-                <li><a href="/">{% trans "Home" %}</a></li>
-                <li><a href="/licenses/">{% trans "Licenses" %}</a></li>
-                {% block active-breadcrumb-li %}{% endblock %}
-            </ul>
-          </nav>
-          {% if languages_and_links %}
-            {% include "includes/languages_dropdown.html" %}
-          {% endif %}
+      {% include 'includes/skiplink.html' %}
+      <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">{% trans "Home" %}</a></li>
+          <li><a href="/{{ category }}/">{% trans category_title %}</a></li>
+          {% block active-breadcrumb-li %}{% endblock %}
+        </ul>
+      </nav>
+      {% if languages_and_links %}
+        {% include "includes/languages_dropdown.html" %}
+      {% endif %}
     </div>
     <section id="content" class="padding-horizontal-larger">
       {% block next_btn_section %}{% endblock %}
@@ -45,69 +50,67 @@
   <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@v2020.11.1/js/vocabulary.js"></script>
 
   <script>
-      /**
-      * Get the fully-qualified URL of a Vocabulary asset.
-      *
-      * @param {string} version - the Vocabulary version in which to locate the asset
-      * @param {string} path - the path of the asset being patched
-      * @return {string} the fully qualified URL of the asset
-      */
-      const getFullyQualifiedUrl = (version, path) => {
-      //   let baseUrl = 'https://unpkg.com/@creativecommons/vocabulary'
-        // If you prefer jsDelivr instead, use
-        let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary'
-        return `${baseUrl}@${version}/${path}`
-      }
+    /**
+    * Get the fully-qualified URL of a Vocabulary asset.
+    *
+    * @param {string} version - the Vocabulary version in which to locate the asset
+    * @param {string} path - the path of the asset being patched
+    * @return {string} the fully qualified URL of the asset
+    */
+    const getFullyQualifiedUrl = (version, path) => {
+    //   let baseUrl = 'https://unpkg.com/@creativecommons/vocabulary'
+      // If you prefer jsDelivr instead, use
+      let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary'
+      return `${baseUrl}@${version}/${path}`
+    }
 
-      /**
-      * Create an invisible container and place the asset into the DOM.
-      *
-      * This function is intended to be used to patch SVG assets that are later
-      * referenced inside `<use>` tags in `<svg>` tags. It can also be used to force
-      * an image to be downloaded to speed up its loading when referenced again.
-      *
-      * @param {string} path - the path of the asset being patched
-      * @param {string} version - the Vocabulary version in which to locate the asset
-      */
-      const patchAssetIntoDom = (path, version = 'latest') => {
-        fetch(getFullyQualifiedUrl(version, path)).then(response => {
-          return response.text()
-        }).then(data => {
-          // Render SVG in the page
-          const logo = document.querySelector('#cc-logo')
-          const footerLogo = document.querySelector('#cc-footer-logo')
-          logo.innerHTML = data;
-          footerLogo.innerHTML = data;
-        })
-      }
-
-      patchAssetIntoDom('assets/logos/cc/logomark.svg');
-
-      /** Next Button On Click Event Listener **/
-      document.getElementById("next-btn").addEventListener("click", function (e) {
-        /**
-        * On click redirect the user to page they are trying to visit
-        * which is stored in the data-href.
-        **/
-        return window.location.href = this.dataset.href
+    /**
+    * Create an invisible container and place the asset into the DOM.
+    *
+    * This function is intended to be used to patch SVG assets that are later
+    * referenced inside `<use>` tags in `<svg>` tags. It can also be used to force
+    * an image to be downloaded to speed up its loading when referenced again.
+    *
+    * @param {string} path - the path of the asset being patched
+    * @param {string} version - the Vocabulary version in which to locate the asset
+    */
+    const patchAssetIntoDom = (path, version = 'latest') => {
+      fetch(getFullyQualifiedUrl(version, path)).then(response => {
+        return response.text()
+      }).then(data => {
+        // Render SVG in the page
+        const logo = document.querySelector('#cc-logo')
+        const footerLogo = document.querySelector('#cc-footer-logo')
+        logo.innerHTML = data;
+        footerLogo.innerHTML = data;
       })
-    </script>
-    {% block extra-js %}
-    {% endblock %}
+    }
+
+    patchAssetIntoDom('assets/logos/cc/logomark.svg');
+
+    /** Next Button On Click Event Listener **/
+    document.getElementById("next-btn").addEventListener("click", function (e) {
+      /**
+      * On click redirect the user to page they are trying to visit
+      * which is stored in the data-href.
+      **/
+      return window.location.href = this.dataset.href
+    })
+  </script>
+  {% block extra-js %}
+  {% endblock %}
   </body>
+  <style>
+    body {
+      background-color: rgb(245, 245, 245);
+    }
+    html[dir="rtl"] nav.breadcrumb>ul li+li:before {
+      transform: scaleX(-1);
+    }
+    html[dir="rtl"] .breadcrumb li:first-child a {
+      padding-right: 0;
+      padding-left: .5rem;
+    }
+  </style>
 </html>
-
-<style>
-body {
-  background-color: rgb(245, 245, 245);
-}
-
-html[dir="rtl"] nav.breadcrumb>ul li+li:before {
-  transform: scaleX(-1);
-}
-
-html[dir="rtl"] .breadcrumb li:first-child a {
-    padding-right: 0;
-    padding-left: .5rem;
-}
-</style>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

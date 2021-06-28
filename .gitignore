@@ -3,9 +3,10 @@
 # - https://github.com/github/gitignore/blob/master/Python.gitignore
 
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
 *$py.class
+*.py[cod]
+.cache/
+__pycache__/
 
 # Distribution / packaging
 build/
@@ -20,6 +21,7 @@ public/
 
 # Environments
 .env
+.local
 .venv
 env/
 venv/

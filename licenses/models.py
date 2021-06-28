@@ -1,7 +1,7 @@
 """
 Every license can be identified by a URL, e.g.
-"http://creativecommons.org/licenses/by-nc-sa/4.0/" or
-"http://creativecommons.org/licenses/by-nc-nd/2.0/tw/".  In the RDF, this is
+"https://creativecommons.org/licenses/by-nc-sa/4.0/" or
+"https://creativecommons.org/licenses/by-nc-nd/2.0/tw/". In the RDF, this is
 the rdf:about attribute on the cc:License element.
 
 If a license has a child dc:source element, then this license is a translation
@@ -11,6 +11,7 @@ Some licenses ahve a dcq:isReplacedBy element.
 """
 # Standard library
 import os
+import posixpath
 
 # Third-party
 import polib
@@ -18,7 +19,6 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import translation
-from django.utils.translation import gettext
 
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
@@ -35,40 +35,83 @@ from licenses.transifex import TransifexHelper
 
 MAX_LANGUAGE_CODE_LENGTH = 8
 
-# (by4 and by3 have the same license codes)
-BY_LICENSE_CODES = ["by", "by-sa", "by-nc-nd", "by-nc", "by-nc-sa", "by-nd"]
-CC0_LICENSE_CODES = ["CC0"]
-DEFAULT_LANGUAGE = {
-    "ca": "en",
-    "ch": "de",
-    "es": "es",
-    "igo": "en",
-    # Cyrillic selected as the default because "the alphabets are used
-    # interchangeably; except in the legal sphere, where Cyrillic is required"
-    # (https://en.wikipedia.org/wiki/Serbian_language)
-    "rs": "sr-Cyrl",
+UNITS_LICENSES = [
+    # Units are in all versions, unless otherwise noted:
+    "by",
+    "by-nc",
+    "by-nc-nd",  # ........ in versions: > 1.0
+    "by-nc-sa",
+    "by-nd",
+    "by-nd-nc",  # ........ in versions: 1.0 unported, 1.0 ported
+    "by-sa",
+    "devnations",  # ...... in versions: 2.0
+    "nc",  # .............. in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "nc-sa",  # ........... in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "nc-sampling+",  # .... in versions: 1.0 unported, 1.0 ported
+    "nd",  # .............. in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "nd-nc",  # ........... in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "sa",  # .............. in versions: 2.0-jp, 1.0 unported, 1.0 ported
+    "sampling",  # ........ in versions: 1.0 unported, 1.0 ported
+    "sampling+",  # ....... in versions: 1.0 unported, 1.0 ported
+]
+UNITS_PUBLIC_DOMAIN = [
+    "CC0",
+]
+UNITS_DEPRECATED = {
+    # Sorted by date, ascending:
+    "nc": "2004-05-25",
+    "nc-sa": "2004-05-25",
+    "nc-sampling": "2004-05-25",
+    "nd": "2004-05-25",
+    "nd-nc": "2004-05-25",
+    "sa": "2004-05-25",
+    "devnations": "2007-06-04",
+    "sampling": "2007-06-04",
+    # public domain dedication and certification: "2010-10-11",
+    "nc-sampling+": "2011-09-12",
+    "sampling+": "2011-09-12",
 }
 
 
 class LegalCodeQuerySet(models.QuerySet):
     # We'll create LegalCode and License objects for all the by licenses,
     # and the zero_1.0 ones.
-    # We're just doing these license codes and versions for now:
+    # We're just doing these units and versions for now:
     # by* 4.0
     # by* 3.0 - including ported
     # cc 1.0
 
     # Queries for legalcode objects
-    BY4_QUERY = Q(
+    LICENSES_ALL_QUERY = Q(
+        license__unit__in=UNITS_LICENSES,
+    )
+    LICENSES_40_QUERY = Q(
         license__version="4.0",
-        license__license_code__in=BY_LICENSE_CODES,
+        license__unit__in=UNITS_LICENSES,
     )
-    BY3_QUERY = Q(
+    LICENSES_30_QUERY = Q(
         license__version="3.0",
-        license__license_code__in=BY_LICENSE_CODES,
+        license__unit__in=UNITS_LICENSES,
     )
+    LICENSES_25_QUERY = Q(
+        license__version="2.5",
+        license__unit__in=UNITS_LICENSES,
+    )
+    LICENSES_21_QUERY = Q(
+        license__version="2.1",
+        license__unit__in=UNITS_LICENSES,
+    )
+    LICENSES_20_QUERY = Q(
+        license__version="2.0",
+        license__unit__in=UNITS_LICENSES,
+    )
+    LICENSES_10_QUERY = Q(
+        license__version="1.0",
+        license__unit__in=UNITS_LICENSES,
+    )
+
     # There's only one version of CC0.
-    CC0_QUERY = Q(license__license_code__in=CC0_LICENSE_CODES)
+    PUBLIC_DOMAIN_ALL_QUERY = Q(license__unit__in=UNITS_PUBLIC_DOMAIN)
 
     def translated(self):
         """
@@ -88,7 +131,7 @@ class LegalCodeQuerySet(models.QuerySet):
         """
 
         return self.filter(
-            self.BY4_QUERY | self.BY3_QUERY | self.CC0_QUERY
+            self.LICENSES_ALL_QUERY | self.PUBLIC_DOMAIN_ALL_QUERY
         ).exclude(language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS)
 
     def validgroups(self):
@@ -99,15 +142,27 @@ class LegalCodeQuerySet(models.QuerySet):
         """
 
         return {
-            "by4.0": self.filter(self.BY4_QUERY).exclude(
+            "Licenses 4.0": self.filter(self.LICENSES_40_QUERY).exclude(
                 language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
             ),
-            "by3.0": self.filter(self.BY3_QUERY).exclude(
+            "Licenses 3.0": self.filter(self.LICENSES_30_QUERY).exclude(
                 language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
             ),
-            "zero1.0": self.filter(self.CC0_QUERY).exclude(
+            "Licenses 2.5": self.filter(self.LICENSES_25_QUERY).exclude(
                 language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
             ),
+            "Licenses 2.1": self.filter(self.LICENSES_21_QUERY).exclude(
+                language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+            ),
+            "Licenses 2.0": self.filter(self.LICENSES_20_QUERY).exclude(
+                language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+            ),
+            "Licenses 1.0": self.filter(self.LICENSES_10_QUERY).exclude(
+                language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS
+            ),
+            "Public Domain all": self.filter(
+                self.PUBLIC_DOMAIN_ALL_QUERY
+            ).exclude(language_code__in=EXCLUDED_LANGUAGE_IDENTIFIERS),
         }
 
 
@@ -124,59 +179,62 @@ class LegalCode(models.Model):
         " different from the Django language code.",
     )
     html_file = models.CharField(
+        "HTML file",
         max_length=300,
         help_text="HTML file we got this from",
         blank=True,
         default="",
     )
-
     translation_last_update = models.DateTimeField(
         help_text="The last_updated field from Transifex for this translation",
         null=True,
         default=None,
     )
-
-    title = models.TextField(
+    title = models.CharField(
+        max_length=112,
         help_text="License title in this language, e.g."
-        " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
+        " 'Atribución/Reconocimiento 4.0 Internacional'",
+        blank=True,
+        default="",
+    )
+    html = models.TextField("HTML", blank=True, default="")
+    license_url = models.URLField("License URL", blank=True, default="")
+    deed_url = models.URLField("Deed URL", unique=True)
+    plain_text_url = models.URLField(
+        "Plain text URL",
         blank=True,
         default="",
     )
 
-    html = models.TextField(blank=True, default="")
-
-    license_url = models.URLField(unique=True)
-    deed_url = models.URLField(unique=True)
-    plain_text_url = models.URLField(unique=True)
-
     objects = LegalCodeQuerySet.as_manager()
 
     class Meta:
-        ordering = ["license__about"]
+        ordering = ["license", "language_code"]
 
     def __str__(self):
         return f"LegalCode<{self.language_code}, {self.license}>"
 
     def save(self, *args, **kwargs):
-        license = self.license
-        self.license_url = build_license_url(
-            license.license_code,
-            license.version,
-            license.jurisdiction_code,
+        unit = self.license.unit
+        self.deed_url = build_path(
+            self.license.canonical_url,
+            "deed",
             self.language_code,
         )
-        self.deed_url = build_deed_url(
-            license.license_code,
-            license.version,
-            license.jurisdiction_code,
+        self.license_url = build_path(
+            self.license.canonical_url,
+            "legalcode",
             self.language_code,
         )
-        license_url = self.license_url
-        self.plain_text_url = (
-            f"{license_url}/index.txt"
-            if license_url.endswith("legalcode")
-            else f"{license_url}.txt"
-        )
+        if (
+            (unit in UNITS_LICENSES and float(self.license.version) > 2.5)
+            or unit == "CC0"
+        ) and self.language_code == "en":
+            self.plain_text_url = build_path(
+                self.license.canonical_url,
+                "legalcode.txt",
+                self.language_code,
+            )
         super().save(*args, **kwargs)
 
     def _get_save_path(self):
@@ -185,121 +243,73 @@ class LegalCode(models.Model):
         the relative path where the saved file should be, not including
         the actual filename.
 
-        For unported, uses "xu" as the "jurisdiction" in the filename.
-
         If saving the license as a static file, this returns the relative
         path of the file to save it as.
 
-        4.0 formula:
-        /licenses/VERSION/LICENSE_deed_LANGAUGE.html
-        /licenses/VERSION/LICENSE_legalcode_LANGAUGEhtml
+        ported Licenses 3.0 and earlier
+            Formula
+                CATEGORY/UNIT/VERSION/JURISDICTION
+            Examples
+                licenses/by/3.0/am
+                licenses/by-nc/3.0/pl
+                licenses/by-nc-nd/2.5/au
+                licenses/by-nc-sa/2.5/ch
+                licenses/by/2.1/es
+                licenses/by-nc/2.1/jp
+                licenses/by/2.0/kr
+                licenses/nd-nc/1.0/fi
 
-        4.0 examples:
-        /licenses/4.0/by-nc-nd_deed_en.html
-        /licenses/4.0/by-nc-nd_legalcode_en.html
-        /licenses/4.0/by_deed_en.html
-        /licenses/4.0/by_legalcode_en.html
-        /licenses/4.0/by_deed_zh-Hans.html
-        /licenses/4.0/by_legalcode_zh-Hans.html
-
-        3.0 formula:
-        /licenses/VERSION/JURISDICTION/LICENSE_deed_LANGAUGE.html
-        /licenses/VERSION/JURISDICTION/LICENSE_legalcode_LANGAUGE.html
-
-        3.0 examples:
-        /licenses/3.0/xu/by_deed_en.html
-        /licenses/3.0/xu/by_legalcode.en.html
-        /licenses/3.0/am/by_deed_hy.html
-        /licenses/3.0/am/by_legalcode_hy.html
-        /licenses/3.0/rs/by_deed_rs-Cyrl.html
-        /licenses/3.0/rs/by_legalcode_rs-Cyrl.html
-        For jurisdiction, I used "xu" to mean "unported".
-        See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
-
-        cc0 formula:
-        /publicdomain/VERSION/LICENSE_deed_LANGAUGE.html
-        /publicdomain/VERSION/LICENSE_legalcode_LANGAUGE.html
-
-        cc0 examples:
-        /publicdomain/1.0/zero_deed_en.html
-        /publicdomain/1.0/zero_legalcode_en.html
-        /publicdomain/1.0/zero_deed_ja.html
-        /publicdomain/1.0/zero_legalcode_ja.html
+        unported Licenses 3.0, Licenses 4.0, and Public Domain:
+            Formula
+                CATEGORY/UNIT/VERSION
+            Examples
+                publicdomain/zero/1.0
+                licenses/by-nc-nd/4.0/
+                licenses/by-nc-sa/4.0/
+                licenses/by-nc/4.0/
+                licenses/by-nd/4.0/
+                licenses/by-sa/4.0/
+                licenses/by/4.0/
         """
 
         license = self.license
-        firstdir = (
-            "publicdomain"
-            if license.license_code.lower() == "cc0"
-            else "licenses"
-        )
-        code = (
-            "zero"
-            if license.license_code.lower() == "cc0"
-            else license.license_code.lower()
-        )
-        if firstdir == "licenses" and license.version in [
-            "1.0",
-            "2.0",
-            "2.1",
-            "2.5",
-            "3.0",
-        ]:
-            # "xu" for "unported"
+        unit = "zero" if license.unit == "CC0" else license.unit.lower()
+        if license.jurisdiction_code:
+            # ported Licenses 3.0 and earlier
             return os.path.join(
-                firstdir,  # licenses
-                code,  # by, by-nc-nd, etc.
+                license.category,  # licenses
+                unit,  # by, by-nc-nd, etc.
                 license.version,  # 1.0, 2.0, etc.
-                license.jurisdiction_code or "xu",
+                license.jurisdiction_code,
             )
         else:
+            # unported Licenses 3.0, Licenses 4.0, and Public Domain:
             return os.path.join(
-                firstdir,  # licenses, publicdomain
-                code,  # by, by-nc-nd, zero, etc.
-                license.version,  # 1.0, 2.0, 4.0, etc.
+                license.category,  # licenses, publicdomain
+                unit,  # by, by-nc-nd, zero, etc.
+                license.version,  # 1.0, 4.0, etc.
             )
 
-    def get_file_and_links(self, layer):
+    def get_file_and_links(self, document):
+        """
+        1. Add document type ("deed" or "legalcode"), language, and HTML file
+           extension to filename to save content to.
+        2. Generate list of symlinks to ensure expected URLs function
+           correctly.
+        """
         license = self.license
         juris_code = license.jurisdiction_code
+        language_default = get_default_language_for_jurisdiction(juris_code)
         filename = os.path.join(
             self._get_save_path(),
-            f"{layer}.{self.language_code}.html",
+            f"{document}.{self.language_code}.html",
         )
         symlinks = []
-
-        # Symlink without English language for by*4.0 and zero
-        if (
-            license.license_code.lower() == "cc0" or license.version == "4.0"
-        ) and self.language_code == "en":
-            symlinks.append(f"{layer}.html")
-            if layer == "deed":
+        if self.language_code == language_default:
+            # Symlink default languages
+            symlinks.append(f"{document}.html")
+            if document == "deed":
                 symlinks.append("index.html")
-        # by* 3.0 and earlier licenses
-        elif license.license_code.lower() != "cc0" and license.version in [
-            "1.0",
-            "2.0",
-            "2.1",
-            "2.5",
-            "3.0",
-        ]:
-            # Unported ("xu" jurisdiction) symlinks
-            if not license.jurisdiction_code:
-                symlinks.append(f"../{filename}")
-                symlinks.append(f"../{layer}.html")
-                if layer == "deed":
-                    symlinks.append("../index.html")
-            # Multiple languages in a jurisdiction
-            elif juris_code in DEFAULT_LANGUAGE:
-                if DEFAULT_LANGUAGE[juris_code] == self.language_code:
-                    symlinks.append(f"{layer}.html")
-                    if layer == "deed":
-                        symlinks.append("index.html")
-            # Single language in a jurisdiction
-            else:
-                symlinks.append(f"{layer}.html")
-                if layer == "deed":
-                    symlinks.append("index.html")
 
         return [filename, symlinks]
 
@@ -315,18 +325,17 @@ class LegalCode(models.Model):
     def branch_name(self):
         """
         If this translation is modified, what is the name of the GitHub branch
-        we'll use to manage the modifications?  Basically its "{license
-        code}-{version}-{language}[-{jurisdiction code}", except that all the
-        "by* 4.0" licenses use "cc4" for the license_code part.  This has to be
-        a valid DNS domain, so we also change any _ to - and remove any
-        periods.
+        we'll use to manage the modifications?  Basically its
+        "{unit}-{version}-{language}-{jurisdiction code}", except that all the
+        "by* 4.0" licenses use "cc4" for the unit part. This has to be a valid
+        DNS domain, so we also change any _ to - and remove any periods.
         """
         license = self.license
         parts = []
-        if license.license_code.startswith("by") and license.version == "4.0":
+        if license.unit.startswith("by") and license.version == "4.0":
             parts.append("cc4")
         else:
-            parts.extend([license.license_code, license.version])
+            parts.extend([license.unit, license.version])
         parts.append(self.language_code)
         if license.jurisdiction_code:
             parts.append(license.jurisdiction_code)
@@ -384,7 +393,7 @@ class LegalCode(models.Model):
         """
         filename = f"{self.license.resource_slug}.po"
         fullpath = os.path.join(
-            settings.TRANSLATION_REPOSITORY_DIRECTORY,
+            settings.DATA_REPOSITORY_DIR,
             "legalcode",
             cc_to_filename_language_code(self.language_code),
             "LC_MESSAGES",
@@ -394,16 +403,17 @@ class LegalCode(models.Model):
 
 
 class License(models.Model):
-    about = models.URLField(
+    canonical_url = models.URLField(
+        "Canonical URL",
         max_length=200,
         help_text="The license's unique identifier, e.g."
-        " 'http://creativecommons.org/licenses/by-nd/2.0/br/'",
+        " 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
     )
-    license_code = models.CharField(
+    unit = models.CharField(
         max_length=40,
         help_text="shorthand representation for which class of licenses this"
-        " falls into.  E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
+        " falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
         " 'devnations', ...",
     )
     version = models.CharField(
@@ -412,40 +422,34 @@ class License(models.Model):
         blank=True,
         default="",
     )
-    jurisdiction_code = models.CharField(max_length=9, blank=True, default="")
+    jurisdiction_code = models.CharField(
+        max_length=9,
+        blank=True,
+        default="",
+    )
     creator_url = models.URLField(
+        "Creator URL",
         max_length=200,
         blank=True,
         default="",
-        help_text="E.g. http://creativecommons.org",
+        help_text="E.g. https://creativecommons.org",
     )
-    license_class_url = models.URLField(
-        max_length=200,
-        help_text="E.g. http://creativecommons.org/license/",
+    category = models.CharField(
+        max_length=13,
+        help_text="'licenses' or 'publicdomain'",
         blank=True,
         default="",
     )
-
-    title_english = models.TextField(
-        help_text="License title in English, e.g."
-        " 'Attribution-NonCommercial-NoDerivs 3.0 Unported'",
-        blank=True,
-        default="",
-    )
-
     source = models.ForeignKey(
         "self",
         null=True,
-        blank=True,
         on_delete=models.CASCADE,
         related_name="source_of",
         help_text="another license that this is the translation of",
     )
-
     is_replaced_by = models.ForeignKey(
         "self",
         null=True,
-        blank=True,
         on_delete=models.CASCADE,
         related_name="replaces",
         help_text="another license that has replaced this one",
@@ -453,37 +457,35 @@ class License(models.Model):
     is_based_on = models.ForeignKey(
         "self",
         null=True,
-        blank=True,
         on_delete=models.CASCADE,
         related_name="base_of",
         help_text="another license that this one is based on",
     )
-
     deprecated_on = models.DateField(
         null=True,
+        default=None,
         help_text="if set, the date on which this license was deprecated",
     )
 
-    permits_derivative_works = models.BooleanField()
-    permits_reproduction = models.BooleanField()
-    permits_distribution = models.BooleanField()
-    permits_sharing = models.BooleanField()
+    permits_derivative_works = models.BooleanField(default=None)
+    permits_reproduction = models.BooleanField(default=None)
+    permits_distribution = models.BooleanField(default=None)
+    permits_sharing = models.BooleanField(default=None)
 
-    requires_share_alike = models.BooleanField()
-    requires_notice = models.BooleanField()
-    requires_attribution = models.BooleanField()
-    requires_source_code = models.BooleanField()
+    requires_share_alike = models.BooleanField(default=None)
+    requires_notice = models.BooleanField(default=None)
+    requires_attribution = models.BooleanField(default=None)
+    requires_source_code = models.BooleanField(default=None)
 
-    prohibits_commercial_use = models.BooleanField()
-    prohibits_high_income_nation_use = models.BooleanField()
+    prohibits_commercial_use = models.BooleanField(default=None)
+    prohibits_high_income_nation_use = models.BooleanField(default=None)
 
     class Meta:
-        ordering = ["-version", "license_code", "jurisdiction_code"]
+        ordering = ["-version", "unit", "jurisdiction_code"]
 
     def __str__(self):
         return (
-            f"License<{self.license_code},{self.version},"
-            f"{self.jurisdiction_code}>"
+            f"License<{self.unit},{self.version}," f"{self.jurisdiction_code}>"
         )
 
     def get_metadata(self):
@@ -491,9 +493,8 @@ class License(models.Model):
         Return a dictionary with the metadata for this license.
         """
         data = {
-            "license_code": self.license_code,
+            "unit": self.unit,
             "version": self.version,
-            "title_english": self.title_english,
         }
         if self.jurisdiction_code:
             data["jurisdiction"] = self.jurisdiction_code
@@ -513,12 +514,10 @@ class License(models.Model):
 
         data["translations"] = {}
         for lc in self.legal_codes.order_by("language_code"):
-            language_code = lc.language_code
             with active_translation(lc.get_translation_object()):
-                data["translations"][language_code] = {
+                data["translations"][lc.language_code] = {
                     "license": lc.license_url,
                     "deed": lc.deed_url,
-                    "title": gettext(self.title_english),
                 }
 
         return data
@@ -530,9 +529,9 @@ class License(models.Model):
         ["cc-logo", "cc-zero", "cc-by"]
         """
         result = ["cc-logo"]  # Everybody gets this
-        if self.license_code == "CC0":
+        if self.unit == "CC0":
             result.append("cc-zero")
-        elif self.license_code.startswith("by"):
+        elif self.unit.startswith("by"):
             result.append("cc-by")
             if self.prohibits_commercial_use:
                 result.append("cc-nc")
@@ -570,11 +569,9 @@ class License(models.Model):
         # No periods.
         # All lowercase.
         if self.jurisdiction_code:
-            slug = (
-                f"{self.license_code}_{self.version}_{self.jurisdiction_code}"
-            )
+            slug = f"{self.unit}_{self.version}_{self.jurisdiction_code}"
         else:
-            slug = f"{self.license_code}_{self.version}"
+            slug = f"{self.unit}_{self.version}"
         slug = slug.replace(".", "")
         return slug.lower()
 
@@ -587,8 +584,8 @@ class License(models.Model):
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
         license = self
-        s = f"{license.license_code} {license.version}"
-        if license.license_code.startswith("by"):
+        s = f"{license.unit} {license.version}"
+        if license.unit.startswith("by"):
             s = f"CC {s}"
         if license.jurisdiction_code:
             s = f"{s} {license.jurisdiction_code}"
@@ -597,12 +594,12 @@ class License(models.Model):
 
     @property
     def level_of_freedom(self):
-        if self.license_code in ("devnations", "sampling"):
+        if self.unit in ("devnations", "sampling"):
             return FREEDOM_LEVEL_MIN
         elif (
-            self.license_code.find("sampling") > -1
-            or self.license_code.find("nc") > -1
-            or self.license_code.find("nd") > -1
+            self.unit.find("sampling") > -1
+            or self.unit.find("nc") > -1
+            or self.unit.find("nd") > -1
         ):
             return FREEDOM_LEVEL_MID
         else:
@@ -614,11 +611,11 @@ class License(models.Model):
 
     @property
     def sampling_plus(self):
-        return self.license_code in ("nc-sampling+", "sampling+")
+        return self.unit in ("nc-sampling+", "sampling+")
 
     @property
     def include_share_adapted_material_clause(self):
-        return self.license_code in ["by", "by-nc"]
+        return self.unit in ["by", "by-nc"]
 
     def tx_upload_messages(self):
         """
@@ -640,15 +637,15 @@ class License(models.Model):
 
     @property
     def nc(self):
-        return "nc" in self.license_code
+        return "nc" in self.unit
 
     @property
     def nd(self):
-        return "nd" in self.license_code
+        return "nd" in self.unit
 
     @property
     def sa(self):
-        return "sa" in self.license_code
+        return "sa" in self.unit
 
 
 class TranslationBranch(models.Model):
@@ -668,7 +665,7 @@ class TranslationBranch(models.Model):
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",
         null=True,
-        blank=True,
+        default=None,
     )
     complete = models.BooleanField(default=False)
 
@@ -710,67 +707,10 @@ class TranslationBranch(models.Model):
         }
 
 
-def build_license_url(license_code, version, jurisdiction_code, language_code):
-    """
-    Return a URL to view the license specified by the inputs. Jurisdiction
-    and language are optional.
-    language_code is a CC language code.
-    """
-    # UGH. Is there any way we could do this with a simple url 'reverse'? The
-    # URL regex would be complicated, but we have unit tests to determine if
-    # we've got it right. See test_templatetags.py.
-    assert language_code
-    if version == "4.0":
-        assert not jurisdiction_code
-    if jurisdiction_code:
-        url = (
-            f"/licenses/{license_code}/{version}/{jurisdiction_code}/legalcode"
-        )
-        default_language = get_default_language_for_jurisdiction(
-            jurisdiction_code
-        )
-        # A few exceptions to how URLs are formed:
-        include_language_anyway = (version == "3.0") and (
-            jurisdiction_code in ["es", "ca", "ch"]
-        )
-        if include_language_anyway or language_code != default_language:
-            url = f"{url}.{language_code}"
-        return url
+def build_path(canonical_url, document, language_code):
+    path = canonical_url.replace("https://creativecommons.org", "")
+    if document == "legalcode.txt" or not language_code:
+        path = posixpath.join(path, document)
     else:
-        default_language = DEFAULT_LANGUAGE_CODE
-        if language_code == default_language or not language_code:
-            return f"/licenses/{license_code}/{version}/legalcode"
-        else:
-            return (
-                f"/licenses/{license_code}/{version}/legalcode.{language_code}"
-            )
-
-
-def build_deed_url(license_code, version, jurisdiction_code, language_code):
-    """
-    Return a URL to view the deed specified by the inputs. Jurisdiction
-    and language are optional.
-    language_code is a CC language code.
-    """
-    # UGH. Is there any way we could do this with a simple url 'reverse'? The
-    # URL regex would be complicated, but we have unit tests to determine if
-    # we've got it right. See test_templatetags.py.
-    #
-    # https://creativecommons.org/licenses/by-sa/4.0/
-    # https://creativecommons.org/licenses/by-sa/4.0/deed.es
-    # https://creativecommons.org/licenses/by/3.0/es/
-    # https://creativecommons.org/licenses/by/3.0/es/deed.fr
-
-    if jurisdiction_code:
-        if language_code == "en" or not language_code:
-            return f"/licenses/{license_code}/{version}/{jurisdiction_code}/"
-        else:
-            return (
-                f"/licenses/{license_code}/{version}/{jurisdiction_code}/"
-                f"deed.{language_code}"
-            )
-    else:
-        if language_code == "en" or not language_code:
-            return f"/licenses/{license_code}/{version}/"
-        else:
-            return f"/licenses/{license_code}/{version}/deed.{language_code}"
+        path = posixpath.join(path, f"{document}.{language_code}")
+    return path

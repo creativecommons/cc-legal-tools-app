@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+
+{# Note Next Link #}
+{% block next_text %}{% trans "See the legal code" %}{% endblock %}
+{% block next_href %}/licenses/deed/{% endblock %}
+
+{% block next_btn_section %}
+<div class="level container">
+  <div class="level-item level-right">
+    <button id="next-btn" class="button tiny is-pulled-right" data-href="/licenses/deed/">{% trans "See the legal code" %}</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+      {% include 'includes/red_alert.html' %}
+      {% include 'includes/sampling_deed_body.html'%}
+      <div class="columns margin-top-normal" >
+        {% include 'includes/related_links.html' with show_sampling_deed="True" %}
+      </div>
+    </div>
+{% endblock %}
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

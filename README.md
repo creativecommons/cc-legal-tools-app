@@ -9,23 +9,82 @@ want to use a newer version, edit `Pipfile`.
 Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
 
 
+## Not the live site
+
+This project is not intended to serve the license and deed pages directly.
+Though if it's deployed on a public server it could do that, performance would
+probably not be acceptable.
+
+Instead, a command line tool can be used to save all the rendered HTML pages
+for licenses and deeds as files. Then those files are used as part of the real
+creativecommons.org site, just served as static files. See details farther
+down.
+
+
 ## Setting up the Project
 
-### Docker compose
+
+### Data Repository
+
+The [creativecommons/cc-licenses-data][repodata] project repository must be
+cloned into a directory adjacent to this one:
+```
+PARENT_DIR
+├── cc-licenses
+└── cc-licenses-data
+```
+
+[repodata]:https://github.com/creativecommons/cc-licenses-data
+
+
+### Docker Compose Setup
+
 Use the following instructions to start the project with Docker compose.
 
-1. Make sure you have configured `cc_licenses.settings.local.py`
-2. Build the containers
-  - `docker-compose build`
-3. Run migrations
-  - `docker-compose run web python manage.py migrate`
-4. Run the containers
-  - `docker-compose up`
+1. Initial Setup
+   1. Ensure the [Data Repository](#data-repository) is in place
+   2. Install Docker ([Install Docker Engine | Docker Documentation][installdocker])
+   3. Create Django local settings file
+        ```shell
+        cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+        ```
+   4. Build the containers
+        ```shell
+        docker-compose build
+        ```
+   5. Run database migrations
+        ```shell
+        docker-compose run app ./manage.py migrate
+        ```
+   6. Clear data in the database
+        ```shell
+        docker-compose run app ./manage.py clear_license_data
+        ```
+   7. Load legacy HTML in the database
+        ```shell
+        docker-compose run app ./manage.py load_html_files
+        ```
+2. Run the containers
+    ```shell
+    docker-compose up
+    ```
+
+The commands above will create 3 docker containers:
+1. **app** ([127.0.0.1:8000](http://127.0.0.1:8000/)): this Djano application
+   - Any changes made to Python will be detected and rebuilt transparently as
+     long as the development server is running.
+2. **db**: PostgreSQL database backend for this Django application
+3. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
+   serving [creativecommons/cc-licenses-data][repodata]/docs.
+
+[installdocker]: https://docs.docker.com/engine/install/
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
-### Manual set-up
+### Manual Setup
+
 1. Development Environment
-   1. Fork and clone the project, cd to the project directory.
+   1. Ensure the [Data Repository](#data-repository) is in place
    2. Install dependencies
       - Linux:
         ```shell
@@ -53,7 +112,7 @@ Use the following instructions to start the project with Docker compose.
     pipenv run pre-commit install
     ```
 2. Configure Django and PostgreSQL
-   1. Create local settings file
+   1. Create Django local settings file
     ```shell
     cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
     ```
@@ -84,29 +143,19 @@ Use the following instructions to start the project with Docker compose.
     ```shell
     pipenv run ./manage.py migrate
     ```
+3. Run development server ([127.0.0.1:8000](http://127.0.0.1:8000/))
+    ```shell
+    pipenv run ./manage.py runserver
+    ```
+   - Any changes made to Python will be detected and rebuilt transparently as
+     long as the development server is running.
 
 
-## Development Server
+### Manual Commands
 
-You should be able to run the development server
-([127.0.0.1:8000](http://127.0.0.1:8000/)) via:
-```shell
-pipenv run ./manage.py runserver
-```
-
-Or, on a custom port and address:
-```shell
-pipenv run ./manage.py runserver 0.0.0.0:8001
-```
-
-Any changes made to Python will be detected and rebuilt transparently as
-long as the development server is running.
-
-
-### Error building trees
-
-If you encounter an `error: Error building trees` error from pre-commit when
-you commit, try adding your files (`git add <FILES>`) prior to committing them.
+**NOTE:** The rest of the documentation assumes Docker. If you are using a
+manual setup, use `pipenv run` instead of `docker-compose run web` for the
+commands below.
 
 
 ### Tooling
@@ -128,16 +177,29 @@ you commit, try adding your files (`git add <FILES>`) prior to committing them.
 [precommit]: https://pre-commit.com/
 
 
-## Not the live site
+#### Coverage Tests and Report
 
-This project is not intended to serve the license and deed pages directly.
-Though if it's deployed on a public server it could do that, performance would
-probably not be acceptable.
+The coverage tests and report are run as part of pre-commit and as a GitHub
+Action. To run it manually:
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+2. Coverage test
+    ```shell
+    docker-compose run app coverage run manage.py test --noinput --keepdb
+    ```
+3. Coverage report
+    ```shell
+    docker-compose run app coverage report
+    ```
 
-Instead, a command line tool can be used to save all the rendered HTML pages
-for licenses and deeds as files. Then those files are used as part of the real
-creativecommons.org site, just served as static files. See details farther
-down.
+
+### Commit Errors
+
+
+#### Error building trees
+
+If you encounter an `error: Error building trees` error from pre-commit when
+you commit, try adding your files (`git add <FILES>`) prior to committing them.
 
 
 ## Data
@@ -152,7 +214,7 @@ The metadata can be downloaded by visiting URL path: /licenses/metadata.yaml
 
 There are two main models (that's Django terminology for tables).
 
-A License can be identified by a license code (e.g. BY, BY-NC-SA) which is a
+A License can be identified by a unit (e.g. BY, BY-NC-SA) which is a
 proxy for the complete set of permissions, requirements, and prohibitions; a
 version number (e.g. 4.0, 3.0), and an optional jurisdiction for ports. So we
 might refer to the license "BY 3.0 Armenia" which would be the 3.0 version of
@@ -198,13 +260,14 @@ to parse BY\* 4.0 HTML files, another for CC0, another for BY\* 3.0 unported
 files, and another for BY\* 3.0 ported. We would expect to add more such
 methods for other license flavors.
 
-Each parsing method uses BeautifulSoup4 to parse the HTML text into a tree
-representing the structure of the HTML, and picks out the part of the page that
-contains the license (as opposed to navigation, styling, and boilerplate text
-that occurs on many pages). Then it uses tag id's and classes and the structure
-of the HTML to pick out the text for each part of the license (generally a
-translatable phrase or paragraph) and organize it into translation files, or
-for the ported 3.0 licenses, just pretty-prints the HTML and saves it as-is.
+Each parsing method uses [BeautifulSoup4][bs4] to parse the HTML text into a
+tree representing the structure of the HTML, and picks out the part of the page
+that contains the license (as opposed to navigation, styling, and boilerplate
+text that occurs on many pages). Then it uses tag id's and classes and the
+structure of the HTML to pick out the text for each part of the license
+(generally a translatable phrase or paragraph) and organize it into translation
+files, or for the ported 3.0 licenses, just pretty-prints the HTML and saves it
+as-is.
 
 The BY\* 4.0 licenses are the most straightforward. The text is the same from
 one license to the next (e.g. BY-NC, BY-SA) except where the actual license
@@ -246,22 +309,14 @@ inserts whatever HTML we've saved into the page.
 The older version licenses have not yet been looked at. Hopefully we can model
 importing those licenses on how we've done the 3.0 licenses.
 
+[bs4]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
-### Running the import
 
-1. Clean up any old data in the database:
-    ```shell
-    pipenv run ./manage.py clear_license_data
-    ```
-2. Clone [creativecommons/cc-licenses-data][repodata] next to this repo
-3. Load HTML files:
-    ```shell
-    pipenv run ./manage.py load_html_files ../cc-licenses-data/legacy/legalcode
-    ```
+#### Import Process
 
-It will read the HTML files from the specified directory, populate the database
-with LegalCode and License records, and create `.po` and `.mo` files in
-[creativecommons/cc-licenses-data][repodata].
+This process will read the HTML files from the specified directory, populate
+the database with LegalCode and License records, and create `.po` and `.mo`
+files in [creativecommons/cc-licenses-data][repodata].
 
 Once you've done that, you might want to update the static HTML files
 for the site; see "Saving the site as static files" farther on.
@@ -271,6 +326,17 @@ Now commit the changes from cc-licenses-data and push to GitHub.
 It's simplest to do this part on a development machine. It gets too complicated
 trying to run on the server and authenticate properly to GitHub from the
 command line.
+
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+3. Clear data in the database
+    ```shell
+    docker-compose run app ./manage.py clear_license_data
+    ```
+4. Load legacy HTML in the database
+    ```shell
+    docker-compose run app ./manage.py load_html_files
+    ```
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
@@ -284,13 +350,13 @@ get an API token, and set `TRANSIFEX_API_TOKEN` in your environment with its
 value.
 
 The cc-licenses-data repo should be cloned next to the cc-licenses repo. (It
-can be elsewhere, then you need to set `TRANSLATION_REPOSITORY_DIRECTORY` to
-its location.) Be sure to clone using a URL that starts with `git@github...`
-and not `https://github...`, or you won't be able to push to it.
+can be elsewhere, then you need to set `DATA_REPOSITORY_DIR` to its location.)
+Be sure to clone using a URL that starts with `git@github...` and not
+`https://github...`, or you won't be able to push to it.
 
-Now arrange for `pipenv run ./manage.py check_for_translation_updates` to be
-run hourly (or the equivalent with the appropriate virtualenv and env
-variarables set).
+Now arrange for `docker-compose run app ./manage.py
+check_for_translation_updates` to be run hourly (or the equivalent with the
+appropriate virtualenv and env variarables set).
 
 Also see [Publishing changes to git repo](#publishing-changes-to-git-repo).
 
@@ -318,11 +384,12 @@ equivalent steps manually:
 - In cc-licenses-data, checkout or create the appropriate branch.
 - Download the updated .po files from Transifex to the appropriate place in
   cc-licenses-data.
-- In cc-licenses, run `pipenv run ./manage.py compilemessages`. *This is
-  important and easy to forget,* but without it, Django will keep using the old
-  translations.
+- In cc-licenses, run `docker-compose run app ./manage.py compilemessages`.
+  *This is important and easy to forget,* but without it, Django will keep
+using the old translations.
 - In cc-licenses-data, commit and push the changes.
-- In cc-licenses, run `pipenv run ./manage.py publish --branch=<branchname>`
+- In cc-licenses, run `docker-compose run app ./manage.py publish
+  --branch=<branchname>`
   (see farther down for more about publishing).
 
 
@@ -339,24 +406,24 @@ Also note: What Transifex calls a `resource` is what Django calls a `domain`.
 I'll probably use the terms interchangeably.
 
 The translation data consists of `.po` files, and they are managed in a
-separate repository from this code,
-`https://github.com/creativecommons/cc-licenses-data`. This is typically
-checked out beside the `cc-licenses` repo, but can be put anywhere by
-changing the Django `TRANSLATION_REPOSITORY_DIRECTORY` setting, or
-setting the `TRANSLATION_REPOSITORY_DIRECTORY` environment variable.
+separate repository from this code
+([creativecommons/cc-licenses-data][repodata]). This is typically checked out
+beside the `cc-licenses` repo, but can be put anywhere by changing the Django
+`DATA_REPOSITORY_DIR` setting, or setting the `DATA_REPOSITORY_DIR` environment
+variable.
 
 For the common web site stuff, and translated text outside of the actual legal
 code of the licenses, the messages use the standard Django translation domain
 `django`, and the resource name on Transifex for those messages is `django-po`.
 These files are also in the cc-licenses-data repo, under `locale`.
 
-For the license legal code, for each combination of license code, version, and
+For the license legal code, for each combination of unit, version, and
 jurisdiction code, there's another separate domain. These are all in
 cc-licenses-data under `legalcode`.
 
 Transifex requires the resource slug to consist solely of letters, digits,
-underscores, and hyphens. So we define the resource slug by joining the license
-code, version, and jurisdiction with underscores (`_`), then stripping out any
+underscores, and hyphens. So we define the resource slug by joining the unit,
+version, and jurisdiction with underscores (`_`), then stripping out any
 periods (`.`) from the resulting string.  Examples: `by-nc_40`,
 `by-nc-sa_30_es` (where `_es` represents the jurisdiction, not the
 translation).
@@ -366,15 +433,17 @@ For each domain, there's a file for each translation. The files are all named
 language.
 
 We have the following structure in our translation data repo:
-
-    legalcode/
-       <language>/
-           LC_MESSAGES/
-                 by_4.0.mo
-                 by_4.0.po
-                 by-nc_4.0.mo
-                 by-nc_4.0.po
-                 ...
+```
+legalcode/
+├── <language>
+│   └── LC_MESSAGES
+│       ├── by-nc-nd_40.mo
+│       ├── by-nc-nd_40.po
+│       ├── by-nc-sa_40.mo
+│       ...
+│       └── by_40.po
+...
+```
 
 The language code used in the path to the files is *not* necessarily the same
 as what we're using to identify the licenses in the site URLs.  That's because
@@ -387,59 +456,50 @@ For example, the translated files for
 that translation.
 
 The `.po` files are initially created from the existing HTML license files by
-running `pipenv run ./manage.py load_html_files <path to legacy/legalcode>`,
-where `<path to legacy/legalcode>` is a local path to
-[creativecommons/cc-licenses-data][repodata]:
-[`legacy/legalcode`][legacylegalcode] (see also above).
+running `docker-compose run app ./manage.py load_html_files`.
 
 After this is done and merged to the main branch, it should not be done again.
 Instead, edit the HTML license template files to change the English text, and
 use Transifex to update the translation files.
 
-Anytime `.po` files are created or changed, run `pipenv run ./manage.py
-compilemessages` to update the `.mo` files.
-
 > :warning: **Important:** If the `.mo` files are not updated, Django will not
 > use the updated translations!
 
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 [legacylegalcode]: https://github.com/creativecommons/cc-licenses-data/tree/main/legacy/legalcode
 
 
-## Saving the site as static files
+#### Translation Update Process
+
+This process must be run any time the `.po` files are created or changed.
+
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+3. Compile translation messages (update `.mo` files)
+    ```shell
+    docker-compose run app ./manage.py compilemessages
+    ```
+
+
+## Generate Static Files
 
 We've been calling this process "publishing", but that's a little
 misleading, since this process does nothing to make its results visible on the
 Internet. It just updates the static HTML files in the -data directory.
 
-This is most easily done from a developer environment.
 
-Check out the [creativecommons/cc-licenses-data][repodata] repository next to
-your `cc-licenses` working tree.
+#### Static Files Process
 
-Decide what branch you want to generate the site from, e.g. "main".
+This process will write the HTML files in the cc-licenses-data clone directory
+under `docs/`. It will not commit the changes (`--nogit`) and will not push any
+commits (`--nopush` is implied by `--nogit`).
 
-In the cc-licenses-data working directory, check out that branch and make sure
-it's up-to-date, e.g.:
-```shell
-git checkout main
-git pull origin main
-```
-
-Then change back to the cc-licenses tree, and run the publish management
-command, probably starting with "--nopush":
-```shell
-pipenv run ./manage.py publish --nopush --branch=main
-```
-
-This will write the HTML files in the cc-licenses-data tree under `build` and
-commit the changes, but won't push them up to GitHub. You can do that manually
-after checking the results.
-
-Alternatively you can leave off `no-push` and *if* the publish makes changes,
-it'll both commit and push them. Just be aware that it won't try to push unless
-it has just committed some changes, so if upstream is already behind and
-running publish doesn't make any new changes, you'll still have to push
-manually to get upstream updated.
+1. Ensure the [Data Repository](#data-repository) is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+3. Compile translation messages (update `.mo` files)
+    ```shell
+    docker-compose run app ./manage.py publish --nogit --branch=main
+    ```
 
 
 ### Publishing changes to git repo

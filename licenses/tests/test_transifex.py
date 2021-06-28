@@ -65,7 +65,7 @@ class DummyRepo:
 
 @override_settings(
     TRANSIFEX=TEST_TRANSIFEX_SETTINGS,
-    TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo",
+    DATA_REPOSITORY_DIR="/trans/repo",
 )
 class TestTransifex(TestCase):
     def setUp(self):
@@ -224,7 +224,7 @@ class TestTransifex(TestCase):
 
     def test_upload_messages_to_transifex_no_resource_yet(self):
         # English so we can create the resource
-        license = LicenseFactory(license_code="by-nd", version="4.0")
+        license = LicenseFactory(unit="by-nd", version="4.0")
         legalcode = LegalCodeFactory(
             license=license,
             language_code=DEFAULT_LANGUAGE_CODE,
@@ -286,7 +286,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
 
     def test_upload_messages_english_resource_exists(self):
         # English because it's the source messages and is handled differently
-        license = LicenseFactory(license_code="by-nd", version="4.0")
+        license = LicenseFactory(unit="by-nd", version="4.0")
         legalcode = LegalCodeFactory(
             license=license,
             language_code=DEFAULT_LANGUAGE_CODE,
@@ -317,7 +317,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
     def test_upload_messages_non_english_resource_exists(self):
         # non-English because it's not the source messages and is handled
         # differently
-        license = LicenseFactory(license_code="by-nd", version="4.0")
+        license = LicenseFactory(unit="by-nd", version="4.0")
         legalcode = LegalCodeFactory(license=license, language_code="fr")
         test_resources = [
             {
@@ -371,7 +371,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
 
 
 @override_settings(
-    TRANSLATION_REPOSITORY_DIRECTORY="/trans/repo",
+    DATA_REPOSITORY_DIR="/trans/repo",
 )
 class CheckForTranslationUpdatesTest(TestCase):
     def test_check_for_translation_updates_with_dirty_repo(self):
@@ -437,7 +437,7 @@ class CheckForTranslationUpdatesTest(TestCase):
         convoluted.
         """
         language_code = "zh-Hans"
-        license = LicenseFactory(version="4.0", license_code="by-nd")
+        license = LicenseFactory(version="4.0", unit="by-nd")
 
         first_translation_update_datetime = datetime.datetime(
             2007, 1, 25, 12, 0, 0, tzinfo=utc
@@ -593,12 +593,12 @@ class CheckForTranslationUpdatesTest(TestCase):
         # legalcodes for two branches
         legalcode1 = LegalCodeFactory(
             license__version="4.0",
-            license__license_code="by-nc",
+            license__unit="by-nc",
             language_code="fr",
         )
         legalcode2 = LegalCodeFactory(
             license__version="4.0",
-            license__license_code="by-nd",
+            license__unit="by-nd",
             language_code="de",
         )
         with mpo(helper, "handle_updated_translation_branch") as mock_handle:
@@ -623,12 +623,12 @@ class CheckForTranslationUpdatesTest(TestCase):
         self.assertIsNone(result)
         legalcode1 = LegalCodeFactory(
             license__version="4.0",
-            license__license_code="by-nc",
+            license__unit="by-nc",
             language_code="fr",
         )
         legalcode2 = LegalCodeFactory(
             license__version="4.0",
-            license__license_code="by-nd",
+            license__unit="by-nd",
             language_code="fr",
         )
         with mp("licenses.transifex.setup_local_branch") as mock_setup, mpo(
@@ -667,7 +667,7 @@ class CheckForTranslationUpdatesTest(TestCase):
         dummy_repo = DummyRepo("/trans/repo")
         legalcode = LegalCodeFactory(
             license__version="4.0",
-            license__license_code="by-nc",
+            license__unit="by-nc",
             language_code="fr",
         )
         helper._stats = {
@@ -706,7 +706,7 @@ class CheckForTranslationUpdatesTest(TestCase):
         self.assertEqual({legalcode}, set(trb.legalcodes.all()))
         relpath = os.path.relpath(
             legalcode.translation_filename(),
-            settings.TRANSLATION_REPOSITORY_DIRECTORY,
+            settings.DATA_REPOSITORY_DIR,
         )
         dummy_repo.index.add.assert_called_with([relpath])
 

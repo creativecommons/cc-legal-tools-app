@@ -77,7 +77,7 @@ def get_translation_object(
     """
 
     license_locale_dir = os.path.join(
-        settings.TRANSLATION_REPOSITORY_DIRECTORY, "translations"
+        settings.DATA_REPOSITORY_DIR, "translations"
     )
     # Start with a translation object for the domain for this license.
     license_translation_object = DjangoTranslation(

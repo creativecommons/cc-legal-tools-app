@@ -1,7 +1,8 @@
 # Standard library
 import os
+import socket
 from argparse import ArgumentParser
-from shutil import rmtree
+from shutil import copyfile, rmtree
 
 # Third-party
 import git
@@ -71,36 +72,55 @@ class Command(BaseCommand):
     def _quiet(self, *args, **kwargs):
         pass
 
+    def run_clean_output_dir(self):
+        output_dir = self.output_dir
+        output_dir_items = [
+            os.path.join(output_dir, item)
+            for item in os.listdir(output_dir)
+            if item != "CNAME"
+        ]
+        for item in output_dir_items:
+            if os.path.isdir(item):
+                rmtree(item)
+            else:
+                os.remove(item)
+
     def run_django_distill(self):
         """Outputs static files into the output dir."""
         if not os.path.isdir(settings.STATIC_ROOT):
             e = "Static source directory does not exist, run collectstatic"
             raise CommandError(e)
+        hostname = socket.gethostname()
         output_dir = self.output_dir
-        if os.path.isdir(output_dir):
-            rmtree(output_dir)
-        os.makedirs(output_dir)
 
-        self.stdout.write(f"\n{self.output_dir}")
-        save_url_as_static_file(output_dir, "/status/", "status/index.html")
+        self.stdout.write(f"\n{hostname}:{output_dir}")
+        save_url_as_static_file(
+            output_dir,
+            url="/dev/status/",
+            relpath="status/index.html",
+            html=True,
+        )
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
             save_url_as_static_file(
                 output_dir,
-                f"/status/{tbranch_id}/",
-                f"status/{tbranch_id}.html",
+                url=f"/status/{tbranch_id}/",
+                relpath=f"status/{tbranch_id}.html",
+                html=True,
             )
 
         legalcodes = LegalCode.objects.validgroups()
         for group in legalcodes.keys():
-            self.stdout.write(f"\n{self.output_dir}")
+            self.stdout.write(f"\n{group}")
+            self.stdout.write(f"{hostname}:{output_dir}")
             for legalcode in legalcodes[group]:
                 # deed
                 filepath, symlinks = legalcode.get_file_and_links("deed")
                 save_url_as_static_file(
                     output_dir,
-                    legalcode.deed_url,
-                    filepath,
+                    url=legalcode.deed_url,
+                    relpath=filepath,
+                    html=True,
                 )
                 for symlink in symlinks:
                     relative_symlink(output_dir, filepath, symlink)
@@ -108,23 +128,136 @@ class Command(BaseCommand):
                 filepath, symlinks = legalcode.get_file_and_links("legalcode")
                 save_url_as_static_file(
                     output_dir,
-                    legalcode.license_url,
-                    filepath,
+                    url=legalcode.license_url,
+                    relpath=filepath,
+                    html=True,
                 )
                 for symlink in symlinks:
                     relative_symlink(output_dir, filepath, symlink)
 
-        self.stdout.write(f"\n{self.output_dir}")
+        self.stdout.write(f"\n{hostname}:{output_dir}")
         save_url_as_static_file(
-            output_dir, reverse("metadata"), "licenses/metadata.yaml"
+            output_dir,
+            url=reverse("metadata"),
+            relpath="licenses/metadata.yaml",
         )
+
+    def run_copy_licenses_rdfs(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
+        licenses_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
+        licenses_rdfs = [
+            rdf_file
+            for rdf_file in os.listdir(licenses_rdf_dir)
+            if os.path.isfile(os.path.join(licenses_rdf_dir, rdf_file))
+        ]
+        licenses_rdfs.sort()
+        self.stdout.write(f"\n{hostname}:{output_dir}")
+        for rdf in licenses_rdfs:
+            if rdf.endswith(".rdf"):
+                name = rdf[:-4]
+            else:
+                continue
+            relative_name = os.path.join(*name.split("_"), "rdf")
+            # "xu" is a "user assigned code" meaning "unported"
+            # See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
+            relative_name = relative_name.replace("xu/", "")
+            dest_file = os.path.join(output_dir, relative_name)
+            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
+            copyfile(os.path.join(licenses_rdf_dir, rdf), dest_file)
+            self.stdout.write(f"    {relative_name}")
+
+    def run_copy_meta_rdfs(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
+        meta_rdf_dir = os.path.join(legacy_dir, "rdf-meta")
+        meta_files = [
+            meta_file
+            for meta_file in os.listdir(meta_rdf_dir)
+            if os.path.isfile(os.path.join(meta_rdf_dir, meta_file))
+        ]
+        meta_files.sort()
+        dest_dir = os.path.join(output_dir, "rdf")
+        os.makedirs(dest_dir, exist_ok=True)
+        self.stdout.write(f"\n{hostname}:{output_dir}")
+        for meta_file in meta_files:
+            dest_relative = os.path.join("rdf", meta_file)
+            dest_full = os.path.join(output_dir, dest_relative)
+            self.stdout.write(f"    {dest_relative}")
+            copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
+            if meta_file == "index.rdf":
+                os.makedirs(
+                    os.path.join(output_dir, "licenses"), exist_ok=True
+                )
+                dir_fd = os.open(output_dir, os.O_RDONLY)
+                symlink = os.path.join("licenses", meta_file)
+                try:
+                    os.symlink(f"../{dest_relative}", symlink, dir_fd=dir_fd)
+                    self.stdout.write(f"   ^{symlink}")
+                finally:
+                    os.close(dir_fd)
+            elif meta_file == "ns.html":
+                dir_fd = os.open(output_dir, os.O_RDONLY)
+                symlink = meta_file
+                try:
+                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
+                    self.stdout.write(f"   ^{symlink}")
+                finally:
+                    os.close(dir_fd)
+            elif meta_file == "schema.rdf":
+                dir_fd = os.open(output_dir, os.O_RDONLY)
+                symlink = meta_file
+                try:
+                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
+                    self.stdout.write(f"   ^{symlink}")
+                finally:
+                    os.close(dir_fd)
+
+    def run_copy_legalcode_plaintext(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
+        plaintext_dir = os.path.join(legacy_dir, "legalcode")
+        plaintext_files = [
+            text_file
+            for text_file in os.listdir(plaintext_dir)
+            if (
+                os.path.isfile(os.path.join(plaintext_dir, text_file))
+                and text_file.endswith(".txt")
+            )
+        ]
+        self.stdout.write(f"\n{hostname}:{output_dir}")
+        for text in plaintext_files:
+            if text.startswith("by"):
+                context = "licenses"
+            else:
+                context = "publicdomain"
+            name = text[:-4]
+            relative_name = os.path.join(
+                context,
+                *name.split("_"),
+                "legalcode.txt",
+            )
+            dest_file = os.path.join(output_dir, relative_name)
+            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
+            copyfile(os.path.join(plaintext_dir, text), dest_file)
+            self.stdout.write(f"    {relative_name}")
+
+    def distill_and_copy(self):
+        self.run_clean_output_dir()
+        self.run_django_distill()
+        self.run_copy_licenses_rdfs()
+        self.run_copy_meta_rdfs()
+        self.run_copy_legalcode_plaintext()
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
         self.stdout.write(f"Publishing branch {branch}")
-        with git.Repo(settings.TRANSLATION_REPOSITORY_DIRECTORY) as repo:
+        with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
             setup_local_branch(repo, branch)
-            self.run_django_distill()
+            self.distill_and_copy()
             if repo.is_dirty(untracked_files=True):
                 # Add any changes and new files
 
@@ -143,24 +276,24 @@ class Command(BaseCommand):
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir"""
-        branch_list = list_open_translation_branches()
+        branches = list_open_translation_branches()
         self.stdout.write(
-            f"\n\nChecking and updating build dirs for {len(branch_list)}"
+            f"\n\nChecking and updating build dirs for {len(branches)}"
             " translation branches\n\n"
         )
-        for b in branch_list:
-            self.publish_branch(b)
+        for branch in branches:
+            self.publish_branch(branch)
 
     def handle(self, *args, **options):
         self.options = options
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
-        git_dir = os.path.abspath(settings.TRANSLATION_REPOSITORY_DIRECTORY)
+        self.legacy_dir = os.path.abspath(settings.LEGACY_DIR)
+        git_dir = os.path.abspath(settings.DATA_REPOSITORY_DIR)
         if not self.output_dir.startswith(git_dir):
             raise ImproperlyConfigured(
-                f"In Django settings, DISTILL_DIR must be inside "
-                f"TRANSLATION_REPOSITORY_DIRECTORY, "
-                f"but DISTILL_DIR={self.output_dir} is outside "
-                f"TRANSLATION_REPOSITORY_DIRECTORY={git_dir}."
+                "In Django settings, DISTILL_DIR must be inside"
+                f" DATA_REPOSITORY_DIR, but DISTILL_DIR={self.output_dir} is"
+                f" outside DATA_REPOSITORY_DIR={git_dir}."
             )
 
         self.relpath = os.path.relpath(self.output_dir, git_dir)
@@ -169,10 +302,10 @@ class Command(BaseCommand):
         if options.get("list_branches"):
             branches = list_open_translation_branches()
             self.stdout.write("\n\nWhich branch are we publishing to?\n")
-            for b in branches:
-                self.stdout.write(b)
+            for branch in branches:
+                self.stdout.write(branch)
         elif options.get("nogit"):
-            self.run_django_distill()
+            self.distill_and_copy()
         elif options.get("branch_name"):
             self.publish_branch(options["branch_name"])
         else:

@@ -41,7 +41,7 @@ class MetadataTest(TestCase):
         ).import_metadata(open("index.rdf", "rb"))
 
     def test_mit_license(self):
-        license = License.objects.get(license_code="MIT")
+        license = License.objects.get(unit="MIT")
         self.assertEqual("", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/software",
@@ -60,7 +60,7 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
 
     def test_bsd(self):
-        license = License.objects.get(license_code="BSD")
+        license = License.objects.get(unit="BSD")
         self.assertEqual("", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/software",
@@ -79,7 +79,7 @@ class MetadataTest(TestCase):
         self.assertFalse(license.prohibits_high_income_nation_use)
 
     def test_40_by_nc_nd(self):
-        license = License.objects.get(version="4.0", license_code="by-nc-nd")
+        license = License.objects.get(version="4.0", unit="by-nc-nd")
         self.assertEqual("http://creativecommons.org", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/", license.license_class_url
@@ -116,7 +116,7 @@ class MetadataTest(TestCase):
         )
 
     def test_40_by_sa(self):
-        license = License.objects.get(version="4.0", license_code="by-sa")
+        license = License.objects.get(version="4.0", unit="by-sa")
         self.assertEqual("http://creativecommons.org", license.creator_url)
         self.assertEqual(
             "http://creativecommons.org/license/", license.license_class_url
@@ -143,12 +143,12 @@ class MetadataTest(TestCase):
 
     def test_30_by_nc_nd_es(self):
         license = License.objects.get(
-            about="http://creativecommons.org/licenses/by-nc-nd/3.0/es/"
+            canonical_url="http://creativecommons.org/licenses/by-nc-nd/3.0/es/"
         )
         # This one has a source
         self.assertEqual(
             "http://creativecommons.org/licenses/by-nc-nd/3.0/",
-            license.source.about,
+            license.source.canonical_url,
         )
         self.assertEqual("http://creativecommons.org", license.creator_url)
         self.assertEqual(
@@ -194,25 +194,25 @@ class MetadataTest(TestCase):
 
     def test_is_replaced_by(self):
         license = License.objects.get(
-            about="http://creativecommons.org/licenses/by/2.0/hr/"
+            canonical_url="http://creativecommons.org/licenses/by/2.0/hr/"
         )
         self.assertEqual(
             "http://creativecommons.org/licenses/by/2.5/hr/",
-            license.is_replaced_by.about,
+            license.is_replaced_by.canonical_url,
         )
 
     def test_is_based_on(self):
         license = License.objects.get(
-            about="http://creativecommons.org/licenses/by-nc-nd/2.0/jp/"
+            canonical_url="http://creativecommons.org/licenses/by-nc-nd/2.0/jp/"
         )
         self.assertEqual(
             "http://creativecommons.org/licenses/by-nc-nd/2.0/",
-            license.is_based_on.about,
+            license.is_based_on.canonical_url,
         )
 
     def test_deprecated_on(self):
         license = License.objects.get(
-            about="http://creativecommons.org/licenses/sa/1.0/fi/"
+            canonical_url="http://creativecommons.org/licenses/sa/1.0/fi/"
         )
         # 2004-05-25
         self.assertEqual(datetime.date(2004, 5, 25), license.deprecated_on)
@@ -228,7 +228,7 @@ class MetadataTest(TestCase):
             self.assertEqual("en", legalcode.language_code)
         with self.subTest("title"):
             bsd_license = License.objects.get(
-                about="http://creativecommons.org/licenses/BSD/"
+                canonical_url="http://creativecommons.org/licenses/BSD/"
             )
             title = TranslatedLicenseName.objects.get(
                 license=bsd_license, name="BSD License"

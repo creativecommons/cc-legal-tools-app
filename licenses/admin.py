@@ -27,14 +27,21 @@ class TranslationBranchAdmin(admin.ModelAdmin):
 @admin.register(LegalCode)
 class LegalCodeAdmin(admin.ModelAdmin):
     fields = [
+        "title",
         "license",
         "language_code",
+        "license_url",
+        "deed_url",
+        "plain_text_url",
+        "html_file",
+        "html",
     ]
     list_display = [
         "language_code",
         "license",
     ]
     list_filter = [
+        "license__unit",
         "language_code",
     ]
     raw_id_fields = [
@@ -54,11 +61,11 @@ class LegalCodeInline(admin.TabularInline):
 @admin.register(License)
 class LicenseAdmin(admin.ModelAdmin):
     fields = [
-        "about",
-        "license_code",
+        "canonical_url",
+        "unit",
         "version",
         "creator_url",
-        "license_class_url",
+        "category",
         "jurisdiction_code",
         "source",
         "is_replaced_by",
@@ -77,16 +84,15 @@ class LicenseAdmin(admin.ModelAdmin):
     ]
     inlines = [LegalCodeInline]
     list_display = [
-        "license_code",
-        "title_english",
+        "unit",
         "version",
         "jurisdiction_code",
     ]
     list_filter = [
-        "license_code",
+        "unit",
         "version",
         "creator_url",
-        "license_class_url",
+        "category",
         "jurisdiction_code",
     ]
     raw_id_fields = [
@@ -95,7 +101,7 @@ class LicenseAdmin(admin.ModelAdmin):
         "is_based_on",
     ]
     search_fields = [
-        "license_code",
+        "unit",
         "version",
-        "about",
+        "canonical_url",
     ]

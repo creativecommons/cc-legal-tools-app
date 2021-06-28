@@ -1,3 +1,8 @@
 [flake8]
-extend-exclude=docs/,node_modules/,venv/
+extend-exclude=
+    .cache/,
+    .local/,
+    docs/,
+    node_modules/,
+    venv/,
 max-line-length = 79
