@@ -20,6 +20,8 @@ from licenses.views import (
     DEED_TEMPLATE_MAPPING,
     NUM_COMMITS,
     branch_status_helper,
+    get_category_and_category_title,
+    normalize_path_and_lang,
 )
 
 
@@ -340,6 +342,45 @@ class ViewLicenseTest(TestCase):
     #        self.assertContains(rsp, 'lang="de"')
     #        self.assertEqual(lc, context["legalcode"])
 
+    def test_get_category_and_category_title_category_license(self):
+        category, category_title = get_category_and_category_title(
+            category=None,
+            license=None,
+        )
+        self.assertEqual(category, "licenses")
+        self.assertEqual(category_title, "Licenses")
+
+        license = LicenseFactory(
+            category="licenses",
+            canonical_url="https://creativecommons.org/licenses/by/4.0/",
+            version="4.0",
+        )
+        category, category_title = get_category_and_category_title(
+            category=None,
+            license=license,
+        )
+        self.assertEqual(category, "licenses")
+        self.assertEqual(category_title, "Licenses")
+
+    def test_get_category_and_category_title_category_publicdomain(self):
+        category, category_title = get_category_and_category_title(
+            category="publicdomain",
+            license=None,
+        )
+        self.assertEqual(category, "publicdomain")
+        self.assertEqual(category_title, "Public Domain")
+
+    def test_normalize_path_and_lang(self):
+        request_path = "/licenses/by/3.0/de/legalcode"
+        jurisdiction = "de"
+        norm_request_path, norm_language_code = normalize_path_and_lang(
+            request_path,
+            jurisdiction,
+            language_code=None,
+        )
+        self.assertEqual(norm_request_path, f"{request_path}.de")
+        self.assertEqual(norm_language_code, "de")
+
     def test_view_license_identifying_jurisdiction_default_language(self):
         language_code = "de"
         lc = LegalCodeFactory(
@@ -569,7 +610,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     #     self.assertEqual("fr", context["target_lang"])
 
 
-class BranchStatusViewTest(TestCase):
+class ViewBranchStatusTest(TestCase):
     def setUp(self):
         self.translation_branch = TranslationBranchFactory(
             language_code="fr",
@@ -723,8 +764,8 @@ class BranchStatusViewTest(TestCase):
         )
 
 
-class TranslationStatusViewTest(TestCase):
-    def test_translation_status_view(self):
+class ViewTranslationStatusTest(TestCase):
+    def test_view_translation_status(self):
         TranslationBranchFactory()
         TranslationBranchFactory()
         TranslationBranchFactory()
@@ -737,7 +778,7 @@ class TranslationStatusViewTest(TestCase):
         self.assertEqual(3, len(context["branches"]))
 
 
-class MetadataViewTest(TestCase):
+class ViewMetadataTest(TestCase):
     def test_view_metadata(self):
         LicenseFactory()
         with mock.patch.object(License, "get_metadata") as mock_get_metadata:
@@ -746,3 +787,11 @@ class MetadataViewTest(TestCase):
         self.assertEqual(200, rsp.status_code)
         mock_get_metadata.assert_called_with()
         self.assertEqual(b"- foo: bar\n", rsp.content)
+
+
+class ViewPageNotFoundTest(TestCase):
+    def test_view_page_not_found(self):
+        url = "/does/not/exist"
+        rsp = self.client.get(url)
+        self.assertTemplateUsed("404.html")
+        self.assertEqual(rsp.status_code, 404)

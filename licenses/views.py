@@ -52,7 +52,7 @@ def get_category_and_category_title(category=None, license=None):
         if license:
             category = license.category
         else:
-            category = "license"
+            category = "licenses"
     # category_title
     if category == "publicdomain":
         category_title = "Public Domain"
@@ -180,16 +180,22 @@ def view_license(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    if is_plain_text:
-        legalcode = get_object_or_404(
-            LegalCode,
-            plain_text_url=request.path,
-        )
-    else:
-        legalcode = get_object_or_404(
-            LegalCode,
-            license_url=request.path,
-        )
+    # Plaintext disabled
+    # if is_plain_text:
+    #     legalcode = get_object_or_404(
+    #         LegalCode,
+    #         plain_text_url=request.path,
+    #     )
+    # else:
+    #     legalcode = get_object_or_404(
+    #         LegalCode,
+    #         license_url=request.path,
+    #     )
+    legalcode = get_object_or_404(
+        LegalCode,
+        license_url=request.path,
+    )
+
     license = legalcode.license
     category, category_title = get_category_and_category_title(
         category,
@@ -394,4 +400,5 @@ def view_page_not_found(request, exception, template_name="404.html"):
             "category": "dev",
             "category_title": "Dev",
         },
+        status=404,
     )
