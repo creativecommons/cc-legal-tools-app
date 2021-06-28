@@ -1,4 +1,5 @@
 # Standard library
+import os.path
 import re
 from operator import itemgetter
 from typing import Iterable
@@ -82,6 +83,7 @@ def view_dev_home(request, category=None):
     )
     licenses = []
     publicdomain = []
+    path_start = os.path.dirname(request.path)
     for lc in legalcode_objects:
         lc_category = lc.license.category
         version = lc.license.version
@@ -104,8 +106,8 @@ def view_dev_home(request, category=None):
             jurisdiction=jurisdiction,
             unit=lc.license.unit,
             language_code=lc.language_code,
-            deed_url=lc.deed_url,
-            license_url=lc.license_url,
+            deed_url=os.path.relpath(lc.deed_url, start=path_start),
+            license_url=os.path.relpath(lc.license_url, start=path_start),
         )
         if lc_category == "licenses":
             licenses.append(data)
@@ -132,6 +134,7 @@ def name_local(legal_code):
 
 
 def get_languages_and_links_for_legalcodes(
+    path_start,
     legalcodes: Iterable[LegalCode],
     selected_language_code: str,
     license_or_deed: str,
@@ -148,14 +151,16 @@ def get_languages_and_links_for_legalcodes(
             # name_local: name of language in its own language
             "name_local": name_local(legal_code),
             "name_for_sorting": name_local(legal_code).lower(),
-            "link": legal_code.license_url
+            "link": os.path.relpath(legal_code.license_url, start=path_start)
             if license_or_deed == "license"
-            else legal_code.deed_url,
+            else os.path.relpath(legal_code.deed_url, start=path_start),
             "selected": selected_language_code == legal_code.language_code,
         }
         for legal_code in legalcodes
     ]
     languages_and_links.sort(key=itemgetter("name_for_sorting"))
+    if len(languages_and_links) < 2:
+        languages_and_links = None
     return languages_and_links
 
 
@@ -167,6 +172,61 @@ def normalize_path_and_lang(request_path, jurisdiction, language_code):
     if not request_path.endswith(f".{language_code}"):
         request_path = f"{request_path}.{language_code}"
     return request_path, language_code
+
+
+def view_deed(
+    request,
+    unit,
+    version,
+    category=None,
+    jurisdiction=None,
+    language_code=None,
+):
+    request.path, language_code = normalize_path_and_lang(
+        request.path, jurisdiction, language_code
+    )
+    path_start = os.path.dirname(request.path)
+    legalcode = get_object_or_404(
+        LegalCode,
+        deed_url=request.path,
+    )
+    license_rel_path = os.path.relpath(legalcode.license_url, path_start)
+
+    license = legalcode.license
+    category, category_title = get_category_and_category_title(
+        category,
+        license,
+    )
+    language_code = legalcode.language_code  # CC language code
+    languages_and_links = get_languages_and_links_for_legalcodes(
+        path_start, license.legal_codes.all(), language_code, "deed"
+    )
+
+    if license.unit == "CC0":
+        body_template = "includes/deed_cc0_body.html"
+    elif license.unit in UNITS_LICENSES and license.version == "4.0":
+        body_template = "includes/deed_40_body.html"
+    else:
+        # Default to 4.0 - or maybe we should just fail?
+        body_template = "includes/deed_40_body.html"
+
+    translation = legalcode.get_translation_object()
+    with active_translation(translation):
+        return render(
+            request,
+            template_name="deed.html",
+            context={
+                "additional_classes": "",
+                "body_template": body_template,
+                "category": category,
+                "category_title": category_title,
+                "fat_code": license.fat_code(),
+                "languages_and_links": languages_and_links,
+                "legalcode": legalcode,
+                "license": license,
+                "license_rel_path": license_rel_path,
+            },
+        )
 
 
 def view_license(
@@ -181,6 +241,7 @@ def view_license(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
+    path_start = os.path.dirname(request.path)
     # Plaintext disabled
     # if is_plain_text:
     #     legalcode = get_object_or_404(
@@ -196,6 +257,7 @@ def view_license(
         LegalCode,
         license_url=request.path,
     )
+    deed_rel_path = os.path.relpath(legalcode.deed_url, path_start)
 
     license = legalcode.license
     category, category_title = get_category_and_category_title(
@@ -205,7 +267,7 @@ def view_license(
 
     language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
-        legalcode.license.legal_codes.all(), language_code, "license"
+        path_start, license.legal_codes.all(), language_code, "license"
     )
 
     kwargs = dict(
@@ -213,10 +275,11 @@ def view_license(
         context={
             "category": category,
             "category_title": category_title,
-            "fat_code": legalcode.license.fat_code(),
+            "fat_code": license.fat_code(),
             "languages_and_links": languages_and_links,
             "legalcode": legalcode,
             "license": license,
+            "deed_rel_path": deed_rel_path,
         },
     )
 
@@ -248,57 +311,6 @@ def view_license(
         #         return response
 
         return render(request, **kwargs)
-
-
-def view_deed(
-    request,
-    unit,
-    version,
-    category=None,
-    jurisdiction=None,
-    language_code=None,
-):
-    request.path, language_code = normalize_path_and_lang(
-        request.path, jurisdiction, language_code
-    )
-    legalcode = get_object_or_404(
-        LegalCode,
-        deed_url=request.path,
-    )
-    license = legalcode.license
-    category, category_title = get_category_and_category_title(
-        category,
-        license,
-    )
-    language_code = legalcode.language_code  # CC language code
-    languages_and_links = get_languages_and_links_for_legalcodes(
-        license.legal_codes.all(), language_code, "deed"
-    )
-
-    if license.unit == "CC0":
-        body_template = "includes/deed_cc0_body.html"
-    elif license.unit in UNITS_LICENSES and license.version == "4.0":
-        body_template = "includes/deed_40_body.html"
-    else:
-        # Default to 4.0 - or maybe we should just fail?
-        body_template = "includes/deed_40_body.html"
-
-    translation = legalcode.get_translation_object()
-    with active_translation(translation):
-        return render(
-            request,
-            "deed.html",
-            {
-                "additional_classes": "",
-                "body_template": body_template,
-                "category": category,
-                "category_title": category_title,
-                "fat_code": license.fat_code(),
-                "languages_and_links": languages_and_links,
-                "legalcode": legalcode,
-                "license": license,
-            },
-        )
 
 
 def view_translation_status(request):
