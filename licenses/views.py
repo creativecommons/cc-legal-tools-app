@@ -204,11 +204,9 @@ def view_deed(
 
     if license.unit == "CC0":
         body_template = "includes/deed_cc0_body.html"
-    elif license.unit in UNITS_LICENSES and license.version == "4.0":
-        body_template = "includes/deed_40_body.html"
     else:
-        # Default to 4.0 - or maybe we should just fail?
-        body_template = "includes/deed_40_body.html"
+        # Default to Licenses Deed - or maybe we should just fail???
+        body_template = "includes/deed_licenses_body.html"
 
     translation = legalcode.get_translation_object()
     with active_translation(translation):
