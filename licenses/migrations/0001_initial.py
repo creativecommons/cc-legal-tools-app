@@ -47,6 +47,7 @@ class Migration(migrations.Migration):
                 (
                     "translation_last_update",
                     models.DateTimeField(
+                        blank=True,
                         null=True,
                         default=None,
                         help_text="The last_updated field from Transifex for"
@@ -124,6 +125,7 @@ class Migration(migrations.Migration):
                 (
                     "last_transifex_update",
                     models.DateTimeField(
+                        blank=True,
                         null=True,
                         default=None,
                         verbose_name="Time when last updated on Transifex.",
@@ -232,7 +234,9 @@ class Migration(migrations.Migration):
                     "is_based_on",
                     models.ForeignKey(
                         help_text="another license that this one is based on",
+                        blank=True,
                         null=True,
+                        default=None,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="base_of",
                         to="licenses.License",
@@ -242,7 +246,9 @@ class Migration(migrations.Migration):
                     "is_replaced_by",
                     models.ForeignKey(
                         help_text="another license that has replaced this one",
+                        blank=True,
                         null=True,
+                        default=None,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="replaces",
                         to="licenses.License",
@@ -253,7 +259,9 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         help_text="another license that this is the"
                         " translation of",
+                        blank=True,
                         null=True,
+                        default=None,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="source_of",
                         to="licenses.License",
