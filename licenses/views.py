@@ -202,7 +202,10 @@ def view_deed(
     )
     language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
-        path_start, license.legal_codes.all(), language_code, "deed"
+        path_start=path_start,
+        legalcodes=license.legal_codes.all(),
+        selected_language_code=language_code,
+        license_or_deed="deed",
     )
 
     if license.unit == "CC0":
@@ -270,7 +273,10 @@ def view_license(
 
     language_code = legalcode.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legalcodes(
-        path_start, license.legal_codes.all(), language_code, "license"
+        path_start=path_start,
+        legalcodes=license.legal_codes.all(),
+        selected_language_code=language_code,
+        license_or_deed="license",
     )
 
     kwargs = dict(
