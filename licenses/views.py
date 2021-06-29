@@ -160,6 +160,9 @@ def get_languages_and_links_for_legalcodes(
     ]
     languages_and_links.sort(key=itemgetter("name_for_sorting"))
     if len(languages_and_links) < 2:
+        # Return an empty list if there are not multiple languages available
+        # (this will result in the language dropdown not being shown with a
+        # single currently active language)
         languages_and_links = None
     return languages_and_links
 
