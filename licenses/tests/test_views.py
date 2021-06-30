@@ -384,12 +384,13 @@ class ViewLicenseTest(TestCase):
     def test_view_license_identifying_jurisdiction_default_language(self):
         language_code = "de"
         lc = LegalCodeFactory(
+            html="crude",
+            language_code=language_code,
             license__category="licenses",
             license__canonical_url="https://creativecommons.org"
             "/licenses/by/3.0/de/",
             license__version="3.0",
             license__jurisdiction_code="de",
-            language_code=language_code,
         )
         url = lc.license_url
         rsp = self.client.get(url)
