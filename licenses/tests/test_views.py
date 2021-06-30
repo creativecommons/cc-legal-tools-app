@@ -545,6 +545,17 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
+    def test_license_deed_view_deed_unimplemented(self):
+        lc = LegalCodeFactory(
+            license__category="licenses",
+            license__canonical_url="https://creativecommons.org/licenses/x/0/",
+            license__unit="x",
+        )
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(rsp.status_code, 200)
+        self.assertTemplateUsed(rsp, "includes/deed_unimplemented.html")
+
     # def test_deed_for_superseded_license(self):
     #     unit = "by-nc-sa"
     #     version = "2.0"  # No 4.0 licenses have been superseded

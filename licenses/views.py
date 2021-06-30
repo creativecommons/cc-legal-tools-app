@@ -116,8 +116,8 @@ def view_dev_home(request, category=None):
 
     return render(
         request,
-        "dev_home.html",
-        {
+        template_name="dev_home.html",
+        context={
             "category": "dev",
             "category_title": "Dev",
             "units": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
@@ -210,11 +210,10 @@ def view_deed(
 
     if license.unit == "CC0":
         body_template = "includes/deed_cc0_body.html"
-    elif license.unit in UNITS_LICENSES and license.version == "4.0":
-        body_template = "includes/deed_40_body.html"
+    elif license.unit in UNITS_LICENSES:
+        body_template = "includes/deed_licenses_body.html"
     else:
-        # Default to 4.0 - or maybe we should just fail?
-        body_template = "includes/deed_40_body.html"
+        body_template = "includes/deed_unimplemented.html"
 
     translation = legalcode.get_translation_object()
     with active_translation(translation):

@@ -187,6 +187,7 @@ class LegalCode(models.Model):
     )
     translation_last_update = models.DateTimeField(
         help_text="The last_updated field from Transifex for this translation",
+        blank=True,
         null=True,
         default=None,
     )
@@ -442,21 +443,27 @@ class License(models.Model):
     )
     source = models.ForeignKey(
         "self",
+        blank=True,
         null=True,
+        default=None,
         on_delete=models.CASCADE,
         related_name="source_of",
         help_text="another license that this is the translation of",
     )
     is_replaced_by = models.ForeignKey(
         "self",
+        blank=True,
         null=True,
+        default=None,
         on_delete=models.CASCADE,
         related_name="replaces",
         help_text="another license that has replaced this one",
     )
     is_based_on = models.ForeignKey(
         "self",
+        blank=True,
         null=True,
+        default=None,
         on_delete=models.CASCADE,
         related_name="base_of",
         help_text="another license that this one is based on",
@@ -664,6 +671,7 @@ class TranslationBranch(models.Model):
     )
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",
+        blank=True,
         null=True,
         default=None,
     )

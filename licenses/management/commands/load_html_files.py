@@ -172,12 +172,15 @@ class Command(BaseCommand):
                 permits_sharing = "nd" not in unit_parts
                 requires_share_alike = "sa" in unit_parts
                 requires_notice = True
-                requires_attribution = True
+                requires_attribution = (
+                    "by" in unit_parts
+                    or "devnations" in unit_parts
+                    or "sampling" in unit_parts
+                    or "sampling+" in unit_parts
+                )
                 requires_source_code = False  # GPL, LGPL only, I think
                 prohibits_commercial_use = "nc" in unit_parts
-                prohibits_high_income_nation_use = (
-                    False  # Not any BY 4.0 license
-                )
+                prohibits_high_income_nation_use = "devnations" in unit_parts
             elif unit in UNITS_PUBLIC_DOMAIN:
                 # permits anything, requires nothing, prohibits nothing
                 permits_derivative_works = True
