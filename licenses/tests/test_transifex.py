@@ -548,7 +548,7 @@ class CheckForTranslationUpdatesTest(TestCase):
             # Should have tried to create resource
             mock_create_resource.assert_called_with(
                 resource_slug=resource_slug,
-                resource_name=legal_code.license.fat_code(),
+                resource_name=legal_code.license.identifier(),
                 pofilename=os.path.basename(legal_code.translation_filename()),
                 pofile_content=get_pofile_content(
                     mock_get_pofile.return_value

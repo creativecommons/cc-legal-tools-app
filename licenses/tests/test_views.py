@@ -491,7 +491,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     def test_text_in_deeds(self):
         LicenseFactory()
         for license in License.objects.filter(version="4.0"):
-            with self.subTest(license.fat_code):
+            with self.subTest(license.identifier):
                 # Test in English and for 4.0 since that's how we've set up the
                 # strings to test for
                 url = build_path(

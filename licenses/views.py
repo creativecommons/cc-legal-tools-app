@@ -229,7 +229,7 @@ def view_deed(
                 "body_template": body_template,
                 "category": category,
                 "category_title": category_title,
-                "fat_code": license.fat_code(),
+                "identifier": license.identifier(),
                 "languages_and_links": languages_and_links,
                 "legal_code": legal_code,
                 "license": license,
@@ -287,7 +287,7 @@ def view_legal_code(
         context={
             "category": category,
             "category_title": category_title,
-            "fat_code": license.fat_code(),
+            "identifier": license.identifier(),
             "languages_and_links": languages_and_links,
             "legal_code": legal_code,
             "license": license,

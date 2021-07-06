@@ -457,7 +457,7 @@ class TransifexHelper:
                 pofile_content = get_pofile_content(english_pofile)
                 self.create_resource(
                     resource_slug=resource_slug,
-                    resource_name=legal_code.license.fat_code(),
+                    resource_name=legal_code.license.identifier(),
                     pofilename=os.path.basename(
                         legal_code.translation_filename()
                     ),

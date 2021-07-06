@@ -3,7 +3,7 @@
 {% load bidi %}
 
 {% block active-breadcrumb-li %}
-  <li class="is-active"><a href="{{ legal_code.legal_code_url }}" aria-current="page displayed">{{ legal_code.fat_code }} {% trans "Legal Code" %}</a></li>
+  <li class="is-active"><a href="{{ legal_code.legal_code_url }}" aria-current="page displayed">{{ legal_code.identifier }} {% trans "Legal Code" %}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}

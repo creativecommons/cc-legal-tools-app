@@ -342,11 +342,11 @@ class LegalCode(models.Model):
             parts.append(license.jurisdiction_code)
         return "-".join(parts).replace("_", "-").replace(".", "").lower()
 
-    def fat_code(self):
+    def identifier(self):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
-        return self.license.fat_code()
+        return self.license.identifier()
 
     @property
     def translation_domain(self):
@@ -567,7 +567,7 @@ class License(models.Model):
     @property
     def resource_name(self):
         """Human-readable name for the translation resource for this license"""
-        return self.fat_code()
+        return self.identifier()
 
     @property
     def resource_slug(self):
@@ -586,7 +586,7 @@ class License(models.Model):
         """Generate RDF for this license?"""
         return "RDF Generation Not Implemented"  # FIXME if needed
 
-    def fat_code(self):
+    def identifier(self):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
