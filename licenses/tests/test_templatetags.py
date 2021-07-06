@@ -48,7 +48,7 @@ class LicenseTagsTest(TestCase):
         self.assertEqual("b", next_letter())
         self.assertEqual("b", current_letter())
 
-    def test_build_license_url(self):
+    def test_build_legal_code_url(self):
         # https://creativecommons.org/licenses/by/3.0/es/legalcode.es
         data = [
             # (unit, version, jurisdiction, language, expected result)
@@ -156,7 +156,7 @@ class LicenseTagsTest(TestCase):
             version,
             jurisdiction,
             language,
-            expected_result,
+            expected_legal_code_url,
         ) in data:
             with self.subTest(
                 (unit, version, jurisdiction, language),
@@ -165,7 +165,7 @@ class LicenseTagsTest(TestCase):
                     category, unit, version, jurisdiction
                 )
                 result = build_path(canonical_url, "legalcode", language)
-                self.assertEqual(expected_result, result)
+                self.assertEqual(expected_legal_code_url, result)
                 self.assertTrue(resolver.resolve(result))
 
     def test_build_deed_url(self):

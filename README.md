@@ -223,7 +223,7 @@ the BY license terms as ported to the Armenia jurisdiction.
 A License can exist in multiple languages or translations. Each one, including
 English, is represented by a LegalCode record. A LegalCode is identified by a
 license and a language, e.g. we might refer to the "BY 3.0 Armenia in Armenian"
-legalcode record.
+legal code record.
 
 Right now there are three places the text of licenses could be.
 

@@ -31,7 +31,7 @@ from licenses.models import (
 )
 from licenses.utils import (
     clean_string,
-    parse_legalcode_filename,
+    parse_legal_code_filename,
     validate_dictionary_is_all_text,
 )
 
@@ -108,8 +108,8 @@ class Command(BaseCommand):
             versions_to_include = None
 
         licenses_created = 0
-        legalcodes_created = 0
-        legalcodes_to_import = []
+        legal_codes_created = 0
+        legal_codes_to_import = []
 
         # Get list of html filenames. We'll filter out the filenames for
         # unwanted versions later (see include variable).
@@ -123,7 +123,7 @@ class Command(BaseCommand):
         self.stdout.write(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
             self.stdout.write(f"    {filename}...", ending="")
-            metadata = parse_legalcode_filename(filename)
+            metadata = parse_legal_code_filename(filename)
 
             basename = os.path.splitext(filename)[0]
             fullpath = os.path.join(input_directory, filename)
@@ -225,7 +225,7 @@ class Command(BaseCommand):
             if created:
                 licenses_created += 1
             # Find or create a LegalCode object
-            legalcode, created = LegalCode.objects.get_or_create(
+            legal_code, created = LegalCode.objects.get_or_create(
                 license=license,
                 language_code=cc_language_code,
                 defaults=dict(
@@ -234,21 +234,21 @@ class Command(BaseCommand):
             )
 
             if created:
-                legalcodes_created += 1
-            legalcodes_to_import.append(legalcode)
+                legal_codes_created += 1
+            legal_codes_to_import.append(legal_code)
         # self.stdout.write(
-        #     f"Created {licenses_created} licenses and {legalcodes_created}"
+        #     f"Created {licenses_created} licenses and {legal_codes_created}"
         #     " translation objects"
         # )
 
         # NOW parse the HTML and output message files
-        legalcodes_to_import = LegalCode.objects.filter(
-            pk__in=[lc.pk for lc in legalcodes_to_import]
+        legal_codes_to_import = LegalCode.objects.filter(
+            pk__in=[lc.pk for lc in legal_codes_to_import]
         )
 
         # What are the language codes we have HTML files for?
         cc_language_codes = sorted(
-            set(lc.language_code for lc in legalcodes_to_import)
+            set(lc.language_code for lc in legal_codes_to_import)
         )
 
         english_by_unit_version = {}
@@ -260,22 +260,22 @@ class Command(BaseCommand):
             "en"
         )  # If english isn't in this list, something is wrong
         for cc_language_code in ["en"] + cc_language_codes:
-            for legalcode in legalcodes_to_import.filter(
+            for legal_code in legal_codes_to_import.filter(
                 language_code=cc_language_code,
             ).order_by(
                 "-license__version",
                 "license__unit",
                 "license__jurisdiction_code",
             ):
-                license = legalcode.license
+                license = legal_code.license
                 unit = license.unit
                 version = license.version
                 support_po_files = False
                 # self.stdout.write(
-                #     f"Importing {legalcode.html_file} {unit}"
+                #     f"Importing {legal_code.html_file} {unit}"
                 #     f" lang={cc_language_code}"
                 # )
-                with open(legalcode.html_file, "r", encoding="utf-8") as f:
+                with open(legal_code.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
                 if unit in UNITS_LICENSES:
@@ -283,7 +283,7 @@ class Command(BaseCommand):
                         support_po_files = True
                         messages_text = self.import_by_40_license_html(
                             content=content,
-                            legalcode=legalcode,
+                            legal_code=legal_code,
                         )
                     elif version == "3.0" and not license.jurisdiction_code:
                         # 3.0 Unported license: we parse out the messages like
@@ -291,14 +291,14 @@ class Command(BaseCommand):
                         messages_text = (
                             self.import_by_30_unported_license_html(
                                 content=content,
-                                legalcode=legalcode,
+                                legal_code=legal_code,
                             )
                         )
                     else:
                         # all others: we just save the HTML for now
                         self.simple_import_license_html(
                             content=content,
-                            legalcode=legalcode,
+                            legal_code=legal_code,
                             version=version,
                         )
                         continue
@@ -306,7 +306,7 @@ class Command(BaseCommand):
                     support_po_files = True
                     messages_text = self.import_cc0_license_html(
                         content=content,
-                        legalcode=legalcode,
+                        legal_code=legal_code,
                     )
                 else:
                     raise NotImplementedError(
@@ -319,7 +319,7 @@ class Command(BaseCommand):
                         key = f"{unit}|{version}"
                         english_by_unit_version[key] = messages_text
                     self.write_po_files(
-                        legalcode,
+                        legal_code,
                         cc_language_code,
                         english_by_unit_version,
                         messages_text,
@@ -327,12 +327,12 @@ class Command(BaseCommand):
 
     def write_po_files(
         self,
-        legalcode,
+        legal_code,
         cc_language_code,
         english_by_unit_version,
         messages_text,
     ):
-        license = legalcode.license
+        license = legal_code.license
         unit = license.unit
         version = license.version
 
@@ -390,7 +390,7 @@ class Command(BaseCommand):
                 )
             )
 
-        po_filename = legalcode.translation_filename()
+        po_filename = legal_code.translation_filename()
         dir = os.path.dirname(po_filename)
         if not os.path.isdir(dir):
             os.makedirs(dir)
@@ -401,8 +401,8 @@ class Command(BaseCommand):
         # pofile and mofile ourselves.
         save_pofile_as_pofile_and_mofile(pofile, po_filename)
 
-    def import_cc0_license_html(self, *, content, legalcode):
-        license = legalcode.license
+    def import_cc0_license_html(self, *, content, legal_code):
+        license = legal_code.license
         assert license.version == "1.0", f"{license.version} is not '1.0'"
         assert license.unit == "CC0", f"{license.unit} is not 'CC0'"
         messages = {}
@@ -413,8 +413,8 @@ class Command(BaseCommand):
         messages["license_medium"] = inner_html(
             soup.find(id="deed-license").h2
         )
-        legalcode.title = messages["license_medium"]
-        legalcode.save()
+        legal_code.title = messages["license_medium"]
+        legal_code.save()
 
         # Big disclaimer (all caps)
         messages["disclaimer"] = clean_string(
@@ -481,14 +481,14 @@ class Command(BaseCommand):
 
         return messages
 
-    def import_by_40_license_html(self, *, content, legalcode):
+    def import_by_40_license_html(self, *, content, legal_code):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
-        license = legalcode.license
+        license = legal_code.license
         unit = license.unit
-        language_code = legalcode.language_code
-        html_file = os.path.basename(legalcode.html_file)
+        language_code = legal_code.language_code
+        html_file = os.path.basename(legal_code.html_file)
         assert license.version == "4.0", f"{license.version} is not '4.0'"
         assert license.unit.startswith("by")
 
@@ -513,8 +513,8 @@ class Command(BaseCommand):
         messages["license_medium"] = inner_html(
             soup.find(id="deed-license").h2
         )
-        legalcode.title = messages["license_medium"]
-        legalcode.save()
+        legal_code.title = messages["license_medium"]
+        legal_code.save()
         messages["license_long"] = inner_html(deed_main_content.h3)
         messages["license_intro"] = inner_html(
             deed_main_content.h3.find_next_sibling("p")
@@ -863,7 +863,7 @@ class Command(BaseCommand):
 
         return messages
 
-    def import_by_30_unported_license_html(self, *, content, legalcode):
+    def import_by_30_unported_license_html(self, *, content, legal_code):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
@@ -883,8 +883,8 @@ class Command(BaseCommand):
         messages["license_medium"] = inner_html(
             soup.find(id="deed-license").h2
         )
-        legalcode.title = messages["license_medium"]
-        legalcode.save()
+        legal_code.title = messages["license_medium"]
+        legal_code.save()
 
         deed_main_content = soup.find(id="deed-main-content")
 
@@ -987,8 +987,8 @@ class Command(BaseCommand):
 
         return messages
 
-    def simple_import_license_html(self, *, content, legalcode, version):
-        html_file = os.path.basename(legalcode.html_file)
+    def simple_import_license_html(self, *, content, legal_code, version):
+        html_file = os.path.basename(legal_code.html_file)
         raw_html = content
         # Clean-up: always use 'strong' instead of 'b'
         raw_html = raw_html.replace("<b>", "<strong>")
@@ -1025,7 +1025,7 @@ class Command(BaseCommand):
         # Title clean-up: remove strong
         title = title.replace("<strong>", "").replace("</strong>", "")
         assert "<" not in title, repr(title)
-        legalcode.title = title
+        legal_code.title = title
 
         # Remove legacy header images
         images = [
@@ -1088,9 +1088,9 @@ class Command(BaseCommand):
             html = html.prettify()
         except AttributeError:
             raise CommandError(
-                f"{html_file}: Unable to parse and extract legalcode"
+                f"{html_file}: Unable to parse and extract legal code"
             )
 
         assert isinstance(html, str)
-        legalcode.html = html
-        legalcode.save()
+        legal_code.html = html
+        legal_code.save()

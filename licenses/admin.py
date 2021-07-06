@@ -20,7 +20,7 @@ class TranslationBranchAdmin(admin.ModelAdmin):
         "language_code",
     ]
     raw_id_fields = [
-        "legalcodes",
+        "legal_codes",
     ]
 
 
@@ -30,7 +30,7 @@ class LegalCodeAdmin(admin.ModelAdmin):
         "title",
         "license",
         "language_code",
-        "license_url",
+        "legal_code_url",
         "deed_url",
         "plain_text_url",
         "html_file",

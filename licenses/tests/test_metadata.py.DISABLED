@@ -96,14 +96,14 @@ class MetadataTest(TestCase):
         self.assertFalse(license.permits_derivative_works)
         self.assertFalse(license.prohibits_high_income_nation_use)
 
-        legalcodes = list(license.legal_codes.all())
-        self.assertEqual(1, len(legalcodes))
-        legalcode = legalcodes[0]
+        legal_codes = list(license.legal_codes.all())
+        self.assertEqual(1, len(legal_codes))
+        legal_code = legal_codes[0]
         self.assertEqual(
-            legalcode.url,
+            legal_code.url,
             "http://creativecommons.org/licenses/by-nc-nd/4.0/legalcode",
         )
-        self.assertEqual(legalcode.language_code, "en")
+        self.assertEqual(legal_code.language_code, "en")
 
         tname = TranslatedLicenseName.objects.get(
             license=license,
@@ -166,13 +166,13 @@ class MetadataTest(TestCase):
         self.assertFalse(license.permits_derivative_works)
         self.assertFalse(license.prohibits_high_income_nation_use)
 
-        # one of six legalcodes for this one
-        legalcode = license.legal_codes.get(language_code="es")
+        # one of six legal codes for this one
+        legal_code = license.legal_codes.get(language_code="es")
         self.assertEqual(
-            legalcode.url,
+            legal_code.url,
             "http://creativecommons.org/licenses/by-nc-nd/3.0/es/legalcode.es",
         )
-        self.assertEqual(legalcode.language_code, "es")
+        self.assertEqual(legal_code.language_code, "es")
 
         tname = TranslatedLicenseName.objects.get(
             license=license,
@@ -220,12 +220,12 @@ class MetadataTest(TestCase):
     def test_english_is_default(self):
         with self.subTest("legal code"):
             # Here's a Legalcode that did not have a language in the RDF
-            legalcode = LegalCode.objects.get(
+            legal_code = LegalCode.objects.get(
                 url="http://creativecommons.org/publicdomain/zero/1.0/"
                 "legalcode"
             )
             # It should be using English
-            self.assertEqual("en", legalcode.language_code)
+            self.assertEqual("en", legal_code.language_code)
         with self.subTest("title"):
             bsd_license = License.objects.get(
                 canonical_url="http://creativecommons.org/licenses/BSD/"

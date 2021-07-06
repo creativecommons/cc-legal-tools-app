@@ -81,7 +81,7 @@ class LegalCodeQuerySet(models.QuerySet):
     # by* 3.0 - including ported
     # cc 1.0
 
-    # Queries for legalcode objects
+    # Queries for LegalCode objects
     LICENSES_ALL_QUERY = Q(
         license__unit__in=UNITS_LICENSES,
     )
@@ -199,7 +199,7 @@ class LegalCode(models.Model):
         default="",
     )
     html = models.TextField("HTML", blank=True, default="")
-    license_url = models.URLField("License URL", blank=True, default="")
+    legal_code_url = models.URLField("Legal Code URL", blank=True, default="")
     deed_url = models.URLField("Deed URL", unique=True)
     plain_text_url = models.URLField(
         "Plain text URL",
@@ -222,7 +222,7 @@ class LegalCode(models.Model):
             "deed",
             self.language_code,
         )
-        self.license_url = build_path(
+        self.legal_code_url = build_path(
             self.license.canonical_url,
             "legalcode",
             self.language_code,
@@ -369,10 +369,10 @@ class LegalCode(models.Model):
     def get_english_pofile(self) -> polib.POFile:
         if self.language_code != DEFAULT_LANGUAGE_CODE:
             # Same license, just in English translation:
-            english_legalcode = self.license.get_legalcode_for_language_code(
+            english_legal_code = self.license.get_legal_code_for_language_code(
                 DEFAULT_LANGUAGE_CODE
             )
-            return english_legalcode.get_pofile()
+            return english_legal_code.get_pofile()
         return self.get_pofile()
 
     def translation_filename(self):
@@ -523,7 +523,7 @@ class License(models.Model):
         for lc in self.legal_codes.order_by("language_code"):
             with active_translation(lc.get_translation_object()):
                 data["translations"][lc.language_code] = {
-                    "license": lc.license_url,
+                    "license": lc.legal_code_url,
                     "deed": lc.deed_url,
                 }
 
@@ -548,7 +548,7 @@ class License(models.Model):
                 result.append("cc-nd")
         return result
 
-    def get_legalcode_for_language_code(self, language_code):
+    def get_legal_code_for_language_code(self, language_code):
         """
         Return the LegalCode object for this license and language.
         If language_code has a "-" and we don't find it, try
@@ -632,15 +632,15 @@ class License(models.Model):
         # Have to do English first, they get uploaded differently as the
         # "source" messages and are required if we need to first create the
         # resource in Transifex.
-        en_legalcode = self.get_legalcode_for_language_code(
+        en_legal_code = self.get_legal_code_for_language_code(
             DEFAULT_LANGUAGE_CODE
         )
         helper = TransifexHelper()
-        helper.upload_messages_to_transifex(legalcode=en_legalcode)
-        for legalcode in self.legal_codes.exclude(
+        helper.upload_messages_to_transifex(legal_code=en_legal_code)
+        for legal_code in self.legal_codes.exclude(
             language_code=DEFAULT_LANGUAGE_CODE
         ):
-            helper.upload_messages_to_transifex(legalcode=legalcode)
+            helper.upload_messages_to_transifex(legal_code=legal_code)
 
     @property
     def nc(self):
@@ -657,7 +657,7 @@ class License(models.Model):
 
 class TranslationBranch(models.Model):
     branch_name = models.CharField(max_length=40)
-    legalcodes = models.ManyToManyField("LegalCode")
+    legal_codes = models.ManyToManyField("LegalCode")
     version = models.CharField(
         max_length=3,
         help_text="E.g. '4.0'. Not required.",
@@ -690,7 +690,7 @@ class TranslationBranch(models.Model):
     def stats(self):
         number_of_untranslated_messages = 0
         number_of_translated_messages = 0
-        for code in self.legalcodes.all():
+        for code in self.legal_codes.all():
             pofile = code.get_pofile()
             number_of_untranslated_messages += len(
                 pofile.untranslated_entries()

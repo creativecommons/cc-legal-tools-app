@@ -5,7 +5,7 @@
   &mdash; Creative Commons
 {% endblock title %}
 
-{% block legalcode_block %}{% endblock %}
+{% block legal_code_block %}{% endblock %}
 
 {% block page_top %}
   <!-- RDF code here for backwards compatibility.  Please use the

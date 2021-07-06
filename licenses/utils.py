@@ -94,7 +94,7 @@ def get_code_from_jurisdiction_url(url):
     return code
 
 
-def parse_legalcode_filename(filename):
+def parse_legal_code_filename(filename):
     """
     Given the filename where the HTML text of a license is stored,
     return a dictionary with the metadata we can figure out from it.

@@ -33,7 +33,7 @@
   </tr>
   </thead>
   <tbody>
-  {% for code in branch.legalcodes.all %}
+  {% for code in branch.legal_codes.all %}
     {% with pofile=code.get_pofile %}
       <tr>
       <td>{{ code.license.fat_code }}</td>

@@ -225,7 +225,7 @@ class TestTransifex(TestCase):
     def test_upload_messages_to_transifex_no_resource_yet(self):
         # English so we can create the resource
         license = LicenseFactory(unit="by-nd", version="4.0")
-        legalcode = LegalCodeFactory(
+        legal_code = LegalCodeFactory(
             license=license,
             language_code=DEFAULT_LANGUAGE_CODE,
         )
@@ -248,13 +248,13 @@ msgstr "Attribution-NoDerivatives 4.0 International"
             mock_gtr.return_value = []
 
             with mpo(self.helper, "create_resource") as mock_create_resource:
-                with mpo(legalcode, "get_pofile") as mock_gpwem:
+                with mpo(legal_code, "get_pofile") as mock_gpwem:
                     mock_gpwem.return_value = english_pofile
                     with mp(
                         "licenses.transifex.get_pofile_content"
                     ) as mock_gpc:
                         mock_gpc.return_value = "not really"
-                        self.helper.upload_messages_to_transifex(legalcode)
+                        self.helper.upload_messages_to_transifex(legal_code)
 
         mock_create_resource.assert_called_with(
             "by-nd_40",
@@ -269,17 +269,17 @@ msgstr "Attribution-NoDerivatives 4.0 International"
         # Must be english or we can't create the resource
         # If we try this with a non-english language and there's no resource,
         # we should get an error.
-        legalcode = LegalCodeFactory(language_code="es")
+        legal_code = LegalCodeFactory(language_code="es")
         test_pofile = polib.POFile()
 
         with mpo(self.helper, "get_transifex_resources") as mock_gtr:
             mock_gtr.return_value = []
-            with mpo(legalcode, "get_pofile") as mock_gpwem:
+            with mpo(legal_code, "get_pofile") as mock_gpwem:
                 mock_gpwem.return_value = test_pofile
                 with self.assertRaisesMessage(
                     ValueError, "Must upload English first"
                 ):
-                    self.helper.upload_messages_to_transifex(legalcode)
+                    self.helper.upload_messages_to_transifex(legal_code)
 
         mock_gtr.assert_called_with()
         mock_gpwem.assert_called_with()
@@ -287,7 +287,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
     def test_upload_messages_english_resource_exists(self):
         # English because it's the source messages and is handled differently
         license = LicenseFactory(unit="by-nd", version="4.0")
-        legalcode = LegalCodeFactory(
+        legal_code = LegalCodeFactory(
             license=license,
             language_code=DEFAULT_LANGUAGE_CODE,
         )
@@ -303,7 +303,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
                 mock_gpc.return_value = "not really"
                 with mpo(self.helper, "update_source_messages") as mock_usm:
                     self.helper.upload_messages_to_transifex(
-                        legalcode, test_pofile
+                        legal_code, test_pofile
                     )
 
         mock_gtr.assert_called_with()
@@ -318,7 +318,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
         # non-English because it's not the source messages and is handled
         # differently
         license = LicenseFactory(unit="by-nd", version="4.0")
-        legalcode = LegalCodeFactory(license=license, language_code="fr")
+        legal_code = LegalCodeFactory(license=license, language_code="fr")
         test_resources = [
             {
                 "slug": license.resource_slug,
@@ -331,7 +331,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
                 mock_gpc.return_value = "not really"
                 with mpo(self.helper, "update_translations") as mock_ut:
                     self.helper.upload_messages_to_transifex(
-                        legalcode, test_pofile
+                        legal_code, test_pofile
                     )
 
         mock_gtr.assert_called_with()
@@ -386,7 +386,7 @@ class CheckForTranslationUpdatesTest(TestCase):
             ):
                 helper.check_for_translation_updates()
 
-    def test_check_for_translation_updates_with_no_legalcodes(self):
+    def test_check_for_translation_updates_with_no_legal_codes(self):
         mock_repo = MagicMock()
         mock_repo.__str__.return_value = "mock_repo"
         mock_repo.is_dirty.return_value = False
@@ -448,19 +448,19 @@ class CheckForTranslationUpdatesTest(TestCase):
 
         if first_time:
             # We don't yet know when the last update was.
-            legalcode_last_update = None
+            legal_code_last_update = None
         else:
             # The last update we know of was at this time.
-            legalcode_last_update = first_translation_update_datetime
+            legal_code_last_update = first_translation_update_datetime
 
-        legalcode = LegalCodeFactory(
+        legal_code = LegalCodeFactory(
             license=license,
             language_code=language_code,
-            translation_last_update=legalcode_last_update,
+            translation_last_update=legal_code_last_update,
         )
         resource_slug = license.resource_slug
 
-        # Will need an English legalcode if we need to create the resource
+        # Will need an English legal_code if we need to create the resource
         if not resource_exists and language_code != DEFAULT_LANGUAGE_CODE:
             LegalCodeFactory(
                 license=license,
@@ -478,7 +478,7 @@ class CheckForTranslationUpdatesTest(TestCase):
         mock_repo = MagicMock()
         mock_repo.is_dirty.return_value = False
 
-        legalcodes = [legalcode]
+        legal_codes = [legal_code]
         dummy_repo = DummyRepo("/trans/repo")
 
         # A couple of places use git.Repo(path) to get a git repo object. Have
@@ -489,8 +489,8 @@ class CheckForTranslationUpdatesTest(TestCase):
         helper = TransifexHelper()
 
         with mpo(
-            helper, "handle_legalcodes_with_updated_translations"
-        ) as mock_handle_legalcodes, mpo(
+            helper, "handle_legal_codes_with_updated_translations"
+        ) as mock_handle_legal_codes, mpo(
             helper, "get_transifex_resource_stats"
         ) as mock_get_transifex_resource_stats, mpo(
             helper, "create_resource"
@@ -540,16 +540,16 @@ class CheckForTranslationUpdatesTest(TestCase):
                 ]
                 # Will need pofile
                 mock_get_pofile.return_value = polib.POFile()
-            helper.check_for_translation_updates_with_repo_and_legalcodes(
-                dummy_repo, legalcodes
+            helper.check_for_translation_updates_with_repo_and_legal_codes(
+                dummy_repo, legal_codes
             )
 
         if not resource_exists:
             # Should have tried to create resource
             mock_create_resource.assert_called_with(
                 resource_slug=resource_slug,
-                resource_name=legalcode.license.fat_code(),
-                pofilename=os.path.basename(legalcode.translation_filename()),
+                resource_name=legal_code.license.fat_code(),
+                pofilename=os.path.basename(legal_code.translation_filename()),
                 pofile_content=get_pofile_content(
                     mock_get_pofile.return_value
                 ),
@@ -564,54 +564,56 @@ class CheckForTranslationUpdatesTest(TestCase):
             mock_upload.assert_called()
 
         mock_get_transifex_resource_stats.assert_called_with()
-        legalcode.refresh_from_db()
+        legal_code.refresh_from_db()
         if changed:
             # we mocked the actual processing, so...
             self.assertEqual(
                 first_translation_update_datetime,
-                legalcode.translation_last_update,
+                legal_code.translation_last_update,
             )
-            mock_handle_legalcodes.assert_called_with(dummy_repo, [legalcode])
+            mock_handle_legal_codes.assert_called_with(
+                dummy_repo, [legal_code]
+            )
         else:
             self.assertEqual(
                 first_translation_update_datetime,
-                legalcode.translation_last_update,
+                legal_code.translation_last_update,
             )
-            mock_handle_legalcodes.assert_called_with(dummy_repo, [])
+            mock_handle_legal_codes.assert_called_with(dummy_repo, [])
         return
 
-    def test_handle_legalcodes_with_updated_translations(self):
+    def test_handle_legal_codes_with_updated_translations(self):
         helper = TransifexHelper()
         dummy_repo = DummyRepo("/trans/repo")
 
-        # No legalcodes, shouldn't call anything or return anything
-        result = helper.handle_legalcodes_with_updated_translations(
+        # No legal_codes, shouldn't call anything or return anything
+        result = helper.handle_legal_codes_with_updated_translations(
             dummy_repo, []
         )
         self.assertEqual([], result)
 
-        # legalcodes for two branches
-        legalcode1 = LegalCodeFactory(
+        # legal_codes for two branches
+        legal_code1 = LegalCodeFactory(
             license__version="4.0",
             license__unit="by-nc",
             language_code="fr",
         )
-        legalcode2 = LegalCodeFactory(
+        legal_code2 = LegalCodeFactory(
             license__version="4.0",
             license__unit="by-nd",
             language_code="de",
         )
         with mpo(helper, "handle_updated_translation_branch") as mock_handle:
-            result = helper.handle_legalcodes_with_updated_translations(
-                dummy_repo, [legalcode1, legalcode2]
+            result = helper.handle_legal_codes_with_updated_translations(
+                dummy_repo, [legal_code1, legal_code2]
             )
         self.assertEqual(
-            [legalcode1.branch_name(), legalcode2.branch_name()], result
+            [legal_code1.branch_name(), legal_code2.branch_name()], result
         )
         self.assertEqual(
             [
-                mock.call(dummy_repo, [legalcode1]),
-                mock.call(dummy_repo, [legalcode2]),
+                mock.call(dummy_repo, [legal_code1]),
+                mock.call(dummy_repo, [legal_code2]),
             ],
             mock_handle.call_args_list,
         )
@@ -621,58 +623,58 @@ class CheckForTranslationUpdatesTest(TestCase):
         dummy_repo = DummyRepo("/trans/repo")
         result = helper.handle_updated_translation_branch(dummy_repo, [])
         self.assertIsNone(result)
-        legalcode1 = LegalCodeFactory(
+        legal_code1 = LegalCodeFactory(
             license__version="4.0",
             license__unit="by-nc",
             language_code="fr",
         )
-        legalcode2 = LegalCodeFactory(
+        legal_code2 = LegalCodeFactory(
             license__version="4.0",
             license__unit="by-nd",
             language_code="fr",
         )
         with mp("licenses.transifex.setup_local_branch") as mock_setup, mpo(
-            helper, "update_branch_for_legalcode"
+            helper, "update_branch_for_legal_code"
         ) as mock_update_branch, mp(
             "licenses.transifex.call_command"
         ) as mock_call_command, mp(
             "licenses.transifex.commit_and_push_changes"
         ) as mock_commit:
             # setup_local_branch
-            # update_branch_for_legalcode
+            # update_branch_for_legal_code
             # commit_and_push_changes
             # branch_object.save()
             result = helper.handle_updated_translation_branch(
-                dummy_repo, [legalcode1, legalcode2]
+                dummy_repo, [legal_code1, legal_code2]
             )
         self.assertIsNone(result)
-        mock_setup.assert_called_with(dummy_repo, legalcode1.branch_name())
+        mock_setup.assert_called_with(dummy_repo, legal_code1.branch_name())
         # Should have published static files for this branch
         expected = [
-            mock.call("publish", branch_name=legalcode1.branch_name()),
+            mock.call("publish", branch_name=legal_code1.branch_name()),
         ]
         self.assertEqual(expected, mock_call_command.call_args_list)
         trb = TranslationBranch.objects.get()
         expected = [
-            mock.call(dummy_repo, legalcode1, trb),
-            mock.call(dummy_repo, legalcode2, trb),
+            mock.call(dummy_repo, legal_code1, trb),
+            mock.call(dummy_repo, legal_code2, trb),
         ]
         self.assertEqual(expected, mock_update_branch.call_args_list)
         mock_commit.assert_called_with(
             dummy_repo, "Translation changes from Transifex.", "", push=True
         )
 
-    def test_update_branch_for_legalcode(self):
+    def test_update_branch_for_legal_code(self):
         helper = TransifexHelper()
         dummy_repo = DummyRepo("/trans/repo")
-        legalcode = LegalCodeFactory(
+        legal_code = LegalCodeFactory(
             license__version="4.0",
             license__unit="by-nc",
             language_code="fr",
         )
         helper._stats = {
-            legalcode.license.resource_slug: {
-                legalcode.language_code: {
+            legal_code.license.resource_slug: {
+                legal_code.language_code: {
                     "translated": {
                         "last_activity": now().isoformat(),
                     }
@@ -680,9 +682,9 @@ class CheckForTranslationUpdatesTest(TestCase):
             }
         }
         trb = TranslationBranch.objects.create(
-            branch_name=legalcode.branch_name(),
-            version=legalcode.license.version,
-            language_code=legalcode.language_code,
+            branch_name=legal_code.branch_name(),
+            version=legal_code.license.version,
+            language_code=legal_code.language_code,
             complete=False,
         )
         content = b"wxyz"
@@ -694,18 +696,20 @@ class CheckForTranslationUpdatesTest(TestCase):
             "licenses.transifex.save_content_as_pofile_and_mofile"
         ) as mock_save:
             mock_get_content.return_value = content
-            mock_save.return_value = [legalcode.translation_filename()]
-            result = helper.update_branch_for_legalcode(
-                dummy_repo, legalcode, trb
+            mock_save.return_value = [legal_code.translation_filename()]
+            result = helper.update_branch_for_legal_code(
+                dummy_repo, legal_code, trb
             )
         self.assertIsNone(result)
         mock_get_content.assert_called_with(
-            legalcode.license.resource_slug, legalcode.language_code
+            legal_code.license.resource_slug, legal_code.language_code
         )
-        mock_save.assert_called_with(legalcode.translation_filename(), content)
-        self.assertEqual({legalcode}, set(trb.legalcodes.all()))
+        mock_save.assert_called_with(
+            legal_code.translation_filename(), content
+        )
+        self.assertEqual({legal_code}, set(trb.legal_codes.all()))
         relpath = os.path.relpath(
-            legalcode.translation_filename(),
+            legal_code.translation_filename(),
             settings.DATA_REPOSITORY_DIR,
         )
         dummy_repo.index.add.assert_called_with([relpath])

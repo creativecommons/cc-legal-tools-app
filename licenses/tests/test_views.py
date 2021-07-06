@@ -315,7 +315,7 @@ class AllLicensesViewTest(LicensesTestsMixin, TestCase):
 
 
 class ViewLicenseTest(TestCase):
-    #    def test_view_license_with_jurisdiction_without_language_specified(
+    #    def test_view_legal_code_with_jurisdiction_without_language_specified(
     #        self
     #    ):
     #        lc = LegalCodeFactory(
@@ -334,13 +334,13 @@ class ViewLicenseTest(TestCase):
     #        )
     #        rsp = self.client.get(url)
     #        self.assertEqual(200, rsp.status_code)
-    #        self.assertTemplateUsed(rsp, "legalcode_page.html")
+    #        self.assertTemplateUsed(rsp, "legal_code_page.html")
     #        self.assertTemplateUsed(
     #            rsp, "includes/legalcode_crude_html.html"
     #        )
     #        context = rsp.context
     #        self.assertContains(rsp, 'lang="de"')
-    #        self.assertEqual(lc, context["legalcode"])
+    #        self.assertEqual(lc, context["legal_code"])
 
     def test_get_category_and_category_title_category_license(self):
         category, category_title = get_category_and_category_title(
@@ -381,7 +381,7 @@ class ViewLicenseTest(TestCase):
         self.assertEqual(norm_request_path, f"{request_path}.de")
         self.assertEqual(norm_language_code, "de")
 
-    def test_view_license_identifying_jurisdiction_default_language(self):
+    def test_view_legal_code_identifying_jurisdiction_default_language(self):
         language_code = "de"
         lc = LegalCodeFactory(
             html="crude",
@@ -392,16 +392,16 @@ class ViewLicenseTest(TestCase):
             license__version="3.0",
             license__jurisdiction_code="de",
         )
-        url = lc.license_url
+        url = lc.legal_code_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed(rsp, "legalcode_page.html")
+        self.assertTemplateUsed(rsp, "legal_code_page.html")
         self.assertTemplateUsed(rsp, "includes/legalcode_crude_html.html")
         context = rsp.context
         self.assertContains(rsp, f'lang="{language_code}"')
-        self.assertEqual(lc, context["legalcode"])
+        self.assertEqual(lc, context["legal_code"])
 
-    def test_view_license(self):
+    def test_view_legal_code(self):
         license = LicenseFactory(
             category="licenses",
             canonical_url="https://creativecommons.org/licenses/by/4.0/",
@@ -412,15 +412,15 @@ class ViewLicenseTest(TestCase):
                 license=license,
                 language_code=language_code,
             )
-            url = lc.license_url
+            url = lc.legal_code_url
             rsp = self.client.get(url)
             self.assertEqual(200, rsp.status_code)
-            self.assertTemplateUsed(rsp, "legalcode_page.html")
+            self.assertTemplateUsed(rsp, "legal_code_page.html")
             self.assertTemplateUsed(
                 rsp, "includes/legalcode_licenses_4.0.html"
             )
             context = rsp.context
-            self.assertEqual(lc, context["legalcode"])
+            self.assertEqual(lc, context["legal_code"])
             self.assertContains(rsp, f'lang="{language_code}"')
             if language_code == "es":
                 self.assertContains(rsp, 'dir="ltr"')
@@ -430,7 +430,7 @@ class ViewLicenseTest(TestCase):
 
 # Disabled pending plaintext file generation
 #
-#    def test_view_license_plain_text(self):
+#    def test_view_legal_code_plain_text(self):
 #        license = LicenseFactory(
 #            canonical_url="https://creativecommons.org/licenses/by/4.0/",
 #            version="4.0",
@@ -465,7 +465,7 @@ class ViewLicenseTest(TestCase):
 class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
     def validate_deed_text(self, rsp, license):
         self.assertEqual(200, rsp.status_code)
-        self.assertEqual("en", rsp.context["legalcode"].language_code)
+        self.assertEqual("en", rsp.context["legal_code"].language_code)
         text = rsp.content.decode("utf-8")
         if (
             "INVALID_VARIABLE" in text

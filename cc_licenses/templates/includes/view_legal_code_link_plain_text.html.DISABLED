@@ -1,6 +1,6 @@
 {% load i18n %}
 
 <div id="legal-code-plain-text" style="font-weight: bold;" class="padding-vertical-normal" >
-  <p class="body-big"><a id="view-plain-text" href="{{ legalcode.plain_text_url }}" class="link">{% trans "View Legal Code as plain text" %}</a></p>
+  <p class="body-big"><a id="view-plain-text" href="{{ legal_code.plain_text_url }}" class="link">{% trans "View Legal Code as plain text" %}</a></p>
 </div>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

@@ -18,7 +18,7 @@ from licenses.utils import (
     cleanup_current_branch_output,
     compute_canonical_url,
     get_code_from_jurisdiction_url,
-    parse_legalcode_filename,
+    parse_legal_code_filename,
     relative_symlink,
     save_bytes_to_file,
     save_dict_to_pofile,
@@ -198,8 +198,8 @@ class GetJurisdictionCodeTest(TestCase):
 
 
 class ParseLegalcodeFilenameTest(TestCase):
-    # Test parse_legalcode_filename
-    def test_parse_legalcode_filename(self):
+    # Test parse_legal_code_filename
+    def test_parse_legal_code_filename(self):
         data = [
             (
                 "by_1.0.html",
@@ -309,14 +309,14 @@ class ParseLegalcodeFilenameTest(TestCase):
         ]
         for filename, expected_result in data:
             with self.subTest(filename):
-                result = parse_legalcode_filename(filename)
+                result = parse_legal_code_filename(filename)
                 if result != expected_result:
                     print(repr(result))
                 self.assertEqual(expected_result, result)
         with self.assertRaisesMessage(ValueError, "Invalid language_code="):
-            parse_legalcode_filename("by_3.0_es_aaa")
+            parse_legal_code_filename("by_3.0_es_aaa")
         with self.assertRaisesMessage(ValueError, "What language? "):
-            parse_legalcode_filename("by_3.0_zz")
+            parse_legal_code_filename("by_3.0_zz")
 
 
 class GetLicenseUtilityTest(TestCase):

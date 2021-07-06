@@ -109,26 +109,26 @@ class Command(BaseCommand):
                 html=True,
             )
 
-        legalcodes = LegalCode.objects.validgroups()
-        for group in legalcodes.keys():
+        legal_codes = LegalCode.objects.validgroups()
+        for group in legal_codes.keys():
             self.stdout.write(f"\n{group}")
             self.stdout.write(f"{hostname}:{output_dir}")
-            for legalcode in legalcodes[group]:
+            for legal_code in legal_codes[group]:
                 # deed
-                filepath, symlinks = legalcode.get_file_and_links("deed")
+                filepath, symlinks = legal_code.get_file_and_links("deed")
                 save_url_as_static_file(
                     output_dir,
-                    url=legalcode.deed_url,
+                    url=legal_code.deed_url,
                     relpath=filepath,
                     html=True,
                 )
                 for symlink in symlinks:
                     relative_symlink(output_dir, filepath, symlink)
                 # legalcode
-                filepath, symlinks = legalcode.get_file_and_links("legalcode")
+                filepath, symlinks = legal_code.get_file_and_links("legalcode")
                 save_url_as_static_file(
                     output_dir,
-                    url=legalcode.license_url,
+                    url=legal_code.legal_code_url,
                     relpath=filepath,
                     html=True,
                 )
@@ -215,7 +215,7 @@ class Command(BaseCommand):
                 finally:
                     os.close(dir_fd)
 
-    def run_copy_legalcode_plaintext(self):
+    def run_copy_legal_code_plaintext(self):
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
         output_dir = self.output_dir
@@ -250,7 +250,7 @@ class Command(BaseCommand):
         self.run_django_distill()
         self.run_copy_licenses_rdfs()
         self.run_copy_meta_rdfs()
-        self.run_copy_legalcode_plaintext()
+        self.run_copy_legal_code_plaintext()
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
