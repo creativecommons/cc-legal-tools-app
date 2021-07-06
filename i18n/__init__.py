@@ -1,7 +1,6 @@
 # Standard library
 import logging
 import os
-import re
 
 # Third-party
 from django.conf import settings
@@ -196,7 +195,6 @@ JURISDICTION_NAMES = {
 
 
 LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
-LANGUAGE_CODE_REGEX = re.compile(LANGUAGE_CODE_REGEX_STRING)
 DJANGO_LANGUAGE_CODES = {
     # CC language code: django language code
     "en-GB": "en-gb",

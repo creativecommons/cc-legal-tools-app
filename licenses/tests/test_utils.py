@@ -18,7 +18,6 @@ from licenses.utils import (
     cleanup_current_branch_output,
     compute_canonical_url,
     get_code_from_jurisdiction_url,
-    get_license_url_from_legalcode_url,
     parse_legalcode_filename,
     relative_symlink,
     save_bytes_to_file,
@@ -318,49 +317,6 @@ class ParseLegalcodeFilenameTest(TestCase):
             parse_legalcode_filename("by_3.0_es_aaa")
         with self.assertRaisesMessage(ValueError, "What language? "):
             parse_legalcode_filename("by_3.0_zz")
-
-
-class GetLicenseURLFromLegalCodeURLTest(TestCase):
-    # get_license_url_from_legalcode_url
-    def test_get_license_url_from_legalcode_url(self):
-        data = [
-            (
-                "https://creativecommons.org/licenses/by/4.0/legalcode",
-                "https://creativecommons.org/licenses/by/4.0/",
-            ),
-            (
-                "https://creativecommons.org/licenses/by/4.0/legalcode.es",
-                "https://creativecommons.org/licenses/by/4.0/",
-            ),
-            (
-                "https://creativecommons.org/licenses/GPL/2.0/legalcode",
-                "https://creativecommons.org/licenses/GPL/2.0/",
-            ),
-            (
-                "https://creativecommons.org/licenses/nc-sampling+/1.0/tw/"
-                "legalcode",
-                "https://creativecommons.org/licenses/nc-sampling+/1.0/tw/",
-            ),
-            # Exceptions:
-            (
-                "http://opensource.org/licenses/bsd-license.php",
-                "https://creativecommons.org/licenses/BSD/",
-            ),
-            (
-                "http://opensource.org/licenses/mit-license.php",
-                "https://creativecommons.org/licenses/MIT/",
-            ),
-        ]
-        for legalcode_url, expected_license_url in data:
-            with self.subTest(legalcode_url):
-                self.assertEqual(
-                    expected_license_url,
-                    get_license_url_from_legalcode_url(legalcode_url),
-                )
-        with self.assertRaises(ValueError):
-            get_license_url_from_legalcode_url(
-                "http://opensource.org/licences/bsd-license.php"
-            )
 
 
 class GetLicenseUtilityTest(TestCase):
