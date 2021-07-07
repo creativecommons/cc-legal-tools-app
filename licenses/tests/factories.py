@@ -81,18 +81,18 @@ class TranslationBranchFactory(factory.django.DjangoModelFactory):
     )
 
     @factory.post_generation
-    def legalcodes(self, create, extracted, **kwargs):
+    def legal_codes(self, create, extracted, **kwargs):
         if not create:
             # Simple build, do nothing.
             return
 
         if extracted:
-            # A list of legalcodes were passed in, use them
+            # A list of legal codes were passed in, use them
             for group in extracted:
-                self.legalcodes.add(group)
+                self.legal_codes.add(group)
         else:
             # Generate a random one with the right features
-            self.legalcodes.add(
+            self.legal_codes.add(
                 LegalCodeFactory(
                     language_code=self.language_code,
                     license__version=self.version,

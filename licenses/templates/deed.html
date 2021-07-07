@@ -2,16 +2,16 @@
 {% load i18n static %}
 
 {% block canonical_url %}{{ license.canonical_url }}{% endblock %}
-{% block title %}{{ legalcode.title }} Deed &mdash; Creative Commons{% endblock %}
+{% block title %}{{ legal_code.title }} Deed &mdash; Creative Commons{% endblock %}
 
 {% block active-breadcrumb-li %}
-<li class="is-active"><a href="{{ legalcode.deed_url }}" aria-current="page displayed">{{ legalcode.fat_code }} {% trans "Deed" %}</a></li>
+<li class="is-active"><a href="{{ legal_code.deed_url }}" aria-current="page displayed">{{ legal_code.identifier }} {% trans "Deed" %}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}
 <div class="level container">
   <div class="level-item level-right">
-    <button id="next-btn" class="button tiny is-pulled-right" data-href="{{ license_rel_path }}">{% trans "See the legal code" %}</button>
+    <button id="next-btn" class="button tiny is-pulled-right" data-href="{{ legal_code_rel_path }}">{% trans "See the legal code" %}</button>
   </div>
 </div>
 {% endblock %}

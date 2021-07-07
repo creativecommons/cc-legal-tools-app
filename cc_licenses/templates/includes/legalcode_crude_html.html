@@ -2,8 +2,8 @@
 {# For tools that are only partially supported, we've just stored their HTML in the database. #}
 <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
   <div id="plain-text-marker">
-    <h3 class="padding-bottom-normal b-header">{{ legalcode.title }}</h3>
-    {{ legalcode.html|safe }}
+    <h3 class="padding-bottom-normal b-header">{{ legal_code.title }}</h3>
+    {{ legal_code.html|safe }}
   </div>{# end plain-text-marker #}
 </div> {#  end legal-code-body #}
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

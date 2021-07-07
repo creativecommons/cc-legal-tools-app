@@ -28,7 +28,7 @@
       <td><a href="{% url 'branch_status' branch.id %}">{{ branch.branch_name }}</a></td>
       <td>{{ branch.language_code }}</td>
       <td>{{ branch.version }}</td>
-      <td>{{ branch.legalcodes.count }}</td>
+      <td>{{ branch.legal_codes.count }}</td>
       <td>{{ branch.last_transifex_update|default_if_none:"-" }}</td>
       {% with stats=branch.stats %}
         <td>{{ stats.number_of_translated_messages }}</td>

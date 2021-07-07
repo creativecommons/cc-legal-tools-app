@@ -11,7 +11,7 @@
 {% endblock page_top %}
 
 {% block license_name %}
-  <span class="cc-license-title" property="dc:title dct:title">{{ legalcode.title }}</span>
+  <span class="cc-license-title" property="dc:title dct:title">{{ legal_code.title }}</span>
   <span class="cc-license-identifier" property="dc:identifier dct:identifier">
     (CC {{ license.unit.upper }} {{ license.version }}{% if license.jurisdiction_code %} {{ license.jurisdiction_code.upper }}{% endif %})
   </span>

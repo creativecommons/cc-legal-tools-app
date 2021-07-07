@@ -135,13 +135,13 @@ class LegalCodeModelTest(TestCase):
 
         for expected, unit, version, jurisdiction, language in data:
             with self.subTest(expected):
-                legalcode = LegalCodeFactory(
+                legal_code = LegalCodeFactory(
                     license__unit=unit,
                     license__version=version,
                     license__jurisdiction_code=jurisdiction,
                     language_code=language,
                 )
-                self.assertEqual(expected, legalcode.translation_domain)
+                self.assertEqual(expected, legal_code.translation_domain)
 
     @override_settings(DATA_REPOSITORY_DIR="/foo")
     def test_translation_filename(self):
@@ -198,40 +198,40 @@ class LegalCodeModelTest(TestCase):
         )
         self.assertEqual(
             lc0.plain_text_url,
-            f"{lc0.license_url.replace('legalcode.en', 'legalcode.txt')}",
+            f"{lc0.legal_code_url.replace('legalcode.en', 'legalcode.txt')}",
         )
         self.assertEqual(lc1.plain_text_url, "")
         self.assertEqual(lc2.plain_text_url, "")
 
     def test_get_pofile(self):
-        legalcode = LegalCodeFactory()
+        legal_code = LegalCodeFactory()
         test_pofile = polib.POFile()
         test_translation_filename = "/dev/null"
         with mock.patch.object(LegalCode, "translation_filename") as mock_tf:
             mock_tf.return_value = test_translation_filename
             with mock.patch.object(polib, "pofile") as mock_pofile:
                 mock_pofile.return_value = test_pofile
-                result = legalcode.get_pofile()
+                result = legal_code.get_pofile()
         mock_pofile.assert_called_with("", encoding="utf-8")
         self.assertEqual(test_pofile, result)
 
     @override_settings(DATA_REPOSITORY_DIR="/some/dir")
     def test_get_english_pofile(self):
-        legalcode = LegalCodeFactory(language_code="es")
-        legalcode_en = LegalCodeFactory(
-            license=legalcode.license, language_code=DEFAULT_LANGUAGE_CODE
+        legal_code = LegalCodeFactory(language_code="es")
+        legal_code_en = LegalCodeFactory(
+            license=legal_code.license, language_code=DEFAULT_LANGUAGE_CODE
         )
         test_pofile = polib.POFile()
 
         with mock.patch.object(
-            License, "get_legalcode_for_language_code"
+            License, "get_legal_code_for_language_code"
         ) as mock_glfl:
-            mock_glfl.return_value = legalcode_en
-            with mock.patch.object(legalcode_en, "get_pofile") as mock_gp:
+            mock_glfl.return_value = legal_code_en
+            with mock.patch.object(legal_code_en, "get_pofile") as mock_gp:
                 mock_gp.return_value = test_pofile
-                self.assertEqual(test_pofile, legalcode.get_english_pofile())
+                self.assertEqual(test_pofile, legal_code.get_english_pofile())
                 self.assertEqual(
-                    test_pofile, legalcode_en.get_english_pofile()
+                    test_pofile, legal_code_en.get_english_pofile()
                 )
         mock_glfl.assert_called_with(DEFAULT_LANGUAGE_CODE)
         mock_gp.assert_called_with()
@@ -240,38 +240,38 @@ class LegalCodeModelTest(TestCase):
     def test_get_translation_object(self):
         # get_translation_object on the model calls the
         # i18n.utils.get_translation_object.
-        legalcode = LegalCodeFactory(
+        legal_code = LegalCodeFactory(
             license__version="4.0",
             license__unit="by-sa",
             language_code="de",
         )
 
         with mock.patch("licenses.models.get_translation_object") as mock_djt:
-            legalcode.get_translation_object()
+            legal_code.get_translation_object()
         mock_djt.assert_called_with(
             domain="by-sa_40", django_language_code="de"
         )
 
     def test_branch_name(self):
-        legalcode = LegalCodeFactory(
+        legal_code = LegalCodeFactory(
             license__version="4.0",
             license__unit="by-sa",
             language_code="de",
         )
-        self.assertEqual("cc4-de", legalcode.branch_name())
-        legalcode = LegalCodeFactory(
+        self.assertEqual("cc4-de", legal_code.branch_name())
+        legal_code = LegalCodeFactory(
             license__version="3.5",
             license__unit="other",
             language_code="de",
         )
-        self.assertEqual("other-35-de", legalcode.branch_name())
-        legalcode = LegalCodeFactory(
+        self.assertEqual("other-35-de", legal_code.branch_name())
+        legal_code = LegalCodeFactory(
             license__version="3.5",
             license__unit="other",
             language_code="de",
             license__jurisdiction_code="xyz",
         )
-        self.assertEqual("other-35-de-xyz", legalcode.branch_name())
+        self.assertEqual("other-35-de-xyz", legal_code.branch_name())
 
     def test_has_english(self):
         license = LicenseFactory()
@@ -299,16 +299,16 @@ class LegalCodeModelTest(TestCase):
                 version=version,
                 jurisdiction_code=jurisdiction_code,
             )
-            legalcode = LegalCodeFactory(
+            legal_code = LegalCodeFactory(
                 license=license, language_code=language_code
             )
             self.assertEqual(
                 [expected_deed_path, expected_deed_symlinks],
-                legalcode.get_file_and_links("deed"),
+                legal_code.get_file_and_links("deed"),
             )
             self.assertEqual(
                 [expected_license_path, expected_license_symlinks],
-                legalcode.get_file_and_links("legalcode"),
+                legal_code.get_file_and_links("legalcode"),
             )
 
     def test_get_deed_or_license_path_by4(self):
@@ -680,22 +680,22 @@ class LicenseModelTest(TestCase):
             ).logos(),
         )
 
-    def test_get_legalcode_for_language_code(self):
+    def test_get_legal_code_for_language_code(self):
         license = LicenseFactory()
 
         lc_pt = LegalCodeFactory(license=license, language_code="pt")
         lc_en = LegalCodeFactory(license=license, language_code="en")
 
         with override(language="pt"):
-            result = license.get_legalcode_for_language_code(None)
+            result = license.get_legal_code_for_language_code(None)
             self.assertEqual(lc_pt.id, result.id)
-        result = license.get_legalcode_for_language_code("pt")
+        result = license.get_legal_code_for_language_code("pt")
         self.assertEqual(lc_pt.id, result.id)
-        result = license.get_legalcode_for_language_code("en")
+        result = license.get_legal_code_for_language_code("en")
         self.assertEqual(lc_en.id, result.id)
         with self.assertRaises(LegalCode.DoesNotExist):
-            license.get_legalcode_for_language_code("en_us")
-        result = license.get_legalcode_for_language_code("en-us")
+            license.get_legal_code_for_language_code("en_us")
+        result = license.get_legal_code_for_language_code("en-us")
         self.assertEqual(lc_en.id, result.id)
 
     def test_resource_name(self):
@@ -804,13 +804,13 @@ class LicenseModelTest(TestCase):
     )
     def test_tx_upload_messages(self):
         language_code = "es"
-        legalcode = LegalCodeFactory(language_code=language_code)
-        license = legalcode.license
+        legal_code = LegalCodeFactory(language_code=language_code)
+        license = legal_code.license
         test_pofile = polib.POFile()
         with mock.patch.object(
-            license, "get_legalcode_for_language_code"
+            license, "get_legal_code_for_language_code"
         ) as mock_glflc:
-            mock_glflc.return_value = legalcode
+            mock_glflc.return_value = legal_code
             with mock.patch.object(
                 TransifexHelper, "upload_messages_to_transifex"
             ) as mock_umtt:
@@ -820,7 +820,7 @@ class LicenseModelTest(TestCase):
                     mock_get_pofile.return_value = test_pofile
                     license.tx_upload_messages()
         mock_glflc.assert_called_with("en")
-        mock_umtt.assert_called_with(legalcode=legalcode)
+        mock_umtt.assert_called_with(legal_code=legal_code)
 
     def test_superseded(self):
         lic1 = LicenseFactory()
@@ -839,7 +839,7 @@ class TranslationBranchModelTest(TestCase):
         language_code = "es"
         lc1 = LegalCodeFactory(language_code=language_code)
         tb = TranslationBranchFactory(
-            language_code=language_code, legalcodes=[lc1]
+            language_code=language_code, legal_codes=[lc1]
         )
 
         class MockPofile(list):

@@ -1,7 +1,6 @@
 # Standard library
 import os
 import posixpath
-import re
 import urllib
 import urllib.parse
 from base64 import b64encode
@@ -14,7 +13,7 @@ from polib import POEntry, POFile
 
 # First-party/Local
 import licenses.models
-from i18n import DEFAULT_LANGUAGE_CODE, LANGUAGE_CODE_REGEX
+from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     cc_to_django_language_code,
     get_default_language_for_jurisdiction,
@@ -95,31 +94,7 @@ def get_code_from_jurisdiction_url(url):
     return code
 
 
-def get_license_url_from_legalcode_url(legalcode_url):
-    """
-    Return the URL of the license that this legalcode url is for.
-    Legalcode URLs are like
-    https://creativecommons.org/licenses/by/4.0/legalcode
-    https://creativecommons.org/licenses/by/4.0/legalcode.es
-    http://opensource.org/licenses/bsd-license.php
-
-    License URLs are like
-    https://creativecommons.org/licenses/by-nc-nd/4.0/
-    https://creativecommons.org/licenses/BSD/
-    """
-    if legalcode_url == "http://opensource.org/licenses/bsd-license.php":
-        return "https://creativecommons.org/licenses/BSD/"
-    if legalcode_url == "http://opensource.org/licenses/mit-license.php":
-        return "https://creativecommons.org/licenses/MIT/"
-
-    regex = re.compile(r"^(.*)legalcode(\.%s)?" % LANGUAGE_CODE_REGEX)
-    m = regex.match(legalcode_url)
-    if m:
-        return m.group(1)
-    raise ValueError(f"regex did not match {legalcode_url}")
-
-
-def parse_legalcode_filename(filename):
+def parse_legal_code_filename(filename):
     """
     Given the filename where the HTML text of a license is stored,
     return a dictionary with the metadata we can figure out from it.

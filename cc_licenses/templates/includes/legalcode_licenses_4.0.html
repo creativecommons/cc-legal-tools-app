@@ -1,19 +1,19 @@
 {% load bidi i18n license_tags %}
 <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
   <div id="plain-text-marker">
-    <h3 class="padding-bottom-normal b-header">{% trans legalcode.title %}</h3>
+    <h3 class="padding-bottom-normal b-header">{% trans legal_code.title %}</h3>
     <p class="body-big padding-bottom-larger">
-    {% if legalcode|is_one_of:"by" %}
+    {% if legal_code|is_one_of:"by" %}
 {% blocktrans trimmed %}By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.{% endblocktrans %}
-      {% elif legalcode|is_one_of:"by-nc" %}
+      {% elif legal_code|is_one_of:"by-nc" %}
       {% blocktrans trimmed %}By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NonCommercial 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.{% endblocktrans %}
-    {% elif legalcode|is_one_of:"by-nc-nd" %}
+    {% elif legal_code|is_one_of:"by-nc-nd" %}
 {% blocktrans trimmed %}By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.{% endblocktrans %}
-    {% elif legalcode|is_one_of:"by-nc-sa" %}
+    {% elif legal_code|is_one_of:"by-nc-sa" %}
       {% blocktrans trimmed %}By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.{% endblocktrans %}
-    {% elif legalcode|is_one_of:"by-nd" %}
+    {% elif legal_code|is_one_of:"by-nd" %}
     {% blocktrans trimmed %}By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NoDerivatives 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.{% endblocktrans %}
-    {% elif legalcode|is_one_of:"by-sa" %}
+    {% elif legal_code|is_one_of:"by-sa" %}
     {% blocktrans trimmed %}By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-ShareAlike 4.0 International Public License ("Public License"). To the extent this Public License may be interpreted as a contract, You are granted the Licensed Rights in consideration of Your acceptance of these terms and conditions, and the Licensor grants You such rights in consideration of benefits the Licensor receives from making the Licensed Material available under these terms and conditions.{% endblocktrans %}
     {% endif %}
     </p>
@@ -31,19 +31,19 @@
             <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">Adapted Material</span> means material subject to Copyright and Similar Rights that is derived from or based upon the Licensed Material and in which the Licensed Material is translated, altered, arranged, transformed, or otherwise modified in a manner requiring permission under the Copyright and Similar Rights held by the Licensor. For purposes of this Public License, where the Licensed Material is a musical work, performance, or sound recording, Adapted Material is always produced where the Licensed Material is synched in timed relation with a moving image.{% endblocktrans %}</div>
           </li>
 
-          {% if legalcode|is_one_of:"by,by-sa,by-nc,by-nc-sa" %}
+          {% if legal_code|is_one_of:"by,by-sa,by-nc,by-nc-sa" %}
             <li id="s1{% next_letter %}_adapters_license" class="padding-bottom-normal">
               <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">Adapter's License</span> means the license You apply to Your Copyright and Similar Rights in Your contributions to Adapted Material in accordance with the terms and conditions of this Public License.{% endblocktrans %}</div>
             </li>
           {% endif %}
 
-          {% if legalcode|is_one_of:"by-nc-sa" %}
+          {% if legal_code|is_one_of:"by-nc-sa" %}
             <li id="s1{% next_letter %}_by_nc_sa_compatible_license" class="padding-bottom-normal">
               <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">BY-NC-SA Compatible License</span> means a license listed at <a href="//creativecommons.org/compatiblelicenses"> creativecommons.org/compatiblelicenses</a>, approved by Creative Commons as essentially the equivalent of this Public License.{% endblocktrans %}</div>
             </li>
           {% endif %}
 
-          {% if legalcode|is_one_of:"by-sa" %}
+          {% if legal_code|is_one_of:"by-sa" %}
             <li id="s1{% next_letter %}_by_sa_compatible_license" class="padding-bottom-normal">
               <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">BY-SA Compatible License</span> means a license listed at <a href="//creativecommons.org/compatiblelicenses"> creativecommons.org/compatiblelicenses</a>, approved by Creative Commons as essentially the equivalent of this Public License.{% endblocktrans %}</div>
             </li>
@@ -61,13 +61,13 @@
             <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">Exceptions and Limitations</span> means fair use, fair dealing, and/or any other exception or limitation to Copyright and Similar Rights that applies to Your use of the Licensed Material.{% endblocktrans %}</div>
           </li>
 
-          {% if legalcode|is_one_of:"by-nc-sa" %}
+          {% if legal_code|is_one_of:"by-nc-sa" %}
             <li id="s1{% next_letter %}_license_elements_nc_sa" class="padding-bottom-normal">
               <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">License Elements</span> means the license attributes listed in the name of a Creative Commons Public License. The License Elements of this Public License are Attribution, NonCommercial, and ShareAlike.{% endblocktrans %}</div>
             </li>
           {% endif %}
 
-          {% if legalcode|is_one_of:"by-sa" %}
+          {% if legal_code|is_one_of:"by-sa" %}
             <li id="s1{% next_letter %}_license_elements_sa" class="padding-bottom-normal">
               <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">License Elements</span> means the license attributes listed in the name of a Creative Commons Public License. The License Elements of this Public License are Attribution and ShareAlike.{% endblocktrans %}</div>
             </li>
@@ -85,7 +85,7 @@
             <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">Licensor</span> means the individual(s) or entity(ies) granting rights under this Public License.{% endblocktrans %}</div>
           </li>
 
-          {% if legalcode|is_one_of:"by-nc,by-nc-nd,by-nc-sa" %}
+          {% if legal_code|is_one_of:"by-nc,by-nc-nd,by-nc-sa" %}
             <li id="s1{% next_letter %}_noncommercial" class="padding-bottom-normal">
               <div class="padding-{% start %}-normal">{% blocktrans trimmed %}<span style="text-decoration: underline;">NonCommercial</span> means not primarily intended for or directed towards commercial advantage or monetary compensation. For purposes of this Public License, the exchange of the Licensed Material for other material subject to Copyright and Similar Rights by digital file-sharing or similar means is NonCommercial provided there is no payment of monetary compensation in connection with the exchange.{% endblocktrans %}</div>
             </li>
@@ -113,13 +113,13 @@
         <ol class="padding-{% start %}-normal padding-vertical-normal">
           <li id="s2a1" class="padding-{% start %}-normal padding-bottom-normal">{% blocktrans trimmed %}Subject to the terms and conditions of this Public License, the Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable license to exercise the Licensed Rights in the Licensed Material to:{% endblocktrans %}
             <ol type="A" class="padding-{% start %}-normal padding-vertical-normal">
-            {% if legalcode|is_one_of:"by-nc,by-nc-nd,by-nd-sa" %}
+            {% if legal_code|is_one_of:"by-nc,by-nc-nd,by-nd-sa" %}
               <li id="s2a1A" class="padding-{% start %}-normal padding-bottom-normal">{% blocktrans trimmed %}reproduce and Share the Licensed Material, in whole or in part, for NonCommercial purposes only; and{% endblocktrans %}</li>
             {% else %}
               <li id="s2a1A" class="padding-{% start %}-normal padding-bottom-normal">{% blocktrans trimmed %}reproduce and Share the Licensed Material, in whole or in part; and{% endblocktrans %}</li>
             {% endif %}
 
-            {% if legalcode|is_one_of:"by-nc,by-nc-nd,by-nd-sa" %}
+            {% if legal_code|is_one_of:"by-nc,by-nc-nd,by-nd-sa" %}
               <li id="s2a1B" class="padding-{% start %}-normal padding-bottom-small">{% blocktrans trimmed %}produce, reproduce, and Share Adapted Material for NonCommercial purposes only.{% endblocktrans %}</li>
             {% else %}
               <li id="s2a1B" class="padding-{% start %}-normal padding-bottom-small">{% blocktrans trimmed %}produce, reproduce, and Share Adapted Material.{% endblocktrans %}</li>
@@ -139,7 +139,7 @@
 
                   <li id="s2a5{% next_letter %}_offer" class="padding-{% start %}-normal padding-bottom-normal"><span style="text-decoration: underline;">{% blocktrans trimmed %}Offer from the Licensor – Licensed Material{% endblocktrans %}</span>{% blocktrans trimmed %}. Every recipient of the Licensed Material automatically receives an offer from the Licensor to exercise the Licensed Rights under the terms and conditions of this Public License.{% endblocktrans %}</li>
 
-                  {% if legalcode|is_one_of:"by-sa,by-nc-sa" %}
+                  {% if legal_code|is_one_of:"by-sa,by-nc-sa" %}
                     <li id="s2a5{% next_letter %}_adapted_material" class="padding-{% start %}-normal padding-bottom-normal"><span style="text-decoration: underline;">{% blocktrans trimmed %}Additional offer from the Licensor – Adapted Material{% endblocktrans %}</span>{% blocktrans trimmed %}. Every recipient of Adapted Material from You automatically receives an offer from the Licensor to exercise the Licensed Rights in the Adapted Material under the conditions of the Adapter’s License You apply.{% endblocktrans %}</li>
                   {% endif %}
 
@@ -155,7 +155,7 @@
           <ol class="padding-{% start %}-normal padding-vertical-normal">
             <li id="s2b1" class="padding-{% start %}-normal padding-bottom-normal">{% blocktrans trimmed %}Moral rights, such as the right of integrity, are not licensed under this Public License, nor are publicity, privacy, and/or other similar personality rights; however, to the extent possible, the Licensor waives and/or agrees not to assert any such rights held by the Licensor to the limited extent necessary to allow You to exercise the Licensed Rights, but not otherwise.{% endblocktrans %}</li>
             <li id="s2b2" class="padding-{% start %}-normal padding-bottom-normal">{% blocktrans trimmed %}Patent and trademark rights are not licensed under this Public License.{% endblocktrans %}</li>
-          {% if legalcode|is_one_of:"by-nc,by-nc-nd,by-nc-sa" %}
+          {% if legal_code|is_one_of:"by-nc,by-nc-nd,by-nc-sa" %}
             <li id="s2b3" class="padding-{% start %}-normal padding-bottom-small">{% blocktrans trimmed %}To the extent possible, the Licensor waives any right to collect royalties from You for the exercise of the Licensed Rights, whether directly or through a collecting society under any voluntary or waivable statutory or compulsory licensing scheme. In all other cases the Licensor expressly reserves any right to collect such royalties, including when the Licensed Material is used other than for NonCommercial purposes.{% endblocktrans %}</li>
           {% else %}
             <li id="s2b3" class="padding-{% start %}-normal padding-bottom-small">{% blocktrans trimmed %}To the extent possible, the Licensor waives any right to collect royalties from You for the exercise of the Licensed Rights, whether directly or through a collecting society under any voluntary or waivable statutory or compulsory licensing scheme. In all other cases the Licensor expressly reserves any right to collect such royalties.{% endblocktrans %}</li>
@@ -191,7 +191,7 @@
               </ol>
             </li>
             <li id="s3a2" class="padding-{% start %}-normal padding-bottom-normal">{% blocktrans trimmed %}You may satisfy the conditions in Section <a href="#s3a1">3(a)(1)</a> in any reasonable manner based on the medium, means, and context in which You Share the Licensed Material. For example, it may be reasonable to satisfy the conditions by providing a URI or hyperlink to a resource that includes the required information.{% endblocktrans %}</li>
-            {% with sharing_adapted=legalcode.license.include_share_adapted_material_clause %}
+            {% with sharing_adapted=legal_code.license.include_share_adapted_material_clause %}
               <li id="s3a3" class="padding-{% start %}-normal {% if sharing_adapted %}padding-bottom-normal{% else %}padding-bottom-small{% endif %}">{% blocktrans trimmed %}If requested by the Licensor, You must remove any of the information
               required by Section <a href="#s3a1A">3(a)(1)(A)</a> to the extent
               reasonably practicable.{% endblocktrans %}</li>
@@ -202,7 +202,7 @@
           </ol>
         </li>
 
-        {% if "sa" in legalcode.license.unit %}
+        {% if "sa" in legal_code.license.unit %}
           <li id="s3b" class="padding-{% start %}-normal padding-bottom-normal"><strong>{% blocktrans trimmed %}ShareAlike{% endblocktrans %}</strong>.
             <p class="padding-top-normal padding-bottom-normal">{% blocktrans trimmed %}In addition to the conditions in Section <a href="#s3a">3(a)</a>, if You Share Adapted Material You produce, the following conditions also apply.{% endblocktrans %}</p>
             <ol class="padding-{% start %}-normal">
@@ -228,14 +228,14 @@
       Your use of the Licensed Material:{% endblocktrans %}</p>
       <ol type="a" class="body-big padding-{% start %}-normal">
           <li id="s4a" class="padding-{% start %}-normal padding-bottom-normal">
-          {% if legalcode|is_one_of:"by-nc,by-nc-nd,by-nc-sa" %}
+          {% if legal_code|is_one_of:"by-nc,by-nc-nd,by-nc-sa" %}
             {% blocktrans trimmed %}for the avoidance of doubt, Section <a href="#s2a1">2(a)(1)</a> grants You the right to extract, reuse, reproduce, and Share all or a substantial portion of the contents of the database for NonCommercial purposes only;{% endblocktrans %}
           {% else %}
             {% blocktrans trimmed %}for the avoidance of doubt, Section <a href="#s2a1">2(a)(1)</a> grants You the right to extract, reuse, reproduce, and Share all or a substantial portion of the contents of the database;{% endblocktrans %}
             {% endif %}
           </li>
           <li id="s4b" class="padding-{% start %}-normal padding-bottom-normal">
-            {% if legalcode|is_one_of:"by-nc-sa,by-sa" %}
+            {% if legal_code|is_one_of:"by-nc-sa,by-sa" %}
               {% blocktrans trimmed %}if You include all or a substantial portion of the database contents in a database in which You have Sui Generis Database Rights, then the database in which You have Sui Generis Database Rights (but not its individual contents) is Adapted Material, including for purposes of Section <a href="#s3b">3(b)</a>; and{% endblocktrans %}
             {% else %}
               {% blocktrans trimmed %}if You include all or a substantial portion of the database contents in a database in which You have Sui Generis Database Rights, then the database in which You have Sui Generis Database Rights (but not its individual contents) is Adapted Material; and{% endblocktrans %}

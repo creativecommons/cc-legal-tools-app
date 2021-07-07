@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block license_name %}
-  <span property="dc:title dct:title" style="display: inline;">{{ legalcode.title }}</span>
+  <span property="dc:title dct:title" style="display: inline;">{{ legal_code.title }}</span>
 {% endblock %}
 
 {% block body %}

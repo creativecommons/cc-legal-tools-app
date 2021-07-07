@@ -14,7 +14,7 @@ from django.urls import path, register_converter
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
 from licenses import VERSION_REGEX_STRING
-from licenses.views import view_deed, view_license, view_metadata
+from licenses.views import view_deed, view_legal_code, view_metadata
 
 
 class CategoryConverter:
@@ -207,37 +207,37 @@ urlpatterns = [
     path(
         "<category:category>/<unit:unit>/<version:version>"
         "/<jurisdiction:jurisdiction>/legalcode.<language_code:language_code>",
-        view_license,
-        name="view_legalcode_ported_language_specified",
+        view_legal_code,
+        name="view_legal_code_ported_language_specified",
     ),
     # Legalcode: with Jurisdiction (ported), no language_code
     path(
         "<category:category>/<unit:unit>/<version:version>"
         "/<jurisdiction:jurisdiction>/legalcode",
-        view_license,
-        name="view_legalcode_ported",
+        view_legal_code,
+        name="view_legal_code_ported",
     ),
     # Legalcode: no Jurisdiction (international/unported), with language_code
     path(
         "<category:category>/<unit:unit>/<version:version>/legalcode"
         ".<language_code:language_code>",
-        view_license,
+        view_legal_code,
         kwargs=dict(jurisdiction=""),
-        name="view_legalcode_unported_language_specified",
+        name="view_legal_code_unported_language_specified",
     ),
     # Legalcode: no Jurisdiction (international/unported), no language_code
     path(
         "<category:category>/<unit:unit>/<version:version>/legalcode",
-        view_license,
+        view_legal_code,
         kwargs=dict(jurisdiction=""),
-        name="view_legalcode_unported",
+        name="view_legal_code_unported",
     ),
     # # Plaintext Legalcode: no Jurisdiction (int/unported), no language_code
     # path(
     #     "<category:category>/<unit:unit>/<version:version>/legalcode.txt",
-    #     view_license,
+    #     view_legal_code,
     #     kwargs=dict(jurisdiction="", is_plain_text=True),
-    #     name="view_legalcode_unported",
+    #     name="view_legal_code_unported",
     # ),
     #
 ]

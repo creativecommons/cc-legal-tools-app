@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% comment %}
 For Development purposes, this displays tables of all the available deeds and
-legalcode. This is not intended for public use and should not be included in
+legal code. This is not intended for public use and should not be included in
 the generation of static files.
 {% endcomment %}
 {% load i18n license_tags %}
@@ -54,13 +54,13 @@ the generation of static files.
               </thead>
               <tbody>
                 {% regroup jurisdiction_group.list by language_code as language_list %}
-                {% for license_group in language_list %}
+                {% for legal_code_group in language_list %}
                   <tr>
-                    <th>{{ license_group.grouper }}</th>
-                    {% for legalcode in license_group.list  %}
+                    <th>{{ legal_code_group.grouper }}</th>
+                    {% for legal_code in legal_code_group.list  %}
                       <td>
-                        <a href="{{ legalcode.deed_url }}">{% trans "Deed" %}</a>,
-                        <a href="{{ legalcode.license_url }}">{% trans "License" %}</a>
+                        <a href="{{ legal_code.deed_url }}">{% trans "Deed" %}</a>,
+                        <a href="{{ legal_code.legal_code_url }}">{% trans "Legal Code" %}</a>
                       </td>
                     {% endfor %}
                   </tr>
@@ -91,13 +91,13 @@ the generation of static files.
               </thead>
               <tbody>
                 {% regroup jurisdiction_group.list by language_code as language_list %}
-                {% for license_group in language_list %}
+                {% for legal_code_group in language_list %}
                   <tr>
-                    <th>{{ license_group.grouper }}</th>
-                    {% for legalcode in license_group.list  %}
+                    <th>{{ legal_code_group.grouper }}</th>
+                    {% for legal_code in legal_code_group.list  %}
                       <td>
-                        <a href="{{ legalcode.deed_url }}">{% trans "Deed" %}</a>,
-                        <a href="{{ legalcode.license_url }}">{% trans "License" %}</a>
+                        <a href="{{ legal_code.deed_url }}">{% trans "Deed" %}</a>,
+                        <a href="{{ legal_code.legal_code_url }}">{% trans "Legal Code" %}</a>
                       </td>
                     {% endfor %}
                   </tr>

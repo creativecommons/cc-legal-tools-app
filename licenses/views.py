@@ -71,7 +71,7 @@ def view_dev_home(request, category=None):
 
     # Get the list of units and languages that occur among the licenses
     # to let the template iterate over them as it likes.
-    legalcode_objects = (
+    legal_code_objects = (
         LegalCode.objects.valid()
         .select_related("license")
         .order_by(
@@ -84,7 +84,7 @@ def view_dev_home(request, category=None):
     licenses = []
     publicdomain = []
     path_start = os.path.dirname(request.path)
-    for lc in legalcode_objects:
+    for lc in legal_code_objects:
         lc_category = lc.license.category
         version = lc.license.version
         jurisdiction = JURISDICTION_NAMES.get(
@@ -107,7 +107,9 @@ def view_dev_home(request, category=None):
             unit=lc.license.unit,
             language_code=lc.language_code,
             deed_url=os.path.relpath(lc.deed_url, start=path_start),
-            license_url=os.path.relpath(lc.license_url, start=path_start),
+            legal_code_url=os.path.relpath(
+                lc.legal_code_url, start=path_start
+            ),
         )
         if lc_category == "licenses":
             licenses.append(data)
@@ -133,15 +135,15 @@ def name_local(legal_code):
     )["name_local"]
 
 
-def get_languages_and_links_for_legalcodes(
+def get_languages_and_links_for_legal_codes(
     path_start,
-    legalcodes: Iterable[LegalCode],
+    legal_codes: Iterable[LegalCode],
     selected_language_code: str,
-    license_or_deed: str,
+    legal_code_or_deed: str,
 ):
     """
-    license_or_deed should be "license" or "deed", controlling which kind of
-    page we link to.
+    legal_code_or_deed should be "deed" or "legal code", controlling which kind
+    of page we link to.
 
     selected_language_code is a CC language code (RFC 5646 language tag)
     """
@@ -151,12 +153,12 @@ def get_languages_and_links_for_legalcodes(
             # name_local: name of language in its own language
             "name_local": name_local(legal_code),
             "name_for_sorting": name_local(legal_code).lower(),
-            "link": os.path.relpath(legal_code.license_url, start=path_start)
-            if license_or_deed == "license"
-            else os.path.relpath(legal_code.deed_url, start=path_start),
+            "link": os.path.relpath(legal_code.deed_url, start=path_start)
+            if legal_code_or_deed == "deed"
+            else os.path.relpath(legal_code.legal_code_url, start=path_start),
             "selected": selected_language_code == legal_code.language_code,
         }
-        for legal_code in legalcodes
+        for legal_code in legal_codes
     ]
     languages_and_links.sort(key=itemgetter("name_for_sorting"))
     if len(languages_and_links) < 2:
@@ -189,23 +191,25 @@ def view_deed(
         request.path, jurisdiction, language_code
     )
     path_start = os.path.dirname(request.path)
-    legalcode = get_object_or_404(
+    legal_code = get_object_or_404(
         LegalCode,
         deed_url=request.path,
     )
-    license_rel_path = os.path.relpath(legalcode.license_url, path_start)
+    legal_code_rel_path = os.path.relpath(
+        legal_code.legal_code_url, path_start
+    )
 
-    license = legalcode.license
+    license = legal_code.license
     category, category_title = get_category_and_category_title(
         category,
         license,
     )
-    language_code = legalcode.language_code  # CC language code
-    languages_and_links = get_languages_and_links_for_legalcodes(
+    language_code = legal_code.language_code  # CC language code
+    languages_and_links = get_languages_and_links_for_legal_codes(
         path_start=path_start,
-        legalcodes=license.legal_codes.all(),
+        legal_codes=license.legal_codes.all(),
         selected_language_code=language_code,
-        license_or_deed="deed",
+        legal_code_or_deed="deed",
     )
 
     if license.unit == "CC0":
@@ -215,7 +219,7 @@ def view_deed(
     else:
         body_template = "includes/deed_unimplemented.html"
 
-    translation = legalcode.get_translation_object()
+    translation = legal_code.get_translation_object()
     with active_translation(translation):
         return render(
             request,
@@ -225,16 +229,16 @@ def view_deed(
                 "body_template": body_template,
                 "category": category,
                 "category_title": category_title,
-                "fat_code": license.fat_code(),
+                "identifier": license.identifier(),
                 "languages_and_links": languages_and_links,
-                "legalcode": legalcode,
+                "legal_code": legal_code,
                 "license": license,
-                "license_rel_path": license_rel_path,
+                "legal_code_rel_path": legal_code_rel_path,
             },
         )
 
 
-def view_license(
+def view_legal_code(
     request,
     unit,
     version,
@@ -249,49 +253,49 @@ def view_license(
     path_start = os.path.dirname(request.path)
     # Plaintext disabled
     # if is_plain_text:
-    #     legalcode = get_object_or_404(
+    #     legal_code = get_object_or_404(
     #         LegalCode,
     #         plain_text_url=request.path,
     #     )
     # else:
-    #     legalcode = get_object_or_404(
+    #     legal_code = get_object_or_404(
     #         LegalCode,
-    #         license_url=request.path,
+    #         legal_code_url=request.path,
     #     )
-    legalcode = get_object_or_404(
+    legal_code = get_object_or_404(
         LegalCode,
-        license_url=request.path,
+        legal_code_url=request.path,
     )
-    deed_rel_path = os.path.relpath(legalcode.deed_url, path_start)
+    deed_rel_path = os.path.relpath(legal_code.deed_url, path_start)
 
-    license = legalcode.license
+    license = legal_code.license
     category, category_title = get_category_and_category_title(
         category,
         license,
     )
 
-    language_code = legalcode.language_code  # CC language code
-    languages_and_links = get_languages_and_links_for_legalcodes(
+    language_code = legal_code.language_code  # CC language code
+    languages_and_links = get_languages_and_links_for_legal_codes(
         path_start=path_start,
-        legalcodes=license.legal_codes.all(),
+        legal_codes=license.legal_codes.all(),
         selected_language_code=language_code,
-        license_or_deed="license",
+        legal_code_or_deed="legal code",
     )
 
     kwargs = dict(
-        template_name="legalcode_page.html",
+        template_name="legal_code_page.html",
         context={
             "category": category,
             "category_title": category_title,
-            "fat_code": license.fat_code(),
+            "identifier": license.identifier(),
             "languages_and_links": languages_and_links,
-            "legalcode": legalcode,
+            "legal_code": legal_code,
             "license": license,
             "deed_rel_path": deed_rel_path,
         },
     )
 
-    translation = legalcode.get_translation_object()
+    translation = legal_code.get_translation_object()
     with active_translation(translation):
         # if is_plain_text:
         #     response = HttpResponse(

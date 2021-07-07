@@ -204,7 +204,7 @@ class MetadataImporter:
             logo.license = logo.license
         do_bulk_create(LICENSE_LOGOS)
 
-    def get_license_object(self, license_url: str) -> Optional[models.Model]:
+    def get_license_object(self, legal_code_url: str) -> Optional[models.Model]:
         """
         Return the License model object for the given URL, creating it and
         adding to the database if necessary. license_elements is a dictionary
@@ -214,17 +214,17 @@ class MetadataImporter:
         # Note: as we build the license object, we remove the XML elements we
         # use from the tree. If we have any left over, we know we've missed
         # converting something.
-        if license_url not in self.license_elements:  # pragma: no cover
+        if legal_code_url not in self.license_elements:  # pragma: no cover
             raise ValueError(
-                f"There is a reference to a license {license_url} that does"
+                f"There is a reference to a license {legal_code_url} that does"
                 " not exist"
             )
-        if license_url in self.licenses:  # pragma: no cover
+        if legal_code_url in self.licenses:  # pragma: no cover
             # We've already done this one, return the License object.
-            return self.licenses[license_url]
+            return self.licenses[legal_code_url]
 
         license_element = self.license_elements[
-            license_url
+            legal_code_url
         ]  # type: ET.Element
 
         #
@@ -251,7 +251,7 @@ class MetadataImporter:
         ):  # Note: Must compare directly to None. Just checking truthiness of
             # an ET element does something else.
             print(
-                f"WARNING: This license {license_url} is using"
+                f"WARNING: This license {legal_code_url} is using"
                 " <dc:isReplacedBy>. It probably should be <dcq:isReplacedBy>"
                 " and that's how we are treating it."
             )
@@ -313,7 +313,7 @@ class MetadataImporter:
 
         # Create the License object
         license = self.License(
-            canonical_url=license_url,
+            canonical_url=legal_code_url,
             unit=get_element_text(license_element, "dc:identifier"),
             version=get_element_text(license_element, "dcq:hasVersion", ""),
             jurisdiction_code=jurisdiction_code,
@@ -367,7 +367,7 @@ class MetadataImporter:
         ):
             code_url = legal_code_element.attrib[namespaced("rdf", "resource")]
 
-            # See if there's a Description for this legalcode
+            # See if there's a Description for this legal code
             descriptions = self.root.findall(
                 f"rdf:Description[@{namespaced('rdf', 'about')}='{code_url}']",
                 namespaces,
@@ -383,7 +383,7 @@ class MetadataImporter:
                         descriptions[0], "dcq:language"
                     )
             if language_code is None:
-                # If we don't already know a language for this legalcode,
+                # If we don't already know a language for this legal code,
                 # assume it's English.
                 language_code = DEFAULT_LANGUAGE_CODE
             if code_url.endswith("/legalcode"):

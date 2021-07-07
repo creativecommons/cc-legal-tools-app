@@ -86,7 +86,7 @@ def get_translation_object(
         localedirs=[license_locale_dir],
     )
     # Add a fallback to the standard Django translation for this language. This
-    # gets us the non-legalcode parts of the pages.
+    # gets us the non-legal-code parts of the pages.
     license_translation_object.add_fallback(translation(django_language_code))
 
     return license_translation_object

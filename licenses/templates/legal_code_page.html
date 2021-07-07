@@ -3,7 +3,7 @@
 {% load bidi %}
 
 {% block active-breadcrumb-li %}
-  <li class="is-active"><a href="{{ legalcode.license_url }}" aria-current="page displayed">{{ legalcode.fat_code }} {% trans "Legal Code" %}</a></li>
+  <li class="is-active"><a href="{{ legal_code.legal_code_url }}" aria-current="page displayed">{{ legal_code.identifier }} {% trans "Legal Code" %}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}
@@ -11,10 +11,10 @@
   <div class="column is-one-quarter"></div>
   <div class="column columns padding-vertical-normal">
     <div class="column is-three-quarters padding-top-normal">
-      Version {{ legalcode.license.version }} &#8226;
+      Version {{ legal_code.license.version }} &#8226;
       See the <a href="https://creativecommons.org/legal-code-errata/">errata page</a> for any corrections and the date of change
-      {% if legalcode.translation_last_update %}
-        &#8226; Translation published {{ legalcode.translation_last_update|date:'Y/m/d' }}
+      {% if legal_code.translation_last_update %}
+        &#8226; Translation published {{ legal_code.translation_last_update|date:'Y/m/d' }}
       {% endif %}
     </div>
     <div class="column">
@@ -24,11 +24,11 @@
 </div>
 {% endblock %}
 
-{% block title %}{{ legalcode.title }} Legal Code &mdash; Creative Commons{% endblock %}
+{% block title %}{{ legal_code.title }} Legal Code &mdash; Creative Commons{% endblock %}
 
 {% block content %}
   <div class="columns">
-    {% if not legalcode.html %}
+    {% if not legal_code.html %}
       {% include 'includes/menu-sidebar.html' %}
     {% endif %}
     <div class="column">
@@ -36,7 +36,7 @@
       {% if license.deprecated_on %}
         {% include 'includes/deprecated.html' %} {# Retired legal tool notice #}
       {% endif %}
-      {% if not legalcode.html %}
+      {% if not legal_code.html %}
         {% include 'includes/about_cc_and_license.html' %}  {#  CC IS NOT A LAW FIRM #}
         {% include 'includes/use_of_licenses.html' %}  {# Considerations... #}
         {% if license.category == "publicdomain" and license.unit == "CC0" %}

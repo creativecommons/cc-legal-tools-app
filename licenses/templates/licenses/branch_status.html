@@ -33,10 +33,10 @@
   </tr>
   </thead>
   <tbody>
-  {% for code in branch.legalcodes.all %}
+  {% for code in branch.legal_codes.all %}
     {% with pofile=code.get_pofile %}
       <tr>
-      <td>{{ code.license.fat_code }}</td>
+      <td>{{ code.license.identifier }}</td>
       <td>{{ code.translation_last_update|default_if_none:"-" }}</td>
       <td>{{ pofile.translated_entries|length }}</td>
       <td>{{ pofile|length }}</td>
