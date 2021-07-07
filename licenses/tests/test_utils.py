@@ -209,6 +209,8 @@ class ParseLegalcodeFilenameTest(TestCase):
                     ),
                     "unit": "by",
                     "version": "1.0",
+                    "deed_only": False,
+                    "deprecated_on": None,
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
                     "category": "licenses",
@@ -222,6 +224,8 @@ class ParseLegalcodeFilenameTest(TestCase):
                     ),
                     "unit": "by",
                     "version": "3.0",
+                    "deed_only": False,
+                    "deprecated_on": None,
                     "jurisdiction_code": "es",
                     "cc_language_code": "ast",
                     "category": "licenses",
@@ -235,6 +239,8 @@ class ParseLegalcodeFilenameTest(TestCase):
                     ),
                     "unit": "by",
                     "version": "3.0",
+                    "deed_only": False,
+                    "deprecated_on": None,
                     "jurisdiction_code": "rs",
                     "cc_language_code": "sr-Cyrl",
                     "category": "licenses",
@@ -248,6 +254,8 @@ class ParseLegalcodeFilenameTest(TestCase):
                     ),
                     "unit": "devnations",
                     "version": "2.0",
+                    "deed_only": False,
+                    "deprecated_on": "2007-06-04",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
                     "category": "licenses",
@@ -255,16 +263,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             ),
             (
                 "LGPL_2.1.html",
-                {
-                    "canonical_url": (
-                        "https://creativecommons.org/licenses/LGPL/2.1/"
-                    ),
-                    "unit": "LGPL",
-                    "version": "2.1",
-                    "jurisdiction_code": "",
-                    "cc_language_code": "en",
-                    "category": "licenses",
-                },
+                None,
             ),
             (
                 "samplingplus_1.0",
@@ -274,6 +273,8 @@ class ParseLegalcodeFilenameTest(TestCase):
                     ),
                     "unit": "sampling+",
                     "version": "1.0",
+                    "deed_only": False,
+                    "deprecated_on": "2011-09-12",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
                     "category": "licenses",
@@ -287,6 +288,8 @@ class ParseLegalcodeFilenameTest(TestCase):
                     ),
                     "unit": "CC0",
                     "version": "1.0",
+                    "deed_only": False,
+                    "deprecated_on": None,
                     "jurisdiction_code": "",
                     "cc_language_code": "fi",
                     "category": "publicdomain",
@@ -301,17 +304,33 @@ class ParseLegalcodeFilenameTest(TestCase):
                     ),
                     "unit": "nc-sampling+",
                     "version": "1.0",
+                    "deed_only": False,
+                    "deprecated_on": "2011-09-12",
                     "jurisdiction_code": "",
                     "cc_language_code": "en",
                     "category": "licenses",
+                },
+            ),
+            (
+                "publicdomain_1.0.html",
+                {
+                    "canonical_url": (
+                        "https://creativecommons.org/publicdomain/"
+                        "publicdomain/1.0/us/"
+                    ),
+                    "unit": "publicdomain",
+                    "version": "1.0",
+                    "deed_only": True,
+                    "deprecated_on": None,
+                    "jurisdiction_code": "us",
+                    "cc_language_code": "en",
+                    "category": "publicdomain",
                 },
             ),
         ]
         for filename, expected_result in data:
             with self.subTest(filename):
                 result = parse_legal_code_filename(filename)
-                if result != expected_result:
-                    print(repr(result))
                 self.assertEqual(expected_result, result)
         with self.assertRaisesMessage(ValueError, "Invalid language_code="):
             parse_legal_code_filename("by_3.0_es_aaa")

@@ -56,6 +56,8 @@ UNITS_LICENSES = [
 ]
 UNITS_PUBLIC_DOMAIN = [
     "CC0",
+    "mark",
+    "publicdomain",
 ]
 UNITS_DEPRECATED = {
     # Sorted by date, ascending:
@@ -71,6 +73,10 @@ UNITS_DEPRECATED = {
     "nc-sampling+": "2011-09-12",
     "sampling+": "2011-09-12",
 }
+UNITS_DEED_ONLY = [
+    "mark",
+    "publicdomain",
+]
 
 
 class LegalCodeQuerySet(models.QuerySet):
@@ -412,7 +418,7 @@ class License(models.Model):
         unique=True,
     )
     unit = models.CharField(
-        max_length=40,
+        max_length=20,
         help_text="shorthand representation for which class of licenses this"
         " falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
         " 'devnations', ...",
@@ -469,10 +475,13 @@ class License(models.Model):
         help_text="another license that this one is based on",
     )
     deprecated_on = models.DateField(
+        blank=True,
         null=True,
         default=None,
         help_text="if set, the date on which this license was deprecated",
     )
+
+    deed_only = models.BooleanField(default=False)
 
     permits_derivative_works = models.BooleanField(default=None)
     permits_reproduction = models.BooleanField(default=None)
@@ -506,6 +515,7 @@ class License(models.Model):
         if self.jurisdiction_code:
             data["jurisdiction"] = self.jurisdiction_code
 
+        data["deed_only"] = self.deed_only
         data["permits_derivative_works"] = self.permits_derivative_works
         data["permits_reproduction"] = self.permits_reproduction
         data["permits_distribution"] = self.permits_distribution

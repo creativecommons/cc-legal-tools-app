@@ -92,7 +92,7 @@ def view_dev_home(request, category=None):
         )
         # For details on nomenclature for unported licenses, see:
         # https://wiki.creativecommons.org/wiki/License_Versions
-        if lc.license.unit == "CC0":
+        if lc.license.unit in ["CC0", "mark"]:
             jurisdiction = "Universal"
         elif lc_category == "licenses" and jurisdiction.lower() == "unported":
             if version == "4.0":
@@ -106,6 +106,7 @@ def view_dev_home(request, category=None):
             jurisdiction=jurisdiction,
             unit=lc.license.unit,
             language_code=lc.language_code,
+            deed_only=lc.license.deed_only,
             deed_url=os.path.relpath(lc.deed_url, start=path_start),
             legal_code_url=os.path.relpath(
                 lc.legal_code_url, start=path_start
@@ -115,6 +116,8 @@ def view_dev_home(request, category=None):
             licenses.append(data)
         else:
             publicdomain.append(data)
+    licenses = sorted(licenses, reverse=True, key=itemgetter("version"))
+    publicdomain = sorted(publicdomain, key=itemgetter("unit"))
 
     return render(
         request,
