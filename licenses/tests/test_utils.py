@@ -321,7 +321,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "unit": "publicdomain",
                     "version": "1.0",
                     "deed_only": True,
-                    "deprecated_on": None,
+                    "deprecated_on": "2010-10-11",
                     "jurisdiction_code": "us",
                     "cc_language_code": "en",
                     "category": "publicdomain",

@@ -69,7 +69,7 @@ UNITS_DEPRECATED = {
     "sa": "2004-05-25",
     "devnations": "2007-06-04",
     "sampling": "2007-06-04",
-    # public domain dedication and certification: "2010-10-11",
+    "publicdomain": "2010-10-11",
     "nc-sampling+": "2011-09-12",
     "sampling+": "2011-09-12",
 }
