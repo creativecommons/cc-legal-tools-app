@@ -590,7 +590,8 @@ class License(models.Model):
         else:
             slug = f"{self.unit}_{self.version}"
         slug = slug.replace(".", "")
-        return slug.lower()
+        slug = slug.lower()
+        return slug
 
     def rdf(self):
         """Generate RDF for this license?"""
@@ -601,13 +602,15 @@ class License(models.Model):
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
         license = self
-        s = f"{license.unit} {license.version}"
-        if license.unit.startswith("by"):
-            s = f"CC {s}"
+        identifier = f"{license.unit} {license.version}"
+        if license.unit in UNITS_LICENSES:
+            identifier = f"CC {identifier}"
+        elif license.unit == "mark":
+            identifier = f"PDM {license.version}"
         if license.jurisdiction_code:
-            s = f"{s} {license.jurisdiction_code}"
-        s = s.upper()
-        return s
+            identifier = f"{identifier} {license.jurisdiction_code}"
+        identifier = identifier.upper()
+        return identifier
 
     @property
     def level_of_freedom(self):

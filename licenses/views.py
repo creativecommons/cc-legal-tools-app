@@ -215,10 +215,14 @@ def view_deed(
         legal_code_or_deed="deed",
     )
 
-    if license.unit == "CC0":
-        body_template = "includes/deed_cc0_body.html"
-    elif license.unit in UNITS_LICENSES:
+    if license.unit in UNITS_LICENSES:
         body_template = "includes/deed_licenses_body.html"
+    elif license.unit == "CC0":
+        body_template = "includes/deed_cc0_body.html"
+    elif license.unit == "mark":
+        body_template = "includes/deed_mark_body.html"
+    elif license.unit == "publicdomain":
+        body_template = "includes/deed_publicdomain_body.html"
     else:
         body_template = "includes/deed_unimplemented.html"
 
