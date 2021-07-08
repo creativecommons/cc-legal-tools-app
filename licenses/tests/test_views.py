@@ -10,14 +10,13 @@ from django.utils.translation.trans_real import DjangoTranslation
 
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
-from licenses.models import LegalCode, License, build_path
+from licenses.models import UNITS_LICENSES, LegalCode, License, build_path
 from licenses.tests.factories import (
     LegalCodeFactory,
     LicenseFactory,
     TranslationBranchFactory,
 )
 from licenses.views import (
-    DEED_TEMPLATE_MAPPING,
     NUM_COMMITS,
     branch_status_helper,
     get_category_and_category_title,
@@ -37,43 +36,41 @@ strings_to_lambdas = {
     # Conditions under which we expect to see these strings in a deed page.
     # The lambda is called with a License object
     "INVALID_VARIABLE": never,  # Should never appear
-    "You are free to:": lambda lic_ob: lic_ob.unit
-    not in DEED_TEMPLATE_MAPPING,
+    "You are free to:": lambda lic_ob: lic_ob.unit in UNITS_LICENSES,
     "You do not have to comply with the license for elements of "
     "the material in the public domain": lambda lic_ob: lic_ob.unit
-    not in DEED_TEMPLATE_MAPPING,  # Shows up in standard_deed.html, not others
+    in UNITS_LICENSES,  # Shows up in standard_deed.html, not others
     "The licensor cannot revoke these freedoms as long as you follow the license terms.": always,  # noqa: E501
     "appropriate credit": lambda lic_ob: lic_ob.requires_attribution
-    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit in UNITS_LICENSES,
     "You may do so in any reasonable manner, but not in any way that "
     "suggests the licensor endorses you or your use.": lambda lic_ob: lic_ob.requires_attribution  # noqa: E501
-    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit in UNITS_LICENSES,
     "We never expect to see this string in a license deed.": never,
     "you must distribute your contributions under the": lambda lic_ob: lic_ob.requires_share_alike,  # noqa: E501
     "ShareAlike": lambda lic_ob: lic_ob.requires_share_alike,
     "same license": lambda lic_ob: lic_ob.requires_share_alike,
     "as the original.": lambda lic_ob: lic_ob.requires_share_alike,
     "Adapt": lambda lic_ob: lic_ob.permits_derivative_works
-    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit in UNITS_LICENSES,
     "remix, transform, and build upon the material": lambda lic_ob: lic_ob.permits_derivative_works  # noqa: E501
-    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit in UNITS_LICENSES,
     "you may not distribute the modified material.": lambda lic_ob: not lic_ob.permits_derivative_works,  # noqa: E501
     "NoDerivatives": lambda lic_ob: not lic_ob.permits_derivative_works,
     # It was decided NOT to include the "free cultural works" icon/text
     "This license is acceptable for Free Cultural Works.": never,
-    "for any purpose, even commercially.": lambda lic_ob: lic_ob.unit
-    not in DEED_TEMPLATE_MAPPING
-    and not lic_ob.prohibits_commercial_use,
+    "for any purpose, even commercially.": lambda lic_ob: not lic_ob.prohibits_commercial_use
+    and lic_ob.unit in UNITS_LICENSES,
     "You may not use the material for": lambda lic_ob: lic_ob.prohibits_commercial_use  # noqa: E501
-    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit in UNITS_LICENSES,
     ">commercial purposes<": lambda lic_ob: lic_ob.prohibits_commercial_use
-    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit in UNITS_LICENSES,
     "When the Licensor is an intergovernmental organization": lambda lic_ob: lic_ob.jurisdiction_code  # noqa: E501
     == "igo",
     "of this license is available. You should use it for new works,": lambda lic_ob: lic_ob.superseded,  # noqa: E501
     """href="/worldwide/""": lambda lic_ob: lic_ob.jurisdiction_code != ""
     and lic_ob.jurisdiction_code not in ["", "es", "igo"]
-    and lic_ob.unit not in DEED_TEMPLATE_MAPPING,
+    and lic_ob.unit in UNITS_LICENSES,
 }
 
 

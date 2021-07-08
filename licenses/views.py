@@ -28,19 +28,6 @@ from licenses.models import (
     TranslationBranch,
 )
 
-# DEED_TEMPLATE_MAPPING is currently only used by tests
-DEED_TEMPLATE_MAPPING = {
-    # unit : template name
-    "sampling": "licenses/sampling_deed.html",  # ......... DISABLED
-    "sampling+": "licenses/sampling_deed.html",  # ........ DISABLED
-    "nc-sampling+": "licenses/sampling_deed.html",  # ..... DISABLED
-    "devnations": "licenses/devnations_deed.html",  # ..... DISABLED
-    "CC0": "licenses/zero_deed.html",  # .................. DISABLED
-    "mark": "licenses/pdmark_deed.html",  # ............... DISABLED
-    "publicdomain": "licenses/publicdomain_deed.html",  # . DISABLED
-    # others use "licenses/standard_deed.html",  # ........ DISABLED
-}
-
 NUM_COMMITS = 3
 
 # For removing the deed.foo section of a deed url
