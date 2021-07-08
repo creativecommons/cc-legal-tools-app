@@ -36,7 +36,7 @@ register_converter(CategoryConverter, "category")
 
 class UnitConverter:
     """
-    Units look like "MIT" or "by-sa" or "by-nc-nd" or "CC0".
+    Units look like "MIT" or "by-sa" or "by-nc-nd" or "zero".
     We accept any mix of letters, digits, and dashes.
     """
 

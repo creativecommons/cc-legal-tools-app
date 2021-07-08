@@ -314,9 +314,9 @@ class Command(BaseCommand):
                             version=version,
                         )
                         continue
-                elif unit == "CC0":
+                elif unit == "zero":
                     support_po_files = True
-                    messages_text = self.import_cc0_license_html(
+                    messages_text = self.import_zero_license_html(
                         content=content,
                         legal_code=legal_code,
                     )
@@ -412,10 +412,10 @@ class Command(BaseCommand):
         # pofile and mofile ourselves.
         save_pofile_as_pofile_and_mofile(pofile, po_filename)
 
-    def import_cc0_license_html(self, *, content, legal_code):
+    def import_zero_license_html(self, *, content, legal_code):
         license = legal_code.license
         assert license.version == "1.0", f"{license.version} is not '1.0'"
-        assert license.unit == "CC0", f"{license.unit} is not 'CC0'"
+        assert license.unit == "zero", f"{license.unit} is not 'zero'"
         messages = {}
         raw_html = content
         # Parse the raw HTML to a BeautifulSoup object.
@@ -486,7 +486,7 @@ class Command(BaseCommand):
             for i, part in enumerate(parts):
                 messages[f"s4_part_{i}"] = str(part)
 
-        # And that's it. The CC0 "license" is relatively short.
+        # And that's it. The CC0 declaration is relatively short.
 
         validate_dictionary_is_all_text(messages)
 

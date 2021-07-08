@@ -132,8 +132,6 @@ def parse_legal_code_filename(filename):
         category = "publicdomain"
         if unit == "publicdomain":
             jurisdiction = "us"
-        elif unit == "zero":
-            unit_to_return = "CC0"
     elif unit in licenses.models.UNITS_LICENSES:
         category = "licenses"
         if parts and float(version) < 4.0:

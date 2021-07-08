@@ -236,10 +236,10 @@ class LicensesTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        self.cc0 = LicenseFactory(
+        self.zero = LicenseFactory(
             canonical_url="https://creativecommons.org/publicdomain/zero/1.0/",
             category="publicdomain",
-            unit="CC0",
+            unit="zero",
             version="1.0",
             permits_derivative_works=True,
             permits_reproduction=True,
@@ -424,7 +424,6 @@ class ViewLicenseTest(TestCase):
             elif language_code == "ar":
                 self.assertContains(rsp, 'dir="rtl"')
 
-
 # Disabled pending plaintext file generation
 #
 #    def test_view_legal_code_plain_text(self):
@@ -533,9 +532,9 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
-    def test_license_deed_view_cc0(self):
+    def test_license_deed_view_zero(self):
         lc = LegalCode.objects.filter(
-            license__unit="CC0",
+            license__unit="zero",
             license__version="1.0",
             language_code="en",
         )[0]

@@ -286,7 +286,7 @@ class ParseLegalcodeFilenameTest(TestCase):
                     "canonical_url": (
                         "https://creativecommons.org/publicdomain/zero/1.0/"
                     ),
-                    "unit": "CC0",
+                    "unit": "zero",
                     "version": "1.0",
                     "deed_only": False,
                     "deprecated_on": None,
