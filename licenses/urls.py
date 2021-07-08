@@ -232,6 +232,7 @@ urlpatterns = [
         kwargs=dict(jurisdiction=""),
         name="view_legal_code_unported",
     ),
+    # NOTE: plaintext functionality disabled
     # # Plaintext Legalcode: no Jurisdiction (int/unported), no language_code
     # path(
     #     "<category:category>/<unit:unit>/<version:version>/legalcode.txt",
@@ -239,5 +240,4 @@ urlpatterns = [
     #     kwargs=dict(jurisdiction="", is_plain_text=True),
     #     name="view_legal_code_unported",
     # ),
-    #
 ]
