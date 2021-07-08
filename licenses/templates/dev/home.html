@@ -36,14 +36,13 @@ the generation of static files.
       <p>All Declarations &amp; Licenses</p>
 
       <h3 id="public-domain">Public Domain</h3>
-      {% regroup publicdomain by unit as unit_list %}
-      {% for unit_group in unit_list %}
-        {% with unit=unit_group.grouper %}
-          <h4>{{ unit }}</h4>
-          {% regroup unit_group.list by version as version_list %}
+      {% regroup publicdomain by identifier as identifier_list %}
+      {% for identifier_group in identifier_list %}
+        {% with identifier=identifier_group.grouper %}
+          <h4>{{ identifier }}</h4>
+          {% regroup identifier_group.list by version as version_list %}
           {% for version_group in version_list %}
             {% with version=version_group.grouper %}
-            <h4>{{ version }}</h4>
               {% regroup version_group.list by jurisdiction as jurisdiction_list %}
               {% for jurisdiction_group in jurisdiction_list %}
                 <h5>{{ jurisdiction_group.grouper }}</h5>
@@ -83,7 +82,7 @@ the generation of static files.
       {% regroup licenses by version as version_list %}
       {% for version_group in version_list %}
         {% with version=version_group.grouper %}
-        <h4>{{ version }}</h4>
+        <h4>{{ version }} Licenses</h4>
           {% regroup version_group.list by jurisdiction as jurisdiction_list %}
           {% for jurisdiction_group in jurisdiction_list %}
             <h5>{{ version }} {{ jurisdiction_group.grouper }}</h5>
