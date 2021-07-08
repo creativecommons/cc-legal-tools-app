@@ -108,7 +108,7 @@ def view_dev_home(request, category=None):
 
     return render(
         request,
-        template_name="dev_home.html",
+        template_name="dev/home.html",
         context={
             "category": "dev",
             "category_title": "Dev",
@@ -329,7 +329,7 @@ def view_translation_status(request):
     branches = TranslationBranch.objects.exclude(complete=True)
     return render(
         request,
-        template_name="licenses/translation_status.html",
+        template_name="dev/translation_status.html",
         context={
             "category": "dev",
             "category_title": "Dev",
@@ -393,7 +393,7 @@ def view_branch_status(request, id):
             context = branch_status_helper(repo, translation_branch)
             result = render(
                 request,
-                "licenses/branch_status.html",
+                "dev/branch_status.html",
                 context,
             )
         cache.set(cachekey, result, 5 * 60)

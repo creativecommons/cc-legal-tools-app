@@ -308,7 +308,7 @@ class AllLicensesViewTest(LicensesTestsMixin, TestCase):
         url = reverse("dev_home")
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("dev_home.html")
+        self.assertTemplateUsed("dev/home.html")
 
 
 class ViewLicenseTest(TestCase):
@@ -645,7 +645,7 @@ class ViewBranchStatusTest(TestCase):
                     # branch_status()
                     self.client.get(url)
         mock_helper.assert_called_with(mock.ANY, self.translation_branch)
-        self.assertTemplateUsed(r, "licenses/branch_status.html")
+        self.assertTemplateUsed(r, "dev/branch_status.html")
         context = r.context
         self.assertEqual(self.translation_branch, context["branch"])
         self.assertEqual(
@@ -782,7 +782,7 @@ class ViewTranslationStatusTest(TestCase):
         url = reverse("translation_status")
         with mock.patch.object(LegalCode, "get_pofile"):
             rsp = self.client.get(url)
-        self.assertTemplateUsed(rsp, "licenses/translation_status.html")
+        self.assertTemplateUsed(rsp, "dev/translation_status.html")
         context = rsp.context
         self.assertEqual(3, len(context["branches"]))
 
