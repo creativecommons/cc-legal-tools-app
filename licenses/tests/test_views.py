@@ -552,7 +552,7 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(rsp.status_code, 200)
-        self.assertTemplateUsed(rsp, "includes/deed_unimplemented.html")
+        self.assertTemplateUsed(rsp, "includes/deed_body_unimplemented.html")
 
     # def test_deed_for_superseded_license(self):
     #     unit = "by-nc-sa"
