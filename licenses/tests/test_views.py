@@ -424,6 +424,7 @@ class ViewLicenseTest(TestCase):
             elif language_code == "ar":
                 self.assertContains(rsp, 'dir="rtl"')
 
+
 # Disabled pending plaintext file generation
 #
 #    def test_view_legal_code_plain_text(self):
