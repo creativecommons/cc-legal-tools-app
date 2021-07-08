@@ -277,7 +277,7 @@ def view_legal_code(
     )
 
     kwargs = dict(
-        template_name="legal_code_page.html",
+        template_name="legalcode.html",
         context={
             "category": category,
             "category_title": category_title,
