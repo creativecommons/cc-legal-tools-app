@@ -59,7 +59,7 @@ strings_to_lambdas = {
     "NoDerivatives": lambda lic_ob: not lic_ob.permits_derivative_works,
     # It was decided NOT to include the "free cultural works" icon/text
     "This license is acceptable for Free Cultural Works.": never,
-    "for any purpose, even commercially.": lambda lic_ob: not lic_ob.prohibits_commercial_use
+    "for any purpose, even commercially.": lambda lic_ob: not lic_ob.prohibits_commercial_use  # noqa: E501
     and lic_ob.unit in UNITS_LICENSES,
     "You may not use the material for": lambda lic_ob: lic_ob.prohibits_commercial_use  # noqa: E501
     and lic_ob.unit in UNITS_LICENSES,
