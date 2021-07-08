@@ -36,39 +36,46 @@ the generation of static files.
       <p>All Declarations &amp; Licenses</p>
 
       <h3 id="public-domain">Public Domain</h3>
-      {% regroup publicdomain by version as version_list %}
-      {% for version_group in version_list %}
-        {% with version=version_group.grouper %}
-        <h4>{{ version }}</h4>
-          {% regroup version_group.list by jurisdiction as jurisdiction_list %}
-          {% for jurisdiction_group in jurisdiction_list %}
-            <h5>{{ jurisdiction_group.grouper }}</h5>
-            <table>
-              <thead>
-              <tr>
-                <th>Language</th>
-                {% for code in jurisdiction_group.list|units %}
-                  <th>{{ code }}</th>
-                {% endfor %}
-              </tr>
-              </thead>
-              <tbody>
-                {% regroup jurisdiction_group.list by language_code as language_list %}
-                {% for legal_code_group in language_list %}
+      {% regroup publicdomain by unit as unit_list %}
+      {% for unit_group in unit_list %}
+        {% with unit=unit_group.grouper %}
+          <h4>{{ unit }}</h4>
+          {% regroup unit_group.list by version as version_list %}
+          {% for version_group in version_list %}
+            {% with version=version_group.grouper %}
+            <h4>{{ version }}</h4>
+              {% regroup version_group.list by jurisdiction as jurisdiction_list %}
+              {% for jurisdiction_group in jurisdiction_list %}
+                <h5>{{ jurisdiction_group.grouper }}</h5>
+                <table>
+                  <thead>
                   <tr>
-                    <th>{{ legal_code_group.grouper }}</th>
-                    {% for legal_code in legal_code_group.list  %}
-                      <td>
-                        <a href="{{ legal_code.deed_url }}">{% trans "Deed" %}</a>,
-                        <a href="{{ legal_code.legal_code_url }}">{% trans "Legal Code" %}</a>
-                      </td>
+                    <th>Language</th>
+                    {% for code in jurisdiction_group.list|units %}
+                      <th>{{ code }}</th>
                     {% endfor %}
                   </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {% regroup jurisdiction_group.list by language_code as language_list %}
+                    {% for legal_code_group in language_list %}
+                      <tr>
+                        <th>{{ legal_code_group.grouper }}</th>
+                        {% for legal_code in legal_code_group.list  %}
+                          <td>
+                            <a href="{{ legal_code.deed_url }}">{% trans "Deed" %}</a>{% if not legal_code.deed_only %},
+                              <a href="{{ legal_code.legal_code_url }}">{% trans "Legal Code" %}</a>
+                            {% endif %}
+                          </td>
+                        {% endfor %}
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              {% endfor %}
+              <p><a href="#top">^top</a></p>
+            {% endwith %}
           {% endfor %}
-          <p><a href="#top">^top</a></p>
         {% endwith %}
       {% endfor %}
 
@@ -79,7 +86,7 @@ the generation of static files.
         <h4>{{ version }}</h4>
           {% regroup version_group.list by jurisdiction as jurisdiction_list %}
           {% for jurisdiction_group in jurisdiction_list %}
-            <h5>{{ jurisdiction_group.grouper }}</h5>
+            <h5>{{ version }} {{ jurisdiction_group.grouper }}</h5>
             <table>
               <thead>
               <tr>

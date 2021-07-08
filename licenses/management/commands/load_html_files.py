@@ -22,13 +22,7 @@ from licenses.bs_utils import (
     nested_text,
     text_up_to,
 )
-from licenses.models import (
-    UNITS_DEPRECATED,
-    UNITS_LICENSES,
-    UNITS_PUBLIC_DOMAIN,
-    LegalCode,
-    License,
-)
+from licenses.models import LegalCode, License
 from licenses.utils import (
     clean_string,
     parse_legal_code_filename,
@@ -113,36 +107,48 @@ class Command(BaseCommand):
 
         # Get list of html filenames. We'll filter out the filenames for
         # unwanted versions later (see include variable).
-        html_filenames = sorted(
-            [
-                filename
-                for filename in os.listdir(input_directory)
-                if filename.endswith(".html") and not os.path.islink(filename)
-            ]
-        )
+        html_filenames = [
+            filename
+            for filename in os.listdir(input_directory)
+            if filename.endswith(".html") and not os.path.islink(filename)
+        ]
+
+        # Deed-only
+        html_filenames.append("publicdomain_1.0.html")
+        html_filenames.append("mark_1.0.html")
+
+        html_filenames.sort()
         self.stdout.write(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
             self.stdout.write(f"    {filename}...", ending="")
-            metadata = parse_legal_code_filename(filename)
+            try:
+                metadata = parse_legal_code_filename(filename)
+            except ValueError as e:
+                raise CommandError(f"ValueError: {e}")
+            if not metadata:
+                self.stdout.write(" not implemented.")
+                continue
 
-            basename = os.path.splitext(filename)[0]
             fullpath = os.path.join(input_directory, filename)
 
             category = metadata["category"]
             unit = metadata["unit"]
             version = metadata["version"]
+            deed_only = metadata["deed_only"]
             jurisdiction_code = metadata["jurisdiction_code"]
+            deprecated_on = metadata["deprecated_on"]
             cc_language_code = metadata[
                 "cc_language_code"
             ] or get_default_language_for_jurisdiction(jurisdiction_code)
             # Make sure this is a valid language code (one we know about)
             django_language_code = cc_to_django_language_code(cc_language_code)
             if django_language_code not in settings.LANG_INFO:
-                raise ValueError(f"Invalid language_code={cc_language_code}")
+                raise CommandError(
+                    f"ValueError: Invalid language_code={cc_language_code}"
+                )
 
             include = (
-                (unit in UNITS_LICENSES or unit in UNITS_PUBLIC_DOMAIN)
-                and (
+                (
                     category_to_include is None
                     or category == category_to_include
                 )
@@ -164,7 +170,7 @@ class Command(BaseCommand):
             canonical_url = metadata["canonical_url"]
 
             unit_parts = unit.split("-")
-            if unit in UNITS_LICENSES:
+            if category == "licenses":
                 # These are valid for BY only
                 permits_derivative_works = "nd" not in unit_parts
                 permits_reproduction = "nd" not in unit_parts
@@ -181,7 +187,7 @@ class Command(BaseCommand):
                 requires_source_code = False  # GPL, LGPL only, I think
                 prohibits_commercial_use = "nc" in unit_parts
                 prohibits_high_income_nation_use = "devnations" in unit_parts
-            elif unit in UNITS_PUBLIC_DOMAIN:
+            elif category == "publicdomain":
                 # permits anything, requires nothing, prohibits nothing
                 permits_derivative_works = True
                 permits_reproduction = True
@@ -193,12 +199,6 @@ class Command(BaseCommand):
                 requires_source_code = False
                 prohibits_commercial_use = False
                 prohibits_high_income_nation_use = False
-            else:
-                raise NotImplementedError(basename)
-
-            deprecated_on = None
-            if unit in UNITS_DEPRECATED:
-                deprecated_on = UNITS_DEPRECATED[unit]
 
             # Find or create a License object
             license, created = License.objects.get_or_create(
@@ -208,8 +208,9 @@ class Command(BaseCommand):
                     unit=unit,
                     version=version,
                     jurisdiction_code=jurisdiction_code,
-                    creator_url="http://creativecommons.org",
+                    creator_url="https://creativecommons.org",
                     deprecated_on=deprecated_on,
+                    deed_only=deed_only,
                     permits_derivative_works=permits_derivative_works,
                     permits_reproduction=permits_reproduction,
                     permits_distribution=permits_distribution,
@@ -236,10 +237,6 @@ class Command(BaseCommand):
             if created:
                 legal_codes_created += 1
             legal_codes_to_import.append(legal_code)
-        # self.stdout.write(
-        #     f"Created {licenses_created} licenses and {legal_codes_created}"
-        #     " translation objects"
-        # )
 
         # NOW parse the HTML and output message files
         legal_codes_to_import = LegalCode.objects.filter(
@@ -271,14 +268,29 @@ class Command(BaseCommand):
                 unit = license.unit
                 version = license.version
                 support_po_files = False
-                # self.stdout.write(
-                #     f"Importing {legal_code.html_file} {unit}"
-                #     f" lang={cc_language_code}"
-                # )
+
+                # Deed-only
+                if license.deed_only:
+                    if unit == "mark":
+                        legal_code.title = "Public Domain Mark 1.0"
+                        legal_code.save()
+                    elif unit == "publicdomain":
+                        legal_code.title = (
+                            "Copyright-Only Dedication* (based on United"
+                            " States law) or Public Domain Certification"
+                        )
+                        legal_code.save()
+                    else:
+                        raise CommandError(
+                            f"NotImplementedError: unit={unit}"
+                            f" version={version}"
+                        )
+                    continue
+
                 with open(legal_code.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                if unit in UNITS_LICENSES:
+                if license.category == "licenses":
                     if version == "4.0":
                         support_po_files = True
                         messages_text = self.import_by_40_license_html(
@@ -309,9 +321,8 @@ class Command(BaseCommand):
                         legal_code=legal_code,
                     )
                 else:
-                    raise NotImplementedError(
-                        f"Have not implemented parsing for {unit}"
-                        f" {version} licenses."
+                    raise CommandError(
+                        f"NotImplementedError: unit={unit} version={version}"
                     )
 
                 if support_po_files:

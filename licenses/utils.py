@@ -121,17 +121,25 @@ def parse_legal_code_filename(filename):
 
     jurisdiction = None
     language = None
+    deed_only = False
+    if unit in licenses.models.UNITS_DEED_ONLY:
+        deed_only = True
+    deprecated_on = None
+    if unit in licenses.models.UNITS_DEPRECATED:
+        deprecated_on = licenses.models.UNITS_DEPRECATED[unit]
     unit_to_return = unit
-    if unit == "zero":
+    if unit in licenses.models.UNITS_PUBLIC_DOMAIN or unit == "zero":
         category = "publicdomain"
-        unit_to_return = "CC0"
-    elif unit in licenses.models.UNITS_PUBLIC_DOMAIN:
-        category = "publicdomain"
-        jurisdiction = parts.pop(0)
-    else:
+        if unit == "publicdomain":
+            jurisdiction = "us"
+        elif unit == "zero":
+            unit_to_return = "CC0"
+    elif unit in licenses.models.UNITS_LICENSES:
         category = "licenses"
         if parts and float(version) < 4.0:
             jurisdiction = parts.pop(0)
+    else:
+        return None
 
     if parts:
         language = parts.pop(0)
@@ -165,6 +173,8 @@ def parse_legal_code_filename(filename):
         jurisdiction_code=jurisdiction or "",
         cc_language_code=cc_language_code,
         canonical_url=canonical_url,
+        deprecated_on=deprecated_on,
+        deed_only=deed_only,
     )
 
     return data

@@ -56,6 +56,8 @@ UNITS_LICENSES = [
 ]
 UNITS_PUBLIC_DOMAIN = [
     "CC0",
+    "mark",
+    "publicdomain",
 ]
 UNITS_DEPRECATED = {
     # Sorted by date, ascending:
@@ -67,10 +69,14 @@ UNITS_DEPRECATED = {
     "sa": "2004-05-25",
     "devnations": "2007-06-04",
     "sampling": "2007-06-04",
-    # public domain dedication and certification: "2010-10-11",
+    "publicdomain": "2010-10-11",
     "nc-sampling+": "2011-09-12",
     "sampling+": "2011-09-12",
 }
+UNITS_DEED_ONLY = [
+    "mark",
+    "publicdomain",
+]
 
 
 class LegalCodeQuerySet(models.QuerySet):
@@ -412,7 +418,7 @@ class License(models.Model):
         unique=True,
     )
     unit = models.CharField(
-        max_length=40,
+        max_length=20,
         help_text="shorthand representation for which class of licenses this"
         " falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
         " 'devnations', ...",
@@ -469,10 +475,13 @@ class License(models.Model):
         help_text="another license that this one is based on",
     )
     deprecated_on = models.DateField(
+        blank=True,
         null=True,
         default=None,
         help_text="if set, the date on which this license was deprecated",
     )
+
+    deed_only = models.BooleanField(default=False)
 
     permits_derivative_works = models.BooleanField(default=None)
     permits_reproduction = models.BooleanField(default=None)
@@ -506,6 +515,7 @@ class License(models.Model):
         if self.jurisdiction_code:
             data["jurisdiction"] = self.jurisdiction_code
 
+        data["deed_only"] = self.deed_only
         data["permits_derivative_works"] = self.permits_derivative_works
         data["permits_reproduction"] = self.permits_reproduction
         data["permits_distribution"] = self.permits_distribution
@@ -580,7 +590,8 @@ class License(models.Model):
         else:
             slug = f"{self.unit}_{self.version}"
         slug = slug.replace(".", "")
-        return slug.lower()
+        slug = slug.lower()
+        return slug
 
     def rdf(self):
         """Generate RDF for this license?"""
@@ -591,13 +602,15 @@ class License(models.Model):
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
         license = self
-        s = f"{license.unit} {license.version}"
-        if license.unit.startswith("by"):
-            s = f"CC {s}"
+        identifier = f"{license.unit} {license.version}"
+        if license.unit in UNITS_LICENSES:
+            identifier = f"CC {identifier}"
+        elif license.unit == "mark":
+            identifier = f"PDM {license.version}"
         if license.jurisdiction_code:
-            s = f"{s} {license.jurisdiction_code}"
-        s = s.upper()
-        return s
+            identifier = f"{identifier} {license.jurisdiction_code}"
+        identifier = identifier.upper()
+        return identifier
 
     @property
     def level_of_freedom(self):
