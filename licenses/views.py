@@ -98,13 +98,14 @@ def view_dev_home(request, category=None):
             legal_code_url=os.path.relpath(
                 lc.legal_code_url, start=path_start
             ),
+            identifier=lc.license.identifier(),
         )
         if lc_category == "licenses":
             licenses.append(data)
         else:
             publicdomain.append(data)
     licenses = sorted(licenses, reverse=True, key=itemgetter("version"))
-    publicdomain = sorted(publicdomain, key=itemgetter("unit"))
+    publicdomain = sorted(publicdomain, key=itemgetter("identifier"))
 
     return render(
         request,
