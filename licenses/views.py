@@ -28,19 +28,6 @@ from licenses.models import (
     TranslationBranch,
 )
 
-# DEED_TEMPLATE_MAPPING is currently only used by tests
-DEED_TEMPLATE_MAPPING = {
-    # unit : template name
-    "sampling": "licenses/sampling_deed.html",  # ......... DISABLED
-    "sampling+": "licenses/sampling_deed.html",  # ........ DISABLED
-    "nc-sampling+": "licenses/sampling_deed.html",  # ..... DISABLED
-    "devnations": "licenses/devnations_deed.html",  # ..... DISABLED
-    "CC0": "licenses/zero_deed.html",  # .................. DISABLED
-    "mark": "licenses/pdmark_deed.html",  # ............... DISABLED
-    "publicdomain": "licenses/publicdomain_deed.html",  # . DISABLED
-    # others use "licenses/standard_deed.html",  # ........ DISABLED
-}
-
 NUM_COMMITS = 3
 
 # For removing the deed.foo section of a deed url
@@ -121,7 +108,7 @@ def view_dev_home(request, category=None):
 
     return render(
         request,
-        template_name="dev_home.html",
+        template_name="dev/home.html",
         context={
             "category": "dev",
             "category_title": "Dev",
@@ -216,15 +203,15 @@ def view_deed(
     )
 
     if license.unit in UNITS_LICENSES:
-        body_template = "includes/deed_licenses_body.html"
+        body_template = "includes/deed_body_licenses.html"
     elif license.unit == "CC0":
-        body_template = "includes/deed_cc0_body.html"
+        body_template = "includes/deed_body_cc0.html"
     elif license.unit == "mark":
-        body_template = "includes/deed_mark_body.html"
+        body_template = "includes/deed_body_mark.html"
     elif license.unit == "publicdomain":
-        body_template = "includes/deed_publicdomain_body.html"
+        body_template = "includes/deed_body_publicdomain.html"
     else:
-        body_template = "includes/deed_unimplemented.html"
+        body_template = "includes/deed_body_unimplemented.html"
 
     translation = legal_code.get_translation_object()
     with active_translation(translation):
@@ -290,7 +277,7 @@ def view_legal_code(
     )
 
     kwargs = dict(
-        template_name="legal_code_page.html",
+        template_name="legalcode.html",
         context={
             "category": category,
             "category_title": category_title,
@@ -342,7 +329,7 @@ def view_translation_status(request):
     branches = TranslationBranch.objects.exclude(complete=True)
     return render(
         request,
-        template_name="licenses/translation_status.html",
+        template_name="dev/translation_status.html",
         context={
             "category": "dev",
             "category_title": "Dev",
@@ -406,7 +393,7 @@ def view_branch_status(request, id):
             context = branch_status_helper(repo, translation_branch)
             result = render(
                 request,
-                "licenses/branch_status.html",
+                "dev/branch_status.html",
                 context,
             )
         cache.set(cachekey, result, 5 * 60)
