@@ -177,31 +177,32 @@ class LegalCodeModelTest(TestCase):
                     ).translation_filename(),
                 )
 
-    def test_plain_text_url(self):
-        lc0 = LegalCodeFactory(
-            license__unit="by",
-            license__version="4.0",
-            license__jurisdiction_code="",
-            language_code="en",
-        )
-        lc1 = LegalCodeFactory(
-            license__unit="by",
-            license__version="4.0",
-            license__jurisdiction_code="",
-            language_code="fr",
-        )
-        lc2 = LegalCodeFactory(
-            license__unit="by",
-            license__version="4.0",
-            license__jurisdiction_code="",
-            language_code="ar",
-        )
-        self.assertEqual(
-            lc0.plain_text_url,
-            f"{lc0.legal_code_url.replace('legalcode.en', 'legalcode.txt')}",
-        )
-        self.assertEqual(lc1.plain_text_url, "")
-        self.assertEqual(lc2.plain_text_url, "")
+    # NOTE: plaintext functionality disabled
+    # def test_plain_text_url(self):
+    #     lc0 = LegalCodeFactory(
+    #         license__unit="by",
+    #         license__version="4.0",
+    #         license__jurisdiction_code="",
+    #         language_code="en",
+    #     )
+    #     lc1 = LegalCodeFactory(
+    #         license__unit="by",
+    #         license__version="4.0",
+    #         license__jurisdiction_code="",
+    #         language_code="fr",
+    #     )
+    #     lc2 = LegalCodeFactory(
+    #         license__unit="by",
+    #         license__version="4.0",
+    #         license__jurisdiction_code="",
+    #         language_code="ar",
+    #     )
+    #     self.assertEqual(
+    #         lc0.plain_text_url,
+    #         f"{lc0.legal_code_url.replace('legalcode.en', 'legalcode.txt')}",
+    #     )
+    #     self.assertEqual(lc1.plain_text_url, "")
+    #     self.assertEqual(lc2.plain_text_url, "")
 
     def test_get_pofile(self):
         legal_code = LegalCodeFactory()

@@ -245,7 +245,7 @@ def view_legal_code(
         request.path, jurisdiction, language_code
     )
     path_start = os.path.dirname(request.path)
-    # Plaintext disabled
+    # NOTE: plaintext functionality disabled
     # if is_plain_text:
     #     legal_code = get_object_or_404(
     #         LegalCode,
@@ -291,6 +291,7 @@ def view_legal_code(
 
     translation = legal_code.get_translation_object()
     with active_translation(translation):
+        # NOTE: plaintext functionality disabled
         # if is_plain_text:
         #     response = HttpResponse(
         #         content_type='text/plain; charset="utf-8"'
@@ -315,7 +316,7 @@ def view_legal_code(
         #         )
         #         response.write(output.stdout)
         #         return response
-
+        #
         return render(request, **kwargs)
 
 

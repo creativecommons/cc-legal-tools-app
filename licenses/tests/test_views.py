@@ -424,39 +424,38 @@ class ViewLicenseTest(TestCase):
             elif language_code == "ar":
                 self.assertContains(rsp, 'dir="rtl"')
 
-
-# Disabled pending plaintext file generation
-#
-#    def test_view_legal_code_plain_text(self):
-#        license = LicenseFactory(
-#            canonical_url="https://creativecommons.org/licenses/by/4.0/",
-#            version="4.0",
-#        )
-#        for language_code in [DEFAULT_LANGUAGE_CODE]:
-#            lc = LegalCodeFactory(
-#                license=license,
-#                language_code=language_code,
-#            )
-#            url = lc.plain_text_url
-#            rsp = self.client.get(url)
-#            self.assertEqual(
-#                'text/plain; charset="utf-8"', rsp._headers["content-type"][1]
-#            )
-#            self.assertEqual(200, rsp.status_code)
-#            self.assertGreater(len(rsp.content.decode()), 0)
-#        lc = LegalCodeFactory(
-#            license__version="3.0",
-#            language_code="fr",
-#            license__unit="by",
-#            license__jurisdiction_code="ch",
-#        )
-#        url = lc.plain_text_url
-#        rsp = self.client.get(url)
-#        self.assertEqual(
-#            'text/plain; charset="utf-8"', rsp._headers["content-type"][1]
-#        )
-#        self.assertEqual(200, rsp.status_code)
-#        self.assertGreater(len(rsp.content.decode()), 0)
+    # NOTE: plaintext functionality disabled
+    # def test_view_legal_code_plain_text(self):
+    #     license = LicenseFactory(
+    #         canonical_url="https://creativecommons.org/licenses/by/4.0/",
+    #         version="4.0",
+    #     )
+    #     for language_code in [DEFAULT_LANGUAGE_CODE]:
+    #         lc = LegalCodeFactory(
+    #             license=license,
+    #             language_code=language_code,
+    #         )
+    #         url = lc.plain_text_url
+    #         rsp = self.client.get(url)
+    #         self.assertEqual(
+    #             'text/plain; charset="utf-8"',
+    #             rsp._headers["content-type"][1]
+    #         )
+    #         self.assertEqual(200, rsp.status_code)
+    #         self.assertGreater(len(rsp.content.decode()), 0)
+    #     lc = LegalCodeFactory(
+    #         license__version="3.0",
+    #         language_code="fr",
+    #         license__unit="by",
+    #         license__jurisdiction_code="ch",
+    #     )
+    #     url = lc.plain_text_url
+    #     rsp = self.client.get(url)
+    #     self.assertEqual(
+    #         'text/plain; charset="utf-8"', rsp._headers["content-type"][1]
+    #     )
+    #     self.assertEqual(200, rsp.status_code)
+    #     self.assertGreater(len(rsp.content.decode()), 0)
 
 
 class LicenseDeedViewTest(LicensesTestsMixin, TestCase):

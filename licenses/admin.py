@@ -32,7 +32,7 @@ class LegalCodeAdmin(admin.ModelAdmin):
         "language_code",
         "legal_code_url",
         "deed_url",
-        "plain_text_url",
+        # "plain_text_url",  # NOTE: plaintext functionality disabled
         "html_file",
         "html",
     ]

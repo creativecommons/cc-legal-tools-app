@@ -222,7 +222,6 @@ class LegalCode(models.Model):
         return f"LegalCode<{self.language_code}, {self.license}>"
 
     def save(self, *args, **kwargs):
-        unit = self.license.unit
         self.deed_url = build_path(
             self.license.canonical_url,
             "deed",
@@ -233,15 +232,17 @@ class LegalCode(models.Model):
             "legalcode",
             self.language_code,
         )
-        if (
-            (unit in UNITS_LICENSES and float(self.license.version) > 2.5)
-            or unit == "zero"
-        ) and self.language_code == "en":
-            self.plain_text_url = build_path(
-                self.license.canonical_url,
-                "legalcode.txt",
-                self.language_code,
-            )
+        # NOTE: plaintext functionality disabled
+        # unit = self.license.unit
+        # if (
+        #     (unit in UNITS_LICENSES and float(self.license.version) > 2.5)
+        #     or unit == "zero"
+        # ) and self.language_code == "en":
+        #     self.plain_text_url = build_path(
+        #         self.license.canonical_url,
+        #         "legalcode.txt",
+        #         self.language_code,
+        #     )
         super().save(*args, **kwargs)
 
     def _get_save_path(self):
