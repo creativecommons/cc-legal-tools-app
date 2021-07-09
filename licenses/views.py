@@ -79,7 +79,7 @@ def view_dev_home(request, category=None):
         )
         # For details on nomenclature for unported licenses, see:
         # https://wiki.creativecommons.org/wiki/License_Versions
-        if lc.license.unit in ["CC0", "mark"]:
+        if lc.license.unit in ["zero", "mark"]:
             jurisdiction = "Universal"
         elif lc_category == "licenses" and jurisdiction.lower() == "unported":
             if version == "4.0":
@@ -204,8 +204,8 @@ def view_deed(
 
     if license.unit in UNITS_LICENSES:
         body_template = "includes/deed_body_licenses.html"
-    elif license.unit == "CC0":
-        body_template = "includes/deed_body_cc0.html"
+    elif license.unit == "zero":
+        body_template = "includes/deed_body_zero.html"
     elif license.unit == "mark":
         body_template = "includes/deed_body_mark.html"
     elif license.unit == "publicdomain":

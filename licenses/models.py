@@ -55,9 +55,9 @@ UNITS_LICENSES = [
     "sampling+",  # ....... in versions: 1.0 unported, 1.0 ported
 ]
 UNITS_PUBLIC_DOMAIN = [
-    "CC0",
     "mark",
     "publicdomain",
+    "zero",
 ]
 UNITS_DEPRECATED = {
     # Sorted by date, ascending:
@@ -116,7 +116,7 @@ class LegalCodeQuerySet(models.QuerySet):
         license__unit__in=UNITS_LICENSES,
     )
 
-    # There's only one version of CC0.
+    # All of the Public Domain declarations are at version 1.0
     PUBLIC_DOMAIN_ALL_QUERY = Q(license__unit__in=UNITS_PUBLIC_DOMAIN)
 
     def translated(self):
@@ -235,7 +235,7 @@ class LegalCode(models.Model):
         )
         if (
             (unit in UNITS_LICENSES and float(self.license.version) > 2.5)
-            or unit == "CC0"
+            or unit == "zero"
         ) and self.language_code == "en":
             self.plain_text_url = build_path(
                 self.license.canonical_url,
@@ -280,7 +280,7 @@ class LegalCode(models.Model):
         """
 
         license = self.license
-        unit = "zero" if license.unit == "CC0" else license.unit.lower()
+        unit = license.unit.lower()
         if license.jurisdiction_code:
             # ported Licenses 3.0 and earlier
             return os.path.join(
@@ -546,7 +546,7 @@ class License(models.Model):
         ["cc-logo", "cc-zero", "cc-by"]
         """
         result = ["cc-logo"]  # Everybody gets this
-        if self.unit == "CC0":
+        if self.unit == "zero":
             result.append("cc-zero")
         elif self.unit.startswith("by"):
             result.append("cc-by")
@@ -603,10 +603,14 @@ class License(models.Model):
         """
         license = self
         identifier = f"{license.unit} {license.version}"
-        if license.unit in UNITS_LICENSES:
-            identifier = f"CC {identifier}"
-        elif license.unit == "mark":
+
+        if license.unit == "mark":
             identifier = f"PDM {license.version}"
+        elif license.unit == "zero":
+            identifier = f"CC0 {license.version}"
+        elif license.unit in UNITS_LICENSES:
+            identifier = f"CC {identifier}"
+
         if license.jurisdiction_code:
             identifier = f"{identifier} {license.jurisdiction_code}"
         identifier = identifier.upper()

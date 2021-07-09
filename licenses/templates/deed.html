@@ -28,8 +28,8 @@
 
     {% if category == "licenses" and license.version == "4.0" %}
       {% include 'includes/disclaimer_40.html' %}
-    {% elif license.unit == "CC0" %}
-      {% include 'includes/disclaimer_cc0.html' %}
+    {% elif license.unit == "zero" %}
+      {% include 'includes/disclaimer_zero.html' %}
     {% elif license.unit == "publicdomain" %}
       {% include 'includes/disclaimer_publicdomain.html' %}
     {% endif %}

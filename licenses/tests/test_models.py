@@ -32,13 +32,13 @@ class LegalCodeQuerySetTest(TestCase):
             unit="by-nc", version="4.0", jurisdiction_code=""
         )
 
-        cc0v1license = LicenseFactory(
-            unit="CC0", version="1.0", jurisdiction_code=""
+        zerov1license = LicenseFactory(
+            unit="zero", version="1.0", jurisdiction_code=""
         )
 
         should_be_translated = [
             LegalCodeFactory(license=bylicense40),
-            LegalCodeFactory(license=cc0v1license),
+            LegalCodeFactory(license=zerov1license),
         ]
         should_not_be_translated = [
             LegalCodeFactory(license=bylicense30ported),
@@ -73,10 +73,10 @@ class LegalCodeQuerySetTest(TestCase):
             unit="xyz", version="4.0", jurisdiction_code=""
         )
 
-        cc0v1license = LicenseFactory(
-            unit="CC0", version="1.0", jurisdiction_code=""
+        zerov1license = LicenseFactory(
+            unit="zero", version="1.0", jurisdiction_code=""
         )
-        noncc0v1license = LicenseFactory(
+        nonzerov1license = LicenseFactory(
             unit="xyz", version="1.0", jurisdiction_code=""
         )
 
@@ -85,13 +85,13 @@ class LegalCodeQuerySetTest(TestCase):
             LegalCodeFactory(license=bylicense30ported),
             LegalCodeFactory(license=bylicense30unported),
             LegalCodeFactory(license=bylicense40),
-            LegalCodeFactory(license=cc0v1license),
+            LegalCodeFactory(license=zerov1license),
         ]
         should_not_be_valid = [
             LegalCodeFactory(license=nonbylicense30ported),
             LegalCodeFactory(license=nonbylicense30unported),
             LegalCodeFactory(license=nonbylicense40),
-            LegalCodeFactory(license=noncc0v1license),
+            LegalCodeFactory(license=nonzerov1license),
         ]
         self.assertCountEqual(should_be_valid, list(LegalCode.objects.valid()))
         self.assertCountEqual(
@@ -449,24 +449,20 @@ class LegalCodeModelTest(TestCase):
             ]
         )
 
-    def test_get_deed_or_license_path_cc0(self):
+    def test_get_deed_or_license_path_zero(self):
         """
-        cc0 formula:
-        /publicdomain/VERSION/LICENSE_deed_LANGAUGE.html
-        /publicdomain/VERSION/LICENSE_legalcode_LANGAUGE.html
-
-        cc0 examples:
-        /publicdomain/1.0/zero_deed_en.html
-        /publicdomain/1.0/zero_legalcode_en.html
-        /publicdomain/1.0/zero_deed_ja.html
-        /publicdomain/1.0/zero_legalcode_ja.html
+        Formula
+            CATEGORY/UNIT/VERSION/DOCUMENT.LANG.html
+        Examples
+            publicdomain/zero/1.0/deed.en.html
+            publicdomain/zero/1.0/legalcode.en.html
         """
         self._test_get_deed_or_license_path(
             [
                 (
                     "publicdomain",
                     "1.0",
-                    "CC0",
+                    "zero",
                     "",
                     "en",
                     "publicdomain/zero/1.0/deed.en.html",
@@ -481,7 +477,7 @@ class LegalCodeModelTest(TestCase):
                 (
                     "publicdomain",
                     "1.0",
-                    "CC0",
+                    "zero",
                     "",
                     "ja",
                     "publicdomain/zero/1.0/deed.ja.html",
@@ -617,7 +613,7 @@ class LicenseModelTest(TestCase):
         # Every license includes "cc-logo"
         self.assertIn("cc-logo", LicenseFactory().logos())
         self.assertEqual(
-            ["cc-logo", "cc-zero"], LicenseFactory(unit="CC0").logos()
+            ["cc-logo", "cc-zero"], LicenseFactory(unit="zero").logos()
         )
         self.assertEqual(
             ["cc-logo", "cc-by"],
