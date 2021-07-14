@@ -176,7 +176,7 @@ LANG_INFO["oci"] = {  # Occitan? https://iso639-3.sil.org/code/oci
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = "America/New_York"
+TIME_ZONE = "Etc/UTC"
 
 USE_I18N = True
 
