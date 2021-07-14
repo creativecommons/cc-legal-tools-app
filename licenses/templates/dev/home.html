@@ -11,6 +11,9 @@ the generation of static files.
 {% endblock %}
 
 {% block content %}
+{% trans "Deed" as deed_translated %}
+{% trans "Legal Code" as legal_code_translated %}
+
   <style>
     h2, h3, h4 {
       margin-top:1em;
@@ -62,8 +65,8 @@ the generation of static files.
                         <th>{{ legal_code_group.grouper }}</th>
                         {% for legal_code in legal_code_group.list  %}
                           <td>
-                            <a href="{{ legal_code.deed_url }}">{% trans "Deed" %}</a>{% if not legal_code.deed_only %},
-                              <a href="{{ legal_code.legal_code_url }}">{% trans "Legal Code" %}</a>
+                            <a href="{{ legal_code.deed_url }}">{{ deed_translated }}</a>{% if not legal_code.deed_only %},
+                              <a href="{{ legal_code.legal_code_url }}">{{ legal_code_translated }}</a>
                             {% endif %}
                           </td>
                         {% endfor %}
@@ -102,8 +105,8 @@ the generation of static files.
                     <th>{{ legal_code_group.grouper }}</th>
                     {% for legal_code in legal_code_group.list  %}
                       <td>
-                        <a href="{{ legal_code.deed_url }}">{% trans "Deed" %}</a>,
-                        <a href="{{ legal_code.legal_code_url }}">{% trans "Legal Code" %}</a>
+                        <a href="{{ legal_code.deed_url }}">{{ deed_translated }}</a>,
+                        <a href="{{ legal_code.legal_code_url }}">{{ legal_code_translated }}</a>
                       </td>
                     {% endfor %}
                   </tr>
