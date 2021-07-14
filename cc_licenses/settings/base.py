@@ -267,12 +267,9 @@ DATA_REPOSITORY_DIR = os.getenv(
 DISTILL_DIR = os.path.join(DATA_REPOSITORY_DIR, "docs")
 LEGACY_DIR = os.path.join(DATA_REPOSITORY_DIR, "legacy")
 
-# Django translations are in the translation repo directory, under "locale".
-# License translations are in the translation repo directory, under
-# "translations".
 LOCALE_PATHS = (
-    os.path.join(DATA_REPOSITORY_DIR, "locale"),
-    os.path.join(DATA_REPOSITORY_DIR, "legalcode"),
+    os.path.join(DATA_REPOSITORY_DIR, "locale"),  # Deed/UX translations
+    os.path.join(DATA_REPOSITORY_DIR, "legalcode"),  # Legal Code translations
 )
 
 TRANSIFEX = {
