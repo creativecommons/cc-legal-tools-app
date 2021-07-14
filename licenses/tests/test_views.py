@@ -276,7 +276,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         LegalCodeFactory(
-            license=self.by_sa_30_es, language_code="es-es"
+            license=self.by_sa_30_es, language_code="es"
         )  # Default lang
 
         self.by_sa_20_es = LicenseFactory(
@@ -297,7 +297,7 @@ class LicensesTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         LegalCodeFactory(
-            license=self.by_sa_20_es, language_code="es-es"
+            license=self.by_sa_20_es, language_code="es"
         )  # Default lang
 
         super().setUp()
@@ -541,17 +541,6 @@ class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-
-    def test_license_deed_view_deed_unimplemented(self):
-        lc = LegalCodeFactory(
-            license__category="licenses",
-            license__canonical_url="https://creativecommons.org/licenses/x/0/",
-            license__unit="x",
-        )
-        url = lc.deed_url
-        rsp = self.client.get(url)
-        self.assertEqual(rsp.status_code, 200)
-        self.assertTemplateUsed(rsp, "includes/deed_body_unimplemented.html")
 
     # def test_deed_for_superseded_license(self):
     #     unit = "by-nc-sa"

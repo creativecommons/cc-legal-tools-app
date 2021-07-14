@@ -58,7 +58,7 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     # YES https://creativecommons.org/licenses/by/3.0/ch/legalcode.de
     "ch": "de",  # ch=Switzerland, default in jurisdictions.rdf=de
     "cl": "es",
-    "cn": "zh-Hans",  # "cn" is China Mainland, language is simplified Chinese
+    "cn": "zh-hans",  # "cn" is China Mainland, language is simplified Chinese
     "co": "es",
     "cr": "es",
     "cz": "cs",
@@ -85,7 +85,7 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "hk": "en-gb",
     "hr": "hr",
     "hu": "hu",
-    "ie": "en-GB",
+    "ie": "en-gb",
     "igo": "en",
     "il": "he",
     "in": "en-gb",
@@ -197,12 +197,11 @@ JURISDICTION_NAMES = {
 LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
 DJANGO_LANGUAGE_CODES = {
     # CC language code: django language code
-    "en-GB": "en-gb",
-    "sr-Cyrl": "sr",
-    "sr-Latn": "sr-latn",
+    "es-es": "es",
+    "sr-cyrl": "sr",
     "zh": "zh-hans",  # Assume mainland china
-    "zh-Hans": "zh-hans",  # "zh_Hans",
-    "zh-Hant": "zh-hant",  # "zh_Hant",
+    "zh-cn": "zh-hans",
+    "zh-tw": "zh-hant",
 }
 FILENAME_LANGUAGE_CODES = {
     # CC language code: language code for path to translation files

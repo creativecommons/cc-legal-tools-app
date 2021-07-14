@@ -142,6 +142,12 @@ LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
 
 # https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 # Teach Django about a few more languages
+LANG_INFO["an"] = {  # Aragonese
+    "bidi": False,
+    "code": "an",
+    "name": "Aragonese",
+    "name_local": "aragonés",
+}
 mi = Locale.parse("mi")
 LANG_INFO["mi"] = {  # Maori
     "bidi": False,
@@ -154,12 +160,6 @@ LANG_INFO["ms"] = {  # Malay
     "code": "ms",
     "name": "Malay",
     "name_local": "Bahasa Melayu",  # ??
-}
-LANG_INFO["zh-Hans"] = {
-    "fallback": ["zh-hans"],
-}
-LANG_INFO["zh-Hant"] = {
-    "fallback": ["zh-hant"],
 }
 LANG_INFO["oci"] = {  # Occitan? https://iso639-3.sil.org/code/oci
     "bidi": False,
