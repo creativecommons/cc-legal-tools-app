@@ -190,8 +190,8 @@ def get_default_language_for_jurisdiction(
     # Output: a CC language code
     return DEFAULT_JURISDICTION_LANGUAGES.get(
         jurisdiction_code, default_language
+    )
 
-        )
 
 def get_jurisdiction_name(category, unit, version, jurisdiction_code):
     jurisdiction_name = JURISDICTION_NAMES.get(
