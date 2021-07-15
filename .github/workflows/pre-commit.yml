@@ -39,7 +39,15 @@ jobs:
         sudo apt-get install -y pandoc
 
     # https://github.com/actions/checkout
-    - uses: actions/checkout@v2
+    - name: Checkout cc-licenses
+      uses: actions/checkout@v2
+
+    # https://github.com/actions/checkout
+    - name: Checkout cc-licenses-data
+      uses: actions/checkout@v2
+      with:
+        repository: creativecommons/cc-licenses-data
+        path: ../cc-licenses-data
 
     - name: Configure testing git identity
       run: |
