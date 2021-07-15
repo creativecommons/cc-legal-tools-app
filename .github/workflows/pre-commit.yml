@@ -1,9 +1,5 @@
 name: pre-commit
 
-defaults:
-  run:
-    working-directory: cc-licenses
-
 on:
   pull_request:
   push:
@@ -45,8 +41,6 @@ jobs:
     # https://github.com/actions/checkout
     - name: Checkout cc-licenses
       uses: actions/checkout@v2
-      with:
-        path: cc-licenses
 
     # https://github.com/actions/checkout
     - name: Checkout cc-licenses-data
