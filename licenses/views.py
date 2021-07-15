@@ -9,7 +9,7 @@ import git
 import yaml
 from django.conf import settings
 from django.core.cache import caches
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import translation
 
@@ -71,11 +71,27 @@ def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
     return languages_and_links
 
 
+def get_legal_code_rel_path(
+    legal_code_url,
+    path_start,
+    language_code,
+    language_default,
+    legal_code_languages,
+):
+    legal_code_rel_path = os.path.relpath(legal_code_url, path_start)
+    if language_code not in legal_code_languages:
+        legal_code_rel_path = legal_code_rel_path.replace(
+            f"legalcode.{language_code}",
+            f"legalcode.{language_default}",
+        )
+
+    return legal_code_rel_path
+
+
 def get_languages_and_links_for_legal_codes(
     path_start,
     legal_codes: Iterable[LegalCode],
     selected_language_code: str,
-    legal_code_or_deed: str,
 ):
     """
     legal_code_or_deed should be "deed" or "legal code", controlling which kind
@@ -89,9 +105,9 @@ def get_languages_and_links_for_legal_codes(
             # name_local: name of language in its own language
             "name_local": name_local(legal_code),
             "name_for_sorting": name_local(legal_code).lower(),
-            "link": os.path.relpath(legal_code.deed_url, start=path_start)
-            if legal_code_or_deed == "deed"
-            else os.path.relpath(legal_code.legal_code_url, start=path_start),
+            "link": os.path.relpath(
+                legal_code.legal_code_url, start=path_start
+            ),
             "selected": selected_language_code == legal_code.language_code,
         }
         for legal_code in legal_codes
@@ -103,6 +119,21 @@ def get_languages_and_links_for_legal_codes(
         # single currently active language)
         languages_and_links = None
     return languages_and_links
+
+
+def get_deed_rel_path(
+    deed_url,
+    path_start,
+    language_code,
+    language_default,
+):
+    deed_rel_path = os.path.relpath(deed_url, path_start)
+    if language_code not in settings.LANGUAGES_TRANSLATED:
+        deed_rel_path = deed_rel_path.replace(
+            f"deed.{language_code}",
+            f"deed.{language_default}",
+        )
+    return deed_rel_path
 
 
 def name_local(legal_code):
@@ -202,25 +233,42 @@ def view_deed(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
+    if language_code not in settings.LANGUAGES_TRANSLATED:
+        raise Http404("invalid language")
+
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
 
     # The Legal Code translations are specific.
     # The Deed translations are generic: all of the Deeds of a given unit share
     # the same text. Therefore, for the purpose of displaying the Deed, we do
-    # not care about the language of the associated Legal Code.
-    default_deed_url = request.path.replace(
-        f"deed.{language_code}",
-        f"deed.{language_default}",
-    )
-    legal_code = get_object_or_404(
-        LegalCode,
-        deed_url=default_deed_url,
-    )
-
-    legal_code_rel_path = os.path.relpath(
-        legal_code.legal_code_url, path_start
-    )
+    # not care about the language of the associated Legal Code. Instead we care
+    # only about the languages that have been mostly (>80%) translated.
+    #
+    # Initially set legal_code based on language_default.
+    legal_code = LegalCode.objects.filter(
+        license__unit=unit,
+        license__version=version,
+        license__jurisdiction_code=jurisdiction,
+        language_code=language_default,
+    )[0]
+    legal_code_languages = []
+    for possible_legal_code in LegalCode.objects.filter(
+        license__unit=unit,
+        license__version=version,
+        license__jurisdiction_code=jurisdiction,
+    ):
+        legal_code_languages.append(possible_legal_code.language_code)
+    if (
+        language_code != language_default
+        and language_code in legal_code_languages
+    ):
+        legal_code = LegalCode.objects.filter(
+            license__unit=unit,
+            license__version=version,
+            license__jurisdiction_code=jurisdiction,
+            language_code=language_code,
+        )[0]
 
     license = legal_code.license
     category, category_title = get_category_and_category_title(
@@ -230,6 +278,14 @@ def view_deed(
     languages_and_links = get_languages_and_links_for_deeds_ux(
         request_path=request.path,
         selected_language_code=language_code,
+    )
+
+    legal_code_rel_path = get_legal_code_rel_path(
+        legal_code.legal_code_url,
+        path_start,
+        language_code,
+        language_default,
+        legal_code_languages,
     )
 
     if license.unit in UNITS_LICENSES:
@@ -275,6 +331,7 @@ def view_legal_code(
         request.path, jurisdiction, language_code
     )
     path_start = os.path.dirname(request.path)
+    language_default = get_default_language_for_jurisdiction(jurisdiction)
     # NOTE: plaintext functionality disabled
     # if is_plain_text:
     #     legal_code = get_object_or_404(
@@ -290,7 +347,6 @@ def view_legal_code(
         LegalCode,
         legal_code_url=request.path,
     )
-    deed_rel_path = os.path.relpath(legal_code.deed_url, path_start)
 
     license = legal_code.license
     category, category_title = get_category_and_category_title(
@@ -303,7 +359,13 @@ def view_legal_code(
         path_start=path_start,
         legal_codes=license.legal_codes.all(),
         selected_language_code=language_code,
-        legal_code_or_deed="legal code",
+    )
+
+    deed_rel_path = get_deed_rel_path(
+        legal_code.deed_url,
+        path_start,
+        language_code,
+        language_default,
     )
 
     kwargs = dict(

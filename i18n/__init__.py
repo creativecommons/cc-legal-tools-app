@@ -26,10 +26,16 @@ DEFAULT_LANGUAGE_CODE = "en"
 # The language codes here are CC language codes, which sometimes differ from
 # Django language codes.
 DEFAULT_JURISDICTION_LANGUAGES = {
-    # Map jurisdiction code to language code. IMPORTANT: Some of the
-    # jurisdiction codes look like language codes, but they're not necessarily
-    # related. E.g. "ar" is the language code for Arabic, but the jurisdiction
-    # code for Argentina.
+    # Map jurisdiction code to language code.
+    #
+    # IMPORTANT: language codes and jurisdictions are different:
+    # - language codes are RFC5646 language tags
+    # - jurisdictions are ISO 3166-1 alpha-2 codes
+    #
+    # For example:
+    # - "ar" is the RFC5646 language tag for Arabic
+    # - "ar" is the ISO 3166-1 alpha-2 code for Argentina
+    #
     # See the "JURISDICTION_NAMES", just below this.
     "am": "hy",  # Armenian - not in jurisdictions.rdf
     "ar": "es",
