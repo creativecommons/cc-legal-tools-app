@@ -223,14 +223,14 @@ The metadata can be downloaded by visiting URL path:
 
 [metadata]: http://127.0.0.1:8000/licenses/metadata.yaml
 
-There are two main models (that's Django terminology for tables).
+There are two main models Django terminology for tables).
 
-A License can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`) which is a
-proxy for the complete set of permissions, requirements, and prohibitions; a
-`version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction` for ports. So we
-might refer to the license by it's **identifier** "BY 3.0 AM" which would be the 3.0 version of the BY license terms as ported to the Armenia jurisdiction.
-
-For additional information see: [**Legal Tools Namespace** -
+A License can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`)
+which is a proxy for the complete set of permissions, requirements, and
+prohibitions; a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction`
+for ports. So we might refer to the license by it's **identifier** "BY 3.0 AM"
+which would be the 3.0 version of the BY license terms as ported to the Armenia
+jurisdiction. For additional information see: [**Legal Tools Namespace** -
 creativecommons/cc-licenses-data: CC Licenses data (static HTML, language
 files, etc.)][namespace].
 
@@ -239,7 +239,7 @@ Right now there are three places the text of licenses could be.
    [creativecommons/cc-licenses-data][repodata] repository (tools with full
    translation support)
    - 4.0 Licenses
-   - CC0 (tools with full translation support): the text is in
+   - CC0
 2. **django template**
    ([`legalcode_licenses_3.0_unported.html`][unportedtemplate])
    - Unported 3.0 Licenses (English-only)
@@ -250,9 +250,15 @@ The text that's in gettext files can be translated via transifex at [Creative
 Commons localization][transifex]. The translation domains there are named for the license
 they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
 
+Documentation:
+- [Models | Django documentation | Django][djangomodels]
+- [Templates | Django documentation | Django][djangotemplates]
+
 [namespace]: https://github.com/creativecommons/cc-licenses-data#legal-tools-namespace
 [unportedtemplate]: licenses/templates/includes/legalcode_licenses_3.0_unported.html
 [transifex]: https://www.transifex.com/creativecommons/CC/
+[djangomodels]: https://docs.djangoproject.com/en/3.2/topics/db/models/
+[djangotemplates]: https://docs.djangoproject.com/en/3.2/topics/templates/
 
 
 ## Importing the existing license text
