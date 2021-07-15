@@ -219,7 +219,7 @@ exist, their translations, their ports, and their characteristics like what
 they permit, require, and prohibit.
 
 The metadata can be downloaded by visiting URL path:
-[127.0.0.1:8000/licenses/metadata.yaml][metadata]
+`127.0.0.1:8000`[`/licenses/metadata.yaml`][metadata]
 
 [metadata]: http://127.0.0.1:8000/licenses/metadata.yaml
 
