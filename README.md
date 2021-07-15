@@ -212,8 +212,6 @@ you commit, try adding your files (`git add <FILES>`) prior to committing them.
 
 ## Data
 
-The license data is stored as follows.
-
 The license metadata is in a database. The metadata tracks which licenses
 exist, their translations, their ports, and their characteristics like what
 they permit, require, and prohibit.
@@ -223,7 +221,10 @@ The metadata can be downloaded by visiting URL path:
 
 [metadata]: http://127.0.0.1:8000/licenses/metadata.yaml
 
-There are two main models Django terminology for tables).
+There are two main models (Django terminology for tables) in
+[`licenses/models.py`](licenes/models.py):
+1. `LegalCode`
+2. `Licenses`
 
 A License can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`)
 which is a proxy for the complete set of permissions, requirements, and
@@ -247,8 +248,8 @@ Right now there are three places the text of licenses could be.
    - Everything else
 
 The text that's in gettext files can be translated via transifex at [Creative
-Commons localization][transifex]. The translation domains there are named for the license
-they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
+Commons localization][transifex]. The translation domains there are named for
+the license they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
 
 Documentation:
 - [Models | Django documentation | Django][djangomodels]
