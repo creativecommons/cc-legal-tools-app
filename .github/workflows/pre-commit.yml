@@ -47,7 +47,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: creativecommons/cc-licenses-data
-        path: ../cc-licenses-data
 
     - name: Configure testing git identity
       run: |
@@ -70,12 +69,19 @@ jobs:
         pipenv sync --dev
 
     - name: Update Django database schema
+      env:
+        DATA_REPOSITORY_DIR: cc-licenses-data
       run: |
         pipenv run ./manage.py migrate
 
     - name: Start Django development web server
+      env:
+        DATA_REPOSITORY_DIR: cc-licenses-data
+
       run: |
         pipenv run ./manage.py runserver &>/dev/null &
 
     # https://github.com/pre-commit/action
     - uses: pre-commit/action@v2.0.0
+      env:
+        DATA_REPOSITORY_DIR: cc-licenses-data
