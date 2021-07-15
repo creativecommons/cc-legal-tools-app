@@ -222,7 +222,7 @@ The metadata can be downloaded by visiting URL path:
 [metadata]: http://127.0.0.1:8000/licenses/metadata.yaml
 
 There are two main models (Django terminology for tables) in
-[`licenses/models.py`](licenes/models.py):
+[`licenses/models.py`](licenses/models.py):
 1. `LegalCode`
 2. `Licenses`
 
