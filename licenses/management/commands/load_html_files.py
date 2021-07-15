@@ -1029,13 +1029,15 @@ class Command(BaseCommand):
             title_html = soup.find(id="deed").p.strong
             title = inner_html(title_html)
             title_html.find_parent("p").decompose()
-        # Title clean-up: whitespace
+        # Title clean-up: whitespace, part 1
         title = " ".join([line.strip() for line in title.split("\n")]).strip()
         # Title clean-up: remove manual break
         title = title.replace("<br/>", "")
         # Title clean-up: remove strong
         title = title.replace("<strong>", "").replace("</strong>", "")
         assert "<" not in title, repr(title)
+        # Title clean-up: whitespace, part 2
+        title = title.strip()
         legal_code.title = title
 
         # Remove legacy header images
