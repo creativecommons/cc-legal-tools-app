@@ -7,7 +7,7 @@ the rdf:about attribute on the cc:License element.
 If a license has a child dc:source element, then this license is a translation
 of the license with the url in the dc:source's rdf:resource attribute.
 
-Some licenses ahve a dcq:isReplacedBy element.
+Some licenses have a dcq:isReplacedBy element.
 """
 # Standard library
 import os
