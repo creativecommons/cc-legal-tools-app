@@ -159,7 +159,19 @@ def cc_to_django_language_code(cc_language_code: str) -> str:
     Given a CC language code, return the language code that Django
     uses to represent that language.
     """
-    return DJANGO_LANGUAGE_CODES.get(cc_language_code, cc_language_code)
+    django_language_code = cc_language_code
+    # Normalize: lowercase
+    django_language_code = django_language_code.lower()
+    # Noarmalize: use dash
+    django_language_code = django_language_code.replace("@", "-")
+    django_language_code = django_language_code.replace("_", "-")
+    # Lookup special cases
+    django_language_code = DJANGO_LANGUAGE_CODES.get(
+        django_language_code,
+        django_language_code,
+    )
+
+    return django_language_code
 
 
 def cc_to_filename_language_code(cc_language_code: str) -> str:

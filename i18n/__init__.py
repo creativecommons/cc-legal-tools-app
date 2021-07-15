@@ -26,10 +26,16 @@ DEFAULT_LANGUAGE_CODE = "en"
 # The language codes here are CC language codes, which sometimes differ from
 # Django language codes.
 DEFAULT_JURISDICTION_LANGUAGES = {
-    # Map jurisdiction code to language code. IMPORTANT: Some of the
-    # jurisdiction codes look like language codes, but they're not necessarily
-    # related. E.g. "ar" is the language code for Arabic, but the jurisdiction
-    # code for Argentina.
+    # Map jurisdiction code to language code.
+    #
+    # IMPORTANT: language codes and jurisdictions are different:
+    # - language codes are RFC5646 language tags
+    # - jurisdictions are ISO 3166-1 alpha-2 codes
+    #
+    # For example:
+    # - "ar" is the RFC5646 language tag for Arabic
+    # - "ar" is the ISO 3166-1 alpha-2 code for Argentina
+    #
     # See the "JURISDICTION_NAMES", just below this.
     "am": "hy",  # Armenian - not in jurisdictions.rdf
     "ar": "es",
@@ -58,7 +64,7 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     # YES https://creativecommons.org/licenses/by/3.0/ch/legalcode.de
     "ch": "de",  # ch=Switzerland, default in jurisdictions.rdf=de
     "cl": "es",
-    "cn": "zh-Hans",  # "cn" is China Mainland, language is simplified Chinese
+    "cn": "zh-hans",  # "cn" is China Mainland, language is simplified Chinese
     "co": "es",
     "cr": "es",
     "cz": "cs",
@@ -85,7 +91,7 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "hk": "en-gb",
     "hr": "hr",
     "hu": "hu",
-    "ie": "en-GB",
+    "ie": "en-gb",
     "igo": "en",
     "il": "he",
     "in": "en-gb",
@@ -197,12 +203,11 @@ JURISDICTION_NAMES = {
 LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
 DJANGO_LANGUAGE_CODES = {
     # CC language code: django language code
-    "en-GB": "en-gb",
-    "sr-Cyrl": "sr",
-    "sr-Latn": "sr-latn",
+    "es-es": "es",
+    "sr-cyrl": "sr",
     "zh": "zh-hans",  # Assume mainland china
-    "zh-Hans": "zh-hans",  # "zh_Hans",
-    "zh-Hant": "zh-hant",  # "zh_Hant",
+    "zh-cn": "zh-hans",
+    "zh-tw": "zh-hant",
 }
 FILENAME_LANGUAGE_CODES = {
     # CC language code: language code for path to translation files

@@ -142,6 +142,12 @@ LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
 
 # https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 # Teach Django about a few more languages
+LANG_INFO["an"] = {  # Aragonese
+    "bidi": False,
+    "code": "an",
+    "name": "Aragonese",
+    "name_local": "aragonés",
+}
 mi = Locale.parse("mi")
 LANG_INFO["mi"] = {  # Maori
     "bidi": False,
@@ -154,12 +160,6 @@ LANG_INFO["ms"] = {  # Malay
     "code": "ms",
     "name": "Malay",
     "name_local": "Bahasa Melayu",  # ??
-}
-LANG_INFO["zh-Hans"] = {
-    "fallback": ["zh-hans"],
-}
-LANG_INFO["zh-Hant"] = {
-    "fallback": ["zh-hant"],
 }
 LANG_INFO["oci"] = {  # Occitan? https://iso639-3.sil.org/code/oci
     "bidi": False,
@@ -176,7 +176,7 @@ LANG_INFO["oci"] = {  # Occitan? https://iso639-3.sil.org/code/oci
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = "America/New_York"
+TIME_ZONE = "Etc/UTC"
 
 USE_I18N = True
 
@@ -267,12 +267,9 @@ DATA_REPOSITORY_DIR = os.getenv(
 DISTILL_DIR = os.path.join(DATA_REPOSITORY_DIR, "docs")
 LEGACY_DIR = os.path.join(DATA_REPOSITORY_DIR, "legacy")
 
-# Django translations are in the translation repo directory, under "locale".
-# License translations are in the translation repo directory, under
-# "translations".
 LOCALE_PATHS = (
-    os.path.join(DATA_REPOSITORY_DIR, "locale"),
-    os.path.join(DATA_REPOSITORY_DIR, "legalcode"),
+    os.path.join(DATA_REPOSITORY_DIR, "locale"),  # Deed/UX translations
+    os.path.join(DATA_REPOSITORY_DIR, "legalcode"),  # Legal Code translations
 )
 
 TRANSIFEX = {
