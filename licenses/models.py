@@ -23,10 +23,10 @@ from django.utils import translation
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
-    active_translation,
     cc_to_django_language_code,
     cc_to_filename_language_code,
     get_default_language_for_jurisdiction,
+    get_jurisdiction_name,
     get_translation_object,
 )
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
@@ -509,35 +509,52 @@ class License(models.Model):
         """
         Return a dictionary with the metadata for this license.
         """
-        data = {
-            "unit": self.unit,
-            "version": self.version,
-        }
-        if self.jurisdiction_code:
-            data["jurisdiction"] = self.jurisdiction_code
+        language_default = get_default_language_for_jurisdiction(
+            self.jurisdiction_code
+        )
+        # TODO: correct this gross hack with a proper separation and mapping
+        # between Django language codes and CC legacy languages codes
+        # https://github.com/creativecommons/cc-licenses/issues/157
+        if language_default == "sr":
+            language_default = "sr-Cyrl"
 
+        data = {}
+        default_lc = self.legal_codes.filter(language_code=language_default)[0]
+        data["canonical_url"] = self.canonical_url
         data["deed_only"] = self.deed_only
+        if self.deprecated_on:
+            data["deprecated_on"] = self.deprecated_on
+        if self.jurisdiction_code:
+            data["jurisdiction_code"] = self.jurisdiction_code
+        data["jurisdiction_name"] = get_jurisdiction_name(
+            self.category,
+            self.unit,
+            self.version,
+            self.jurisdiction_code,
+        )
+        data["identifier"] = self.identifier()
+        if not self.deed_only:
+            data["legal_code_languages"] = {}
+            for lc in self.legal_codes.order_by("language_code"):
+                lang_code = lc.language_code
+                django_code = cc_to_django_language_code(lang_code)
+                language_info = translation.get_language_info(django_code)
+                data["legal_code_languages"][lang_code] = language_info["name"]
         data["permits_derivative_works"] = self.permits_derivative_works
-        data["permits_reproduction"] = self.permits_reproduction
         data["permits_distribution"] = self.permits_distribution
+        data["permits_reproduction"] = self.permits_reproduction
         data["permits_sharing"] = self.permits_sharing
-        data["requires_share_alike"] = self.requires_share_alike
-        data["requires_notice"] = self.requires_notice
-        data["requires_attribution"] = self.requires_attribution
-        data["requires_source_code"] = self.requires_source_code
         data["prohibits_commercial_use"] = self.prohibits_commercial_use
         data[
             "prohibits_high_income_nation_use"
         ] = self.prohibits_high_income_nation_use
-
-        data["translations"] = {}
-        for lc in self.legal_codes.order_by("language_code"):
-            with active_translation(lc.get_translation_object()):
-                data["translations"][lc.language_code] = {
-                    "license": lc.legal_code_url,
-                    "deed": lc.deed_url,
-                }
-
+        data["requires_attribution"] = self.requires_attribution
+        data["requires_notice"] = self.requires_notice
+        data["requires_share_alike"] = self.requires_share_alike
+        data["requires_source_code"] = self.requires_source_code
+        data["title"] = default_lc.title
+        data["unit"] = self.unit
+        data["version"] = self.version
         return data
 
     def logos(self):

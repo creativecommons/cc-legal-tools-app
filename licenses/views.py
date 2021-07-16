@@ -14,11 +14,12 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import translation
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE, JURISDICTION_NAMES
+from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     active_translation,
     cc_to_django_language_code,
     get_default_language_for_jurisdiction,
+    get_jurisdiction_name,
 )
 from licenses.models import (
     UNITS_LICENSES,
@@ -175,25 +176,18 @@ def view_dev_home(request, category=None):
     path_start = os.path.dirname(request.path)
     for lc in legal_code_objects:
         lc_category = lc.license.category
-        version = lc.license.version
-        jurisdiction = JURISDICTION_NAMES.get(
-            lc.license.jurisdiction_code, lc.license.jurisdiction_code
+        lc_unit = lc.license.unit
+        lc_version = lc.license.version
+        jurisdiction_name = get_jurisdiction_name(
+            lc_category,
+            lc_unit,
+            lc_version,
+            lc.license.jurisdiction_code,
         )
-        # For details on nomenclature for unported licenses, see:
-        # https://wiki.creativecommons.org/wiki/License_Versions
-        if lc.license.unit in ["zero", "mark"]:
-            jurisdiction = "Universal"
-        elif lc_category == "licenses" and jurisdiction.lower() == "unported":
-            if version == "4.0":
-                jurisdiction = "International"
-            elif version == "3.0":
-                jurisdiction = "International (unported)"
-            else:
-                jurisdiction = "Generic (unported)"
         data = dict(
-            version=version,
-            jurisdiction=jurisdiction,
-            unit=lc.license.unit,
+            version=lc_version,
+            jurisdiction_name=jurisdiction_name,
+            unit=lc_unit,
             language_code=lc.language_code,
             deed_only=lc.license.deed_only,
             deed_url=os.path.relpath(lc.deed_url, start=path_start),
@@ -494,7 +488,12 @@ def view_branch_status(request, id):
 
 
 def view_metadata(request):
-    data = [license.get_metadata() for license in License.objects.all()]
+    data = {"licenses": [], "publicdomain": []}
+    for license in License.objects.all():
+        category = license.category
+        data[category].append(
+            {f"{license.resource_slug}": license.get_metadata()}
+        )
     yaml_bytes = yaml.dump(
         data, default_flow_style=False, encoding="utf-8", allow_unicode=True
     )

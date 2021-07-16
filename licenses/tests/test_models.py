@@ -532,7 +532,7 @@ class LicenseModelTest(TestCase):
 
         data = license.get_metadata()
         expected_data = {
-            "jurisdiction": "xyz",
+            "jurisdiction_name": "xyz",
             "unit": "by-nc",
             "permits_derivative_works": False,
             "permits_distribution": True,
@@ -544,15 +544,9 @@ class LicenseModelTest(TestCase):
             "requires_notice": True,
             "requires_share_alike": True,
             "requires_source_code": True,
-            "translations": {
-                "en": {
-                    "deed": "/licenses/by-nc/3.0/xyz/deed.en",
-                    "license": "/licenses/by-nc/3.0/xyz/legalcode.en",
-                },
-                "pt": {
-                    "deed": "/licenses/by-nc/3.0/xyz/deed.pt",
-                    "license": "/licenses/by-nc/3.0/xyz/legalcode.pt",
-                },
+            "legal_code_languages": {
+                "en": "English",
+                "pt": "Portuguese",
             },
             "version": "3.0",
         }
@@ -599,11 +593,8 @@ class LicenseModelTest(TestCase):
             "requires_notice": True,
             "requires_share_alike": True,
             "requires_source_code": True,
-            "translations": {
-                "en": {
-                    "deed": "/licenses/by-nc/3.0/deed.en",
-                    "license": "/licenses/by-nc/3.0/legalcode.en",
-                },
+            "legal_code_languages": {
+                "en": "English",
             },
         }
 
