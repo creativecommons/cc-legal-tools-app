@@ -3,10 +3,13 @@
 
 ## Software Versions
 
-The Django version configured in this template is conservative. If you
-want to use a newer version, edit `Pipfile`.
+- Python 3.7
+  - For parity with Debian GNU/Linux 10 (buster)
+- [Django 3.2][django32]
 
-Python version 3.7 is used for parity with Debian GNU/Linux 10 (buster).
+Both versions are specified in the [`Pipfile`](Pipefile).
+
+[django32]: https://docs.djangoproject.com/en/3.2/
 
 
 ## Not the live site
@@ -26,13 +29,18 @@ down.
 
 ### Data Repository
 
-The [creativecommons/cc-licenses-data][repodata] project repository must be
+The [creativecommons/cc-licenses-data][repodata] project repository should be
 cloned into a directory adjacent to this one:
 ```
 PARENT_DIR
 ├── cc-licenses
 └── cc-licenses-data
 ```
+
+If it is not cloned into the default location,  the Django
+`DATA_REPOSITORY_DIR` django configuration setting, or the
+`DATA_REPOSITORY_DIR` environment variable can be used to configure its
+location.
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
@@ -42,7 +50,7 @@ PARENT_DIR
 Use the following instructions to start the project with Docker compose.
 
 1. Initial Setup
-   1. Ensure the [Data Repository](#data-repository) is in place
+   1. Ensure the [Data Repository](#data-repository), above,  is in place
    2. Install Docker ([Install Docker Engine | Docker Documentation][installdocker])
    3. Create Django local settings file
         ```shell
@@ -84,7 +92,7 @@ The commands above will create 3 docker containers:
 ### Manual Setup
 
 1. Development Environment
-   1. Ensure the [Data Repository](#data-repository) is in place
+   1. Ensure the [Data Repository](#data-repository), above,  is in place
    2. Install dependencies
       - Linux:
         ```shell
@@ -181,8 +189,8 @@ commands below.
 
 The coverage tests and report are run as part of pre-commit and as a GitHub
 Action. To run it manually:
-1. Ensure the [Data Repository](#data-repository) is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+1. Ensure the [Data Repository](#data-repository), above,  is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 2. Coverage test
     ```shell
     docker-compose run app coverage run manage.py test --noinput --keepdb
@@ -204,43 +212,54 @@ you commit, try adding your files (`git add <FILES>`) prior to committing them.
 
 ## Data
 
-The license data is stored as follows.
-
 The license metadata is in a database. The metadata tracks which licenses
 exist, their translations, their ports, and their characteristics like what
 they permit, require, and prohibit.
 
-The metadata can be downloaded by visiting URL path: /licenses/metadata.yaml
+The metadata can be downloaded by visiting URL path:
+`127.0.0.1:8000`[`/licenses/metadata.yaml`][metadata]
 
-There are two main models (that's Django terminology for tables).
+[metadata]: http://127.0.0.1:8000/licenses/metadata.yaml
 
-A License can be identified by a unit (e.g. BY, BY-NC-SA) which is a
-proxy for the complete set of permissions, requirements, and prohibitions; a
-version number (e.g. 4.0, 3.0), and an optional jurisdiction for ports. So we
-might refer to the license "BY 3.0 Armenia" which would be the 3.0 version of
-the BY license terms as ported to the Armenia jurisdiction.
+There are two main models (Django terminology for tables) in
+[`licenses/models.py`](licenses/models.py):
+1. `LegalCode`
+2. `Licenses`
 
-A License can exist in multiple languages or translations. Each one, including
-English, is represented by a LegalCode record. A LegalCode is identified by a
-license and a language, e.g. we might refer to the "BY 3.0 Armenia in Armenian"
-legal code record.
+A License can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`)
+which is a proxy for the complete set of permissions, requirements, and
+prohibitions; a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction`
+for ports. So we might refer to the license by it's **identifier** "BY 3.0 AM"
+which would be the 3.0 version of the BY license terms as ported to the Armenia
+jurisdiction. For additional information see: [**Legal Tools Namespace** -
+creativecommons/cc-licenses-data: CC Licenses data (static HTML, language
+files, etc.)][namespace].
 
 Right now there are three places the text of licenses could be.
-
-For licenses that we are translating, like BY 4.0 and CC0, the text is in
-gettext files (.po and .mo) in the cc-licenses-data repository.
-
-For the 3.0 unported licenses that are English-only, the text is in a Django
-template.
-
-For the 3.0 ported licenses, we've just got the HTML in the database in the
-LegalCode records, and insert it as-is into the page.
+1. **gettext files** (`.po` and `.mo`) in the
+   [creativecommons/cc-licenses-data][repodata] repository (tools with full
+   translation support)
+   - 4.0 Licenses
+   - CC0
+2. **django template**
+   ([`legalcode_licenses_3.0_unported.html`][unportedtemplate])
+   - Unported 3.0 Licenses (English-only)
+3. **`html` field** (in the `LegalCode` model):
+   - Everything else
 
 The text that's in gettext files can be translated via transifex at [Creative
-Commons localization][transifex]. The resources there are named for the license
-they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
+Commons localization][transifex]. The translation domains there are named for
+the license they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
 
+Documentation:
+- [Models | Django documentation | Django][djangomodels]
+- [Templates | Django documentation | Django][djangotemplates]
+
+[namespace]: https://github.com/creativecommons/cc-licenses-data#legal-tools-namespace
+[unportedtemplate]: licenses/templates/includes/legalcode_licenses_3.0_unported.html
 [transifex]: https://www.transifex.com/creativecommons/CC/
+[djangomodels]: https://docs.djangoproject.com/en/3.2/topics/db/models/
+[djangotemplates]: https://docs.djangoproject.com/en/3.2/topics/templates/
 
 
 ## Importing the existing license text
@@ -252,83 +271,41 @@ will become the canonical source, and the process described here should not
 need to be repeated after that.
 
 The implementation is the Django management command `load_html_files`, which
-reads from the existing HTML files in the creativecommons.org repository, and
-populates the database records and translation files.
+reads from the legacy HTML legal code files in the
+[creativecommons/cc-licenses-data][repodata] repository, and populates the
+database records and translation files.
 
-`load_html_files` has custom code for each flavor of license. There's a method
-to parse BY\* 4.0 HTML files, another for CC0, another for BY\* 3.0 unported
-files, and another for BY\* 3.0 ported. We would expect to add more such
-methods for other license flavors.
-
-Each parsing method uses [BeautifulSoup4][bs4] to parse the HTML text into a
-tree representing the structure of the HTML, and picks out the part of the page
-that contains the license (as opposed to navigation, styling, and boilerplate
-text that occurs on many pages). Then it uses tag id's and classes and the
-structure of the HTML to pick out the text for each part of the license
-(generally a translatable phrase or paragraph) and organize it into translation
-files, or for the ported 3.0 licenses, just pretty-prints the HTML and saves it
-as-is.
-
-The BY\* 4.0 licenses are the most straightforward. The text is the same from
-one license to the next (e.g. BY-NC, BY-SA) except where the actual license
-terms are different, and even then, the text specific to particular terms, say
-"NC", are pretty much the same in the licenses that have those terms.
-
-That means we were able to create a single Django HTML template to render any
-BY\* 4.0 license, using conditionals to include or vary parts of the text as
-needed.
-
-The regularity of these licenses extends to the translated versions, so the
-English text in the Django template is marked for translation as usual in
-Django, and Django can substitute the appropriate translated text for each
-message as the page is rendered.
-
-CC0 (the public domain "license") works similarly.
-
-The 3.0 licenses are more complicated due to ports and less consistency
-in general.
-
-The unported (international) 3.0 licenses are not translated, and do have
-enough regularity that it was possible to create a single Django template to
-render the 3.0 unported licenses. Since these are not translated, and there's
-no expectation that they ever will be, the template just has the English text
-in it, not marked for translation.
-
-The ported 3.0 licenses are too varied to do something like that. Each port can
-have arbitrary differences from the unported version, so trying to capture
-those differences as conditionals in a template would be nearly impossible, and
-certainly unmanageable. As for translations, some of the ports do have multiple
-languages, although many don't have an English translation at all.
-
-So for the ported 3.0 licenses, at least for now, it was decided to just
-extract the part of the existing HTML pages that had the actual license text
-and store it in the LegalCode objects representing those ports in those
-languages. There is a template for 3.0 ported licenses, but it basically just
-inserts whatever HTML we've saved into the page.
-
-The older version licenses have not yet been looked at. Hopefully we can model
-importing those licenses on how we've done the 3.0 licenses.
+`load_html_files` uses [BeautifulSoup4][bs4] to parse the legacy HTML legal
+code:
+1. `import_zero_license_html` for CC0 Public Domain tool
+   - HTML is handled specificially (using tag ids and classes) to populate
+     translation strings and to be used with specific HTML formatting when
+     displayed via template
+2. `import_by_40_license_html` for 4.0 License tools
+   - HTML is handled specificially (using tag ids and classes) to populate
+     translation strings and to be used with specific HTML formatting when
+     displayed via a template
+3. `import_by_30_unported_license_html` for unported 3.0 License tools
+   (English-only)
+   - HTML is handled specificially to be used with specific HTML formatting
+     when displayed via a template
+4. `simple_import_license_html` for everything else
+   - HTML is handled generically; only the title and license body are
+     identified. The body is stored in the `html` field of the
+     `LegalCode` model
 
 [bs4]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 #### Import Process
 
 This process will read the HTML files from the specified directory, populate
-the database with LegalCode and License records, and create `.po` and `.mo`
-files in [creativecommons/cc-licenses-data][repodata].
+`LegalCode` and `License` modelss, and create `.po` files in
+[creativecommons/cc-licenses-data][repodata].
 
-Once you've done that, you might want to update the static HTML files
-for the site; see "Saving the site as static files" farther on.
-
-Now commit the changes from cc-licenses-data and push to GitHub.
-
-It's simplest to do this part on a development machine. It gets too complicated
-trying to run on the server and authenticate properly to GitHub from the
-command line.
-
-1. Ensure the [Data Repository](#data-repository) is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Clear data in the database
     ```shell
     docker-compose run app ./manage.py clear_license_data
@@ -337,6 +314,10 @@ command line.
     ```shell
     docker-compose run app ./manage.py load_html_files
     ```
+5. Optionally (and only as appropriate):
+   1. commit `.po` file changes in [creativecommons/cc-licenses-data][repodata]
+   2. [Translation Update Process](#translation-update-process), below
+   3. [Generate Static Files](#generate-static-files), below
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
@@ -344,137 +325,127 @@ command line.
 ## Translation
 
 To upload/download translation files to/from Transifex, you'll need an account
-there with access to these translations. Then follow [these
-instructions](https://docs.transifex.com/api/introduction#authentication) to
-get an API token, and set `TRANSIFEX_API_TOKEN` in your environment with its
-value.
+there with access to these translations. Then follow the [Authenticiation |
+Introduction to the Transifex API | Transifex Documentation][transauth]: to get
+an API token, and set `TRANSIFEX_API_TOKEN` in your environment with its value.
 
-The cc-licenses-data repo should be cloned next to the cc-licenses repo. (It
-can be elsewhere, then you need to set `DATA_REPOSITORY_DIR` to its location.)
-Be sure to clone using a URL that starts with `git@github...` and not
-`https://github...`, or you won't be able to push to it.
+The [creativecommons/cc-licenses-data][repodata] repository should be cloned
+next to this `cc-licenses` repository. (It can be elsewhere, then you need to
+set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a URL that
+starts with `git@github...` and not `https://github...`, or you won't be able
+to push to it.
 
 Now arrange for `docker-compose run app ./manage.py
 check_for_translation_updates` to be run hourly (or the equivalent with the
 appropriate virtualenv and env variarables set).
 
-Also see [Publishing changes to git repo](#publishing-changes-to-git-repo).
+Also see [Publishing changes to git repo](#publishing-changes-to-git-repo),
+below.
+
+[transauth]: https://docs.transifex.com/api/introduction#authentication
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 ### When translations have been updated in Transifex
 
 The hourly run of `check_for_translation_updates` looks to see if any of
 the translation files in Transifex have newer last modification times
-than we know about. If so, it will:
+than we know about. It performs the following process (which can also be done manually:
 
-- Determine which translation branch the changes should be tracked under. For
-  example, if a French translation file for BY 4.0 has changed, the branch name
-  will be cc4-fr.
-- Check out the latest version of the cc4-fr branch in the cc-licenses-data
-  repo beside the cc-licenses repo, or create a new branch from develop with
-  that name.
-- Download the updated translation file, compile it, and save both to
-  cc-licenses-data.
-- Commit that change and push it upstream.
-- For each branch that has been updated, publish its static files into
-  cc-licenses-data, commit, and push upstream.
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Within the [creativecommons/cc-licenses-data][repodata] (the [Data
+   Repository](#data-repository)):
+   1. Checkout or create the appropriate branch.
+      - For example, if a French translation file for BY 4.0 has changed, the
+        branch name will be `cc4-fr`.
+   2. Download the updated `.po` file from Transifex
+   3. Do the [Translation Update Process](#translation-update-process) (below)
+      - *This is important and easy to forget,* but without it, Django will
+        keep using the old translations
+   4. Commit that change and push it upstream.
+3. Within this `cc-licenses` repository:
+   1. For each branch that has been updated, [Generate Static
+      Files](#generate-static-files) (below). Use the options to update git and
+      push the changes.
 
-If you knew that translation files in Transifex had changed, you could do the
-equivalent steps manually:
-- In cc-licenses-data, checkout or create the appropriate branch.
-- Download the updated .po files from Transifex to the appropriate place in
-  cc-licenses-data.
-- In cc-licenses, run `docker-compose run app ./manage.py compilemessages`.
-  *This is important and easy to forget,* but without it, Django will keep
-using the old translations.
-- In cc-licenses-data, commit and push the changes.
-- In cc-licenses, run `docker-compose run app ./manage.py publish
-  --branch=<branchname>`
-  (see farther down for more about publishing).
+[repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
 ### How the license translation is implemented
 
-First, note that translation uses two sets of files. Most things use the
-built-in Django translation support. But the translation of the actual legal
-text of the licenses is handled using a different set of files.
+Django Translation uses two sets of files in the
+[creativecommons/cc-licenses-data][repodata] repository (the [Data
+Repository](#data-repository), above):
+- **`legalcode/`**
+  - `.po` and `.mo` internationalization and localization files for Legal Codes
+  - The Django translation domain and corresponding Transifex resource is
+    different for each tool  (ex.  `by-nc-sa_40`) and is loosely based on the
+    **identifier** (ex. CC BY-NC-SA 4.0)
+- **`locale/`**
+  - `.po` and `.mo` internationalization and localization files for Deeds and
+    UX
+  - The Django translation domain is the default (`django`)
+  - The Transifex resource is `django-po`)
 
-Second note: the initial implementation focuses on the 4.0 by-X, 3.0 unported,
-and CC0 licenses. Others will be added as time allows.
+The Internationalization and localization file details:
+- `.mo` machine object files
+  - *generated* by the `compilemessages` command (see [Translation Update
+    Process](#translation-update-process), below)
+  - *ingested* by this application and used by the `publish` command (see
+    [Generate Static Files](#generate-static-files), below)
+- `.po` portable object files
+  - *generated* by the `check_for_translation_updates` command (see [When
+    translations have been updated in
+    Transifex](#when-translations-have-been-updated-in-transifex), above)
+    - `legalcode/`: *initially generated* by the `load_html_files` command (see [Import
+      Process](#import-process), above)
+    - `locale/`: *initially generated* by the `makemessages` command
+  - *ingested* by the `compilemessages` command (see [Translation Update
+    Process](#translation-update-process), below)
 
-Also note: What Transifex calls a `resource` is what Django calls a `domain`.
-I'll probably use the terms interchangeably.
-
-The translation data consists of `.po` files, and they are managed in a
-separate repository from this code
-([creativecommons/cc-licenses-data][repodata]). This is typically checked out
-beside the `cc-licenses` repo, but can be put anywhere by changing the Django
-`DATA_REPOSITORY_DIR` setting, or setting the `DATA_REPOSITORY_DIR` environment
-variable.
-
-For the common web site stuff, and translated text outside of the actual legal
-code of the licenses, the messages use the standard Django translation domain
-`django`, and the resource name on Transifex for those messages is `django-po`.
-These files are also in the cc-licenses-data repo, under `locale`.
-
-For the license legal code, for each combination of unit, version, and
-jurisdiction code, there's another separate domain. These are all in
-cc-licenses-data under `legalcode`.
-
-Transifex requires the resource slug to consist solely of letters, digits,
-underscores, and hyphens. So we define the resource slug by joining the unit,
-version, and jurisdiction with underscores (`_`), then stripping out any
-periods (`.`) from the resulting string.  Examples: `by-nc_40`,
-`by-nc-sa_30_es` (where `_es` represents the jurisdiction, not the
-translation).
-
-For each domain, there's a file for each translation. The files are all named
-`<resourcename>.po` but are in different directories for each translated
-language.
-
-We have the following structure in our translation data repo:
-```
-legalcode/
-├── <language>
-│   └── LC_MESSAGES
-│       ├── by-nc-nd_40.mo
-│       ├── by-nc-nd_40.po
-│       ├── by-nc-sa_40.mo
-│       ...
-│       └── by_40.po
-...
-```
 
 The language code used in the path to the files is *not* necessarily the same
-as what we're using to identify the licenses in the site URLs.  That's because
+as what we're using to identify the licenses in the site URLs. That's because
 the language codes used by Django don't always match what the site URLs are
-using, and we can't change either of them.
+using. We can not change the Django language codes and must not change the URL
+path.
 
 For example, the translated files for
 `https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans` are in the
 `zh_Hans` directory. In this case, `zh_Hans` is what Django uses to identify
 that translation.
 
-The `.po` files are initially created from the existing HTML license files by
-running `docker-compose run app ./manage.py load_html_files`.
-
-After this is done and merged to the main branch, it should not be done again.
-Instead, edit the HTML license template files to change the English text, and
-use Transifex to update the translation files.
-
-> :warning: **Important:** If the `.mo` files are not updated, Django will not
-> use the updated translations!
+Documentation:
+- [Translation | Django documentation | Django](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/)
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
-[legacylegalcode]: https://github.com/creativecommons/cc-licenses-data/tree/main/legacy/legalcode
+
+
+#### Transifex Resources
+
+What Transifex calls a `resource` is what Django calls a translation
+`domain`.
+
+Transifex requires the resource slug to consist solely of letters, digits,
+underscores, and hyphens (`/[a-zA-Z0-9_-]/`). This project uses the following:
+- Formula
+  - **unit** + `_` + **version** + `_` + **jurisdiction**
+  - strip out any periods (`.`)
+- Examples:
+  - `by-nd_40`
+  - `by-nc-sa_30_es`
+  - `zero_10`
+
+Documentation:
+- [Resources | Transifex Documentation](https://docs.transifex.com/api/resources)
 
 
 #### Translation Update Process
 
 This process must be run any time the `.po` files are created or changed.
 
-1. Ensure the [Data Repository](#data-repository) is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+1. Ensure the [Data Repository](#data-repository), above,  is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 3. Compile translation messages (update `.mo` files)
     ```shell
     docker-compose run app ./manage.py compilemessages
@@ -485,7 +456,9 @@ This process must be run any time the `.po` files are created or changed.
 
 We've been calling this process "publishing", but that's a little
 misleading, since this process does nothing to make its results visible on the
-Internet. It just updates the static HTML files in the -data directory.
+Internet. It only updates the static files in the `doc`directory of the
+[creativecommons/cc-licenses-data][repodata] repository (the [Data
+Repository](#data-repository), above).
 
 
 #### Static Files Process
@@ -494,8 +467,8 @@ This process will write the HTML files in the cc-licenses-data clone directory
 under `docs/`. It will not commit the changes (`--nogit`) and will not push any
 commits (`--nopush` is implied by `--nogit`).
 
-1. Ensure the [Data Repository](#data-repository) is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup) is complete
+1. Ensure the [Data Repository](#data-repository), above,  is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 3. Compile translation messages (update `.mo` files)
     ```shell
     docker-compose run app ./manage.py publish --nogit --branch=main

@@ -8,7 +8,7 @@ Babel = "*"
 beautifulsoup4 = "*"
 dealer = "*"
 dj-database-url = "*"
-Django = ">=2.2.20,<3.0"
+Django = ">=3.2,<3.3"
 GitPython = "*"
 iso8601 = "*"
 lxml = "*"  # For use by beautifulsoup4 (but not a stated dependency)
@@ -19,7 +19,7 @@ urllib3 = "*"
 whitenoise = "*"
 
 [dev-packages]
-black = "==21.5b2"
+black = "==21.6b"
 coverage = "*"
 django-debug-toolbar = "*"
 factory-boy = "*"
