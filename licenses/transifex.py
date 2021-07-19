@@ -420,9 +420,9 @@ class TransifexHelper:
         """
         self.say(3, "check if repo is dirty")
         if repo.is_dirty():
-            raise Exception(
-                f"Git repo at {settings.DATA_REPOSITORY_DIR} is dirty. We"
-                " cannot continue."
+            raise git.exc.RepositoryDirtyError(
+                settings.DATA_REPOSITORY_DIR,
+                "Repository is dirty. We cannot continue.",
             )
         self.say(2, "Fetch to update repo")
         repo.remotes.origin.fetch()
