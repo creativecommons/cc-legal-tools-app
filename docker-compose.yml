@@ -12,7 +12,7 @@ services:
   app:
     build: .
     image: cc_licenses
-    command: python manage.py runserver 0.0.0.0:8000 --settings cc_licenses.settings.local
+    command: ./manage.py runserver
     volumes:
       - .:/home/cc
       - ../cc-licenses-data:/home/cc-licenses-data
@@ -22,9 +22,10 @@ services:
       - db
     environment:
       - DEV_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - DJANGO_SETTINGS_MODULE=cc_licenses.settings.local
   static:
     image: nginx
     volumes:
-      - ../cc-licenses-data/docs/:/usr/share/nginx/html
+      - ../cc-licenses-data/docs/:/usr/share/nginx/html:ro
     ports:
       - "8080:80"
