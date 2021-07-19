@@ -198,8 +198,6 @@ JURISDICTION_NAMES = {
     "vn": "Vietnam",
     "za": "South Africa",
 }
-
-
 LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
 DJANGO_LANGUAGE_CODES = {
     # CC language code: django language code

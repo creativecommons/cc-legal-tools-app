@@ -31,6 +31,7 @@ the generation of static files.
       <h2 id="develoment">Development</h2>
       <p><a href="/dev/admin/">Django administration</a></p>
       <p><a href="{% url 'dev_404' %}">Error 404</a></p>
+      <p><a href="{% url 'metadata' %}">metadata.yaml</a></p>
 
       <h2 id="translations">Translation</h2>
       <p><a href="{% url 'translation_status' %}">Translation status</a></p>
@@ -46,20 +47,20 @@ the generation of static files.
           {% regroup identifier_group.list by version as version_list %}
           {% for version_group in version_list %}
             {% with version=version_group.grouper %}
-              {% regroup version_group.list by jurisdiction as jurisdiction_list %}
-              {% for jurisdiction_group in jurisdiction_list %}
-                <h5>{{ jurisdiction_group.grouper }}</h5>
+              {% regroup version_group.list by jurisdiction_name as jurisdiction_name_list %}
+              {% for jurisdiction_name_group in jurisdiction_name_list %}
+                <h5>{{ jurisdiction_name_group.grouper }}</h5>
                 <table>
                   <thead>
                   <tr>
                     <th>Language</th>
-                    {% for code in jurisdiction_group.list|units %}
+                    {% for code in jurisdiction_name_group.list|units %}
                       <th>{{ code }}</th>
                     {% endfor %}
                   </tr>
                   </thead>
                   <tbody>
-                    {% regroup jurisdiction_group.list by language_code as language_list %}
+                    {% regroup jurisdiction_name_group.list by language_code as language_list %}
                     {% for legal_code_group in language_list %}
                       <tr>
                         <th>{{ legal_code_group.grouper }}</th>
@@ -86,20 +87,20 @@ the generation of static files.
       {% for version_group in version_list %}
         {% with version=version_group.grouper %}
         <h4>{{ version }} Licenses</h4>
-          {% regroup version_group.list by jurisdiction as jurisdiction_list %}
-          {% for jurisdiction_group in jurisdiction_list %}
-            <h5>{{ version }} {{ jurisdiction_group.grouper }}</h5>
+          {% regroup version_group.list by jurisdiction_name as jurisdiction_name_list %}
+          {% for jurisdiction_name_group in jurisdiction_name_list %}
+            <h5>{{ version }} {{ jurisdiction_name_group.grouper }}</h5>
             <table>
               <thead>
               <tr>
                 <th>Language</th>
-                {% for code in jurisdiction_group.list|units %}
+                {% for code in jurisdiction_name_group.list|units %}
                   <th>{{ code }}</th>
                 {% endfor %}
               </tr>
               </thead>
               <tbody>
-                {% regroup jurisdiction_group.list by language_code as language_list %}
+                {% regroup jurisdiction_name_group.list by language_code as language_list %}
                 {% for legal_code_group in language_list %}
                   <tr>
                     <th>{{ legal_code_group.grouper }}</th>

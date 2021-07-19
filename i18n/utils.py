@@ -17,6 +17,7 @@ from i18n import (
     DEFAULT_LANGUAGE_CODE,
     DJANGO_LANGUAGE_CODES,
     FILENAME_LANGUAGE_CODES,
+    JURISDICTION_NAMES,
 )
 
 CACHED_APPLICABLE_LANGS = {}
@@ -190,6 +191,24 @@ def get_default_language_for_jurisdiction(
     return DEFAULT_JURISDICTION_LANGUAGES.get(
         jurisdiction_code, default_language
     )
+
+
+def get_jurisdiction_name(category, unit, version, jurisdiction_code):
+    jurisdiction_name = JURISDICTION_NAMES.get(
+        jurisdiction_code, jurisdiction_code
+    )
+    # For details on nomenclature for unported licenses, see:
+    # https://wiki.creativecommons.org/wiki/License_Versions
+    if unit in ["zero", "mark"]:
+        jurisdiction_name = "Universal"
+    elif category == "licenses" and jurisdiction_name.lower() == "unported":
+        if version == "4.0":
+            jurisdiction_name = "International"
+        elif version == "3.0":
+            jurisdiction_name = "International (unported)"
+        else:
+            jurisdiction_name = "Generic (unported)"
+    return jurisdiction_name
 
 
 def get_locale_text_orientation(locale_identifier: str) -> str:

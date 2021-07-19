@@ -20,6 +20,8 @@ from licenses.views import (
     NUM_COMMITS,
     branch_status_helper,
     get_category_and_category_title,
+    get_deed_rel_path,
+    get_legal_code_rel_path,
     normalize_path_and_lang,
 )
 
@@ -303,12 +305,234 @@ class LicensesTestsMixin:
         super().setUp()
 
 
-class AllLicensesViewTest(LicensesTestsMixin, TestCase):
+class ViewDevHomeTest(LicensesTestsMixin, TestCase):
     def test_view_dev_home_view(self):
         url = reverse("dev_home")
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed("dev/home.html")
+
+
+class DeedViewViewTest(LicensesTestsMixin, TestCase):
+    def validate_deed_text(self, rsp, license):
+        self.assertEqual(200, rsp.status_code)
+        self.assertEqual("en", rsp.context["legal_code"].language_code)
+        text = rsp.content.decode("utf-8")
+        if (
+            "INVALID_VARIABLE" in text
+        ):  # Some unresolved variable in the template
+            msgs = ["INVALID_VARIABLE in output"]
+            for line in text.splitlines():
+                if "INVALID_VARIABLE" in line:
+                    msgs.append(line)
+            self.fail("\n".join(msgs))
+
+        expected, unexpected = expected_and_unexpected_strings_for_license(
+            license
+        )
+        for s in expected:
+            with self.subTest("|".join([license.unit, license.version, s])):
+                if s not in text:
+                    print(text)
+                self.assertContains(rsp, s)
+        for s in unexpected:
+            with self.subTest("|".join([license.unit, license.version, s])):
+                self.assertNotContains(rsp, s)
+
+    def test_text_in_deeds(self):
+        LicenseFactory()
+        for license in License.objects.filter(version="4.0"):
+            with self.subTest(license.identifier):
+                # Test in English and for 4.0 since that's how we've set up the
+                # strings to test for
+                url = build_path(
+                    license.canonical_url,
+                    "deed",
+                    "en",
+                )
+                rsp = self.client.get(url)
+                self.assertEqual(rsp.status_code, 200)
+                self.validate_deed_text(rsp, license)
+
+    def test_view_deed_template_body_licenses(self):
+        lc = LegalCode.objects.filter(license__unit="by")[0]
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/deed_body_licenses.html")
+
+    def test_view_deed_template_body_zero(self):
+        lc = LegalCode.objects.filter(license__unit="zero")[0]
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/deed_body_zero.html")
+
+    def test_view_deed_template_body_mark(self):
+        lc = LegalCodeFactory(
+            license__canonical_url="https://creativecommons.org/publicdomain/"
+            "mark/1.0/",
+            license__unit="mark",
+            license__version="1.0",
+            language_code="en",
+        )
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/deed_body_mark.html")
+
+    def test_view_deed_template_body_publicdomain(self):
+        lc = LegalCodeFactory(
+            license__canonical_url="https://creativecommons.org/publicdomain/"
+            "publicdomain/1.0/us/",
+            license__unit="publicdomain",
+            license__version="1.0",
+            license__jurisdiction_code="us",
+            language_code="en",
+        )
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/deed_body_publicdomain.html")
+
+    def test_view_deed_template_body_unimplemented(self):
+        lc = LegalCodeFactory(
+            license__canonical_url="https://creativecommons.org/licenses/x/0",
+            license__unit="x",
+            license__version="0",
+            language_code="en",
+        )
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/deed_body_unimplemented.html")
+
+    def test_get_legal_code_rel_path(self):
+        expected_legal_code_rel_path = "legalcode.en"
+        legal_code_rel_path = get_legal_code_rel_path(
+            legal_code_url="/legalcode.xx",
+            path_start="/",
+            language_code="xx",
+            language_default="en",
+            legal_code_languages=["en", "es"],
+        )
+        self.assertEqual(expected_legal_code_rel_path, legal_code_rel_path)
+
+    def test_view_deed_invalid_language(self):
+        lc = LegalCode.objects.filter(
+            license__unit="zero",
+            language_code="en",
+        )[0]
+        url = lc.deed_url.replace("deed.en", "deed.xx")
+        rsp = self.client.get(url)
+        self.assertEqual(404, rsp.status_code)
+
+    def test_view_deed_jurisdiction_language(self):
+        lc = LegalCode.objects.filter(
+            license__unit="by-sa",
+            license__version="3.0",
+            license__jurisdiction_code="es",
+        )[0]
+        license = lc.license
+
+        language_code = "fr"
+        lc = LegalCodeFactory(license=license, language_code=language_code)
+        # "<code:unit>/<version:version>/<jurisdiction:jurisdiction>
+        #  /deed.<lang:target_lang>"
+        url = lc.deed_url
+        # Mock 'get_translation_object' because we have no 3.0 translations
+        # imported yet and we can't use 4.0 to test jurisdictions.
+        translation_object = DjangoTranslation(language="fr")
+        with mock.patch.object(
+            LegalCode, "get_translation_object"
+        ) as mock_gto:
+            mock_gto.return_value = translation_object
+            rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+
+    def test_view_deed_jurisdiction(self):
+        lc = LegalCode.objects.filter(
+            license__unit="by-sa",
+            license__version="3.0",
+            license__jurisdiction_code="es",
+        )[0]
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+
+    def test_view_deed_zero(self):
+        lc = LegalCode.objects.filter(
+            license__unit="zero",
+            license__version="1.0",
+            language_code="en",
+        )[0]
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+
+    # def test_deed_for_superseded_license(self):
+    #     unit = "by-nc-sa"
+    #     version = "2.0"  # No 4.0 licenses have been superseded
+    #
+    #     new_license = License.objects.get(
+    #         unit=unit, version="3.0", jurisdiction_code=""
+    #     )
+    #     license = License.objects.get(
+    #         unit=unit, version=version, jurisdiction_code=""
+    #     )
+    #     license.is_replaced_by = new_license
+    #     license.save()
+    #     rsp = self.client.get(license.deed_url)
+    #     self.validate_deed_text(rsp, license)
+    #
+    # def test_jurisdictions(self):
+    #     for code in ["es", "igo"]:
+    #         with self.subTest(code):
+    #             license = LicenseFactory(
+    #                 unit="by-nd-sa",
+    #                 jurisdiction_code="es",
+    #                 version="3.7",
+    #                 requires_share_alike=True,
+    #                 permits_distribution=False,
+    #                 requires_attribution=True,
+    #                 prohibits_commercial_use=False,
+    #                 permits_derivative_works=False,
+    #             )
+    #             rsp = self.client.get(license.deed_url)
+    #             self.validate_deed_text(rsp, license)
+    #
+    # def test_language(self):
+    #     license = (
+    #         License.objects.filter(
+    #             unit="by-nd",
+    #             version="4.0",
+    #             legal_codes__language_code="es",
+    #         )
+    #         .first()
+    #     )
+    #     rsp = self.client.get(license.deed_url)
+    #     self.validate_deed_text(rsp, license)
+    #
+    # def test_use_jurisdiction_default_language(self):
+    #     """
+    #     If no language specified, but jurisdiction default language is not
+    #     english, use that language instead of english.
+    #     """
+    #     license = License.objects.filter(
+    #         version="3.0",
+    #         jurisdiction_code="fr"
+    #     ).first()
+    #     url = reverse(
+    #         "view_deed_jurisdiction",
+    #         kwargs=dict(
+    #             unit=license.unit,
+    #             version=license.version,
+    #             jurisdiction=license.jurisdiction_code,
+    #         ),
+    #     )
+    #     rsp = self.client.get(url)
+    #     context = rsp.context
+    #     self.assertEqual("fr", context["target_lang"])
 
 
 class ViewLicenseTest(TestCase):
@@ -377,6 +601,16 @@ class ViewLicenseTest(TestCase):
         )
         self.assertEqual(norm_request_path, f"{request_path}.de")
         self.assertEqual(norm_language_code, "de")
+
+    def test_get_deed_rel_path(self):
+        expected_deed_rel_path = "deed.en"
+        deed_rel_path = get_deed_rel_path(
+            deed_url="/deed.xx",
+            path_start="/",
+            language_code="xx",
+            language_default="en",
+        )
+        self.assertEqual(expected_deed_rel_path, deed_rel_path)
 
     def test_view_legal_code_identifying_jurisdiction_default_language(self):
         language_code = "de"
@@ -456,155 +690,6 @@ class ViewLicenseTest(TestCase):
     #     )
     #     self.assertEqual(200, rsp.status_code)
     #     self.assertGreater(len(rsp.content.decode()), 0)
-
-
-class LicenseDeedViewTest(LicensesTestsMixin, TestCase):
-    def validate_deed_text(self, rsp, license):
-        self.assertEqual(200, rsp.status_code)
-        self.assertEqual("en", rsp.context["legal_code"].language_code)
-        text = rsp.content.decode("utf-8")
-        if (
-            "INVALID_VARIABLE" in text
-        ):  # Some unresolved variable in the template
-            msgs = ["INVALID_VARIABLE in output"]
-            for line in text.splitlines():
-                if "INVALID_VARIABLE" in line:
-                    msgs.append(line)
-            self.fail("\n".join(msgs))
-
-        expected, unexpected = expected_and_unexpected_strings_for_license(
-            license
-        )
-        for s in expected:
-            with self.subTest("|".join([license.unit, license.version, s])):
-                if s not in text:
-                    print(text)
-                self.assertContains(rsp, s)
-        for s in unexpected:
-            with self.subTest("|".join([license.unit, license.version, s])):
-                self.assertNotContains(rsp, s)
-
-    def test_text_in_deeds(self):
-        LicenseFactory()
-        for license in License.objects.filter(version="4.0"):
-            with self.subTest(license.identifier):
-                # Test in English and for 4.0 since that's how we've set up the
-                # strings to test for
-                url = build_path(
-                    license.canonical_url,
-                    "deed",
-                    "en",
-                )
-                rsp = self.client.get(url)
-                self.assertEqual(rsp.status_code, 200)
-                self.validate_deed_text(rsp, license)
-
-    def test_license_deed_view_code_version_jurisdiction_language(self):
-        lc = LegalCode.objects.filter(
-            license__unit="by-sa",
-            license__version="3.0",
-            license__jurisdiction_code="es",
-        )[0]
-        license = lc.license
-
-        language_code = "fr"
-        lc = LegalCodeFactory(license=license, language_code=language_code)
-        # "<code:unit>/<version:version>/<jurisdiction:jurisdiction>
-        #  /deed.<lang:target_lang>"
-        url = lc.deed_url
-        # Mock 'get_translation_object' because we have no 3.0 translations
-        # imported yet and we can't use 4.0 to test jurisdictions.
-        translation_object = DjangoTranslation(language="fr")
-        with mock.patch.object(
-            LegalCode, "get_translation_object"
-        ) as mock_gto:
-            mock_gto.return_value = translation_object
-            rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-
-    def test_license_deed_view_code_version_jurisdiction(self):
-        lc = LegalCode.objects.filter(
-            license__unit="by-sa",
-            license__version="3.0",
-            license__jurisdiction_code="es",
-        )[0]
-        url = lc.deed_url
-        rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-
-    def test_license_deed_view_zero(self):
-        lc = LegalCode.objects.filter(
-            license__unit="zero",
-            license__version="1.0",
-            language_code="en",
-        )[0]
-        url = lc.deed_url
-        rsp = self.client.get(url)
-        self.assertEqual(200, rsp.status_code)
-
-    # def test_deed_for_superseded_license(self):
-    #     unit = "by-nc-sa"
-    #     version = "2.0"  # No 4.0 licenses have been superseded
-    #
-    #     new_license = License.objects.get(
-    #         unit=unit, version="3.0", jurisdiction_code=""
-    #     )
-    #     license = License.objects.get(
-    #         unit=unit, version=version, jurisdiction_code=""
-    #     )
-    #     license.is_replaced_by = new_license
-    #     license.save()
-    #     rsp = self.client.get(license.deed_url)
-    #     self.validate_deed_text(rsp, license)
-    #
-    # def test_jurisdictions(self):
-    #     for code in ["es", "igo"]:
-    #         with self.subTest(code):
-    #             license = LicenseFactory(
-    #                 unit="by-nd-sa",
-    #                 jurisdiction_code="es",
-    #                 version="3.7",
-    #                 requires_share_alike=True,
-    #                 permits_distribution=False,
-    #                 requires_attribution=True,
-    #                 prohibits_commercial_use=False,
-    #                 permits_derivative_works=False,
-    #             )
-    #             rsp = self.client.get(license.deed_url)
-    #             self.validate_deed_text(rsp, license)
-    #
-    # def test_language(self):
-    #     license = (
-    #         License.objects.filter(
-    #             unit="by-nd",
-    #             version="4.0",
-    #             legal_codes__language_code="es",
-    #         )
-    #         .first()
-    #     )
-    #     rsp = self.client.get(license.deed_url)
-    #     self.validate_deed_text(rsp, license)
-    #
-    # def test_use_jurisdiction_default_language(self):
-    #     """
-    #     If no language specified, but jurisdiction default language is not
-    #     english, use that language instead of english.
-    #     """
-    #     license = License.objects.filter(
-    #         version="3.0",
-    #         jurisdiction_code="fr"
-    #     ).first()
-    #     url = reverse(
-    #         "license_deed_view_code_version_jurisdiction",
-    #         kwargs=dict(
-    #             unit=license.unit,
-    #             version=license.version,
-    #             jurisdiction=license.jurisdiction_code,
-    #         ),
-    #     )
-    #     rsp = self.client.get(url)
-    #     context = rsp.context
-    #     self.assertEqual("fr", context["target_lang"])
 
 
 class ViewBranchStatusTest(TestCase):
@@ -777,13 +862,18 @@ class ViewTranslationStatusTest(TestCase):
 
 class ViewMetadataTest(TestCase):
     def test_view_metadata(self):
-        LicenseFactory()
+        LicenseFactory(category="licenses", unit="by", version="1.1")
+        LicenseFactory(category="publicdomain", unit="zero", version="1.1")
         with mock.patch.object(License, "get_metadata") as mock_get_metadata:
             mock_get_metadata.return_value = {"foo": "bar"}
             rsp = self.client.get(reverse("metadata"))
         self.assertEqual(200, rsp.status_code)
         mock_get_metadata.assert_called_with()
-        self.assertEqual(b"- foo: bar\n", rsp.content)
+        self.assertEqual(
+            b"licenses:\n- by_11: &id001\n    foo: bar\n"
+            b"publicdomain:\n- zero_11: *id001\n",
+            rsp.content,
+        )
 
 
 class ViewPageNotFoundTest(TestCase):
