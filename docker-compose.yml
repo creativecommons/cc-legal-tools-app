@@ -12,7 +12,7 @@ services:
   app:
     build: .
     image: cc_licenses
-    command: ./manage.py runserver
+    command: ./manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/home/cc
       - ../cc-licenses-data:/home/cc-licenses-data
