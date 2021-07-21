@@ -325,10 +325,12 @@ This process will read the HTML files from the specified directory, populate
 ### Import Dependency Documentation
 
 - [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
-- [lxml - Processing XML and HTML with Python][lxml]
+  - [lxml - Processing XML and HTML with Python][lxml]
+- [Quick start guide — polib 1.1.1 documentation][polibdocs]
 
 [bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 [lxml]: https://lxml.de/
+[polibdocs]: https://polib.readthedocs.io/en/latest/quickstart.html
 
 
 ## Translation
@@ -352,31 +354,6 @@ Also see [Publishing changes to git repo](#publishing-changes-to-git-repo),
 below.
 
 [transauth]: https://docs.transifex.com/api/introduction#authentication
-[repodata]:https://github.com/creativecommons/cc-licenses-data
-
-
-### When translations have been updated in Transifex
-
-The hourly run of `check_for_translation_updates` looks to see if any of
-the translation files in Transifex have newer last modification times
-than we know about. It performs the following process (which can also be done manually:
-
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Within the [creativecommons/cc-licenses-data][repodata] (the [Data
-   Repository](#data-repository)):
-   1. Checkout or create the appropriate branch.
-      - For example, if a French translation file for BY 4.0 has changed, the
-        branch name will be `cc4-fr`.
-   2. Download the updated `.po` file from Transifex
-   3. Do the [Translation Update Process](#translation-update-process) (below)
-      - *This is important and easy to forget,* but without it, Django will
-        keep using the old translations
-   4. Commit that change and push it upstream.
-3. Within this `cc-licenses` repository:
-   1. For each branch that has been updated, [Generate Static
-      Files](#generate-static-files) (below). Use the options to update git and
-      push the changes.
-
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
@@ -449,9 +426,42 @@ Documentation:
 - [Resources | Transifex Documentation](https://docs.transifex.com/api/resources)
 
 
+### Check for Translation Updates
+
+The hourly run of `check_for_translation_updates` looks to see if any of
+the translation files in Transifex have newer last modification times
+than we know about. It performs the following process (which can also be done manually:
+
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Within the [creativecommons/cc-licenses-data][repodata] (the [Data
+   Repository](#data-repository)):
+   1. Checkout or create the appropriate branch.
+      - For example, if a French translation file for BY 4.0 has changed, the
+        branch name will be `cc4-fr`.
+   2. Download the updated `.po` file from Transifex
+   3. Do the [Translation Update Process](#translation-update-process) (below)
+      - *This is important and easy to forget,* but without it, Django will
+        keep using the old translations
+   4. Commit that change and push it upstream.
+3. Within this `cc-licenses` repository:
+   1. For each branch that has been updated, [Generate Static
+      Files](#generate-static-files) (below). Use the options to update git and
+      push the changes.
+
+[repodata]:https://github.com/creativecommons/cc-licenses-data
+
+
+### Check for Translation Updates Dependency Documentation
+
+- [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
+
+[gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
+
+
 ### Translation Update Process
 
-This process must be run any time the `.po` files are created or changed.
+This Django Admin command must be run any time the `.po` files are created or
+changed.
 
 1. Ensure the [Data Repository](#data-repository), above,  is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
@@ -497,8 +507,8 @@ path to that deploy key file.
 ### Publishing Dependency Documentation
 
 - [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
+  - [lxml - Processing XML and HTML with Python][lxml]
 - [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
-- [lxml - Processing XML and HTML with Python][lxml]
 
 [bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 [gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
