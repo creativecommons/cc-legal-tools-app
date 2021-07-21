@@ -275,7 +275,7 @@ reads from the legacy HTML legal code files in the
 [creativecommons/cc-licenses-data][repodata] repository, and populates the
 database records and translation files.
 
-`load_html_files` uses [BeautifulSoup4][bs4] to parse the legacy HTML legal
+`load_html_files` uses [BeautifulSoup4][bs4docs] to parse the legacy HTML legal
 code:
 1. `import_zero_license_html` for CC0 Public Domain tool
    - HTML is handled specificially (using tag ids and classes) to populate
@@ -294,8 +294,8 @@ code:
      identified. The body is stored in the `html` field of the
      `LegalCode` model
 
-[bs4]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[repodata]: https://github.com/creativecommons/cc-licenses-data
 
 
 ### Import Process
@@ -365,13 +365,19 @@ Repository](#data-repository), above):
 - **`legalcode/`**
   - `.po` and `.mo` internationalization and localization files for Legal Codes
   - The Django translation domain and corresponding Transifex resource is
-    different for each tool  (ex.  `by-nc-sa_40`) and is loosely based on the
-    **identifier** (ex. CC BY-NC-SA 4.0)
+    different for each tool.
+    - Formula:
+      1. **unit** + `_` + **version** + `_` + **jurisdiction**
+      2. strip out any periods (`.`)
+    - Examples:
+      - `by-nd_40`
+      - `by-nc-sa_30_es`
+      - `zero_10`
 - **`locale/`**
   - `.po` and `.mo` internationalization and localization files for Deeds and
     UX
   - The Django translation domain is the default (`django`)
-  - The Transifex resource is `django-po`)
+  - The Transifex resource is `django-po`
 
 The Internationalization and localization file details:
 - `.mo` machine object files
@@ -383,12 +389,11 @@ The Internationalization and localization file details:
   - *generated* by the `check_for_translation_updates` command (see [When
     translations have been updated in
     Transifex](#when-translations-have-been-updated-in-transifex), above)
-    - `legalcode/`: *initially generated* by the `load_html_files` command (see [Import
-      Process](#import-process), above)
+    - `legalcode/`: *initially generated* by the `load_html_files` command
+      (see [Import Process](#import-process), above)
     - `locale/`: *initially generated* by the `makemessages` command
   - *ingested* by the `compilemessages` command (see [Translation Update
     Process](#translation-update-process), below)
-
 
 The language code used in the path to the files is *not* necessarily the same
 as what we're using to identify the licenses in the site URLs. That's because
@@ -402,35 +407,19 @@ For example, the translated files for
 that translation.
 
 Documentation:
-- [Translation | Django documentation | Django](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/)
+- [Translation | Django documentation | Django][djangotranslation]
+- [Resources | Transifex Documentation][transifexresources]
 
-[repodata]:https://github.com/creativecommons/cc-licenses-data
-
-
-### Transifex Resources
-
-What Transifex calls a `resource` is what Django calls a translation
-`domain`.
-
-Transifex requires the resource slug to consist solely of letters, digits,
-underscores, and hyphens (`/[a-zA-Z0-9_-]/`). This project uses the following:
-- Formula
-  - **unit** + `_` + **version** + `_` + **jurisdiction**
-  - strip out any periods (`.`)
-- Examples:
-  - `by-nd_40`
-  - `by-nc-sa_30_es`
-  - `zero_10`
-
-Documentation:
-- [Resources | Transifex Documentation](https://docs.transifex.com/api/resources)
+[repodata]: https://github.com/creativecommons/cc-licenses-data
+[djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
+[transifexresources]: https://docs.transifex.com/api/resources
 
 
 ### Check for Translation Updates
 
-The hourly run of `check_for_translation_updates` looks to see if any of
-the translation files in Transifex have newer last modification times
-than we know about. It performs the following process (which can also be done manually:
+The hourly run of `check_for_translation_updates` looks to see if any of the
+translation files in Transifex have newer last modification times than we know
+about. It performs the following process (which can also be done manually:
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Within the [creativecommons/cc-licenses-data][repodata] (the [Data
@@ -473,9 +462,9 @@ changed.
 
 ## Generate Static Files
 
-We've been calling this process "publishing", but that's a little
-misleading, since this process does nothing to make its results visible on the
-Internet. It only updates the static files in the `doc` directory of the
+We've been calling this process "publishing", but that's a little misleading,
+since this process does nothing to make its results visible on the Internet. It
+only updates the static files in the `doc` directory of the
 [creativecommons/cc-licenses-data][repodata] repository (the [Data
 Repository](#data-repository), above).
 
