@@ -13,6 +13,9 @@ services:
       - type: bind
         source: ./data/db
         target: /var/lib/postgresql/data
+      # Use tmpfs for pg_stat_tmp to resolve WARNING: could not open statistics
+      # file
+      # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
       - type: tmpfs
         target: /var/lib/postgresql/data/pg_stat_tmp
 
