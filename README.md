@@ -322,6 +322,15 @@ This process will read the HTML files from the specified directory, populate
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
+### Import Dependency Documentation
+
+- [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
+- [lxml - Processing XML and HTML with Python][lxml]
+
+[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[lxml]: https://lxml.de/
+
+
 ## Translation
 
 To upload/download translation files to/from Transifex, you'll need an account
@@ -421,7 +430,7 @@ Documentation:
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
-#### Transifex Resources
+### Transifex Resources
 
 What Transifex calls a `resource` is what Django calls a translation
 `domain`.
@@ -440,7 +449,7 @@ Documentation:
 - [Resources | Transifex Documentation](https://docs.transifex.com/api/resources)
 
 
-#### Translation Update Process
+### Translation Update Process
 
 This process must be run any time the `.po` files are created or changed.
 
@@ -456,12 +465,12 @@ This process must be run any time the `.po` files are created or changed.
 
 We've been calling this process "publishing", but that's a little
 misleading, since this process does nothing to make its results visible on the
-Internet. It only updates the static files in the `doc`directory of the
+Internet. It only updates the static files in the `doc` directory of the
 [creativecommons/cc-licenses-data][repodata] repository (the [Data
 Repository](#data-repository), above).
 
 
-#### Static Files Process
+### Static Files Process
 
 This process will write the HTML files in the cc-licenses-data clone directory
 under `docs/`. It will not commit the changes (`--nogit`) and will not push any
@@ -480,9 +489,20 @@ commits (`--nopush` is implied by `--nogit`).
 When the site is deployed, to enable pushing and pulling the licenses data repo
 with GitHub, create an ssh deploy key for the cc-licenses-data repo with write
 permissions, and put the private key file (not password protected) somewhere
-safe, owned by www-data, and readable only by its owner (0o400). Then in
-settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be the full path to that
-deploy key file.
+safe (owned by `www-data` if on a server), and readable only by its owner
+(0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be the full
+path to that deploy key file.
+
+
+### Publishing Dependency Documentation
+
+- [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
+- [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
+- [lxml - Processing XML and HTML with Python][lxml]
+
+[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
+[lxml]: https://lxml.de/
 
 
 ## License
