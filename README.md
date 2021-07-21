@@ -248,8 +248,9 @@ Right now there are three places the text of licenses could be.
    - Everything else
 
 The text that's in gettext files can be translated via transifex at [Creative
-Commons localization][cctransifex]. The translation domains there are named for
-the license they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
+Commons localization][cctransifex]. For additional information the Django
+translation domaions / Transifex resources, see [How the license translation is
+implemented](#how-the-license-translation-is-implemented), below.
 
 Documentation:
 - [Models | Django documentation | Django][djangomodels]
