@@ -248,7 +248,7 @@ Right now there are three places the text of licenses could be.
    - Everything else
 
 The text that's in gettext files can be translated via transifex at [Creative
-Commons localization][transifex]. The translation domains there are named for
+Commons localization][cctransifex]. The translation domains there are named for
 the license they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
 
 Documentation:
@@ -257,7 +257,7 @@ Documentation:
 
 [namespace]: https://github.com/creativecommons/cc-licenses-data#legal-tools-namespace
 [unportedtemplate]: licenses/templates/includes/legalcode_licenses_3.0_unported.html
-[transifex]: https://www.transifex.com/creativecommons/CC/
+[cctransifex]: https://www.transifex.com/creativecommons/public/
 [djangomodels]: https://docs.djangoproject.com/en/3.2/topics/db/models/
 [djangotemplates]: https://docs.djangoproject.com/en/3.2/topics/templates/
 
