@@ -339,7 +339,8 @@ This process will read the HTML files from the specified directory, populate
 To upload/download translation files to/from Transifex, you'll need an account
 there with access to these translations. Then follow the [Authenticiation |
 Introduction to the Transifex API | Transifex Documentation][transauth]: to get
-an API token, and set `TRANSIFEX_API_TOKEN` in your environment with its value.
+an API token, and set `TRANSIFEX["API_TOKEN"]` in your environment with its
+value.
 
 The [creativecommons/cc-licenses-data][repodata] repository should be cloned
 next to this `cc-licenses` repository. (It can be elsewhere, then you need to

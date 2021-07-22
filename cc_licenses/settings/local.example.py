@@ -8,7 +8,7 @@ import dj_database_url
 from cc_licenses.settings.dev import *  # noqa: F401, F403
 
 # Override settings here
-# TRANSIFEX_API_TOKEN = "TRANSIFEX_API_TOKEN"
+# TRANSIFEX["API_TOKEN"] = "TRANSIFEX_API_TOKEN"
 # TRANSLATION_REPOSITORY_DEPLOY_KEY = os.path.join(
 #     os.path.expanduser("~"), ".ssh", "PRIVATE_KEY_NAME",
 # )
