@@ -287,18 +287,26 @@ class LegalCode(models.Model):
         unit = license.unit.lower()
         if license.jurisdiction_code:
             # ported Licenses 3.0 and earlier
-            return os.path.join(
-                license.category,  # licenses
-                unit,  # by, by-nc-nd, etc.
-                license.version,  # 1.0, 2.0, etc.
-                license.jurisdiction_code,
+            return os.path.abspath(
+                os.path.realpath(
+                    os.path.join(
+                        license.category,  # licenses
+                        unit,  # by, by-nc-nd, etc.
+                        license.version,  # 1.0, 2.0, etc.
+                        license.jurisdiction_code,
+                    )
+                )
             )
         else:
             # unported Licenses 3.0, Licenses 4.0, and Public Domain:
-            return os.path.join(
-                license.category,  # licenses, publicdomain
-                unit,  # by, by-nc-nd, zero, etc.
-                license.version,  # 1.0, 4.0, etc.
+            return os.path.abspath(
+                os.path.realpath(
+                    os.path.join(
+                        license.category,  # licenses, publicdomain
+                        unit,  # by, by-nc-nd, zero, etc.
+                        license.version,  # 1.0, 4.0, etc.
+                    )
+                )
             )
 
     def get_file_and_links(self, document):
@@ -311,9 +319,13 @@ class LegalCode(models.Model):
         license = self.license
         juris_code = license.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
-        filename = os.path.join(
-            self._get_save_path(),
-            f"{document}.{self.language_code}.html",
+        filename = os.path.abspath(
+            os.path.realpath(
+                os.path.join(
+                    self._get_save_path(),
+                    f"{document}.{self.language_code}.html",
+                )
+            )
         )
         symlinks = []
         if self.language_code == language_default:
@@ -403,12 +415,16 @@ class LegalCode(models.Model):
         "{translation repo topdir}/legalcode/fr/by-nc_4.0.po".
         """
         filename = f"{self.license.resource_slug}.po"
-        fullpath = os.path.join(
-            settings.DATA_REPOSITORY_DIR,
-            "legalcode",
-            cc_to_filename_language_code(self.language_code),
-            "LC_MESSAGES",
-            filename,
+        fullpath = os.path.abspath(
+            os.path.realpath(
+                os.path.join(
+                    settings.DATA_REPOSITORY_DIR,
+                    "legalcode",
+                    cc_to_filename_language_code(self.language_code),
+                    "LC_MESSAGES",
+                    filename,
+                )
+            )
         )
         return fullpath
 
