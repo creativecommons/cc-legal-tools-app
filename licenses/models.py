@@ -92,42 +92,45 @@ class LegalCodeQuerySet(models.QuerySet):
         license__unit__in=UNITS_LICENSES,
     )
     LICENSES_40_QUERY = Q(
-        license__version="4.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="4.0",
     )
     LICENSES_30_QUERY = Q(
-        license__version="3.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="3.0",
     )
     LICENSES_25_QUERY = Q(
-        license__version="2.5",
         license__unit__in=UNITS_LICENSES,
+        license__version="2.5",
     )
     LICENSES_21_QUERY = Q(
-        license__version="2.1",
         license__unit__in=UNITS_LICENSES,
+        license__version="2.1",
     )
     LICENSES_20_QUERY = Q(
-        license__version="2.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="2.0",
     )
     LICENSES_10_QUERY = Q(
-        license__version="1.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="1.0",
     )
 
     # All of the Public Domain declarations are at version 1.0
     PUBLIC_DOMAIN_ALL_QUERY = Q(license__unit__in=UNITS_PUBLIC_DOMAIN)
+
+    PUBLIC_DOMAIN_ZERO_QUERY = Q(license__unit="zero")
 
     def translated(self):
         """
         Return a queryset of the LegalCode objects that we are doing the
         translation process on.
         """
-        # We are not translating the 3.0 unported licenses - they are English
-        # only We are not translating the 3.0 ported licenses - just storing
-        # their HTML as-is.
-        return self.exclude(license__version="3.0")
+        # Only the 4.0 Licenses 4.0 and CC0 1.0 currently have translation
+        # support. TODO: add Licenses 3.0 IGO
+        return self.filter(
+            self.LICENSES_40_QUERY | self.PUBLIC_DOMAIN_ZERO_QUERY
+        )
 
     def valid(self):
         """
@@ -579,17 +582,13 @@ class License(models.Model):
     def get_legal_code_for_language_code(self, language_code):
         """
         Return the LegalCode object for this license and language.
-        If language_code has a "-" and we don't find it, try
-        without the "-*" part (to handle e.g. "en-us").
         """
         if not language_code:
             language_code = translation.get_language()
         try:
             return self.legal_codes.get(language_code=language_code)
-        except LegalCode.DoesNotExist:
-            if "-" in language_code:  # e.g. "en-us"
-                lang = language_code.split("-")[0]
-                return self.legal_codes.get(language_code=lang)
+        except LegalCode.DoesNotExist as e:
+            e.args = (f"{e.args[0]} language_code={language_code}",)
             raise
 
     @property
