@@ -8,7 +8,10 @@ import dj_database_url
 from cc_licenses.settings.dev import *  # noqa: F401, F403
 
 # Override settings here
-# TRANSLATION_REPOSITORY_DEPLOY_KEY = "/path/to/ssh/private/key"
+# TRANSIFEX_API_TOKEN = "TRANSIFEX_API_TOKEN"
+# TRANSLATION_REPOSITORY_DEPLOY_KEY = os.path.join(
+#     os.path.expanduser("~"), ".ssh", "PRIVATE_KEY_NAME",
+# )
 
 # If DEV_DATABASE_URL environment variable is not set, then localhost is
 # assumed.  Also see DATABASES variable in settings base.by.
