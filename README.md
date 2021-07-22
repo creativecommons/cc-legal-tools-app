@@ -444,8 +444,10 @@ about. It performs the following process (which can also be done manually:
 ### Check for Translation Updates Dependency Documentation
 
 - [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
+- [Requests: HTTP for Humans™ — Requests 2.26.0 documentation][requestsdocs]
 
 [gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
+[requestsdocs]: https://docs.python-requests.org/en/master/
 
 
 ### Translation Update Process
