@@ -1,6 +1,7 @@
 # Third-party
 from django.core.management import BaseCommand, CommandError, call_command
 from git.exc import GitCommandError, RepositoryDirtyError
+from requests.exceptions import HTTPError
 
 # First-party/Local
 from licenses.transifex import TransifexHelper
@@ -14,6 +15,8 @@ class Command(BaseCommand):
             ).check_for_translation_updates()
         except GitCommandError as e:
             raise CommandError(f"GitCommandError: {e}")
+        except HTTPError as e:
+            raise CommandError(f"HTTPError: {e}")
         except RepositoryDirtyError as e:
             raise CommandError(f"RepositoryDirtyError: {e}")
 
