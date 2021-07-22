@@ -178,19 +178,30 @@ def view_dev_home(request, category=None):
         lc_category = lc.license.category
         lc_unit = lc.license.unit
         lc_version = lc.license.version
+        lc_language_default = get_default_language_for_jurisdiction(
+            lc.license.jurisdiction_code,
+        )
         jurisdiction_name = get_jurisdiction_name(
             lc_category,
             lc_unit,
             lc_version,
             lc.license.jurisdiction_code,
         )
+        deed_rel_path = get_deed_rel_path(
+            lc.deed_url,
+            path_start,
+            lc.language_code,
+            lc_language_default,
+        )
+        deed_translated = deed_rel_path.endswith(f".{lc.language_code}")
         data = dict(
             version=lc_version,
             jurisdiction_name=jurisdiction_name,
             unit=lc_unit,
             language_code=lc.language_code,
             deed_only=lc.license.deed_only,
-            deed_url=os.path.relpath(lc.deed_url, start=path_start),
+            deed_translated=deed_translated,
+            deed_url=deed_rel_path,
             legal_code_url=os.path.relpath(
                 lc.legal_code_url, start=path_start
             ),

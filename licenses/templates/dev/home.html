@@ -66,7 +66,10 @@ the generation of static files.
                         <th>{{ legal_code_group.grouper }}</th>
                         {% for legal_code in legal_code_group.list  %}
                           <td>
-                            <a href="{{ legal_code.deed_url }}">{{ deed_translated }}</a>{% if not legal_code.deed_only %},
+                            {% if legal_code.deed_translated %}
+                              <a href="{{ legal_code.deed_url }}">{{ deed_translated }}</a>{% if not legal_code.deed_only %},{% endif %}
+                            {% endif %}
+                            {% if not legal_code.deed_only %}
                               <a href="{{ legal_code.legal_code_url }}">{{ legal_code_translated }}</a>
                             {% endif %}
                           </td>
@@ -106,7 +109,9 @@ the generation of static files.
                     <th>{{ legal_code_group.grouper }}</th>
                     {% for legal_code in legal_code_group.list  %}
                       <td>
-                        <a href="{{ legal_code.deed_url }}">{{ deed_translated }}</a>,
+                        {% if legal_code.deed_translated %}
+                          <a href="{{ legal_code.deed_url }}">{{ deed_translated }}</a>,
+                        {% endif %}
                         <a href="{{ legal_code.legal_code_url }}">{{ legal_code_translated }}</a>
                       </td>
                     {% endfor %}
