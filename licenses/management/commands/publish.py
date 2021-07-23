@@ -1,4 +1,5 @@
 # Standard library
+import logging
 import os
 import socket
 from argparse import ArgumentParser
@@ -10,11 +11,20 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import BaseCommand, CommandError
 from django.urls import reverse
+from django.http.response import Http404
 
 # First-party/Local
 from licenses.git_utils import commit_and_push_changes, setup_local_branch
 from licenses.models import LegalCode, TranslationBranch
 from licenses.utils import relative_symlink, save_url_as_static_file
+
+LOG = logging.getLogger(__name__)
+LOG_LEVELS = {
+    0: logging.ERROR,
+    1: logging.WARNING,
+    2: logging.INFO,
+    3: logging.DEBUG,
+}
 
 
 def list_open_translation_branches():
@@ -93,7 +103,7 @@ class Command(BaseCommand):
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
-        self.stdout.write(f"\n{hostname}:{output_dir}")
+        LOG.debug(f"{hostname}:{output_dir}")
         save_url_as_static_file(
             output_dir,
             url="/dev/status/",
@@ -102,40 +112,48 @@ class Command(BaseCommand):
         )
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
+            relpath = f"status/{tbranch_id}.html"
+            LOG.debug(f"    {relpath}")
             save_url_as_static_file(
                 output_dir,
                 url=f"/status/{tbranch_id}/",
-                relpath=f"status/{tbranch_id}.html",
+                relpath=relpath,
                 html=True,
             )
 
         legal_codes = LegalCode.objects.validgroups()
         for group in legal_codes.keys():
-            self.stdout.write(f"\n{group}")
-            self.stdout.write(f"{hostname}:{output_dir}")
+            LOG.info(f"Publishing {group}")
+            LOG.debug(f"{hostname}:{output_dir}")
             for legal_code in legal_codes[group]:
                 # deed
-                filepath, symlinks = legal_code.get_file_and_links("deed")
-                save_url_as_static_file(
-                    output_dir,
-                    url=legal_code.deed_url,
-                    relpath=filepath,
-                    html=True,
-                )
-                for symlink in symlinks:
-                    relative_symlink(output_dir, filepath, symlink)
+                try:
+                    relpath, symlinks = legal_code.get_file_and_links("deed")
+                    save_url_as_static_file(
+                        output_dir,
+                        url=legal_code.deed_url,
+                        relpath=relpath,
+                        html=True,
+                        logger=LOG,
+                    )
+                    for symlink in symlinks:
+                        relative_symlink(output_dir, relpath, symlink, LOG)
+                except Http404 as e:
+                    if not "invalid language" in str(e):
+                        raise
                 # legalcode
-                filepath, symlinks = legal_code.get_file_and_links("legalcode")
+                relpath, symlinks = legal_code.get_file_and_links("legalcode")
                 save_url_as_static_file(
                     output_dir,
                     url=legal_code.legal_code_url,
-                    relpath=filepath,
+                    relpath=relpath,
                     html=True,
+                    logger=LOG,
                 )
                 for symlink in symlinks:
-                    relative_symlink(output_dir, filepath, symlink)
+                    relative_symlink(output_dir, relpath, symlink, LOG)
 
-        self.stdout.write(f"\n{hostname}:{output_dir}")
+        LOG.debug(f"\n{hostname}:{output_dir}")
         save_url_as_static_file(
             output_dir,
             url=reverse("metadata"),
@@ -153,7 +171,8 @@ class Command(BaseCommand):
             if os.path.isfile(os.path.join(licenses_rdf_dir, rdf_file))
         ]
         licenses_rdfs.sort()
-        self.stdout.write(f"\n{hostname}:{output_dir}")
+        LOG.info(f"Publishing legal code RDFs")
+        LOG.debug(f"\n{hostname}:{output_dir}")
         for rdf in licenses_rdfs:
             if rdf.endswith(".rdf"):
                 name = rdf[:-4]
@@ -166,7 +185,7 @@ class Command(BaseCommand):
             dest_file = os.path.join(output_dir, relative_name)
             os.makedirs(os.path.dirname(dest_file), exist_ok=True)
             copyfile(os.path.join(licenses_rdf_dir, rdf), dest_file)
-            self.stdout.write(f"    {relative_name}")
+            LOG.debug(f"    {relative_name}")
 
     def run_copy_meta_rdfs(self):
         hostname = socket.gethostname()
@@ -181,11 +200,12 @@ class Command(BaseCommand):
         meta_files.sort()
         dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
-        self.stdout.write(f"\n{hostname}:{output_dir}")
+        LOG.info(f"Publishing RDF information and metadata")
+        LOG.debug(f"{hostname}:{output_dir}")
         for meta_file in meta_files:
             dest_relative = os.path.join("rdf", meta_file)
             dest_full = os.path.join(output_dir, dest_relative)
-            self.stdout.write(f"    {dest_relative}")
+            LOG.debug(f"    {dest_relative}")
             copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
             if meta_file == "index.rdf":
                 os.makedirs(
@@ -195,7 +215,7 @@ class Command(BaseCommand):
                 symlink = os.path.join("licenses", meta_file)
                 try:
                     os.symlink(f"../{dest_relative}", symlink, dir_fd=dir_fd)
-                    self.stdout.write(f"   ^{symlink}")
+                    LOG.debug(f"   ^{symlink}")
                 finally:
                     os.close(dir_fd)
             elif meta_file == "ns.html":
@@ -203,7 +223,7 @@ class Command(BaseCommand):
                 symlink = meta_file
                 try:
                     os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-                    self.stdout.write(f"   ^{symlink}")
+                    LOG.debug(f"   ^{symlink}")
                 finally:
                     os.close(dir_fd)
             elif meta_file == "schema.rdf":
@@ -211,7 +231,7 @@ class Command(BaseCommand):
                 symlink = meta_file
                 try:
                     os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-                    self.stdout.write(f"   ^{symlink}")
+                    LOG.debug(f"   ^{symlink}")
                 finally:
                     os.close(dir_fd)
 
@@ -228,7 +248,8 @@ class Command(BaseCommand):
                 and text_file.endswith(".txt")
             )
         ]
-        self.stdout.write(f"\n{hostname}:{output_dir}")
+        LOG.info(f"Publishing plaintext legal code")
+        LOG.debug(f"{hostname}:{output_dir}")
         for text in plaintext_files:
             if text.startswith("by"):
                 context = "licenses"
@@ -243,7 +264,7 @@ class Command(BaseCommand):
             dest_file = os.path.join(output_dir, relative_name)
             os.makedirs(os.path.dirname(dest_file), exist_ok=True)
             copyfile(os.path.join(plaintext_dir, text), dest_file)
-            self.stdout.write(f"    {relative_name}")
+            LOG.debug(f"    {relative_name}")
 
     def distill_and_copy(self):
         self.run_clean_output_dir()
@@ -254,7 +275,7 @@ class Command(BaseCommand):
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
-        self.stdout.write(f"Publishing branch {branch}")
+        LOG.debug(f"Publishing branch {branch}")
         with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
             setup_local_branch(repo, branch)
             self.distill_and_copy()
@@ -268,23 +289,25 @@ class Command(BaseCommand):
                     push=self.push,
                 )
                 if repo.is_dirty(untracked_files=True):
-                    raise Exception(
-                        "Something went wrong, the repo is still dirty"
+                    raise git.exc.RepositoryDirtyError(
+                        settings.DATA_REPOSITORY_DIR,
+                        "Repository is dirty. We cannot continue.",
                     )
             else:
-                self.stdout.write(f"\n{branch} build dir is up to date.\n")
+                LOG.debug(f"{branch} build dir is up to date.")
 
     def publish_all(self):
         """Workflow for checking branches and updating their build dir"""
         branches = list_open_translation_branches()
-        self.stdout.write(
-            f"\n\nChecking and updating build dirs for {len(branches)}"
-            " translation branches\n\n"
+        LOG.info(
+            f"Checking and updating build dirs for {len(branches)}"
+            " translation branches."
         )
         for branch in branches:
             self.publish_branch(branch)
 
     def handle(self, *args, **options):
+        LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         self.options = options
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.legacy_dir = os.path.abspath(settings.LEGACY_DIR)
@@ -301,9 +324,9 @@ class Command(BaseCommand):
 
         if options.get("list_branches"):
             branches = list_open_translation_branches()
-            self.stdout.write("\n\nWhich branch are we publishing to?\n")
+            LOG.debug("\n\nWhich branch are we publishing to?\n")
             for branch in branches:
-                self.stdout.write(branch)
+                LOG.debug(branch)
         elif options.get("nogit"):
             self.distill_and_copy()
         elif options.get("branch_name"):

@@ -228,7 +228,7 @@ def view_deed(
         request.path, jurisdiction, language_code
     )
     if language_code not in settings.LANGUAGES_TRANSLATED:
-        raise Http404("invalid language")
+        raise Http404(f"invalid language: {language_code}")
 
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
