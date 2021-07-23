@@ -23,7 +23,6 @@ from django.utils import translation
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
-    cc_to_django_language_code,
     cc_to_filename_language_code,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
@@ -287,26 +286,18 @@ class LegalCode(models.Model):
         unit = license.unit.lower()
         if license.jurisdiction_code:
             # ported Licenses 3.0 and earlier
-            return os.path.abspath(
-                os.path.realpath(
-                    os.path.join(
-                        license.category,  # licenses
-                        unit,  # by, by-nc-nd, etc.
-                        license.version,  # 1.0, 2.0, etc.
-                        license.jurisdiction_code,
-                    )
-                )
+            return os.path.join(
+                license.category,  # licenses or publicdomain
+                unit,  # ex. by, by-nc-nd
+                license.version,  # ex. 1.0, 2.0
+                license.jurisdiction_code, # ex. ca, tw
             )
         else:
             # unported Licenses 3.0, Licenses 4.0, and Public Domain:
-            return os.path.abspath(
-                os.path.realpath(
-                    os.path.join(
-                        license.category,  # licenses, publicdomain
-                        unit,  # by, by-nc-nd, zero, etc.
-                        license.version,  # 1.0, 4.0, etc.
-                    )
-                )
+            return os.path.join(
+                license.category,  # licenses or  publicdomain
+                unit,  # ex. by, by-nc-nd, zero
+                license.version,  # ex. 1.0, 4.0
             )
 
     def get_file_and_links(self, document):
@@ -319,13 +310,9 @@ class LegalCode(models.Model):
         license = self.license
         juris_code = license.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
-        filename = os.path.abspath(
-            os.path.realpath(
-                os.path.join(
-                    self._get_save_path(),
-                    f"{document}.{self.language_code}.html",
-                )
-            )
+        filename = os.path.join(
+            self._get_save_path(),
+            f"{document}.{self.language_code}.html",
         )
         symlinks = []
         if self.language_code == language_default:
@@ -377,9 +364,7 @@ class LegalCode(models.Model):
     def get_translation_object(self):
         domain = self.license.resource_slug
         return get_translation_object(
-            django_language_code=cc_to_django_language_code(
-                self.language_code
-            ),
+            django_language_code=self.language_code,
             domain=domain,
         )
 
@@ -531,12 +516,6 @@ class License(models.Model):
         language_default = get_default_language_for_jurisdiction(
             self.jurisdiction_code
         )
-        # TODO: correct this gross hack with a proper separation and mapping
-        # between Django language codes and CC legacy languages codes
-        # https://github.com/creativecommons/cc-licenses/issues/157
-        if language_default == "sr":
-            language_default = "sr-Cyrl"
-
         data = {}
         default_lc = self.legal_codes.filter(language_code=language_default)[0]
         data["canonical_url"] = self.canonical_url
@@ -556,8 +535,7 @@ class License(models.Model):
             data["legal_code_languages"] = {}
             for lc in self.legal_codes.order_by("language_code"):
                 lang_code = lc.language_code
-                django_code = cc_to_django_language_code(lang_code)
-                language_info = translation.get_language_info(django_code)
+                language_info = translation.get_language_info(lang_code)
                 data["legal_code_languages"][lang_code] = language_info["name"]
         data["permits_derivative_works"] = self.permits_derivative_works
         data["permits_distribution"] = self.permits_distribution

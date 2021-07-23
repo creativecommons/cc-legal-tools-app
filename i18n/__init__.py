@@ -15,7 +15,9 @@ CSV_HEADERS = [
     "percent_trans",
 ]
 DEFAULT_INPUT_DIR = settings.LOCALE_PATHS[0]
-DEFAULT_CSV_FILE = os.path.join(DEFAULT_INPUT_DIR, "transstats.csv")
+DEFAULT_CSV_FILE = os.path.abspath(
+    os.path.realpath(os.path.join(DEFAULT_INPUT_DIR, "transstats.csv"))
+)
 # If something has no language listed, that generally means it's English.
 # We want to set an actual language code on it so that once this data has
 # been imported, we don't have to treat English as a special default.
@@ -27,11 +29,12 @@ DEFAULT_LANGUAGE_CODE = "en"
 # Django language codes.
 DEFAULT_JURISDICTION_LANGUAGES = {
     # Map jurisdiction code to language code.
-    # "jurisdiction code": "language code"
+    # "jurisdiction code": "Django language code"
     #
     # IMPORTANT: language codes and jurisdictions are different:
     # - jurisdictions are ISO 3166-1 alpha-2 codes
-    # - language codes are RFC5646 language tags
+    # - Django language codes are lowercase Django RFC5646 language tags:
+    #   https://github.com/django/django/blob/main/django/conf/global_settings.py
     #
     # For example:
     # - "ar" is the ISO 3166-1 alpha-2 code for Argentina
@@ -121,8 +124,8 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "sg": "en-gb",
     "si": "sl",
     "th": "th",
-    "tw": "zh-tw",
-    "ua": "zh-tw",
+    "tw": "zh-hant",
+    "ua": "zh-hant",
     "ug": "en",
     "uk": "en-gb",
     "us": "en",
@@ -200,11 +203,28 @@ JURISDICTION_NAMES = {
     "za": "South Africa",
 }
 LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
-DJANGO_LANGUAGE_CODES = {
-    # CC language code: django language code
+LANGMAP_DJANGO_TO_TRANSIFEX = {
+    # Django language code: Transifex language code
+    #
+    # Django language codes are lowercase Django RFC5646 language tags:
+    # https://github.com/django/django/blob/main/django/conf/global_settings.py
+    #
+    # Transifex language codes are ISO 639 language codes optionally followed
+    # by a ISO 3166 country code or ISO 15924 script code
+    # https://www.transifex.com/explore/languages/
+    "en-gb": "en_GB",
+    "pt-br": "pt_BR",
+    "zh-hans": "zh-Hans",
+    "zh-hant": "zh-Hant",
+}
+LANGMAP_LEGACY_TO_DJANGO = {
+    # Legacy language code: Django language code
+    #
+    # Django language codes are lowercase Django RFC5646 language tags:
+    # https://github.com/django/django/blob/main/django/conf/global_settings.py
     "es-es": "es",
     "sr-cyrl": "sr",
-    "zh": "zh-hans",  # Assume mainland china
+    "zh": "zh-hans",
     "zh-cn": "zh-hans",
     "zh-tw": "zh-hant",
 }

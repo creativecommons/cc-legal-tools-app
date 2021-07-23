@@ -6,6 +6,7 @@ from typing import Iterable
 
 # Third-party
 import git
+import polib
 import yaml
 from django.conf import settings
 from django.core.cache import caches
@@ -17,7 +18,6 @@ from django.utils import translation
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     active_translation,
-    cc_to_django_language_code,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
 )
@@ -138,9 +138,9 @@ def get_deed_rel_path(
 
 
 def name_local(legal_code):
-    return translation.get_language_info(
-        cc_to_django_language_code(legal_code.language_code)
-    )["name_local"]
+    return translation.get_language_info(legal_code.language_code)[
+        "name_local"
+    ]
 
 
 def normalize_path_and_lang(request_path, jurisdiction, language_code):
@@ -304,8 +304,7 @@ def view_deed(
     else:
         body_template = "includes/deed_body_unimplemented.html"
 
-    django_language_code = cc_to_django_language_code(language_code)
-    translation.activate(django_language_code)
+    translation.activate(language_code)
     return render(
         request,
         template_name="deed.html",
@@ -425,6 +424,27 @@ def view_translation_status(request):
     # branches = [head.name[len("origin/") :] for head in heads]
 
     branches = TranslationBranch.objects.exclude(complete=True)
+
+    deed_ux_translation_info = {}
+    locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
+    locale_dir = os.path.abspath(os.path.realpath(locale_dir))
+    for language_code in os.listdir(locale_dir):
+        po_file = os.path.join(
+            locale_dir,
+            language_code,
+            "LC_MESSAGES",
+            "django.po",
+        )
+        if not os.path.isfile(po_file):
+            continue
+        po = polib.pofile(po_file)
+        percent_translated = po.percent_translated()
+        deed_ux_translation_info[language_code] = {
+            "percent_translated": percent_translated,
+            "created": po.metadata.get("POT-Creation-Date", ""),
+            "updated": po.metadata.get("PO-Revision-Date", ""),
+        }
+
     return render(
         request,
         template_name="dev/translation_status.html",
@@ -432,6 +452,7 @@ def view_translation_status(request):
             "branches": branches,
             "category": "dev",
             "category_title": "Dev",
+            "deed_ux": deed_ux_translation_info,
         },
     )
 

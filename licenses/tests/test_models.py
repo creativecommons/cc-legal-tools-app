@@ -250,7 +250,7 @@ class LegalCodeModelTest(TestCase):
         with mock.patch("licenses.models.get_translation_object") as mock_djt:
             legal_code.get_translation_object()
         mock_djt.assert_called_with(
-            domain="by-sa_40", django_language_code="de"
+            django_language_code="de", domain="by-sa_40"
         )
 
     def test_branch_name(self):
@@ -683,8 +683,6 @@ class LicenseModelTest(TestCase):
         self.assertEqual(lc_en.id, result.id)
         with self.assertRaises(LegalCode.DoesNotExist):
             license.get_legal_code_for_language_code("en_us")
-        result = license.get_legal_code_for_language_code("en-us")
-        self.assertEqual(lc_en.id, result.id)
 
     def test_resource_name(self):
         license = LicenseFactory(

@@ -15,9 +15,10 @@ from django.utils.translation.trans_real import DjangoTranslation, translation
 from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
     DEFAULT_LANGUAGE_CODE,
-    DJANGO_LANGUAGE_CODES,
     FILENAME_LANGUAGE_CODES,
     JURISDICTION_NAMES,
+    LANGMAP_DJANGO_TO_TRANSIFEX,
+    LANGMAP_LEGACY_TO_DJANGO,
 )
 
 CACHED_APPLICABLE_LANGS = {}
@@ -155,19 +156,47 @@ def get_pofile_content(pofile: polib.POFile) -> str:
     return pofile.__unicode__()
 
 
-def cc_to_django_language_code(cc_language_code: str) -> str:
+def map_django_to_transifex_language_code(django_language_code: str) -> str:
     """
-    Given a CC language code, return the language code that Django
-    uses to represent that language.
+    Given a Django language code, return a Transifex language code.
+
+    Django language codes are lowercase Django RFC5646 language tags:
+    https://github.com/django/django/blob/main/django/conf/global_settings.py
+
+    Transifex language codes are ISO 639 language codes optionally followed
+    by a ISO 3166 country code or ISO 15924 script code
+    https://www.transifex.com/explore/languages/
     """
-    django_language_code = cc_language_code
+    transifex_language_code = django_language_code
+    # Lookup special cases
+    transifex_language_code = LANGMAP_DJANGO_TO_TRANSIFEX.get(
+        transifex_language_code,
+        transifex_language_code,
+    )
+
+    return transifex_language_code
+
+
+def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
+    """
+    Given a Legacy language code, return a Django language code.
+
+    Legacy language codes include:
+    - Transifex language locales
+      https://www.transifex.com/explore/languages/
+    - legacy file name language codes
+
+    Django language codes are lowercase Django RFC5646 language tags:
+    https://github.com/django/django/blob/main/django/conf/global_settings.py
+    """
+    django_language_code = legacy_language_code
     # Normalize: lowercase
     django_language_code = django_language_code.lower()
     # Noarmalize: use dash
     django_language_code = django_language_code.replace("@", "-")
     django_language_code = django_language_code.replace("_", "-")
     # Lookup special cases
-    django_language_code = DJANGO_LANGUAGE_CODES.get(
+    django_language_code = LANGMAP_LEGACY_TO_DJANGO.get(
         django_language_code,
         django_language_code,
     )

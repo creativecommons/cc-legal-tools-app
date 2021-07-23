@@ -12,8 +12,7 @@ from polib import POEntry, POFile
 
 # First-party/Local
 from i18n.utils import (
-    cc_to_django_language_code,
-    get_default_language_for_jurisdiction,
+    map_django_to_transifex_language_code,
     save_pofile_as_pofile_and_mofile,
 )
 from licenses.bs_utils import (
@@ -140,15 +139,7 @@ class Command(BaseCommand):
             deed_only = metadata["deed_only"]
             jurisdiction_code = metadata["jurisdiction_code"]
             deprecated_on = metadata["deprecated_on"]
-            cc_language_code = metadata[
-                "cc_language_code"
-            ] or get_default_language_for_jurisdiction(jurisdiction_code)
-            # Make sure this is a valid language code (one we know about)
-            django_language_code = cc_to_django_language_code(cc_language_code)
-            if django_language_code not in settings.LANG_INFO:
-                raise CommandError(
-                    f"ValueError: Invalid language_code={cc_language_code}"
-                )
+            language_code = metadata["language_code"]
 
             include = (
                 (
@@ -157,7 +148,7 @@ class Command(BaseCommand):
                 )
                 and (
                     languages_to_include is None
-                    or cc_language_code in languages_to_include
+                    or language_code in languages_to_include
                 )
                 and (
                     versions_to_include is None
@@ -231,7 +222,7 @@ class Command(BaseCommand):
             # Find or create a LegalCode object
             legal_code, created = LegalCode.objects.get_or_create(
                 license=license,
-                language_code=cc_language_code,
+                language_code=language_code,
                 defaults=dict(
                     html_file=fullpath,
                 ),
@@ -247,7 +238,7 @@ class Command(BaseCommand):
         )
 
         # What are the language codes we have HTML files for?
-        cc_language_codes = sorted(
+        language_codes = sorted(
             set(lc.language_code for lc in legal_codes_to_import)
         )
 
@@ -256,12 +247,12 @@ class Command(BaseCommand):
         # We have to do English first. Django gets confused if you try to load
         # another language and it can't find English, I guess it's looking for
         # something to fall back to.
-        cc_language_codes.remove(
+        language_codes.remove(
             "en"
         )  # If english isn't in this list, something is wrong
-        for cc_language_code in ["en"] + cc_language_codes:
+        for language_code in ["en"] + language_codes:
             for legal_code in legal_codes_to_import.filter(
-                language_code=cc_language_code,
+                language_code=language_code,
             ).order_by(
                 "-license__version",
                 "license__unit",
@@ -329,12 +320,12 @@ class Command(BaseCommand):
                     )
 
                 if support_po_files:
-                    if cc_language_code == "en":
+                    if language_code == "en":
                         key = f"{unit}|{version}"
                         english_by_unit_version[key] = messages_text
                     self.write_po_files(
                         legal_code,
-                        cc_language_code,
+                        language_code,
                         english_by_unit_version,
                         messages_text,
                     )
@@ -342,7 +333,7 @@ class Command(BaseCommand):
     def write_po_files(
         self,
         legal_code,
-        cc_language_code,
+        language_code,
         english_by_unit_version,
         messages_text,
     ):
@@ -351,6 +342,9 @@ class Command(BaseCommand):
         version = license.version
         identifier = license.identifier()
         po_filename = legal_code.translation_filename()
+        transifex_language = map_django_to_transifex_language_code(
+            language_code
+        )
 
         key = f"{unit}|{version}"
         english_messages = english_by_unit_version[key]
@@ -365,7 +359,7 @@ class Command(BaseCommand):
 
         # Use the English message text as the message key
         for internal_key, translation in messages_text.items():
-            if cc_language_code == "en":
+            if language_code == "en":
                 message_key = translation.strip()
                 message_value = ""
             else:
@@ -380,14 +374,16 @@ class Command(BaseCommand):
             )
         # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html  # noqa: E501
         pofile.metadata = {
-            "Project-Id-Version": f"{identifier}",
-            "PO-Revision-Date": f"{NOW}",
-            "Language-Team": "https://www.transifex.com/creativecommons/CC/",
-            "Language": cc_language_code,
-            "MIME-Version": "1.0",
-            "Content-Type": "text/plain; charset=utf-8",
             "Content-Transfer-Encoding": "8bit",
+            "Content-Type": "text/plain; charset=utf-8",
+            "Language": language_code,
+            "Language-Team": "https://www.transifex.com/creativecommons/CC/",
+            "MIME-Version": "1.0",
+            "PO-Revision-Date": f"{NOW}",
             "Percent-Translated": f"{pofile.percent_translated()}",
+            "Project-Id-Version": f"{identifier}",
+            "Transifex-Language": transifex_language,
+            "Transifex-Slug": legal_code.license.resource_slug,
         }
 
         dir = os.path.dirname(po_filename)
