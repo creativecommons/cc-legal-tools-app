@@ -56,9 +56,7 @@ class SaveURLAsStaticFileTest(TestCase):
             source1 = os.path.join(tmpdir.name, "source1")
             with open(source1, "wb") as f:
                 f.write(contents1)
-            with mock.patch("sys.stdout", new=StringIO()) as mock_out:
-                relative_symlink(tmpdir.name, source1, "link1")
-                self.assertEqual(mock_out.getvalue().strip(), "^link1")
+            relative_symlink(tmpdir.name, source1, "link1")
             with open(os.path.join(tmpdir.name, "link1"), "rb") as f:
                 contents = f.read()
             self.assertEqual(contents1, contents)
@@ -69,9 +67,7 @@ class SaveURLAsStaticFileTest(TestCase):
             source2 = os.path.join(subdir, "source1")
             with open(source2, "wb") as f:
                 f.write(contents2)
-            with mock.patch("sys.stdout", new=StringIO()) as mock_out:
-                relative_symlink(tmpdir.name, source2, "../link2")
-                self.assertEqual(mock_out.getvalue().strip(), "^link2")
+            relative_symlink(tmpdir.name, source2, "../link2")
             with open(os.path.join(tmpdir.name, "link2"), "rb") as f:
                 contents = f.read()
             self.assertEqual(contents2, contents)
@@ -122,26 +118,6 @@ class SaveURLAsStaticFileTest(TestCase):
                             relpath="/output/licenses/metadata.yaml",
                         )
 
-    def test_save_url_as_static_file_home(self):
-        """
-        dev_home is a TemplateView, which needs to be rendered before
-        we can look at its content?
-        """
-        output_dir = "/output"
-        url = "/dev/"
-
-        with mock.patch("licenses.utils.save_bytes_to_file"):
-            with mock.patch("sys.stdout", new=StringIO()) as mock_out:
-                save_url_as_static_file(
-                    output_dir,
-                    url,
-                    relpath="/output/home.html",
-                    html=True,
-                )
-                self.assertEqual(
-                    mock_out.getvalue().strip(), "/output/home.html"
-                )
-
     def test_save_url_as_static_file_200(self):
         output_dir = "/output"
         url = "/licenses/metadata.yaml"
@@ -166,11 +142,7 @@ class SaveURLAsStaticFileTest(TestCase):
                 mock_resolve.return_value = MockResolverMatch(
                     func=mock_view_metadata
                 )
-                with mock.patch("sys.stdout", new=StringIO()) as mock_out:
-                    save_url_as_static_file(output_dir, url, relpath)
-                    self.assertEqual(
-                        mock_out.getvalue().strip(), "licenses/metadata.yaml"
-                    )
+                save_url_as_static_file(output_dir, url, relpath)
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
         self.assertEqual(

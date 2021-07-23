@@ -1,5 +1,6 @@
 # Standard library
 import datetime
+import logging
 import os
 import socket
 from argparse import ArgumentParser
@@ -29,6 +30,13 @@ from licenses.utils import (
     validate_dictionary_is_all_text,
 )
 
+LOG = logging.getLogger(__name__)
+LOG_LEVELS = {
+    0: logging.ERROR,
+    1: logging.WARNING,
+    2: logging.INFO,
+    3: logging.DEBUG,
+}
 NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S+0000")
 
 
@@ -77,6 +85,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, input_directory, **options):
+        LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         hostname = socket.gethostname()
         if not os.path.isdir(input_directory):
             raise CommandError(f"invalid input_directory: {input_directory}")
@@ -120,15 +129,14 @@ class Command(BaseCommand):
         html_filenames.append("mark_1.0.html")
 
         html_filenames.sort()
-        self.stdout.write(f"\n{hostname}:{input_directory}")
+        LOG.debug(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
-            self.stdout.write(f"    {filename}...", ending="")
             try:
                 metadata = parse_legal_code_filename(filename)
             except ValueError as e:
                 raise CommandError(f"ValueError: {e}")
             if not metadata:
-                self.stdout.write(" not implemented.")
+                LOG.warning(f"{filename} not implemented.")
                 continue
 
             fullpath = os.path.join(input_directory, filename)
@@ -156,9 +164,9 @@ class Command(BaseCommand):
                 )
             )
             if include:
-                self.stdout.write(" loading...")
+                LOG.debug(f"{filename} loading...")
             else:
-                self.stdout.write(" skipped.")
+                LOG.info(f"{filename} skipped.")
                 continue
 
             canonical_url = metadata["canonical_url"]

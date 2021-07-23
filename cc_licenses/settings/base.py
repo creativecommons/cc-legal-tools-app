@@ -5,8 +5,13 @@ Django settings for cc_licenses project.
 import os
 
 # Third-party
+import colorlog  # noqa: F401
 from babel import Locale
 from django.conf.locale import LANG_INFO
+
+APP_NAME = "licenses"
+APP_LABEL = APP_NAME
+APP_VERBOSE_NAME = APP_NAME.title()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # SETTINGS_DIR is where this settings file is
@@ -92,6 +97,7 @@ MEDIA_ROOT = os.path.join(ROOT_DIR, "public", "media")
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = "/media/"
 
+# https://docs.djangoproject.com/en/3.2/topics/logging/
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -100,7 +106,23 @@ LOGGING = {
     },
     "formatters": {
         "basic": {
-            "format": "%(asctime)s %(name)-20s %(levelname)-8s %(message)s",
+            "format": "%(levelname)s %(asctime)s %(name)s: %(message)s",
+        },
+        "format_mgmt": {
+            # https://github.com/borntyping/python-colorlog
+            "()": "colorlog.ColoredFormatter",
+            "datefmt": "%H:%M:%S",
+            "format": (
+                "%(log_color)s%(levelname).4s %(asctime)s%(reset)s"
+                " %(message)s"
+            ),
+            "log_colors": {
+                "DEBUG": "cyan",
+                "INFO": "green",
+                "WARNING": "yellow",
+                "ERROR": "red",
+                "CRITICAL": "red,bg_white",
+            },
         },
     },
     "handlers": {
@@ -110,12 +132,22 @@ LOGGING = {
             "class": "django.utils.log.AdminEmailHandler",
         },
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "basic",
         },
+        "handle_mgmt": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "format_mgmt",
+        },
     },
     "loggers": {
+        f"{APP_NAME}.management.commands": {
+            "handlers": ["handle_mgmt"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
         "django.request": {
             "handlers": ["mail_admins"],
             "level": "ERROR",
@@ -131,7 +163,7 @@ LOGGING = {
         "handlers": [
             "console",
         ],
-        "level": "INFO",
+        "level": "WARNING",
     },
 }
 

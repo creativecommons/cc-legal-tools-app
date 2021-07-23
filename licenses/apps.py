@@ -11,9 +11,12 @@ from licenses.git_utils import setup_to_call_git
 
 
 class LicensesConfig(AppConfig):
-    name = "licenses"  # required: must be the Full dotted path to the app
-    label = "licenses"  # optional: app label, must be unique in Django project
-    verbose_name = "Licenses"  # optional
+    # required: must be the Full dotted path to the app
+    name = settings.APP_NAME
+    # optional: app label, must be unique in Django project
+    label = settings.APP_LABEL
+    # optional: verbose name
+    verbose_name = settings.APP_VERBOSE_NAME
 
     LANGUAGES_TRANSLATED = []
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
