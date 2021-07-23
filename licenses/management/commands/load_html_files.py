@@ -1,4 +1,5 @@
 # Standard library
+import datetime
 import os
 import socket
 from argparse import ArgumentParser
@@ -28,6 +29,8 @@ from licenses.utils import (
     parse_legal_code_filename,
     validate_dictionary_is_all_text,
 )
+
+NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S+0000")
 
 
 class Command(BaseCommand):
@@ -346,6 +349,8 @@ class Command(BaseCommand):
         license = legal_code.license
         unit = license.unit
         version = license.version
+        identifier = license.identifier()
+        po_filename = legal_code.translation_filename()
 
         key = f"{unit}|{version}"
         english_messages = english_by_unit_version[key]
@@ -357,18 +362,6 @@ class Command(BaseCommand):
         # essentially disable wrapping.
         if self.unwrapped:
             pofile.wrapwidth = 999999
-        pofile.metadata = {
-            "Project-Id-Version": f"{unit}-{version}",
-            # 'Report-Msgid-Bugs-To': 'you@example.com',
-            # 'POT-Creation-Date': '2007-10-18 14:00+0100',
-            # 'PO-Revision-Date': '2007-10-18 14:00+0100',
-            # 'Last-Translator': 'you <you@example.com>',
-            # 'Language-Team': 'English <yourteam@example.com>',
-            "Language": cc_language_code,
-            "MIME-Version": "1.0",
-            "Content-Type": "text/plain; charset=utf-8",
-            "Content-Transfer-Encoding": "8bit",
-        }
 
         # Use the English message text as the message key
         for internal_key, translation in messages_text.items():
@@ -376,22 +369,7 @@ class Command(BaseCommand):
                 message_key = translation.strip()
                 message_value = ""
             else:
-                # WORKAROUND - by-nc-nd 4.0 NL has an extra item
-                # under s3a.
-                # https://github.com/creativecommons/creativecommons.org/pull/1160  # noqa: E501
-                if (
-                    internal_key == "s3a4_if_you_share_adapted_material"
-                    and internal_key not in english_messages
-                ):
-                    message_key = (
-                        "If You Share Adapted Material You"
-                        " produce, the Adapter's License You apply"
-                        " must not prevent recipients of the"
-                        " Adapted Material from complying with"
-                        " this Public License."
-                    )
-                else:
-                    message_key = english_messages[internal_key]
+                message_key = english_messages[internal_key]
                 message_value = translation
 
             pofile.append(
@@ -400,8 +378,18 @@ class Command(BaseCommand):
                     msgstr=clean_string(message_value),
                 )
             )
+        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html  # noqa: E501
+        pofile.metadata = {
+            "Project-Id-Version": f"{identifier}",
+            "PO-Revision-Date": f"{NOW}",
+            "Language-Team": "https://www.transifex.com/creativecommons/CC/",
+            "Language": cc_language_code,
+            "MIME-Version": "1.0",
+            "Content-Type": "text/plain; charset=utf-8",
+            "Content-Transfer-Encoding": "8bit",
+            "Percent-Translated": f"{pofile.percent_translated()}",
+        }
 
-        po_filename = legal_code.translation_filename()
         dir = os.path.dirname(po_filename)
         if not os.path.isdir(dir):
             os.makedirs(dir)

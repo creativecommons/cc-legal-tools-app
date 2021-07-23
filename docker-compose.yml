@@ -1,30 +1,42 @@
-version: "3"
+version: "3.2"
 
 services:
+
   db:
-    image: postgres
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./data/db
+        target: /var/lib/postgresql/data
+      # Use tmpfs for pg_stat_tmp to resolve WARNING: could not open statistics
+      # file
+      # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
+      - type: tmpfs
+        target: /var/lib/postgresql/data/pg_stat_tmp
+
   app:
     build: .
-    image: cc_licenses
-    command: python manage.py runserver 0.0.0.0:8000 --settings cc_licenses.settings.local
-    volumes:
-      - .:/home/cc
-      - ../cc-licenses-data:/home/cc-licenses-data
-    ports:
-      - "8000:8000"
+    command: ./manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
     environment:
       - DEV_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - DJANGO_SETTINGS_MODULE=cc_licenses.settings.local
+    image: cc_licenses
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/home/cc
+      - ../cc-licenses-data:/home/cc-licenses-data
+
   static:
     image: nginx
-    volumes:
-      - ../cc-licenses-data/docs/:/usr/share/nginx/html
     ports:
       - "8080:80"
+    volumes:
+      - ../cc-licenses-data/docs/:/usr/share/nginx/html:ro

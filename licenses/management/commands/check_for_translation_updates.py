@@ -1,29 +1,31 @@
 # Third-party
-from django.core.management import BaseCommand, call_command
+from django.core.management import BaseCommand, CommandError, call_command
+from git.exc import GitCommandError, RepositoryDirtyError
 
 # First-party/Local
 from licenses.transifex import TransifexHelper
 
-TOP_BRANCH = "main"
-
-branch_name = "test_branch"
-
 
 class Command(BaseCommand):
     def handle(self, **options):
-        branches_updated = TransifexHelper(
-            verbosity=options["verbosity"]
-        ).check_for_translation_updates()
+        try:
+            branches_updated = TransifexHelper(
+                verbosity=options["verbosity"]
+            ).check_for_translation_updates()
+        except GitCommandError as e:
+            raise CommandError(f"GitCommandError: {e}")
+        except RepositoryDirtyError as e:
+            raise CommandError(f"RepositoryDirtyError: {e}")
 
         # run collectstatic if we're going to publish
         if branches_updated:
             call_command("collectstatic", interactive=False)
-            print("Ran collectstatic")
+            self.stdout.write("Ran collectstatic")
 
             for branch_name in branches_updated:
                 # Update the HTML files, commit, and push
                 call_command("publish", branch_name=branch_name)
-                print(
+                self.stdout.write(
                     f"Updated HTML files for {branch_name}, updated branch,"
                     " and pushed if needed"
                 )

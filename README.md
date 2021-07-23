@@ -248,8 +248,9 @@ Right now there are three places the text of licenses could be.
    - Everything else
 
 The text that's in gettext files can be translated via transifex at [Creative
-Commons localization][transifex]. The translation domains there are named for
-the license they contain text for. Examples: "CC0 1.0" or "CC BY-NC-ND 4.0".
+Commons localization][cctransifex]. For additional information the Django
+translation domaions / Transifex resources, see [How the license translation is
+implemented](#how-the-license-translation-is-implemented), below.
 
 Documentation:
 - [Models | Django documentation | Django][djangomodels]
@@ -257,7 +258,7 @@ Documentation:
 
 [namespace]: https://github.com/creativecommons/cc-licenses-data#legal-tools-namespace
 [unportedtemplate]: licenses/templates/includes/legalcode_licenses_3.0_unported.html
-[transifex]: https://www.transifex.com/creativecommons/CC/
+[cctransifex]: https://www.transifex.com/creativecommons/public/
 [djangomodels]: https://docs.djangoproject.com/en/3.2/topics/db/models/
 [djangotemplates]: https://docs.djangoproject.com/en/3.2/topics/templates/
 
@@ -275,7 +276,7 @@ reads from the legacy HTML legal code files in the
 [creativecommons/cc-licenses-data][repodata] repository, and populates the
 database records and translation files.
 
-`load_html_files` uses [BeautifulSoup4][bs4] to parse the legacy HTML legal
+`load_html_files` uses [BeautifulSoup4][bs4docs] to parse the legacy HTML legal
 code:
 1. `import_zero_license_html` for CC0 Public Domain tool
    - HTML is handled specificially (using tag ids and classes) to populate
@@ -294,11 +295,11 @@ code:
      identified. The body is stored in the `html` field of the
      `LegalCode` model
 
-[bs4]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[repodata]: https://github.com/creativecommons/cc-licenses-data
 
 
-#### Import Process
+### Import Process
 
 This process will read the HTML files from the specified directory, populate
 `LegalCode` and `License` modelss, and create `.po` files in
@@ -320,6 +321,17 @@ This process will read the HTML files from the specified directory, populate
    3. [Generate Static Files](#generate-static-files), below
 
 [repodata]:https://github.com/creativecommons/cc-licenses-data
+
+
+### Import Dependency Documentation
+
+- [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
+  - [lxml - Processing XML and HTML with Python][lxml]
+- [Quick start guide — polib 1.1.1 documentation][polibdocs]
+
+[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[lxml]: https://lxml.de/
+[polibdocs]: https://polib.readthedocs.io/en/latest/quickstart.html
 
 
 ## Translation
@@ -346,11 +358,69 @@ below.
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
-### When translations have been updated in Transifex
+### How the license translation is implemented
 
-The hourly run of `check_for_translation_updates` looks to see if any of
-the translation files in Transifex have newer last modification times
-than we know about. It performs the following process (which can also be done manually:
+Django Translation uses two sets of files in the
+[creativecommons/cc-licenses-data][repodata] repository (the [Data
+Repository](#data-repository), above):
+- **`legalcode/`**
+  - `.po` and `.mo` internationalization and localization files for Legal Codes
+  - The Django translation domain and corresponding Transifex resource is
+    different for each tool.
+    - Formula:
+      1. **unit** + `_` + **version** + `_` + **jurisdiction**
+      2. strip out any periods (`.`)
+    - Examples:
+      - `by-nd_40`
+      - `by-nc-sa_30_es`
+      - `zero_10`
+- **`locale/`**
+  - `.po` and `.mo` internationalization and localization files for Deeds and
+    UX
+  - The Django translation domain is the default (`django`)
+  - The Transifex resource is `django-po`
+
+The Internationalization and localization file details:
+- `.mo` machine object files
+  - *generated* by the `compilemessages` command (see [Translation Update
+    Process](#translation-update-process), below)
+  - *ingested* by this application and used by the `publish` command (see
+    [Generate Static Files](#generate-static-files), below)
+- `.po` portable object files
+  - *generated* by the `check_for_translation_updates` command (see [When
+    translations have been updated in
+    Transifex](#when-translations-have-been-updated-in-transifex), above)
+    - `legalcode/`: *initially generated* by the `load_html_files` command
+      (see [Import Process](#import-process), above)
+    - `locale/`: *initially generated* by the `makemessages` command
+  - *ingested* by the `compilemessages` command (see [Translation Update
+    Process](#translation-update-process), below)
+
+The language code used in the path to the files is *not* necessarily the same
+as what we're using to identify the licenses in the site URLs. That's because
+the language codes used by Django don't always match what the site URLs are
+using. We can not change the Django language codes and must not change the URL
+path.
+
+For example, the translated files for
+`https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans` are in the
+`zh_Hans` directory. In this case, `zh_Hans` is what Django uses to identify
+that translation.
+
+Documentation:
+- [Translation | Django documentation | Django][djangotranslation]
+- [Resources | Transifex Documentation][transifexresources]
+
+[repodata]: https://github.com/creativecommons/cc-licenses-data
+[djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
+[transifexresources]: https://docs.transifex.com/api/resources
+
+
+### Check for Translation Updates
+
+The hourly run of `check_for_translation_updates` looks to see if any of the
+translation files in Transifex have newer last modification times than we know
+about. It performs the following process (which can also be done manually:
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Within the [creativecommons/cc-licenses-data][repodata] (the [Data
@@ -371,78 +441,17 @@ than we know about. It performs the following process (which can also be done ma
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
-### How the license translation is implemented
+### Check for Translation Updates Dependency Documentation
 
-Django Translation uses two sets of files in the
-[creativecommons/cc-licenses-data][repodata] repository (the [Data
-Repository](#data-repository), above):
-- **`legalcode/`**
-  - `.po` and `.mo` internationalization and localization files for Legal Codes
-  - The Django translation domain and corresponding Transifex resource is
-    different for each tool  (ex.  `by-nc-sa_40`) and is loosely based on the
-    **identifier** (ex. CC BY-NC-SA 4.0)
-- **`locale/`**
-  - `.po` and `.mo` internationalization and localization files for Deeds and
-    UX
-  - The Django translation domain is the default (`django`)
-  - The Transifex resource is `django-po`)
+- [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
 
-The Internationalization and localization file details:
-- `.mo` machine object files
-  - *generated* by the `compilemessages` command (see [Translation Update
-    Process](#translation-update-process), below)
-  - *ingested* by this application and used by the `publish` command (see
-    [Generate Static Files](#generate-static-files), below)
-- `.po` portable object files
-  - *generated* by the `check_for_translation_updates` command (see [When
-    translations have been updated in
-    Transifex](#when-translations-have-been-updated-in-transifex), above)
-    - `legalcode/`: *initially generated* by the `load_html_files` command (see [Import
-      Process](#import-process), above)
-    - `locale/`: *initially generated* by the `makemessages` command
-  - *ingested* by the `compilemessages` command (see [Translation Update
-    Process](#translation-update-process), below)
+[gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
 
 
-The language code used in the path to the files is *not* necessarily the same
-as what we're using to identify the licenses in the site URLs. That's because
-the language codes used by Django don't always match what the site URLs are
-using. We can not change the Django language codes and must not change the URL
-path.
+### Translation Update Process
 
-For example, the translated files for
-`https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans` are in the
-`zh_Hans` directory. In this case, `zh_Hans` is what Django uses to identify
-that translation.
-
-Documentation:
-- [Translation | Django documentation | Django](https://docs.djangoproject.com/en/3.2/topics/i18n/translation/)
-
-[repodata]:https://github.com/creativecommons/cc-licenses-data
-
-
-#### Transifex Resources
-
-What Transifex calls a `resource` is what Django calls a translation
-`domain`.
-
-Transifex requires the resource slug to consist solely of letters, digits,
-underscores, and hyphens (`/[a-zA-Z0-9_-]/`). This project uses the following:
-- Formula
-  - **unit** + `_` + **version** + `_` + **jurisdiction**
-  - strip out any periods (`.`)
-- Examples:
-  - `by-nd_40`
-  - `by-nc-sa_30_es`
-  - `zero_10`
-
-Documentation:
-- [Resources | Transifex Documentation](https://docs.transifex.com/api/resources)
-
-
-#### Translation Update Process
-
-This process must be run any time the `.po` files are created or changed.
+This Django Admin command must be run any time the `.po` files are created or
+changed.
 
 1. Ensure the [Data Repository](#data-repository), above,  is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
@@ -454,14 +463,14 @@ This process must be run any time the `.po` files are created or changed.
 
 ## Generate Static Files
 
-We've been calling this process "publishing", but that's a little
-misleading, since this process does nothing to make its results visible on the
-Internet. It only updates the static files in the `doc`directory of the
+We've been calling this process "publishing", but that's a little misleading,
+since this process does nothing to make its results visible on the Internet. It
+only updates the static files in the `doc` directory of the
 [creativecommons/cc-licenses-data][repodata] repository (the [Data
 Repository](#data-repository), above).
 
 
-#### Static Files Process
+### Static Files Process
 
 This process will write the HTML files in the cc-licenses-data clone directory
 under `docs/`. It will not commit the changes (`--nogit`) and will not push any
@@ -480,9 +489,20 @@ commits (`--nopush` is implied by `--nogit`).
 When the site is deployed, to enable pushing and pulling the licenses data repo
 with GitHub, create an ssh deploy key for the cc-licenses-data repo with write
 permissions, and put the private key file (not password protected) somewhere
-safe, owned by www-data, and readable only by its owner (0o400). Then in
-settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be the full path to that
-deploy key file.
+safe (owned by `www-data` if on a server), and readable only by its owner
+(0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be the full
+path to that deploy key file.
+
+
+### Publishing Dependency Documentation
+
+- [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
+  - [lxml - Processing XML and HTML with Python][lxml]
+- [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
+
+[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
+[lxml]: https://lxml.de/
 
 
 ## License
