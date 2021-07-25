@@ -8,7 +8,7 @@ from django.core.management import BaseCommand
 from licenses.models import License
 
 LOG = logging.getLogger(__name__)
-LOG_LEVELS = { 
+LOG_LEVELS = {
     0: logging.ERROR,
     1: logging.WARNING,
     2: logging.INFO,
