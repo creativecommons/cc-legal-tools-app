@@ -10,8 +10,8 @@ import git
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import BaseCommand, CommandError
-from django.urls import reverse
 from django.http.response import Http404
+from django.urls import reverse
 
 # First-party/Local
 from licenses.git_utils import commit_and_push_changes, setup_local_branch
