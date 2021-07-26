@@ -139,7 +139,7 @@ class Command(BaseCommand):
                     for symlink in symlinks:
                         relative_symlink(output_dir, relpath, symlink, LOG)
                 except Http404 as e:
-                    if not "invalid language" in str(e):
+                    if "invalid language" not in str(e):
                         raise
                 # legalcode
                 relpath, symlinks = legal_code.get_file_and_links("legalcode")
@@ -153,7 +153,7 @@ class Command(BaseCommand):
                 for symlink in symlinks:
                     relative_symlink(output_dir, relpath, symlink, LOG)
 
-        LOG.debug(f"\n{hostname}:{output_dir}")
+        LOG.debug(f"{hostname}:{output_dir}")
         save_url_as_static_file(
             output_dir,
             url=reverse("metadata"),
@@ -171,8 +171,8 @@ class Command(BaseCommand):
             if os.path.isfile(os.path.join(licenses_rdf_dir, rdf_file))
         ]
         licenses_rdfs.sort()
-        LOG.info(f"Publishing legal code RDFs")
-        LOG.debug(f"\n{hostname}:{output_dir}")
+        LOG.info("Publishing legal code RDFs")
+        LOG.debug(f"{hostname}:{output_dir}")
         for rdf in licenses_rdfs:
             if rdf.endswith(".rdf"):
                 name = rdf[:-4]
@@ -200,7 +200,7 @@ class Command(BaseCommand):
         meta_files.sort()
         dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
-        LOG.info(f"Publishing RDF information and metadata")
+        LOG.info("Publishing RDF information and metadata")
         LOG.debug(f"{hostname}:{output_dir}")
         for meta_file in meta_files:
             dest_relative = os.path.join("rdf", meta_file)
@@ -248,7 +248,7 @@ class Command(BaseCommand):
                 and text_file.endswith(".txt")
             )
         ]
-        LOG.info(f"Publishing plaintext legal code")
+        LOG.info("Publishing plaintext legal code")
         LOG.debug(f"{hostname}:{output_dir}")
         for text in plaintext_files:
             if text.startswith("by"):
@@ -324,7 +324,7 @@ class Command(BaseCommand):
 
         if options.get("list_branches"):
             branches = list_open_translation_branches()
-            LOG.debug("\n\nWhich branch are we publishing to?\n")
+            LOG.debug("Which branch are we publishing to?")
             for branch in branches:
                 LOG.debug(branch)
         elif options.get("nogit"):
