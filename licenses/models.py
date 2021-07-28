@@ -32,7 +32,7 @@ from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 from licenses.transifex import TransifexHelper
 
-MAX_LANGUAGE_CODE_LENGTH = 8
+MAX_LANGUAGE_CODE_LENGTH = 15
 
 UNITS_LICENSES = [
     # Units are in all versions, unless otherwise noted:
@@ -182,9 +182,7 @@ class LegalCode(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?"
-        " This is the language code used by CC, which might be a little"
-        " different from the Django language code.",
+        help_text="Django language tag (lowercase RFC5646 language tag)",
     )
     html_file = models.CharField(
         "HTML file",
@@ -290,7 +288,7 @@ class LegalCode(models.Model):
                 license.category,  # licenses or publicdomain
                 unit,  # ex. by, by-nc-nd
                 license.version,  # ex. 1.0, 2.0
-                license.jurisdiction_code, # ex. ca, tw
+                license.jurisdiction_code,  # ex. ca, tw
             )
         else:
             # unported Licenses 3.0, Licenses 4.0, and Public Domain:
@@ -694,8 +692,7 @@ class TranslationBranch(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?"
-        " This is a CC language code, which might differ from Django.",
+        help_text="Django language tag (lowercase RFC5646 language tag)",
     )
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",
