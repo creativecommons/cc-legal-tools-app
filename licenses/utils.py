@@ -37,7 +37,7 @@ class MockRequest:
         self.path = path
 
 
-def save_url_as_static_file(output_dir, url, relpath, html=False):
+def save_url_as_static_file(output_dir, url, relpath, html=False, logger=None):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
@@ -49,7 +49,8 @@ def save_url_as_static_file(output_dir, url, relpath, html=False):
     # Was using test Client, but it runs middleware and fails at runtime
     # because the request host wasn't in the ALLOWED_HOSTS. So, resolve the URL
     # and call the view directly.
-    print(f"    {relpath}")
+    if logger:
+        logger.debug(f"    {relpath}")
     resolver = get_resolver()
     match = resolver.resolve(url)  # ResolverMatch
     rsp = match.func(request=MockRequest(url), *match.args, **match.kwargs)
@@ -66,7 +67,7 @@ def save_url_as_static_file(output_dir, url, relpath, html=False):
     save_bytes_to_file(content, output_filename)
 
 
-def relative_symlink(src1, src2, dst):
+def relative_symlink(src1, src2, dst, logger=None):
     padding = " " * len(os.path.dirname(src2))
     src = os.path.abspath(os.path.join(src1, src2))
     dir_path, src_file = os.path.split(src)
@@ -80,7 +81,8 @@ def relative_symlink(src1, src2, dst):
     dir_fd = os.open(dir_path, os.O_RDONLY)
     try:
         os.symlink(src_file, dst, dir_fd=dir_fd)
-        print(f"    {padding}^{dst}")
+        if logger:
+            logger.debug(f"    {padding}^{dst}")
     finally:
         os.close(dir_fd)
 
