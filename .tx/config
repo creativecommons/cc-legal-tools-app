@@ -1,20 +1,27 @@
-# This isn't really used. "python manage.py check_for_translation_updates" should do whatever is necessary.
+# NOTE: This isn't really used. "python manage.py
+# check_for_translation_updates" should do whatever is necessary.
 
 [main]
 host = https://www.transifex.com
 
-[CC.django-po]
-# Translation files are in our sister repo, cc-licenses-data, which
-# typically will be checked out beside this one. If not, this needs
-# to be changed or the tx command line client won't work.
-file_filter = ../cc-licenses-data/locale/<lang>/LC_MESSAGES/django.po
+[CC.deeds_ux]
+# Translation files are in our sister repo, cc-licenses-data, which typically
+# will be checked out beside this one. If not, this needs to be changed or the
+# tx command line client won't work.
+file_filter = ../cc-licenses-data/locale/<lang>/LC_MESSAGES/deeds_ux.po
 minimum_perc = 0
-source_file = ../cc-licenses-data/locale/en/LC_MESSAGES/django.po
+source_file = ../cc-licenses-data/locale/en/LC_MESSAGES/deeds_ux.po
 source_lang = en
 type = PO
-# Transifex uses zh-Hans and zh-Hant, Django insists on zh_Hans and zh_Hant in its paths.
-# The lang_map does the conversion when we're doing tx push/pull, so that
-# we can name our directories zh_Hans and zh_Hant, and Transifex will use those
-# directories instead of zh-Hans and zh-Hant.
+# Transifex uses zh-Hans and zh-Hant, Django insists on zh-hans and zh-hant in
+# its paths. The lang_map does the conversion when we're doing tx push/pull,
+# so that we can name our directories zh-hans and zh-hant, and Transifex will
+# use those directories instead of zh-Hans and zh-Hant.
+#
+# Any changes to lang_map should also be made in
+# i18n/__init__.py: LANGMAP_DJANGO_TO_TRANSIFEX
+#
 # lang_map = REMOTE_CODE: LOCAL_CODE, REMOTE_CODE: LOCAL_CODE
-lang_map = zh-Hans: zh_Hans, zh-Hant: zh_Hant
+lang_map = de_AT: de-at, en_CA: en-ca, en_GB: en-gb, es_AR: es-ar, es_PE: es-pe, fa_IR: fa-ir, fr_CA: fr-ca, fr_CH: fr-ch, oc@aranes: oc-aranes, pt_BR: pt-br, si_LK: si-lk, sr@latin: sr-latn, zh-Hans: zh-hans, zh-Hant: zh-hant, zh_HK: zh-hk
+
+# vim: set ft=dosini
