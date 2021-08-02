@@ -367,12 +367,8 @@ class Command(BaseCommand):
 
         # Use the English message text as the message key
         for internal_key, translation in messages_text.items():
-            if language_code == "en":
-                message_key = translation.strip()
-                message_value = ""
-            else:
-                message_key = english_messages[internal_key]
-                message_value = translation
+            message_key = english_messages[internal_key]
+            message_value = translation
 
             pofile.append(
                 POEntry(
