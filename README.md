@@ -62,15 +62,15 @@ Use the following instructions to start the project with Docker compose.
         ```
    5. Run database migrations
         ```shell
-        docker-compose run app ./manage.py migrate
+        docker-compose exec app ./manage.py migrate
         ```
    6. Clear data in the database
         ```shell
-        docker-compose run app ./manage.py clear_license_data
+        docker-compose exec app ./manage.py clear_license_data
         ```
    7. Load legacy HTML in the database
         ```shell
-        docker-compose run app ./manage.py load_html_files
+        docker-compose exec app ./manage.py load_html_files
         ```
 2. Run the containers
     ```shell
@@ -162,7 +162,7 @@ The commands above will create 3 docker containers:
 ### Manual Commands
 
 **NOTE:** The rest of the documentation assumes Docker. If you are using a
-manual setup, use `pipenv run` instead of `docker-compose run web` for the
+manual setup, use `pipenv run` instead of `docker-compose exec app` for the
 commands below.
 
 
@@ -193,11 +193,11 @@ Action. To run it manually:
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 2. Coverage test
     ```shell
-    docker-compose run app coverage run manage.py test --noinput --keepdb
+    docker-compose exec app coverage run manage.py test --noinput --keepdb
     ```
 3. Coverage report
     ```shell
-    docker-compose run app coverage report
+    docker-compose exec app coverage report
     ```
 
 
@@ -309,11 +309,11 @@ This process will read the HTML files from the specified directory, populate
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Clear data in the database
     ```shell
-    docker-compose run app ./manage.py clear_license_data
+    docker-compose exec app ./manage.py clear_license_data
     ```
 4. Load legacy HTML in the database
     ```shell
-    docker-compose run app ./manage.py load_html_files
+    docker-compose exec app ./manage.py load_html_files
     ```
 5. Optionally (and only as appropriate):
    1. commit `.po` file changes in [creativecommons/cc-licenses-data][repodata]
@@ -348,15 +348,22 @@ set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a URL that
 starts with `git@github...` and not `https://github...`, or you won't be able
 to push to it.
 
-Now arrange for `docker-compose run app ./manage.py
-check_for_translation_updates` to be run hourly (or the equivalent with the
-appropriate virtualenv and env variarables set).
+In production, the `check_for_translation_updates` mangement command should be
+run hourly. See [Check for Translation
+Updates](#check-for-translation-updates), below.
 
 Also see [Publishing changes to git repo](#publishing-changes-to-git-repo),
 below.
 
-[transauth]: https://docs.transifex.com/api/introduction#authentication
+[Babel][babel] is used for localization information.
+
+Documentation:
+- [Babel — Babel 2.7.0 documentation][babel]
+- [Translation | Django documentation | Django][djangotranslation]
+
+[babel]: http://babel.pocoo.org/en/latest/index.html
 [repodata]:https://github.com/creativecommons/cc-licenses-data
+[transauth]: https://docs.transifex.com/api/introduction#authentication
 
 
 ### How the license translation is implemented
@@ -366,8 +373,8 @@ Django Translation uses two sets of files in the
 Repository](#data-repository), above):
 - **`legalcode/`**
   - `.po` and `.mo` internationalization and localization files for Legal Codes
-  - The Django translation domain and corresponding Transifex resource is
-    different for each tool.
+  - The file names and corresponding Transifex resource are different for each
+    tool.
     - Formula:
       1. **unit** + `_` + **version** + `_` + **jurisdiction**
       2. strip out any periods (`.`)
@@ -378,44 +385,83 @@ Repository](#data-repository), above):
 - **`locale/`**
   - `.po` and `.mo` internationalization and localization files for Deeds and
     UX
-  - The Django translation domain is the default (`django`)
-  - The Transifex resource is `django-po`
+  - The file names and corresponding Transifex resource slug are all `deeds_ux`
+    (`DEEDS_UX_RESOURCE_SLUG` in the settings).
 
-The Internationalization and localization file details:
+The internationalization and localization file details:
 - `.mo` machine object files
   - *generated* by the `compilemessages` command (see [Translation Update
     Process](#translation-update-process), below)
   - *ingested* by this application and used by the `publish` command (see
     [Generate Static Files](#generate-static-files), below)
 - `.po` portable object files
-  - *generated* by the `check_for_translation_updates` command (see [When
-    translations have been updated in
-    Transifex](#when-translations-have-been-updated-in-transifex), above)
+  - *generated* by the `check_for_translation_updates` command (see [Check for
+    Translation Updates](#check-for-translation-updates), below)
     - `legalcode/`: *initially generated* by the `load_html_files` command
       (see [Import Process](#import-process), above)
     - `locale/`: *initially generated* by the `makemessages` command
   - *ingested* by the `compilemessages` command (see [Translation Update
     Process](#translation-update-process), below)
 
-The language code used in the path to the files is *not* necessarily the same
-as what we're using to identify the licenses in the site URLs. That's because
-the language codes used by Django don't always match what the site URLs are
-using. We can not change the Django language codes and must not change the URL
-path.
-
-For example, the translated files for
-`https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-Hans` are in the
-`zh_Hans` directory. In this case, `zh_Hans` is what Django uses to identify
-that translation.
-
 Documentation:
 - [Translation | Django documentation | Django][djangotranslation]
 - [Resources | Transifex Documentation][transifexresources]
 
-[repodata]: https://github.com/creativecommons/cc-licenses-data
 [djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
+[repodata]: https://github.com/creativecommons/cc-licenses-data
 [transifexresources]: https://docs.transifex.com/api/resources
 
+
+### Language Codes
+
+The language codes used within this application and for the
+internationalization and localization directory structure are Django language
+codes.
+
+Definitions:
+- Django language codes are ***lowercase* [RFC5646][rfc5646] language tags**
+  - Examples: `de-at`, `oc-aranes`, `sr-latn`, `zh-hant`
+- Transifex langauge codes are **[POSIX locales][posixlocale]**
+  - Examples: `de_AT`, `oc@aranes`, `sr@latin`, `zh_Hant`
+- Legacy language codes include:
+  - **[POSIX locales][posixlocale]**
+    - Examples (see above)
+  - ***convential* [RFC5646][rfc5646] language tags**
+    - Examples: `sr-Latn`, `zh-Hant`
+
+Mappings:
+- Legacy language codes are mapped to Django language codes by by the
+  `load_html_files` command (see [Import Process](#import-process), above).
+- Django language codes are mapped to Transifex langauge codes by the
+  `check_for_translation_updates` command (see [Check for Translation
+Updates](#check-for-translation-updates), below).
+- Django language codes are mapped to Legacy language codes by the `publish`
+  command (see [Generate Static Files](#generate-static-files), below) to
+  create redirects.
+
+Documentation:
+- Django Language Codes:
+  - `127.0.0.1:8000`[`/dev/status/` Translation Status][translationstatus]
+  - `django/django`:`django/conf/global_settings.p`:[Lines 50-148][djangocodes]
+- Transifex Language Codes: [Languages on Transifex][transifexcodes]
+- References:
+  - [ISO 639-1 - Wikipedia][iso639-1]
+  - [ISO 639-2 - Wikipedia][iso639-2]
+  - [ISO 3166-1 alpha-2- Wikipedia][iso3166-1alpha-2]
+  - [ISO 15924 - Wikipedia][iso15924]
+  - [POSIX platforms - Locale (computer software) - Wikipedia][posixlocale]
+    (POSIX Locale)
+  - [RFC5646 Tags for Identifying Languages][rfc5646]
+
+[djangocodes]: https://github.com/django/django/blob/0dc25526d8daaaa59968d4b1b597968e197f040c/django/conf/global_settings.py#L50-L148
+[iso15924]: https://en.wikipedia.org/wiki/ISO_15924
+[iso3166-1alpha-2]: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+[iso639-1]: https://en.wikipedia.org/wiki/ISO_639-1
+[iso639-2]: https://en.wikipedia.org/wiki/ISO_639-2
+[posixlocale]: https://en.wikipedia.org/wiki/Locale_(computer_software)#POSIX_platforms
+[rfc5646]: https://datatracker.ietf.org/doc/html/rfc5646.html
+[transifexcodes]: https://www.transifex.com/explore/languages/
+[translationstatus]: http://127.0.0.1:8000/dev/status/
 
 ### Check for Translation Updates
 
@@ -460,7 +506,7 @@ changed.
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 3. Compile translation messages (update `.mo` files)
     ```shell
-    docker-compose run app ./manage.py compilemessages
+    docker-compose exec app ./manage.py compilemessages
     ```
 
 
@@ -483,7 +529,7 @@ commits (`--nopush` is implied by `--nogit`).
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 3. Compile translation messages (update `.mo` files)
     ```shell
-    docker-compose run app ./manage.py publish --nogit --branch=main
+    docker-compose exec app ./manage.py publish --nogit --branch=main
     ```
 
 
