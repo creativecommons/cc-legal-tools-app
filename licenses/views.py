@@ -433,7 +433,7 @@ def view_translation_status(request):
         )
     )
     legal_code_langauge_codes = [
-        lc.language_code for lc in language_code_objects
+        lc.language_code for lc in legal_code_objects
     ]
     legal_code_langauge_codes = sorted(list(set(legal_code_langauge_codes)))
 
