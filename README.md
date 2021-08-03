@@ -53,27 +53,27 @@ Use the following instructions to start the project with Docker compose.
    1. Ensure the [Data Repository](#data-repository), above,  is in place
    2. Install Docker ([Install Docker Engine | Docker Documentation][installdocker])
    3. Create Django local settings file
-        ```shell
+        ```
         cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
         ```
    4. Build the containers
-        ```shell
+        ```
         docker-compose build
         ```
    5. Run database migrations
-        ```shell
+        ```
         docker-compose exec app ./manage.py migrate
         ```
    6. Clear data in the database
-        ```shell
+        ```
         docker-compose exec app ./manage.py clear_license_data
         ```
    7. Load legacy HTML in the database
-        ```shell
+        ```
         docker-compose exec app ./manage.py load_html_files
         ```
 2. Run the containers
-    ```shell
+    ```
     docker-compose up
     ```
 
@@ -95,33 +95,33 @@ The commands above will create 3 docker containers:
    1. Ensure the [Data Repository](#data-repository), above,  is in place
    2. Install dependencies
       - Linux:
-        ```shell
+        ```
         sudo apt-get install pandoc postgresql postgresql-contrib python3.7 python3.7-dev python3-pip
         ```
-        ```shell
+        ```
         pip3 install pipenv
         ```
       - macOS: via [Homebrew](https://brew.sh/):
-        ```shell
+        ```
         brew install pandoc pipenv postgresql python@3.7
         ```
    3. Install Python 3.7 environment and modules via pipenv to create a
       virtualenv
       - Linux:
-        ```shell
+        ```
         pipenv install --dev --python /usr/bin/python3.7
         ```
       - macOS: via [Homebrew](https://brew.sh/):
-        ```shell
+        ```
         pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
         ```
    4. Install pre-commit hooks
-    ```shell
+    ```
     pipenv run pre-commit install
     ```
 2. Configure Django and PostgreSQL
    1. Create Django local settings file
-    ```shell
+    ```
     cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
     ```
    2. Start PostgrSQL server
@@ -130,29 +130,29 @@ The commands above will create 3 docker containers:
         refer to the official documentation.
         https://www.postgresql.org/docs/current/tutorial-install.html
       - Linux:
-        ```shell
+        ```
         sudo service postgresql start
         ```
       - macOS:
-        ```shell
+        ```
         brew services run postgres
         ```
 
    3. Create project database
       - Linux:
-        ```shell
+        ```
         sudo createdb -E UTF-8 cc_licenses
         ```
       - macOS:
-        ```shell
+        ```
         createdb -E UTF-8 cc_licenses
         ```
    4. Load database schema
-    ```shell
+    ```
     pipenv run ./manage.py migrate
     ```
 3. Run development server ([127.0.0.1:8000](http://127.0.0.1:8000/))
-    ```shell
+    ```
     pipenv run ./manage.py runserver
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
@@ -192,11 +192,11 @@ Action. To run it manually:
 1. Ensure the [Data Repository](#data-repository), above,  is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 2. Coverage test
-    ```shell
+    ```
     docker-compose exec app coverage run manage.py test --noinput --keepdb
     ```
 3. Coverage report
-    ```shell
+    ```
     docker-compose exec app coverage report
     ```
 
@@ -308,11 +308,11 @@ This process will read the HTML files from the specified directory, populate
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Clear data in the database
-    ```shell
+    ```
     docker-compose exec app ./manage.py clear_license_data
     ```
 4. Load legacy HTML in the database
-    ```shell
+    ```
     docker-compose exec app ./manage.py load_html_files
     ```
 5. Optionally (and only as appropriate):
@@ -442,7 +442,8 @@ Updates](#check-for-translation-updates), below).
 Documentation:
 - Django Language Codes:
   - `127.0.0.1:8000`[`/dev/status/` Translation Status][translationstatus]
-  - `django/django`:`django/conf/global_settings.p`:[Lines 50-148][djangocodes]
+  - `django/django`:`django/conf/global_settings.p`:
+    [Lines 50-148][djangocodes]
 - Transifex Language Codes: [Languages on Transifex][transifexcodes]
 - References:
   - [ISO 639-1 - Wikipedia][iso639-1]
@@ -505,7 +506,7 @@ changed.
 1. Ensure the [Data Repository](#data-repository), above,  is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 3. Compile translation messages (update `.mo` files)
-    ```shell
+    ```
     docker-compose exec app ./manage.py compilemessages
     ```
 
@@ -528,7 +529,7 @@ commits (`--nopush` is implied by `--nogit`).
 1. Ensure the [Data Repository](#data-repository), above,  is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
 3. Compile translation messages (update `.mo` files)
-    ```shell
+    ```
     docker-compose exec app ./manage.py publish --nogit --branch=main
     ```
 
