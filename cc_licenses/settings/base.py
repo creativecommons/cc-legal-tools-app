@@ -7,6 +7,7 @@ import os
 # Third-party
 import colorlog  # noqa: F401
 from babel import Locale
+from babel.core import UnknownLocaleError
 from django.conf.locale import LANG_INFO
 
 APP_NAME = "licenses"
@@ -168,39 +169,63 @@ LOGGING = {
 }
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.11/topics/i18n/
+# https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
+DEEDS_UX_RESOURCE_NAME = "Deeds & UX"
+DEEDS_UX_RESOURCE_SLUG = "deeds_ux"
+
+# Language code for this installation.
 LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
 
-# https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-# Teach Django about a few more languages
-LANG_INFO["an"] = {  # Aragonese
+# Teach Django about a few more languages (sorted by langauge code):
+
+# Aragonese
+LANG_INFO["an"] = {
     "bidi": False,
     "code": "an",
     "name": "Aragonese",
     "name_local": "aragonés",
 }
-mi = Locale.parse("mi")
-LANG_INFO["mi"] = {  # Maori
+# Maori
+LANG_INFO["mi"] = {"code": "mi"}  # Remaining data from Babel
+# Malay
+LANG_INFO["ms"] = {"code": "ms"}  # Remaining data from Babel
+# Maltese
+LANG_INFO["mt"] = {"code": "mt"}  # Remaining data from Babel
+# Northern Sotho
+LANG_INFO["nso"] = {
     "bidi": False,
-    "code": "mi",
-    "name": mi.get_display_name("en"),  # in english
-    "name_local": mi.get_display_name("mi"),  # in their own language
+    "code": "nso",
+    "name": "Northern Sotho",
+    "name_local": "Sesotho sa Leboa",
 }
-LANG_INFO["ms"] = {  # Malay
+# Aranese (an Occitan variant)
+LANG_INFO["oc-aranes"] = {
     "bidi": False,
-    "code": "ms",
-    "name": "Malay",
-    "name_local": "Bahasa Melayu",  # ??
+    "code": "oc-aranes",
+    "name": "Aranese",
+    "name_local": "aranés",
 }
-LANG_INFO["oci"] = {  # Occitan? https://iso639-3.sil.org/code/oci
-    "bidi": False,
-    "code": "oci",
-    "name": "Occitan",
-    "name_local": "Occitan",
+# Sinhala (Sri Lanka)
+LANG_INFO["si-lk"] = {"code": "si-lk"}  # Remaining data from Babel
+# Zulu
+LANG_INFO["zu"] = {"code": "zu"}  # Remaining data from Babel
+
+# Normalize languages using Babel
+order_to_bidi = {
+    "left-to-right": False,
+    "right-to-left": True,
 }
+for language_code in LANG_INFO.keys():
+    babel_code = language_code.replace("-", "_")
+    try:
+        locale = Locale.parse(babel_code)
+        lang_info = LANG_INFO[language_code]
+        lang_info["name"] = locale.get_display_name("en")
+        lang_info["name_local"] = locale.get_display_name(babel_code)
+        lang_info["bidi"] = order_to_bidi[locale.character_order]
+    except UnknownLocaleError:
+        continue
 
 
 # Local time zone for this installation. Choices can be found here:

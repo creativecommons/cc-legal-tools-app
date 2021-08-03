@@ -35,8 +35,8 @@ were to add frontend JS translations.
 
 3. Tell Transifex where your files are, and how to link them to Transifex:
 
-        tx set --auto-local -r cc_licenses.djangopo \
-            'locale/<lang>/LC_MESSAGES/django.po' \
+        tx set --auto-local -r cc_licenses.deeds_ux \
+            'locale/<lang>/LC_MESSAGES/deeds_ux.po' \
             --source-lang en --type PO --execute
 
 4. Commit this to the repo:

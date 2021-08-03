@@ -4,21 +4,80 @@
   <li class="is-active"><a href="{% url 'translation_status' %}" aria-current="page displayed">Translation Status</a></li>
 {% endblock %}
 
+{% block title %}Translation Status{% endblock %}
 
 {% block content %}
-  <h1>Translation status</h1>
+  <style>
+    h2, h3, h4 {
+      margin-top:1em;
+    }
+    th, td {
+      border:1px solid black;
+      padding:2px;
+    }
+  </style>
 
+  <h1>Deed & UX Translation Status</h1>
+  <table border="1">
+  <thead>
+  <tr>
+    <th>Language Code</th>
+    <th>Langauge Name</th>
+    <th>Percent<br>Translated</th>
+    <th>Created</th>
+    <th>Updated</th>
+    <th>BiDi</th>
+    <th>Legal Codes</br>in this language</th>
+    <th>Name Local</th>
+  </tr>
+  </thead>
+  {% for language_code, info in deed_ux.items %}
+    <tr>
+      <td><code>{{ language_code }}</code></td>
+      <td>{{ info.name|safe }}</td>
+      {% if info.percent_translated == 0 %}
+      <td style="background-color:#ffeeee;text-align:right;">
+      {% elif info.percent_translated < 80 %}
+      <td style="background-color:#ffffee;text-align:right;">
+      {% else %}
+      <td style="background-color:#eeffee;text-align:right;">
+      {% endif %}
+        {{ info.percent_translated }}%
+      </td>
+      <td>{{ info.created }}</td>
+      <td>{{ info.updated }}</td>
+      {% if info.bidi %}
+        <td style="font-weight:bold;text-align:right">
+          RTL &#x21E6 {#&lArr; {# leftwards double arrow #}
+        </td>
+      {% else %}
+        <td style="text-align:left">
+          &#x21E8 {#&rArr; {# rightwards double arrow #} LTR
+        </td>
+      {% endif %}
+      </td>
+      <td style="text-align:center;">
+        {% if info.legal_code %}
+          &#x2714 {# heavy check mark emoji #}
+        {% endif %}
+      </td>
+      <td>{{ info.name_local }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+
+  <h1>Legal Code Translation Status</h1>
   <table border="1">
   <thead>
   <tr>
     <th>Branch name</th>
     <th>Language</th>
-    <th>License version</th>
-    <th># of legal codes changed</th>
-    <th>Last updated in Transifex</th>
-    <th># of translated messages</th>
-    <th>Total # of messages</th>
-    <th>% translated</th>
+    <th>License<br>version</th>
+    <th>Legal codes<br>changed count</th>
+    <th>Last updated<br>in Transifex</th>
+    <th>Translated<br>messages count</th>
+    <th>Messages<br>total count</th>
+    <th>Percent<br>Translated</th>
     <th>Preview (not implemented yet)</th>
   </tr>
   </thead>
@@ -44,7 +103,11 @@
       <td><a href="#">This will be a link to a preview site.</a></td>
     </tr>
   {% empty %}
-    <tr><td>There are no active translation branches.</td></tr>
+    <tr>
+      <td colspan="9" style="color:red;">
+        <em>There are no active translation branches.</em>
+      </td>
+    </tr>
   {% endfor %}
   </tbody>
   </table>

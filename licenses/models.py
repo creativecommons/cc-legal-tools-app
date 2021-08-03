@@ -23,17 +23,17 @@ from django.utils import translation
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
-    cc_to_django_language_code,
-    cc_to_filename_language_code,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
     get_translation_object,
 )
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
-from licenses.transifex import TransifexHelper
 
-MAX_LANGUAGE_CODE_LENGTH = 8
+# TODO: update as part of translation rewrite
+# from licenses.transifex import TransifexHelper
+
+MAX_LANGUAGE_CODE_LENGTH = 15
 
 UNITS_LICENSES = [
     # Units are in all versions, unless otherwise noted:
@@ -92,42 +92,45 @@ class LegalCodeQuerySet(models.QuerySet):
         license__unit__in=UNITS_LICENSES,
     )
     LICENSES_40_QUERY = Q(
-        license__version="4.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="4.0",
     )
     LICENSES_30_QUERY = Q(
-        license__version="3.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="3.0",
     )
     LICENSES_25_QUERY = Q(
-        license__version="2.5",
         license__unit__in=UNITS_LICENSES,
+        license__version="2.5",
     )
     LICENSES_21_QUERY = Q(
-        license__version="2.1",
         license__unit__in=UNITS_LICENSES,
+        license__version="2.1",
     )
     LICENSES_20_QUERY = Q(
-        license__version="2.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="2.0",
     )
     LICENSES_10_QUERY = Q(
-        license__version="1.0",
         license__unit__in=UNITS_LICENSES,
+        license__version="1.0",
     )
 
     # All of the Public Domain declarations are at version 1.0
     PUBLIC_DOMAIN_ALL_QUERY = Q(license__unit__in=UNITS_PUBLIC_DOMAIN)
+
+    PUBLIC_DOMAIN_ZERO_QUERY = Q(license__unit="zero")
 
     def translated(self):
         """
         Return a queryset of the LegalCode objects that we are doing the
         translation process on.
         """
-        # We are not translating the 3.0 unported licenses - they are English
-        # only We are not translating the 3.0 ported licenses - just storing
-        # their HTML as-is.
-        return self.exclude(license__version="3.0")
+        # Only the 4.0 Licenses 4.0 and CC0 1.0 currently have translation
+        # support. TODO: add Licenses 3.0 IGO
+        return self.filter(
+            self.LICENSES_40_QUERY | self.PUBLIC_DOMAIN_ZERO_QUERY
+        )
 
     def valid(self):
         """
@@ -180,9 +183,7 @@ class LegalCode(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?"
-        " This is the language code used by CC, which might be a little"
-        " different from the Django language code.",
+        help_text="Django langauge code (lowercase RFC5646 language tag)",
     )
     html_file = models.CharField(
         "HTML file",
@@ -285,17 +286,17 @@ class LegalCode(models.Model):
         if license.jurisdiction_code:
             # ported Licenses 3.0 and earlier
             return os.path.join(
-                license.category,  # licenses
-                unit,  # by, by-nc-nd, etc.
-                license.version,  # 1.0, 2.0, etc.
-                license.jurisdiction_code,
+                license.category,  # licenses or publicdomain
+                unit,  # ex. by, by-nc-nd
+                license.version,  # ex. 1.0, 2.0
+                license.jurisdiction_code,  # ex. ca, tw
             )
         else:
             # unported Licenses 3.0, Licenses 4.0, and Public Domain:
             return os.path.join(
-                license.category,  # licenses, publicdomain
-                unit,  # by, by-nc-nd, zero, etc.
-                license.version,  # 1.0, 4.0, etc.
+                license.category,  # licenses or  publicdomain
+                unit,  # ex. by, by-nc-nd, zero
+                license.version,  # ex. 1.0, 4.0
             )
 
     def get_file_and_links(self, document):
@@ -362,9 +363,7 @@ class LegalCode(models.Model):
     def get_translation_object(self):
         domain = self.license.resource_slug
         return get_translation_object(
-            django_language_code=cc_to_django_language_code(
-                self.language_code
-            ),
+            django_language_code=self.language_code,
             domain=domain,
         )
 
@@ -373,22 +372,21 @@ class LegalCode(models.Model):
             content = f.read()
         return polib.pofile(content.decode(), encoding="utf-8")
 
-    def get_english_pofile(self) -> polib.POFile:
+    def get_english_pofile_path(self) -> str:
         if self.language_code != DEFAULT_LANGUAGE_CODE:
             # Same license, just in English translation:
             english_legal_code = self.license.get_legal_code_for_language_code(
                 DEFAULT_LANGUAGE_CODE
             )
-            return english_legal_code.get_pofile()
-        return self.get_pofile()
+            return english_legal_code.translation_filename()
+        return self.translation_filename()
 
     def translation_filename(self):
         """
         Return absolute path to the .po file with this translation.
         These are in the cc-licenses-data repository, in subdirectories:
           - "legalcode/"
-          - language code (should match what Django uses, not what Transifex
-            uses)
+          - language code
           - "LC_MESSAGES/"  (Django insists on this)
           - files
 
@@ -400,12 +398,16 @@ class LegalCode(models.Model):
         "{translation repo topdir}/legalcode/fr/by-nc_4.0.po".
         """
         filename = f"{self.license.resource_slug}.po"
-        fullpath = os.path.join(
-            settings.DATA_REPOSITORY_DIR,
-            "legalcode",
-            cc_to_filename_language_code(self.language_code),
-            "LC_MESSAGES",
-            filename,
+        fullpath = os.path.abspath(
+            os.path.realpath(
+                os.path.join(
+                    settings.DATA_REPOSITORY_DIR,
+                    "legalcode",
+                    self.language_code,
+                    "LC_MESSAGES",
+                    filename,
+                )
+            )
         )
         return fullpath
 
@@ -512,12 +514,6 @@ class License(models.Model):
         language_default = get_default_language_for_jurisdiction(
             self.jurisdiction_code
         )
-        # TODO: correct this gross hack with a proper separation and mapping
-        # between Django language codes and CC legacy languages codes
-        # https://github.com/creativecommons/cc-licenses/issues/157
-        if language_default == "sr":
-            language_default = "sr-Cyrl"
-
         data = {}
         default_lc = self.legal_codes.filter(language_code=language_default)[0]
         data["canonical_url"] = self.canonical_url
@@ -537,8 +533,7 @@ class License(models.Model):
             data["legal_code_languages"] = {}
             for lc in self.legal_codes.order_by("language_code"):
                 lang_code = lc.language_code
-                django_code = cc_to_django_language_code(lang_code)
-                language_info = translation.get_language_info(django_code)
+                language_info = translation.get_language_info(lang_code)
                 data["legal_code_languages"][lang_code] = language_info["name"]
         data["permits_derivative_works"] = self.permits_derivative_works
         data["permits_distribution"] = self.permits_distribution
@@ -579,17 +574,13 @@ class License(models.Model):
     def get_legal_code_for_language_code(self, language_code):
         """
         Return the LegalCode object for this license and language.
-        If language_code has a "-" and we don't find it, try
-        without the "-*" part (to handle e.g. "en-us").
         """
         if not language_code:
             language_code = translation.get_language()
         try:
             return self.legal_codes.get(language_code=language_code)
-        except LegalCode.DoesNotExist:
-            if "-" in language_code:  # e.g. "en-us"
-                lang = language_code.split("-")[0]
-                return self.legal_codes.get(language_code=lang)
+        except LegalCode.DoesNotExist as e:
+            e.args = (f"{e.args[0]} language_code={language_code}",)
             raise
 
     @property
@@ -659,23 +650,24 @@ class License(models.Model):
     def include_share_adapted_material_clause(self):
         return self.unit in ["by", "by-nc"]
 
-    def tx_upload_messages(self):
-        """
-        Upload the messages to Transifex,
-        creating the resource if it doesn't already exist.
-        """
-        # Have to do English first, they get uploaded differently as the
-        # "source" messages and are required if we need to first create the
-        # resource in Transifex.
-        en_legal_code = self.get_legal_code_for_language_code(
-            DEFAULT_LANGUAGE_CODE
-        )
-        helper = TransifexHelper()
-        helper.upload_messages_to_transifex(legal_code=en_legal_code)
-        for legal_code in self.legal_codes.exclude(
-            language_code=DEFAULT_LANGUAGE_CODE
-        ):
-            helper.upload_messages_to_transifex(legal_code=legal_code)
+    # TODO: update as part of translation rewrite
+    # def tx_upload_messages(self):
+    #     """
+    #     Upload the messages to Transifex,
+    #     creating the resource if it doesn't already exist.
+    #     """
+    #     # Have to do English first, they get uploaded differently as the
+    #     # "source" messages and are required if we need to first create the
+    #     # resource in Transifex.
+    #     en_legal_code = self.get_legal_code_for_language_code(
+    #         DEFAULT_LANGUAGE_CODE
+    #     )
+    #     helper = TransifexHelper()
+    #     helper.upload_messages_to_transifex(legal_code=en_legal_code)
+    #     for legal_code in self.legal_codes.exclude(
+    #         language_code=DEFAULT_LANGUAGE_CODE
+    #     ):
+    #         helper.upload_messages_to_transifex(legal_code=legal_code)
 
     @property
     def nc(self):
@@ -701,8 +693,7 @@ class TranslationBranch(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="E.g. 'en', 'en-ca', 'sr-Latn', or 'x-i18n'. Case-sensitive?"
-        " This is a CC language code, which might differ from Django.",
+        help_text="Django langauge code (lowercase RFC5646 language tag)",
     )
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",

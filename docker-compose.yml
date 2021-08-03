@@ -30,6 +30,7 @@ services:
     image: cc_licenses
     ports:
       - "8000:8000"
+    restart: always
     volumes:
       - .:/home/cc
       - ../cc-licenses-data:/home/cc-licenses-data

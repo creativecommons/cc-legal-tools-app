@@ -15,8 +15,10 @@ from licenses.tests.factories import (
     LicenseFactory,
     TranslationBranchFactory,
 )
-from licenses.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
-from licenses.transifex import TransifexHelper
+
+# TODO: update as part of translation rewrite
+# from licenses.transifex import TransifexHelper
+# from licenses.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
 
 
 class LegalCodeQuerySetTest(TestCase):
@@ -217,25 +219,28 @@ class LegalCodeModelTest(TestCase):
         self.assertEqual(test_pofile, result)
 
     @override_settings(DATA_REPOSITORY_DIR="/some/dir")
-    def test_get_english_pofile(self):
-        legal_code = LegalCodeFactory(language_code="es")
+    def test_get_english_pofile_path(self):
+        legal_code = LegalCodeFactory(
+            license__version="4.0",
+            license__unit="by-sa",
+            language_code="de",
+        )
         legal_code_en = LegalCodeFactory(
             license=legal_code.license, language_code=DEFAULT_LANGUAGE_CODE
         )
-        test_pofile = polib.POFile()
+        expected_path = "/some/dir/legalcode/en/LC_MESSAGES/by-sa_40.po"
 
         with mock.patch.object(
             License, "get_legal_code_for_language_code"
         ) as mock_glfl:
             mock_glfl.return_value = legal_code_en
-            with mock.patch.object(legal_code_en, "get_pofile") as mock_gp:
-                mock_gp.return_value = test_pofile
-                self.assertEqual(test_pofile, legal_code.get_english_pofile())
-                self.assertEqual(
-                    test_pofile, legal_code_en.get_english_pofile()
-                )
+            self.assertEqual(
+                expected_path, legal_code.get_english_pofile_path()
+            )
+            self.assertEqual(
+                expected_path, legal_code_en.get_english_pofile_path()
+            )
         mock_glfl.assert_called_with(DEFAULT_LANGUAGE_CODE)
-        mock_gp.assert_called_with()
 
     @override_settings(DATA_REPOSITORY_DIR="/some/dir")
     def test_get_translation_object(self):
@@ -250,7 +255,7 @@ class LegalCodeModelTest(TestCase):
         with mock.patch("licenses.models.get_translation_object") as mock_djt:
             legal_code.get_translation_object()
         mock_djt.assert_called_with(
-            domain="by-sa_40", django_language_code="de"
+            django_language_code="de", domain="by-sa_40"
         )
 
     def test_branch_name(self):
@@ -683,8 +688,6 @@ class LicenseModelTest(TestCase):
         self.assertEqual(lc_en.id, result.id)
         with self.assertRaises(LegalCode.DoesNotExist):
             license.get_legal_code_for_language_code("en_us")
-        result = license.get_legal_code_for_language_code("en-us")
-        self.assertEqual(lc_en.id, result.id)
 
     def test_resource_name(self):
         license = LicenseFactory(
@@ -786,29 +789,30 @@ class LicenseModelTest(TestCase):
                 license = LicenseFactory(unit=unit)
                 self.assertEqual(expected_freedom, license.level_of_freedom)
 
-    @override_settings(
-        TRANSIFEX=TEST_TRANSIFEX_SETTINGS,
-        DATA_REPOSITORY_DIR="/trans/repo",
-    )
-    def test_tx_upload_messages(self):
-        language_code = "es"
-        legal_code = LegalCodeFactory(language_code=language_code)
-        license = legal_code.license
-        test_pofile = polib.POFile()
-        with mock.patch.object(
-            license, "get_legal_code_for_language_code"
-        ) as mock_glflc:
-            mock_glflc.return_value = legal_code
-            with mock.patch.object(
-                TransifexHelper, "upload_messages_to_transifex"
-            ) as mock_umtt:
-                with mock.patch.object(
-                    LegalCode, "get_pofile"
-                ) as mock_get_pofile:
-                    mock_get_pofile.return_value = test_pofile
-                    license.tx_upload_messages()
-        mock_glflc.assert_called_with("en")
-        mock_umtt.assert_called_with(legal_code=legal_code)
+    # TODO: update as part of translation rewrite
+    # @override_settings(
+    #     TRANSIFEX=TEST_TRANSIFEX_SETTINGS,
+    #     DATA_REPOSITORY_DIR="/trans/repo",
+    # )
+    # def test_tx_upload_messages(self):
+    #     language_code = "es"
+    #     legal_code = LegalCodeFactory(language_code=language_code)
+    #     license = legal_code.license
+    #     test_pofile = polib.POFile()
+    #     with mock.patch.object(
+    #         license, "get_legal_code_for_language_code"
+    #     ) as mock_glflc:
+    #         mock_glflc.return_value = legal_code
+    #         with mock.patch.object(
+    #             TransifexHelper, "upload_messages_to_transifex"
+    #         ) as mock_umtt:
+    #             with mock.patch.object(
+    #                 LegalCode, "get_pofile"
+    #             ) as mock_get_pofile:
+    #                 mock_get_pofile.return_value = test_pofile
+    #                 license.tx_upload_messages()
+    #     mock_glflc.assert_called_with("en")
+    #     mock_umtt.assert_called_with(legal_code=legal_code)
 
     def test_superseded(self):
         lic1 = LicenseFactory()

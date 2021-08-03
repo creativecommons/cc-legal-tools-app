@@ -15,8 +15,8 @@ from polib import POEntry, POFile
 import licenses.models
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
-    cc_to_django_language_code,
     get_default_language_for_jurisdiction,
+    map_legacy_to_django_language_code,
 )
 
 
@@ -122,7 +122,7 @@ def parse_legal_code_filename(filename):
     version = parts.pop(0)
 
     jurisdiction = None
-    language = None
+    language_code = None
     deed_only = False
     if unit in licenses.models.UNITS_DEED_ONLY:
         deed_only = True
@@ -141,37 +141,33 @@ def parse_legal_code_filename(filename):
     else:
         return None
 
+    # Set and validate language_code
     if parts:
-        language = parts.pop(0)
+        language_code = map_legacy_to_django_language_code(parts.pop(0))
+    if jurisdiction:
+        language_code = language_code or get_default_language_for_jurisdiction(
+            jurisdiction, ""
+        )
+    else:
+        language_code = language_code or DEFAULT_LANGUAGE_CODE
+    if not language_code:
+        raise ValueError(f"What language? filename={filename}")
+    if language_code not in settings.LANG_INFO:
+        # Valid Django language_codes are extended in settings with the
+        # defaults in:
+        # https://github.com/django/django/blob/main/django/conf/global_settings.py
+        raise ValueError(f"{filename}: Invalid language_code={language_code}")
 
     canonical_url = compute_canonical_url(
         category, unit, version, jurisdiction
     )
-
-    if jurisdiction:
-        cc_language_code = language or get_default_language_for_jurisdiction(
-            jurisdiction, ""
-        )
-    else:
-        cc_language_code = language or DEFAULT_LANGUAGE_CODE
-
-    if not cc_language_code:
-        raise ValueError(f"What language? filename={filename}")
-
-    # Make sure this is a valid language code (one we know about)
-    django_language_code = cc_to_django_language_code(cc_language_code)
-    if django_language_code not in settings.LANG_INFO:
-        raise ValueError(
-            f"{filename}: Invalid language_code={cc_language_code}"
-            f" dj={django_language_code}"
-        )
 
     data = dict(
         category=category,
         unit=unit_to_return,
         version=version,
         jurisdiction_code=jurisdiction or "",
-        cc_language_code=cc_language_code,
+        language_code=language_code,
         canonical_url=canonical_url,
         deprecated_on=deprecated_on,
         deed_only=deed_only,

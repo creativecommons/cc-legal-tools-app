@@ -4,6 +4,7 @@ import re
 from contextlib import contextmanager
 
 # Third-party
+import dateutil.parser
 import polib
 from babel import Locale, UnknownLocaleError
 from django.conf import settings
@@ -15,9 +16,9 @@ from django.utils.translation.trans_real import DjangoTranslation, translation
 from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
     DEFAULT_LANGUAGE_CODE,
-    DJANGO_LANGUAGE_CODES,
-    FILENAME_LANGUAGE_CODES,
     JURISDICTION_NAMES,
+    LANGMAP_DJANGO_TO_TRANSIFEX,
+    LANGMAP_LEGACY_TO_DJANGO,
 )
 
 CACHED_APPLICABLE_LANGS = {}
@@ -143,44 +144,103 @@ def save_content_as_pofile_and_mofile(path: str, content: bytes):
     return save_pofile_as_pofile_and_mofile(pofile, path)
 
 
-def get_pofile_content(pofile: polib.POFile) -> str:
+def get_pofile_content(pofile: polib.POFile) -> str:  # pragma: no cover
     """
-    Return the content of the pofile object - a string
-    that contains what would be in the po file on the disk
-    if we saved it.
+    Return the content of the pofile object - a string that contains what would
+    be in the po file on the disk if we saved it.
+
+    This isn't really worth its own function, except that mocking __unicode__
+    for tests is a pain, and it's easier to have this function so we can just
+    mock it.
     """
-    # This isn't really worth its own function, except that mocking
-    # __unicode__ for tests is a pain, and it's easier to have this
-    # function so we can just mock it.
     return pofile.__unicode__()
 
 
-def cc_to_django_language_code(cc_language_code: str) -> str:
+def get_pofile_path(
+    locale_or_legalcode: str, language_code: str, resource_slug: str
+):
+    pofile_path = os.path.abspath(
+        os.path.realpath(
+            os.path.join(
+                settings.DATA_REPOSITORY_DIR,
+                locale_or_legalcode,
+                language_code,
+                "LC_MESSAGES",
+                f"{resource_slug}.po",
+            )
+        )
+    )
+    return pofile_path
+
+
+def get_pofile_creation_date(pofile_obj: polib.POFile):
+    try:
+        po_creation_date = pofile_obj.metadata["POT-Creation-Date"]
+    except KeyError:
+        return None
+    try:
+        creation_date = dateutil.parser.parse(po_creation_date)
+        return creation_date
+    except dateutil.parser._parser.ParserError:
+        return None
+
+
+def get_pofile_revision_date(pofile_obj: polib.POFile):
+    try:
+        po_revision_date = pofile_obj.metadata["PO-Revision-Date"]
+    except KeyError:
+        return None
+    try:
+        revision_date = dateutil.parser.parse(po_revision_date)
+        return revision_date
+    except dateutil.parser._parser.ParserError:
+        return None
+
+
+def map_django_to_transifex_language_code(django_language_code: str) -> str:
     """
-    Given a CC language code, return the language code that Django
-    uses to represent that language.
+    Given a Django language code, return a Transifex language code.
+
+    Django language codes are lowercase Django RFC5646 language tags:
+    https://github.com/django/django/blob/main/django/conf/global_settings.py
+
+    Transifex language codes are ISO 639 language codes optionally followed
+    by a ISO 3166 country code or ISO 15924 script code
+    https://www.transifex.com/explore/languages/
     """
-    django_language_code = cc_language_code
+    transifex_language_code = django_language_code
+    # Lookup special cases
+    transifex_language_code = LANGMAP_DJANGO_TO_TRANSIFEX.get(
+        transifex_language_code,
+        transifex_language_code,
+    )
+    return transifex_language_code
+
+
+def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
+    """
+    Given a Legacy language code, return a Django language code.
+
+    Legacy language codes include:
+    - Transifex language locales
+      https://www.transifex.com/explore/languages/
+    - legacy file name language codes
+
+    Django language codes are lowercase Django RFC5646 language tags:
+    https://github.com/django/django/blob/main/django/conf/global_settings.py
+    """
+    django_language_code = legacy_language_code
     # Normalize: lowercase
     django_language_code = django_language_code.lower()
     # Noarmalize: use dash
     django_language_code = django_language_code.replace("@", "-")
     django_language_code = django_language_code.replace("_", "-")
     # Lookup special cases
-    django_language_code = DJANGO_LANGUAGE_CODES.get(
+    django_language_code = LANGMAP_LEGACY_TO_DJANGO.get(
         django_language_code,
         django_language_code,
     )
-
     return django_language_code
-
-
-def cc_to_filename_language_code(cc_language_code: str) -> str:
-    """
-    Given a CC language code, return the language code to use
-    in its gettext translation files.
-    """
-    return FILENAME_LANGUAGE_CODES.get(cc_language_code, cc_language_code)
 
 
 def get_default_language_for_jurisdiction(

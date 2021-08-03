@@ -7,7 +7,6 @@ from django.apps import AppConfig
 from django.conf import settings
 
 # First-party/Local
-from i18n.utils import cc_to_django_language_code
 from licenses.git_utils import setup_to_call_git
 
 
@@ -18,6 +17,8 @@ class LicensesConfig(AppConfig):
     label = settings.APP_LABEL
     # optional: verbose name
     verbose_name = settings.APP_VERBOSE_NAME
+
+    # Determine languages that have met or exceed display threshold
     LANGUAGES_TRANSLATED = []
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
@@ -26,14 +27,14 @@ class LicensesConfig(AppConfig):
             locale_dir,
             language_code,
             "LC_MESSAGES",
-            "django.po",
+            f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
         )
         if not os.path.isfile(po_file):
             continue
         po = polib.pofile(po_file)
         if po.percent_translated() < 80:
             continue
-        LANGUAGES_TRANSLATED.append(cc_to_django_language_code(language_code))
+        LANGUAGES_TRANSLATED.append(language_code)
     settings.LANGUAGES_TRANSLATED = sorted(list(set(LANGUAGES_TRANSLATED)))
 
     def ready(self):

@@ -6,6 +6,7 @@ from typing import Iterable
 
 # Third-party
 import git
+import polib
 import yaml
 from django.conf import settings
 from django.core.cache import caches
@@ -17,7 +18,6 @@ from django.utils import translation
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     active_translation,
-    cc_to_django_language_code,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
 )
@@ -138,9 +138,9 @@ def get_deed_rel_path(
 
 
 def name_local(legal_code):
-    return translation.get_language_info(
-        cc_to_django_language_code(legal_code.language_code)
-    )["name_local"]
+    return translation.get_language_info(legal_code.language_code)[
+        "name_local"
+    ]
 
 
 def normalize_path_and_lang(request_path, jurisdiction, language_code):
@@ -178,19 +178,30 @@ def view_dev_home(request, category=None):
         lc_category = lc.license.category
         lc_unit = lc.license.unit
         lc_version = lc.license.version
+        lc_language_default = get_default_language_for_jurisdiction(
+            lc.license.jurisdiction_code,
+        )
         jurisdiction_name = get_jurisdiction_name(
             lc_category,
             lc_unit,
             lc_version,
             lc.license.jurisdiction_code,
         )
+        deed_rel_path = get_deed_rel_path(
+            lc.deed_url,
+            path_start,
+            lc.language_code,
+            lc_language_default,
+        )
+        deed_translated = deed_rel_path.endswith(f".{lc.language_code}")
         data = dict(
             version=lc_version,
             jurisdiction_name=jurisdiction_name,
             unit=lc_unit,
             language_code=lc.language_code,
             deed_only=lc.license.deed_only,
-            deed_url=os.path.relpath(lc.deed_url, start=path_start),
+            deed_translated=deed_translated,
+            deed_url=deed_rel_path,
             legal_code_url=os.path.relpath(
                 lc.legal_code_url, start=path_start
             ),
@@ -293,8 +304,7 @@ def view_deed(
     else:
         body_template = "includes/deed_body_unimplemented.html"
 
-    django_language_code = cc_to_django_language_code(language_code)
-    translation.activate(django_language_code)
+    translation.activate(language_code)
     return render(
         request,
         template_name="deed.html",
@@ -414,6 +424,58 @@ def view_translation_status(request):
     # branches = [head.name[len("origin/") :] for head in heads]
 
     branches = TranslationBranch.objects.exclude(complete=True)
+
+    legal_code_objects = (
+        LegalCode.objects.valid()
+        .select_related("license")
+        .order_by(
+            "language_code",
+        )
+    )
+    legal_code_langauge_codes = [lc.language_code for lc in legal_code_objects]
+    legal_code_langauge_codes = sorted(list(set(legal_code_langauge_codes)))
+
+    deed_ux_translation_info = {}
+    locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
+    locale_dir = os.path.abspath(os.path.realpath(locale_dir))
+
+    for language_code in os.listdir(locale_dir):
+        po_file = os.path.join(
+            locale_dir,
+            language_code,
+            "LC_MESSAGES",
+            f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
+        )
+
+        if not os.path.isfile(po_file):
+            continue
+
+        po = polib.pofile(po_file)
+        percent_translated = po.percent_translated()
+
+        try:
+            language_info = translation.get_language_info(language_code)
+            bidi = language_info["bidi"]
+            name = language_info["name"]
+            name_local = language_info["name_local"]
+        except KeyError:
+            name = '<em style="color:red;">Unknown</em>'
+
+        legal_code = False
+
+        if language_code in legal_code_langauge_codes:
+            legal_code = True
+
+            deed_ux_translation_info[language_code] = {
+                "name": name,
+                "name_local": name_local,
+                "bidi": bidi,
+                "percent_translated": percent_translated,
+                "created": po.metadata.get("POT-Creation-Date", ""),
+                "updated": po.metadata.get("PO-Revision-Date", ""),
+                "legal_code": legal_code,
+            }
+
     return render(
         request,
         template_name="dev/translation_status.html",
@@ -421,6 +483,7 @@ def view_translation_status(request):
             "branches": branches,
             "category": "dev",
             "category_title": "Dev",
+            "deed_ux": deed_ux_translation_info,
         },
     )
 
