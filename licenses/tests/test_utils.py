@@ -512,6 +512,12 @@ class TestMisc(TestCase):
             utils.cleanup_current_branch_output(unmodified_list), expected_list
         )
 
+    def test_b64encode_string(self):
+        string = "abc123"
+        expected_encoded = "YWJjMTIz"
+        encoded_string = utils.b64encode_string(string)
+        self.assertEqual(expected_encoded, encoded_string)
+
 
 class CleanStringTest(TestCase):
     def test_clean_string(self):
