@@ -16,7 +16,11 @@ from django.urls import reverse
 # First-party/Local
 from licenses.git_utils import commit_and_push_changes, setup_local_branch
 from licenses.models import LegalCode, TranslationBranch
-from licenses.utils import relative_symlink, save_url_as_static_file
+from licenses.utils import (
+    init_utils_logger,
+    relative_symlink,
+    save_url_as_static_file,
+)
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
@@ -134,10 +138,9 @@ class Command(BaseCommand):
                         url=legal_code.deed_url,
                         relpath=relpath,
                         html=True,
-                        logger=LOG,
                     )
                     for symlink in symlinks:
-                        relative_symlink(output_dir, relpath, symlink, LOG)
+                        relative_symlink(output_dir, relpath, symlink)
                 except Http404 as e:
                     if "invalid language" not in str(e):
                         raise
@@ -148,10 +151,9 @@ class Command(BaseCommand):
                     url=legal_code.legal_code_url,
                     relpath=relpath,
                     html=True,
-                    logger=LOG,
                 )
                 for symlink in symlinks:
-                    relative_symlink(output_dir, relpath, symlink, LOG)
+                    relative_symlink(output_dir, relpath, symlink)
 
         LOG.debug(f"{hostname}:{output_dir}")
         save_url_as_static_file(
@@ -308,6 +310,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
+        init_utils_logger(LOG)
         self.options = options
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.legacy_dir = os.path.abspath(settings.LEGACY_DIR)
