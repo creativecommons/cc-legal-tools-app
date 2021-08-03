@@ -7,14 +7,24 @@ The CSV written will be in the format of:
 
 # Standard library
 import csv
+import logging
 import os
 
 # Third-party
 import polib
+from django.conf import settings
 from django.core.management import BaseCommand
 
 # First-party/Local
 from i18n import CSV_HEADERS, DEFAULT_CSV_FILE, DEFAULT_INPUT_DIR
+
+LOG = logging.getLogger(__name__)
+LOG_LEVELS = {
+    0: logging.ERROR,
+    1: logging.WARNING,
+    2: logging.INFO,
+    3: logging.DEBUG,
+}
 
 
 def gen_statistics(input_dir, output_file):
@@ -38,8 +48,7 @@ def gen_statistics(input_dir, output_file):
         trans_dir = os.path.join(input_dir, locale_identifier, "LC_MESSAGES")
         if os.path.isdir(trans_dir):
             trans_file = os.path.join(trans_dir, "django.po")
-
-            print(trans_file)
+            LOG.info(trans_file)
 
             # load .po file
             pofile = polib.pofile(trans_file)
@@ -88,6 +97,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, input_dir, output_file, **options):
+        LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         if os.path.exists(output_file):
             os.remove(output_file)
         gen_statistics(input_dir, output_file)
