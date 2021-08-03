@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             model_name="legalcode",
             name="language_code",
             field=models.CharField(
-                help_text="Django language tag (lowercase RFC5646 language"
+                help_text="Django langauge code (lowercase RFC5646 language"
                 " tag)",
                 max_length=15,
             ),
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
             model_name="translationbranch",
             name="language_code",
             field=models.CharField(
-                help_text="Django language tag (lowercase RFC5646 language"
+                help_text="Django langauge code (lowercase RFC5646 language"
                 " tag)",
                 max_length=15,
             ),

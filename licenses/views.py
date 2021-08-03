@@ -425,6 +425,18 @@ def view_translation_status(request):
 
     branches = TranslationBranch.objects.exclude(complete=True)
 
+    legal_code_objects = (
+        LegalCode.objects.valid()
+        .select_related("license")
+        .order_by(
+            "language_code",
+        )
+    )
+    legal_code_langauge_codes = []
+    for lc in legal_code_objects:
+        legal_code_langauge_codes.append(lc.language_code)
+    legal_code_langauge_codes = sorted(list(set(legal_code_langauge_codes)))
+
     deed_ux_translation_info = {}
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
@@ -433,16 +445,30 @@ def view_translation_status(request):
             locale_dir,
             language_code,
             "LC_MESSAGES",
-            "django.po",
+            f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
         )
         if not os.path.isfile(po_file):
             continue
         po = polib.pofile(po_file)
         percent_translated = po.percent_translated()
+        try:
+            language_info = translation.get_language_info(language_code)
+            bidi = language_info["bidi"]
+            name = language_info["name"]
+            name_local = language_info["name_local"]
+        except KeyError:
+            name = '<em style="color:red;">Unknown</em>'
+        legal_code = False
+        if language_code in legal_code_langauge_codes:
+            legal_code = True
         deed_ux_translation_info[language_code] = {
+            "name": name,
+            "name_local": name_local,
+            "bidi": bidi,
             "percent_translated": percent_translated,
             "created": po.metadata.get("POT-Creation-Date", ""),
             "updated": po.metadata.get("PO-Revision-Date", ""),
+            "legal_code": legal_code,
         }
 
     return render(

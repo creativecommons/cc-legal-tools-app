@@ -23,7 +23,6 @@ from django.utils import translation
 # First-party/Local
 from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
-    cc_to_filename_language_code,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
     get_translation_object,
@@ -182,7 +181,7 @@ class LegalCode(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="Django language tag (lowercase RFC5646 language tag)",
+        help_text="Django langauge code (lowercase RFC5646 language tag)",
     )
     html_file = models.CharField(
         "HTML file",
@@ -371,22 +370,21 @@ class LegalCode(models.Model):
             content = f.read()
         return polib.pofile(content.decode(), encoding="utf-8")
 
-    def get_english_pofile(self) -> polib.POFile:
+    def get_english_pofile_path(self) -> str:
         if self.language_code != DEFAULT_LANGUAGE_CODE:
             # Same license, just in English translation:
             english_legal_code = self.license.get_legal_code_for_language_code(
                 DEFAULT_LANGUAGE_CODE
             )
-            return english_legal_code.get_pofile()
-        return self.get_pofile()
+            return english_legal_code.translation_filename()
+        return self.translation_filename()
 
     def translation_filename(self):
         """
         Return absolute path to the .po file with this translation.
         These are in the cc-licenses-data repository, in subdirectories:
           - "legalcode/"
-          - language code (should match what Django uses, not what Transifex
-            uses)
+          - language code
           - "LC_MESSAGES/"  (Django insists on this)
           - files
 
@@ -403,7 +401,7 @@ class LegalCode(models.Model):
                 os.path.join(
                     settings.DATA_REPOSITORY_DIR,
                     "legalcode",
-                    cc_to_filename_language_code(self.language_code),
+                    self.language_code,
                     "LC_MESSAGES",
                     filename,
                 )
@@ -692,7 +690,7 @@ class TranslationBranch(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="Django language tag (lowercase RFC5646 language tag)",
+        help_text="Django langauge code (lowercase RFC5646 language tag)",
     )
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",

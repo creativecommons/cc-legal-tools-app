@@ -47,7 +47,11 @@ def gen_statistics(input_dir, output_file):
     for locale_identifier in sorted(lang_dirs):
         trans_dir = os.path.join(input_dir, locale_identifier, "LC_MESSAGES")
         if os.path.isdir(trans_dir):
-            trans_file = os.path.join(trans_dir, "django.po")
+            trans_file = os.path.join(
+                trans_dir,
+                f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
+            )
+
             LOG.info(trans_file)
 
             # load .po file

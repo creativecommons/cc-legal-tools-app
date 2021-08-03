@@ -18,6 +18,7 @@ class LicensesConfig(AppConfig):
     # optional: verbose name
     verbose_name = settings.APP_VERBOSE_NAME
 
+    # Determine languages that have met or exceed display threshold
     LANGUAGES_TRANSLATED = []
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
@@ -26,7 +27,7 @@ class LicensesConfig(AppConfig):
             locale_dir,
             language_code,
             "LC_MESSAGES",
-            "django.po",
+            f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
         )
         if not os.path.isfile(po_file):
             continue

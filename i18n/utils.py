@@ -4,6 +4,7 @@ import re
 from contextlib import contextmanager
 
 # Third-party
+import dateutil.parser
 import polib
 from babel import Locale, UnknownLocaleError
 from django.conf import settings
@@ -15,7 +16,6 @@ from django.utils.translation.trans_real import DjangoTranslation, translation
 from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
     DEFAULT_LANGUAGE_CODE,
-    FILENAME_LANGUAGE_CODES,
     JURISDICTION_NAMES,
     LANGMAP_DJANGO_TO_TRANSIFEX,
     LANGMAP_LEGACY_TO_DJANGO,
@@ -156,6 +156,47 @@ def get_pofile_content(pofile: polib.POFile) -> str:
     return pofile.__unicode__()
 
 
+def get_pofile_path(
+    locale_or_legalcode: str, language_code: str, resource_slug: str
+):
+    pofile_path = os.path.abspath(
+        os.path.realpath(
+            os.path.join(
+                settings.DATA_REPOSITORY_DIR,
+                locale_or_legalcode,
+                language_code,
+                "LC_MESSAGES",
+                f"{resource_slug}.po",
+            )
+        )
+    )
+    return pofile_path
+
+
+def get_pofile_creation_date(pofile_obj: polib.POFile):
+    try:
+        po_creation_date = pofile_obj.metadata["POT-Creation-Date"]
+    except KeyError:
+        return None
+    try:
+        creation_date = dateutil.parser.parse(po_creation_date)
+        return creation_date
+    except dateutil.parser._parser.ParserError:
+        return None
+
+
+def get_pofile_revision_date(pofile_obj: polib.POFile):
+    try:
+        po_revision_date = pofile_obj.metadata["PO-Revision-Date"]
+    except KeyError:
+        return None
+    try:
+        revision_date = dateutil.parser.parse(po_revision_date)
+        return revision_date
+    except dateutil.parser._parser.ParserError:
+        return None
+
+
 def map_django_to_transifex_language_code(django_language_code: str) -> str:
     """
     Given a Django language code, return a Transifex language code.
@@ -173,7 +214,6 @@ def map_django_to_transifex_language_code(django_language_code: str) -> str:
         transifex_language_code,
         transifex_language_code,
     )
-
     return transifex_language_code
 
 
@@ -200,16 +240,7 @@ def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
         django_language_code,
         django_language_code,
     )
-
     return django_language_code
-
-
-def cc_to_filename_language_code(cc_language_code: str) -> str:
-    """
-    Given a CC language code, return the language code to use
-    in its gettext translation files.
-    """
-    return FILENAME_LANGUAGE_CODES.get(cc_language_code, cc_language_code)
 
 
 def get_default_language_for_jurisdiction(

@@ -118,11 +118,11 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "pr": "es",
     "pt": "pt",
     "ro": "ro",
-    "rs": "sr",
     "scotland": "en-gb",
     "se": "sv",
     "sg": "en-gb",
     "si": "sl",
+    "sr": "sr-latn",  # because "sr" Deed & UX translation is not complete
     "th": "th",
     "tw": "zh-hant",
     "ua": "zh-hant",
@@ -187,11 +187,11 @@ JURISDICTION_NAMES = {
     "pr": "Puerto Rico",
     "pt": "Portugal",
     "ro": "Romania",
-    "rs": "Serbia",
     "scotland": "UK: Scotland",
     "se": "Sweden",
     "sg": "Singapore",
     "si": "Slovenia",
+    "sr": "Serbia",
     "th": "Thailand",
     "tw": "Taiwan",
     "ua": "Ukraine",
@@ -212,26 +212,39 @@ LANGMAP_DJANGO_TO_TRANSIFEX = {
     # Transifex language codes are ISO 639 language codes optionally followed
     # by a ISO 3166 country code or ISO 15924 script code
     # https://www.transifex.com/explore/languages/
+    #
+    # Any changes here should also be made in .tx/config
+    "de-at": "de_AT",
+    "en-ca": "en_CA",
     "en-gb": "en_GB",
+    "es-ar": "es_AR",
+    "es-pe": "es_PE",
+    "fa-ir": "fa_IR",
+    "fr-ca": "fr_CA",
+    "fr-ch": "fr_CH",
+    "oc-aranes": "oc@aranes",
     "pt-br": "pt_BR",
+    "si-lk": "si_LK",
+    "sr-latn": "sr@latin",
     "zh-hans": "zh-Hans",
     "zh-hant": "zh-Hant",
+    "zh-hk": "zh_HK",
 }
 LANGMAP_LEGACY_TO_DJANGO = {
     # Legacy language code: Django language code
     #
+    # Note that Legacy language code is first transformed by
+    # i18n.FUNCTION_NAME
+    #
     # Django language codes are lowercase Django RFC5646 language tags:
     # https://github.com/django/django/blob/main/django/conf/global_settings.py
+    "en-us": "en",
     "es-es": "es",
+    "oci": "oc-aranes",
+    "oci-es": "oc-aranes",
     "sr-cyrl": "sr",
+    "sr-latin": "sr-latn",
     "zh": "zh-hans",
     "zh-cn": "zh-hans",
     "zh-tw": "zh-hant",
-}
-FILENAME_LANGUAGE_CODES = {
-    # CC language code: language code for path to translation files
-    # (Don't ask me why... this just seems to be how it is.)
-    "en-GB": "en",
-    "zh-Hans": "zh_Hans",
-    "zh-Hant": "zh_Hant",
 }
