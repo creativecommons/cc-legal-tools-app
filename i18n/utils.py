@@ -144,15 +144,15 @@ def save_content_as_pofile_and_mofile(path: str, content: bytes):
     return save_pofile_as_pofile_and_mofile(pofile, path)
 
 
-def get_pofile_content(pofile: polib.POFile) -> str:
+def get_pofile_content(pofile: polib.POFile) -> str:  # pragma: no cover
     """
-    Return the content of the pofile object - a string
-    that contains what would be in the po file on the disk
-    if we saved it.
+    Return the content of the pofile object - a string that contains what would
+    be in the po file on the disk if we saved it.
+
+    This isn't really worth its own function, except that mocking __unicode__
+    for tests is a pain, and it's easier to have this function so we can just
+    mock it.
     """
-    # This isn't really worth its own function, except that mocking
-    # __unicode__ for tests is a pain, and it's easier to have this
-    # function so we can just mock it.
     return pofile.__unicode__()
 
 
