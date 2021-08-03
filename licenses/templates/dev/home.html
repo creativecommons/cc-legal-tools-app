@@ -10,6 +10,8 @@ the generation of static files.
   <li class="is-active"><a href="{% url 'dev_home' %}" aria-current="page displayed">Dev Home</a></li>
 {% endblock %}
 
+{% block title %}Dev Home{% endblock %}
+
 {% block content %}
 {% trans "Deed" as deed_translated %}
 {% trans "Legal Code" as legal_code_translated %}
@@ -55,7 +57,7 @@ the generation of static files.
                   <tr>
                     <th>Language</th>
                     {% for code in jurisdiction_name_group.list|units %}
-                      <th>{{ code }}</th>
+                      <th><code>{{ code }}</code></th>
                     {% endfor %}
                   </tr>
                   </thead>
@@ -63,7 +65,7 @@ the generation of static files.
                     {% regroup jurisdiction_name_group.list by language_code as language_list %}
                     {% for legal_code_group in language_list %}
                       <tr>
-                        <th>{{ legal_code_group.grouper }}</th>
+                        <th><code>{{ legal_code_group.grouper }}</code></th>
                         {% for legal_code in legal_code_group.list  %}
                           <td>
                             {% if legal_code.deed_translated %}
@@ -98,7 +100,7 @@ the generation of static files.
               <tr>
                 <th>Language</th>
                 {% for code in jurisdiction_name_group.list|units %}
-                  <th>{{ code }}</th>
+                  <th><code>{{ code }}</code></th>
                 {% endfor %}
               </tr>
               </thead>
@@ -106,7 +108,7 @@ the generation of static files.
                 {% regroup jurisdiction_name_group.list by language_code as language_list %}
                 {% for legal_code_group in language_list %}
                   <tr>
-                    <th>{{ legal_code_group.grouper }}</th>
+                    <th><code>{{ legal_code_group.grouper }}</code></th>
                     {% for legal_code in legal_code_group.list  %}
                       <td>
                         {% if legal_code.deed_translated %}
