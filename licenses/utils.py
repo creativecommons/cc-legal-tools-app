@@ -66,8 +66,6 @@ def save_url_as_static_file(output_dir, url, relpath, html=False):
     rsp = match.func(request=MockRequest(url), *match.args, **match.kwargs)
     if rsp.status_code != 200:
         raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
-    if hasattr(rsp, "render"):
-        rsp.render()
     output_filename = os.path.join(output_dir, relpath)
     content = rsp.content
     if html:
