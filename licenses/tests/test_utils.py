@@ -116,7 +116,7 @@ class SaveURLAsStaticFileTest(TestCase):
                             relpath="/output/licenses/metadata.yaml",
                         )
 
-    def test_save_url_as_static_file_200(self):
+    def test_save_url_as_static_file_200_yaml(self):
         output_dir = "/output"
         url = "/licenses/metadata.yaml"
         file_content = b"xxxxx"
@@ -148,6 +148,49 @@ class SaveURLAsStaticFileTest(TestCase):
         )
         self.assertEqual(
             [call(file_content, "/output/licenses/metadata.yaml")],
+            mock_save.call_args_list,
+        )
+
+    def test_save_url_as_static_file_200_html(self):
+        output_dir = "/output"
+        url = "/licenses/by/4.0/"
+        file_content = b"<html><body><p>HI</body></html>"
+        relpath = "licenses/by/4.0/deed.en.html"
+
+        class MockResponse:
+            content = file_content
+            status_code = 200
+
+        class MockResolverMatch:
+            def __init__(self, func):
+                self.func = func
+                self.args = []
+                self.kwargs = {}
+
+        mock_view_html = MagicMock()
+        mock_view_html.return_value = MockResponse()
+
+        with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
+            with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                mock_resolve.return_value = MockResolverMatch(
+                    func=mock_view_html
+                )
+                utils.save_url_as_static_file(
+                    output_dir, url, relpath, html=True
+                )
+
+        self.assertEqual([call(url)], mock_resolve.call_args_list)
+        self.assertEqual(
+            [call(request=mock.ANY)], mock_view_html.call_args_list
+        )
+        self.assertEqual(
+            [
+                call(
+                    b"<html>\n <body>\n  <p>\n   HI\n  </p>\n </body>\n"
+                    b"</html>",
+                    "/output/licenses/by/4.0/deed.en.html",
+                )
+            ],
             mock_save.call_args_list,
         )
 
