@@ -4,12 +4,18 @@ from unittest import mock
 from unittest.mock import MagicMock
 
 # Third-party
+import polib
 from django.test import TestCase, override_settings
 
 # First-party/Local
 from i18n.utils import (
     active_translation,
+    get_pofile_creation_date,
+    get_pofile_path,
+    get_pofile_revision_date,
     get_translation_object,
+    map_django_to_transifex_language_code,
+    map_legacy_to_django_language_code,
     save_content_as_pofile_and_mofile,
 )
 
@@ -60,7 +66,67 @@ class TranslationTest(TestCase):
             )
 
 
+@override_settings(DATA_REPOSITORY_DIR="/foo/bar")
 class PofileTest(TestCase):
+    def test_get_pofile_path(self):
+        locale_path = get_pofile_path("locale", "ar", "slug1")
+        self.assertEqual(
+            "/foo/bar/locale/ar/LC_MESSAGES/slug1.po", locale_path
+        )
+
+        locale_path = get_pofile_path("legalcode", "en", "slug2")
+        self.assertEqual(
+            "/foo/bar/legalcode/en/LC_MESSAGES/slug2.po", locale_path
+        )
+
+    def test_get_pofile_creation_date(self):
+        content = (
+            'msgid ""\n'
+            'msgstr ""\n'
+            '"POT-Creation-Date: 2020-06-29 12:54:48+00:00\\n"\n'
+        )
+        pofile_obj = polib.pofile(content, encoding="utf-8")
+        creation_date = get_pofile_creation_date(pofile_obj)
+        self.assertEqual("2020-06-29 12:54:48+00:00", str(creation_date))
+
+        content = (
+            'msgid ""\n'
+            'msgstr ""\n'
+            '"POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\\n"\n'
+        )
+        pofile_obj = polib.pofile(content, encoding="utf-8")
+        creation_date = get_pofile_creation_date(pofile_obj)
+        self.assertEqual(None, creation_date)
+
+        content = 'msgid ""\n' 'msgstr ""\n'
+        pofile_obj = polib.pofile(content, encoding="utf-8")
+        creation_date = get_pofile_creation_date(pofile_obj)
+        self.assertEqual(None, creation_date)
+
+    def test_get_pofile_revision_date(self):
+        content = (
+            b'msgid ""\n'
+            b'msgstr ""\n'
+            b'"PO-Revision-Date: 2020-06-29 12:54:48+00:00\\n"\n'
+        )
+        pofile_obj = polib.pofile(content.decode(), encoding="utf-8")
+        revision_date = get_pofile_revision_date(pofile_obj)
+        self.assertEqual("2020-06-29 12:54:48+00:00", str(revision_date))
+
+        content = (
+            b'msgid ""\n'
+            b'msgstr ""\n'
+            b'"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"\n'
+        )
+        pofile_obj = polib.pofile(content.decode(), encoding="utf-8")
+        revision_date = get_pofile_revision_date(pofile_obj)
+        self.assertEqual(None, revision_date)
+
+        content = b'msgid ""\n' b'msgstr ""\n'
+        pofile_obj = polib.pofile(content.decode(), encoding="utf-8")
+        revision_date = get_pofile_revision_date(pofile_obj)
+        self.assertEqual(None, revision_date)
+
     def test_save_content_as_pofile_and_mofile(self):
         path = "/foo/bar.po"
         content = b"xxxxxyyyyy"
@@ -73,3 +139,31 @@ class PofileTest(TestCase):
         pofile = mock_polib.pofile.return_value
         pofile.save.assert_called_with(path)
         pofile.save_as_mofile.assert_called_with("/foo/bar.mo")
+
+
+class MappingTest(TestCase):
+    def test_map_django_to_transifex_language_code(self):
+        transifex_code = map_django_to_transifex_language_code("de-at")
+        self.assertEqual("de_AT", transifex_code)
+
+        transifex_code = map_django_to_transifex_language_code("oc-aranes")
+        self.assertEqual("oc@aranes", transifex_code)
+
+        transifex_code = map_django_to_transifex_language_code("sr-latn")
+        self.assertEqual("sr@latin", transifex_code)
+
+        transifex_code = map_django_to_transifex_language_code("zh-hans")
+        self.assertEqual("zh-Hans", transifex_code)
+
+    def test_map_legacy_to_django_language_code(self):
+        transifex_code = map_legacy_to_django_language_code("de_AT")
+        self.assertEqual("de-at", transifex_code)
+
+        transifex_code = map_legacy_to_django_language_code("oc@aranes")
+        self.assertEqual("oc-aranes", transifex_code)
+
+        transifex_code = map_legacy_to_django_language_code("sr@latin")
+        self.assertEqual("sr-latn", transifex_code)
+
+        transifex_code = map_legacy_to_django_language_code("zh_Hans")
+        self.assertEqual("zh-hans", transifex_code)
