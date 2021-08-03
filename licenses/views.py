@@ -438,6 +438,7 @@ def view_translation_status(request):
     deed_ux_translation_info = {}
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
+    
     for language_code in os.listdir(locale_dir):
         po_file = os.path.join(
             locale_dir,
@@ -445,10 +446,13 @@ def view_translation_status(request):
             "LC_MESSAGES",
             f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
         )
+        
         if not os.path.isfile(po_file):
             continue
+        
         po = polib.pofile(po_file)
         percent_translated = po.percent_translated()
+        
         try:
             language_info = translation.get_language_info(language_code)
             bidi = language_info["bidi"]
@@ -456,10 +460,13 @@ def view_translation_status(request):
             name_local = language_info["name_local"]
         except KeyError:
             name = '<em style="color:red;">Unknown</em>'
+        
         legal_code = False
+        
         if language_code in legal_code_langauge_codes:
             legal_code = True
-        deed_ux_translation_info[language_code] = {
+    
+            deed_ux_translation_info[language_code] = {
             "name": name,
             "name_local": name_local,
             "bidi": bidi,
