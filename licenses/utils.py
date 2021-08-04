@@ -1,4 +1,5 @@
 # Standard library
+import logging
 import os
 import posixpath
 import urllib
@@ -19,6 +20,16 @@ from i18n.utils import (
     map_legacy_to_django_language_code,
 )
 
+LOG = logging.getLogger(__name__)
+
+
+def init_utils_logger(logger: logging.Logger = None):
+    global LOG
+    if logger is None:
+        LOG = logging.getLogger(__name__)
+    else:
+        LOG = logger
+
 
 def save_bytes_to_file(bytes, output_filename):
     dirname = os.path.dirname(output_filename)
@@ -37,7 +48,7 @@ class MockRequest:
         self.path = path
 
 
-def save_url_as_static_file(output_dir, url, relpath, html=False, logger=None):
+def save_url_as_static_file(output_dir, url, relpath, html=False):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
@@ -49,15 +60,12 @@ def save_url_as_static_file(output_dir, url, relpath, html=False, logger=None):
     # Was using test Client, but it runs middleware and fails at runtime
     # because the request host wasn't in the ALLOWED_HOSTS. So, resolve the URL
     # and call the view directly.
-    if logger:
-        logger.debug(f"    {relpath}")
+    LOG.debug(f"    {relpath}")
     resolver = get_resolver()
     match = resolver.resolve(url)  # ResolverMatch
     rsp = match.func(request=MockRequest(url), *match.args, **match.kwargs)
     if rsp.status_code != 200:
         raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
-    if hasattr(rsp, "render"):
-        rsp.render()
     output_filename = os.path.join(output_dir, relpath)
     content = rsp.content
     if html:
@@ -67,7 +75,7 @@ def save_url_as_static_file(output_dir, url, relpath, html=False, logger=None):
     save_bytes_to_file(content, output_filename)
 
 
-def relative_symlink(src1, src2, dst, logger=None):
+def relative_symlink(src1, src2, dst):
     padding = " " * len(os.path.dirname(src2))
     src = os.path.abspath(os.path.join(src1, src2))
     dir_path, src_file = os.path.split(src)
@@ -81,8 +89,7 @@ def relative_symlink(src1, src2, dst, logger=None):
     dir_fd = os.open(dir_path, os.O_RDONLY)
     try:
         os.symlink(src_file, dst, dir_fd=dir_fd)
-        if logger:
-            logger.debug(f"    {padding}^{dst}")
+        LOG.debug(f"    {padding}^{dst}")
     finally:
         os.close(dir_fd)
 

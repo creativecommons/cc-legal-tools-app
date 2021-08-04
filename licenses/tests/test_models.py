@@ -606,6 +606,102 @@ class LicenseModelTest(TestCase):
         for key in expected_data.keys():
             self.assertEqual(expected_data[key], data[key])
 
+        # Deprecated
+        license = LicenseFactory(
+            **{
+                "canonical_url": (
+                    "https://creativecommons.org/licenses/sampling/1.0/"
+                ),
+                "category": "licenses",
+                "unit": "sampling",
+                "version": "1.0",
+                "jurisdiction_code": "",
+                "deprecated_on": "2007-06-04",
+                "permits_derivative_works": True,
+                "permits_reproduction": True,
+                "permits_distribution": True,
+                "permits_sharing": True,
+                "requires_share_alike": False,
+                "requires_notice": True,
+                "requires_attribution": True,
+                "requires_source_code": False,
+                "prohibits_commercial_use": False,
+                "prohibits_high_income_nation_use": False,
+            }
+        )
+
+        LegalCodeFactory(license=license, language_code="en")
+
+        data = license.get_metadata()
+        expected_data = {
+            "unit": "sampling",
+            "version": "1.0",
+            "deprecated_on": "2007-06-04",
+            "permits_derivative_works": True,
+            "permits_distribution": True,
+            "permits_reproduction": True,
+            "permits_sharing": True,
+            "prohibits_commercial_use": False,
+            "prohibits_high_income_nation_use": False,
+            "requires_attribution": True,
+            "requires_notice": True,
+            "requires_share_alike": False,
+            "requires_source_code": False,
+            "legal_code_languages": {
+                "en": "English",
+            },
+        }
+
+        for key in expected_data.keys():
+            self.assertEqual(expected_data[key], data[key])
+
+        # Deed-only
+        license = LicenseFactory(
+            **{
+                "canonical_url": (
+                    "https://creativecommons.org/publicdomain/mark/1.0/"
+                ),
+                "category": "publicdomain",
+                "unit": "mark",
+                "version": "1.0",
+                "jurisdiction_code": "",
+                "deed_only": True,
+                "deprecated_on": "2007-06-04",
+                "permits_derivative_works": True,
+                "permits_reproduction": True,
+                "permits_distribution": True,
+                "permits_sharing": True,
+                "requires_share_alike": False,
+                "requires_notice": False,
+                "requires_attribution": False,
+                "requires_source_code": False,
+                "prohibits_commercial_use": False,
+                "prohibits_high_income_nation_use": False,
+            }
+        )
+
+        LegalCodeFactory(license=license, language_code="en")
+
+        data = license.get_metadata()
+        expected_data = {
+            "unit": "mark",
+            "version": "1.0",
+            "deprecated_on": "2007-06-04",
+            "permits_derivative_works": True,
+            "permits_distribution": True,
+            "permits_reproduction": True,
+            "permits_sharing": True,
+            "prohibits_commercial_use": False,
+            "prohibits_high_income_nation_use": False,
+            "requires_attribution": False,
+            "requires_notice": False,
+            "requires_share_alike": False,
+            "requires_source_code": False,
+        }
+
+        for key in expected_data.keys():
+            self.assertEqual(expected_data[key], data[key])
+
     def test_logos(self):
         # Every license includes "cc-logo"
         self.assertIn("cc-logo", LicenseFactory().logos())

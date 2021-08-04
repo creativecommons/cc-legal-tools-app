@@ -852,6 +852,10 @@ class ViewTranslationStatusTest(TestCase):
         TranslationBranchFactory()
         TranslationBranchFactory()
 
+        # Ensure there is at least one language information dictionary without
+        # a bidi key
+        del settings.LANG_INFO["en"]["bidi"]
+
         url = reverse("translation_status")
         with mock.patch.object(LegalCode, "get_pofile"):
             rsp = self.client.get(url)

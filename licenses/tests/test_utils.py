@@ -1,4 +1,5 @@
 # Standard library
+import logging
 import os
 import tempfile
 from io import StringIO
@@ -12,22 +13,19 @@ from django.urls import Resolver404, URLResolver
 from polib import POEntry
 
 # First-party/Local
+from licenses import utils
 from licenses.models import License
-from licenses.utils import (
-    clean_string,
-    cleanup_current_branch_output,
-    compute_canonical_url,
-    get_code_from_jurisdiction_url,
-    parse_legal_code_filename,
-    relative_symlink,
-    save_bytes_to_file,
-    save_dict_to_pofile,
-    save_url_as_static_file,
-    strip_list_whitespace,
-    validate_dictionary_is_all_text,
-    validate_list_is_all_text,
-)
 from .factories import LegalCodeFactory, LicenseFactory
+
+
+class LoggingTest(TestCase):
+    def test_init_utils_logger(self):
+        utils.init_utils_logger(None)
+        self.assertEqual("licenses.utils", utils.LOG.name)
+
+        logger = logging.getLogger(__name__)
+        utils.init_utils_logger(logger)
+        self.assertEqual("licenses.tests.test_utils", utils.LOG.name)
 
 
 class SaveURLAsStaticFileTest(TestCase):
@@ -35,13 +33,13 @@ class SaveURLAsStaticFileTest(TestCase):
         try:
             tmpdir = tempfile.TemporaryDirectory()
             filename = os.path.join(tmpdir.name, "level1")
-            save_bytes_to_file(b"abcxyz", filename)
+            utils.save_bytes_to_file(b"abcxyz", filename)
             with open(filename, "rb") as f:
                 contents = f.read()
             self.assertEqual(b"abcxyz", contents)
 
             filename = os.path.join(tmpdir.name, "level1", "level2")
-            save_bytes_to_file(b"abcxyz", filename)
+            utils.save_bytes_to_file(b"abcxyz", filename)
             with open(filename, "rb") as f:
                 contents = f.read()
             self.assertEqual(b"abcxyz", contents)
@@ -56,7 +54,7 @@ class SaveURLAsStaticFileTest(TestCase):
             source1 = os.path.join(tmpdir.name, "source1")
             with open(source1, "wb") as f:
                 f.write(contents1)
-            relative_symlink(tmpdir.name, source1, "link1")
+            utils.relative_symlink(tmpdir.name, source1, "link1")
             with open(os.path.join(tmpdir.name, "link1"), "rb") as f:
                 contents = f.read()
             self.assertEqual(contents1, contents)
@@ -67,7 +65,7 @@ class SaveURLAsStaticFileTest(TestCase):
             source2 = os.path.join(subdir, "source1")
             with open(source2, "wb") as f:
                 f.write(contents2)
-            relative_symlink(tmpdir.name, source2, "../link2")
+            utils.relative_symlink(tmpdir.name, source2, "../link2")
             with open(os.path.join(tmpdir.name, "link2"), "rb") as f:
                 contents = f.read()
             self.assertEqual(contents2, contents)
@@ -78,7 +76,7 @@ class SaveURLAsStaticFileTest(TestCase):
         output_dir = "/output"
         url = "/some/url/"
         with self.assertRaises(Resolver404):
-            save_url_as_static_file(
+            utils.save_url_as_static_file(
                 output_dir,
                 url,
                 relpath="",
@@ -112,13 +110,13 @@ class SaveURLAsStaticFileTest(TestCase):
                     "ERROR: Status 500 for url /licenses/metadata.yaml",
                 ):
                     with mock.patch("sys.stdout", new=StringIO()):
-                        save_url_as_static_file(
+                        utils.save_url_as_static_file(
                             output_dir,
                             url,
                             relpath="/output/licenses/metadata.yaml",
                         )
 
-    def test_save_url_as_static_file_200(self):
+    def test_save_url_as_static_file_200_yaml(self):
         output_dir = "/output"
         url = "/licenses/metadata.yaml"
         file_content = b"xxxxx"
@@ -142,7 +140,7 @@ class SaveURLAsStaticFileTest(TestCase):
                 mock_resolve.return_value = MockResolverMatch(
                     func=mock_view_metadata
                 )
-                save_url_as_static_file(output_dir, url, relpath)
+                utils.save_url_as_static_file(output_dir, url, relpath)
 
         self.assertEqual([call(url)], mock_resolve.call_args_list)
         self.assertEqual(
@@ -153,24 +151,69 @@ class SaveURLAsStaticFileTest(TestCase):
             mock_save.call_args_list,
         )
 
+    def test_save_url_as_static_file_200_html(self):
+        output_dir = "/output"
+        url = "/licenses/by/4.0/"
+        file_content = b"<html><body><p>HI</body></html>"
+        relpath = "licenses/by/4.0/deed.en.html"
+
+        class MockResponse:
+            content = file_content
+            status_code = 200
+
+        class MockResolverMatch:
+            def __init__(self, func):
+                self.func = func
+                self.args = []
+                self.kwargs = {}
+
+        mock_view_html = MagicMock()
+        mock_view_html.return_value = MockResponse()
+
+        with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
+            with mock.patch.object(URLResolver, "resolve") as mock_resolve:
+                mock_resolve.return_value = MockResolverMatch(
+                    func=mock_view_html
+                )
+                utils.save_url_as_static_file(
+                    output_dir, url, relpath, html=True
+                )
+
+        self.assertEqual([call(url)], mock_resolve.call_args_list)
+        self.assertEqual(
+            [call(request=mock.ANY)], mock_view_html.call_args_list
+        )
+        self.assertEqual(
+            [
+                call(
+                    b"<html>\n <body>\n  <p>\n   HI\n  </p>\n </body>\n"
+                    b"</html>",
+                    "/output/licenses/by/4.0/deed.en.html",
+                )
+            ],
+            mock_save.call_args_list,
+        )
+
 
 class GetJurisdictionCodeTest(TestCase):
     def test_get_code_from_jurisdiction_url(self):
         # Just returns the last portion of the path
         self.assertEqual(
             "foo",
-            get_code_from_jurisdiction_url("http://example.com/bar/foo/"),
+            utils.get_code_from_jurisdiction_url(
+                "http://example.com/bar/foo/"
+            ),
         )
         self.assertEqual(
-            "foo", get_code_from_jurisdiction_url("http://example.com/bar/foo")
+            "foo",
+            utils.get_code_from_jurisdiction_url("http://example.com/bar/foo"),
         )
         self.assertEqual(
-            "", get_code_from_jurisdiction_url("http://example.com")
+            "", utils.get_code_from_jurisdiction_url("http://example.com")
         )
 
 
 class ParseLegalcodeFilenameTest(TestCase):
-    # Test parse_legal_code_filename
     def test_parse_legal_code_filename(self):
         data = [
             (
@@ -302,12 +345,12 @@ class ParseLegalcodeFilenameTest(TestCase):
         ]
         for filename, expected_result in data:
             with self.subTest(filename):
-                result = parse_legal_code_filename(filename)
+                result = utils.parse_legal_code_filename(filename)
                 self.assertEqual(expected_result, result)
         with self.assertRaisesMessage(ValueError, "Invalid language_code="):
-            parse_legal_code_filename("by_3.0_es_aaa")
+            utils.parse_legal_code_filename("by_3.0_es_aaa")
         with self.assertRaisesMessage(ValueError, "What language? "):
-            parse_legal_code_filename("by_3.0_zz")
+            utils.parse_legal_code_filename("by_3.0_zz")
 
 
 class GetLicenseUtilityTest(TestCase):
@@ -341,7 +384,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_by_nc_40(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/by-nc/4.0/",
-            compute_canonical_url(
+            utils.compute_canonical_url(
                 category="licenses",
                 unit="by-nc",
                 version="4.0",
@@ -352,7 +395,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_bsd(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/BSD/",
-            compute_canonical_url(
+            utils.compute_canonical_url(
                 category="licenses",
                 unit="BSD",
                 version="",
@@ -363,7 +406,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_mit(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/MIT/",
-            compute_canonical_url(
+            utils.compute_canonical_url(
                 category="licenses",
                 unit="MIT",
                 version="",
@@ -374,7 +417,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_gpl20(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/GPL/2.0/",
-            compute_canonical_url(
+            utils.compute_canonical_url(
                 category="licenses",
                 unit="GPL",
                 version="2.0",
@@ -385,7 +428,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_30_nl(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/by/3.0/nl/",
-            compute_canonical_url(
+            utils.compute_canonical_url(
                 category="licenses",
                 unit="by",
                 version="3.0",
@@ -396,48 +439,52 @@ class TestComputeCanonicalURL(TestCase):
 
 class TestMisc(TestCase):
     def test_validate_list_is_all_text(self):
-        validate_list_is_all_text(["a", "b"])
+        utils.validate_list_is_all_text(["a", "b"])
         with self.assertRaises(ValueError):
-            validate_list_is_all_text(["a", 1])
+            utils.validate_list_is_all_text(["a", 1])
         with self.assertRaises(ValueError):
-            validate_list_is_all_text(["a", 4.2])
+            utils.validate_list_is_all_text(["a", 4.2])
         with self.assertRaises(ValueError):
-            validate_list_is_all_text(["a", object()])
+            utils.validate_list_is_all_text(["a", object()])
         soup = BeautifulSoup("<span>foo</span>", "lxml")
         navstring = soup.span.string
-        out = validate_list_is_all_text([navstring])
+        out = utils.validate_list_is_all_text([navstring])
         self.assertEqual(["foo"], out)
-        self.assertEqual([["foo"]], validate_list_is_all_text([[navstring]]))
         self.assertEqual(
-            [{"a": "foo"}], validate_list_is_all_text([{"a": navstring}])
+            [["foo"]], utils.validate_list_is_all_text([[navstring]])
+        )
+        self.assertEqual(
+            [{"a": "foo"}], utils.validate_list_is_all_text([{"a": navstring}])
         )
 
     def test_validate_dictionary_is_all_text(self):
-        validate_dictionary_is_all_text({"1": "a", "2": "b"})
+        utils.validate_dictionary_is_all_text({"1": "a", "2": "b"})
         with self.assertRaises(ValueError):
-            validate_dictionary_is_all_text({"1": "a", "2": 1})
+            utils.validate_dictionary_is_all_text({"1": "a", "2": 1})
         with self.assertRaises(ValueError):
-            validate_dictionary_is_all_text({"1": "a", "2": 3.14})
+            utils.validate_dictionary_is_all_text({"1": "a", "2": 3.14})
         with self.assertRaises(ValueError):
-            validate_dictionary_is_all_text({"1": "a", "2": object()})
+            utils.validate_dictionary_is_all_text({"1": "a", "2": object()})
         soup = BeautifulSoup("<span>foo</span>", "lxml")
         navstring = soup.span.string
         self.assertEqual(
-            {"a": "foo"}, validate_dictionary_is_all_text({"a": navstring})
+            {"a": "foo"},
+            utils.validate_dictionary_is_all_text({"a": navstring}),
         )
         self.assertEqual(
-            {"a": ["foo"]}, validate_dictionary_is_all_text({"a": [navstring]})
+            {"a": ["foo"]},
+            utils.validate_dictionary_is_all_text({"a": [navstring]}),
         )
         self.assertEqual(
             {"a": {"b": "foo"}},
-            validate_dictionary_is_all_text({"a": {"b": "foo"}}),
+            utils.validate_dictionary_is_all_text({"a": {"b": "foo"}}),
         )
 
     def test_save_dict_to_pofile(self):
         mock_pofile = MagicMock()
         mock_pofile.append = MagicMock()
         messages = {"a": "one", "b": "two"}
-        save_dict_to_pofile(mock_pofile, messages)
+        utils.save_dict_to_pofile(mock_pofile, messages)
         self.assertEqual([], mock_pofile.call_args_list)
         self.assertEqual(2, len(mock_pofile.append.call_args_list))
         args, kwargs = mock_pofile.append.call_args_list[0]
@@ -449,21 +496,27 @@ class TestMisc(TestCase):
         right_list = ["left ", "right ", "center "]
         center_list = [" left ", " right ", " center "]
         self.assertEqual(
-            strip_list_whitespace("left", left_list), expected_list
+            utils.strip_list_whitespace("left", left_list), expected_list
         )
         self.assertEqual(
-            strip_list_whitespace("right", right_list), expected_list
+            utils.strip_list_whitespace("right", right_list), expected_list
         )
         self.assertEqual(
-            strip_list_whitespace("center", center_list), expected_list
+            utils.strip_list_whitespace("center", center_list), expected_list
         )
 
     def test_cleanup_current_branch_output(self):
         expected_list = ["some-branch", "another-branch", "main"]
         unmodified_list = ["some-branch", "* another-branch", "main"]
         self.assertEqual(
-            cleanup_current_branch_output(unmodified_list), expected_list
+            utils.cleanup_current_branch_output(unmodified_list), expected_list
         )
+
+    def test_b64encode_string(self):
+        string = "abc123"
+        expected_encoded = "YWJjMTIz"
+        encoded_string = utils.b64encode_string(string)
+        self.assertEqual(expected_encoded, encoded_string)
 
 
 class CleanStringTest(TestCase):
@@ -479,4 +532,4 @@ class CleanStringTest(TestCase):
         ]
         for input, expected in data:
             with self.subTest(input):
-                self.assertEqual(expected, clean_string(input))
+                self.assertEqual(expected, utils.clean_string(input))
