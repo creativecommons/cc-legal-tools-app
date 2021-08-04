@@ -351,7 +351,7 @@ class DeedViewViewTest(LicensesTestsMixin, TestCase):
                     "en",
                 )
                 rsp = self.client.get(url)
-                self.assertEqual(rsp.status_code, 200)
+                self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
                 self.validate_deed_text(rsp, license)
 
     def test_view_deed_template_body_licenses(self):
