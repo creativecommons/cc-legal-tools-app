@@ -352,7 +352,7 @@ class TransifexHelper:
             "translations": {},
         }
         # Deeds & UX - Translations
-        for language_code in settings.LANGUAGES_TRANSLATED:
+        for language_code in settings.LANGUAGES_WITH_PO_FILE:
             if language_code == DEFAULT_LANGUAGE_CODE:
                 continue
             pofile_path = get_pofile_path(
@@ -572,6 +572,8 @@ class TransifexHelper:
         transifex_revision,
         dryrun=True,
     ):
+        pad = len(pofile_path)
+        transifex_label = f"{transifex_code} Transifex {resource_slug}.po"
         #
         # Process creation date
         #
@@ -587,10 +589,9 @@ class TransifexHelper:
                 dryrun=dryrun,
             )
         elif transifex_creation != pofile_creation:
-            pad1 = len(pofile_path) - 15
-            label = f"Transifex {resource_slug} {transifex_code}"
             self.log.error(
-                f"{label:>{pad}}: {transifex_creation}"
+                "Creation date mismatch:"
+                f"\n{transifex_label:>{pad}}: {transifex_creation}"
                 f"\n{pofile_path}: {pofile_creation}"
             )
         #
@@ -608,6 +609,7 @@ class TransifexHelper:
                 dryrun=dryrun,
             )
         elif pofile_revision != transifex_revision:
+            # Determine if Local PO File and Transifex PO File are the same
             transifex_pofile_content = self.transifex_get_pofile_content(
                 resource_slug, transifex_code
             )
@@ -618,6 +620,12 @@ class TransifexHelper:
             for index, entry in enumerate(pofile_obj):
                 if pofile_obj[index] != transifex_pofile_obj[index]:
                     po_entries_are_the_same = False
+                    self.log.debug(
+                        "\n=== Local =======\n"
+                        f"{pofile_obj[index]}"
+                        "\n=== Transifex ===\n"
+                        f"{transifex_pofile_obj[index]}"
+                    )
                     break
             # Normalize Local PO File revision date if the Local PO File
             # entries and the Transifex PO File entries are the same.
@@ -632,10 +640,9 @@ class TransifexHelper:
                     dryrun=dryrun,
                 )
             else:
-                pad = len(pofile_path) -15
-                label = f"Transifex {resource_slug} {transifex_code}"
                 self.log.error(
-                    f"{label:>{pad}}: {transifex_revision}"
+                    "Revision date mismatch:"
+                    f"\n{transifex_label:>{pad}}: {transifex_revision}"
                     f"\n{pofile_path}: {pofile_revision}"
                 )
 
@@ -675,9 +682,11 @@ class TransifexHelper:
         self.legal_codes_to_update = []
         self.branch_objects_to_update = []
         legal_codes_with_updated_translations = []
-        local_data = self.build_local_data(legal_codes)
 
-        # Process local translation data
+        # Process translation data by starting with local PO files
+        # (includes both Deeds & UX and Legal Codes)
+        local_data = self.build_local_data(legal_codes)
+        # Resources & Sources
         for resource_slug, resource in local_data.items():
             language_code = DEFAULT_LANGUAGE_CODE
             transifex_code = map_django_to_transifex_language_code(
@@ -688,6 +697,7 @@ class TransifexHelper:
             pofile_obj = resource["pofile_obj"]
             pofile_creation = resource["creation_date"]
             pofile_revision = resource["revision_date"]
+
             # Ensure Resource is on Transifex
             self.add_resource_to_transifex(
                 language_code=DEFAULT_LANGUAGE_CODE,
@@ -736,6 +746,8 @@ class TransifexHelper:
             # "/content/",
             # files=files,
             # )
+
+            # Translations
             for language_code, translation in resource["translations"].items():
                 transifex_code = map_django_to_transifex_language_code(
                     language_code
@@ -744,6 +756,7 @@ class TransifexHelper:
                 pofile_obj = translation["pofile_obj"]
                 pofile_creation = translation["creation_date"]
                 pofile_revision = translation["revision_date"]
+
                 # Ensure translation is on Transifex
                 self.add_translation_to_transifex_resource(
                     language_code=language_code,
@@ -757,10 +770,12 @@ class TransifexHelper:
                     self.resource_stats[resource_slug]["created"]
                 )
                 transifex_revision = dateutil.parser.parse(
-                    self.translation_stats[resource_slug][
-                        transifex_code
-                    ]["translated"]["last_activity"]
+                    self.translation_stats[resource_slug][transifex_code][
+                        "translated"
+                    ]["last_activity"]
                 )
+
+                # Normalize Creation and Revision dates in local PO files
                 self.normalize_pofile_dates(
                     resource_slug,
                     transifex_code,

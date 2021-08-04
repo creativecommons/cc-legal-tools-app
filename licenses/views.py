@@ -53,7 +53,7 @@ def get_category_and_category_title(category=None, license=None):
 def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
     languages_and_links = []
 
-    for language_code in settings.LANGUAGES_TRANSLATED:
+    for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
         language_info = translation.get_language_info(language_code)
         link = request_path.replace(
             f".{selected_language_code}",
@@ -129,7 +129,7 @@ def get_deed_rel_path(
     language_default,
 ):
     deed_rel_path = os.path.relpath(deed_url, path_start)
-    if language_code not in settings.LANGUAGES_TRANSLATED:
+    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
         deed_rel_path = deed_rel_path.replace(
             f"deed.{language_code}",
             f"deed.{language_default}",
@@ -238,7 +238,7 @@ def view_deed(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    if language_code not in settings.LANGUAGES_TRANSLATED:
+    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
         raise Http404(f"invalid language: {language_code}")
 
     path_start = os.path.dirname(request.path)

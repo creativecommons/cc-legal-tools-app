@@ -19,7 +19,8 @@ class LicensesConfig(AppConfig):
     verbose_name = settings.APP_VERBOSE_NAME
 
     # Determine languages that have met or exceed display threshold
-    LANGUAGES_TRANSLATED = []
+    LANGUAGES_WITH_PO_FILE = []
+    LANGUAGES_MOSTLY_TRANSLATED = []
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
     for language_code in os.listdir(locale_dir):
@@ -32,10 +33,14 @@ class LicensesConfig(AppConfig):
         if not os.path.isfile(po_file):
             continue
         po = polib.pofile(po_file)
+        LANGUAGES_WITH_PO_FILE.append(language_code)
         if po.percent_translated() < 80:
             continue
-        LANGUAGES_TRANSLATED.append(language_code)
-    settings.LANGUAGES_TRANSLATED = sorted(list(set(LANGUAGES_TRANSLATED)))
+        LANGUAGES_MOSTLY_TRANSLATED.append(language_code)
+    settings.LANGUAGES_WITH_PO_FILE = sorted(list(set(LANGUAGES_WITH_PO_FILE)))
+    settings.LANGUAGES_MOSTLY_TRANSLATED = sorted(
+        list(set(LANGUAGES_MOSTLY_TRANSLATED))
+    )
 
     def ready(self):
         setup_to_call_git()
