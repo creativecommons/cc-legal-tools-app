@@ -78,6 +78,13 @@ class Command(BaseCommand):
             " '1.0,3.0,4.0'",
         )
         parser.add_argument(
+            "--pomofiles",
+            action="store_true",
+            help="Write .po and .mo files. This option may cause"
+            " discrepencies between the data repository and Transifex and"
+            " should only be used with great care.",
+        )
+        parser.add_argument(
             "--unwrapped",
             action="store_true",
             help="Do not wrap lines in output .po files. Helpful if you need"
@@ -86,10 +93,11 @@ class Command(BaseCommand):
 
     def handle(self, input_directory, **options):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
-        hostname = socket.gethostname()
         if not os.path.isdir(input_directory):
             raise CommandError(f"invalid input_directory: {input_directory}")
         self.unwrapped = options["unwrapped"]
+        self.pomofiles = options["pomofiles"]
+        hostname = socket.gethostname()
         # category_to_include
         if options["category"]:
             category_to_include = options["category"]
@@ -164,7 +172,7 @@ class Command(BaseCommand):
                 )
             )
             if include:
-                LOG.debug(f"{filename} loading...")
+                LOG.debug(f"{filename} loading")
             else:
                 LOG.info(f"{filename} skipped.")
                 continue
@@ -327,7 +335,7 @@ class Command(BaseCommand):
                         f"NotImplementedError: unit={unit} version={version}"
                     )
 
-                if support_po_files:
+                if support_po_files and self.pomofiles:
                     if language_code == "en":
                         key = f"{unit}|{version}"
                         english_by_unit_version[key] = messages_text
@@ -398,6 +406,7 @@ class Command(BaseCommand):
         # and can fail if the venv or project source is not
         # writable. We know this dir is writable, so just save this
         # pofile and mofile ourselves.
+        LOG.debug(f"Writing {po_filename.replace('.po', '')}.(mo|po)")
         save_pofile_as_pofile_and_mofile(pofile, po_filename)
 
     def import_zero_license_html(self, *, content, legal_code):
