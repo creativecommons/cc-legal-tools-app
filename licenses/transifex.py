@@ -85,6 +85,7 @@ class TransifexHelper:
 
         self.project_slug = settings.TRANSIFEX["PROJECT_SLUG"]
         self.organization_slug = settings.TRANSIFEX["ORGANIZATION_SLUG"]
+        self.team_id = settings.TRANSIFEX["TEAM_ID"]
 
         api_token = settings.TRANSIFEX["API_TOKEN"]
         auth = TransifexAuthRequests(token=api_token)
@@ -381,8 +382,6 @@ class TransifexHelper:
                 continue
             pofile_path = legal_code.get_english_pofile_path()
             pofile_obj = polib.pofile(pofile_path)
-            creation_date = get_pofile_creation_date(pofile_obj)
-            revision_date = get_pofile_revision_date(pofile_obj)
             local_data[resource_slug] = {
                 "name": resource_name,
                 "pofile_path": pofile_path,
@@ -498,8 +497,7 @@ class TransifexHelper:
 
         dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         pofile_content = get_pofile_content(pofile_obj)
-        # This 'files' arg needs a different argument name,
-        # unfortunately.
+        # This 'files' arg needs a different argument name, unfortunately.
         files = self.files_argument("file", pofile_path, pofile_content)
         try:
             if not dryrun:
@@ -522,10 +520,49 @@ class TransifexHelper:
                 f" using {pofile_path}."
             )
 
+    def normalize_pofile_language_team(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+        dryrun=True,
+    ):
+        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
+        translation_team_current = pofile_obj.metadata["Language-Team"]
+        if transifex_code == "en":
+            translation_team = (
+                f"https://www.transifex.com/{self.organization_slug}/"
+                f"{self.project_slug}/"
+            )
+        else:
+            translation_team = (
+                f"https://www.transifex.com/{self.organization_slug}/teams/"
+                f"{self.team_id}/{transifex_code}/"
+            )
+
+        if translation_team_current == translation_team:
+            return pofile_obj
+
+        self.log.info(
+            f"{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file 'Language-Team'{dryrun_msg}:"
+            f"\n{pofile_path}: {translation_team}"
+        )
+
+        if dryrun:
+            return pofile_obj
+
+        pofile_obj.metadata["Language-Team"] = translation_team
+        pofile_obj.save(pofile_path)
+        return pofile_obj
+
     def update_pofile_creation_to_match_transifex(
         self,
         resource_slug,
         transifex_code,
+        resource_name,
         pofile_obj,
         pofile_path,
         pofile_creation,
@@ -536,19 +573,22 @@ class TransifexHelper:
         pad = len(pofile_path)
         label = f"Transifex {resource_slug} {transifex_code}"
         self.log.info(
-            "Correcting local PO file 'POT-Creation-Date' to match Transifex"
-            f"{dryrun_msg}."
+            f"{resource_name} ({resource_slug}) {transifex_code}:"
+            " Correcting PO file 'POT-Creation-Date' to match Transifex"
+            f"{dryrun_msg}:"
             f"\n{pofile_path}: {pofile_creation}"
             f"\n{label:>{pad}}: {transifex_creation}"
         )
         if dryrun:
-            return
+            return pofile_obj
         pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
         pofile_obj.save(pofile_path)
+        return pofile_obj
 
     def update_pofile_revision_to_match_transifex(
         self,
         resource_slug,
+        resource_name,
         transifex_code,
         pofile_obj,
         pofile_path,
@@ -560,37 +600,45 @@ class TransifexHelper:
         pad = len(pofile_path)
         label = f"Transifex {resource_slug} {transifex_code}"
         self.log.info(
-            "Correcting local PO file 'PO-Revision-Date' to match Transifex"
-            f"{dryrun_msg}."
+            f"{resource_name} ({resource_slug}) {transifex_code}:"
+            " Correcting PO file 'PO-Revision-Date' to match Transifex"
+            f"{dryrun_msg}:"
             f"\n{label:>{pad}}: {transifex_revision}"
             f"\n{pofile_path}: {pofile_revision}"
         )
         if dryrun:
-            return
+            return pofile_obj
         pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
         pofile_obj.save(pofile_path)
+        return pofile_obj
 
     def normalize_pofile_dates(
         self,
         resource_slug,
+        resource_name,
         transifex_code,
         pofile_obj,
         pofile_path,
-        pofile_creation,
-        pofile_revision,
-        transifex_creation,
-        transifex_revision,
         dryrun=True,
     ):
         pad = len(pofile_path)
+        pofile_creation = get_pofile_creation_date(pofile_obj)
+        pofile_revision = get_pofile_revision_date(pofile_obj)
+        transifex_creation = dateutil.parser.parse(
+            self.resource_stats[resource_slug]["created"]
+        )
+        transifex_revision = dateutil.parser.parse(
+            self.resource_stats[resource_slug]["last_update"]
+        )
         transifex_label = f"{transifex_code} Transifex {resource_slug}.po"
         #
         # Process creation date
         #
         if pofile_creation is None or transifex_creation < pofile_creation:
             # Normalize Local PO File revision date if its empty or invalid
-            self.update_pofile_creation_to_match_transifex(
+            pofile_obj = self.update_pofile_creation_to_match_transifex(
                 resource_slug,
+                resource_name,
                 transifex_code,
                 pofile_obj,
                 pofile_path,
@@ -600,7 +648,8 @@ class TransifexHelper:
             )
         elif transifex_creation != pofile_creation:
             self.log.error(
-                "Creation date mismatch:"
+                f"{resource_name} ({resource_slug}) {transifex_code}:"
+                " 'POT-Creation-Date' mismatch:"
                 f"\n{transifex_label:>{pad}}: {transifex_creation}"
                 f"\n{pofile_path}: {pofile_creation}"
             )
@@ -609,8 +658,9 @@ class TransifexHelper:
         #
         if pofile_revision is None:
             # Normalize Local PO File revision date if its empty or invalid
-            self.update_pofile_revision_to_match_transifex(
+            pofile_obj = self.update_pofile_revision_to_match_transifex(
                 resource_slug,
+                resource_name,
                 transifex_code,
                 pofile_obj,
                 pofile_path,
@@ -640,8 +690,9 @@ class TransifexHelper:
             # Normalize Local PO File revision date if the Local PO File
             # entries and the Transifex PO File entries are the same.
             if po_entries_are_the_same:
-                self.update_pofile_revision_to_match_transifex(
+                pofile_obj = self.update_pofile_revision_to_match_transifex(
                     resource_slug,
+                    resource_name,
                     transifex_code,
                     pofile_obj,
                     pofile_path,
@@ -651,10 +702,12 @@ class TransifexHelper:
                 )
             else:
                 self.log.error(
-                    "Revision date mismatch:"
+                    f"{resource_name} ({resource_slug}) {transifex_code}:"
+                    " 'PO-Revision-Date' mismatch:"
                     f"\n{transifex_label:>{pad}}: {transifex_revision}"
                     f"\n{pofile_path}: {pofile_revision}"
                 )
+        return pofile_obj
 
     def check_for_translation_updates_with_repo_and_legal_codes(
         self,
@@ -705,8 +758,16 @@ class TransifexHelper:
             resource_name = resource["name"]
             pofile_path = resource["pofile_path"]
             pofile_obj = resource["pofile_obj"]
-            pofile_creation = resource["creation_date"]
-            pofile_revision = resource["revision_date"]
+
+            # Normalize deterministic metadata
+            pofile_obj = self.normalize_pofile_language_team(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                dryrun,
+            )
 
             # Ensure Resource is on Transifex
             self.add_resource_to_transifex(
@@ -717,21 +778,12 @@ class TransifexHelper:
                 pofile_obj,
                 dryrun=dryrun,
             )
-            transifex_creation = dateutil.parser.parse(
-                self.resource_stats[resource_slug]["created"]
-            )
-            transifex_revision = dateutil.parser.parse(
-                self.resource_stats[resource_slug]["last_update"]
-            )
-            self.normalize_pofile_dates(
+            pofile_obj = self.normalize_pofile_dates(
                 resource_slug,
+                resource_name,
                 transifex_code,
                 pofile_obj,
                 pofile_path,
-                pofile_creation,
-                pofile_revision,
-                transifex_creation,
-                transifex_revision,
                 dryrun,
             )
             # TODO: update source xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -764,8 +816,16 @@ class TransifexHelper:
                 )
                 pofile_path = translation["pofile_path"]
                 pofile_obj = translation["pofile_obj"]
-                pofile_creation = translation["creation_date"]
-                pofile_revision = translation["revision_date"]
+
+                # Normalize deterministic metadata
+                pofile_obj = self.normalize_pofile_language_team(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                    dryrun,
+                )
 
                 # Ensure translation is on Transifex
                 self.add_translation_to_transifex_resource(
@@ -777,31 +837,20 @@ class TransifexHelper:
                     dryrun,
                 )
                 if transifex_code not in self.translation_stats[resource_slug]:
-                    # Abort processing translation if it is not on Transifex
                     self.log.critical(
                         f"{resource_name} ({resource_slug}) {transifex_code}:"
-                        " Aborting translation processing."
+                        " Language notyet supported by Transifex. Aborting"
+                        " translation langauge processing."
                     )
                     continue
 
                 # Normalize Creation and Revision dates in local PO files
-                transifex_creation = dateutil.parser.parse(
-                    self.resource_stats[resource_slug]["created"]
-                )
-                transifex_revision = dateutil.parser.parse(
-                    self.translation_stats[resource_slug][transifex_code][
-                        "translated"
-                    ]["last_activity"]
-                )
-                self.normalize_pofile_dates(
+                pofile_obj = self.normalize_pofile_dates(
                     resource_slug,
+                    resource_name,
                     transifex_code,
                     pofile_obj,
                     pofile_path,
-                    pofile_creation,
-                    pofile_revision,
-                    transifex_creation,
-                    transifex_revision,
                     dryrun,
                 )
 
