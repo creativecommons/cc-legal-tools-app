@@ -77,7 +77,9 @@ class TransifexAuthRequests(requests.auth.AuthBase):
 
 
 class TransifexHelper:
-    def __init__(self, logger: logging.Logger = None):
+    def __init__(self, dryrun: bool = True, logger: logging.Logger = None):
+        self.dryrun = dryrun
+        self.nop = "<NOP> " if dryrun else ""
         if logger is None:
             self.log = logging.getLogger()
         else:
@@ -425,24 +427,23 @@ class TransifexHelper:
 
         (Except for screenshots, Transifex API 2.5 is read-only.)
         """
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         transifex_code = map_django_to_transifex_language_code(language_code)
         transifex_resource_slugs = self.resource_stats.keys()
         if resource_slug in transifex_resource_slugs:
             self.log.debug(
-                f"{resource_name} ({resource_slug}) {transifex_code}:"
-                f" Transifex already contains resource."
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Transifex already contains resource."
             )
             return
         # Create the resource in Transifex (API 2.5 does not support
         # writing to resources so we're stuck with 2.0 for that).
         pofile_content = get_pofile_content(pofile_obj)
         self.log.warning(
-            f"{resource_name} ({resource_slug}) {transifex_code}:"
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
             f" Transifex does not yet contain resource. Creating using"
-            f" {pofile_path}{dryrun_msg}."
+            f" {pofile_path}."
         )
-        if dryrun:
+        if self.dryrun:
             return
         # data args for creating the resource
         data = dict(slug=resource_slug, name=resource_name, i18n_type="PO")
@@ -477,30 +478,30 @@ class TransifexHelper:
         transifex_resource_slugs = self.translation_stats.keys()
         if language_code == DEFAULT_LANGUAGE_CODE:
             raise ValueError(
-                f"{resource_name} ({resource_slug}) {transifex_code}:"
-                " This function, add_translation_to_transifex_resource(),"
-                " is for translations, not sources."
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: This function,"
+                " add_translation_to_transifex_resource(), is for"
+                " translations, not sources."
             )
         elif resource_slug not in transifex_resource_slugs:
             raise ValueError(
-                f"{resource_name} ({resource_slug}) {transifex_code}:"
-                " Transifex does not yet contain resource. The"
-                " add_resource_to_transifex() function must be called"
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Transifex does not yet contain resource."
+                " The add_resource_to_transifex() function must be called"
                 " before this one: add_translation_to_transifex_resource()."
             )
         elif transifex_code in self.translation_stats[resource_slug]:
             self.log.debug(
-                f"{resource_name} ({resource_slug}) {transifex_code}:"
-                f" Transifex already contains translation."
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Transifex already contains translation."
             )
             return
 
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         pofile_content = get_pofile_content(pofile_obj)
         # This 'files' arg needs a different argument name, unfortunately.
         files = self.files_argument("file", pofile_path, pofile_content)
         try:
-            if not dryrun:
+            if not self.dryrun:
                 self.request20(
                     "put",
                     f"project/{self.project_slug}/resource/{resource_slug}/"
@@ -509,15 +510,15 @@ class TransifexHelper:
                 )
                 self.clear_transifex_stats()
             self.log.info(
-                f"{resource_name} ({resource_slug}) {transifex_code}:"
-                f" Transifex does not yet contain translation. Added using"
-                f" {pofile_path}{dryrun_msg}."
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Transifex does not yet contain"
+                f" translation. Added using {pofile_path}."
             )
         except requests.exceptions.HTTPError:
             self.log.error(
-                f"{resource_name} ({resource_slug}) {transifex_code}:"
-                f" Transifex does not yet contain translation. Adding FAILED"
-                f" using {pofile_path}."
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Transifex does not yet contain"
+                f" translation. Adding FAILED using {pofile_path}."
             )
 
     def normalize_pofile_language_team(
@@ -527,9 +528,7 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
-        dryrun=True,
     ):
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         key = "Language-Team"
         translation_team_current = pofile_obj.metadata[key]
         if transifex_code == "en":
@@ -546,11 +545,11 @@ class TransifexHelper:
             return pofile_obj
 
         self.log.info(
-            f"{resource_name} ({resource_slug}) {transifex_code}:"
-            f" Correcting PO file '{key}'{dryrun_msg}:"
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}':"
             f"\n{pofile_path}: New Value: '{translation_team}'"
         )
-        if dryrun:
+        if self.dryrun:
             return pofile_obj
         pofile_obj.metadata[key] = translation_team
         pofile_obj.save(pofile_path)
@@ -563,9 +562,7 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
-        dryrun=True,
     ):
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         key = "Last-Translator"
         filler_data = "FULL NAME <EMAIL@ADDRESS>"
         if key not in pofile_obj.metadata:
@@ -575,11 +572,11 @@ class TransifexHelper:
             return pofile_obj
 
         self.log.info(
-            f"{resource_name} ({resource_slug}) {transifex_code}:"
-            f" Correcting PO file '{key}'{dryrun_msg}:"
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}':"
             f"\n{pofile_path}: Removing: '{filler_data}'"
         )
-        if dryrun:
+        if self.dryrun:
             return pofile_obj
         del pofile_obj.metadata[key]
         pofile_obj.save(pofile_path)
@@ -592,9 +589,7 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
-        dryrun=True,
     ):
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         key = "Project-Id-Version"
         filler_data = "PACKAGE VERSION"
         if (
@@ -604,11 +599,11 @@ class TransifexHelper:
             return pofile_obj
 
         self.log.info(
-            f"{resource_name} ({resource_slug}) {transifex_code}:"
-            f" Correcting PO file '{key}'{dryrun_msg}:"
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}':"
             f"\n{pofile_path}: New value: '{resource_slug}'"
         )
-        if dryrun:
+        if self.dryrun:
             return pofile_obj
         pofile_obj.metadata[key] = resource_slug
         pofile_obj.save(pofile_path)
@@ -621,7 +616,6 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
-        dryrun=True,
     ):
         pofile_obj = self.normalize_pofile_language_team(
             transifex_code,
@@ -629,7 +623,6 @@ class TransifexHelper:
             resource_name,
             pofile_path,
             pofile_obj,
-            dryrun,
         )
         pofile_obj = self.normalize_pofile_last_translator(
             transifex_code,
@@ -637,7 +630,6 @@ class TransifexHelper:
             resource_name,
             pofile_path,
             pofile_obj,
-            dryrun,
         )
         pofile_obj = self.normalize_pofile_project_id(
             transifex_code,
@@ -645,7 +637,6 @@ class TransifexHelper:
             resource_name,
             pofile_path,
             pofile_obj,
-            dryrun,
         )
         return pofile_obj
 
@@ -658,19 +649,16 @@ class TransifexHelper:
         pofile_path,
         pofile_creation,
         transifex_creation,
-        dryrun=True,
     ):
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         pad = len(pofile_path)
         label = f"Transifex {resource_slug} {transifex_code}"
         self.log.info(
-            f"{resource_name} ({resource_slug}) {transifex_code}:"
-            " Correcting PO file 'POT-Creation-Date' to match Transifex"
-            f"{dryrun_msg}:"
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            " Correcting PO file 'POT-Creation-Date' to match Transifex:"
             f"\n{pofile_path}: {pofile_creation}"
             f"\n{label:>{pad}}: {transifex_creation}"
         )
-        if dryrun:
+        if self.dryrun:
             return pofile_obj
         pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
         pofile_obj.save(pofile_path)
@@ -685,19 +673,16 @@ class TransifexHelper:
         pofile_path,
         pofile_revision,
         transifex_revision,
-        dryrun=True,
     ):
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
         pad = len(pofile_path)
         label = f"Transifex {resource_slug} {transifex_code}"
         self.log.info(
-            f"{resource_name} ({resource_slug}) {transifex_code}:"
-            " Correcting PO file 'PO-Revision-Date' to match Transifex"
-            f"{dryrun_msg}:"
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            " Correcting PO file 'PO-Revision-Date' to match Transifex:"
             f"\n{label:>{pad}}: {transifex_revision}"
             f"\n{pofile_path}: {pofile_revision}"
         )
-        if dryrun:
+        if self.dryrun:
             return pofile_obj
         pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
         pofile_obj.save(pofile_path)
@@ -710,7 +695,6 @@ class TransifexHelper:
         transifex_code,
         pofile_obj,
         pofile_path,
-        dryrun=True,
     ):
         pad = len(pofile_path)
         pofile_creation = get_pofile_creation_date(pofile_obj)
@@ -735,12 +719,11 @@ class TransifexHelper:
                 pofile_path,
                 pofile_creation,
                 transifex_creation,
-                dryrun=dryrun,
             )
         elif transifex_creation != pofile_creation:
             self.log.error(
-                f"{resource_name} ({resource_slug}) {transifex_code}:"
-                " 'POT-Creation-Date' mismatch:"
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: 'POT-Creation-Date' mismatch:"
                 f"\n{transifex_label:>{pad}}: {transifex_creation}"
                 f"\n{pofile_path}: {pofile_creation}"
             )
@@ -757,7 +740,6 @@ class TransifexHelper:
                 pofile_path,
                 pofile_revision,
                 transifex_revision,
-                dryrun=dryrun,
             )
         elif pofile_revision != transifex_revision:
             # Determine if Local PO File and Transifex PO File are the same
@@ -789,12 +771,11 @@ class TransifexHelper:
                     pofile_path,
                     pofile_revision,
                     transifex_revision,
-                    dryrun=dryrun,
                 )
             else:
                 self.log.error(
-                    f"{resource_name} ({resource_slug}) {transifex_code}:"
-                    " 'PO-Revision-Date' mismatch:"
+                    f"{self.nop}{resource_name} ({resource_slug})"
+                    f" {transifex_code}: 'PO-Revision-Date' mismatch:"
                     f"\n{transifex_label:>{pad}}: {transifex_revision}"
                     f"\n{pofile_path}: {pofile_revision}"
                 )
@@ -805,7 +786,6 @@ class TransifexHelper:
         repo: git.Repo,
         legal_codes: Iterable["licenses.models.LegalCode"],
         update_repo=True,
-        dryrun=True,
     ):
         """
         Use the Transifex API to find the last update timestamp for all our
@@ -817,8 +797,7 @@ class TransifexHelper:
         Return a list of the names of all local branches that have been
         updated, that can be used e.g. to run publish on those branches.
         """
-        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
-        self.log.info("Check if repo is dirty")
+        self.log.info(f"{self.nop}Check if repo is dirty")
         if repo.is_dirty():
             if update_repo:
                 raise git.exc.RepositoryDirtyError(
@@ -826,10 +805,10 @@ class TransifexHelper:
                     "Repository is dirty. We cannot continue.",
                 )
             else:
-                self.log.warning("Repository is dirty.")
+                self.log.warning(f"{self.nop}Repository is dirty.")
         if update_repo:
-            self.log.info(f"Fetch to update repo{dryrun_msg}.")
-            if not dryrun:
+            self.log.info(f"{self.nop}Fetch to update repo.")
+            if not self.dryrun:
                 repo.remotes.origin.fetch()
 
         self.branches_to_update = defaultdict(_empty_branch_object)
@@ -857,7 +836,6 @@ class TransifexHelper:
                 resource_name,
                 pofile_path,
                 pofile_obj,
-                dryrun,
             )
 
             # Ensure Resource is on Transifex
@@ -867,7 +845,6 @@ class TransifexHelper:
                 resource_name,
                 pofile_path,
                 pofile_obj,
-                dryrun=dryrun,
             )
             pofile_obj = self.normalize_pofile_dates(
                 resource_slug,
@@ -875,18 +852,17 @@ class TransifexHelper:
                 transifex_code,
                 pofile_obj,
                 pofile_path,
-                dryrun,
             )
             # TODO: update source xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
             # # UpdateSource
             # # We're doing English, which is the source language.
             # self.log.info(
-            # f"{resource_name} ({resource_slug}) {transifex_code}:"
+            # f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
             # f" Transifex: updating source (all msgid entries) using"
-            # f" {pofile_path}{dryrun_msg}."
+            # f" {pofile_path}."
             # )
-            # if dryrun:
-            # return
+            # if self.dryrun:
+            #     return
             # # https://docs.transifex.com/api/resources
             # #
             # # Update the source messages on Transifex from our local .pofile.
@@ -915,7 +891,6 @@ class TransifexHelper:
                     resource_name,
                     pofile_path,
                     pofile_obj,
-                    dryrun,
                 )
 
                 # Ensure translation is on Transifex
@@ -925,7 +900,6 @@ class TransifexHelper:
                     resource_name,
                     pofile_path,
                     pofile_obj,
-                    dryrun,
                 )
                 if transifex_code not in self.translation_stats[resource_slug]:
                     self.log.critical(
@@ -942,7 +916,6 @@ class TransifexHelper:
                     transifex_code,
                     pofile_obj,
                     pofile_path,
-                    dryrun,
                 )
 
             # TODO
@@ -976,7 +949,6 @@ class TransifexHelper:
     def check_for_translation_updates(
         self,
         update_repo=False,
-        dryrun=True,
     ):
         """
         This function wraps
@@ -994,6 +966,6 @@ class TransifexHelper:
         with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
             return (
                 self.check_for_translation_updates_with_repo_and_legal_codes(
-                    repo, legal_codes, update_repo, dryrun
+                    repo, legal_codes, update_repo
                 )
             )
