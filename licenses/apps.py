@@ -24,17 +24,17 @@ class LicensesConfig(AppConfig):
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
     for language_code in os.listdir(locale_dir):
-        po_file = os.path.join(
+        pofile_path = os.path.join(
             locale_dir,
             language_code,
             "LC_MESSAGES",
             f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
         )
-        if not os.path.isfile(po_file):
+        if not os.path.isfile(pofile_path):
             continue
-        po = polib.pofile(po_file)
+        pofile_obj = polib.pofile(pofile_path)
         LANGUAGES_WITH_PO_FILE.append(language_code)
-        if po.percent_translated() < 80:
+        if pofile_obj.percent_translated() < 80:
             continue
         LANGUAGES_MOSTLY_TRANSLATED.append(language_code)
     settings.LANGUAGES_WITH_PO_FILE = sorted(list(set(LANGUAGES_WITH_PO_FILE)))
