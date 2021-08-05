@@ -8,7 +8,8 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 CSV_HEADERS = [
-    "lang",
+    "lang_ietf",
+    "lang_locale",
     "num_messages",
     "num_trans",
     "num_fuzzy",

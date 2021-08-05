@@ -17,6 +17,7 @@ from django.core.management import BaseCommand
 
 # First-party/Local
 from i18n import CSV_HEADERS, DEFAULT_CSV_FILE, DEFAULT_INPUT_DIR
+from i18n.utils import map_django_to_transifex_language_code
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
@@ -37,30 +38,32 @@ def gen_statistics(input_dir, output_file):
     """
     output_file = open(output_file, "w")
 
-    input_dir = os.path.abspath(input_dir)
+    input_dir = os.path.abspath(os.path.realpath(input_dir))
     lang_dirs = os.listdir(input_dir)
 
     # Create CSV writer
-    writer = csv.DictWriter(output_file, CSV_HEADERS)
+    writer = csv.DictWriter(output_file, CSV_HEADERS, dialect="unix")
+    writer.writeheader()
 
     # iterate through all the languages
-    for locale_identifier in sorted(lang_dirs):
-        trans_dir = os.path.join(input_dir, locale_identifier, "LC_MESSAGES")
+    for language_code in sorted(lang_dirs):
+        transifex_code = map_django_to_transifex_language_code(language_code)
+        trans_dir = os.path.join(input_dir, language_code, "LC_MESSAGES")
         if os.path.isdir(trans_dir):
             trans_file = os.path.join(
                 trans_dir,
                 f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
             )
 
-            LOG.info(trans_file)
+            LOG.info(f"Reading {trans_file}")
 
             # load .po file
-            pofile = polib.pofile(trans_file)
+            pofile_obj = polib.pofile(trans_file)
 
             fuzzies = 0
             translated = 0
 
-            for entry in pofile:
+            for entry in pofile_obj:
                 if entry.msgstr:
                     if entry.fuzzy:
                         fuzzies += 1
@@ -69,12 +72,13 @@ def gen_statistics(input_dir, output_file):
 
             writer.writerow(
                 {
-                    "lang": locale_identifier,
-                    "num_messages": len(pofile),
+                    "lang_ietf": language_code,
+                    "lang_locale": transifex_code,
+                    "num_messages": len(pofile_obj),
                     "num_trans": translated,
                     "num_fuzzy": fuzzies,
                     "percent_trans": int(
-                        (float(translated) / len(pofile)) * 100
+                        (float(translated) / len(pofile_obj)) * 100
                     ),
                 }
             )
