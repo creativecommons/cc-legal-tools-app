@@ -28,10 +28,12 @@ from licenses.transifex import (
 TEST_PROJECT_SLUG = "proj"
 TEST_ORGANIZATION_SLUG = "org"
 TEST_TOKEN = "aaaaabbbbbb"
+TEST_TEAM_ID = 123456789
 TEST_TRANSIFEX_SETTINGS = {
     "ORGANIZATION_SLUG": TEST_ORGANIZATION_SLUG,
     "PROJECT_SLUG": TEST_PROJECT_SLUG,
     "API_TOKEN": TEST_TOKEN,
+    "TEAM_ID": TEST_TEAM_ID,
 }
 
 # To shorten lines of code, make a short alias
