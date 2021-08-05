@@ -781,40 +781,15 @@ class TransifexHelper:
                 )
         return pofile_obj
 
-    def check_for_translation_updates_with_repo_and_legal_codes(
-        self,
-        repo: git.Repo,
-        legal_codes: Iterable["licenses.models.LegalCode"],
-        update_repo=True,
-    ):
-        """
-        Use the Transifex API to find the last update timestamp for all our
-        translations.  If translations are updated, we'll create a branch if
-        there isn't already one for that translation, then update it with the
-        updated translations, rebuild the HTML, commit all the changes, and
-        push it upstream.
-
-        Return a list of the names of all local branches that have been
-        updated, that can be used e.g. to run publish on those branches.
-        """
-        self.log.info(f"{self.nop}Check if repo is dirty")
+    def normalize_translations(self):
+        legal_codes = (
+            licenses.models.LegalCode.objects.valid()
+            .translated()
+            .exclude(language_code=DEFAULT_LANGUAGE_CODE)
+        )
+        repo = git.Repo(settings.DATA_REPOSITORY_DIR)
         if repo.is_dirty():
-            if update_repo:
-                raise git.exc.RepositoryDirtyError(
-                    settings.DATA_REPOSITORY_DIR,
-                    "Repository is dirty. We cannot continue.",
-                )
-            else:
-                self.log.warning(f"{self.nop}Repository is dirty.")
-        if update_repo:
-            self.log.info(f"{self.nop}Fetch to update repo.")
-            if not self.dryrun:
-                repo.remotes.origin.fetch()
-
-        self.branches_to_update = defaultdict(_empty_branch_object)
-        self.legal_codes_to_update = []
-        self.branch_objects_to_update = []
-        legal_codes_with_updated_translations = []
+            self.log.warning(f"{self.nop}Repository is dirty.")
 
         # Process translation data by starting with local PO files
         # (includes both Deeds & UX and Legal Codes)
@@ -853,7 +828,7 @@ class TransifexHelper:
                 pofile_obj,
                 pofile_path,
             )
-            # TODO: update source xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            # TODO: update source
             # # UpdateSource
             # # We're doing English, which is the source language.
             # self.log.info(
@@ -918,33 +893,70 @@ class TransifexHelper:
                     pofile_path,
                 )
 
-            # TODO
-            #
-            # if legal_code.translation_last_update is None:
-            #     # First time: initialize, don't create branch
-            #     legal_code.translation_last_update = last_tx_update
-            #     legal_code.save()
-            #     self.log.info(
-            #         f"{resource_name} ({resource_slug}) {transifex_code}:"
-            #         f" Django {language_code} last update time initialized:"
-            #         f" {last_tx_update}."
-            #     )
-            #     continue
-            #
-            # if last_tx_update <= legal_code.translation_last_update:
-            #     # No change
-            #     self.log.debug(
-            #         f"No changes for {legal_code.license.identifier()}"
-            #     )
-            #     continue
-            #
-            # # Translation has changed!
-            # self.log.info(f"Translation has changed for {legal_code}")
-            # legal_codes_with_updated_translations.append(legal_code)
+    def check_for_translation_updates_with_repo_and_legal_codes(
+        self,
+        repo: git.Repo,
+        legal_codes: Iterable["licenses.models.LegalCode"],
+        update_repo=False,
+    ):
+        """
+        Use the Transifex API to find the last update timestamp for all our
+        translations.  If translations are updated, we'll create a branch if
+        there isn't already one for that translation, then update it with the
+        updated translations, rebuild the HTML, commit all the changes, and
+        push it upstream.
 
-        return self.handle_legal_codes_with_updated_translations(
-            repo, legal_codes_with_updated_translations
-        )
+        Return a list of the names of all local branches that have been
+        updated, that can be used e.g. to run publish on those branches.
+        """
+        # TODO
+        pass
+        # self.log.info(f"{self.nop}Check if repo is dirty")
+        # if repo.is_dirty():
+        #     if update_repo:
+        #         raise git.exc.RepositoryDirtyError(
+        #             settings.DATA_REPOSITORY_DIR,
+        #             "Repository is dirty. We cannot continue.",
+        #         )
+        #     else:
+        #         self.log.warning(f"{self.nop}Repository is dirty.")
+        # if update_repo:
+        #     self.log.info(f"{self.nop}Fetch to update repo.")
+        #     if not self.dryrun:
+        #         repo.remotes.origin.fetch()
+        #
+        # self.branches_to_update = defaultdict(_empty_branch_object)
+        # self.legal_codes_to_update = []
+        # self.branch_objects_to_update = []
+        # legal_codes_with_updated_translations = []
+        #
+        #     # TODO: loop through legal codes
+        #
+        #     if legal_code.translation_last_update is None:
+        #         # First time: initialize, don't create branch
+        #         legal_code.translation_last_update = last_tx_update
+        #         legal_code.save()
+        #         self.log.info(
+        #             f"{resource_name} ({resource_slug}) {transifex_code}:"
+        #             f" Django {language_code} last update time initialized:"
+        #             f" {last_tx_update}."
+        #         )
+        #         continue
+        #
+        #     if last_tx_update <= legal_code.translation_last_update:
+        #         # No change
+        #         self.log.debug(
+        #             f"No changes for {legal_code.license.identifier()}"
+        #         )
+        #         continue
+        #
+        #     # Translation has changed!
+        #     self.log.info(f"Translation has changed for {legal_code}")
+        #     legal_codes_with_updated_translations.append(legal_code)
+        #
+        # return self.handle_legal_codes_with_updated_translations(
+        #     repo, legal_codes_with_updated_translations
+        # )
 
     def check_for_translation_updates(
         self,
@@ -955,17 +967,16 @@ class TransifexHelper:
         check_for_translation_updates_with_repo_and_legal_codes() to make
         testing easier. Otherwise, there's no need or reason for it.
         """
-        # First-party/Local
-        from licenses.models import LegalCode
-
-        legal_codes = (
-            LegalCode.objects.valid()
-            .translated()
-            .exclude(language_code=DEFAULT_LANGUAGE_CODE)
-        )
-        with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
-            return (
-                self.check_for_translation_updates_with_repo_and_legal_codes(
-                    repo, legal_codes, update_repo
-                )
-            )
+        # TODO
+        pass
+        # legal_codes = (
+        #     licenses.models.LegalCode.objects.valid()
+        #     .translated()
+        #     .exclude(language_code=DEFAULT_LANGUAGE_CODE)
+        # )
+        # with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
+        #     return (
+        #         self.check_for_translation_updates_with_repo_and_legal_codes(
+        #             repo, legal_codes, update_repo
+        #         )
+        #     )
