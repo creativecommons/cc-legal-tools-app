@@ -356,7 +356,6 @@ class Command(BaseCommand):
         license = legal_code.license
         unit = license.unit
         version = license.version
-        identifier = license.identifier()
         po_filename = legal_code.translation_filename()
         transifex_language = map_django_to_transifex_language_code(
             language_code
@@ -391,9 +390,9 @@ class Command(BaseCommand):
             "Language": language_code,
             "Language-Team": "https://www.transifex.com/creativecommons/CC/",
             "MIME-Version": "1.0",
-            "PO-Revision-Date": f"{NOW}",
-            "Percent-Translated": f"{pofile.percent_translated()}",
-            "Project-Id-Version": f"{identifier}",
+            "PO-Revision-Date": NOW,
+            "Percent-Translated": pofile.percent_translated(),
+            "Project-Id-Version": legal_code.license.resource_slug,
             "Transifex-Language": transifex_language,
             "Transifex-Slug": legal_code.license.resource_slug,
         }

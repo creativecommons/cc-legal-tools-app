@@ -530,7 +530,8 @@ class TransifexHelper:
         dryrun=True,
     ):
         dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
-        translation_team_current = pofile_obj.metadata["Language-Team"]
+        key = "Language-Team"
+        translation_team_current = pofile_obj.metadata[key]
         if transifex_code == "en":
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/"
@@ -541,21 +542,111 @@ class TransifexHelper:
                 f"https://www.transifex.com/{self.organization_slug}/teams/"
                 f"{self.team_id}/{transifex_code}/"
             )
-
         if translation_team_current == translation_team:
             return pofile_obj
 
         self.log.info(
             f"{resource_name} ({resource_slug}) {transifex_code}:"
-            f" Correcting PO file 'Language-Team'{dryrun_msg}:"
-            f"\n{pofile_path}: {translation_team}"
+            f" Correcting PO file '{key}'{dryrun_msg}:"
+            f"\n{pofile_path}: New Value: '{translation_team}'"
         )
-
         if dryrun:
             return pofile_obj
-
-        pofile_obj.metadata["Language-Team"] = translation_team
+        pofile_obj.metadata[key] = translation_team
         pofile_obj.save(pofile_path)
+        return pofile_obj
+
+    def normalize_pofile_last_translator(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+        dryrun=True,
+    ):
+        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
+        key = "Last-Translator"
+        filler_data = "FULL NAME <EMAIL@ADDRESS>"
+        if key not in pofile_obj.metadata:
+            return pofile_obj
+        last_translator = pofile_obj.metadata[key]
+        if last_translator != filler_data:
+            return pofile_obj
+
+        self.log.info(
+            f"{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}'{dryrun_msg}:"
+            f"\n{pofile_path}: Removing: '{filler_data}'"
+        )
+        if dryrun:
+            return pofile_obj
+        del pofile_obj.metadata[key]
+        pofile_obj.save(pofile_path)
+        return pofile_obj
+
+    def normalize_pofile_project_id(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+        dryrun=True,
+    ):
+        dryrun_msg = " *** DRY RUN (no-op) ***" if dryrun else ""
+        key = "Project-Id-Version"
+        filler_data = "PACKAGE VERSION"
+        if (
+            key in pofile_obj.metadata
+            and pofile_obj.metadata[key] != filler_data
+        ) or pofile_obj.metadata[key] == resource_slug:
+            return pofile_obj
+
+        self.log.info(
+            f"{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}'{dryrun_msg}:"
+            f"\n{pofile_path}: New value: '{resource_slug}'"
+        )
+        if dryrun:
+            return pofile_obj
+        pofile_obj.metadata[key] = resource_slug
+        pofile_obj.save(pofile_path)
+        return pofile_obj
+
+    def normalize_pofile_metadata(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+        dryrun=True,
+    ):
+        pofile_obj = self.normalize_pofile_language_team(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+            dryrun,
+        )
+        pofile_obj = self.normalize_pofile_last_translator(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+            dryrun,
+        )
+        pofile_obj = self.normalize_pofile_project_id(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+            dryrun,
+        )
         return pofile_obj
 
     def update_pofile_creation_to_match_transifex(
@@ -760,7 +851,7 @@ class TransifexHelper:
             pofile_obj = resource["pofile_obj"]
 
             # Normalize deterministic metadata
-            pofile_obj = self.normalize_pofile_language_team(
+            pofile_obj = self.normalize_pofile_metadata(
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -818,7 +909,7 @@ class TransifexHelper:
                 pofile_obj = translation["pofile_obj"]
 
                 # Normalize deterministic metadata
-                pofile_obj = self.normalize_pofile_language_team(
+                pofile_obj = self.normalize_pofile_metadata(
                     transifex_code,
                     resource_slug,
                     resource_name,
