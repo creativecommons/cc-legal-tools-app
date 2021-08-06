@@ -547,7 +547,7 @@ class TransifexHelper:
         pofile_obj,
     ):
         key = "Language-Team"
-        if transifex_code == "en":
+        if transifex_code == DEFAULT_LANGUAGE_CODE:
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/"
                 f"{self.project_slug}/"
