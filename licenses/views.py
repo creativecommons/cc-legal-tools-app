@@ -20,6 +20,7 @@ from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
+    map_django_to_transifex_language_code,
 )
 from licenses.models import (
     UNITS_LICENSES,
@@ -465,6 +466,9 @@ def view_translation_status(request):
 
         if language_code in legal_code_langauge_codes:
             legal_code = True
+            transifex_code = map_django_to_transifex_language_code(
+                language_code
+            )
 
             deed_ux_translation_info[language_code] = {
                 "name": name,
@@ -474,6 +478,7 @@ def view_translation_status(request):
                 "created": po.metadata.get("POT-Creation-Date", ""),
                 "updated": po.metadata.get("PO-Revision-Date", ""),
                 "legal_code": legal_code,
+                "transifex_code": transifex_code,
             }
 
     return render(

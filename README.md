@@ -421,14 +421,15 @@ internationalization and localization directory structure are Django language
 codes.
 
 Definitions:
-- Django language codes are ***lowercase* [RFC5646][rfc5646] language tags**
+- Django language codes are ***lowercase* [IETF language
+  tags][ietf-lang-tags]**
   - Examples: `de-at`, `oc-aranes`, `sr-latn`, `zh-hant`
 - Transifex langauge codes are **[POSIX locales][posixlocale]**
   - Examples: `de_AT`, `oc@aranes`, `sr@latin`, `zh_Hant`
 - Legacy language codes include:
   - **[POSIX locales][posixlocale]**
     - Examples (see above)
-  - ***convential* [RFC5646][rfc5646] language tags**
+  - ***convential* [IETF language tags][ietf-lang-tags]**
     - Examples: `sr-Latn`, `zh-Hant`
 
 Mappings:
@@ -446,25 +447,40 @@ Documentation:
   - `127.0.0.1:8000`[`/dev/status/` Translation Status][translationstatus]
   - `django/django`:`django/conf/global_settings.p`:
     [Lines 50-148][djangocodes]
-- Transifex Language Codes: [Languages on Transifex][transifexcodes]
+- Transifex Language Codes:
+  - `127.0.0.1:8000`[`/dev/status/` Translation Status][translationstatus]
+  - [Languages on Transifex][transifexcodes]
 - References:
-  - [ISO 639-1 - Wikipedia][iso639-1]
-  - [ISO 639-2 - Wikipedia][iso639-2]
-  - [ISO 3166-1 alpha-2- Wikipedia][iso3166-1alpha-2]
-  - [ISO 15924 - Wikipedia][iso15924]
+  - [IETF language tag - Wikipedia][ietf-lang-tags]
+    - [RFC5646 Tags for Identifying Languages][rfc5646]
+      - [ISO 639-1 - Wikipedia][iso639-1] *Codes for the representation of
+        names of languages—Part 1: Alpha-2 code*
+        - [List of ISO 639-1 codes - Wikipedia][iso639-1-alpha-2]
+      - [ISO 639-2 - Wikipedia][iso639-2] *Codes for the representation of
+        names of languages — Part 2: Alpha-3 code*
+        - [List of ISO 639-2 codes - Wikipedia][iso639-2-alpha-3]
+      - [ISO 3166-1 - Wikipedia][iso3166-1] *Codes for the representation of
+        names of countries and their subdivisions – Part 1: Country codes*
+        - [ISO 3166-1 alpha-2 - Wikipedia][iso3166-1-alpha-2]
+      - [ISO 15924 - Wikipedia][iso15924] *Codes for the representation of
+        names of scripts*
   - [POSIX platforms - Locale (computer software) - Wikipedia][posixlocale]
     (POSIX Locale)
-  - [RFC5646 Tags for Identifying Languages][rfc5646]
 
 [djangocodes]: https://github.com/django/django/blob/0dc25526d8daaaa59968d4b1b597968e197f040c/django/conf/global_settings.py#L50-L148
+[ietf-lang-tags]: https://en.wikipedia.org/wiki/IETF_language_tag
 [iso15924]: https://en.wikipedia.org/wiki/ISO_15924
-[iso3166-1alpha-2]: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+[iso3166-1-alpha-2]: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+[iso3166-1]: https://en.wikipedia.org/wiki/ISO_3166-1
+[iso639-1-alpha-2]: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 [iso639-1]: https://en.wikipedia.org/wiki/ISO_639-1
+[iso639-2-alpha-3]: https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
 [iso639-2]: https://en.wikipedia.org/wiki/ISO_639-2
 [posixlocale]: https://en.wikipedia.org/wiki/Locale_(computer_software)#POSIX_platforms
 [rfc5646]: https://datatracker.ietf.org/doc/html/rfc5646.html
 [transifexcodes]: https://www.transifex.com/explore/languages/
 [translationstatus]: http://127.0.0.1:8000/dev/status/
+
 
 ### Check for Translation Updates
 
