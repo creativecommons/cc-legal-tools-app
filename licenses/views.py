@@ -99,7 +99,8 @@ def get_languages_and_links_for_legal_codes(
     legal_code_or_deed should be "deed" or "legal code", controlling which kind
     of page we link to.
 
-    selected_language_code is a CC language code (RFC 5646 language tag)
+    selected_language_code is a Django language code (lowercase IETF language
+    tag)
     """
     languages_and_links = [
         {
