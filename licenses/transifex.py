@@ -329,7 +329,9 @@ class TransifexHelper:
     #     # Return the list of updated branch names
     #     return branch_names
 
-    def build_local_data(self, legal_codes):
+    def build_local_data(
+        self, legal_codes: Iterable["licenses.models.LegalCode"]
+    ):
         local_data = {}
         # Deeds & UX - Sources
         resource_name = settings.DEEDS_UX_RESOURCE_NAME
@@ -420,8 +422,7 @@ class TransifexHelper:
         (Except for screenshots, Transifex API 2.5 is read-only.)
         """
         transifex_code = map_django_to_transifex_language_code(language_code)
-        transifex_resource_slugs = self.resource_stats.keys()
-        if resource_slug in transifex_resource_slugs:
+        if resource_slug in self.resource_stats.keys():
             self.log.debug(
                 f"{self.nop}{resource_name} ({resource_slug})"
                 f" {transifex_code}: Transifex already contains resource."
@@ -466,7 +467,6 @@ class TransifexHelper:
         (Transifex API 2.5 does not include a translations endpoint.)
         """
         transifex_code = map_django_to_transifex_language_code(language_code)
-        transifex_resource_slugs = self.translation_stats.keys()
         if language_code == DEFAULT_LANGUAGE_CODE:
             raise ValueError(
                 f"{self.nop}{resource_name} ({resource_slug})"
@@ -474,7 +474,7 @@ class TransifexHelper:
                 " add_translation_to_transifex_resource(), is for"
                 " translations, not sources."
             )
-        elif resource_slug not in transifex_resource_slugs:
+        elif resource_slug not in self.resource_stats.keys():
             raise ValueError(
                 f"{self.nop}{resource_name} ({resource_slug})"
                 f" {transifex_code}: Transifex does not yet contain resource."
