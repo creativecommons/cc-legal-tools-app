@@ -242,8 +242,10 @@ LANGMAP_LEGACY_TO_DJANGO = {
     # https://github.com/django/django/blob/main/django/conf/global_settings.py
     "en-us": "en",
     "es-es": "es",
+    "oc": "oc-aranes",
     "oci": "oc-aranes",
     "oci-es": "oc-aranes",
+    "oc@aranes": "oc-aranes",
     "sr-cyrl": "sr",
     "sr-latin": "sr-latn",
     "zh": "zh-hans",
