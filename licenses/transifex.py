@@ -519,6 +519,30 @@ class TransifexHelper:
                 f" translation. Adding FAILED using {pofile_path}."
             )
 
+    def normalize_pofile_language(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+    ):
+        key = "Language"
+        langauge_current = pofile_obj.metadata[key]
+        if langauge_current == transifex_code:
+            return pofile_obj
+
+        self.log.info(
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}':"
+            f"\n{pofile_path}: New Value: '{transifex_code}'"
+        )
+        if self.dryrun:
+            return pofile_obj
+        pofile_obj.metadata[key] = transifex_code
+        pofile_obj.save(pofile_path)
+        return pofile_obj
+
     def normalize_pofile_language_team(
         self,
         transifex_code,
@@ -615,6 +639,13 @@ class TransifexHelper:
         pofile_path,
         pofile_obj,
     ):
+        pofile_obj = self.normalize_pofile_language(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
         pofile_obj = self.normalize_pofile_language_team(
             transifex_code,
             resource_slug,

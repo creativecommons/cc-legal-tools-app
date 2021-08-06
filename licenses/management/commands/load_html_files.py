@@ -387,14 +387,12 @@ class Command(BaseCommand):
         pofile.metadata = {
             "Content-Transfer-Encoding": "8bit",
             "Content-Type": "text/plain; charset=utf-8",
-            "Language": language_code,
+            "Language": transifex_language,
             "Language-Team": "https://www.transifex.com/creativecommons/CC/",
             "MIME-Version": "1.0",
             "PO-Revision-Date": NOW,
             "Percent-Translated": pofile.percent_translated(),
             "Project-Id-Version": legal_code.license.resource_slug,
-            "Transifex-Language": transifex_language,
-            "Transifex-Slug": legal_code.license.resource_slug,
         }
 
         dir = os.path.dirname(po_filename)
