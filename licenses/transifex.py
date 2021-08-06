@@ -4,7 +4,6 @@ Deal with Transifex
 # Standard library
 import logging
 import os
-from collections import defaultdict
 from typing import Iterable
 
 # Third-party
@@ -14,7 +13,6 @@ import polib
 import requests
 import requests.auth
 from django.conf import settings
-from django.core.management import call_command
 
 # First-party/Local
 import licenses.models
@@ -25,12 +23,6 @@ from i18n.utils import (
     get_pofile_path,
     get_pofile_revision_date,
     map_django_to_transifex_language_code,
-    save_content_as_pofile_and_mofile,
-)
-from licenses.git_utils import (
-    commit_and_push_changes,
-    kill_branch,
-    setup_local_branch,
 )
 from licenses.utils import b64encode_string
 
@@ -80,10 +72,7 @@ class TransifexHelper:
     def __init__(self, dryrun: bool = True, logger: logging.Logger = None):
         self.dryrun = dryrun
         self.nop = "<NOP> " if dryrun else ""
-        if logger is None:
-            self.log = logging.getLogger()
-        else:
-            self.log = logger
+        self.log = logger if logger else logging.getLogger()
 
         self.project_slug = settings.TRANSIFEX["PROJECT_SLUG"]
         self.organization_slug = settings.TRANSIFEX["ORGANIZATION_SLUG"]
@@ -215,126 +204,130 @@ class TransifexHelper:
         pofile_content = response.content  # binary
         return pofile_content
 
-    def update_branch_for_legal_code(self, repo, legal_code, branch_object):
-        """
-        Pull down the latest translation for the legal_code and update
-        the local .po and .mo files. Assumes the correct branch has
-        already been checked out.  Adds the updated files to the index.
-        """
-        transifex_code = map_django_to_transifex_language_code(
-            legal_code.language_code
-        )
-        resource_slug = legal_code.license.resource_slug
-        self.log.info(f"\tUpdating {resource_slug} {legal_code.language_code}")
-        last_tx_update = dateutil.parser.parse(
-            self.translation_stats[resource_slug][transifex_code][
-                "translated"
-            ]["last_activity"]
-        )
-        legal_code.translation_last_update = last_tx_update
+    # def update_branch_for_legal_code(self, repo, legal_code, branch_object):
+    #     """
+    #     Pull down the latest translation for the legal_code and update
+    #     the local .po and .mo files. Assumes the correct branch has
+    #     already been checked out.  Adds the updated files to the index.
+    #     """
+    #     transifex_code = map_django_to_transifex_language_code(
+    #         legal_code.language_code
+    #     )
+    #     resource_slug = legal_code.license.resource_slug
+    #     self.log.info(
+    #         f"\tUpdating {resource_slug} {legal_code.language_code}"
+    #     )
+    #     last_tx_update = dateutil.parser.parse(
+    #         self.translation_stats[resource_slug][transifex_code][
+    #             "translated"
+    #         ]["last_activity"]
+    #     )
+    #     legal_code.translation_last_update = last_tx_update
+    #
+    #     branch_object.legal_codes.add(legal_code)
+    #     if (
+    #         branch_object.last_transifex_update is None
+    #         or branch_object.last_transifex_update < last_tx_update
+    #     ):
+    #         branch_object.last_transifex_update = last_tx_update
+    #
+    #     # Get the updated translation. We don't write it to a file yet.
+    #     # We'll do all the updates for a branch at once in the next section.
+    #     pofile_path = legal_code.translation_filename()
+    #     pofile_content = self.transifex_get_pofile_content(
+    #         resource_slug, transifex_code
+    #     )
+    #     filenames = save_content_as_pofile_and_mofile(
+    #         pofile_path, pofile_content
+    #     )
+    #     relpaths = [
+    #         os.path.relpath(filename, settings.DATA_REPOSITORY_DIR)
+    #         for filename in filenames
+    #     ]
+    #     repo.index.add(relpaths)
 
-        branch_object.legal_codes.add(legal_code)
-        if (
-            branch_object.last_transifex_update is None
-            or branch_object.last_transifex_update < last_tx_update
-        ):
-            branch_object.last_transifex_update = last_tx_update
-
-        # Get the updated translation. We don't write it to a file yet.
-        # We'll do all the updates for a branch at once in the next section.
-        pofile_path = legal_code.translation_filename()
-        pofile_content = self.transifex_get_pofile_content(
-            resource_slug, transifex_code
-        )
-        filenames = save_content_as_pofile_and_mofile(
-            pofile_path, pofile_content
-        )
-        relpaths = [
-            os.path.relpath(filename, settings.DATA_REPOSITORY_DIR)
-            for filename in filenames
-        ]
-        repo.index.add(relpaths)
-
-    def handle_updated_translation_branch(self, repo, legal_codes):
-        # Legalcodes whose translations have been updated and all belong to the
-        # same translation branch.
-        # If we update the branch, we'll also publish updates to its static
-        # files.
-        if not legal_codes:
-            return
-        branch_name = legal_codes[0].branch_name()
-        language_code = legal_codes[0].language_code
-        version = legal_codes[0].license.version
-
-        self.log.info(f"Updating branch {branch_name}")
-
-        setup_local_branch(repo, branch_name)
-
-        # Track the translation update using a TranslationBranch object
-        # First-party/Local
-        from licenses.models import TranslationBranch
-
-        branch_object, _ = TranslationBranch.objects.get_or_create(
-            branch_name=branch_name,
-            language_code=language_code,
-            version=version,
-            complete=False,
-        )
-        for legal_code in legal_codes:
-            self.update_branch_for_legal_code(repo, legal_code, branch_object)
-
-        self.log.info("Publishing static files")
-        call_command("publish", branch_name=branch_name)
-        repo.index.add(
-            [
-                os.path.relpath(
-                    settings.DISTILL_DIR,
-                    settings.DATA_REPOSITORY_DIR,
-                )
-            ]
-        )
-
-        # Commit and push this branch
-        self.log.info("Committing and pushing")
-        commit_and_push_changes(
-            repo, "Translation changes from Transifex.", "", push=True
-        )
-
-        self.log.info(
-            f"Updated branch {branch_name} with updated translations and"
-            " pushed",
-        )
-
-        # Don't need local branch anymore
-        kill_branch(repo, branch_name)
-
-        # Now that we know the new changes are upstream, save the LegalCode
-        # objects with their new translation_last_updates, and the branch
-        # object.
-        # First-party/Local
-        from licenses.models import LegalCode
-
-        LegalCode.objects.bulk_update(
-            legal_codes,
-            fields=["translation_last_update"],
-        )
-        branch_object.save()
-
-    def handle_legal_codes_with_updated_translations(
-        self, repo, legal_codes_with_updated_translations
-    ):
-        # Group by branches
-        legal_codes_by_branchname = defaultdict(list)
-        for legal_code in legal_codes_with_updated_translations:
-            branch_name = legal_code.branch_name()
-            legal_codes_by_branchname[branch_name].append(legal_code)
-        branch_names = list(legal_codes_by_branchname.keys())
-
-        # For each branch, get the changes and process them.
-        for branch_name, legal_codes in legal_codes_by_branchname.items():
-            self.handle_updated_translation_branch(repo, legal_codes)
-        # Return the list of updated branch names
-        return branch_names
+    # def handle_updated_translation_branch(self, repo, legal_codes):
+    #     # Legalcodes whose translations have been updated and all belong to
+    #     # the same translation branch.
+    #     # If we update the branch, we'll also publish updates to its static
+    #     # files.
+    #     if not legal_codes:
+    #         return
+    #     branch_name = legal_codes[0].branch_name()
+    #     language_code = legal_codes[0].language_code
+    #     version = legal_codes[0].license.version
+    #
+    #     self.log.info(f"Updating branch {branch_name}")
+    #
+    #     setup_local_branch(repo, branch_name)
+    #
+    #     # Track the translation update using a TranslationBranch object
+    #     # First-party/Local
+    #     from licenses.models import TranslationBranch
+    #
+    #     branch_object, _ = TranslationBranch.objects.get_or_create(
+    #         branch_name=branch_name,
+    #         language_code=language_code,
+    #         version=version,
+    #         complete=False,
+    #     )
+    #     for legal_code in legal_codes:
+    #         self.update_branch_for_legal_code(
+    #             repo, legal_code, branch_object
+    #         )
+    #
+    #     self.log.info("Publishing static files")
+    #     call_command("publish", branch_name=branch_name)
+    #     repo.index.add(
+    #         [
+    #             os.path.relpath(
+    #                 settings.DISTILL_DIR,
+    #                 settings.DATA_REPOSITORY_DIR,
+    #             )
+    #         ]
+    #     )
+    #
+    #     # Commit and push this branch
+    #     self.log.info("Committing and pushing")
+    #     commit_and_push_changes(
+    #         repo, "Translation changes from Transifex.", "", push=True
+    #     )
+    #
+    #     self.log.info(
+    #         f"Updated branch {branch_name} with updated translations and"
+    #         " pushed",
+    #     )
+    #
+    #     # Don't need local branch anymore
+    #     kill_branch(repo, branch_name)
+    #
+    #     # Now that we know the new changes are upstream, save the LegalCode
+    #     # objects with their new translation_last_updates, and the branch
+    #     # object.
+    #     # First-party/Local
+    #     from licenses.models import LegalCode
+    #
+    #     LegalCode.objects.bulk_update(
+    #         legal_codes,
+    #         fields=["translation_last_update"],
+    #     )
+    #     branch_object.save()
+    #
+    # def handle_legal_codes_with_updated_translations(
+    #     self, repo, legal_codes_with_updated_translations
+    # ):
+    #     # Group by branches
+    #     legal_codes_by_branchname = defaultdict(list)
+    #     for legal_code in legal_codes_with_updated_translations:
+    #         branch_name = legal_code.branch_name()
+    #         legal_codes_by_branchname[branch_name].append(legal_code)
+    #     branch_names = list(legal_codes_by_branchname.keys())
+    #
+    #     # For each branch, get the changes and process them.
+    #     for branch_name, legal_codes in legal_codes_by_branchname.items():
+    #         self.handle_updated_translation_branch(repo, legal_codes)
+    #     # Return the list of updated branch names
+    #     return branch_names
 
     def build_local_data(self, legal_codes):
         local_data = {}
@@ -857,7 +850,6 @@ class TransifexHelper:
                 pofile_obj,
                 pofile_path,
             )
-            # TODO: update source
             # # UpdateSource
             # # We're doing English, which is the source language.
             # self.log.info(
@@ -938,7 +930,6 @@ class TransifexHelper:
         Return a list of the names of all local branches that have been
         updated, that can be used e.g. to run publish on those branches.
         """
-        # TODO
         pass
         # self.log.info(f"{self.nop}Check if repo is dirty")
         # if repo.is_dirty():
@@ -996,7 +987,6 @@ class TransifexHelper:
         check_for_translation_updates_with_repo_and_legal_codes() to make
         testing easier. Otherwise, there's no need or reason for it.
         """
-        # TODO
         pass
         # legal_codes = (
         #     licenses.models.LegalCode.objects.valid()
