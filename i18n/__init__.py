@@ -203,7 +203,7 @@ JURISDICTION_NAMES = {
     "vn": "Vietnam",
     "za": "South Africa",
 }
-LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
+LANGUAGE_CODE_REGEX_STRING = r"[a-z-]*"
 LANGMAP_DJANGO_TO_TRANSIFEX = {
     # Django language code: Transifex language code
     #
