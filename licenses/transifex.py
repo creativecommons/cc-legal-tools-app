@@ -521,8 +521,10 @@ class TransifexHelper:
         pofile_obj,
     ):
         key = "Language"
-        langauge_current = pofile_obj.metadata[key]
-        if langauge_current == transifex_code:
+        if (
+            key in pofile_obj.metadata
+            and pofile_obj.metadata[key] == transifex_code
+        ):
             return pofile_obj
 
         self.log.info(
@@ -545,7 +547,6 @@ class TransifexHelper:
         pofile_obj,
     ):
         key = "Language-Team"
-        translation_team_current = pofile_obj.metadata[key]
         if transifex_code == "en":
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/"
@@ -556,7 +557,10 @@ class TransifexHelper:
                 f"https://www.transifex.com/{self.organization_slug}/teams/"
                 f"{self.team_id}/{transifex_code}/"
             )
-        if translation_team_current == translation_team:
+        if (
+            key in pofile_obj.metadata
+            and pofile_obj.metadata[key] == translation_team
+        ):
             return pofile_obj
 
         self.log.info(
