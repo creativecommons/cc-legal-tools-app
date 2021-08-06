@@ -417,7 +417,6 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
-        dryrun=True,
     ):
         """
         Add resource to Transifex
@@ -464,7 +463,6 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
-        dryrun=True,
     ):
         """
         Add translation to Transifex resource.
