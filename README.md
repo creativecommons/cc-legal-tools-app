@@ -51,7 +51,8 @@ Use the following instructions to start the project with Docker compose.
 
 1. Initial Setup
    1. Ensure the [Data Repository](#data-repository), above,  is in place
-   2. Install Docker ([Install Docker Engine | Docker Documentation][installdocker])
+   2. Install Docker ([Install Docker Engine | Docker
+      Documentation][installdocker])
    3. Create Django local settings file
         ```
         cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
@@ -127,8 +128,7 @@ The commands above will create 3 docker containers:
    2. Start PostgrSQL server
       - It's completely fine to not make a specific postgresql account. But if
         you do wish to create a different user account for the project, Please
-        refer to the official documentation.
-        https://www.postgresql.org/docs/current/tutorial-install.html
+        refer to [PostgreSQL: Documentation: Installation][postgresql-install]
       - Linux:
         ```
         sudo service postgresql start
@@ -157,6 +157,8 @@ The commands above will create 3 docker containers:
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
+
+[postgresql-install]: https://www.postgresql.org/docs/current/tutorial-install.html
 
 
 ### Manual Commands
@@ -235,14 +237,14 @@ jurisdiction. For additional information see: [**Legal Tools Namespace** -
 creativecommons/cc-licenses-data: CC Licenses data (static HTML, language
 files, etc.)][namespace].
 
-Right now there are three places the text of licenses could be.
+There are three places legal code text could be:
 1. **gettext files** (`.po` and `.mo`) in the
-   [creativecommons/cc-licenses-data][repodata] repository (tools with full
-   translation support)
+   [creativecommons/cc-licenses-data][repodata] repository (legal tools with
+   full translation support):
    - 4.0 Licenses
    - CC0
 2. **django template**
-   ([`legalcode_licenses_3.0_unported.html`][unportedtemplate])
+   ([`legalcode_licenses_3.0_unported.html`][unportedtemplate]):
    - Unported 3.0 Licenses (English-only)
 3. **`html` field** (in the `LegalCode` model):
    - Everything else
