@@ -8,7 +8,8 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 CSV_HEADERS = [
-    "lang",
+    "lang_ietf",
+    "lang_locale",
     "num_messages",
     "num_trans",
     "num_fuzzy",
@@ -33,12 +34,11 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     #
     # IMPORTANT: language codes and jurisdictions are different:
     # - jurisdictions are ISO 3166-1 alpha-2 codes
-    # - Django language codes are lowercase Django RFC5646 language tags:
-    #   https://github.com/django/django/blob/main/django/conf/global_settings.py
+    # - Django language codes are lowercase IETF language tags:
     #
     # For example:
     # - "ar" is the ISO 3166-1 alpha-2 code for Argentina
-    # - "ar" is the RFC5646 language tag for Arabic
+    # - "ar" is the IETF language tag for Arabic
     #
     # See the "JURISDICTION_NAMES", just below this.
     "am": "hy",  # Armenian - not in jurisdictions.rdf
@@ -202,16 +202,13 @@ JURISDICTION_NAMES = {
     "vn": "Vietnam",
     "za": "South Africa",
 }
-LANGUAGE_CODE_REGEX_STRING = r"[a-zA-Z_-]*"
+LANGUAGE_CODE_REGEX_STRING = r"[a-z-]*"
 LANGMAP_DJANGO_TO_TRANSIFEX = {
     # Django language code: Transifex language code
     #
-    # Django language codes are lowercase Django RFC5646 language tags:
-    # https://github.com/django/django/blob/main/django/conf/global_settings.py
+    # Django language codes are lowercase IETF language tags
     #
-    # Transifex language codes are ISO 639 language codes optionally followed
-    # by a ISO 3166 country code or ISO 15924 script code
-    # https://www.transifex.com/explore/languages/
+    # Transifex language codes are POSIX Locales
     #
     # Any changes here should also be made in .tx/config
     "de-at": "de_AT",
@@ -222,7 +219,8 @@ LANGMAP_DJANGO_TO_TRANSIFEX = {
     "fa-ir": "fa_IR",
     "fr-ca": "fr_CA",
     "fr-ch": "fr_CH",
-    "oc-aranes": "oc@aranes",
+    # "oc-aranes": "oc@aranes",  # .. until Aranese is added to Transifex
+    "oc-aranes": "oc",  # Use Occitan until Aranese is added to Transifex
     "pt-br": "pt_BR",
     "si-lk": "si_LK",
     "sr-latn": "sr@latin",
@@ -236,12 +234,17 @@ LANGMAP_LEGACY_TO_DJANGO = {
     # Note that Legacy language code is first transformed by
     # i18n.FUNCTION_NAME
     #
-    # Django language codes are lowercase Django RFC5646 language tags:
-    # https://github.com/django/django/blob/main/django/conf/global_settings.py
+    # Legacy language codes include:
+    # - POSIX Locales (ex. Transifex language codes)
+    # - conventential IETF language tags (instead of lowercase, ex. zh-Hans)
+    #
+    # Django language codes are lowercase IETF language tags
     "en-us": "en",
     "es-es": "es",
+    "oc": "oc-aranes",
     "oci": "oc-aranes",
     "oci-es": "oc-aranes",
+    "oc@aranes": "oc-aranes",
     "sr-cyrl": "sr",
     "sr-latin": "sr-latn",
     "zh": "zh-hans",

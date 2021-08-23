@@ -183,7 +183,7 @@ class LegalCode(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="Django langauge code (lowercase RFC5646 language tag)",
+        help_text="Django langauge code (lowercase IETF language tag)",
     )
     html_file = models.CharField(
         "HTML file",
@@ -693,7 +693,7 @@ class TranslationBranch(models.Model):
     )
     language_code = models.CharField(
         max_length=MAX_LANGUAGE_CODE_LENGTH,
-        help_text="Django langauge code (lowercase RFC5646 language tag)",
+        help_text="Django langauge code (lowercase IETF language tag)",
     )
     last_transifex_update = models.DateTimeField(
         "Time when last updated on Transifex.",

@@ -332,9 +332,12 @@ LOCALE_PATHS = (
 )
 
 TRANSIFEX = {
+    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
     "ORGANIZATION_SLUG": "creativecommons",
     "PROJECT_SLUG": "CC",
-    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
+    # We currently only have a single team for all of our projects named
+    # "Creative Commons team"
+    "TEAM_ID": 11342,
 }
 
 # The git branch where the official, approved, used in production translations

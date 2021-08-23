@@ -21,9 +21,15 @@ LOG_LEVELS = {
 class Command(BaseCommand):
     def handle(self, **options):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
+
+        # =====================================================================
+        # TODO: Fix check translations
+        raise CommandError("This command is currently disabled.")
+        # =====================================================================
+
         try:
             branches_updated = TransifexHelper(
-                verbosity=options["verbosity"]
+                logger=LOG,
             ).check_for_translation_updates()
         except GitCommandError as e:
             raise CommandError(f"GitCommandError: {e}")

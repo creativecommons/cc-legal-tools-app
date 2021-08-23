@@ -20,6 +20,7 @@ from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
+    map_django_to_transifex_language_code,
 )
 from licenses.models import (
     UNITS_LICENSES,
@@ -53,7 +54,7 @@ def get_category_and_category_title(category=None, license=None):
 def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
     languages_and_links = []
 
-    for language_code in settings.LANGUAGES_TRANSLATED:
+    for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
         language_info = translation.get_language_info(language_code)
         link = request_path.replace(
             f".{selected_language_code}",
@@ -98,7 +99,8 @@ def get_languages_and_links_for_legal_codes(
     legal_code_or_deed should be "deed" or "legal code", controlling which kind
     of page we link to.
 
-    selected_language_code is a CC language code (RFC 5646 language tag)
+    selected_language_code is a Django language code (lowercase IETF language
+    tag)
     """
     languages_and_links = [
         {
@@ -129,7 +131,7 @@ def get_deed_rel_path(
     language_default,
 ):
     deed_rel_path = os.path.relpath(deed_url, path_start)
-    if language_code not in settings.LANGUAGES_TRANSLATED:
+    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
         deed_rel_path = deed_rel_path.replace(
             f"deed.{language_code}",
             f"deed.{language_default}",
@@ -238,7 +240,7 @@ def view_deed(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    if language_code not in settings.LANGUAGES_TRANSLATED:
+    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
         raise Http404(f"invalid language: {language_code}")
 
     path_start = os.path.dirname(request.path)
@@ -465,6 +467,9 @@ def view_translation_status(request):
 
         if language_code in legal_code_langauge_codes:
             legal_code = True
+            transifex_code = map_django_to_transifex_language_code(
+                language_code
+            )
 
             deed_ux_translation_info[language_code] = {
                 "name": name,
@@ -474,6 +479,7 @@ def view_translation_status(request):
                 "created": po.metadata.get("POT-Creation-Date", ""),
                 "updated": po.metadata.get("PO-Revision-Date", ""),
                 "legal_code": legal_code,
+                "transifex_code": transifex_code,
             }
 
     return render(

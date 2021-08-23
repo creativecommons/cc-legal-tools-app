@@ -201,12 +201,9 @@ def map_django_to_transifex_language_code(django_language_code: str) -> str:
     """
     Given a Django language code, return a Transifex language code.
 
-    Django language codes are lowercase Django RFC5646 language tags:
-    https://github.com/django/django/blob/main/django/conf/global_settings.py
+    Django language codes are lowercase IETF language tags
 
-    Transifex language codes are ISO 639 language codes optionally followed
-    by a ISO 3166 country code or ISO 15924 script code
-    https://www.transifex.com/explore/languages/
+    Transifex language codes are POSIX Locales
     """
     transifex_language_code = django_language_code
     # Lookup special cases
@@ -222,12 +219,10 @@ def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
     Given a Legacy language code, return a Django language code.
 
     Legacy language codes include:
-    - Transifex language locales
-      https://www.transifex.com/explore/languages/
-    - legacy file name language codes
+    - POSIX Locales (ex. Transifex language codes)
+    - conventential IETF language tags (instead of lowercase, ex. zh-Hans)
 
-    Django language codes are lowercase Django RFC5646 language tags:
-    https://github.com/django/django/blob/main/django/conf/global_settings.py
+    Django language codes are lowercase IETF language tag
     """
     django_language_code = legacy_language_code
     # Normalize: lowercase

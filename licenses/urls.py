@@ -55,8 +55,6 @@ register_converter(UnitConverter, "unit")
 class JurisdictionConverter:
     """
     jurisdiction should be ISO 3166-1 alpha-2 country code
-        ISO 3166-1 alpha-2 - Wikipedia
-        https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 
     BUT it also looks as if we use "igo" and "scotland".
     """
@@ -89,17 +87,7 @@ register_converter(VersionConverter, "version")
 
 class LangConverter:
     """
-    language should be RFC 5646 language tag (RFC 5646)
-    https://tools.ietf.org/html/rfc5646.html
-    However, RFC 5646 was finalized after most of the legacy ccEngine was written.
-    Some of the language tags are based on older specs.
-
-    A more specific RFC 5646 regex might be
-    ^((?:(en-GB-oed|i-ami|i-bnn|i-default|i-enochian|i-hak|i-klingon|i-lux|i-mingo|i-navajo|i-pwn|i-tao|i-tay|i-tsu|sgn-BE-FR|sgn-BE-NL|sgn-CH-DE)|(art-lojban|cel-gaulish|no-bok|no-nyn|zh-guoyu|zh-hakka|zh-min|zh-min-nan|zh-xiang))|((?:([A-Za-z]{2,3}(-(?:[A-Za-z]{3}(-[A-Za-z]{3}){0,2}))?)|[A-Za-z]{4}|[A-Za-z]{5,8})(-(?:[A-Za-z]{4}))?(-(?:[A-Za-z]{2}|[0-9]{3}))?(-(?:[A-Za-z0-9]{5,8}|[0-9][A-Za-z0-9]{3}))*(-(?:[0-9A-WY-Za-wy-z](-[A-Za-z0-9]{2,8})+))*(-(?:x(-[A-Za-z0-9]{1,8})+))?)|(?:x(-[A-Za-z0-9]{1,8})+))$  # noqa: E501
-    but that might exclude some older tags, so let's just keep it simple for
-    now and match any combination of letters, underscores, and dashes.
-
-    (Why underscores? Because of en_GB being used some places.)
+    Django language code should be lowercase IETF language tag
     """
 
     regex = LANGUAGE_CODE_REGEX_STRING
