@@ -972,6 +972,60 @@ class TestTransifex(TestCase):
             new_pofile_obj.metadata["POT-Creation-Date"], transifex_creation
         )
 
+    # Test: update_pofile_revision_to_match_transifex ########################
+
+    def test_update_pofile_revision_to_match_transifex_dryrun(self):
+        self.helper.dryrun = True
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_revision = "2021-01-01 01:01:01.000001+00:00"
+        pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
+        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            self.helper.update_pofile_revision_to_match_transifex(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                pofile_revision,
+                transifex_revision,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_update_pofile_revision_to_match_transifex_save(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_revision = "2021-01-01 01:01:01.000001+00:00"
+        pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
+        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = (
+                self.helper.update_pofile_revision_to_match_transifex(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                    pofile_revision,
+                    transifex_revision,
+                )
+            )
+
+        mock_pofile_save.assert_called()
+        self.assertEqual(
+            new_pofile_obj.metadata["PO-Revision-Date"], transifex_revision
+        )
+
     # def test_update_source_messages(self):
     #     with mpo(self.helper, "request20") as mock_request:
     #         self.helper.update_source_messages(
