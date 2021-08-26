@@ -610,11 +610,7 @@ class TransifexHelper:
         pofile_obj,
     ):
         key = "Project-Id-Version"
-        filler_data = "PACKAGE VERSION"
-        if (
-            key in pofile_obj.metadata
-            and pofile_obj.metadata[key] != filler_data
-        ) or pofile_obj.metadata[key] == resource_slug:
+        if pofile_obj.metadata.get(key, None) == resource_slug:
             return pofile_obj
 
         self.log.info(
