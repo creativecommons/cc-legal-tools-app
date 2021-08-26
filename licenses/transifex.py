@@ -664,11 +664,11 @@ class TransifexHelper:
 
     def update_pofile_creation_to_match_transifex(
         self,
-        resource_slug,
         transifex_code,
+        resource_slug,
         resource_name,
-        pofile_obj,
         pofile_path,
+        pofile_obj,
         pofile_creation,
         transifex_creation,
     ):
@@ -688,11 +688,11 @@ class TransifexHelper:
 
     def update_pofile_revision_to_match_transifex(
         self,
+        transifex_code,
         resource_slug,
         resource_name,
-        transifex_code,
-        pofile_obj,
         pofile_path,
+        pofile_obj,
         pofile_revision,
         transifex_revision,
     ):
@@ -712,11 +712,11 @@ class TransifexHelper:
 
     def normalize_pofile_dates(
         self,
+        transifex_code,
         resource_slug,
         resource_name,
-        transifex_code,
-        pofile_obj,
         pofile_path,
+        pofile_obj,
     ):
         pad = len(pofile_path)
         pofile_creation = get_pofile_creation_date(pofile_obj)
@@ -734,11 +734,11 @@ class TransifexHelper:
         if pofile_creation is None or transifex_creation < pofile_creation:
             # Normalize Local PO File revision date if its empty or invalid
             pofile_obj = self.update_pofile_creation_to_match_transifex(
+                transifex_code,
                 resource_slug,
                 resource_name,
-                transifex_code,
-                pofile_obj,
                 pofile_path,
+                pofile_obj,
                 pofile_creation,
                 transifex_creation,
             )
@@ -755,11 +755,11 @@ class TransifexHelper:
         if pofile_revision is None:
             # Normalize Local PO File revision date if its empty or invalid
             pofile_obj = self.update_pofile_revision_to_match_transifex(
+                transifex_code,
                 resource_slug,
                 resource_name,
-                transifex_code,
-                pofile_obj,
                 pofile_path,
+                pofile_obj,
                 pofile_revision,
                 transifex_revision,
             )
@@ -786,11 +786,11 @@ class TransifexHelper:
             # entries and the Transifex PO File entries are the same.
             if po_entries_are_the_same:
                 pofile_obj = self.update_pofile_revision_to_match_transifex(
+                    transifex_code,
                     resource_slug,
                     resource_name,
-                    transifex_code,
-                    pofile_obj,
                     pofile_path,
+                    pofile_obj,
                     pofile_revision,
                     transifex_revision,
                 )
@@ -844,11 +844,11 @@ class TransifexHelper:
                 pofile_obj,
             )
             pofile_obj = self.normalize_pofile_dates(
+                transifex_code,
                 resource_slug,
                 resource_name,
-                transifex_code,
-                pofile_obj,
                 pofile_path,
+                pofile_obj,
             )
             # # UpdateSource
             # # We're doing English, which is the source language.
@@ -907,11 +907,11 @@ class TransifexHelper:
 
                 # Normalize Creation and Revision dates in local PO files
                 pofile_obj = self.normalize_pofile_dates(
+                    transifex_code,
                     resource_slug,
                     resource_name,
-                    transifex_code,
-                    pofile_obj,
                     pofile_path,
+                    pofile_obj,
                 )
 
     def check_for_translation_updates_with_repo_and_legal_codes(
