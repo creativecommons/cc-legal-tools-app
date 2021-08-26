@@ -896,6 +896,28 @@ class TestTransifex(TestCase):
             resource_slug, new_pofile_obj.metadata["Project-Id-Version"]
         )
 
+    # Test: normalize_pofile_metadata ########################################
+
+    def test_normalize_pofile_metadata(self):
+        self.helper.dryrun = True
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_metadata(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+        self.assertEqual(pofile_obj, new_pofile_obj)
+
     # def test_update_source_messages(self):
     #     with mpo(self.helper, "request20") as mock_request:
     #         self.helper.update_source_messages(
