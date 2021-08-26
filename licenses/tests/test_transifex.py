@@ -601,6 +601,7 @@ class TestTransifex(TestCase):
             )
 
         mock_pofile_save.assert_called()
+        self.assertIn("Language", new_pofile_obj.metadata)
         self.assertEqual(new_pofile_obj.metadata["Language"], transifex_code)
 
     def test_noramalize_pofile_language_incorrect(self):
@@ -664,7 +665,7 @@ class TestTransifex(TestCase):
 
     def test_normalize_pofile_language_team_dryrun(self):
         self.helper.dryrun = True
-        transifex_code = "en"
+        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
@@ -708,7 +709,7 @@ class TestTransifex(TestCase):
         del pofile_obj.metadata["Language-Team"]
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
-            self.helper.normalize_pofile_language_team(
+            new_pofile_obj = self.helper.normalize_pofile_language_team(
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -717,6 +718,86 @@ class TestTransifex(TestCase):
             )
 
         mock_pofile_save.assert_called()
+        self.assertIn("Language-Team", new_pofile_obj.metadata)
+
+    def test_normalize_pofile_last_translator_missing(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata.pop("Last-Translator", None)
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_last_translator(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+        self.assertNotIn("Last-Translator", new_pofile_obj.metadata)
+
+    def test_normalize_pofile_last_translator_correct(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Last-Translator"] = "valid_email@example.com"
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            self.helper.normalize_pofile_last_translator(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_normalize_pofile_last_translator_dryrun(self):
+        self.helper.dryrun = True
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Last-Translator"] = "FULL NAME <EMAIL@ADDRESS>"
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            self.helper.normalize_pofile_last_translator(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_normalize_pofile_last_translator_incorrect(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Last-Translator"] = "FULL NAME <EMAIL@ADDRESS>"
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_last_translator(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_called()
+        self.assertNotIn("Last-Translator", new_pofile_obj.metadata)
 
     # def test_update_source_messages(self):
     #     with mpo(self.helper, "request20") as mock_request:
