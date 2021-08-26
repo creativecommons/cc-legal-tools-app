@@ -285,6 +285,8 @@ class TestTransifex(TestCase):
             list(local_data["by_40"]["translations"].keys()), ["de"]
         )
 
+    # Test: add_resource_to_transifex ########################################
+
     def test_add_resource_to_transifex_missing(self):
         language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
@@ -364,6 +366,8 @@ class TestTransifex(TestCase):
             )
 
         mock_request.assert_not_called()
+
+    # Test: add_translation_to_transifex_resource ############################
 
     def test_add_translation_to_transifex_resource_is_source(self):
         language_code = DEFAULT_LANGUAGE_CODE
@@ -546,6 +550,8 @@ class TestTransifex(TestCase):
             ],
         )
 
+    # Test: normalize_pofile_language ########################################
+
     def test_noramalize_pofile_language_correct(self):
         transifex_code = "en"
         resource_slug = "x_slug_x"
@@ -622,6 +628,8 @@ class TestTransifex(TestCase):
 
         mock_pofile_save.assert_called()
         self.assertEqual(new_pofile_obj.metadata["Language"], transifex_code)
+
+    # Test: normalize_pofile_language_team ###################################
 
     def test_normalize_pofile_language_team_source_correct(self):
         transifex_code = "en"
@@ -720,6 +728,8 @@ class TestTransifex(TestCase):
         mock_pofile_save.assert_called()
         self.assertIn("Language-Team", new_pofile_obj.metadata)
 
+    # Test: normalize_pofile_last_translator #################################
+
     def test_normalize_pofile_last_translator_missing(self):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
@@ -798,6 +808,93 @@ class TestTransifex(TestCase):
 
         mock_pofile_save.assert_called()
         self.assertNotIn("Last-Translator", new_pofile_obj.metadata)
+
+    # Test: normalize_pofile_project_id ######################################
+
+    def test_normalize_pofile_project_id_correct(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Project-Id-Version"] = resource_slug
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            self.helper.normalize_pofile_project_id(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_normalize_pofile_project_id_dryrun(self):
+        self.helper.dryrun = True
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Project-Id-Version"] = "PACKAGE VERSION"
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            self.helper.normalize_pofile_project_id(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_normalize_pofile_project_id_incorrect(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Project-Id-Version"] = "PACKAGE VERSION"
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_project_id(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_called()
+        self.assertIn("Project-Id-Version", new_pofile_obj.metadata)
+        self.assertEqual(
+            resource_slug, new_pofile_obj.metadata["Project-Id-Version"]
+        )
+
+    def test_normalize_pofile_project_id_missing(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata.pop("Project-Id-Version", None)
+
+        with mpo(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_project_id(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_called()
+        self.assertIn("Project-Id-Version", new_pofile_obj.metadata)
+        self.assertEqual(
+            resource_slug, new_pofile_obj.metadata["Project-Id-Version"]
+        )
 
     # def test_update_source_messages(self):
     #     with mpo(self.helper, "request20") as mock_request:
