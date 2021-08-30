@@ -706,7 +706,7 @@ class TransifexHelper:
         )
         if self.dryrun:
             return pofile_obj
-        pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
+        pofile_obj.metadata["PO-Revision-Date"] = str(transifex_revision)
         pofile_obj.save(pofile_path)
         return pofile_obj
 
