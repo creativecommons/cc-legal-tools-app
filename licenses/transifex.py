@@ -682,7 +682,7 @@ class TransifexHelper:
         )
         if self.dryrun:
             return pofile_obj
-        pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
+        pofile_obj.metadata["POT-Creation-Date"] = str(transifex_creation)
         pofile_obj.save(pofile_path)
         return pofile_obj
 
