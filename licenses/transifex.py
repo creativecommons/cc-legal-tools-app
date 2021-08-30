@@ -919,7 +919,7 @@ class TransifexHelper:
         repo: git.Repo,
         legal_codes: Iterable["licenses.models.LegalCode"],
         update_repo=False,
-    ):
+    ):  # pragma: no cover
         """
         Use the Transifex API to find the last update timestamp for all our
         translations.  If translations are updated, we'll create a branch if
@@ -981,7 +981,7 @@ class TransifexHelper:
     def check_for_translation_updates(
         self,
         update_repo=False,
-    ):
+    ):  # pragma: no cover
         """
         This function wraps
         check_for_translation_updates_with_repo_and_legal_codes() to make
