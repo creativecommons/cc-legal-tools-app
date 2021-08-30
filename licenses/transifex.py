@@ -803,7 +803,7 @@ class TransifexHelper:
                 )
         return pofile_obj
 
-    def normalize_translations(self):
+    def normalize_translations(self):  # pragma: no cover
         legal_codes = (
             licenses.models.LegalCode.objects.valid()
             .translated()
