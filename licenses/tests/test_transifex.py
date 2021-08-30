@@ -595,7 +595,7 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        del pofile_obj.metadata["Language"]
+        pofile_obj.metadata.pop("Language", None)
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_language(
@@ -714,7 +714,7 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        del pofile_obj.metadata["Language-Team"]
+        pofile_obj.metadata.pop("Language-Team", None)
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_language_team(
@@ -1025,6 +1025,199 @@ class TestTransifex(TestCase):
         self.assertEqual(
             new_pofile_obj.metadata["PO-Revision-Date"], transifex_revision
         )
+
+    # Test: normalize_pofile_dates ########################
+
+    def test_normalize_pofile_dates_update_pofile_dates_missing(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
+        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata.pop("POT-Creation-Date", None)
+        pofile_obj.metadata.pop("PO-Revision-Date", None)
+
+        with mpo(
+            self.helper, "get_transifex_resource_stats"
+        ) as mock_resource_stats:
+            mock_resource_stats.return_value = {
+                resource_slug: {
+                    "created": transifex_creation,
+                    "last_update": transifex_revision,
+                },
+            }
+            with mpo(polib.POFile, "save") as mock_pofile_save:
+                new_pofile_obj = self.helper.normalize_pofile_dates(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        mock_pofile_save.assert_called()
+        self.assertEqual(
+            new_pofile_obj.metadata["POT-Creation-Date"], transifex_creation
+        )
+        self.assertEqual(
+            new_pofile_obj.metadata["PO-Revision-Date"], transifex_revision
+        )
+
+    def test_normalize_pofile_dates_update_pofile_creation_newer(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
+        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_creation = "2021-03-03 03:03:03.000003+00:00"
+        pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
+        pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
+
+        with mpo(
+            self.helper, "get_transifex_resource_stats"
+        ) as mock_resource_stats:
+            mock_resource_stats.return_value = {
+                resource_slug: {
+                    "created": transifex_creation,
+                    "last_update": transifex_revision,
+                },
+            }
+            with mpo(polib.POFile, "save") as mock_pofile_save:
+                new_pofile_obj = self.helper.normalize_pofile_dates(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        mock_pofile_save.assert_called_once()
+        self.assertEqual(
+            new_pofile_obj.metadata["POT-Creation-Date"], transifex_creation
+        )
+
+    def test_normalize_pofile_dates_update_pofile_creation_older(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_creation = "2021-02-02 02:02:02.000002+00:00"
+        transifex_revision = "2021-03-03 03:03:03.000003+00:00"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_creation = "2021-01-01 01:01:01.000001+00:00"
+        pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
+        pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mpo(
+                self.helper, "get_transifex_resource_stats"
+            ) as mock_resource_stats:
+                mock_resource_stats.return_value = {
+                    resource_slug: {
+                        "created": transifex_creation,
+                        "last_update": transifex_revision,
+                    },
+                }
+                with mpo(polib.POFile, "save") as mock_pofile_save:
+                    self.helper.normalize_pofile_dates(
+                        transifex_code,
+                        resource_slug,
+                        resource_name,
+                        pofile_path,
+                        pofile_obj,
+                    )
+
+        mock_pofile_save.assert_not_called()
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("'POT-Creation-Date' mismatch", log_context.output[0])
+
+    def test_normalize_pofile_dates_update_pofile_entries_same(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
+        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_revision = "2021-03-03 03:03:03.000003+00:00"
+        pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
+        pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
+
+        with mpo(
+            self.helper, "transifex_get_pofile_content"
+        ) as mock_transifex_content:
+            mock_transifex_content.return_value = bytes(
+                POFILE_CONTENT, "utf-8"
+            )
+            with mpo(
+                self.helper, "get_transifex_resource_stats"
+            ) as mock_resource_stats:
+                mock_resource_stats.return_value = {
+                    resource_slug: {
+                        "created": transifex_creation,
+                        "last_update": transifex_revision,
+                    },
+                }
+                with mpo(polib.POFile, "save") as mock_pofile_save:
+                    new_pofile_obj = self.helper.normalize_pofile_dates(
+                        transifex_code,
+                        resource_slug,
+                        resource_name,
+                        pofile_path,
+                        pofile_obj,
+                    )
+
+        mock_pofile_save.assert_called_once()
+        self.assertEqual(
+            new_pofile_obj.metadata["PO-Revision-Date"], transifex_revision
+        )
+
+    def test_normalize_pofile_dates_update_pofile_entries_different(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
+        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(
+            pofile=POFILE_CONTENT.replace("International", "Intergalactic")
+        )
+        pofile_revision = "2021-03-03 03:03:03.000003+00:00"
+        pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
+        pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mpo(
+                self.helper, "transifex_get_pofile_content"
+            ) as mock_transifex_content:
+                mock_transifex_content.return_value = bytes(
+                    POFILE_CONTENT, "utf-8"
+                )
+                with mpo(
+                    self.helper, "get_transifex_resource_stats"
+                ) as mock_resource_stats:
+                    mock_resource_stats.return_value = {
+                        resource_slug: {
+                            "created": transifex_creation,
+                            "last_update": transifex_revision,
+                        },
+                    }
+                    with mpo(polib.POFile, "save") as mock_pofile_save:
+                        new_pofile_obj = self.helper.normalize_pofile_dates(
+                            transifex_code,
+                            resource_slug,
+                            resource_name,
+                            pofile_path,
+                            pofile_obj,
+                        )
+
+        mock_pofile_save.assert_not_called()
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("'PO-Revision-Date' mismatch", log_context.output[0])
 
     # def test_update_source_messages(self):
     #     with mpo(self.helper, "request20") as mock_request:
