@@ -203,6 +203,29 @@ JURISDICTION_NAMES = {
     "za": "South Africa",
 }
 LANGUAGE_CODE_REGEX_STRING = r"[a-z-]*"
+LANGMAP_DJANGO_TO_REDIRECTS = {
+    # Django language code: List of language codes that should redirect to it
+    #
+    # Django language codes are lowercase IETF language tags
+    "de-at": ["de-AT", "de_at", "de_AT"],
+    "en": ["en-us", "en-US"],
+    "en-ca": ["en-CA", "en_ca", "en_CA"],
+    "en-gb": ["en-GB", "en_gb", "en_GB"],
+    "es": ["es-es", "es-ES"],
+    "es-ar": ["es-AR", "es_ar", "es_AR"],
+    "es-pe": ["es-PE", "es_pe", "es_PE"],
+    "fa-ir": ["fa-IR", "fa_ir", "fa_IR"],
+    "fr-ca": ["fr-CA", "fr_ca", "fr_CA"],
+    "fr-ch": ["fr-CH", "fr_ch", "fr_CH"],
+    "oc-aranes": ["oc-Aranes", "oci"],
+    "pt-br": ["pt-BR", "pt_br", "pt_BR"],
+    "si-lk": ["si-LK", "si_lk", "si_LK"],
+    "sr": ["sr-cyrl", "sr-Cyrl", "sr@cyrl", "sr@Cyrl"],
+    "sr-latn": ["sr-Latn", "sr-latin", "sr-Latin", "sr@latin", "sr@Latin"],
+    "zh-hans": ["zh-Hans", "zh", "zh-cn", "zh-CN", "zh_cn", "zh_CN"],
+    "zh-hant": ["zh-Hant", "zh-tw", "zh-TW", "zh_tw", "zh_TW"],
+    "zh-hk": ["zh-HK", "zh_hk", "zh_HK"],
+}
 LANGMAP_DJANGO_TO_TRANSIFEX = {
     # Django language code: Transifex language code
     #

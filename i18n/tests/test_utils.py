@@ -14,6 +14,7 @@ from i18n.utils import (
     get_pofile_path,
     get_pofile_revision_date,
     get_translation_object,
+    map_django_to_redirects_language_code,
     map_django_to_transifex_language_code,
     map_legacy_to_django_language_code,
     save_content_as_pofile_and_mofile,
@@ -142,6 +143,59 @@ class PofileTest(TestCase):
 
 
 class MappingTest(TestCase):
+    def test_map_django_to_redirects_language_code(self):
+        self.assertEqual(
+            ["DE-AT", "DE_AT", "de-AT", "de_AT", "de_at"],
+            map_django_to_redirects_language_code("de-at"),
+        )
+
+        self.assertEqual(
+            ["EN", "EN-US", "en-US", "en-us"],
+            map_django_to_redirects_language_code("en"),
+        )
+
+        self.assertEqual(
+            [
+                "NL",
+            ],
+            map_django_to_redirects_language_code("nl"),
+        )
+
+        self.assertEqual(
+            ["OC-ARANES", "OCI", "oc-Aranes", "oci"],
+            map_django_to_redirects_language_code("oc-aranes"),
+        )
+
+        self.assertEqual(
+            [
+                "SR-LATIN",
+                "SR-LATN",
+                "SR@LATIN",
+                "sr-Latin",
+                "sr-Latn",
+                "sr-latin",
+                "sr@Latin",
+                "sr@latin",
+            ],
+            map_django_to_redirects_language_code("sr-latn"),
+        )
+
+        self.assertEqual(
+            [
+                "ZH",
+                "ZH-CN",
+                "ZH-HANS",
+                "ZH_CN",
+                "zh",
+                "zh-CN",
+                "zh-Hans",
+                "zh-cn",
+                "zh_CN",
+                "zh_cn",
+            ],
+            map_django_to_redirects_language_code("zh-hans"),
+        )
+
     def test_map_django_to_transifex_language_code(self):
         transifex_code = map_django_to_transifex_language_code("de-at")
         self.assertEqual("de_AT", transifex_code)

@@ -17,6 +17,7 @@ from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
     DEFAULT_LANGUAGE_CODE,
     JURISDICTION_NAMES,
+    LANGMAP_DJANGO_TO_REDIRECTS,
     LANGMAP_DJANGO_TO_TRANSIFEX,
     LANGMAP_LEGACY_TO_DJANGO,
 )
@@ -195,6 +196,27 @@ def get_pofile_revision_date(pofile_obj: polib.POFile):
         return revision_date
     except dateutil.parser._parser.ParserError:
         return None
+
+
+def map_django_to_redirects_language_code(django_language_code: str) -> str:
+    """
+    Given a Django language code, return a list of languages codes that should
+    redirect to it.
+
+    Django language codes are lowercase IETF language tags
+
+    At a minimum, the retruned redirects_codes is a list containing only the
+    UPPERCASE Django language code.
+    """
+    redirects_codes = []
+    redirects_codes.append(django_language_code.upper())
+    for language_code in LANGMAP_DJANGO_TO_REDIRECTS.get(
+        django_language_code, []
+    ):
+        redirects_codes.append(language_code)
+        redirects_codes.append(language_code.upper())
+    redirects_codes = sorted(list(set(redirects_codes)))
+    return redirects_codes
 
 
 def map_django_to_transifex_language_code(django_language_code: str) -> str:
