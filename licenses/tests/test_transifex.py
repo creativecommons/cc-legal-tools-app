@@ -1207,7 +1207,7 @@ class TestTransifex(TestCase):
                         },
                     }
                     with mpo(polib.POFile, "save") as mock_pofile_save:
-                        new_pofile_obj = self.helper.normalize_pofile_dates(
+                        self.helper.normalize_pofile_dates(
                             transifex_code,
                             resource_slug,
                             resource_name,
