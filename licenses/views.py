@@ -330,7 +330,7 @@ def view_legal_code(
     version,
     category=None,
     jurisdiction=None,
-    language_code=None,  # CC language code
+    language_code=None,
     is_plain_text=False,
 ):
     request.path, language_code = normalize_path_and_lang(
