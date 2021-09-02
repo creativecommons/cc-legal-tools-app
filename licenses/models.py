@@ -55,8 +55,8 @@ UNITS_LICENSES = [
     "sampling+",  # ....... in versions: 1.0 unported, 1.0 ported
 ]
 UNITS_PUBLIC_DOMAIN = [
+    "certification",
     "mark",
-    "publicdomain",
     "zero",
 ]
 UNITS_DEPRECATED = {
@@ -69,13 +69,13 @@ UNITS_DEPRECATED = {
     "sa": "2004-05-25",
     "devnations": "2007-06-04",
     "sampling": "2007-06-04",
-    "publicdomain": "2010-10-11",
+    "certification": "2010-10-11",
     "nc-sampling+": "2011-09-12",
     "sampling+": "2011-09-12",
 }
 UNITS_DEED_ONLY = [
+    "certification",
     "mark",
-    "publicdomain",
 ]
 
 
