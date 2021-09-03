@@ -381,11 +381,11 @@ class DeedViewViewTest(LicensesTestsMixin, TestCase):
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed("includes/deed_body_mark.html")
 
-    def test_view_deed_template_body_publicdomain(self):
+    def test_view_deed_template_body_certification(self):
         lc = LegalCodeFactory(
             license__canonical_url="https://creativecommons.org/publicdomain/"
-            "publicdomain/1.0/us/",
-            license__unit="publicdomain",
+            "certification/1.0/us/",
+            license__unit="certification",
             license__version="1.0",
             license__jurisdiction_code="us",
             language_code="en",
@@ -393,7 +393,7 @@ class DeedViewViewTest(LicensesTestsMixin, TestCase):
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("includes/deed_body_publicdomain.html")
+        self.assertTemplateUsed("includes/deed_body_certification.html")
 
     def test_view_deed_template_body_unimplemented(self):
         lc = LegalCodeFactory(

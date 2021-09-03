@@ -139,7 +139,7 @@ def parse_legal_code_filename(filename):
     unit_to_return = unit
     if unit in licenses.models.UNITS_PUBLIC_DOMAIN or unit == "zero":
         category = "publicdomain"
-        if unit == "publicdomain":
+        if unit == "certification":
             jurisdiction = "us"
     elif unit in licenses.models.UNITS_LICENSES:
         category = "licenses"

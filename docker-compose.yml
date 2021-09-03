@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.6"
 
 services:
 
@@ -9,15 +9,13 @@ services:
       - POSTGRES_PASSWORD=postgres
     image: postgres
     restart: unless-stopped
-    volumes:
-      - type: bind
-        source: ./data/db
-        target: /var/lib/postgresql/data
+    tmpfs:
       # Use tmpfs for pg_stat_tmp to resolve WARNING: could not open statistics
       # file
       # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
-      - type: tmpfs
-        target: /var/lib/postgresql/data/pg_stat_tmp
+      - /var/lib/postgresql/data/pg_stat_tmp
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
 
   app:
     build: .
@@ -39,5 +37,6 @@ services:
     image: nginx
     ports:
       - "8080:80"
+    restart: always
     volumes:
       - ../cc-licenses-data/docs/:/usr/share/nginx/html:ro
