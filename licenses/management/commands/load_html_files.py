@@ -133,7 +133,7 @@ class Command(BaseCommand):
         ]
 
         # Deed-only
-        html_filenames.append("publicdomain_1.0.html")
+        html_filenames.append("certification_1.0.html")
         html_filenames.append("mark_1.0.html")
 
         html_filenames.sort()
@@ -284,7 +284,7 @@ class Command(BaseCommand):
                     if unit == "mark":
                         legal_code.title = "Public Domain Mark 1.0"
                         legal_code.save()
-                    elif unit == "publicdomain":
+                    elif unit == "certification":
                         legal_code.title = (
                             "Copyright-Only Dedication* (based on United"
                             " States law) or Public Domain Certification"

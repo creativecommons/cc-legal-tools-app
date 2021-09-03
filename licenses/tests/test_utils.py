@@ -327,13 +327,13 @@ class ParseLegalcodeFilenameTest(TestCase):
                 },
             ),
             (
-                "publicdomain_1.0.html",
+                "certification_1.0.html",
                 {
                     "canonical_url": (
                         "https://creativecommons.org/publicdomain/"
-                        "publicdomain/1.0/us/"
+                        "certification/1.0/us/"
                     ),
-                    "unit": "publicdomain",
+                    "unit": "certification",
                     "version": "1.0",
                     "deed_only": True,
                     "deprecated_on": "2010-10-11",

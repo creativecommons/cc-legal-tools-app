@@ -301,8 +301,8 @@ def view_deed(
         body_template = "includes/deed_body_zero.html"
     elif license.unit == "mark":
         body_template = "includes/deed_body_mark.html"
-    elif license.unit == "publicdomain":
-        body_template = "includes/deed_body_publicdomain.html"
+    elif license.unit == "certification":
+        body_template = "includes/deed_body_certification.html"
     else:
         body_template = "includes/deed_body_unimplemented.html"
 
@@ -330,7 +330,7 @@ def view_legal_code(
     version,
     category=None,
     jurisdiction=None,
-    language_code=None,  # CC language code
+    language_code=None,
     is_plain_text=False,
 ):
     request.path, language_code = normalize_path_and_lang(
