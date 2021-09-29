@@ -88,10 +88,14 @@ class Command(BaseCommand):
 
     def run_clean_output_dir(self):
         output_dir = self.output_dir
+        # RE: .nojekyll:
+        # https://github.blog/2009-12-29-bypassing-jekyll-on-github-pages/
+        # RE: CNAME
+        # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
         output_dir_items = [
             os.path.join(output_dir, item)
             for item in os.listdir(output_dir)
-            if item != "CNAME"
+            if item not in [".nojekyll", "CNAME"]
         ]
         for item in output_dir_items:
             if os.path.isdir(item):
@@ -169,7 +173,7 @@ class Command(BaseCommand):
             if os.path.isfile(os.path.join(licenses_rdf_dir, rdf_file))
         ]
         licenses_rdfs.sort()
-        LOG.info("Publishing legal code RDFs")
+        LOG.info("Copying legal code RDFs")
         LOG.debug(f"{hostname}:{output_dir}")
         for rdf in licenses_rdfs:
             if rdf.endswith(".rdf"):
@@ -198,7 +202,7 @@ class Command(BaseCommand):
         meta_files.sort()
         dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
-        LOG.info("Publishing RDF information and metadata")
+        LOG.info("Copying RDF information and metadata")
         LOG.debug(f"{hostname}:{output_dir}")
         for meta_file in meta_files:
             dest_relative = os.path.join("rdf", meta_file)
@@ -246,7 +250,7 @@ class Command(BaseCommand):
                 and text_file.endswith(".txt")
             )
         ]
-        LOG.info("Publishing plaintext legal code")
+        LOG.info("Copying plaintext legal code")
         LOG.debug(f"{hostname}:{output_dir}")
         for text in plaintext_files:
             if text.startswith("by"):
