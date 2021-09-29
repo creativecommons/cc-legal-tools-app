@@ -112,7 +112,6 @@ class Command(BaseCommand):
             output_dir,
             url="/dev/status/",
             relpath="status/index.html",
-            html=True,
         )
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
@@ -122,7 +121,6 @@ class Command(BaseCommand):
                 output_dir,
                 url=f"/status/{tbranch_id}/",
                 relpath=relpath,
-                html=True,
             )
 
         legal_codes = LegalCode.objects.validgroups()
@@ -137,7 +135,6 @@ class Command(BaseCommand):
                         output_dir,
                         url=legal_code.deed_url,
                         relpath=relpath,
-                        html=True,
                     )
                     for symlink in symlinks:
                         relative_symlink(output_dir, relpath, symlink)
@@ -150,7 +147,6 @@ class Command(BaseCommand):
                     output_dir,
                     url=legal_code.legal_code_url,
                     relpath=relpath,
-                    html=True,
                 )
                 for symlink in symlinks:
                     relative_symlink(output_dir, relpath, symlink)

@@ -8,6 +8,7 @@ from typing import Iterable
 import git
 import polib
 import yaml
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import caches
 from django.http import Http404, HttpResponse
@@ -216,7 +217,7 @@ def view_dev_home(request, category=None):
     licenses = sorted(licenses, reverse=True, key=itemgetter("version"))
     publicdomain = sorted(publicdomain, key=itemgetter("identifier"))
 
-    return render(
+    html_response = render(
         request,
         template_name="dev/home.html",
         context={
@@ -227,6 +228,11 @@ def view_dev_home(request, category=None):
             "units": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
         },
     )
+    html_response.content = bytes(
+        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        "utf-8",
+    )
+    return html_response
 
 
 def view_deed(
@@ -307,7 +313,7 @@ def view_deed(
         body_template = "includes/deed_body_unimplemented.html"
 
     translation.activate(language_code)
-    return render(
+    html_response = render(
         request,
         template_name="deed.html",
         context={
@@ -322,6 +328,11 @@ def view_deed(
             "license": license,
         },
     )
+    html_response.content = bytes(
+        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        "utf-8",
+    )
+    return html_response
 
 
 def view_legal_code(
@@ -415,7 +426,12 @@ def view_legal_code(
         #         response.write(output.stdout)
         #         return response
         #
-        return render(request, **kwargs)
+        html_response = render(request, **kwargs)
+        html_response.content = bytes(
+            BeautifulSoup(html_response.content, features="lxml").prettify(),
+            "utf-8",
+        )
+        return html_response
 
 
 def view_translation_status(request):
@@ -482,7 +498,7 @@ def view_translation_status(request):
                 "transifex_code": transifex_code,
             }
 
-    return render(
+    html_response = render(
         request,
         template_name="dev/translation_status.html",
         context={
@@ -492,6 +508,11 @@ def view_translation_status(request):
             "deed_ux": deed_ux_translation_info,
         },
     )
+    html_response.content = bytes(
+        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        "utf-8",
+    )
+    return html_response
 
 
 def branch_status_helper(repo, translation_branch):
@@ -543,17 +564,23 @@ def view_branch_status(request, id):
     cachekey = (
         f"{settings.DATA_REPOSITORY_DIR}-{translation_branch.branch_name}"
     )
-    result = cache.get(cachekey)
-    if result is None:
+    html_response = cache.get(cachekey)
+    if html_response is None:
         with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
             context = branch_status_helper(repo, translation_branch)
-            result = render(
+            html_response = render(
                 request,
                 "dev/branch_status.html",
                 context,
             )
-        cache.set(cachekey, result, 5 * 60)
-    return result
+            html_response.content = bytes(
+                BeautifulSoup(
+                    html_response.content, features="lxml"
+                ).prettify(),
+                "utf-8",
+            )
+        cache.set(cachekey, html_response, 5 * 60)
+    return html_response
 
 
 def view_metadata(request):
