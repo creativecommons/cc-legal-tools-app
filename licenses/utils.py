@@ -7,7 +7,7 @@ import urllib.parse
 from base64 import b64encode
 
 # Third-party
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import NavigableString
 from django.conf import settings
 from django.urls import get_resolver
 from polib import POEntry, POFile
@@ -48,12 +48,10 @@ class MockRequest:
         self.path = path
 
 
-def save_url_as_static_file(output_dir, url, relpath, html=False):
+def save_url_as_static_file(output_dir, url, relpath):
     """
     Get the output from the URL and save it in an appropriate file
     under output_dir. For making static files from a site.
-
-    If the file is a HTML file, use BeautifulSoup to prettify the contents.
 
     Pass in open_func just for testing, not in regular use.
     """
@@ -67,12 +65,7 @@ def save_url_as_static_file(output_dir, url, relpath, html=False):
     if rsp.status_code != 200:
         raise ValueError(f"ERROR: Status {rsp.status_code} for url {url}")
     output_filename = os.path.join(output_dir, relpath)
-    content = rsp.content
-    if html:
-        content = bytes(
-            BeautifulSoup(content, features="lxml").prettify(), "utf-8"
-        )
-    save_bytes_to_file(content, output_filename)
+    save_bytes_to_file(rsp.content, output_filename)
 
 
 def relative_symlink(src1, src2, dst):

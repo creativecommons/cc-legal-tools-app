@@ -65,7 +65,7 @@ strings_to_lambdas = {
     and lic_ob.unit in UNITS_LICENSES,
     "You may not use the material for": lambda lic_ob: lic_ob.prohibits_commercial_use  # noqa: E501
     and lic_ob.unit in UNITS_LICENSES,
-    ">commercial purposes<": lambda lic_ob: lic_ob.prohibits_commercial_use
+    "commercial purposes": lambda lic_ob: lic_ob.prohibits_commercial_use
     and lic_ob.unit in UNITS_LICENSES,
     "When the Licensor is an intergovernmental organization": lambda lic_ob: lic_ob.jurisdiction_code  # noqa: E501
     == "igo",
