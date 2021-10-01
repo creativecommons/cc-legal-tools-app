@@ -287,7 +287,7 @@ class LegalCodeModelTest(TestCase):
         self.assertTrue(lc_fr.has_english())
         self.assertTrue(lc_en.has_english())
 
-    def _test_get_deed_or_license_path(self, data):
+    def _test_get_publish_files(self, data):
         for (
             category,
             version,
@@ -296,8 +296,10 @@ class LegalCodeModelTest(TestCase):
             language_code,
             expected_deed_path,
             expected_deed_symlinks,
+            expected_deed_redirects_data,
             expected_license_path,
             expected_license_symlinks,
+            expected_license_redirects_data,
         ) in data:
             license = LicenseFactory(
                 category=category,
@@ -309,29 +311,34 @@ class LegalCodeModelTest(TestCase):
                 license=license, language_code=language_code
             )
             self.assertEqual(
-                [expected_deed_path, expected_deed_symlinks],
-                legal_code.get_file_and_links("deed"),
+                [
+                    expected_deed_path,
+                    expected_deed_symlinks,
+                    expected_deed_redirects_data,
+                ],
+                legal_code.get_publish_files("deed"),
             )
             self.assertEqual(
-                [expected_license_path, expected_license_symlinks],
-                legal_code.get_file_and_links("legalcode"),
+                [
+                    expected_license_path,
+                    expected_license_symlinks,
+                    expected_license_redirects_data,
+                ],
+                legal_code.get_publish_files("legalcode"),
             )
 
-    def test_get_deed_or_license_path_by4(self):
+    def test_get_publish_files_by4(self):
         """
-        4.0 formula:
-        /licenses/VERSION/LICENSE_deed_LANGAUGE.html
-        /licenses/VERSION/LICENSE_legalcode_LANGAUGEhtml
-
-        4.0 examples:
-        /licenses/4.0/by-nc-nd_deed_en.html
-        /licenses/4.0/by-nc-nd_legalcode_en.html
-        /licenses/4.0/by_deed_en.html
-        /licenses/4.0/by_legalcode_en.html
-        /licenses/4.0/by_deed_zh-Hans.html
-        /licenses/4.0/by_legalcode_zh-Hans.html
+        4.0:
+            Formula
+                CATEGORY/UNIT/VERSION/DOCUMENT.LANG.html
+            Examples
+                licenses/by-nc-nd/4.0/deed.en-us.html
+                licenses/by-nc-nd/4.0/legalcode.en-us.html
+                licenses/by/4.0/deed.hl.html
+                licenses/by/4.0/legalcode.hl.html
         """
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "licenses",
@@ -341,39 +348,127 @@ class LegalCodeModelTest(TestCase):
                     "en",
                     "licenses/by-nc-nd/4.0/deed.en.html",
                     ["deed.html", "index.html"],
+                    [
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by-nc-nd/4.0/deed.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by-nc-nd/4.0/deed.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                     "licenses/by-nc-nd/4.0/legalcode.en.html",
                     ["legalcode.html"],
+                    [
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by-nc-nd/4.0/legalcode.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by-nc-nd/4.0/legalcode.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                 ),
                 (
                     "licenses",
                     "4.0",
                     "by",
                     "",
-                    "en",
-                    "licenses/by/4.0/deed.en.html",
-                    ["deed.html", "index.html"],
-                    "licenses/by/4.0/legalcode.en.html",
-                    ["legalcode.html"],
+                    "hl",
+                    "licenses/by/4.0/deed.hl.html",
+                    [],
+                    [],
+                    "licenses/by/4.0/legalcode.hl.html",
+                    [],
+                    [],
                 ),
             ]
         )
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "licenses",
                     "4.0",
                     "by",
                     "",
-                    "zh-Hans",
-                    "licenses/by/4.0/deed.zh-Hans.html",
+                    "zh-hans",
+                    "licenses/by/4.0/deed.zh-hans.html",
                     [],
-                    "licenses/by/4.0/legalcode.zh-Hans.html",
+                    [
+                        {
+                            "destination": "deed.zh-hans.html",
+                            "language_code": "zh-hans",
+                            "redirect_file": "licenses/by/4.0/deed.zh.html",
+                            "title": "",
+                        },
+                        {
+                            "destination": "deed.zh-hans.html",
+                            "language_code": "zh-hans",
+                            "redirect_file": (
+                                "licenses/by/4.0/deed.zh-cn.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "deed.zh-hans.html",
+                            "language_code": "zh-hans",
+                            "redirect_file": (
+                                "licenses/by/4.0/deed.zh_cn.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
+                    "licenses/by/4.0/legalcode.zh-hans.html",
                     [],
+                    [
+                        {
+                            "destination": "legalcode.zh-hans.html",
+                            "language_code": "zh-hans",
+                            "redirect_file": (
+                                "licenses/by/4.0/legalcode.zh.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "legalcode.zh-hans.html",
+                            "language_code": "zh-hans",
+                            "redirect_file": (
+                                "licenses/by/4.0/legalcode.zh-cn.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "legalcode.zh-hans.html",
+                            "language_code": "zh-hans",
+                            "redirect_file": (
+                                "licenses/by/4.0/legalcode.zh_cn.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                 ),
             ]
         )
 
-    def test_get_deed_or_license_path_by3(self):
+    def test_get_publish_files_by3(self):
         """
         3.0 unported
             Formula
@@ -392,7 +487,7 @@ class LegalCodeModelTest(TestCase):
                 licenses/by-sa/3.0/ca/legalcode.fr.html
         """
         # Unported
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "licenses",
@@ -402,13 +497,49 @@ class LegalCodeModelTest(TestCase):
                     "en",
                     "licenses/by/3.0/deed.en.html",
                     ["deed.html", "index.html"],
+                    [
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/deed.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/deed.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                     "licenses/by/3.0/legalcode.en.html",
                     ["legalcode.html"],
+                    [
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/legalcode.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/legalcode.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                 ),
             ]
         )
         # Ported with multiple languages
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "licenses",
@@ -418,12 +549,48 @@ class LegalCodeModelTest(TestCase):
                     "en",
                     "licenses/by/3.0/ca/deed.en.html",
                     ["deed.html", "index.html"],
+                    [
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/ca/deed.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/ca/deed.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                     "licenses/by/3.0/ca/legalcode.en.html",
                     ["legalcode.html"],
+                    [
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/ca/legalcode.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "licenses/by/3.0/ca/legalcode.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                 ),
             ]
         )
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "licenses",
@@ -432,14 +599,16 @@ class LegalCodeModelTest(TestCase):
                     "ca",
                     "fr",
                     "licenses/by-sa/3.0/ca/deed.fr.html",
-                    [],
+                    [],  # no symlinks
+                    [],  # no redirects data
                     "licenses/by-sa/3.0/ca/legalcode.fr.html",
-                    [],
+                    [],  # no symlinks
+                    [],  # no redirects data
                 ),
             ]
         )
         # Ported with single language
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "licenses",
@@ -449,13 +618,15 @@ class LegalCodeModelTest(TestCase):
                     "hy",
                     "licenses/by-nc-nd/3.0/am/deed.hy.html",
                     ["deed.html", "index.html"],
+                    [],  # no redirects data
                     "licenses/by-nc-nd/3.0/am/legalcode.hy.html",
                     ["legalcode.html"],
+                    [],  # no redirects data
                 ),
             ]
         )
 
-    def test_get_deed_or_license_path_zero(self):
+    def test_get_publish_files_zero(self):
         """
         Formula
             CATEGORY/UNIT/VERSION/DOCUMENT.LANG.html
@@ -463,7 +634,7 @@ class LegalCodeModelTest(TestCase):
             publicdomain/zero/1.0/deed.en.html
             publicdomain/zero/1.0/legalcode.en.html
         """
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "publicdomain",
@@ -473,12 +644,48 @@ class LegalCodeModelTest(TestCase):
                     "en",
                     "publicdomain/zero/1.0/deed.en.html",
                     ["deed.html", "index.html"],
+                    [
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "publicdomain/zero/1.0/deed.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "deed.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "publicdomain/zero/1.0/deed.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                     "publicdomain/zero/1.0/legalcode.en.html",
                     ["legalcode.html"],
+                    [
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "publicdomain/zero/1.0/legalcode.en-us.html"
+                            ),
+                            "title": "",
+                        },
+                        {
+                            "destination": "legalcode.en.html",
+                            "language_code": "en",
+                            "redirect_file": (
+                                "publicdomain/zero/1.0/legalcode.en_us.html"
+                            ),
+                            "title": "",
+                        },
+                    ],
                 ),
             ]
         )
-        self._test_get_deed_or_license_path(
+        self._test_get_publish_files(
             [
                 (
                     "publicdomain",
@@ -487,9 +694,11 @@ class LegalCodeModelTest(TestCase):
                     "",
                     "ja",
                     "publicdomain/zero/1.0/deed.ja.html",
-                    [],
+                    [],  # no symlinks
+                    [],  # no redirects data
                     "publicdomain/zero/1.0/legalcode.ja.html",
-                    [],
+                    [],  # no symlinks
+                    [],  # no redirects data
                 ),
             ]
         )

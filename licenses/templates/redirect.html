@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load bidi i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_language_info for LANGUAGE_CODE as lang %}
+{% trans "Redirect to:" as redirect_to %}
+<html lang="{{ lang.code }}" class="no-js" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
+<head>
+  <title>{{ redirect_to }} {{ title }}</title>
+  <meta charset="utf-8"/>
+  <meta content="0;url={{ destination }}" http-equiv="refresh"/>
+  <link href="{{ destination }}" rel="shortlink"/>
+</head>
+<body>
+  {{ redirect_to }}
+  <a href="{{ destination }}">{{ title }}</a>
+</body>
+</html>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

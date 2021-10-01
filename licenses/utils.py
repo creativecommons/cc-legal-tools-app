@@ -19,6 +19,7 @@ from i18n.utils import (
     get_default_language_for_jurisdiction,
     map_legacy_to_django_language_code,
 )
+from licenses.views import render_redirect
 
 LOG = logging.getLogger(__name__)
 
@@ -85,6 +86,20 @@ def relative_symlink(src1, src2, dst):
         LOG.debug(f"    {padding}^{dst}")
     finally:
         os.close(dir_fd)
+
+
+def save_redirect(output_dir, redirect_data):
+    relpath = redirect_data["redirect_file"]
+    content = render_redirect(
+        title=redirect_data["title"],
+        destination=redirect_data["destination"],
+        language_code=redirect_data["language_code"],
+    )
+    path, filename = os.path.split(relpath)
+    padding = " " * (len(os.path.dirname(path)) + 8)
+    LOG.debug(f"{padding}*{filename}")
+    output_filename = os.path.join(output_dir, relpath)
+    save_bytes_to_file(content, output_filename)
 
 
 def get_code_from_jurisdiction_url(url):

@@ -26,6 +26,7 @@ from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
     get_translation_object,
+    map_django_to_redirects_language_codes_lowercase,
 )
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
@@ -299,28 +300,44 @@ class LegalCode(models.Model):
                 license.version,  # ex. 1.0, 4.0
             )
 
-    def get_file_and_links(self, document):
+    def get_publish_files(self, document):
         """
         1. Add document type ("deed" or "legalcode"), language, and HTML file
-           extension to filename to save content to.
+           extension to filename to get output/save-destination filename.
         2. Generate list of symlinks to ensure expected URLs function
            correctly.
+        3. Generate list of redirects to ensure languages are reachable given
+           different language code formats and character case.
         """
+        language_code = self.language_code
         license = self.license
         juris_code = license.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
-        filename = os.path.join(
-            self._get_save_path(),
-            f"{document}.{self.language_code}.html",
-        )
+        filename = f"{document}.{self.language_code}.html"
+        relpath = os.path.join(self._get_save_path(), filename)
         symlinks = []
-        if self.language_code == language_default:
+        if language_code == language_default:
             # Symlink default languages
             symlinks.append(f"{document}.html")
             if document == "deed":
                 symlinks.append("index.html")
 
-        return [filename, symlinks]
+        redirects_data = []
+        for redirect_code in map_django_to_redirects_language_codes_lowercase(
+            language_code
+        ):
+            redirect_file = os.path.join(
+                self._get_save_path(), f"{document}.{redirect_code}.html"
+            )
+            redirects_data.append(
+                {
+                    "redirect_file": redirect_file,
+                    "title": self.title,
+                    "destination": filename,
+                    "language_code": language_code,
+                }
+            )
+        return [relpath, symlinks, redirects_data]
 
     def has_english(self):
         """
