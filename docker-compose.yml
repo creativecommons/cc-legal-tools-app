@@ -39,4 +39,5 @@ services:
       - "8080:80"
     restart: always
     volumes:
+      - ../cc-licenses-data/config/:/etc/nginx/conf.d:ro
       - ../cc-licenses-data/docs/:/usr/share/nginx/html:ro

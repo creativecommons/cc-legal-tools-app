@@ -26,6 +26,7 @@ from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
     get_translation_object,
+    map_django_to_redirects_language_codes,
     map_django_to_redirects_language_codes_lowercase,
 )
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
@@ -333,11 +334,32 @@ class LegalCode(models.Model):
                 {
                     "redirect_file": redirect_file,
                     "title": self.title,
-                    "destination": filename,
+                    "destination": f"{document}.{self.language_code}",
                     "language_code": language_code,
                 }
             )
         return [relpath, symlinks, redirects_data]
+
+    def get_redirect_pairs(self, document):
+        """
+        Get a list of pairs (list with two items):
+        1. document path with redirect language code
+        2. document path with correct Django language code
+        """
+        language_code = self.language_code
+        filename = f"{document}.{self.language_code}"
+        relpath = os.path.join(self._get_save_path(), filename)
+        redirect_pairs = []
+        for redirect_code in map_django_to_redirects_language_codes(
+            language_code
+        ):
+            redirect_name = f"{document}.{redirect_code}"
+            redirect_relpath = os.path.join(
+                self._get_save_path(), redirect_name
+            )
+            redirect_pairs.append([redirect_relpath, relpath])
+        redirect_pairs.sort(key=lambda x: x[0], reverse=True)
+        return redirect_pairs
 
     def has_english(self):
         """
