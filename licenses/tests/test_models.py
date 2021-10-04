@@ -335,8 +335,8 @@ class LegalCodeModelTest(TestCase):
             Examples
                 licenses/by-nc-nd/4.0/deed.en-us.html
                 licenses/by-nc-nd/4.0/legalcode.en-us.html
-                licenses/by/4.0/deed.hl.html
-                licenses/by/4.0/legalcode.hl.html
+                licenses/by/4.0/deed.nl.html
+                licenses/by/4.0/legalcode.nl.html
         """
         self._test_get_publish_files(
             [
@@ -350,7 +350,7 @@ class LegalCodeModelTest(TestCase):
                     ["deed.html", "index.html"],
                     [
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by-nc-nd/4.0/deed.en-us.html"
@@ -358,7 +358,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by-nc-nd/4.0/deed.en_us.html"
@@ -370,7 +370,7 @@ class LegalCodeModelTest(TestCase):
                     ["legalcode.html"],
                     [
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by-nc-nd/4.0/legalcode.en-us.html"
@@ -378,7 +378,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by-nc-nd/4.0/legalcode.en_us.html"
@@ -392,11 +392,11 @@ class LegalCodeModelTest(TestCase):
                     "4.0",
                     "by",
                     "",
-                    "hl",
-                    "licenses/by/4.0/deed.hl.html",
+                    "nl",
+                    "licenses/by/4.0/deed.nl.html",
                     [],
                     [],
-                    "licenses/by/4.0/legalcode.hl.html",
+                    "licenses/by/4.0/legalcode.nl.html",
                     [],
                     [],
                 ),
@@ -414,13 +414,13 @@ class LegalCodeModelTest(TestCase):
                     [],
                     [
                         {
-                            "destination": "deed.zh-hans.html",
+                            "destination": "deed.zh-hans",
                             "language_code": "zh-hans",
                             "redirect_file": "licenses/by/4.0/deed.zh.html",
                             "title": "",
                         },
                         {
-                            "destination": "deed.zh-hans.html",
+                            "destination": "deed.zh-hans",
                             "language_code": "zh-hans",
                             "redirect_file": (
                                 "licenses/by/4.0/deed.zh-cn.html"
@@ -428,7 +428,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "deed.zh-hans.html",
+                            "destination": "deed.zh-hans",
                             "language_code": "zh-hans",
                             "redirect_file": (
                                 "licenses/by/4.0/deed.zh_cn.html"
@@ -440,7 +440,7 @@ class LegalCodeModelTest(TestCase):
                     [],
                     [
                         {
-                            "destination": "legalcode.zh-hans.html",
+                            "destination": "legalcode.zh-hans",
                             "language_code": "zh-hans",
                             "redirect_file": (
                                 "licenses/by/4.0/legalcode.zh.html"
@@ -448,7 +448,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "legalcode.zh-hans.html",
+                            "destination": "legalcode.zh-hans",
                             "language_code": "zh-hans",
                             "redirect_file": (
                                 "licenses/by/4.0/legalcode.zh-cn.html"
@@ -456,7 +456,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "legalcode.zh-hans.html",
+                            "destination": "legalcode.zh-hans",
                             "language_code": "zh-hans",
                             "redirect_file": (
                                 "licenses/by/4.0/legalcode.zh_cn.html"
@@ -499,7 +499,7 @@ class LegalCodeModelTest(TestCase):
                     ["deed.html", "index.html"],
                     [
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/deed.en-us.html"
@@ -507,7 +507,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/deed.en_us.html"
@@ -519,7 +519,7 @@ class LegalCodeModelTest(TestCase):
                     ["legalcode.html"],
                     [
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/legalcode.en-us.html"
@@ -527,7 +527,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/legalcode.en_us.html"
@@ -551,7 +551,7 @@ class LegalCodeModelTest(TestCase):
                     ["deed.html", "index.html"],
                     [
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/ca/deed.en-us.html"
@@ -559,7 +559,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/ca/deed.en_us.html"
@@ -571,7 +571,7 @@ class LegalCodeModelTest(TestCase):
                     ["legalcode.html"],
                     [
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/ca/legalcode.en-us.html"
@@ -579,7 +579,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "licenses/by/3.0/ca/legalcode.en_us.html"
@@ -646,7 +646,7 @@ class LegalCodeModelTest(TestCase):
                     ["deed.html", "index.html"],
                     [
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "publicdomain/zero/1.0/deed.en-us.html"
@@ -654,7 +654,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "deed.en.html",
+                            "destination": "deed.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "publicdomain/zero/1.0/deed.en_us.html"
@@ -666,7 +666,7 @@ class LegalCodeModelTest(TestCase):
                     ["legalcode.html"],
                     [
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "publicdomain/zero/1.0/legalcode.en-us.html"
@@ -674,7 +674,7 @@ class LegalCodeModelTest(TestCase):
                             "title": "",
                         },
                         {
-                            "destination": "legalcode.en.html",
+                            "destination": "legalcode.en",
                             "language_code": "en",
                             "redirect_file": (
                                 "publicdomain/zero/1.0/legalcode.en_us.html"
@@ -701,6 +701,15 @@ class LegalCodeModelTest(TestCase):
                     [],  # no redirects data
                 ),
             ]
+        )
+
+    def test_get_redirect_pairs_4(self):
+        license = LicenseFactory(category="license", unit="by", version="4.0")
+        legal_code = LegalCodeFactory(license=license, language_code="nl")
+        redirect_pairs = legal_code.get_redirect_pairs("deed")
+        self.assertEqual(
+            [["license/by/4.0/deed.NL", "license/by/4.0/deed.nl"]],
+            redirect_pairs,
         )
 
 
