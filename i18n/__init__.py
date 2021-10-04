@@ -246,8 +246,6 @@ LANGMAP_DJANGO_TO_TRANSIFEX = {
     "fa-ir": "fa_IR",
     "fr-ca": "fr_CA",
     "fr-ch": "fr_CH",
-    # "oc-aranes": "oc@aranes",  # .. until Aranese is added to Transifex
-    "oc-aranes": "oc",  # Use Occitan until Aranese is added to Transifex
     "pt-br": "pt_BR",
     "si-lk": "si_LK",
     "sr-latn": "sr@latin",
