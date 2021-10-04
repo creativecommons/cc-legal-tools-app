@@ -4,7 +4,7 @@ import os
 import tempfile
 from io import StringIO
 from unittest import mock
-from unittest.mock import MagicMock, call
+from unittest.mock import MagicMock
 
 # Third-party
 from bs4 import BeautifulSoup
@@ -43,32 +43,6 @@ class SaveURLAsStaticFileTest(TestCase):
             with open(filename, "rb") as f:
                 contents = f.read()
             self.assertEqual(b"abcxyz", contents)
-        finally:
-            tmpdir.cleanup()
-
-    def test_relative_symlink(self):
-        try:
-            tmpdir = tempfile.TemporaryDirectory()
-            # symlink link1 => source1 and verify by reading link1
-            contents1 = b"111"
-            source1 = os.path.join(tmpdir.name, "source1")
-            with open(source1, "wb") as f:
-                f.write(contents1)
-            utils.relative_symlink(tmpdir.name, source1, "link1")
-            with open(os.path.join(tmpdir.name, "link1"), "rb") as f:
-                contents = f.read()
-            self.assertEqual(contents1, contents)
-            # symlink link2 => xx/source2 and verify by reading link2
-            subdir = os.path.join(tmpdir.name, "xx")
-            os.makedirs(subdir, mode=0o755)
-            contents2 = b"222"
-            source2 = os.path.join(subdir, "source1")
-            with open(source2, "wb") as f:
-                f.write(contents2)
-            utils.relative_symlink(tmpdir.name, source2, "../link2")
-            with open(os.path.join(tmpdir.name, "link2"), "rb") as f:
-                contents = f.read()
-            self.assertEqual(contents2, contents)
         finally:
             tmpdir.cleanup()
 
@@ -142,14 +116,60 @@ class SaveURLAsStaticFileTest(TestCase):
                 )
                 utils.save_url_as_static_file(output_dir, url, relpath)
 
-        self.assertEqual([call(url)], mock_resolve.call_args_list)
-        self.assertEqual(
-            [call(request=mock.ANY)], mock_view_metadata.call_args_list
+        mock_resolve.assert_called_with(url)
+        mock_view_metadata.assert_called()
+        mock_save.assert_called_with(
+            file_content, "/output/licenses/metadata.yaml"
         )
-        self.assertEqual(
-            [call(file_content, "/output/licenses/metadata.yaml")],
-            mock_save.call_args_list,
+
+    def test_relative_symlink(self):
+        try:
+            tmpdir = tempfile.TemporaryDirectory()
+            # symlink link1 => source1 and verify by reading link1
+            contents1 = b"111"
+            source1 = os.path.join(tmpdir.name, "source1")
+            with open(source1, "wb") as f:
+                f.write(contents1)
+            utils.relative_symlink(tmpdir.name, source1, "link1")
+            with open(os.path.join(tmpdir.name, "link1"), "rb") as f:
+                contents = f.read()
+            self.assertEqual(contents1, contents)
+            # symlink link2 => xx/source2 and verify by reading link2
+            subdir = os.path.join(tmpdir.name, "xx")
+            os.makedirs(subdir, mode=0o755)
+            contents2 = b"222"
+            source2 = os.path.join(subdir, "source1")
+            with open(source2, "wb") as f:
+                f.write(contents2)
+            utils.relative_symlink(tmpdir.name, source2, "../link2")
+            with open(os.path.join(tmpdir.name, "link2"), "rb") as f:
+                contents = f.read()
+            self.assertEqual(contents2, contents)
+        finally:
+            tmpdir.cleanup()
+
+    def test_save_redirect(self):
+        output_dir = "/OUTPUT_DIR"
+        redirect_data = {
+            "destination": "DESTINATION",
+            "language_code": "LANGUAGE_CODE",
+            "redirect_file": ("FILE_PATH"),
+            "title": "TITLE",
+        }
+
+        with mock.patch(
+            "licenses.utils.render_redirect",
+            return_value="STRING",
+        ) as mock_render:
+            with mock.patch("licenses.utils.save_bytes_to_file") as mock_save:
+                utils.save_redirect(output_dir, redirect_data)
+
+        mock_render.assert_called_with(
+            title="TITLE",
+            destination="DESTINATION",
+            language_code="LANGUAGE_CODE",
         )
+        mock_save.assert_called_with("STRING", "/OUTPUT_DIR/FILE_PATH")
 
 
 class GetJurisdictionCodeTest(TestCase):

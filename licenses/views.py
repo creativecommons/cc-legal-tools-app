@@ -13,6 +13,7 @@ from django.conf import settings
 from django.core.cache import caches
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
 from django.utils import translation
 
 # First-party/Local
@@ -609,3 +610,16 @@ def view_page_not_found(request, exception, template_name="404.html"):
         },
         status=404,
     )
+
+
+def render_redirect(title, destination, language_code):
+    translation.activate(language_code)
+    html_content = render_to_string(
+        "redirect.html",
+        context={"title": title, "destination": destination},
+    )
+    html_content = bytes(
+        BeautifulSoup(html_content, features="lxml").prettify(),
+        "utf-8",
+    )
+    return html_content

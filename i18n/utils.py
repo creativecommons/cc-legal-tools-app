@@ -17,6 +17,7 @@ from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
     DEFAULT_LANGUAGE_CODE,
     JURISDICTION_NAMES,
+    LANGMAP_DJANGO_TO_REDIRECTS,
     LANGMAP_DJANGO_TO_TRANSIFEX,
     LANGMAP_LEGACY_TO_DJANGO,
 )
@@ -195,6 +196,72 @@ def get_pofile_revision_date(pofile_obj: polib.POFile):
         return revision_date
     except dateutil.parser._parser.ParserError:
         return None
+
+
+def map_django_to_redirects_language_codes(django_language_code: str) -> list:
+    """
+    Given a Django language code, return a list of languages codes that should
+    redirect to it.
+
+    Django language codes are lowercase IETF language tags
+
+    At a minimum, the returned redirect_codes is a list containing only the
+    UPPERCASE Django language code.
+    """
+
+    redirect_codes = []
+    legacy_codes = LANGMAP_DJANGO_TO_REDIRECTS.get(django_language_code, [])
+    legacy_codes.append(django_language_code)
+    for language_code in legacy_codes:
+        # Only lowercase language codes are expected
+        assert language_code == language_code.lower()
+        redirect_codes.append(language_code)
+        redirect_codes.append(language_code.upper())
+        for separator in ["-", "@", "_"]:
+            if separator in language_code:
+                parts = language_code.split(separator)
+                # add variant with all parts after the first UPPERCASE
+                redirect_codes.append(
+                    separator.join(
+                        [
+                            parts[0],
+                        ]
+                        + [part.upper() for part in parts[1:]]
+                    )
+                )
+                # add variant with all parts after the first Titlecase
+                redirect_codes.append(
+                    separator.join(
+                        [
+                            parts[0],
+                        ]
+                        + [part.title() for part in parts[1:]]
+                    )
+                )
+    redirect_codes = sorted(list(set(redirect_codes)))
+    redirect_codes.remove(django_language_code)
+    return redirect_codes
+
+
+def map_django_to_redirects_language_codes_lowercase(
+    django_language_code: str,
+) -> list:
+    """
+    Given a Django language code, return a list of lowercase languages codes
+    that should redirect to it. The list may be empty.
+
+    Django language codes are lowercase IETF language tags
+    """
+    redirect_codes = map_django_to_redirects_language_codes(
+        django_language_code
+    )
+    redirect_codes = [
+        redirect_code.lower()
+        for redirect_code in redirect_codes
+        if redirect_code.lower() != django_language_code
+    ]
+    redirect_codes = sorted(list(set(redirect_codes)))
+    return redirect_codes
 
 
 def map_django_to_transifex_language_code(django_language_code: str) -> str:

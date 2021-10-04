@@ -19,6 +19,7 @@ from licenses.models import LegalCode, TranslationBranch
 from licenses.utils import (
     init_utils_logger,
     relative_symlink,
+    save_redirect,
     save_url_as_static_file,
 )
 
@@ -134,7 +135,11 @@ class Command(BaseCommand):
             for legal_code in legal_codes[group]:
                 # deed
                 try:
-                    relpath, symlinks = legal_code.get_file_and_links("deed")
+                    (
+                        relpath,
+                        symlinks,
+                        redirects_data,
+                    ) = legal_code.get_publish_files("deed")
                     save_url_as_static_file(
                         output_dir,
                         url=legal_code.deed_url,
@@ -142,11 +147,17 @@ class Command(BaseCommand):
                     )
                     for symlink in symlinks:
                         relative_symlink(output_dir, relpath, symlink)
+                    for redirect_data in redirects_data:
+                        save_redirect(output_dir, redirect_data)
                 except Http404 as e:
                     if "invalid language" not in str(e):
                         raise
                 # legalcode
-                relpath, symlinks = legal_code.get_file_and_links("legalcode")
+                (
+                    relpath,
+                    symlinks,
+                    redirects_data,
+                ) = legal_code.get_publish_files("legalcode")
                 save_url_as_static_file(
                     output_dir,
                     url=legal_code.legal_code_url,
@@ -154,6 +165,8 @@ class Command(BaseCommand):
                 )
                 for symlink in symlinks:
                     relative_symlink(output_dir, relpath, symlink)
+                for redirect_data in redirects_data:
+                    save_redirect(output_dir, redirect_data)
 
         LOG.debug(f"{hostname}:{output_dir}")
         save_url_as_static_file(

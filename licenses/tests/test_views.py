@@ -23,6 +23,7 @@ from licenses.views import (
     get_deed_rel_path,
     get_legal_code_rel_path,
     normalize_path_and_lang,
+    render_redirect,
 )
 
 
@@ -886,3 +887,27 @@ class ViewPageNotFoundTest(TestCase):
         rsp = self.client.get(url)
         self.assertTemplateUsed("404.html")
         self.assertEqual(rsp.status_code, 404)
+
+
+class RenderRedirect(TestCase):
+    def test_render_redirect_en_ltr(self):
+        destination = "DESTINATION"
+        language_code = "en"
+        title = "TITLE"
+        rendered = render_redirect(title, destination, language_code)
+        rendered = rendered.decode("utf-8")
+        self.assertTemplateUsed("redirect.html")
+        self.assertIn(f'dir="ltr" lang="{language_code}">', rendered)
+        self.assertIn(f"Redirect to: {title}", rendered)
+        self.assertIn(f'<meta content="0;url={destination}"', rendered)
+
+    def test_render_redirect_ar_rtl(self):
+        destination = "DESTINATION"
+        language_code = "ar"
+        title = "TITLE"
+        rendered = render_redirect(title, destination, language_code)
+        rendered = rendered.decode("utf-8")
+        self.assertTemplateUsed("redirect.html")
+        self.assertIn(f'dir="rtl" lang="{language_code}">', rendered)
+        self.assertIn(f"Redirect to: {title}", rendered)
+        self.assertIn(f'<meta content="0;url={destination}"', rendered)

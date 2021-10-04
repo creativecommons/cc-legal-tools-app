@@ -203,6 +203,33 @@ JURISDICTION_NAMES = {
     "za": "South Africa",
 }
 LANGUAGE_CODE_REGEX_STRING = r"[a-z-]*"
+LANGMAP_DJANGO_TO_REDIRECTS = {
+    # Django language code: List of language codes that should redirect to it
+    #
+    # Django language codes are lowercase IETF language tags
+    #
+    # The map_django_to_redirects_language_codes function adds uppercase and
+    # titlecase variants automatically (only lowercase language codes should be
+    # added here).
+    "de-at": ["de_at"],
+    "en": ["en-us", "en_us"],
+    "en-ca": ["en_ca"],
+    "en-gb": ["en_gb"],
+    "es": ["es-es", "es_es"],
+    "es-ar": ["es_ar"],
+    "es-pe": ["es_pe"],
+    "fa-ir": ["fa_ir"],
+    "fr-ca": ["fr_ca"],
+    "fr-ch": ["fr_ch"],
+    "oc-aranes": ["oci"],
+    "pt-br": ["pt_br"],
+    "si-lk": ["si_lk"],
+    "sr": ["sr-cyrl", "sr@cyrl"],
+    "sr-latn": ["sr-latin", "sr@latin"],
+    "zh-hans": ["zh", "zh-cn", "zh_cn"],
+    "zh-hant": ["zh-tw", "zh_tw"],
+    "zh-hk": ["zh_hk"],
+}
 LANGMAP_DJANGO_TO_TRANSIFEX = {
     # Django language code: Transifex language code
     #
