@@ -168,14 +168,50 @@ LOGGING = {
     },
 }
 
+# Location of the data repository directory.
+# Look in environment for DATA_REPOSITORY_DIR. Default is next to this one.
+DATA_REPOSITORY_DIR = os.path.abspath(
+    os.path.realpath(
+        os.getenv(
+            "DATA_REPOSITORY_DIR",
+            os.path.join(ROOT_DIR, "..", "cc-licenses-data"),
+        )
+    )
+)
+DISTILL_DIR = os.path.abspath(
+    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "docs"))
+)
+LEGACY_DIR = os.path.abspath(
+    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "legacy"))
+)
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
+
+# Language code for this installation.
+LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
 
 DEEDS_UX_RESOURCE_NAME = "Deeds & UX"
 DEEDS_UX_RESOURCE_SLUG = "deeds_ux"
 
-# Language code for this installation.
-LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
+# Percent translated that languages should be at or above
+TRANSLATION_THRESHOLD = 80
+
+DEEDS_UX_LOCALE_PATH = os.path.abspath(
+    os.path.abspath(
+        os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "locale"))
+    )
+)
+LEGAL_CODE_LOCALE_PATH = os.path.abspath(
+    os.path.abspath(
+        os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "legalcode"))
+    )
+)
+LOCALE_PATHS = (
+    DEEDS_UX_LOCALE_PATH,
+    LEGAL_CODE_LOCALE_PATH,
+)
 
 # Teach Django about a few more languages (sorted by langauge code):
 
@@ -226,6 +262,15 @@ for language_code in LANG_INFO.keys():
         lang_info["bidi"] = order_to_bidi[locale.character_order]
     except UnknownLocaleError:
         continue
+
+TRANSIFEX = {
+    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
+    "ORGANIZATION_SLUG": "creativecommons",
+    "PROJECT_SLUG": "CC",
+    # We currently only have a single team for all of our projects named
+    # "Creative Commons team"
+    "TEAM_ID": 11342,
+}
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -313,32 +358,6 @@ if "CACHE_HOST" in os.environ:
         "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
         "LOCATION": "%(CACHE_HOST)s" % os.environ,
     }
-
-# Percent translated that languages should be at or above
-TRANSLATION_THRESHOLD = 80
-
-# Location of the translation data's repo. Look in env for DATA_REPOSITORY_DIR.
-# Default is next to this one.
-DATA_REPOSITORY_DIR = os.getenv(
-    "DATA_REPOSITORY_DIR",
-    os.path.join(ROOT_DIR, "..", "cc-licenses-data"),
-)
-DISTILL_DIR = os.path.join(DATA_REPOSITORY_DIR, "docs")
-LEGACY_DIR = os.path.join(DATA_REPOSITORY_DIR, "legacy")
-
-LOCALE_PATHS = (
-    os.path.join(DATA_REPOSITORY_DIR, "locale"),  # Deed/UX translations
-    os.path.join(DATA_REPOSITORY_DIR, "legalcode"),  # Legal Code translations
-)
-
-TRANSIFEX = {
-    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
-    "ORGANIZATION_SLUG": "creativecommons",
-    "PROJECT_SLUG": "CC",
-    # We currently only have a single team for all of our projects named
-    # "Creative Commons team"
-    "TEAM_ID": 11342,
-}
 
 # The git branch where the official, approved, used in production translations
 # are.
