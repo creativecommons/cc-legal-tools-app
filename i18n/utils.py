@@ -6,7 +6,6 @@ from contextlib import contextmanager
 # Third-party
 import dateutil.parser
 import polib
-from babel import Locale, UnknownLocaleError
 from django.conf import settings
 from django.utils.translation import trans_real
 
