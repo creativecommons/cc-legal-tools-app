@@ -507,6 +507,7 @@ def view_translation_status(request):
             "category": "dev",
             "category_title": "Dev",
             "deed_ux": deed_ux_translation_info,
+            "threshold": settings.TRANSLATION_THRESHOLD,
         },
     )
     html_response.content = bytes(
