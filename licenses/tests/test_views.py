@@ -333,8 +333,6 @@ class DeedViewViewTest(LicensesTestsMixin, TestCase):
         )
         for s in expected:
             with self.subTest("|".join([license.unit, license.version, s])):
-                if s not in text:
-                    print(text)
                 self.assertContains(rsp, s)
         for s in unexpected:
             with self.subTest("|".join([license.unit, license.version, s])):
@@ -347,13 +345,36 @@ class DeedViewViewTest(LicensesTestsMixin, TestCase):
                 # Test in English and for 4.0 since that's how we've set up the
                 # strings to test for
                 url = build_path(
-                    license.canonical_url,
-                    "deed",
-                    "en",
+                    canonical_url=license.canonical_url,
+                    document="deed",
+                    language_code="en",
                 )
                 rsp = self.client.get(url)
                 self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
                 self.validate_deed_text(rsp, license)
+
+    def test_deed_translation_by_40_es(self):
+        legal_code = LegalCode.objects.filter(
+            license__unit="by",
+            license__version="4.0",
+            language_code="es",
+        )[0]
+        url = legal_code.deed_url
+        rsp = self.client.get(url)
+        text = rsp.content.decode("utf-8")
+        self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
+        self.assertEqual("es", rsp.context["legal_code"].language_code)
+        if (
+            "INVALID_VARIABLE" in text
+        ):  # Some unresolved variable in the template
+            msgs = ["INVALID_VARIABLE in output"]
+            for line in text.splitlines():
+                if "INVALID_VARIABLE" in line:
+                    msgs.append(line)
+            self.fail("\n".join(msgs))
+        self.assertContains(rsp, "Atribución")
+        self.assertContains(rsp, "No hay restricciones adicionales")
+        self.assertContains(rsp, "Avisos")
 
     def test_view_deed_template_body_licenses(self):
         lc = LegalCode.objects.filter(license__unit="by")[0]
@@ -536,7 +557,7 @@ class DeedViewViewTest(LicensesTestsMixin, TestCase):
     #     self.assertEqual("fr", context["target_lang"])
 
 
-class ViewLicenseTest(TestCase):
+class ViewLegalCodeTest(TestCase):
     #    def test_view_legal_code_with_jurisdiction_without_language_specified(
     #        self
     #    ):
@@ -691,6 +712,35 @@ class ViewLicenseTest(TestCase):
     #     )
     #     self.assertEqual(200, rsp.status_code)
     #     self.assertGreater(len(rsp.content.decode()), 0)
+
+    def test_legal_code_translation_by_40_es(self):
+        license = LicenseFactory(
+            category="licenses",
+            canonical_url="https://creativecommons.org/licenses/by/4.0/",
+            version="4.0",
+        )
+        legal_code = LegalCodeFactory(
+            license=license,
+            language_code="es",
+        )
+        url = legal_code.legal_code_url
+        rsp = self.client.get(url)
+        text = rsp.content.decode("utf-8")
+        self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
+        self.assertEqual("es", rsp.context["legal_code"].language_code)
+        if (
+            "INVALID_VARIABLE" in text
+        ):  # Some unresolved variable in the template
+            msgs = ["INVALID_VARIABLE in output"]
+            for line in text.splitlines():
+                if "INVALID_VARIABLE" in line:
+                    msgs.append(line)
+            self.fail("\n".join(msgs))
+        self.assertContains(rsp, "Sección 1 – Definiciones")
+        self.assertContains(
+            rsp, 'Sección 4 – Derechos "Sui Generis" sobre Bases de Datos.'
+        )
+        self.assertContains(rsp, "Sección 8 – Interpretación")
 
 
 class ViewBranchStatusTest(TestCase):
