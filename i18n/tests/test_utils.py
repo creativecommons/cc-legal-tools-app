@@ -247,7 +247,7 @@ class MappingTest(TestCase):
         self.assertEqual("de_AT", transifex_code)
 
         transifex_code = map_django_to_transifex_language_code("oc-aranes")
-        self.assertEqual("oc", transifex_code)
+        self.assertEqual("oc-aranes", transifex_code)
 
         transifex_code = map_django_to_transifex_language_code("sr-latn")
         self.assertEqual("sr@latin", transifex_code)
