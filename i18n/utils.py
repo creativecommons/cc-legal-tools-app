@@ -8,8 +8,7 @@ import dateutil.parser
 import polib
 from babel import Locale, UnknownLocaleError
 from django.conf import settings
-from django.utils.encoding import force_text
-from django.utils.translation import override, trans_real, ugettext
+from django.utils.translation import trans_real
 
 # First-party/Local
 from i18n import (
@@ -75,16 +74,15 @@ def get_translation_object(
     Return a DjangoTranslation object suitable to activate when we're wanting
     to render templates for this language code and domain.  (The domain is
     typically specific to one or a few licenses that have common translations.)
+
+    This fuction requires the legal code locales path to have been added to
+    Django settings.LOCALE_PATHS
     """
 
-    license_locale_dir = os.path.join(
-        settings.DATA_REPOSITORY_DIR, "translations"
-    )
     # Start with a translation object for the domain for this license.
     license_translation_object = trans_real.DjangoTranslation(
         language=django_language_code,
         domain=domain,
-        localedirs=[license_locale_dir],
     )
     # Add a fallback to the standard Django translation for this language. This
     # gets us the non-legal-code parts of the pages.
@@ -331,49 +329,46 @@ def get_jurisdiction_name(category, unit, version, jurisdiction_code):
     return jurisdiction_name
 
 
-def get_locale_text_orientation(locale_identifier: str) -> str:
+def load_deeds_ux_translations():
     """
-    Find out whether the locale is ltr or rtl
+    Load Deeds & UX translations that meet or exceed the TRANSLATION_THRESHOLD.
     """
-    try:
-        locale = Locale.parse(locale_identifier, sep="-")
-    except UnknownLocaleError:
-        raise ValueError(
-            "No locale found with identifier %r" % locale_identifier
+    languages_with_po_file = []
+    languages_mostly_translated = []
+    for language_code in os.listdir(settings.DEEDS_UX_LOCALE_PATH):
+        pofile_path = os.path.join(
+            settings.DEEDS_UX_LOCALE_PATH,
+            language_code,
+            "LC_MESSAGES",
+            f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
         )
-    return "ltr" if locale.character_order == "left-to-right" else "rtl"
+        if not os.path.isfile(pofile_path):
+            continue
+        pofile_obj = polib.pofile(pofile_path)
+        languages_with_po_file.append(language_code)
+        if pofile_obj.percent_translated() < settings.TRANSLATION_THRESHOLD:
+            continue
+        languages_mostly_translated.append(language_code)
+        # Load Deeds & UX translations from custom gettext domain
+        # **WARNING: private variable used**
+        trans_real._translations[language_code] = trans_real.DjangoTranslation(
+            language=language_code, domain=settings.DEEDS_UX_RESOURCE_SLUG
+        )
+    # Add global settings
+    settings.LANGUAGES_WITH_PO_FILE = sorted(list(set(languages_with_po_file)))
+    settings.LANGUAGES_MOSTLY_TRANSLATED = sorted(
+        list(set(languages_mostly_translated))
+    )
 
 
-def rtl_context_stuff(locale_identifier):
-    """
-    This is to accomodate the old templating stuff, which requires:
-     - text_orientation
-     - is_rtl
-     - is_rtl_align
-
-    We could probably adjust the templates to just use
-    text_orientation but maybe we'll do that later.
-    """
-    text_orientation = get_locale_text_orientation(locale_identifier)
-
-    # 'rtl' if the request locale is represented right-to-left;
-    # otherwise an empty string.
-    is_rtl = text_orientation == "rtl"
-
-    # Return the appropriate alignment for the request locale:
-    # 'text-align:right' or 'text-align:left'.
-    if text_orientation == "rtl":
-        is_rtl_align = "text-align: right"
-    else:
-        is_rtl_align = "text-align: left"
-
-    return {
-        "get_ltr_rtl": text_orientation,
-        "is_rtl": is_rtl,
-        "is_rtl_align": is_rtl_align,
-    }
-
-
+# def ugettext_for_locale(locale):
+#     def _wrapped_ugettext(message):
+#         with override(locale):
+#             return force_text(ugettext(message))
+#
+#     return _wrapped_ugettext
+#
+#
 # def get_well_translated_langs(
 #     threshold=settings.TRANSLATION_THRESHOLD,
 #     trans_file=DEFAULT_CSV_FILE,
@@ -437,17 +432,9 @@ def rtl_context_stuff(locale_identifier):
 #     return result
 
 
-def ugettext_for_locale(locale):
-    def _wrapped_ugettext(message):
-        with override(locale):
-            return force_text(ugettext(message))
-
-    return _wrapped_ugettext
-
-
-CACHED_TRANS_STATS = {}
-
-
+# CACHED_TRANS_STATS = {}
+#
+#
 # def get_all_trans_stats(trans_file=DEFAULT_CSV_FILE):
 #     """
 #     Get all of the statistics on all translations, how much they are done
@@ -498,20 +485,6 @@ CACHED_TRANS_STATS = {}
 #     # cache and return
 #     CACHED_TRANS_STATS[trans_file] = stats
 #     return stats
-
-
-def locale_to_lower_upper(locale):
-    """
-    Take a locale, regardless of style, and format it like "en_US"
-    """
-    if "-" in locale:
-        lang, country = locale.split("-", 1)
-        return "%s_%s" % (lang.lower(), country.upper())
-    elif "_" in locale:
-        lang, country = locale.split("_", 1)
-        return "%s_%s" % (lang.lower(), country.upper())
-    else:
-        return locale.lower()
 
 
 # def applicable_langs(locale):
