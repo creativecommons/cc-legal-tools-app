@@ -23,7 +23,7 @@
   <tr>
     <th>Django<br>Language Code</th>
     <th>Transifex<br>Language Code</th>
-    <th>Langauge Name</th>
+    <th>Language Name</th>
     <th>Percent<br>Translated</th>
     <th>Created</th>
     <th>Updated</th>
@@ -68,8 +68,10 @@
   {% endfor %}
   </table>
   <ul>
+    <li>Translation inclusion threashold: {{ threshold }}%</li>
     <li>Django Language Codes are <em>lowercase</em> IETF language tags</li>
-    <li>Transifex Language Codes are POSIX Locales</li>
+    <li><em>Some</em> Transifex Language Codes are IETF language tags</li>
+    <li><em>Most</em> Transifex Language Codes are POSIX Locales</li>
   </ul>
 
   <h1>Legal Code Translation Status</h1>
