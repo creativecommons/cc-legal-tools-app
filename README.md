@@ -472,7 +472,10 @@ Mappings:
 Updates](#check-for-translation-updates), below).
 - Django language codes are mapped to Legacy language codes by the `publish`
   command (see [Generate Static Files](#generate-static-files), below) to
-  create redirects.
+  create redirects
+  - lowercase static file redirects for simple hosting like GitHub Pages or
+    Netlify
+  - an NGINX include file with mixed case redirects for dedicated hosting
 
 Documentation:
 - Django Language Codes:
