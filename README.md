@@ -386,21 +386,24 @@ Django Translation uses two sets of files in the
 [creativecommons/cc-licenses-data][repodata] repository (the [Data
 Repository](#data-repository), above):
 - **`legalcode/`**
-  - `.po` and `.mo` internationalization and localization files for Legal Codes
+  - `.po` and `.mo` internationalization and localization files (gettext files)
+    for Legal Codes
   - The file names and corresponding Transifex resource are different for each
     tool.
-    - Formula:
+    - Resource Slug / Translation Domain Formula:
       1. **unit** + `_` + **version** + `_` + **jurisdiction**
       2. strip out any periods (`.`)
-    - Examples:
+    - Resource Slug / Translation Domain Examples:
       - `by-nd_40`
       - `by-nc-sa_30_es`
       - `zero_10`
 - **`locale/`**
-  - `.po` and `.mo` internationalization and localization files for Deeds and
-    UX
-  - The file names and corresponding Transifex resource slug are all `deeds_ux`
-    (`DEEDS_UX_RESOURCE_SLUG` in the settings).
+  - `.po` and `.mo` internationalization and localization files (gettext files)
+    for Deeds & UX
+  - There is only one filename for Deeds & UX (it is configurable via the
+    `DEEDS_UX_RESOURCE_SLUG` settings).
+    - Resource Slug / Translation Domain value:
+      - `deeds_ux`
 
 Many custom Django translation domains (gettext translation domains are used).
 They match the Transifex resource slug. For details, see [[Feature] Custom
