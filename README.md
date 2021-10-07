@@ -459,7 +459,7 @@ Definitions:
 - Legacy language codes include:
   - **[POSIX locales][posixlocale]**
     - Example: (see above)
-  - ***unconventional* **[POSIX locales][posixlocale]**
+  - ***unconventional* [POSIX locales][posixlocale]**
     - Example: `oci` (three letter code used instead of two letter code)
   - ***conventional* [IETF language tags][ietf-lang-tags]**
     - Examples: (see above)
