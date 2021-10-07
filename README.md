@@ -27,8 +27,7 @@ project is a component, see
 
 ## Software Versions
 
-- [Python 3.9][python37]
-  - For parity with Debian GNU/Linux 10 (buster)
+- [Python 3.9][python37] (For parity with Debian GNU/Linux 10 [buster])
 - [Django 3.2][django32]
 
 Both versions are specified in the [`Pipfile`](Pipefile).
@@ -404,8 +403,9 @@ Repository](#data-repository), above):
     (`DEEDS_UX_RESOURCE_SLUG` in the settings).
 
 Many custom Django translation domains (gettext translation domains are used).
-They match the Transifex resource slug. For details, see:
-- #181
+They match the Transifex resource slug. For details, see [[Feature] Custom
+gettext translation domains may overly complicate Django code · Issue
+#181][issue181].
 
 The internationalization and localization file details:
 - `.mo` machine object files
@@ -424,14 +424,16 @@ The internationalization and localization file details:
 
 The internationalization and localization files are contained within Django
 language code subdirectories instead of locale name subdirectories. For
-details, see:
-- #182
+details, see [[Bug] Translation directories should use locale name instead of
+language code · Issue #182][issue182].
 
 Documentation:
 - [Translation | Django documentation | Django][djangotranslation]
 - [Resources | Transifex Documentation][transifexresources]
 
 [djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
+[issue181]: https://github.com/creativecommons/cc-licenses/issues/181
+[issue182]: https://github.com/creativecommons/cc-licenses/issues/182
 [repodata]: https://github.com/creativecommons/cc-licenses-data
 [transifexresources]: https://docs.transifex.com/api/resources
 
