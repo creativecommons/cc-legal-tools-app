@@ -185,6 +185,9 @@ commands below.
 - **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
 - [Black][black]: the uncompromising Python code formatter
 - [Coverage.py][coveragepy]: Code coverage measurement for Python
+- Docker
+  - [Dockerfile reference | Docker Documentation][dockerfile]
+  - [Compose file version 3 reference | Docker Documentation][compose3]
 - [flake8][flake8]: a python tool that glues together pep8, pyflakes, mccabe,
   and third-party plugins to check the style and quality of some python code.
 - [isort][isort]: A Python utility / library to sort imports.
@@ -194,6 +197,8 @@ commands below.
 [ccospyguide]: https://opensource.creativecommons.org/contributing-code/python-guidelines/
 [black]: https://github.com/psf/black
 [coveragepy]: https://github.com/nedbat/coveragepy
+[dockerfile]: https://docs.docker.com/engine/reference/builder/
+[compose3]: https://docs.docker.com/compose/compose-file/compose-file-v3/
 [flake8]: https://gitlab.com/pycqa/flake8
 [isort]: https://pycqa.github.io/isort/
 [precommit]: https://pre-commit.com/
