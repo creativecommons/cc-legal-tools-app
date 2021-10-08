@@ -1,15 +1,10 @@
 # Creative Commons Licenses
 
 
-## Software Versions
+## Licenses and Public Domain Declarations
 
-- Python 3.7
-  - For parity with Debian GNU/Linux 10 (buster)
-- [Django 3.2][django32]
-
-Both versions are specified in the [`Pipfile`](Pipefile).
-
-[django32]: https://docs.djangoproject.com/en/3.2/
+The project title, *Creative Commons Licenses*, has been shortened for
+convenience. This project also includes the Public Domain declarations.
 
 
 ## Not the live site
@@ -22,6 +17,23 @@ Instead, a command line tool can be used to save all the rendered HTML pages
 for licenses and deeds as files. Then those files are used as part of the real
 creativecommons.org site, just served as static files. See details farther
 down.
+
+For the parent project for the entire creativecommons.org site (of which this
+project is a component, see
+[creativecommons/project_creativecommons.org][project_cc].
+
+[project_cc]: https://github.com/creativecommons/project_creativecommons.org
+
+
+## Software Versions
+
+- [Python 3.7][python37] (For parity with Debian GNU/Linux 10 [buster])
+- [Django 3.2][django32]
+
+Both versions are specified in the [`Pipfile`](Pipefile).
+
+[python37]: https://docs.python.org/3.7/
+[django32]: https://docs.djangoproject.com/en/3.2/
 
 
 ## Setting up the Project
@@ -173,6 +185,9 @@ commands below.
 - **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
 - [Black][black]: the uncompromising Python code formatter
 - [Coverage.py][coveragepy]: Code coverage measurement for Python
+- Docker
+  - [Dockerfile reference | Docker Documentation][dockerfile]
+  - [Compose file version 3 reference | Docker Documentation][compose3]
 - [flake8][flake8]: a python tool that glues together pep8, pyflakes, mccabe,
   and third-party plugins to check the style and quality of some python code.
 - [isort][isort]: A Python utility / library to sort imports.
@@ -182,6 +197,8 @@ commands below.
 [ccospyguide]: https://opensource.creativecommons.org/contributing-code/python-guidelines/
 [black]: https://github.com/psf/black
 [coveragepy]: https://github.com/nedbat/coveragepy
+[dockerfile]: https://docs.docker.com/engine/reference/builder/
+[compose3]: https://docs.docker.com/compose/compose-file/compose-file-v3/
 [flake8]: https://gitlab.com/pycqa/flake8
 [isort]: https://pycqa.github.io/isort/
 [precommit]: https://pre-commit.com/
@@ -249,9 +266,9 @@ There are three places legal code text could be:
 3. **`html` field** (in the `LegalCode` model):
    - Everything else
 
-The text that's in gettext files can be translated via transifex at [Creative
+The text that's in gettext files can be translated via Transifex at [Creative
 Commons localization][cctransifex]. For additional information the Django
-translation domaions / Transifex resources, see [How the license translation is
+translation domains / Transifex resources, see [How the license translation is
 implemented](#how-the-license-translation-is-implemented), below.
 
 Documentation:
@@ -304,7 +321,7 @@ code:
 ### Import Process
 
 This process will read the HTML files from the specified directory, populate
-`LegalCode` and `License` modelss, and create `.po` files in
+`LegalCode` and `License` models, and create `.po` files in
 [creativecommons/cc-licenses-data][repodata].
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
@@ -339,18 +356,18 @@ This process will read the HTML files from the specified directory, populate
 ## Translation
 
 To upload/download translation files to/from Transifex, you'll need an account
-there with access to these translations. Then follow the [Authenticiation |
+there with access to these translations. Then follow the [Authentication |
 Introduction to the Transifex API | Transifex Documentation][transauth]: to get
 an API token, and set `TRANSIFEX["API_TOKEN"]` in your environment with its
 value.
 
-The [creativecommons/cc-licenses-data][repodata] repository should be cloned
+The [creativecommons/cc-licenses-data][repodata] repository must be cloned
 next to this `cc-licenses` repository. (It can be elsewhere, then you need to
 set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a URL that
 starts with `git@github...` and not `https://github...`, or you won't be able
-to push to it.
+to push to it. Also see [Data Repository](#data-repository), above.
 
-In production, the `check_for_translation_updates` mangement command should be
+In production, the `check_for_translation_updates` management command should be
 run hourly. See [Check for Translation
 Updates](#check-for-translation-updates), below.
 
@@ -374,21 +391,29 @@ Django Translation uses two sets of files in the
 [creativecommons/cc-licenses-data][repodata] repository (the [Data
 Repository](#data-repository), above):
 - **`legalcode/`**
-  - `.po` and `.mo` internationalization and localization files for Legal Codes
+  - `.po` and `.mo` internationalization and localization files (gettext files)
+    for Legal Codes
   - The file names and corresponding Transifex resource are different for each
     tool.
-    - Formula:
+    - Resource Slug / Translation Domain Formula:
       1. **unit** + `_` + **version** + `_` + **jurisdiction**
       2. strip out any periods (`.`)
-    - Examples:
+    - Resource Slug / Translation Domain Examples:
       - `by-nd_40`
       - `by-nc-sa_30_es`
       - `zero_10`
 - **`locale/`**
-  - `.po` and `.mo` internationalization and localization files for Deeds and
-    UX
-  - The file names and corresponding Transifex resource slug are all `deeds_ux`
-    (`DEEDS_UX_RESOURCE_SLUG` in the settings).
+  - `.po` and `.mo` internationalization and localization files (gettext files)
+    for Deeds & UX
+  - There is only one filename for Deeds & UX (it is configurable via the
+    `DEEDS_UX_RESOURCE_SLUG` settings).
+    - Resource Slug / Translation Domain value:
+      - `deeds_ux`
+
+Many custom Django translation domains (gettext translation domains are used).
+They match the Transifex resource slug. For details, see [[Feature] Custom
+gettext translation domains may overly complicate Django code · Issue
+#181][issue181].
 
 The internationalization and localization file details:
 - `.mo` machine object files
@@ -405,11 +430,18 @@ The internationalization and localization file details:
   - *ingested* by the `compilemessages` command (see [Translation Update
     Process](#translation-update-process), below)
 
+The internationalization and localization files are contained within Django
+language code subdirectories instead of locale name subdirectories. For
+details, see [[Bug] Translation directories should use locale name instead of
+language code · Issue #182][issue182].
+
 Documentation:
 - [Translation | Django documentation | Django][djangotranslation]
 - [Resources | Transifex Documentation][transifexresources]
 
 [djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
+[issue181]: https://github.com/creativecommons/cc-licenses/issues/181
+[issue182]: https://github.com/creativecommons/cc-licenses/issues/182
 [repodata]: https://github.com/creativecommons/cc-licenses-data
 [transifexresources]: https://docs.transifex.com/api/resources
 
@@ -424,23 +456,31 @@ Definitions:
 - Django language codes are ***lowercase* [IETF language
   tags][ietf-lang-tags]**
   - Examples: `de-at`, `oc-aranes`, `sr-latn`, `zh-hant`
-- Transifex langauge codes are **[POSIX locales][posixlocale]**
+- Transifex langauge codes are primarily **[POSIX locales][posixlocale]**
   - Examples: `de_AT`, `oc@aranes`, `sr@latin`, `zh_Hant`
+- Transifex language codes also include ***convential* [IETF language
+  tags][ietf-lang-tags]**
+  - Examples: `zh-Hans`, `zh-Hant`
 - Legacy language codes include:
   - **[POSIX locales][posixlocale]**
-    - Examples (see above)
-  - ***convential* [IETF language tags][ietf-lang-tags]**
-    - Examples: `sr-Latn`, `zh-Hant`
+    - Example: (see above)
+  - ***unconventional* [POSIX locales][posixlocale]**
+    - Example: `oci` (three letter code used instead of two letter code)
+  - ***conventional* [IETF language tags][ietf-lang-tags]**
+    - Examples: (see above)
 
 Mappings:
 - Legacy language codes are mapped to Django language codes by by the
   `load_html_files` command (see [Import Process](#import-process), above).
-- Django language codes are mapped to Transifex langauge codes by the
+- Django language codes are mapped to Transifex language codes by the
   `check_for_translation_updates` command (see [Check for Translation
 Updates](#check-for-translation-updates), below).
 - Django language codes are mapped to Legacy language codes by the `publish`
   command (see [Generate Static Files](#generate-static-files), below) to
-  create redirects.
+  create redirects
+  - lowercase static file redirects for simple hosting like GitHub Pages or
+    Netlify
+  - an NGINX include file with mixed case redirects for dedicated hosting
 
 Documentation:
 - Django Language Codes:
@@ -531,9 +571,7 @@ changed.
 
 ## Generate Static Files
 
-We've been calling this process "publishing", but that's a little misleading,
-since this process does nothing to make its results visible on the Internet. It
-only updates the static files in the `doc` directory of the
+Generating static files updates the static files in the `doc` directory of the
 [creativecommons/cc-licenses-data][repodata] repository (the [Data
 Repository](#data-repository), above).
 
