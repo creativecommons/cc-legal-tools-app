@@ -27,7 +27,7 @@ project is a component, see
 
 ## Software Versions
 
-- [Python 3.9][python37] (For parity with Debian GNU/Linux 10 [buster])
+- [Python 3.7][python37] (For parity with Debian GNU/Linux 10 [buster])
 - [Django 3.2][django32]
 
 Both versions are specified in the [`Pipfile`](Pipefile).
