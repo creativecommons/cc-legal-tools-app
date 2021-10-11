@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Run coverage tests and report
+#
 set -o errtrace
 set -o nounset
 

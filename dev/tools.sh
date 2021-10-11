@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# Run Python code tools (isort, black, flake8)
+#
 set -o errtrace
 set -o nounset
 

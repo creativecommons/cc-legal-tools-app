@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# Reset Django application database data (!!DANGER!!)
 set -o errexit
 set -o errtrace
 set -o nounset

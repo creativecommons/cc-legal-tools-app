@@ -1,6 +1,8 @@
 #!/bin/bash
-# Note that docker-compose executes this with the cc-licenses as the working
-# directory
+#
+# Helper script for docker-compose app service. Ensures db services is actually
+# available before executing runserver command.
+#
 while !</dev/tcp/db/5432; do
     echo 'Waiting on db service; sleeping for 1 second.'
     sleep 1
