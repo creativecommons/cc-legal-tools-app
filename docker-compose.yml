@@ -8,18 +8,19 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     image: postgres
-    restart: unless-stopped
-    tmpfs:
-      # Use tmpfs for pg_stat_tmp to resolve WARNING: could not open statistics
-      # file
-      # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
-      - /var/lib/postgresql/data/pg_stat_tmp
+    restart: always
+#    # Use tmpfs for pg_stat_tmp to resolve WARNING: could not open statistics
+#    # file
+#    # (this solves the warning, but breaks initialization: enable as needed)
+#    # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
+#    tmpfs:
+#      - /var/lib/postgresql/data/pg_stat_tmp
     volumes:
       - ./data/db:/var/lib/postgresql/data
 
   app:
     build: .
-    command: ./manage.py runserver 0.0.0.0:8000
+    command: ./dev/wait-for-db-then-runserver.sh
     depends_on:
       - db
     environment:
