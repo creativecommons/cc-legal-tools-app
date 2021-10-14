@@ -9,7 +9,6 @@ from argparse import ArgumentParser
 from bs4 import BeautifulSoup, Tag
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
-from django.utils.translation import to_locale
 from polib import POEntry, POFile
 
 # First-party/Local
@@ -388,7 +387,7 @@ class Command(BaseCommand):
         pofile.metadata = {
             "Content-Transfer-Encoding": "8bit",
             "Content-Type": "text/plain; charset=utf-8",
-            "Language": to_locale(language_code),
+            "Language": transifex_language,
             "Language-Django": language_code,
             "Language-Transifex": transifex_language,
             "Language-Team": "https://www.transifex.com/creativecommons/CC/",
