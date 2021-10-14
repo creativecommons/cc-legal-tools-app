@@ -47,9 +47,13 @@ class TranslationTest(TestCase):
     def test_get_translation_object(self):
         translation_object = MagicMock()
 
-        with mock.patch("i18n.utils.trans_real.DjangoTranslation") as mock_djt:
+        with mock.patch(
+            "i18n.utils.translation.trans_real.DjangoTranslation"
+        ) as mock_djt:
             mock_djt.return_value = translation_object
-            with mock.patch("i18n.utils.trans_real.translation") as mock_trans:
+            with mock.patch(
+                "i18n.utils.translation.trans_real.translation"
+            ) as mock_trans:
                 result = get_translation_object(
                     django_language_code="LANGUAGE_CODE",
                     domain="GETTEXT_DOMAIN",

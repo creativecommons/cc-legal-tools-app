@@ -18,60 +18,71 @@
   </style>
 
   <h1>Deed & UX Translation Status</h1>
-  <table border="1">
-  <thead>
+  <table>
+  <thead style="background-color: rgb(245, 245, 245); position: sticky; top: 0px;">
   <tr>
     <th>Django<br>Language Code</th>
+    <th>Django<br>Locale Name</th>
     <th>Transifex<br>Language Code</th>
     <th>Language Name</th>
     <th>Percent<br>Translated</th>
-    <th>Created</th>
-    <th>Updated</th>
+    <th>Created (UTC)</th>
+    <th>Updated (UTC)</th>
     <th>BiDi</th>
     <th>Legal Codes<br>in this language</th>
     <th>Name Local</th>
   </tr>
   </thead>
-  {% for language_code, info in deed_ux.items %}
-    <tr>
-      <td><code>{{ language_code }}</code></td>
-      <td><code>{{ info.transifex_code }}</code></td>
-      <td>{{ info.name|safe }}</td>
-      {% if info.percent_translated == 0 %}
-      <td style="background-color:#ffeeee;text-align:right;">
-      {% elif info.percent_translated < 80 %}
-      <td style="background-color:#ffffee;text-align:right;">
-      {% else %}
-      <td style="background-color:#eeffee;text-align:right;">
-      {% endif %}
-        {{ info.percent_translated }}%
-      </td>
-      <td>{{ info.created }}</td>
-      <td>{{ info.updated }}</td>
-      {% if info.bidi %}
-        <td style="font-weight:bold;text-align:right">
-          RTL &#x21E6 {#&lArr; {# leftwards double arrow #}
-        </td>
-      {% else %}
-        <td style="text-align:left">
-          &#x21E8 {#&rArr; {# rightwards double arrow #} LTR
-        </td>
-      {% endif %}
-      </td>
-      <td style="text-align:center;">
-        {% if info.legal_code %}
-          &#x2714 {# heavy check mark emoji #}
+  </tbody>
+    {% for language_code, info in deed_ux.items %}
+      <tr>
+        {% if language_code == info.locale_name and info.locale_name == info.transifex_code %}
+        <td colspan="3"><code>{{ language_code }}</code></td>
+        {% elif info.locale_name == info.transifex_code %}
+        <td><code>{{ language_code }}</code></td>
+        <td colspan="2"><code>{{ info.locale_name }}</code></td>
+        {% else %}
+        <td><code>{{ language_code }}</code></td>
+        <td><code>{{ info.locale_name }}</code></td>
+        <td><code>{{ info.transifex_code }}</code></td>
         {% endif %}
-      </td>
-      <td>{{ info.name_local }}</td>
-    </tr>
-  {% endfor %}
+        <td>{{ info.name|safe }}</td>
+        {% if info.percent_translated == 0 %}
+        <td style="background-color:#ffeeee;text-align:right;">
+        {% elif info.percent_translated < 80 %}
+        <td style="background-color:#ffffee;text-align:right;">
+        {% else %}
+        <td style="background-color:#eeffee;text-align:right;">
+        {% endif %}
+          {{ info.percent_translated }}%
+        </td>
+        <td>{{ info.created }}</td>
+        <td>{{ info.updated }}</td>
+        {% if info.bidi %}
+          <td style="font-weight:bold;text-align:right">
+            RTL &#x21E6 {#&lArr; {# leftwards double arrow #}
+          </td>
+        {% else %}
+          <td style="text-align:left">
+            &#x21E8 {#&rArr; {# rightwards double arrow #} LTR
+          </td>
+        {% endif %}
+        </td>
+        <td style="text-align:center;">
+          {% if info.legal_code %}
+            &#x2714 {# heavy check mark emoji #}
+          {% endif %}
+        </td>
+        <td>{{ info.name_local }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
   </table>
   <ul>
     <li>Translation inclusion threashold: {{ threshold }}%</li>
     <li>Django Language Codes are <em>lowercase</em> IETF language tags</li>
     <li><em>Some</em> Transifex Language Codes are IETF language tags</li>
-    <li><em>Most</em> Transifex Language Codes are POSIX Locales</li>
+    <li><em>Most</em> Transifex Language Codes are POSIX Locales or Unicode Locales</li>
   </ul>
 
   <h1>Legal Code Translation Status</h1>

@@ -15,7 +15,6 @@ import posixpath
 
 # Third-party
 import polib
-from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import translation
@@ -25,6 +24,7 @@ from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
+    get_pofile_path,
     get_translation_object,
     map_django_to_redirects_language_codes,
     map_django_to_redirects_language_codes_lowercase,
@@ -423,32 +423,13 @@ class LegalCode(models.Model):
     def translation_filename(self):
         """
         Return absolute path to the .po file with this translation.
-        These are in the cc-licenses-data repository, in subdirectories:
-          - "legalcode/"
-          - language code
-          - "LC_MESSAGES/"  (Django insists on this)
-          - files
-
-        The filenames are {resource_slug}.po (get the resource_slug
-        from the license).
-
-        e.g. for the BY-NC 4.0 French translation, which has no jurisdiction,
-        the filename will be "by-nc_4.0.po", and in full,
-        "{translation repo topdir}/legalcode/fr/by-nc_4.0.po".
         """
-        filename = f"{self.license.resource_slug}.po"
-        fullpath = os.path.abspath(
-            os.path.realpath(
-                os.path.join(
-                    settings.DATA_REPOSITORY_DIR,
-                    "legalcode",
-                    self.language_code,
-                    "LC_MESSAGES",
-                    filename,
-                )
-            )
+        pofile_path = get_pofile_path(
+            locale_or_legalcode="legalcode",
+            language_code=self.language_code,
+            resource_slug=self.license.resource_slug,
         )
-        return fullpath
+        return pofile_path
 
 
 class License(models.Model):

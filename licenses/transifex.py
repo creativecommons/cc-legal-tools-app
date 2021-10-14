@@ -353,7 +353,10 @@ class TransifexHelper:
             "translations": {},
         }
         # Deeds & UX - Translations
-        for language_code in settings.LANGUAGES_WITH_PO_FILE:
+        for (
+            language_code,
+            language_data,
+        ) in settings.DEEDS_UX_PO_FILE_INFO.items():
             if language_code == DEFAULT_LANGUAGE_CODE:
                 continue
             pofile_path = get_pofile_path(
@@ -362,8 +365,8 @@ class TransifexHelper:
                 resource_slug=resource_slug,
             )
             pofile_obj = polib.pofile(pofile_path)
-            creation_date = get_pofile_creation_date(pofile_obj)
-            revision_date = get_pofile_revision_date(pofile_obj)
+            creation_date = language_data["creation_date"]
+            revision_date = language_data["revision_date"]
             local_data[resource_slug]["translations"][language_code] = {
                 "pofile_path": pofile_path,
                 "pofile_obj": pofile_obj,
@@ -514,27 +517,38 @@ class TransifexHelper:
 
     def normalize_pofile_language(
         self,
+        language_code,
         transifex_code,
         resource_slug,
         resource_name,
         pofile_path,
         pofile_obj,
     ):
-        key = "Language"
-        if (
-            key in pofile_obj.metadata
-            and pofile_obj.metadata[key] == transifex_code
-        ):
+        keys = {
+            "Language": transifex_code,
+            "Language-Django": language_code,
+            "Language-Transifex": transifex_code,
+        }
+
+        all_present_and_correct = True
+        for key, value in keys.items():
+            if pofile_obj.metadata.get(key, "") != value:
+                all_present_and_correct = False
+        if all_present_and_correct:
             return pofile_obj
 
-        self.log.info(
-            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
-            f" Correcting PO file '{key}':"
-            f"\n{pofile_path}: New Value: '{transifex_code}'"
-        )
+        for key, value in keys.items():
+            if pofile_obj.metadata.get(key, "") != value:
+                self.log.info(
+                    f"{self.nop}{resource_name} ({resource_slug})"
+                    f" {transifex_code}:"
+                    f" Correcting PO file '{key}':"
+                    f"\n{pofile_path}: New Value: '{transifex_code}'"
+                )
+            if not self.dryrun:
+                pofile_obj.metadata[key] = value
         if self.dryrun:
             return pofile_obj
-        pofile_obj.metadata[key] = transifex_code
         pofile_obj.save(pofile_path)
         return pofile_obj
 
@@ -624,8 +638,10 @@ class TransifexHelper:
         pofile_obj.save(pofile_path)
         return pofile_obj
 
+
     def normalize_pofile_metadata(
         self,
+        language_code,
         transifex_code,
         resource_slug,
         resource_name,
@@ -633,6 +649,7 @@ class TransifexHelper:
         pofile_obj,
     ):
         pofile_obj = self.normalize_pofile_language(
+            language_code,
             transifex_code,
             resource_slug,
             resource_name,
@@ -828,6 +845,7 @@ class TransifexHelper:
 
             # Normalize deterministic metadata
             pofile_obj = self.normalize_pofile_metadata(
+                language_code,
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -882,6 +900,7 @@ class TransifexHelper:
 
                 # Normalize deterministic metadata
                 pofile_obj = self.normalize_pofile_metadata(
+                    language_code,
                     transifex_code,
                     resource_slug,
                     resource_name,

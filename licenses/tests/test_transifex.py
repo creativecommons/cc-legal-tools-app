@@ -38,6 +38,8 @@ msgstr ""
 "Project-Id-Version: by-nd_40\n"
 "Language-Team: https://www.transifex.com/{TEST_ORG_SLUG}/{TEST_PROJ_SLUG}/\n"
 "Language: en\n"
+"Language-Django: en\n"
+"Language-Transifex: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -553,6 +555,7 @@ class TestTransifex(TestCase):
     # Test: normalize_pofile_language ########################################
 
     def test_noramalize_pofile_language_correct(self):
+        language_code = "en"
         transifex_code = "en"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -561,6 +564,7 @@ class TestTransifex(TestCase):
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language(
+                language_code,
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -572,6 +576,7 @@ class TestTransifex(TestCase):
 
     def test_noramalize_pofile_language_dryrun(self):
         self.helper.dryrun = True
+        language_code = "en"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -580,6 +585,7 @@ class TestTransifex(TestCase):
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language(
+                language_code,
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -590,15 +596,19 @@ class TestTransifex(TestCase):
         mock_pofile_save.assert_not_called()
 
     def test_noramalize_pofile_language_missing(self):
+        language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata.pop("Language", None)
+        pofile_obj.metadata.pop("Language-Django", None)
+        pofile_obj.metadata.pop("Language-Transifex", None)
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_language(
+                language_code,
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -611,6 +621,7 @@ class TestTransifex(TestCase):
         self.assertEqual(new_pofile_obj.metadata["Language"], transifex_code)
 
     def test_noramalize_pofile_language_incorrect(self):
+        language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -619,6 +630,7 @@ class TestTransifex(TestCase):
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_language(
+                language_code,
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -900,6 +912,7 @@ class TestTransifex(TestCase):
 
     def test_normalize_pofile_metadata(self):
         self.helper.dryrun = True
+        language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -908,6 +921,7 @@ class TestTransifex(TestCase):
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_metadata(
+                language_code,
                 transifex_code,
                 resource_slug,
                 resource_name,

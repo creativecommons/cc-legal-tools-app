@@ -6,7 +6,6 @@ from typing import Iterable
 
 # Third-party
 import git
-import polib
 import yaml
 from bs4 import BeautifulSoup
 from django.conf import settings
@@ -22,6 +21,7 @@ from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
+    load_deeds_ux_translations,
     map_django_to_transifex_language_code,
 )
 from licenses.models import (
@@ -442,6 +442,9 @@ def view_translation_status(request):
     # heads = repo.remotes.origin.refs
     # branches = [head.name[len("origin/") :] for head in heads]
 
+    # ensure translation status is current
+    load_deeds_ux_translations()
+
     branches = TranslationBranch.objects.exclude(complete=True)
 
     legal_code_objects = (
@@ -458,46 +461,37 @@ def view_translation_status(request):
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
 
-    for language_code in os.listdir(locale_dir):
-        po_file = os.path.join(
-            locale_dir,
-            language_code,
-            "LC_MESSAGES",
-            f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
-        )
-
-        if not os.path.isfile(po_file):
-            continue
-
-        po = polib.pofile(po_file)
-        percent_translated = po.percent_translated()
-
+    for language_code, language_data in settings.DEEDS_UX_PO_FILE_INFO.items():
         try:
             language_info = translation.get_language_info(language_code)
             bidi = language_info["bidi"]
             name = language_info["name"]
             name_local = language_info["name_local"]
-        except KeyError:
+        except KeyError:  # pragma: no cover
             name = '<em style="color:red;">Unknown</em>'
-
         legal_code = False
-
         if language_code in legal_code_langauge_codes:
             legal_code = True
-            transifex_code = map_django_to_transifex_language_code(
-                language_code
-            )
+        transifex_code = map_django_to_transifex_language_code(language_code)
+        date_format = "%Y-%m-%d %H:%M"
+        created = ""
+        if language_data["creation_date"] is not None:  # pragma: no cover
+            created = language_data["creation_date"].strftime(date_format)
+        updated = ""
+        if language_data["revision_date"] is not None:  # pragma: no cover
+            updated = language_data["creation_date"].strftime(date_format)
 
-            deed_ux_translation_info[language_code] = {
-                "name": name,
-                "name_local": name_local,
-                "bidi": bidi,
-                "percent_translated": percent_translated,
-                "created": po.metadata.get("POT-Creation-Date", ""),
-                "updated": po.metadata.get("PO-Revision-Date", ""),
-                "legal_code": legal_code,
-                "transifex_code": transifex_code,
-            }
+        deed_ux_translation_info[language_code] = {
+            "locale_name": translation.to_locale(language_code),
+            "name": name,
+            "name_local": name_local,
+            "bidi": bidi,
+            "percent_translated": language_data["percent_translated"],
+            "created": created,
+            "updated": updated,
+            "legal_code": legal_code,
+            "transifex_code": transifex_code,
+        }
 
     html_response = render(
         request,
