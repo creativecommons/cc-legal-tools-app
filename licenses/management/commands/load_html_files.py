@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from bs4 import BeautifulSoup, Tag
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
+from django.utils.translation import to_locale
 from polib import POEntry, POFile
 
 # First-party/Local

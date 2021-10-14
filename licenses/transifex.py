@@ -638,7 +638,6 @@ class TransifexHelper:
         pofile_obj.save(pofile_path)
         return pofile_obj
 
-
     def normalize_pofile_metadata(
         self,
         language_code,
