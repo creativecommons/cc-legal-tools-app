@@ -156,16 +156,21 @@ def get_pofile_content(pofile: polib.POFile) -> str:  # pragma: no cover
 
 
 def get_pofile_path(
-    locale_or_legalcode: str, language_code: str, resource_slug: str
+    locale_or_legalcode: str,
+    language_code: str,
+    translation_domain: str,
+    data_dir=None,
 ):
+    if data_dir is None:
+        data_dir = settings.DATA_REPOSITORY_DIR
     pofile_path = os.path.abspath(
         os.path.realpath(
             os.path.join(
-                settings.DATA_REPOSITORY_DIR,
+                data_dir,
                 locale_or_legalcode,
                 translation.to_locale(language_code),
                 "LC_MESSAGES",
-                f"{resource_slug}.po",
+                f"{translation_domain}.po",
             )
         )
     )
@@ -333,19 +338,19 @@ def get_jurisdiction_name(category, unit, version, jurisdiction_code):
 
 def load_deeds_ux_translations():
     """
-    Process Deed & UX translations (store information on all, load those that
-    meet or exceed the TRANSLATION_THRESHOLD).
+    Process Deed & UX translations (store information on all and track those
+    that meet or exceed the TRANSLATION_THRESHOLD).
     """
     deeds_ux_po_file_info = {}
     languages_mostly_translated = []
-    for locale_name in sorted(os.listdir(settings.DEEDS_UX_LOCALE_PATH)):
+    for locale_name in os.listdir(settings.DEEDS_UX_LOCALE_PATH):
         language_code = translation.to_language(locale_name)
         pofile_path = get_pofile_path(
             locale_or_legalcode="locale",
             language_code=language_code,
-            resource_slug=settings.DEEDS_UX_RESOURCE_SLUG,
+            translation_domain="django",
         )
-        if not os.path.isfile(pofile_path):
+        if not os.path.isfile(pofile_path):  # pragma: no cover
             continue
         pofile_obj = polib.pofile(pofile_path)
         percent_translated = pofile_obj.percent_translated()
@@ -359,13 +364,7 @@ def load_deeds_ux_translations():
         if percent_translated < settings.TRANSLATION_THRESHOLD:
             continue
         languages_mostly_translated.append(language_code)
-        # Load Deeds & UX translations from custom gettext domain
-        # **WARNING: private variable used**
-        translation.trans_real._translations[
-            language_code
-        ] = translation.trans_real.DjangoTranslation(
-            language=language_code, domain=settings.DEEDS_UX_RESOURCE_SLUG
-        )
+    deeds_ux_po_file_info = dict(sorted(deeds_ux_po_file_info.items()))
     # Add global settings
     settings.DEEDS_UX_PO_FILE_INFO = deeds_ux_po_file_info
     settings.LANGUAGES_MOSTLY_TRANSLATED = sorted(

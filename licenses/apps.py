@@ -22,6 +22,6 @@ class LicensesConfig(AppConfig):
         for language_code in settings.LANG_INFO.keys():
             update_lang_info(language_code)
 
-        # Process Deed & UX translations (store information on all, load those
-        # that meet or exceed the TRANSLATION_THRESHOLD).
+        # Process Deed & UX translations (store information on all and track
+        # those that meet or exceed the TRANSLATION_THRESHOLD).
         load_deeds_ux_translations()

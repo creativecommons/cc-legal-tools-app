@@ -427,7 +427,7 @@ class LegalCode(models.Model):
         pofile_path = get_pofile_path(
             locale_or_legalcode="legalcode",
             language_code=self.language_code,
-            resource_slug=self.license.resource_slug,
+            translation_domain=self.license.resource_slug,
         )
         return pofile_path
 
