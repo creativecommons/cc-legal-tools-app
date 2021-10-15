@@ -15,9 +15,9 @@ CSV_HEADERS = [
     "num_fuzzy",
     "percent_trans",
 ]
-DEFAULT_INPUT_DIR = settings.LOCALE_PATHS[0]
+DEFAULT_INPUT_DIR = os.path.dirname(settings.DEEDS_UX_LOCALE_PATH)
 DEFAULT_CSV_FILE = os.path.abspath(
-    os.path.realpath(os.path.join(DEFAULT_INPUT_DIR, "transstats.csv"))
+    os.path.realpath(os.path.join(settings.DISTILL_DIR, "transstats.csv"))
 )
 # If something has no language listed, that generally means it's English.
 # We want to set an actual language code on it so that once this data has

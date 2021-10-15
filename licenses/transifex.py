@@ -339,7 +339,7 @@ class TransifexHelper:
         pofile_path = get_pofile_path(
             locale_or_legalcode="locale",
             language_code=DEFAULT_LANGUAGE_CODE,
-            resource_slug=resource_slug,
+            translation_domain="django",
         )
         pofile_obj = polib.pofile(pofile_path)
         creation_date = get_pofile_creation_date(pofile_obj)
@@ -362,7 +362,7 @@ class TransifexHelper:
             pofile_path = get_pofile_path(
                 locale_or_legalcode="locale",
                 language_code=language_code,
-                resource_slug=resource_slug,
+                translation_domain="django",
             )
             pofile_obj = polib.pofile(pofile_path)
             creation_date = language_data["creation_date"]

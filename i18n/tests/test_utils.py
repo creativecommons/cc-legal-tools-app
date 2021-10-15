@@ -87,12 +87,21 @@ class TranslationTest(TestCase):
 @override_settings(DATA_REPOSITORY_DIR="/foo/bar")
 class PofileTest(TestCase):
     def test_get_pofile_path(self):
-        locale_path = get_pofile_path("locale", "ar", "slug1")
+        locale_path = get_pofile_path(
+            locale_or_legalcode="locale",
+            language_code="ar",
+            translation_domain="slug1",
+        )
         self.assertEqual(
             "/foo/bar/locale/ar/LC_MESSAGES/slug1.po", locale_path
         )
 
-        locale_path = get_pofile_path("legalcode", "en", "slug2")
+        locale_path = get_pofile_path(
+            locale_or_legalcode="legalcode",
+            language_code="en",
+            translation_domain="slug2",
+            data_dir="/foo/bar",
+        )
         self.assertEqual(
             "/foo/bar/legalcode/en/LC_MESSAGES/slug2.po", locale_path
         )

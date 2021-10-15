@@ -387,142 +387,23 @@ Documentation:
 
 ### How the license translation is implemented
 
-Django Translation uses two sets of files in the
+Django Translation uses two sets of Gettext Files in the
 [creativecommons/cc-licenses-data][repodata] repository (the [Data
-Repository](#data-repository), above):
-- **`legalcode/`**
-  - `.po` and `.mo` internationalization and localization files (gettext files)
-    for Legal Codes
-  - The file names and corresponding Transifex resource are different for each
-    tool.
-    - Resource Slug / Translation Domain Formula:
-      1. **unit** + `_` + **version** + `_` + **jurisdiction**
-      2. strip out any periods (`.`)
-    - Resource Slug / Translation Domain Examples:
-      - `by-nd_40`
-      - `by-nc-sa_30_es`
-      - `zero_10`
-- **`locale/`**
-  - `.po` and `.mo` internationalization and localization files (gettext files)
-    for Deeds & UX
-  - There is only one filename for Deeds & UX (it is configurable via the
-    `DEEDS_UX_RESOURCE_SLUG` settings).
-    - Resource Slug / Translation Domain value:
-      - `deeds_ux`
-
-Many custom Django translation domains (gettext translation domains are used).
-They match the Transifex resource slug. For details, see [[Feature] Custom
-gettext translation domains may overly complicate Django code · Issue
-#181][issue181].
-
-The internationalization and localization file details:
-- `.mo` machine object files
-  - *generated* by the `compilemessages` command (see [Translation Update
-    Process](#translation-update-process), below)
-  - *ingested* by this application and used by the `publish` command (see
-    [Generate Static Files](#generate-static-files), below)
-- `.po` portable object files
-  - *generated* by the `check_for_translation_updates` command (see [Check for
-    Translation Updates](#check-for-translation-updates), below)
-    - `legalcode/`: *initially generated* by the `load_html_files` command
-      (see [Import Process](#import-process), above)
-    - `locale/`: *initially generated* by the `makemessages` command
-  - *ingested* by the `compilemessages` command (see [Translation Update
-    Process](#translation-update-process), below)
-
-The internationalization and localization files are contained within Django
-language code subdirectories instead of locale name subdirectories. For
-details, see [[Bug] Translation directories should use locale name instead of
-language code · Issue #182][issue182].
+Repository](#data-repository), above). See that repository for detailed
+information and definitions.
 
 Documentation:
 - [Translation | Django documentation | Django][djangotranslation]
 - [Resources | Transifex Documentation][transifexresources]
 
 [djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
-[issue181]: https://github.com/creativecommons/cc-licenses/issues/181
-[issue182]: https://github.com/creativecommons/cc-licenses/issues/182
 [repodata]: https://github.com/creativecommons/cc-licenses-data
 [transifexresources]: https://docs.transifex.com/api/resources
 
 
-### Language Codes
-
-The language codes used within this application and for the
-internationalization and localization directory structure are Django language
-codes.
-
-Definitions:
-- Django language codes are ***lowercase* [IETF language
-  tags][ietf-lang-tags]**
-  - Examples: `de-at`, `oc-aranes`, `sr-latn`, `zh-hant`
-- Transifex langauge codes are primarily **[POSIX locales][posixlocale]**
-  - Examples: `de_AT`, `oc@aranes`, `sr@latin`, `zh_Hant`
-- Transifex language codes also include ***convential* [IETF language
-  tags][ietf-lang-tags]**
-  - Examples: `zh-Hans`, `zh-Hant`
-- Legacy language codes include:
-  - **[POSIX locales][posixlocale]**
-    - Example: (see above)
-  - ***unconventional* [POSIX locales][posixlocale]**
-    - Example: `oci` (three letter code used instead of two letter code)
-  - ***conventional* [IETF language tags][ietf-lang-tags]**
-    - Examples: (see above)
-
-Mappings:
-- Legacy language codes are mapped to Django language codes by by the
-  `load_html_files` command (see [Import Process](#import-process), above).
-- Django language codes are mapped to Transifex language codes by the
-  `check_for_translation_updates` command (see [Check for Translation
-Updates](#check-for-translation-updates), below).
-- Django language codes are mapped to Legacy language codes by the `publish`
-  command (see [Generate Static Files](#generate-static-files), below) to
-  create redirects
-  - lowercase static file redirects for simple hosting like GitHub Pages or
-    Netlify
-  - an NGINX include file with mixed case redirects for dedicated hosting
-
-Documentation:
-- Django Language Codes:
-  - `127.0.0.1:8000`[`/dev/status/` Translation Status][translationstatus]
-  - `django/django`:`django/conf/global_settings.p`:
-    [Lines 50-148][djangocodes]
-- Transifex Language Codes:
-  - `127.0.0.1:8000`[`/dev/status/` Translation Status][translationstatus]
-  - [Languages on Transifex][transifexcodes]
-- References:
-  - [IETF language tag - Wikipedia][ietf-lang-tags]
-    - [RFC5646 Tags for Identifying Languages][rfc5646]
-      - [ISO 639-1 - Wikipedia][iso639-1] *Codes for the representation of
-        names of languages—Part 1: Alpha-2 code*
-        - [List of ISO 639-1 codes - Wikipedia][iso639-1-alpha-2]
-      - [ISO 639-2 - Wikipedia][iso639-2] *Codes for the representation of
-        names of languages — Part 2: Alpha-3 code*
-        - [List of ISO 639-2 codes - Wikipedia][iso639-2-alpha-3]
-      - [ISO 3166-1 - Wikipedia][iso3166-1] *Codes for the representation of
-        names of countries and their subdivisions – Part 1: Country codes*
-        - [ISO 3166-1 alpha-2 - Wikipedia][iso3166-1-alpha-2]
-      - [ISO 15924 - Wikipedia][iso15924] *Codes for the representation of
-        names of scripts*
-  - [POSIX platforms - Locale (computer software) - Wikipedia][posixlocale]
-    (POSIX Locale)
-
-[djangocodes]: https://github.com/django/django/blob/0dc25526d8daaaa59968d4b1b597968e197f040c/django/conf/global_settings.py#L50-L148
-[ietf-lang-tags]: https://en.wikipedia.org/wiki/IETF_language_tag
-[iso15924]: https://en.wikipedia.org/wiki/ISO_15924
-[iso3166-1-alpha-2]: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-[iso3166-1]: https://en.wikipedia.org/wiki/ISO_3166-1
-[iso639-1-alpha-2]: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-[iso639-1]: https://en.wikipedia.org/wiki/ISO_639-1
-[iso639-2-alpha-3]: https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
-[iso639-2]: https://en.wikipedia.org/wiki/ISO_639-2
-[posixlocale]: https://en.wikipedia.org/wiki/Locale_(computer_software)#POSIX_platforms
-[rfc5646]: https://datatracker.ietf.org/doc/html/rfc5646.html
-[transifexcodes]: https://www.transifex.com/explore/languages/
-[translationstatus]: http://127.0.0.1:8000/dev/status/
-
-
 ### Check for Translation Updates
+
+> :warning: **This functionality is currently disabled.**
 
 The hourly run of `check_for_translation_updates` looks to see if any of the
 translation files in Transifex have newer last modification times than we know
