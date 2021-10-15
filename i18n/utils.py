@@ -6,8 +6,11 @@ from contextlib import contextmanager
 # Third-party
 import dateutil.parser
 import polib
+from babel import Locale
+from babel.core import UnknownLocaleError
 from django.conf import settings
-from django.utils.translation import trans_real
+from django.conf.locale import LANG_INFO
+from django.utils import translation
 
 # First-party/Local
 from i18n import (
@@ -68,7 +71,7 @@ JURISDICTION_CURRENCY_LOOKUP = {
 # need to perform all that well, since it just generates static files.
 def get_translation_object(
     *, django_language_code: str, domain: str
-) -> trans_real.DjangoTranslation:
+) -> translation.trans_real.DjangoTranslation:
     """
     Return a DjangoTranslation object suitable to activate when we're wanting
     to render templates for this language code and domain.  (The domain is
@@ -79,14 +82,14 @@ def get_translation_object(
     """
 
     # Start with a translation object for the domain for this license.
-    license_translation_object = trans_real.DjangoTranslation(
+    license_translation_object = translation.trans_real.DjangoTranslation(
         language=django_language_code,
         domain=domain,
     )
     # Add a fallback to the standard Django translation for this language. This
     # gets us the non-legal-code parts of the pages.
     license_translation_object.add_fallback(
-        trans_real.translation(django_language_code)
+        translation.trans_real.translation(django_language_code)
     )
 
     return license_translation_object
@@ -94,7 +97,7 @@ def get_translation_object(
 
 @contextmanager
 def active_translation(
-    translation_obj: trans_real.DjangoTranslation,
+    translation_obj: translation.trans_real.DjangoTranslation,
 ):
     """
     Context manager to do stuff within its context with a particular
@@ -111,7 +114,7 @@ def active_translation(
     translation system that could change on us.  It doesn't seem likely,
     though.
     """
-    _active = trans_real._active
+    _active = translation.trans_real._active
 
     # Either _active.value points at a DjangoTranslation
     # object, or _active has no 'value' attribute.
@@ -160,7 +163,7 @@ def get_pofile_path(
             os.path.join(
                 settings.DATA_REPOSITORY_DIR,
                 locale_or_legalcode,
-                language_code,
+                translation.to_locale(language_code),
                 "LC_MESSAGES",
                 f"{resource_slug}.po",
             )
@@ -330,34 +333,65 @@ def get_jurisdiction_name(category, unit, version, jurisdiction_code):
 
 def load_deeds_ux_translations():
     """
-    Load Deeds & UX translations that meet or exceed the TRANSLATION_THRESHOLD.
+    Process Deed & UX translations (store information on all, load those that
+    meet or exceed the TRANSLATION_THRESHOLD).
     """
-    languages_with_po_file = []
+    deeds_ux_po_file_info = {}
     languages_mostly_translated = []
-    for language_code in os.listdir(settings.DEEDS_UX_LOCALE_PATH):
-        pofile_path = os.path.join(
-            settings.DEEDS_UX_LOCALE_PATH,
-            language_code,
-            "LC_MESSAGES",
-            f"{settings.DEEDS_UX_RESOURCE_SLUG}.po",
+    for locale_name in sorted(os.listdir(settings.DEEDS_UX_LOCALE_PATH)):
+        language_code = translation.to_language(locale_name)
+        pofile_path = get_pofile_path(
+            locale_or_legalcode="locale",
+            language_code=language_code,
+            resource_slug=settings.DEEDS_UX_RESOURCE_SLUG,
         )
         if not os.path.isfile(pofile_path):
             continue
         pofile_obj = polib.pofile(pofile_path)
-        languages_with_po_file.append(language_code)
-        if pofile_obj.percent_translated() < settings.TRANSLATION_THRESHOLD:
+        percent_translated = pofile_obj.percent_translated()
+        deeds_ux_po_file_info[language_code] = {
+            "percent_translated": percent_translated,
+            "creation_date": get_pofile_creation_date(pofile_obj),
+            "revision_date": get_pofile_revision_date(pofile_obj),
+            "metadata": pofile_obj.metadata,
+        }
+        update_lang_info(language_code)
+        if percent_translated < settings.TRANSLATION_THRESHOLD:
             continue
         languages_mostly_translated.append(language_code)
         # Load Deeds & UX translations from custom gettext domain
         # **WARNING: private variable used**
-        trans_real._translations[language_code] = trans_real.DjangoTranslation(
+        translation.trans_real._translations[
+            language_code
+        ] = translation.trans_real.DjangoTranslation(
             language=language_code, domain=settings.DEEDS_UX_RESOURCE_SLUG
         )
     # Add global settings
-    settings.LANGUAGES_WITH_PO_FILE = sorted(list(set(languages_with_po_file)))
+    settings.DEEDS_UX_PO_FILE_INFO = deeds_ux_po_file_info
     settings.LANGUAGES_MOSTLY_TRANSLATED = sorted(
         list(set(languages_mostly_translated))
     )
+
+
+def update_lang_info(language_code):
+    """
+    Normalize language information using Babel
+    """
+    order_to_bidi = {
+        "left-to-right": False,
+        "right-to-left": True,
+    }
+    locale_name = translation.to_locale(language_code)
+    try:
+        locale = Locale.parse(locale_name)
+        if language_code not in LANG_INFO:
+            LANG_INFO[language_code] = {}
+        lang_info = LANG_INFO[language_code]
+        lang_info["name"] = locale.get_display_name("en")
+        lang_info["name_local"] = locale.get_display_name(locale_name)
+        lang_info["bidi"] = order_to_bidi[locale.character_order]
+    except UnknownLocaleError:
+        pass
 
 
 # def ugettext_for_locale(locale):

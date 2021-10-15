@@ -388,6 +388,8 @@ class Command(BaseCommand):
             "Content-Transfer-Encoding": "8bit",
             "Content-Type": "text/plain; charset=utf-8",
             "Language": transifex_language,
+            "Language-Django": language_code,
+            "Language-Transifex": transifex_language,
             "Language-Team": "https://www.transifex.com/creativecommons/CC/",
             "MIME-Version": "1.0",
             "PO-Revision-Date": NOW,
@@ -395,9 +397,9 @@ class Command(BaseCommand):
             "Project-Id-Version": legal_code.license.resource_slug,
         }
 
-        dir = os.path.dirname(po_filename)
-        if not os.path.isdir(dir):
-            os.makedirs(dir)
+        directory = os.path.dirname(po_filename)
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
         # Save mofile ourself. We could call 'compilemessages' but
         # it wants to compile everything, which is both overkill
         # and can fail if the venv or project source is not

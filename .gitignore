@@ -41,3 +41,7 @@ data/
 
 # IDE ignores
 .vscode
+
+# Container files
+.bash_history
+.ssh

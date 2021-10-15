@@ -6,8 +6,6 @@ import os
 
 # Third-party
 import colorlog  # noqa: F401
-from babel import Locale
-from babel.core import UnknownLocaleError
 from django.conf.locale import LANG_INFO
 
 APP_NAME = "licenses"
@@ -213,7 +211,7 @@ LOCALE_PATHS = (
     LEGAL_CODE_LOCALE_PATH,
 )
 
-# Teach Django about a few more languages (sorted by langauge code):
+# Teach Django about a few more languages (sorted by language code)
 
 # Aragonese
 LANG_INFO["an"] = {
@@ -247,24 +245,8 @@ LANG_INFO["si-lk"] = {"code": "si-lk"}  # Remaining data from Babel
 # Zulu
 LANG_INFO["zu"] = {"code": "zu"}  # Remaining data from Babel
 
-# Normalize languages using Babel
-order_to_bidi = {
-    "left-to-right": False,
-    "right-to-left": True,
-}
-for language_code in LANG_INFO.keys():
-    babel_code = language_code.replace("-", "_")
-    try:
-        locale = Locale.parse(babel_code)
-        lang_info = LANG_INFO[language_code]
-        lang_info["name"] = locale.get_display_name("en")
-        lang_info["name_local"] = locale.get_display_name(babel_code)
-        lang_info["bidi"] = order_to_bidi[locale.character_order]
-    except UnknownLocaleError:
-        continue
-
 TRANSIFEX = {
-    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "missing"),
+    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "[!] MISSING [!]"),
     "ORGANIZATION_SLUG": "creativecommons",
     "PROJECT_SLUG": "CC",
     # We currently only have a single team for all of our projects named

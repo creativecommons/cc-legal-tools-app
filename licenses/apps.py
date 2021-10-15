@@ -3,7 +3,7 @@ from django.apps import AppConfig
 from django.conf import settings
 
 # First-party/Local
-from i18n.utils import load_deeds_ux_translations
+from i18n.utils import load_deeds_ux_translations, update_lang_info
 from licenses.git_utils import setup_to_call_git
 
 
@@ -17,4 +17,11 @@ class LicensesConfig(AppConfig):
 
     def ready(self):
         setup_to_call_git()
+
+        # Normalize all currently loaded language information using Babel
+        for language_code in settings.LANG_INFO.keys():
+            update_lang_info(language_code)
+
+        # Process Deed & UX translations (store information on all, load those
+        # that meet or exceed the TRANSLATION_THRESHOLD).
         load_deeds_ux_translations()
