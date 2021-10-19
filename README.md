@@ -356,10 +356,9 @@ This process will read the HTML files from the specified directory, populate
 ## Translation
 
 To upload/download translation files to/from Transifex, you'll need an account
-there with access to these translations. Then follow the [Authentication |
-Introduction to the Transifex API | Transifex Documentation][transauth]: to get
-an API token, and set `TRANSIFEX["API_TOKEN"]` in your environment with its
-value.
+there with access to these translations. Then follow the [Authentication -
+Transifex API v3][transauth]: to get an API token, and set
+`TRANSIFEX["API_TOKEN"]` in your environment with its value.
 
 The [creativecommons/cc-licenses-data][repodata] repository must be cloned
 next to this `cc-licenses` repository. (It can be elsewhere, then you need to
@@ -382,7 +381,7 @@ Documentation:
 
 [babel]: http://babel.pocoo.org/en/latest/index.html
 [repodata]:https://github.com/creativecommons/cc-licenses-data
-[transauth]: https://docs.transifex.com/api/introduction#authentication
+[transauth]: https://transifex.github.io/openapi/index.html#section/Authentication
 
 
 ### How the license translation is implemented
@@ -394,11 +393,16 @@ information and definitions.
 
 Documentation:
 - [Translation | Django documentation | Django][djangotranslation]
-- [Resources | Transifex Documentation][transifexresources]
+- Transifex API
+  - [Introduction to API 3.0 | Transifex Documentation][api30intro]
+  - [Transifex API v3][api30]
+  - Python SDK: [transifex-python/transifex/api][apisdk]
 
+[api30]: https://transifex.github.io/openapi/index.html#section/Introduction
+[api30intro]: https://docs.transifex.com/api-3-0/introduction-to-api-3-0
+[apisdk]: https://github.com/transifex/transifex-python/tree/devel/transifex/api
 [djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
 [repodata]: https://github.com/creativecommons/cc-licenses-data
-[transifexresources]: https://docs.transifex.com/api/resources
 
 
 ### Check for Translation Updates
