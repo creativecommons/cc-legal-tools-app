@@ -3,7 +3,6 @@ Deal with Transifex
 """
 # Standard library
 import logging
-import os
 from typing import Iterable
 
 # Third-party
@@ -53,33 +52,22 @@ class TransifexHelper:
         # (^[a-z0-9._-]+$'), but the web interfaces does not (did not?). Our
         # project slug is uppercase.
         # https://transifex.github.io/openapi/#tag/Projects
-        for project in self.api_organization.fetch("projects"):
+        for project in self.api_organization.fetch(
+            "projects"
+        ):  # pragma: no cover
+            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
+            # https://github.com/nedbat/coveragepy/issues/198
             if project.attributes["slug"] == self.project_slug:
                 self.api_project = project
                 break
         for i18n_format in self.api.I18nFormat.filter(
             organization=self.api_organization
-        ):
+        ):  # pragma: no cover
+            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
+            # https://github.com/nedbat/coveragepy/issues/198
             if i18n_format.id == "PO":
                 self.api_i18n_format = i18n_format
                 break
-
-    def files_argument(self, name, filename, content):
-        """
-        Return a valid value for the "files" argument to requests.put or
-        requests.post to upload the given content as the given filename, as the
-        given argument name.
-        """
-        return [
-            (
-                name,
-                (
-                    os.path.basename(filename),
-                    content,
-                    "application/octet-stream",
-                ),
-            )
-        ]
 
     def get_transifex_resource_stats(self):
         """
@@ -122,15 +110,14 @@ class TransifexHelper:
         for l_stats in languages_stats:
             resource_slug = l_stats.related["resource"].id.split(":")[-1]
             transifex_code = l_stats.related["language"].id.split(":")[-1]
-            if resource_slug == "ccsearch":
+            if resource_slug in ["cc-search", "deeds-choosers"] or (
+                l_stats.attributes["translated_strings"] == 0
+                and l_stats.attributes["translated_words"] == 0
+            ):
                 continue
             if resource_slug not in stats:
                 stats[resource_slug] = {}
-            if (
-                l_stats.attributes["translated_strings"] > 0
-                or l_stats.attributes["translated_words"] > 0
-            ):
-                stats[resource_slug][transifex_code] = l_stats.attributes
+            stats[resource_slug][transifex_code] = l_stats.attributes
 
         return stats
 
@@ -438,6 +425,7 @@ class TransifexHelper:
         )
         if self.dryrun:
             return
+
         # Create Resource
         self.api.Resource.create(
             name=resource_name,
@@ -447,6 +435,7 @@ class TransifexHelper:
                 "project": self.api_project,
             },
         )
+
         # Upload Source Strings to Resource
         resource = self.api.Resource.get(
             project=self.api_project, slug=resource_slug
@@ -506,25 +495,18 @@ class TransifexHelper:
         resource = self.api.Resource.get(
             project=self.api_project, slug=resource_slug
         )
-        try:
-            if not self.dryrun:
-                self.api.ResourceTranslationsAsyncUpload.upload(
-                    resource=resource,
-                    content=pofile_content,
-                    language=language.id,
-                )
-                self.clear_transifex_stats()
-            self.log.info(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex does not yet contain"
-                f" translation. Added using {pofile_path}."
+        if not self.dryrun:
+            self.api.ResourceTranslationsAsyncUpload.upload(
+                resource=resource,
+                content=pofile_content,
+                language=language.id,
             )
-        except requests.exceptions.HTTPError:
-            self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex does not yet contain"
-                f" translation. Adding FAILED using {pofile_path}."
-            )
+            self.clear_transifex_stats()
+        self.log.info(
+            f"{self.nop}{resource_name} ({resource_slug})"
+            f" {transifex_code}: Transifex does not yet contain"
+            f" translation. Added using {pofile_path}."
+        )
 
     def normalize_pofile_language(
         self,
