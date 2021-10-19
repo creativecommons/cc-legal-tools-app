@@ -110,10 +110,7 @@ class TransifexHelper:
         for l_stats in languages_stats:
             resource_slug = l_stats.related["resource"].id.split(":")[-1]
             transifex_code = l_stats.related["language"].id.split(":")[-1]
-            if resource_slug in ["cc-search", "deeds-choosers"] or (
-                l_stats.attributes["translated_strings"] == 0
-                and l_stats.attributes["translated_words"] == 0
-            ):
+            if resource_slug in ["cc-search", "deeds-choosers"]:
                 continue
             if resource_slug not in stats:
                 stats[resource_slug] = {}
@@ -483,7 +480,14 @@ class TransifexHelper:
                 " The add_resource_to_transifex() function must be called"
                 " before this one: add_translation_to_transifex_resource()."
             )
-        elif transifex_code in self.translation_stats[resource_slug]:
+        elif (
+            resource_slug in self.translation_stats
+            and transifex_code in self.translation_stats[resource_slug]
+            and self.translation_stats[resource_slug][transifex_code].get(
+                "translated_strings", 0
+            )
+            > 0
+        ):
             self.log.debug(
                 f"{self.nop}{resource_name} ({resource_slug})"
                 f" {transifex_code}: Transifex already contains translation."

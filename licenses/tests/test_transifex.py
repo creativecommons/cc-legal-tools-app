@@ -324,10 +324,18 @@ class TestTransifex(TestCase):
         self.assertNotIn("cc-search", stats)
         self.assertNotIn("deeds-choosers", stats)
         self.assertIn("deeds_ux", stats)
-        self.assertNotIn("id", stats["deeds_ux"])
+        self.assertIn("id", stats["deeds_ux"])
         self.assertIn("is", stats["deeds_ux"])
         self.assertIn("it", stats["deeds_ux"])
-        self.assertEqual(30, stats["deeds_ux"]["is"]["translated_strings"])
+        self.assertEqual(
+            0, stats["deeds_ux"]["id"].get("translated_strings", 0)
+        )
+        self.assertEqual(
+            30, stats["deeds_ux"]["is"].get("translated_strings", 0)
+        )
+        self.assertEqual(
+            50, stats["deeds_ux"]["it"].get("translated_strings", 0)
+        )
 
     def test_transifex_get_pofile_content_bad_i18n_type(self):
         api = self.helper.api
@@ -562,17 +570,19 @@ class TestTransifex(TestCase):
         api.Resource.get.assert_not_called()
         api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_resource_present(self):
+    def test_add_translation_to_transifex_present(self):
         api = self.helper.api
         language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
-        pofile_obj = "x_pofile_obj_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
+        self.helper._resource_stats = {resource_slug: None}
         # Set translation stats so we do not have to also mock it here
-        self.helper._translation_stats = {"x_slug_x": {"x_lang_code_x": None}}
+        self.helper._translation_stats = {
+            resource_slug: {language_code: {"translated_strings": 99}}
+        }
 
         self.helper.add_translation_to_transifex_resource(
             language_code,
@@ -595,9 +605,9 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
+        self.helper._resource_stats = {resource_slug: None}
         # Set translation stats so we do not have to also mock it here
-        self.helper._translation_stats = {"x_slug_x": {}}
+        self.helper._translation_stats = {resource_slug: {}}
 
         self.helper.add_translation_to_transifex_resource(
             language_code,
@@ -611,7 +621,7 @@ class TestTransifex(TestCase):
         api.Resource.get.assert_called_once()
         api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_resource_missing(self):
+    def test_add_translation_to_transifex_missing(self):
         api = self.helper.api
         language_code = "x_lang_code_x"
         transifex_code = map_django_to_transifex_language_code(language_code)
@@ -630,9 +640,9 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
         # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
+        self.helper._resource_stats = {resource_slug: {}}
         # Set translation stats so we do not have to also mock it here
-        self.helper._translation_stats = {"x_slug_x": {}}
+        self.helper._translation_stats = {resource_slug: {}}
 
         self.helper.add_translation_to_transifex_resource(
             language_code,
