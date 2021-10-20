@@ -3,18 +3,20 @@ version: "3.6"
 services:
 
   db:
+    # Change location of pg_stat_tmp to allow it to be on tmpfs (see below)
+    command: postgres --stats_temp_directory=/var/lib/postgresql/pg_stat_tmp
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     image: postgres
     restart: always
-#    # Use tmpfs for pg_stat_tmp to resolve WARNING: could not open statistics
-#    # file
-#    # (this solves the warning, but breaks initialization: enable as needed)
-#    # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
-#    tmpfs:
-#      - /var/lib/postgresql/data/pg_stat_tmp
+    # Use tmpfs for pg_stat_tmp to resolve WARNING: could not open statistics
+    # file
+    # (this solves the warning, but breaks initialization: enable as needed)
+    # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
+    tmpfs:
+      - /var/lib/postgresql/pg_stat_tmp
     volumes:
       - ./data/db:/var/lib/postgresql/data
 
