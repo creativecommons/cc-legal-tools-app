@@ -3,7 +3,6 @@ Deal with Transifex
 """
 # Standard library
 import logging
-import os
 from typing import Iterable
 
 # Third-party
@@ -11,8 +10,8 @@ import dateutil.parser
 import git
 import polib
 import requests
-import requests.auth
 from django.conf import settings
+from transifex.api import transifex_api
 
 # First-party/Local
 import licenses.models
@@ -24,15 +23,6 @@ from i18n.utils import (
     get_pofile_revision_date,
     map_django_to_transifex_language_code,
 )
-from licenses.utils import b64encode_string
-
-# API 2.0 https://docs.transifex.com/api/introduction
-BASE_URL_20 = "https://www.transifex.com/api/2/"
-HOST_20 = "www.transifex.com"
-
-# API 2.5 https://docs.transifex.com/api/examples/introduction-to-api-2-5
-BASE_URL_25 = "https://api.transifex.com/"
-HOST_25 = "api.transifex.com"
 
 LEGALCODES_KEY = "__LEGALCODES__"
 
@@ -42,121 +32,90 @@ def _empty_branch_object():
     return {LEGALCODES_KEY: []}
 
 
-class TransifexAuthRequests(requests.auth.AuthBase):
-    """
-    Allow using transifex "basic auth" which uses no password, and expects
-    the passed value to not even have the ":" separator which Basic Auth is
-    supposed to have.
-    """
-
-    def __init__(self, token: str):
-        self.token = token
-
-    def __eq__(self, other):
-        return all(
-            [
-                self.token == getattr(other, "token", None),
-            ]
-        )
-
-    def __ne__(self, other):
-        return not self == other
-
-    def __call__(self, r):
-        auth_str = b64encode_string(f"api:{self.token}")
-        r.headers["Authorization"] = f"Basic {auth_str}"
-        return r
-
-
 class TransifexHelper:
     def __init__(self, dryrun: bool = True, logger: logging.Logger = None):
         self.dryrun = dryrun
         self.nop = "<NOP> " if dryrun else ""
         self.log = logger if logger else logging.getLogger()
 
-        self.project_slug = settings.TRANSIFEX["PROJECT_SLUG"]
         self.organization_slug = settings.TRANSIFEX["ORGANIZATION_SLUG"]
+        self.project_slug = settings.TRANSIFEX["PROJECT_SLUG"]
         self.team_id = settings.TRANSIFEX["TEAM_ID"]
+        self.project_id = f"o:{self.organization_slug}:p:{self.project_slug}"
 
-        api_token = settings.TRANSIFEX["API_TOKEN"]
-        auth = TransifexAuthRequests(token=api_token)
-        self.api_v20 = requests.Session()
-        self.api_v20.auth = auth
-
-        self.api_v25 = requests.Session()
-        self.api_v25.auth = auth
-
-    def request20(self, method, path, **kwargs):
-        func = getattr(self.api_v20, method)
-        url = f"{BASE_URL_20}{path}"
-        response = func(url, **kwargs)
-        response.raise_for_status()
-        return response
-
-    def request25(self, method, path, **kwargs):
-        func = getattr(self.api_v25, method)
-        url = f"{BASE_URL_25}{path}"
-        response = func(url, **kwargs)
-        response.raise_for_status()
-        return response
-
-    def files_argument(self, name, filename, content):
-        """
-        Return a valid value for the "files" argument to requests.put or
-        requests.post to upload the given content as the given filename, as the
-        given argument name.
-        """
-        return [
-            (
-                name,
-                (
-                    os.path.basename(filename),
-                    content,
-                    "application/octet-stream",
-                ),
-            )
-        ]
+        self.api = transifex_api
+        self.api.setup(auth=settings.TRANSIFEX["API_TOKEN"])
+        self.api_organization = self.api.Organization.get(
+            slug=self.organization_slug
+        )
+        # The Transifex API requires project slugs to be lowercase
+        # (^[a-z0-9._-]+$'), but the web interfaces does not (did not?). Our
+        # project slug is uppercase.
+        # https://transifex.github.io/openapi/#tag/Projects
+        for project in self.api_organization.fetch(
+            "projects"
+        ):  # pragma: no cover
+            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
+            # https://github.com/nedbat/coveragepy/issues/198
+            if project.attributes["slug"] == self.project_slug:
+                self.api_project = project
+                break
+        for i18n_format in self.api.I18nFormat.filter(
+            organization=self.api_organization
+        ):  # pragma: no cover
+            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
+            # https://github.com/nedbat/coveragepy/issues/198
+            if i18n_format.id == "PO":
+                self.api_i18n_format = i18n_format
+                break
 
     def get_transifex_resource_stats(self):
         """
         Returns a dictionary of current Transifex resource stats keyed by
         resource_slug.
 
-        Uses Transifex API 2.5: Resources
-        https://docs.transifex.com/api-2-5/resources
+        Uses transifex-python
+        https://github.com/transifex/transifex-python/tree/devel/transifex/api
+
+        Uses Transifex API 3.0: Resources
+        https://transifex.github.io/openapi/#tag/Resources
         """
-        response = self.request25(
-            "get",
-            f"organizations/{self.organization_slug}/projects/"
-            f"{self.project_slug}/resources/",
-        )
-        raw_stats = response.json()
         stats = {}
-        for data in raw_stats:
-            resource_slug = data["slug"]
-            del data["slug"]
-            stats[resource_slug] = data
+        resources = sorted(
+            self.api_project.fetch("resources").all(), key=lambda x: x.id
+        )
+        for resource in resources:
+            r_slug = resource.attributes["slug"]
+            stats[r_slug] = resource.attributes
         return stats
 
     def get_transifex_translation_stats(self):
         """
         Returns dictionary of the current Transifex translation stats keyed by
-        resource_slug, then transifex_code.
+        resource_slug then transifex_code.
 
-        Uses Transifex API 2.5: Resources
-        https://docs.transifex.com/api-2-5/resources
+        Uses transifex-python
+        https://github.com/transifex/transifex-python/tree/devel/transifex/api
+
+        Uses Transifex API 3.0: Statistics
+        https://transifex.github.io/openapi/#tag/Statistics
         """
-        transifex_resource_slugs = self.resource_stats.keys()
-
-        # Get full stats for each of the resources
         stats = {}
-        for resource_slug in transifex_resource_slugs:
-            response = self.request25(
-                "get",
-                f"organizations/{self.organization_slug}/projects/"
-                f"{self.project_slug}/resources/{resource_slug}",
-            )
-            stats[resource_slug] = response.json()["stats"]
+        languages_stats = sorted(
+            self.api.ResourceLanguageStats.filter(
+                project=self.api_project
+            ).all(),
+            key=lambda x: x.id,
+        )
+        for l_stats in languages_stats:
+            resource_slug = l_stats.related["resource"].id.split(":")[-1]
+            transifex_code = l_stats.related["language"].id.split(":")[-1]
+            if resource_slug in ["cc-search", "deeds-choosers"]:
+                continue
+            if resource_slug not in stats:
+                stats[resource_slug] = {}
+            stats[resource_slug][transifex_code] = l_stats.attributes
+
         return stats
 
     @property
@@ -187,21 +146,40 @@ class TransifexHelper:
         self, resource_slug, transifex_code
     ) -> bytes:
         """
-        Get the updated translation. We don't write it to a file yet. We'll do
-        all the updates for a branch at once in the next section.
+        Get the Gettext portable object file (PO file) from Transifex for a
+        given translation.
 
-        Uses Transifex API 2.0: Translations
-        https://docs.transifex.com/api/translations
+        Uses transifex-python
+        https://github.com/transifex/transifex-python/tree/devel/transifex/api
 
-        (Transifex API 2.5 does not include a translations endpoint.)
+        Uses Transifex API 3.0: Resource Translations
+        https://transifex.github.io/openapi/#tag/Resource-Translations
         """
-        response = self.request20(
-            "get",
-            f"project/{self.project_slug}/resource/{resource_slug}"
-            f"/translation/{transifex_code}/",
-            params={"mode": "translator", "file": "PO"},
+        resource = self.api.Resource.get(
+            project=self.api_project, slug=resource_slug
         )
-        pofile_content = response.content  # binary
+        i18n_type = resource.attributes["i18n_type"]
+        if i18n_type != "PO":
+            raise ValueError(
+                f"Transifex {resource_slug} file format is not 'PO'. It is:"
+                f" {i18n_type}"
+            )
+        if transifex_code == DEFAULT_LANGUAGE_CODE:
+            # Download source file
+            url = self.api.ResourceStringsAsyncDownload.download(
+                resource=resource,
+                content_encoding="text",
+                file_type="default",
+            )
+        else:
+            # Download translation file
+            language = self.api.Language.get(code=transifex_code)
+            url = self.api.ResourceTranslationsAsyncDownload.download(
+                resource=resource,
+                language=language,
+                mode="translator",
+            )
+        pofile_content = requests.get(url).content  # binary
         return pofile_content
 
     # def update_branch_for_legal_code(self, repo, legal_code, branch_object):
@@ -219,8 +197,8 @@ class TransifexHelper:
     #     )
     #     last_tx_update = dateutil.parser.parse(
     #         self.translation_stats[resource_slug][transifex_code][
-    #             "translated"
-    #         ]["last_activity"]
+    #             "last_translation_update"
+    #         ]
     #     )
     #     legal_code.translation_last_update = last_tx_update
     #
@@ -419,21 +397,24 @@ class TransifexHelper:
         """
         Add resource to Transifex
 
-        Uses Transifex API 2.0: Resources
-        https://docs.transifex.com/api/resources
+        Uses transifex-python
+        https://github.com/transifex/transifex-python/tree/devel/transifex/api
 
-        (Except for screenshots, Transifex API 2.5 is read-only.)
+        Uses Transifex API 3.0: Resources
+        https://transifex.github.io/openapi/index.html#tag/Resources
+
+        Uses Transifex API 3.0: Resource Strings
+        https://transifex.github.io/openapi/index.html#tag/Resource-Strings
         """
         transifex_code = map_django_to_transifex_language_code(language_code)
+
         if resource_slug in self.resource_stats.keys():
             self.log.debug(
                 f"{self.nop}{resource_name} ({resource_slug})"
                 f" {transifex_code}: Transifex already contains resource."
             )
             return
-        # Create the resource in Transifex (API 2.5 does not support
-        # writing to resources so we're stuck with 2.0 for that).
-        pofile_content = get_pofile_content(pofile_obj)
+
         self.log.warning(
             f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
             f" Transifex does not yet contain resource. Creating using"
@@ -441,15 +422,29 @@ class TransifexHelper:
         )
         if self.dryrun:
             return
-        # data args for creating the resource
-        data = dict(slug=resource_slug, name=resource_name, i18n_type="PO")
-        # the "source messages" uploaded as the content of a pofile
-        files = self.files_argument("content", pofile_path, pofile_content)
-        self.request20(
-            "post",
-            f"project/{self.project_slug}/resources/",
-            data=data,
-            files=files,
+
+        # Create Resource
+        self.api.Resource.create(
+            name=resource_name,
+            slug=resource_slug,
+            relationships={
+                "i18n_format": self.api_i18n_format,
+                "project": self.api_project,
+            },
+        )
+
+        # Upload Source Strings to Resource
+        resource = self.api.Resource.get(
+            project=self.api_project, slug=resource_slug
+        )
+        for entry in pofile_obj:
+            # Remove duplicate translated strings
+            if entry.msgid == entry.msgstr:
+                entry.msgstr = ""
+        pofile_content = get_pofile_content(pofile_obj)
+        self.api.ResourceStringsAsyncUpload.upload(
+            resource=resource,
+            content=pofile_content,
         )
         self.clear_transifex_stats()
 
@@ -464,10 +459,11 @@ class TransifexHelper:
         """
         Add translation to Transifex resource.
 
-        Uses Transifex API 2.0: Translations
-        https://docs.transifex.com/api/translations
+        Uses transifex-python
+        https://github.com/transifex/transifex-python/tree/devel/transifex/api
 
-        (Transifex API 2.5 does not include a translations endpoint.)
+        Uses Transifex API 3.0: Resources Translations
+        https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
         transifex_code = map_django_to_transifex_language_code(language_code)
         if language_code == DEFAULT_LANGUAGE_CODE:
@@ -484,7 +480,14 @@ class TransifexHelper:
                 " The add_resource_to_transifex() function must be called"
                 " before this one: add_translation_to_transifex_resource()."
             )
-        elif transifex_code in self.translation_stats[resource_slug]:
+        elif (
+            resource_slug in self.translation_stats
+            and transifex_code in self.translation_stats[resource_slug]
+            and self.translation_stats[resource_slug][transifex_code].get(
+                "translated_strings", 0
+            )
+            > 0
+        ):
             self.log.debug(
                 f"{self.nop}{resource_name} ({resource_slug})"
                 f" {transifex_code}: Transifex already contains translation."
@@ -492,28 +495,22 @@ class TransifexHelper:
             return
 
         pofile_content = get_pofile_content(pofile_obj)
-        # This 'files' arg needs a different argument name, unfortunately.
-        files = self.files_argument("file", pofile_path, pofile_content)
-        try:
-            if not self.dryrun:
-                self.request20(
-                    "put",
-                    f"project/{self.project_slug}/resource/{resource_slug}/"
-                    f"translation/{transifex_code}/",
-                    files=files,
-                )
-                self.clear_transifex_stats()
-            self.log.info(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex does not yet contain"
-                f" translation. Added using {pofile_path}."
+        language = self.api.Language.get(code=transifex_code)
+        resource = self.api.Resource.get(
+            project=self.api_project, slug=resource_slug
+        )
+        if not self.dryrun:
+            self.api.ResourceTranslationsAsyncUpload.upload(
+                resource=resource,
+                content=pofile_content,
+                language=language.id,
             )
-        except requests.exceptions.HTTPError:
-            self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex does not yet contain"
-                f" translation. Adding FAILED using {pofile_path}."
-            )
+            self.clear_transifex_stats()
+        self.log.info(
+            f"{self.nop}{resource_name} ({resource_slug})"
+            f" {transifex_code}: Transifex does not yet contain"
+            f" translation. Added using {pofile_path}."
+        )
 
     def normalize_pofile_language(
         self,
@@ -738,10 +735,10 @@ class TransifexHelper:
         pofile_creation = get_pofile_creation_date(pofile_obj)
         pofile_revision = get_pofile_revision_date(pofile_obj)
         transifex_creation = dateutil.parser.parse(
-            self.resource_stats[resource_slug]["created"]
+            self.resource_stats[resource_slug]["datetime_created"]
         )
         transifex_revision = dateutil.parser.parse(
-            self.resource_stats[resource_slug]["last_update"]
+            self.resource_stats[resource_slug]["datetime_modified"]
         )
         transifex_label = f"{transifex_code} Transifex {resource_slug}.po"
         #
@@ -918,8 +915,8 @@ class TransifexHelper:
                 if transifex_code not in self.translation_stats[resource_slug]:
                     self.log.critical(
                         f"{resource_name} ({resource_slug}) {transifex_code}:"
-                        " Language notyet supported by Transifex. Aborting"
-                        " translation langauge processing."
+                        " Language not yet supported by Transifex. Aborting"
+                        " translation language processing."
                     )
                     continue
 

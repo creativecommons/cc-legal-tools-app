@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 
 # Third-party
 import polib
-import requests
 from django.test import TestCase, override_settings
 
 # First-party/Local
@@ -17,7 +16,6 @@ from licenses.models import LegalCode
 from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 from licenses.transifex import (
     LEGALCODES_KEY,
-    TransifexAuthRequests,
     TransifexHelper,
     _empty_branch_object,
 )
@@ -46,6 +44,9 @@ msgstr ""
 
 msgid "license_medium"
 msgstr "Attribution-NoDerivatives 4.0 International"
+
+msgid "english text"
+msgstr "english text"
 """
 
 
@@ -83,179 +84,319 @@ class DummyRepo:
 )
 class TestTransifex(TestCase):
     def setUp(self):
-        self.helper = TransifexHelper(dryrun=False)
+        project_xa = mock.Mock(id="o:XA:p:XA", attributes={"slug": "XA"})
+        project_xa.__str__ = mock.Mock(return_value=project_xa.id)
+        project_xb = mock.Mock(id="o:XB:p:XB", attributes={"slug": "XB"})
+        project_xb.__str__ = mock.Mock(return_value=project_xb.id)
+        project_cc = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}",
+            attributes={"slug": TEST_PROJ_SLUG},
+        )
+        project_cc.__str__ = mock.Mock(return_value=project_cc.id)
+        project_xd = mock.Mock(id="o:XD:p:XD", attributes={"slug": "XD"})
+        project_xd.__str__ = mock.Mock(return_value=project_xd.id)
+        organization = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}",
+            attributes={"slug": TEST_ORG_SLUG},
+        )
+        organization.__str__ = mock.Mock(return_value=organization.id)
+        organization.fetch = mock.Mock(
+            return_value=[project_xa, project_xb, project_cc, project_xd]
+        )
+        i18n_format_xa = mock.Mock(id="XA")
+        i18n_format_xa.__str__ = mock.Mock(return_value=i18n_format_xa.id)
+        i18n_format_xb = mock.Mock(id="XB")
+        i18n_format_xb.__str__ = mock.Mock(return_value=i18n_format_xb.id)
+        i18n_format_po = mock.Mock(id="PO")
+        i18n_format_po.__str__ = mock.Mock(return_value=i18n_format_po.id)
+        i18n_format_xd = mock.Mock(id="XD")
+        i18n_format_xd.__str__ = mock.Mock(return_value=i18n_format_xd.id)
+        with mock.patch("licenses.transifex.transifex_api") as api:
+            api.Organization.get = mock.Mock(return_value=organization)
+            api.I18nFormat.filter = mock.Mock(
+                return_value=[
+                    i18n_format_xa,
+                    i18n_format_xb,
+                    i18n_format_po,
+                    i18n_format_xd,
+                ]
+            )
+            self.helper = TransifexHelper(dryrun=False)
+
+        api.Organization.get.assert_called_once()
+        organization.fetch.assert_called_once()
+        api.I18nFormat.filter.assert_called_once()
 
     def test__empty_branch_object(self):
         empty = _empty_branch_object()
         self.assertEquals(empty, {LEGALCODES_KEY: []})
 
-    def test_request20_success(self):
-        with mpo(self.helper.api_v20, "get") as mock_get:
-            mock_get.return_value = mock.MagicMock(status_code=200)
-            self.helper.request20(
-                path="foo/bar", method="get", data={"a": 1}, files=[(1, 2)]
-            )
-        mock_get.assert_called_with(
-            "https://www.transifex.com/api/2/foo/bar",
-            data={"a": 1},
-            files=[(1, 2)],
-        )
-
-    def test_request25_success(self):
-        with mpo(self.helper.api_v25, "get") as mock_get:
-            mock_get.return_value = mock.MagicMock(status_code=200)
-            self.helper.request25(
-                path="foo/bar", method="get", data={"a": 1}, files=[(1, 2)]
-            )
-        mock_get.assert_called_with(
-            "https://api.transifex.com/foo/bar", data={"a": 1}, files=[(1, 2)]
-        )
-
-    def test_request20_failure(self):
-        error_response = requests.Response()
-        error_response.status_code = 500
-        error_response.reason = "testing"
-
-        with mpo(self.helper.api_v20, "get") as mock_get:
-            mock_get.return_value = error_response
-            with self.assertRaises(requests.HTTPError):
-                self.helper.request20(
-                    path="foo/bar", method="get", data={"a": 1}, files=[(1, 2)]
-                )
-        mock_get.assert_called_with(
-            "https://www.transifex.com/api/2/foo/bar",
-            data={"a": 1},
-            files=[(1, 2)],
-        )
-
-    def test_request25_failure(self):
-        error_response = requests.Response()
-        error_response.status_code = 500
-        error_response.reason = "testing"
-
-        with mpo(self.helper.api_v25, "get") as mock_get:
-            mock_get.return_value = error_response
-            with self.assertRaises(requests.HTTPError):
-                self.helper.request25(
-                    path="foo/bar", method="get", data={"a": 1}, files=[(1, 2)]
-                )
-        mock_get.assert_called_with(
-            "https://api.transifex.com/foo/bar", data={"a": 1}, files=[(1, 2)]
-        )
-
-    def test_files_argument(self):
-        result = self.helper.files_argument("foo", "bar", "baz")
-        self.assertEqual(
-            [("foo", ("bar", "baz", "application/octet-stream"))], result
-        )
-
     def test_resource_stats(self):
-        with mpo(self.helper, "request25") as mock_request:
-            mock_request.return_value.json.return_value = [
-                {
+        resources = [
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:by-nc-nd_40",
+                attributes={
                     "accept_translations": True,
-                    "can_edit_source": True,
-                    "categories": [],
-                    "created": "2020-11-05T13:20:23.405317Z",
-                    "has_source_revisions": False,
+                    "datetime_created": "2020-09-21T15:22:49Z",
+                    "datetime_modified": "2020-10-05T13:23:22Z",
                     "i18n_type": "PO",
-                    "id": 1946597,
-                    "last_update": "2021-07-19T14:32:49.918803Z",
-                    "name": "CC0 1.0",
-                    "priority": "1",
-                    "slug": "zero_10",
-                    "stats": {
-                        "language_code": None,
-                        "reviewed_1": {
-                            "last_activity": None,
-                            "name": "reviewed",
-                            "percentage": 0.0,
-                            "stringcount": 0,
-                            "wordcount": 0,
-                        },
-                        "translated": {
-                            "last_activity": "2021-02-06T06:26:38.478879Z",
-                            "name": "translated",
-                            "percentage": 0.0076,
-                            "stringcount": 19,
-                            "wordcount": 657,
-                        },
-                    },
-                    "stringcount": 24,
-                    "wordcount": 1051,
+                    "i18n_version": 2,
+                    "name": "CC BY-NC-ND 4.0",
+                    "priority": "high",
+                    "slug": "by-nc-nd_40",
+                    "string_count": 74,
+                    "word_count": 2038,
                 },
-            ]
-            # With _resource_stats empty
-            stats = self.helper.resource_stats
-            # With _resource_stats populated
-            stats = self.helper.resource_stats
+            ),
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:by-nc-sa_40",
+                attributes={
+                    "accept_translations": True,
+                    "datetime_created": "2020-10-05T13:40:25Z",
+                    "datetime_modified": "2020-10-05T13:40:25Z",
+                    "i18n_type": "PO",
+                    "i18n_version": 2,
+                    "name": "CC BY-NC-SA 4.0",
+                    "priority": "high",
+                    "slug": "by-nc-sa_40",
+                    "string_count": 84,
+                    "word_count": 2289,
+                },
+            ),
+        ]
+        all_resources = mock.Mock(return_value=resources)
+        self.helper.api_project.fetch = mock.Mock(
+            return_value=mock.Mock(all=all_resources)
+        )
 
-        mock_request.assert_called_with(
-            "get",
-            f"organizations/{TEST_ORG_SLUG}/projects/{TEST_PROJ_SLUG}"
-            "/resources/",
-        )
+        # With _resource_stats empty
+        stats = self.helper.resource_stats
+        # With _resource_stats populated
+        stats = self.helper.resource_stats
+
+        all_resources.assert_called_once()
         self.assertEqual(
-            "2020-11-05T13:20:23.405317Z", stats["zero_10"]["created"]
+            "2020-09-21T15:22:49Z", stats["by-nc-nd_40"]["datetime_created"]
         )
+        self.assertEqual(2289, stats["by-nc-sa_40"]["word_count"])
 
     def test_translation_stats(self):
-        # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"zero_10": None}
-
-        with mpo(self.helper, "request25") as mock_request:
-            mock_request.return_value.json.return_value = {
-                "stats": {
-                    "ach": {
-                        "reviewed_1": {
-                            "last_activity": None,
-                            "name": "reviewed",
-                            "percentage": 0.0,
-                            "stringcount": 0,
-                            "wordcount": 0,
-                        },
-                        "translated": {
-                            "last_activity": "2020-11-05T13:20:23.462081Z",
-                            "name": "translated",
-                            "percentage": 0.0,
-                            "stringcount": 0,
-                            "wordcount": 0,
-                        },
-                    },
+        languages_stats = [
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:cc-search:l:es",
+                attributes={
+                    "last_proofread_update": None,
+                    "last_review_update": "2018-04-15T12:50:40Z",
+                    "last_translation_update": "2018-04-15T12:50:33Z",
+                    "last_update": "2018-04-15T12:50:40Z",
+                    "proofread_strings": 0,
+                    "proofread_words": 0,
+                    "reviewed_strings": 22,
+                    "reviewed_words": 189,
+                    "total_strings": 22,
+                    "total_words": 189,
+                    "translated_strings": 22,
+                    "translated_words": 189,
+                    "untranslated_strings": 0,
+                    "untranslated_words": 0,
                 },
-            }
-            # With _resource_stats empty
-            stats = self.helper.translation_stats
-            # With _resource_stats populated
-            stats = self.helper.translation_stats
+                related={
+                    "language": mock.Mock(id="l:es"),
+                    "resource": mock.Mock(
+                        id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:cc-search"
+                    ),
+                },
+            ),
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds-choosers"
+                ":l:nl",
+                attributes={
+                    "last_proofread_update": None,
+                    "last_review_update": "2020-10-02T06:47:38Z",
+                    "last_translation_update": "2020-10-02T06:47:38Z",
+                    "last_update": "2020-10-02T06:47:38Z",
+                    "proofread_strings": 0,
+                    "proofread_words": 0,
+                    "reviewed_strings": 572,
+                    "reviewed_words": 8124,
+                    "total_strings": 575,
+                    "total_words": 8128,
+                    "translated_strings": 575,
+                    "translated_words": 8128,
+                    "untranslated_strings": 0,
+                    "untranslated_words": 0,
+                },
+                related={
+                    "language": mock.Mock(id="l:nl"),
+                    "resource": mock.Mock(
+                        id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:"
+                        "r:deeds-choosers"
+                    ),
+                },
+            ),
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds_ux:l:id",
+                attributes={
+                    "last_proofread_update": None,
+                    "last_review_update": None,
+                    "last_translation_update": "2020-06-29T12:54:48Z",
+                    "last_update": "2021-07-28T15:04:31Z",
+                    "proofread_strings": 0,
+                    "proofread_words": 0,
+                    "reviewed_strings": 0,
+                    "reviewed_words": 0,
+                    "total_strings": 112,
+                    "total_words": 2388,
+                    "translated_strings": 0,
+                    "translated_words": 0,
+                    "untranslated_strings": 112,
+                    "untranslated_words": 2388,
+                },
+                related={
+                    "language": mock.Mock(id="l:id"),
+                    "resource": mock.Mock(
+                        id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds_ux"
+                    ),
+                },
+            ),
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds_ux:l:is",
+                attributes={
+                    "last_proofread_update": None,
+                    "last_review_update": None,
+                    "last_translation_update": "2020-09-18T09:46:58Z",
+                    "last_update": "2021-07-28T15:04:31Z",
+                    "proofread_strings": 0,
+                    "proofread_words": 0,
+                    "reviewed_strings": 0,
+                    "reviewed_words": 0,
+                    "total_strings": 112,
+                    "total_words": 2388,
+                    "translated_strings": 30,
+                    "translated_words": 74,
+                    "untranslated_strings": 82,
+                    "untranslated_words": 2314,
+                },
+                related={
+                    "language": mock.Mock(id="l:is"),
+                    "resource": mock.Mock(
+                        id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds_ux"
+                    ),
+                },
+            ),
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds_ux:l:it",
+                attributes={
+                    "last_proofread_update": None,
+                    "last_review_update": None,
+                    "last_translation_update": "2020-10-28T16:00:16Z",
+                    "last_update": "2021-07-28T15:04:31Z",
+                    "proofread_strings": 0,
+                    "proofread_words": 0,
+                    "reviewed_strings": 0,
+                    "reviewed_words": 0,
+                    "total_strings": 112,
+                    "total_words": 2388,
+                    "translated_strings": 50,
+                    "translated_words": 500,
+                    "untranslated_strings": 62,
+                    "untranslated_words": 1888,
+                },
+                related={
+                    "language": mock.Mock(id="l:it"),
+                    "resource": mock.Mock(
+                        id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds_ux"
+                    ),
+                },
+            ),
+        ]
+        all_lang_stats = mock.Mock(return_value=languages_stats)
+        self.helper.api.ResourceLanguageStats.filter = mock.Mock(
+            return_value=mock.Mock(all=all_lang_stats)
+        )
 
-        mock_request.assert_called_with(
-            "get",
-            f"organizations/{TEST_ORG_SLUG}/projects/{TEST_PROJ_SLUG}"
-            "/resources/zero_10",
+        # With _resource_stats empty
+        stats = self.helper.translation_stats
+        # With _resource_stats populated
+        stats = self.helper.translation_stats
+
+        all_lang_stats.assert_called_once()
+        self.assertNotIn("cc-search", stats)
+        self.assertNotIn("deeds-choosers", stats)
+        self.assertIn("deeds_ux", stats)
+        self.assertIn("id", stats["deeds_ux"])
+        self.assertIn("is", stats["deeds_ux"])
+        self.assertIn("it", stats["deeds_ux"])
+        self.assertEqual(
+            0, stats["deeds_ux"]["id"].get("translated_strings", 0)
         )
         self.assertEqual(
-            "2020-11-05T13:20:23.462081Z",
-            stats["zero_10"]["ach"]["translated"]["last_activity"],
+            30, stats["deeds_ux"]["is"].get("translated_strings", 0)
+        )
+        self.assertEqual(
+            50, stats["deeds_ux"]["it"].get("translated_strings", 0)
         )
 
-    def test_transifex_get_pofile_content(self):
-        helper = TransifexHelper()
-        resource_slug = "slug"
-        transifex_code = "sr@latin"
-        with mpo(helper, "request20") as mock_req20:
-            mock_req20.return_value = mock.MagicMock(content=b"xxxxxx")
-            result = helper.transifex_get_pofile_content(
+    def test_transifex_get_pofile_content_bad_i18n_type(self):
+        api = self.helper.api
+        resource_slug = "x_resource_x"
+        transifex_code = "en"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "XA"},
+        )
+        self.helper.api.Resource.get = mock.Mock(return_value=resource)
+        with mock.patch("requests.get") as request:
+            with self.assertRaises(ValueError) as cm:
+                self.helper.transifex_get_pofile_content(
+                    resource_slug, transifex_code
+                )
+
+        self.assertEqual(
+            f"Transifex {resource_slug} file format is not 'PO'. It is: XA",
+            str(cm.exception),
+        )
+        api.ResourceStringsAsyncDownload.download.assert_not_called()
+        api.ResourceTranslationsAsyncDownload.download.assert_not_called()
+        request.assert_not_called()
+
+    def test_transifex_get_pofile_content_source(self):
+        api = self.helper.api
+        resource_slug = "x_resource_x"
+        transifex_code = "en"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        self.helper.api.Resource.get = mock.Mock(return_value=resource)
+        with mock.patch("requests.get") as request:
+            request.return_value = mock.MagicMock(content=b"xxxxxx")
+            result = self.helper.transifex_get_pofile_content(
                 resource_slug, transifex_code
             )
 
-        mock_req20.assert_called_with(
-            "get",
-            f"project/{TEST_PROJ_SLUG}/resource/{resource_slug}"
-            f"/translation/{transifex_code}/",
-            params={"mode": "translator", "file": "PO"},
-        )
+        api.ResourceStringsAsyncDownload.download.assert_called_once()
+        api.ResourceTranslationsAsyncDownload.download.assert_not_called()
         self.assertEqual(result, b"xxxxxx")
+
+    def test_transifex_get_pofile_content_translation(self):
+        api = self.helper.api
+        resource_slug = "x_resource_x"
+        transifex_code = "nl"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        self.helper.api.Resource.get = mock.Mock(return_value=resource)
+        with mock.patch("requests.get") as request:
+            request.return_value = mock.MagicMock(content=b"yyyyyy")
+            result = self.helper.transifex_get_pofile_content(
+                resource_slug, transifex_code
+            )
+
+        api.ResourceStringsAsyncDownload.download.not_called()
+        api.ResourceTranslationsAsyncDownload.download.assert_called_once()
+        self.assertEqual(result, b"yyyyyy")
 
     def test_clear_transifex_stats(self):
         with self.assertRaises(AttributeError):
@@ -289,43 +430,66 @@ class TestTransifex(TestCase):
 
     # Test: add_resource_to_transifex ########################################
 
+    def test_add_resource_to_transifex_present(self):
+        language_code = "x_lang_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = "x_pofile_obj_x"
+        # Set resource stats so we do not have to also mock it here
+        self.helper._resource_stats = {"x_slug_x": None}
+
+        self.helper.add_resource_to_transifex(
+            language_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
+
+        self.helper.api.Resource.create.assert_not_called()
+        self.helper.api.Resource.get.assert_not_called()
+        self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
+
     def test_add_resource_to_transifex_missing(self):
         language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        self.helper.api.Resource.get = mock.Mock(return_value=resource)
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
         # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {}
 
-        with mpo(self.helper, "request20") as mock_request:
-            self.helper.add_resource_to_transifex(
-                language_code,
-                resource_slug,
-                resource_name,
-                pofile_path,
-                pofile_obj,
-            )
+        self.helper.add_resource_to_transifex(
+            language_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
 
-        mock_request.assert_called_with(
-            "post",
-            f"project/{TEST_PROJ_SLUG}/resources/",
-            data={
-                "slug": "x_slug_x",
-                "name": "x_name_x",
-                "i18n_type": "PO",
+        self.helper.api.Resource.create.assert_called_once()
+        self.helper.api.Resource.create.assert_called_with(
+            name=resource_name,
+            slug=resource_slug,
+            relationships={
+                "i18n_format": self.helper.api_i18n_format,
+                "project": self.helper.api_project,
             },
-            files=[
-                (
-                    "content",
-                    (
-                        "x_path_x",
-                        pofile_content,
-                        "application/octet-stream",
-                    ),
-                )
-            ],
+        )
+        self.helper.api.Resource.get.assert_called_once()
+        self.helper.api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        self.helper.api.ResourceStringsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content.replace(
+                'msgstr "english text"', 'msgstr ""'
+            ),
         )
 
     def test_add_resource_to_transifex_dryrun(self):
@@ -334,103 +498,36 @@ class TestTransifex(TestCase):
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj = "x_pofile_obj_x"
         # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {}
 
-        with mpo(self.helper, "request20") as mock_request:
-            self.helper.add_resource_to_transifex(
-                language_code,
-                resource_slug,
-                resource_name,
-                pofile_path,
-                pofile_obj,
-            )
+        self.helper.add_resource_to_transifex(
+            language_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
 
-        mock_request.assert_not_called()
-
-    def test_add_resource_to_transifex_present(self):
-        language_code = "x_lang_code_x"
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
-        pofile_path = "x_path_x"
-        pofile_obj = "xxx_pofile_obj"
-        # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
-
-        with mpo(self.helper, "request20") as mock_request:
-            self.helper.add_resource_to_transifex(
-                language_code,
-                resource_slug,
-                resource_name,
-                pofile_path,
-                pofile_obj,
-            )
-
-        mock_request.assert_not_called()
+        self.helper.api.Resource.create.assert_not_called()
+        self.helper.api.Resource.get.assert_not_called()
+        self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
 
     # Test: add_translation_to_transifex_resource ############################
 
     def test_add_translation_to_transifex_resource_is_source(self):
+        api = self.helper.api
         language_code = DEFAULT_LANGUAGE_CODE
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
-        pofile_obj = "xxx_pofile_obj"
-        with self.assertRaises(ValueError) as cm:
-            with mpo(self.helper, "request20") as mock_request:
-                self.helper.add_translation_to_transifex_resource(
-                    language_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                )
-
-        self.assertIn("x_name_x (x_slug_x) en", str(cm.exception))
-        self.assertIn("is for translations, not sources.", str(cm.exception))
-        mock_request.assert_not_called()
-
-    def test_add_translation_to_transifex_resource_missing_source(self):
-        language_code = "x_lang_code_x"
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
-        pofile_path = "x_path_x"
-        pofile_obj = "xxx_pofile_obj"
-        # Set resource stats so we do not have to also mock it here
+        pofile_obj = "x_pofile_obj_x"
+        # Set stats so we do not have to also mock them here
         self.helper._resource_stats = {}
+        self.helper._translation_stats = {}
 
         with self.assertRaises(ValueError) as cm:
-            with mpo(self.helper, "request20") as mock_request:
-                self.helper.add_translation_to_transifex_resource(
-                    language_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                )
-
-        self.assertIn(
-            "x_name_x (x_slug_x) x_lang_code_x",
-            str(cm.exception),
-        )
-        self.assertIn(
-            "Transifex does not yet contain resource.", str(cm.exception)
-        )
-        mock_request.assert_not_called()
-
-    def test_add_translation_to_transifex_resource_present(self):
-        language_code = "x_lang_code_x"
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
-        pofile_path = "x_path_x"
-        pofile_obj = "xxx_pofile_obj"
-        # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
-        # Set trasnslation stats so we do not have to also mock it here
-        self.helper._translation_stats = {"x_slug_x": {"x_lang_code_x": None}}
-
-        with mpo(self.helper, "request20") as mock_request:
             self.helper.add_translation_to_transifex_resource(
                 language_code,
                 resource_slug,
@@ -439,9 +536,68 @@ class TestTransifex(TestCase):
                 pofile_obj,
             )
 
-        mock_request.assert_not_called()
+        self.assertIn("x_name_x (x_slug_x) en", str(cm.exception))
+        self.assertIn("is for translations, not sources.", str(cm.exception))
+        api.Language.get.assert_not_called()
+        api.Resource.get.assert_not_called()
+        api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
+
+    def test_add_translation_to_transifex_resource_missing_source(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = "x_pofile_obj_x"
+        # Set stats so we do not have to also mock them here
+        self.helper._resource_stats = {}
+        self.helper._translation_stats = {}
+
+        with self.assertRaises(ValueError) as cm:
+            self.helper.add_translation_to_transifex_resource(
+                language_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        self.assertIn("x_name_x (x_slug_x) x_lang_code_x", str(cm.exception))
+        self.assertIn(
+            "Transifex does not yet contain resource.", str(cm.exception)
+        )
+        api.Language.get.assert_not_called()
+        api.Resource.get.assert_not_called()
+        api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
+
+    def test_add_translation_to_transifex_present(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        # Set resource stats so we do not have to also mock it here
+        self.helper._resource_stats = {resource_slug: None}
+        # Set translation stats so we do not have to also mock it here
+        self.helper._translation_stats = {
+            resource_slug: {language_code: {"translated_strings": 99}}
+        }
+
+        self.helper.add_translation_to_transifex_resource(
+            language_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
+
+        api.Language.get.assert_not_called()
+        api.Resource.get.assert_not_called()
+        api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
     def test_add_translation_to_transifex_resource_dryrun(self):
+        api = self.helper.api
         self.helper.dryrun = True
         language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
@@ -449,107 +605,60 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
-        # Set trasnslation stats so we do not have to also mock it here
-        self.helper._translation_stats = {"x_slug_x": {}}
+        self.helper._resource_stats = {resource_slug: None}
+        # Set translation stats so we do not have to also mock it here
+        self.helper._translation_stats = {resource_slug: {}}
 
-        with mpo(self.helper, "request20") as mock_request:
-            self.helper.add_translation_to_transifex_resource(
-                language_code,
-                resource_slug,
-                resource_name,
-                pofile_path,
-                pofile_obj,
-            )
+        self.helper.add_translation_to_transifex_resource(
+            language_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
 
-        mock_request.assert_not_called()
+        api.Language.get.assert_called_once()
+        api.Resource.get.assert_called_once()
+        api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_resource_missing(self):
+    def test_add_translation_to_transifex_missing(self):
+        api = self.helper.api
         language_code = "x_lang_code_x"
         transifex_code = map_django_to_transifex_language_code(language_code)
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
+        )
+        self.helper.api.Language.get = mock.Mock(return_value=language)
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        self.helper.api.Resource.get = mock.Mock(return_value=resource)
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
         # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
-        # Set trasnslation stats so we do not have to also mock it here
-        self.helper._translation_stats = {"x_slug_x": {}}
+        self.helper._resource_stats = {resource_slug: {}}
+        # Set translation stats so we do not have to also mock it here
+        self.helper._translation_stats = {resource_slug: {}}
 
-        with mpo(self.helper, "request20") as mock_request:
-            self.helper.add_translation_to_transifex_resource(
-                language_code,
-                resource_slug,
-                resource_name,
-                pofile_path,
-                pofile_obj,
-            )
-
-        mock_request.assert_called_with(
-            "put",
-            f"project/{TEST_PROJ_SLUG}/resource/{resource_slug}"
-            f"/translation/{transifex_code}/",
-            files=[
-                (
-                    "file",
-                    (
-                        "x_path_x",
-                        pofile_content,
-                        "application/octet-stream",
-                    ),
-                )
-            ],
+        self.helper.add_translation_to_transifex_resource(
+            language_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
         )
 
-    def test_add_translation_to_transifex_resource_invalid(self):
-        language_code = "x_lang_code_x"
-        transifex_code = language_code
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_content = get_pofile_content(pofile_obj)
-        # Set resource stats so we do not have to also mock it here
-        self.helper._resource_stats = {"x_slug_x": None}
-        # Set trasnslation stats so we do not have to also mock it here
-        self.helper._translation_stats = {"x_slug_x": {}}
-
-        with self.assertLogs(level="DEBUG") as cm:
-            with mpo(self.helper, "request20") as mock_request:
-                mock_request.side_effect = requests.exceptions.HTTPError(
-                    mock.Mock(status=404)
-                )
-                self.helper.add_translation_to_transifex_resource(
-                    language_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                )
-
-        mock_request.assert_called_with(
-            "put",
-            f"project/{TEST_PROJ_SLUG}/resource/{resource_slug}/translation/"
-            f"{transifex_code}/",
-            files=[
-                (
-                    "file",
-                    (
-                        "x_path_x",
-                        pofile_content,
-                        "application/octet-stream",
-                    ),
-                )
-            ],
-        )
-        self.assertEqual(
-            cm.output,
-            [
-                "ERROR:root:x_name_x (x_slug_x) x_lang_code_x:"
-                " Transifex does not yet contain translation. Adding FAILED"
-                " using x_path_x.",
-            ],
+        api.Language.get.assert_called_once()
+        api.Resource.get.assert_called_once()
+        api.ResourceTranslationsAsyncUpload.upload.assert_called_once()
+        api.ResourceTranslationsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content,
+            language=language.id,
         )
 
     # Test: normalize_pofile_language ########################################
@@ -941,9 +1050,9 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_creation = "2021-01-01 01:01:01.000001+00:00"
+        pofile_creation = "2021-01-01 01:01:01+00:00"
         pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
-        transifex_creation = "2021-02-02 02:02:02.000002+00:00"
+        transifex_creation = "2021-02-02 02:02:02+00:00"
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             self.helper.update_pofile_creation_to_match_transifex(
@@ -964,9 +1073,9 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_creation = "2021-01-01 01:01:01.000001+00:00"
+        pofile_creation = "2021-01-01 01:01:01+00:00"
         pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
-        transifex_creation = "2021-02-02 02:02:02.000002+00:00"
+        transifex_creation = "2021-02-02 02:02:02+00:00"
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = (
@@ -995,9 +1104,9 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_revision = "2021-01-01 01:01:01.000001+00:00"
+        pofile_revision = "2021-01-01 01:01:01+00:00"
         pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
-        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        transifex_revision = "2021-02-02 02:02:02+00:00"
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             self.helper.update_pofile_revision_to_match_transifex(
@@ -1018,9 +1127,9 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_revision = "2021-01-01 01:01:01.000001+00:00"
+        pofile_revision = "2021-01-01 01:01:01+00:00"
         pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
-        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        transifex_revision = "2021-02-02 02:02:02+00:00"
 
         with mpo(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = (
@@ -1046,8 +1155,8 @@ class TestTransifex(TestCase):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
-        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        transifex_creation = "2021-01-01 01:01:01+00:00"
+        transifex_revision = "2021-02-02 02:02:02+00:00"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata.pop("POT-Creation-Date", None)
@@ -1058,8 +1167,8 @@ class TestTransifex(TestCase):
         ) as mock_resource_stats:
             mock_resource_stats.return_value = {
                 resource_slug: {
-                    "created": transifex_creation,
-                    "last_update": transifex_revision,
+                    "datetime_created": transifex_creation,
+                    "datetime_modified": transifex_revision,
                 },
             }
             with mpo(polib.POFile, "save") as mock_pofile_save:
@@ -1083,11 +1192,11 @@ class TestTransifex(TestCase):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
-        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        transifex_creation = "2021-01-01 01:01:01+00:00"
+        transifex_revision = "2021-02-02 02:02:02+00:00"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_creation = "2021-03-03 03:03:03.000003+00:00"
+        pofile_creation = "2021-03-03 03:03:03+00:00"
         pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
         pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
 
@@ -1096,8 +1205,8 @@ class TestTransifex(TestCase):
         ) as mock_resource_stats:
             mock_resource_stats.return_value = {
                 resource_slug: {
-                    "created": transifex_creation,
-                    "last_update": transifex_revision,
+                    "datetime_created": transifex_creation,
+                    "datetime_modified": transifex_revision,
                 },
             }
             with mpo(polib.POFile, "save") as mock_pofile_save:
@@ -1118,11 +1227,11 @@ class TestTransifex(TestCase):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-02-02 02:02:02.000002+00:00"
-        transifex_revision = "2021-03-03 03:03:03.000003+00:00"
+        transifex_creation = "2021-02-02 02:02:02+00:00"
+        transifex_revision = "2021-03-03 03:03:03+00:00"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_creation = "2021-01-01 01:01:01.000001+00:00"
+        pofile_creation = "2021-01-01 01:01:01+00:00"
         pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
         pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
 
@@ -1132,8 +1241,8 @@ class TestTransifex(TestCase):
             ) as mock_resource_stats:
                 mock_resource_stats.return_value = {
                     resource_slug: {
-                        "created": transifex_creation,
-                        "last_update": transifex_revision,
+                        "datetime_created": transifex_creation,
+                        "datetime_modified": transifex_revision,
                     },
                 }
                 with mpo(polib.POFile, "save") as mock_pofile_save:
@@ -1153,11 +1262,11 @@ class TestTransifex(TestCase):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
-        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        transifex_creation = "2021-01-01 01:01:01+00:00"
+        transifex_revision = "2021-02-02 02:02:02+00:00"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_revision = "2021-03-03 03:03:03.000003+00:00"
+        pofile_revision = "2021-03-03 03:03:03+00:00"
         pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
         pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
 
@@ -1172,8 +1281,8 @@ class TestTransifex(TestCase):
             ) as mock_resource_stats:
                 mock_resource_stats.return_value = {
                     resource_slug: {
-                        "created": transifex_creation,
-                        "last_update": transifex_revision,
+                        "datetime_created": transifex_creation,
+                        "datetime_modified": transifex_revision,
                     },
                 }
                 with mpo(polib.POFile, "save") as mock_pofile_save:
@@ -1194,13 +1303,13 @@ class TestTransifex(TestCase):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01.000001+00:00"
-        transifex_revision = "2021-02-02 02:02:02.000002+00:00"
+        transifex_creation = "2021-01-01 01:01:01+00:00"
+        transifex_revision = "2021-02-02 02:02:02+00:00"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(
             pofile=POFILE_CONTENT.replace("International", "Intergalactic")
         )
-        pofile_revision = "2021-03-03 03:03:03.000003+00:00"
+        pofile_revision = "2021-03-03 03:03:03+00:00"
         pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
         pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
 
@@ -1216,8 +1325,8 @@ class TestTransifex(TestCase):
                 ) as mock_resource_stats:
                     mock_resource_stats.return_value = {
                         resource_slug: {
-                            "created": transifex_creation,
-                            "last_update": transifex_revision,
+                            "datetime_created": transifex_creation,
+                            "datetime_modified": transifex_revision,
                         },
                     }
                     with mpo(polib.POFile, "save") as mock_pofile_save:
@@ -1723,21 +1832,3 @@ class TestTransifex(TestCase):
 #         )
 #         dummy_repo.index.add.assert_called_with([relpath])
 #
-
-
-class TestTransifexAuthRequests(TestCase):
-    def test_transifex_auth_requests(self):
-        token = "frenchfriedpotatoes"
-        auth = TransifexAuthRequests(token)
-        self.assertEqual(token, auth.token)
-        auth2 = TransifexAuthRequests(token)
-        self.assertEqual(auth, auth2)
-        auth3 = TransifexAuthRequests("another token")
-        self.assertNotEqual(auth, auth3)
-        r = mock.Mock(headers={})
-        result = auth(r)
-        self.assertEqual(r, result)
-        self.assertEqual(
-            {"Authorization": "Basic YXBpOmZyZW5jaGZyaWVkcG90YXRvZXM="},
-            result.headers,
-        )
