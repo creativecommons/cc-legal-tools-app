@@ -15,7 +15,6 @@ from transifex.api import transifex_api
 
 # First-party/Local
 import licenses.models
-from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     get_pofile_content,
     get_pofile_creation_date,
@@ -164,7 +163,7 @@ class TransifexHelper:
                 f"Transifex {resource_slug} file format is not 'PO'. It is:"
                 f" {i18n_type}"
             )
-        if transifex_code == DEFAULT_LANGUAGE_CODE:
+        if transifex_code == settings.LANGUAGE_CODE:
             # Download source file
             url = self.api.ResourceStringsAsyncDownload.download(
                 resource=resource,
@@ -316,7 +315,7 @@ class TransifexHelper:
         resource_slug = settings.DEEDS_UX_RESOURCE_SLUG
         pofile_path = get_pofile_path(
             locale_or_legalcode="locale",
-            language_code=DEFAULT_LANGUAGE_CODE,
+            language_code=settings.LANGUAGE_CODE,
             translation_domain="django",
         )
         pofile_obj = polib.pofile(pofile_path)
@@ -335,7 +334,7 @@ class TransifexHelper:
             language_code,
             language_data,
         ) in settings.DEEDS_UX_PO_FILE_INFO.items():
-            if language_code == DEFAULT_LANGUAGE_CODE:
+            if language_code == settings.LANGUAGE_CODE:
                 continue
             pofile_path = get_pofile_path(
                 locale_or_legalcode="locale",
@@ -372,7 +371,7 @@ class TransifexHelper:
         for legal_code in legal_codes:
             resource_slug = legal_code.license.resource_slug
             language_code = legal_code.language_code
-            if language_code == DEFAULT_LANGUAGE_CODE:
+            if language_code == settings.LANGUAGE_CODE:
                 continue
             pofile_path = legal_code.translation_filename()
             pofile_obj = polib.pofile(pofile_path)
@@ -466,7 +465,7 @@ class TransifexHelper:
         https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
         transifex_code = map_django_to_transifex_language_code(language_code)
-        if language_code == DEFAULT_LANGUAGE_CODE:
+        if language_code == settings.LANGUAGE_CODE:
             raise ValueError(
                 f"{self.nop}{resource_name} ({resource_slug})"
                 f" {transifex_code}: This function,"
@@ -558,7 +557,7 @@ class TransifexHelper:
         pofile_obj,
     ):
         key = "Language-Team"
-        if transifex_code == DEFAULT_LANGUAGE_CODE:
+        if transifex_code == settings.LANGUAGE_CODE:
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/"
                 f"{self.project_slug}/"
@@ -820,7 +819,7 @@ class TransifexHelper:
         legal_codes = (
             licenses.models.LegalCode.objects.valid()
             .translated()
-            .exclude(language_code=DEFAULT_LANGUAGE_CODE)
+            .exclude(language_code=settings.LANGUAGE_CODE)
         )
         repo = git.Repo(settings.DATA_REPOSITORY_DIR)
         if repo.is_dirty():
@@ -831,7 +830,7 @@ class TransifexHelper:
         local_data = self.build_local_data(legal_codes)
         # Resources & Sources
         for resource_slug, resource in local_data.items():
-            language_code = DEFAULT_LANGUAGE_CODE
+            language_code = settings.LANGUAGE_CODE
             transifex_code = map_django_to_transifex_language_code(
                 language_code
             )
@@ -1006,7 +1005,7 @@ class TransifexHelper:
         # legal_codes = (
         #     licenses.models.LegalCode.objects.valid()
         #     .translated()
-        #     .exclude(language_code=DEFAULT_LANGUAGE_CODE)
+        #     .exclude(language_code=settings.LANGUAGE_CODE)
         # )
         # with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
         #     return (

@@ -4,10 +4,10 @@ from unittest.mock import MagicMock
 
 # Third-party
 import polib
+from django.conf import settings
 from django.test import TestCase, override_settings
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     get_pofile_content,
     map_django_to_transifex_language_code,
@@ -416,7 +416,7 @@ class TestTransifex(TestCase):
 
     def test_build_local_data(self):
         license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=DEFAULT_LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="de")
         legal_codes = LegalCode.objects.all()
 
@@ -518,7 +518,7 @@ class TestTransifex(TestCase):
 
     def test_add_translation_to_transifex_resource_is_source(self):
         api = self.helper.api
-        language_code = DEFAULT_LANGUAGE_CODE
+        language_code = settings.LANGUAGE_CODE
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
@@ -1406,7 +1406,7 @@ class TestTransifex(TestCase):
     #     license = LicenseFactory(unit="by-nd", version="4.0")
     #     legal_code = LegalCodeFactory(
     #         license=license,
-    #         language_code=DEFAULT_LANGUAGE_CODE,
+    #         language_code=settings.LANGUAGE_CODE,
     #     )
     #     test_resources = [
     #         {
@@ -1580,10 +1580,10 @@ class TestTransifex(TestCase):
 #         resource_slug = license.resource_slug
 #
 #         # Will need an English legal_code if we need to create the resource
-#         if not resource_exists and language_code != DEFAULT_LANGUAGE_CODE:
+#         if not resource_exists and language_code != settings.LANGUAGE_CODE:
 #             LegalCodeFactory(
 #                 license=license,
-#                 language_code=DEFAULT_LANGUAGE_CODE,
+#                 language_code=settings.LANGUAGE_CODE,
 #             )
 #
 #         # 'timestamp' returns on translation stats from transifex

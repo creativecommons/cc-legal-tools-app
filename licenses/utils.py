@@ -13,7 +13,6 @@ from polib import POEntry, POFile
 
 # First-party/Local
 import licenses.models
-from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     map_legacy_to_django_language_code,
@@ -163,7 +162,7 @@ def parse_legal_code_filename(filename):
             jurisdiction, ""
         )
     else:
-        language_code = language_code or DEFAULT_LANGUAGE_CODE
+        language_code = language_code or settings.LANGUAGE_CODE
     if not language_code:
         raise ValueError(f"What language? filename={filename}")
     if language_code not in settings.LANG_INFO:
