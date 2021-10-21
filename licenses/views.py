@@ -16,7 +16,6 @@ from django.template.loader import render_to_string
 from django.utils import translation
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction,
@@ -134,10 +133,16 @@ def get_deed_rel_path(
 ):
     deed_rel_path = os.path.relpath(deed_url, path_start)
     if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
-        deed_rel_path = deed_rel_path.replace(
-            f"deed.{language_code}",
-            f"deed.{language_default}",
-        )
+        if language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+            # Translation incomplete, use region default language
+            deed_rel_path = deed_rel_path.replace(
+                f"deed.{language_code}", f"deed.{language_default}"
+            )
+        else:
+            # Translation incomplete, use Englishi
+            deed_rel_path = deed_rel_path.replace(
+                f"deed.{language_code}", f"deed.{settings.LANGUAGE_CODE}"
+            )
     return deed_rel_path
 
 
@@ -150,7 +155,7 @@ def name_local(legal_code):
 def normalize_path_and_lang(request_path, jurisdiction, language_code):
     if not language_code:
         language_code = get_default_language_for_jurisdiction(
-            jurisdiction, DEFAULT_LANGUAGE_CODE
+            jurisdiction, settings.LANGUAGE_CODE
         )
     if not request_path.endswith(f".{language_code}"):
         request_path = f"{request_path}.{language_code}"

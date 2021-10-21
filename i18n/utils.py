@@ -15,7 +15,6 @@ from django.utils import translation
 # First-party/Local
 from i18n import (
     DEFAULT_JURISDICTION_LANGUAGES,
-    DEFAULT_LANGUAGE_CODE,
     JURISDICTION_NAMES,
     LANGMAP_DJANGO_TO_REDIRECTS,
     LANGMAP_DJANGO_TO_TRANSIFEX,
@@ -309,7 +308,7 @@ def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
 
 
 def get_default_language_for_jurisdiction(
-    jurisdiction_code, default_language=DEFAULT_LANGUAGE_CODE
+    jurisdiction_code, default_language=settings.LANGUAGE_CODE
 ):
     # Input: a jurisdiction code
     # Output: a CC language code

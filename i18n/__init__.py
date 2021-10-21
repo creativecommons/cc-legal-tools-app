@@ -19,11 +19,6 @@ DEFAULT_INPUT_DIR = os.path.dirname(settings.DEEDS_UX_LOCALE_PATH)
 DEFAULT_CSV_FILE = os.path.abspath(
     os.path.realpath(os.path.join(settings.DISTILL_DIR, "transstats.csv"))
 )
-# If something has no language listed, that generally means it's English.
-# We want to set an actual language code on it so that once this data has
-# been imported, we don't have to treat English as a special default.
-DEFAULT_LANGUAGE_CODE = "en"
-
 # The DEFAULT_JURISDICTION_LANGUAGES and JURISDICTION_NAMES are largely based
 # on jurisdictions.rdf in the cc.licenserdf repo.
 # The language codes here are CC language codes, which sometimes differ from

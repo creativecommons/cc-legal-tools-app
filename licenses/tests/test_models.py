@@ -3,11 +3,11 @@ from unittest import mock
 
 # Third-party
 import polib
+from django.conf import settings
 from django.test import TestCase, override_settings
 from django.utils.translation import override
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE
 from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.models import LegalCode, License
 from licenses.tests.factories import (
@@ -226,7 +226,7 @@ class LegalCodeModelTest(TestCase):
             language_code="de",
         )
         legal_code_en = LegalCodeFactory(
-            license=legal_code.license, language_code=DEFAULT_LANGUAGE_CODE
+            license=legal_code.license, language_code=settings.LANGUAGE_CODE
         )
         expected_path = "/some/dir/legalcode/en/LC_MESSAGES/by-sa_40.po"
 
@@ -240,7 +240,7 @@ class LegalCodeModelTest(TestCase):
             self.assertEqual(
                 expected_path, legal_code_en.get_english_pofile_path()
             )
-        mock_glfl.assert_called_with(DEFAULT_LANGUAGE_CODE)
+        mock_glfl.assert_called_with(settings.LANGUAGE_CODE)
 
     @override_settings(DATA_REPOSITORY_DIR="/some/dir")
     def test_get_translation_object(self):
@@ -1044,7 +1044,7 @@ class LicenseModelTest(TestCase):
     #         unit="bx-oh", version="1.3", jurisdiction_code=""
     #     )
     #     self.assertEqual(
-    #         DEFAULT_LANGUAGE_CODE, license.default_language_code()
+    #         settings.LANGUAGE_CODE, license.default_language_code()
     #     )
     #     license = LicenseFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code="fr"

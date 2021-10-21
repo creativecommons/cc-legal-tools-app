@@ -16,12 +16,7 @@ from django.conf import settings
 from django.core.management import BaseCommand
 
 # First-party/Local
-from i18n import (
-    CSV_HEADERS,
-    DEFAULT_CSV_FILE,
-    DEFAULT_INPUT_DIR,
-    DEFAULT_LANGUAGE_CODE,
-)
+from i18n import CSV_HEADERS, DEFAULT_CSV_FILE, DEFAULT_INPUT_DIR
 from i18n.utils import get_pofile_path, map_django_to_transifex_language_code
 
 LOG = logging.getLogger(__name__)
@@ -54,7 +49,7 @@ def gen_statistics(input_dir, output_file):
         language_code,
         language_data,
     ) in settings.DEEDS_UX_PO_FILE_INFO.items():
-        if language_code == DEFAULT_LANGUAGE_CODE:
+        if language_code == settings.LANGUAGE_CODE:
             continue
         transifex_code = map_django_to_transifex_language_code(language_code)
         pofile_path = get_pofile_path(

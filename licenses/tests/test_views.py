@@ -3,13 +3,12 @@ from unittest import mock
 
 # Third-party
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation.trans_real import DjangoTranslation
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE
 from licenses.models import UNITS_LICENSES, LegalCode, License, build_path
 from licenses.tests.factories import (
     LegalCodeFactory,
@@ -624,13 +623,39 @@ class ViewLegalCodeTest(TestCase):
         self.assertEqual(norm_request_path, f"{request_path}.de")
         self.assertEqual(norm_language_code, "de")
 
-    def test_get_deed_rel_path(self):
-        expected_deed_rel_path = "deed.en"
+    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
+    def test_get_deed_rel_path_mostly_translated_language_code(self):
+        expected_deed_rel_path = "deed.x1"
         deed_rel_path = get_deed_rel_path(
-            deed_url="/deed.xx",
+            deed_url="/deed.x1",
             path_start="/",
-            language_code="xx",
-            language_default="en",
+            language_code="x1",
+            language_default="x2",
+        )
+        self.assertEqual(expected_deed_rel_path, deed_rel_path)
+
+    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
+    def test_get_deed_rel_path_less_translated_language_code(self):
+        expected_deed_rel_path = "deed.x2"
+        deed_rel_path = get_deed_rel_path(
+            deed_url="/deed.x3",
+            path_start="/",
+            language_code="x3",
+            language_default="x2",
+        )
+        self.assertEqual(expected_deed_rel_path, deed_rel_path)
+
+    @override_settings(
+        LANGUAGE_CODE="x1",
+        LANGUAGES_MOSTLY_TRANSLATED=[],
+    )
+    def test_get_deed_rel_path_less_translated_language_default(self):
+        expected_deed_rel_path = "deed.x1"
+        deed_rel_path = get_deed_rel_path(
+            deed_url="/deed.x3",
+            path_start="/",
+            language_code="x3",
+            language_default="x2",
         )
         self.assertEqual(expected_deed_rel_path, deed_rel_path)
 
@@ -660,7 +685,7 @@ class ViewLegalCodeTest(TestCase):
             canonical_url="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
-        for language_code in ["es", "ar", DEFAULT_LANGUAGE_CODE]:
+        for language_code in ["es", "ar", settings.LANGUAGE_CODE]:
             lc = LegalCodeFactory(
                 license=license,
                 language_code=language_code,
@@ -686,7 +711,7 @@ class ViewLegalCodeTest(TestCase):
     #         canonical_url="https://creativecommons.org/licenses/by/4.0/",
     #         version="4.0",
     #     )
-    #     for language_code in [DEFAULT_LANGUAGE_CODE]:
+    #     for language_code in [settings.LANGUAGE_CODE]:
     #         lc = LegalCodeFactory(
     #             license=license,
     #             language_code=language_code,

@@ -15,12 +15,12 @@ import posixpath
 
 # Third-party
 import polib
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.utils import translation
 
 # First-party/Local
-from i18n import DEFAULT_LANGUAGE_CODE
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
@@ -412,10 +412,10 @@ class LegalCode(models.Model):
         return polib.pofile(content.decode(), encoding="utf-8")
 
     def get_english_pofile_path(self) -> str:
-        if self.language_code != DEFAULT_LANGUAGE_CODE:
+        if self.language_code != settings.LANGUAGE_CODE:
             # Same license, just in English translation:
             english_legal_code = self.license.get_legal_code_for_language_code(
-                DEFAULT_LANGUAGE_CODE
+                settings.LANGUAGE_CODE
             )
             return english_legal_code.translation_filename()
         return self.translation_filename()
@@ -680,12 +680,12 @@ class License(models.Model):
     #     # "source" messages and are required if we need to first create the
     #     # resource in Transifex.
     #     en_legal_code = self.get_legal_code_for_language_code(
-    #         DEFAULT_LANGUAGE_CODE
+    #         settings.LANGUAGE_CODE
     #     )
     #     helper = TransifexHelper()
     #     helper.upload_messages_to_transifex(legal_code=en_legal_code)
     #     for legal_code in self.legal_codes.exclude(
-    #         language_code=DEFAULT_LANGUAGE_CODE
+    #         language_code=settings.LANGUAGE_CODE
     #     ):
     #         helper.upload_messages_to_transifex(legal_code=legal_code)
 
