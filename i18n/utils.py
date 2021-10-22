@@ -177,6 +177,8 @@ def get_pofile_path(
 
 
 def parse_date(date_str: str):
+    if date_str is None:
+        return None
     try:
         date = dateutil.parser.isoparse(date_str)
         return date
