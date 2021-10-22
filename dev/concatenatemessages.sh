@@ -26,15 +26,15 @@ if ! command -v msgcat; then
     exit 1
 fi 1>&2
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment makemessages'
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment nofuzzy_makemessages'
 docker-compose exec app coverage run manage.py \
-    makemessages \
+    nofuzzy_makemessages \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
         --ignore **/includes/legalcode_zero.html \
         --no-obsolete \
-        --keep-pot
+        --verbosity 2
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Concatenate legacy ccEngine translations'
@@ -65,15 +65,15 @@ for _locale_dir in $(find ../cc-licenses-data/locale/* -maxdepth 0 -type d); do
 done
 echo
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment makemessages'
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment nofuzzy_makemessages'
 docker-compose exec app coverage run manage.py \
-    makemessages \
+    nofuzzy_makemessages \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
         --ignore **/includes/legalcode_zero.html \
         --no-obsolete \
-        --keep-pot
+        --verbosity 2
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment compilemessages'

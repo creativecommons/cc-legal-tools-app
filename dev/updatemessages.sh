@@ -15,15 +15,15 @@ if ! docker-compose exec app true 2>/dev/null; then
     exit 1
 fi
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment makemessages'
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment nofuzzy_makemessages'
 docker-compose exec app coverage run manage.py \
-    makemessages \
+    nofuzzy_makemessages \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
         --ignore **/includes/legalcode_zero.html \
         --no-obsolete \
-        --keep-pot
+        --verbosity 2
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment compilemessages'
