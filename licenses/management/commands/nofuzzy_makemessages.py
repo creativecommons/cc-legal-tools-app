@@ -1,6 +1,7 @@
 # Third-party
 from django.core.management.commands import makemessages
 
+
 class Command(makemessages.Command):
     # For Django default msgmerge options, see:
     # https://github.com/django/django/blob/stable/3.2.x/django/core/management/commands/makemessages.py#L211
