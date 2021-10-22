@@ -362,7 +362,10 @@ def load_deeds_ux_translations():
             "metadata": pofile_obj.metadata,
         }
         update_lang_info(language_code)
-        if percent_translated < settings.TRANSLATION_THRESHOLD:
+        if (
+            percent_translated < settings.TRANSLATION_THRESHOLD
+            and language_code != settings.LANGUAGE_CODE
+        ):
             continue
         languages_mostly_translated.append(language_code)
     deeds_ux_po_file_info = dict(sorted(deeds_ux_po_file_info.items()))
