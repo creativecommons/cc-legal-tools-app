@@ -8,6 +8,18 @@ set -o nounset
 # Change directory to cc-licenses (grandparent directory of this script)
 cd ${0%/*}/../
 
+if ! docker-compose exec app true 2>/dev/null; then
+    echo 'The app container/services is not avaialable.' 1>&2
+    echo 'First run `docker-compose up`.' 1>&2
+    exit 1
+fi
+if ! docker-compose exec db true 2>/dev/null; then
+    echo 'The app container/services is not avaialable.' 1>&2
+    echo 'First run `docker-compose up`.' 1>&2
+    exit 1
+fi
+
+
 DOCKER_DB_RUN="docker-compose run -e PGHOST=db \
                                   -e PGDATABASE=postgres \
                                   -e PGPASSWORD=postgres \

@@ -8,6 +8,12 @@ set -o nounset
 # Change directory to cc-licenses (grandparent directory of this script)
 cd ${0%/*}/../
 
+if ! docker-compose exec app true 2>/dev/null; then
+    echo 'The app container/services is not avaialable.' 1>&2
+    echo 'First run `docker-compose up`.' 1>&2
+    exit 1
+fi
+
 printf "\e[1m\e[7m %-80s\e[0m\n" 'isort'
 docker-compose exec app isort ${@:-.}
 echo
