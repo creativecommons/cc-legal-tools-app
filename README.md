@@ -204,6 +204,17 @@ commands below.
 [precommit]: https://pre-commit.com/
 
 
+#### Helper Scripts
+
+Best run before every commit:
+- `./dev/coverage.sh` - Run coverage tests and report
+- `./dev/tools.sh` - Run Python code tools (isort, black, flake8)
+
+Esoteric and dangerous:
+- `./dev/resetdb.sh` - Reset Django application database data (!!DANGER!!)
+  - usually only helpful if you're doing model/schema work
+
+
 #### Coverage Tests and Report
 
 The coverage tests and report are run as part of pre-commit and as a GitHub
