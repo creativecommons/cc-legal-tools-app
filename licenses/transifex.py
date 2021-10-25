@@ -181,210 +181,6 @@ class TransifexHelper:
         pofile_content = requests.get(url).content  # binary
         return pofile_content
 
-    # def update_branch_for_legal_code(self, repo, legal_code, branch_object):
-    #     """
-    #     Pull down the latest translation for the legal_code and update
-    #     the local .po and .mo files. Assumes the correct branch has
-    #     already been checked out.  Adds the updated files to the index.
-    #     """
-    #     transifex_code = map_django_to_transifex_language_code(
-    #         legal_code.language_code
-    #     )
-    #     resource_slug = legal_code.license.resource_slug
-    #     self.log.info(
-    #         f"\tUpdating {resource_slug} {legal_code.language_code}"
-    #     )
-    #     last_tx_update = dateutil.parser.parse(
-    #         self.translation_stats[resource_slug][transifex_code][
-    #             "last_translation_update"
-    #         ]
-    #     )
-    #     legal_code.translation_last_update = last_tx_update
-    #
-    #     branch_object.legal_codes.add(legal_code)
-    #     if (
-    #         branch_object.last_transifex_update is None
-    #         or branch_object.last_transifex_update < last_tx_update
-    #     ):
-    #         branch_object.last_transifex_update = last_tx_update
-    #
-    #     # Get the updated translation. We don't write it to a file yet.
-    #     # We'll do all the updates for a branch at once in the next section.
-    #     pofile_path = legal_code.translation_filename()
-    #     pofile_content = self.transifex_get_pofile_content(
-    #         resource_slug, transifex_code
-    #     )
-    #     filenames = save_content_as_pofile_and_mofile(
-    #         pofile_path, pofile_content
-    #     )
-    #     relpaths = [
-    #         os.path.relpath(filename, settings.DATA_REPOSITORY_DIR)
-    #         for filename in filenames
-    #     ]
-    #     repo.index.add(relpaths)
-
-    # def handle_updated_translation_branch(self, repo, legal_codes):
-    #     # Legalcodes whose translations have been updated and all belong to
-    #     # the same translation branch.
-    #     # If we update the branch, we'll also publish updates to its static
-    #     # files.
-    #     if not legal_codes:
-    #         return
-    #     branch_name = legal_codes[0].branch_name()
-    #     language_code = legal_codes[0].language_code
-    #     version = legal_codes[0].license.version
-    #
-    #     self.log.info(f"Updating branch {branch_name}")
-    #
-    #     setup_local_branch(repo, branch_name)
-    #
-    #     # Track the translation update using a TranslationBranch object
-    #     # First-party/Local
-    #     from licenses.models import TranslationBranch
-    #
-    #     branch_object, _ = TranslationBranch.objects.get_or_create(
-    #         branch_name=branch_name,
-    #         language_code=language_code,
-    #         version=version,
-    #         complete=False,
-    #     )
-    #     for legal_code in legal_codes:
-    #         self.update_branch_for_legal_code(
-    #             repo, legal_code, branch_object
-    #         )
-    #
-    #     self.log.info("Publishing static files")
-    #     call_command("publish", branch_name=branch_name)
-    #     repo.index.add(
-    #         [
-    #             os.path.relpath(
-    #                 settings.DISTILL_DIR,
-    #                 settings.DATA_REPOSITORY_DIR,
-    #             )
-    #         ]
-    #     )
-    #
-    #     # Commit and push this branch
-    #     self.log.info("Committing and pushing")
-    #     commit_and_push_changes(
-    #         repo, "Translation changes from Transifex.", "", push=True
-    #     )
-    #
-    #     self.log.info(
-    #         f"Updated branch {branch_name} with updated translations and"
-    #         " pushed",
-    #     )
-    #
-    #     # Don't need local branch anymore
-    #     kill_branch(repo, branch_name)
-    #
-    #     # Now that we know the new changes are upstream, save the LegalCode
-    #     # objects with their new translation_last_updates, and the branch
-    #     # object.
-    #     # First-party/Local
-    #     from licenses.models import LegalCode
-    #
-    #     LegalCode.objects.bulk_update(
-    #         legal_codes,
-    #         fields=["translation_last_update"],
-    #     )
-    #     branch_object.save()
-    #
-    # def handle_legal_codes_with_updated_translations(
-    #     self, repo, legal_codes_with_updated_translations
-    # ):
-    #     # Group by branches
-    #     legal_codes_by_branchname = defaultdict(list)
-    #     for legal_code in legal_codes_with_updated_translations:
-    #         branch_name = legal_code.branch_name()
-    #         legal_codes_by_branchname[branch_name].append(legal_code)
-    #     branch_names = list(legal_codes_by_branchname.keys())
-    #
-    #     # For each branch, get the changes and process them.
-    #     for branch_name, legal_codes in legal_codes_by_branchname.items():
-    #         self.handle_updated_translation_branch(repo, legal_codes)
-    #     # Return the list of updated branch names
-    #     return branch_names
-
-    def build_local_data(
-        self, legal_codes: Iterable["licenses.models.LegalCode"]
-    ):
-        local_data = {}
-        # Deeds & UX - Sources
-        resource_name = settings.DEEDS_UX_RESOURCE_NAME
-        resource_slug = settings.DEEDS_UX_RESOURCE_SLUG
-        pofile_path = get_pofile_path(
-            locale_or_legalcode="locale",
-            language_code=settings.LANGUAGE_CODE,
-            translation_domain="django",
-        )
-        pofile_obj = polib.pofile(pofile_path)
-        creation_date = get_pofile_creation_date(pofile_obj)
-        revision_date = get_pofile_revision_date(pofile_obj)
-        local_data[resource_slug] = {
-            "name": resource_name,
-            "pofile_path": pofile_path,
-            "pofile_obj": pofile_obj,
-            "creation_date": creation_date,
-            "revision_date": revision_date,
-            "translations": {},
-        }
-        # Deeds & UX - Translations
-        for (
-            language_code,
-            language_data,
-        ) in settings.DEEDS_UX_PO_FILE_INFO.items():
-            if language_code == settings.LANGUAGE_CODE:
-                continue
-            pofile_path = get_pofile_path(
-                locale_or_legalcode="locale",
-                language_code=language_code,
-                translation_domain="django",
-            )
-            pofile_obj = polib.pofile(pofile_path)
-            creation_date = language_data["creation_date"]
-            revision_date = language_data["revision_date"]
-            local_data[resource_slug]["translations"][language_code] = {
-                "pofile_path": pofile_path,
-                "pofile_obj": pofile_obj,
-                "creation_date": creation_date,
-                "revision_date": revision_date,
-            }
-
-        # Legal Code - Sources
-        for legal_code in legal_codes:
-            resource_name = legal_code.license.identifier()
-            resource_slug = legal_code.license.resource_slug
-            if resource_slug in local_data:
-                continue
-            pofile_path = legal_code.get_english_pofile_path()
-            pofile_obj = polib.pofile(pofile_path)
-            local_data[resource_slug] = {
-                "name": resource_name,
-                "pofile_path": pofile_path,
-                "pofile_obj": pofile_obj,
-                "creation_date": creation_date,
-                "revision_date": revision_date,
-                "translations": {},
-            }
-        # Legal Code - Translations
-        for legal_code in legal_codes:
-            resource_slug = legal_code.license.resource_slug
-            language_code = legal_code.language_code
-            if language_code == settings.LANGUAGE_CODE:
-                continue
-            pofile_path = legal_code.translation_filename()
-            pofile_obj = polib.pofile(pofile_path)
-            creation_date = get_pofile_creation_date(pofile_obj)
-            revision_date = get_pofile_revision_date(pofile_obj)
-            local_data[resource_slug]["translations"][language_code] = {
-                "pofile_path": pofile_path,
-                "pofile_obj": pofile_obj,
-                "creation_date": creation_date,
-                "revision_date": revision_date,
-            }
-        return local_data
-
     def add_resource_to_transifex(
         self,
         language_code,
@@ -498,18 +294,151 @@ class TransifexHelper:
         resource = self.api.Resource.get(
             project=self.api_project, slug=resource_slug
         )
-        if not self.dryrun:
-            self.api.ResourceTranslationsAsyncUpload.upload(
-                resource=resource,
-                content=pofile_content,
-                language=language.id,
-            )
-            self.clear_transifex_stats()
         self.log.info(
             f"{self.nop}{resource_name} ({resource_slug})"
             f" {transifex_code}: Transifex does not yet contain"
             f" translation. Added using {pofile_path}."
         )
+        if not self.dryrun:
+            result = self.api.ResourceTranslationsAsyncUpload.upload(
+                content=pofile_content,
+                language=language.id,
+                resource=resource,
+            )
+            created = result["translations_created"]
+            updated = result["translations_updated"]
+            if not created and not updated:
+                self.log.error(
+                    f"Translation upload failed: created: {created};"
+                    f" updated: {updated}"
+                )
+            else:
+                self.clear_transifex_stats()
+
+    # def update_branch_for_legal_code(self, repo, legal_code, branch_object):
+    #     """
+    #     Pull down the latest translation for the legal_code and update
+    #     the local .po and .mo files. Assumes the correct branch has
+    #     already been checked out.  Adds the updated files to the index.
+    #     """
+    #     transifex_code = map_django_to_transifex_language_code(
+    #         legal_code.language_code
+    #     )
+    #     resource_slug = legal_code.license.resource_slug
+    #     self.log.info(
+    #         f"\tUpdating {resource_slug} {legal_code.language_code}"
+    #     )
+    #     last_tx_update = dateutil.parser.isoparse(
+    #         self.translation_stats[resource_slug][transifex_code][
+    #             "last_translation_update"
+    #         ]
+    #     )
+    #     legal_code.translation_last_update = last_tx_update
+    #
+    #     branch_object.legal_codes.add(legal_code)
+    #     if (
+    #         branch_object.last_transifex_update is None
+    #         or branch_object.last_transifex_update < last_tx_update
+    #     ):
+    #         branch_object.last_transifex_update = last_tx_update
+    #
+    #     # Get the updated translation. We don't write it to a file yet.
+    #     # We'll do all the updates for a branch at once in the next section.
+    #     pofile_path = legal_code.translation_filename()
+    #     pofile_content = self.transifex_get_pofile_content(
+    #         resource_slug, transifex_code
+    #     )
+    #     filenames = save_content_as_pofile_and_mofile(
+    #         pofile_path, pofile_content
+    #     )
+    #     relpaths = [
+    #         os.path.relpath(filename, settings.DATA_REPOSITORY_DIR)
+    #         for filename in filenames
+    #     ]
+    #     repo.index.add(relpaths)
+
+    # def handle_updated_translation_branch(self, repo, legal_codes):
+    #     # Legalcodes whose translations have been updated and all belong to
+    #     # the same translation branch.
+    #     # If we update the branch, we'll also publish updates to its static
+    #     # files.
+    #     if not legal_codes:
+    #         return
+    #     branch_name = legal_codes[0].branch_name()
+    #     language_code = legal_codes[0].language_code
+    #     version = legal_codes[0].license.version
+    #
+    #     self.log.info(f"Updating branch {branch_name}")
+    #
+    #     setup_local_branch(repo, branch_name)
+    #
+    #     # Track the translation update using a TranslationBranch object
+    #     # First-party/Local
+    #     from licenses.models import TranslationBranch
+    #
+    #     branch_object, _ = TranslationBranch.objects.get_or_create(
+    #         branch_name=branch_name,
+    #         language_code=language_code,
+    #         version=version,
+    #         complete=False,
+    #     )
+    #     for legal_code in legal_codes:
+    #         self.update_branch_for_legal_code(
+    #             repo, legal_code, branch_object
+    #         )
+    #
+    #     self.log.info("Publishing static files")
+    #     call_command("publish", branch_name=branch_name)
+    #     repo.index.add(
+    #         [
+    #             os.path.relpath(
+    #                 settings.DISTILL_DIR,
+    #                 settings.DATA_REPOSITORY_DIR,
+    #             )
+    #         ]
+    #     )
+    #
+    #     # Commit and push this branch
+    #     self.log.info("Committing and pushing")
+    #     commit_and_push_changes(
+    #         repo, "Translation changes from Transifex.", "", push=True
+    #     )
+    #
+    #     self.log.info(
+    #         f"Updated branch {branch_name} with updated translations and"
+    #         " pushed",
+    #     )
+    #
+    #     # Don't need local branch anymore
+    #     kill_branch(repo, branch_name)
+    #
+    #     # Now that we know the new changes are upstream, save the LegalCode
+    #     # objects with their new translation_last_updates, and the branch
+    #     # object.
+    #     # First-party/Local
+    #     from licenses.models import LegalCode
+    #
+    #     LegalCode.objects.bulk_update(
+    #         legal_codes,
+    #         fields=["translation_last_update"],
+    #     )
+    #     branch_object.save()
+    #
+    # def handle_legal_codes_with_updated_translations(
+    #     self, repo, legal_codes_with_updated_translations
+    # ):
+    #     # Group by branches
+    #     legal_codes_by_branchname = defaultdict(list)
+    #     for legal_code in legal_codes_with_updated_translations:
+    #         branch_name = legal_code.branch_name()
+    #         legal_codes_by_branchname[branch_name].append(legal_code)
+    #     branch_names = list(legal_codes_by_branchname.keys())
+    #
+    #     # For each branch, get the changes and process them.
+    #     for branch_name, legal_codes in legal_codes_by_branchname.items():
+    #         self.handle_updated_translation_branch(repo, legal_codes)
+    #     # Return the list of updated branch names
+    #     return branch_names
 
     def normalize_pofile_language(
         self,
@@ -674,7 +603,7 @@ class TransifexHelper:
         )
         return pofile_obj
 
-    def update_pofile_creation_to_match_transifex(
+    def update_pofile_creation_datetime(
         self,
         transifex_code,
         resource_slug,
@@ -698,7 +627,7 @@ class TransifexHelper:
         pofile_obj.save(pofile_path)
         return pofile_obj
 
-    def update_pofile_revision_to_match_transifex(
+    def update_pofile_revision_datetime(
         self,
         transifex_code,
         resource_slug,
@@ -729,23 +658,18 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
+        pofile_creation,
+        pofile_revision,
+        transifex_creation,
+        transifex_revision,
     ):
         pad = len(pofile_path)
-        pofile_creation = get_pofile_creation_date(pofile_obj)
-        pofile_revision = get_pofile_revision_date(pofile_obj)
-        transifex_creation = dateutil.parser.parse(
-            self.resource_stats[resource_slug]["datetime_created"]
-        )
-        transifex_revision = dateutil.parser.parse(
-            self.resource_stats[resource_slug]["datetime_modified"]
-        )
         transifex_label = f"{transifex_code} Transifex {resource_slug}.po"
-        #
+
         # Process creation date
-        #
         if pofile_creation is None or transifex_creation < pofile_creation:
             # Normalize Local PO File revision date if its empty or invalid
-            pofile_obj = self.update_pofile_creation_to_match_transifex(
+            pofile_obj = self.update_pofile_creation_datetime(
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -761,12 +685,11 @@ class TransifexHelper:
                 f"\n{transifex_label:>{pad}}: {transifex_creation}"
                 f"\n{pofile_path}: {pofile_creation}"
             )
-        #
+
         # Process revision date
-        #
         if pofile_revision is None:
             # Normalize Local PO File revision date if its empty or invalid
-            pofile_obj = self.update_pofile_revision_to_match_transifex(
+            pofile_obj = self.update_pofile_revision_datetime(
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -775,7 +698,7 @@ class TransifexHelper:
                 pofile_revision,
                 transifex_revision,
             )
-        elif pofile_revision != transifex_revision:
+        elif transifex_revision != pofile_revision:
             # Determine if Local PO File and Transifex PO File are the same
             transifex_pofile_content = self.transifex_get_pofile_content(
                 resource_slug, transifex_code
@@ -794,10 +717,16 @@ class TransifexHelper:
                     # f"{transifex_pofile_obj[index]}"
                     # )
                     break
-            # Normalize Local PO File revision date if the Local PO File
-            # entries and the Transifex PO File entries are the same.
             if po_entries_are_the_same:
-                pofile_obj = self.update_pofile_revision_to_match_transifex(
+                # Normalize Local PO File revision date if the Local PO File
+                # entries and the Transifex PO File entries are the same.
+                #
+                # As of 2021-10-21, the Python SDK for the Transifex API 3.0
+                # only allows modification of ResourceTranslation attributes
+                # strings, reviewed, and proofread (*not* datetime_translated).
+                # We can only normalize dates in one direction (normalize PO
+                # Files).
+                pofile_obj = self.update_pofile_revision_datetime(
                     transifex_code,
                     resource_slug,
                     resource_name,
@@ -813,21 +742,134 @@ class TransifexHelper:
                     f"\n{transifex_label:>{pad}}: {transifex_revision}"
                     f"\n{pofile_path}: {pofile_revision}"
                 )
+
         return pofile_obj
 
-    def normalize_translations(self):  # pragma: no cover
-        legal_codes = (
-            licenses.models.LegalCode.objects.valid()
-            .translated()
-            .exclude(language_code=settings.LANGUAGE_CODE)
-        )
-        repo = git.Repo(settings.DATA_REPOSITORY_DIR)
+    def check_data_repo_is_clean(self, repo=None):
+        if not repo:
+            repo = git.Repo(settings.DATA_REPOSITORY_DIR)
         if repo.is_dirty():
             self.log.warning(f"{self.nop}Repository is dirty.")
+            return False
+        return True
 
-        # Process translation data by starting with local PO files
-        # (includes both Deeds & UX and Legal Codes)
-        local_data = self.build_local_data(legal_codes)
+    def get_local_data(self, limit_domain, limit_language):
+        deeds_ux = {}
+        if not limit_domain or limit_domain == "deeds_ux":
+            deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+
+        legal_codes = []
+        if not limit_domain or limit_domain == "legal_code":
+            legal_codes = list(
+                licenses.models.LegalCode.objects.valid()
+                .translated()
+                .exclude(language_code=settings.LANGUAGE_CODE)
+            )
+
+        local_data = self.build_local_data(
+            deeds_ux, legal_codes, limit_language
+        )
+        return local_data
+
+    def build_local_data(
+        self,
+        deeds_ux: dict,
+        legal_codes: Iterable["licenses.models.LegalCode"],
+        limit_language,
+    ):
+        local_data = {}
+
+        if deeds_ux:
+            # Deeds & UX - Sources
+            resource_name = settings.DEEDS_UX_RESOURCE_NAME
+            resource_slug = settings.DEEDS_UX_RESOURCE_SLUG
+            pofile_path = get_pofile_path(
+                locale_or_legalcode="locale",
+                language_code=settings.LANGUAGE_CODE,
+                translation_domain="django",
+            )
+            pofile_obj = polib.pofile(pofile_path)
+            creation_date = get_pofile_creation_date(pofile_obj)
+            revision_date = get_pofile_revision_date(pofile_obj)
+            local_data[resource_slug] = {
+                "name": resource_name,
+                "pofile_path": pofile_path,
+                "pofile_obj": pofile_obj,
+                "creation_date": creation_date,
+                "revision_date": revision_date,
+                "translations": {},
+            }
+
+        # Deeds & UX - Translations
+        for (
+            language_code,
+            language_data,
+        ) in deeds_ux.items():
+            if language_code == settings.LANGUAGE_CODE:
+                continue
+            if limit_language and limit_language != language_code:
+                continue
+            pofile_path = get_pofile_path(
+                locale_or_legalcode="locale",
+                language_code=language_code,
+                translation_domain="django",
+            )
+            pofile_obj = polib.pofile(pofile_path)
+            creation_date = language_data["creation_date"]
+            revision_date = language_data["revision_date"]
+            local_data[resource_slug]["translations"][language_code] = {
+                "pofile_path": pofile_path,
+                "pofile_obj": pofile_obj,
+                "creation_date": creation_date,
+                "revision_date": revision_date,
+            }
+
+        # Legal Code - Sources
+        for legal_code in legal_codes:
+            resource_name = legal_code.license.identifier()
+            resource_slug = legal_code.license.resource_slug
+            if resource_slug in local_data:
+                continue
+            pofile_path = legal_code.get_english_pofile_path()
+            pofile_obj = polib.pofile(pofile_path)
+            creation_date = get_pofile_creation_date(pofile_obj)
+            revision_date = get_pofile_revision_date(pofile_obj)
+            local_data[resource_slug] = {
+                "name": resource_name,
+                "pofile_path": pofile_path,
+                "pofile_obj": pofile_obj,
+                "creation_date": creation_date,
+                "revision_date": revision_date,
+                "translations": {},
+            }
+
+        # Legal Code - Translations
+        for legal_code in legal_codes:
+            resource_slug = legal_code.license.resource_slug
+            language_code = legal_code.language_code
+            if language_code == settings.LANGUAGE_CODE:
+                continue
+            if limit_language and limit_language != language_code:
+                continue
+            pofile_path = legal_code.translation_filename()
+            pofile_obj = polib.pofile(pofile_path)
+            creation_date = get_pofile_creation_date(pofile_obj)
+            revision_date = get_pofile_revision_date(pofile_obj)
+            local_data[resource_slug]["translations"][language_code] = {
+                "pofile_path": pofile_path,
+                "pofile_obj": pofile_obj,
+                "creation_date": creation_date,
+                "revision_date": revision_date,
+            }
+
+        return local_data
+
+    def normalize_translations(
+        self, limit_domain, limit_language
+    ):  # pragma: no cover
+        self.check_data_repo_is_clean()
+        local_data = self.get_local_data(limit_domain, limit_language)
+
         # Resources & Sources
         for resource_slug, resource in local_data.items():
             language_code = settings.LANGUAGE_CODE
@@ -835,8 +877,18 @@ class TransifexHelper:
                 language_code
             )
             resource_name = resource["name"]
+
             pofile_path = resource["pofile_path"]
             pofile_obj = resource["pofile_obj"]
+            pofile_creation = resource["creation_date"]
+            pofile_revision = resource["revision_date"]
+
+            transifex_creation = dateutil.parser.isoparse(
+                self.resource_stats[resource_slug]["datetime_created"]
+            )
+            transifex_revision = dateutil.parser.isoparse(
+                self.resource_stats[resource_slug]["datetime_modified"]
+            )
 
             # Normalize deterministic metadata
             pofile_obj = self.normalize_pofile_metadata(
@@ -862,6 +914,10 @@ class TransifexHelper:
                 resource_name,
                 pofile_path,
                 pofile_obj,
+                pofile_creation,
+                pofile_revision,
+                transifex_creation,
+                transifex_revision,
             )
             # # UpdateSource
             # # We're doing English, which is the source language.
@@ -892,6 +948,17 @@ class TransifexHelper:
                 )
                 pofile_path = translation["pofile_path"]
                 pofile_obj = translation["pofile_obj"]
+                pofile_creation = translation["creation_date"]
+                pofile_revision = translation["revision_date"]
+
+                transifex_creation = dateutil.parser.isoparse(
+                    self.resource_stats[resource_slug]["datetime_created"]
+                )
+                transifex_revision = dateutil.parser.isoparse(
+                    self.translation_stats[resource_slug][transifex_code][
+                        "last_translation_update"
+                    ]
+                )
 
                 # Normalize deterministic metadata
                 pofile_obj = self.normalize_pofile_metadata(
@@ -926,6 +993,10 @@ class TransifexHelper:
                     resource_name,
                     pofile_path,
                     pofile_obj,
+                    pofile_creation,
+                    pofile_revision,
+                    transifex_creation,
+                    transifex_revision,
                 )
 
     def check_for_translation_updates_with_repo_and_legal_codes(
