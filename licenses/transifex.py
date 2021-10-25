@@ -687,11 +687,11 @@ class TransifexHelper:
         transifex_label = f"{transifex_code} Transifex {resource_slug}.po"
 
         # Process creation date
-        if pofile_creation is None or (
-            transifex_creation is not None
-            and transifex_creation != pofile_creation
+        if transifex_creation != pofile_creation
         ):
-            # Normalize Local PO File revision date if its empty or invalid
+            # Normalize Local PO File creation date to match Transifex
+            # (Transifex API 3.0 does not allow for modifcation of Transifex
+            #  creation datetimes)
             pofile_obj = self.update_pofile_creation_datetime(
                 transifex_code,
                 resource_slug,
@@ -700,13 +700,6 @@ class TransifexHelper:
                 pofile_obj,
                 pofile_creation,
                 transifex_creation,
-            )
-        elif transifex_creation != pofile_creation:
-            self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: 'POT-Creation-Date' mismatch:"
-                f"\n{transifex_label:>{pad}}: {transifex_creation}"
-                f"\n{pofile_path}: {pofile_creation}"
             )
 
         # Process revision date
