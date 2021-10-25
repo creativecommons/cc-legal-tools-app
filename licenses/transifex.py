@@ -687,8 +687,7 @@ class TransifexHelper:
         transifex_label = f"{transifex_code} Transifex {resource_slug}.po"
 
         # Process creation date
-        if transifex_creation != pofile_creation
-        ):
+        if transifex_creation != pofile_creation:
             # Normalize Local PO File creation date to match Transifex
             # (Transifex API 3.0 does not allow for modifcation of Transifex
             #  creation datetimes)
