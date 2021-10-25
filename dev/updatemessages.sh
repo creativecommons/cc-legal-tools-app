@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Run Django Management makemessages with helpful options (including excluding
-# legalcode) and compilemessages
+# Run Django Management nofuzzy_makemessages with helpful options (including
+# excluding legalcode) and compilemessages
 #
 set -o errtrace
 set -o nounset

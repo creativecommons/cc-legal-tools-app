@@ -211,13 +211,13 @@ Best run before every commit:
 - `./dev/tools.sh` - Run Python code tools (isort, black, flake8)
 
 Esoteric and dangerous:
-- `./dev/concatenatemessages.sh` - Concatenate legacy ccEngine translation into
-  cc-licenses
+- `./dev/concatenatemessages.sh` - Concatenate legacy ccEngine translations
+  into cc-licenses
   - rarely used (only after source strings are updated)
 - `./dev/resetdb.sh` - Reset Django application database data (!!DANGER!!)
   - usually only helpful if you're doing model/schema work
-- `./dev/updatemessages.sh` - Run Django Management makemessages with helpful
-  options (including excluding legalcode) and compilemessages
+- `./dev/updatemessages.sh` - Run Django Management nofuzzy_makemessages with
+  helpful options (including excluding legalcode) and compilemessages
 
 
 #### Coverage Tests and Report

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Concatenate legacy ccEngine translation into cc-licenses
+# Concatenate legacy ccEngine translations into cc-licenses
 #
 set -o errtrace
 set -o nounset
