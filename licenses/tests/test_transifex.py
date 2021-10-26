@@ -130,6 +130,18 @@ class TestTransifex(TestCase):
     def test_resource_stats(self):
         resources = [
             mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:cc-search",
+                attributes={
+                    "slug": "cc-search",
+                },
+            ),
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds-choosers",
+                attributes={
+                    "slug": "deeds-choosers",
+                },
+            ),
+            mock.Mock(
                 id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:by-nc-nd_40",
                 attributes={
                     "accept_translations": True,
@@ -171,12 +183,16 @@ class TestTransifex(TestCase):
         stats = self.helper.resource_stats
 
         all_resources.assert_called_once()
+        self.assertNotIn("cc-search", stats)
+        self.assertNotIn("deeds-choosers", stats)
+        self.assertIn("by-nc-nd_40", stats)
         self.assertEqual(
             "2020-09-21T15:22:49Z", stats["by-nc-nd_40"]["datetime_created"]
         )
+        self.assertIn("by-nc-sa_40", stats)
         self.assertEqual(2289, stats["by-nc-sa_40"]["word_count"])
 
-    def test_translation_stats(self):
+    def test_(self):
         languages_stats = [
             mock.Mock(
                 id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:cc-search:l:es",
@@ -698,7 +714,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {"x_slug_x": None}
 
         self.helper.add_resource_to_transifex(
@@ -713,7 +728,8 @@ class TestTransifex(TestCase):
         self.helper.api.Resource.get.assert_not_called()
         self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
 
-    def test_add_resource_to_transifex_missing(self):
+    def test_add_resource_to_transifex_missing_created(self):
+        api = self.helper.api
         language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -721,23 +737,27 @@ class TestTransifex(TestCase):
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
             attributes={"i18n_type": "PO"},
         )
-        self.helper.api.Resource.get = mock.Mock(return_value=resource)
+        api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceStringsAsyncUpload.upload = mock.Mock(
+            return_value={"strings_created": 1, "strings_skipped": 0}
+        )
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {}
+        self.helper.clear_transifex_stats = mock.Mock()
 
-        self.helper.add_resource_to_transifex(
-            language_code,
-            resource_slug,
-            resource_name,
-            pofile_path,
-            pofile_obj,
-        )
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.add_resource_to_transifex(
+                language_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
 
-        self.helper.api.Resource.create.assert_called_once()
-        self.helper.api.Resource.create.assert_called_with(
+        api.Resource.create.assert_called_once()
+        api.Resource.create.assert_called_with(
             name=resource_name,
             slug=resource_slug,
             relationships={
@@ -745,14 +765,134 @@ class TestTransifex(TestCase):
                 "project": self.helper.api_project,
             },
         )
-        self.helper.api.Resource.get.assert_called_once()
-        self.helper.api.ResourceStringsAsyncUpload.upload.assert_called_once()
-        self.helper.api.ResourceStringsAsyncUpload.upload.assert_called_with(
+        api.Resource.get.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_with(
             resource=resource,
             content=pofile_content.replace(
-                'msgstr "english text"', 'msgstr ""'
-            ),
+                'msgstr "Attribution-NoDerivatives 4.0 International"',
+                'msgstr ""',
+            ).replace('msgstr "english text"', 'msgstr ""'),
         )
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "Transifex does not yet contain resource", log_context.output[0]
+        )
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn("Resource upload results", log_context.output[1])
+        self.helper.clear_transifex_stats.assert_called_once()
+
+    def test_add_resource_to_transifex_missing_failed(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceStringsAsyncUpload.upload = mock.Mock(
+            return_value={"strings_created": 0, "strings_skipped": 0}
+        )
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {}
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.add_resource_to_transifex(
+                language_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        api.Resource.create.assert_called_once()
+        api.Resource.create.assert_called_with(
+            name=resource_name,
+            slug=resource_slug,
+            relationships={
+                "i18n_format": self.helper.api_i18n_format,
+                "project": self.helper.api_project,
+            },
+        )
+        api.Resource.get.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content.replace(
+                'msgstr "Attribution-NoDerivatives 4.0 International"',
+                'msgstr ""',
+            ).replace('msgstr "english text"', 'msgstr ""'),
+        )
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "Transifex does not yet contain resource", log_context.output[0]
+        )
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn("Resource upload results", log_context.output[1])
+        self.assertTrue(log_context.output[2].startswith("CRITICAL:"))
+        self.assertIn("Resource upload failed", log_context.output[2])
+        self.helper.clear_transifex_stats.assert_not_called()
+
+    def test_add_resource_to_transifex_missing_some_skipped(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceStringsAsyncUpload.upload = mock.Mock(
+            return_value={"strings_created": 1, "strings_skipped": 1}
+        )
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {}
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.add_resource_to_transifex(
+                language_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        api.Resource.create.assert_called_once()
+        api.Resource.create.assert_called_with(
+            name=resource_name,
+            slug=resource_slug,
+            relationships={
+                "i18n_format": self.helper.api_i18n_format,
+                "project": self.helper.api_project,
+            },
+        )
+        api.Resource.get.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content.replace(
+                'msgstr "Attribution-NoDerivatives 4.0 International"',
+                'msgstr ""',
+            ).replace('msgstr "english text"', 'msgstr ""'),
+        )
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "Transifex does not yet contain resource", log_context.output[0]
+        )
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn("Resource upload results", log_context.output[1])
+        self.assertTrue(log_context.output[2].startswith("WARNING:"))
+        self.assertIn("Resource strings skipped", log_context.output[2])
+        self.helper.clear_transifex_stats.assert_called_once()
 
     def test_add_resource_to_transifex_dryrun(self):
         self.helper.dryrun = True
@@ -761,7 +901,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {}
 
         self.helper.add_resource_to_transifex(
@@ -839,9 +978,7 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {resource_slug: None}
-        # Set translation stats so we do not have to also mock it here
         self.helper._translation_stats = {
             resource_slug: {language_code: {"translated_strings": 99}}
         }
@@ -866,9 +1003,7 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {resource_slug: None}
-        # Set translation stats so we do not have to also mock it here
         self.helper._translation_stats = {resource_slug: {}}
 
         self.helper.add_translation_to_transifex_resource(
@@ -901,9 +1036,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {resource_slug: {}}
-        # Set translation stats so we do not have to also mock it here
         self.helper._translation_stats = {resource_slug: {}}
         api.ResourceTranslationsAsyncUpload.upload.return_value = {
             "translations_created": 1,
@@ -947,9 +1080,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {resource_slug: {}}
-        # Set translation stats so we do not have to also mock it here
         self.helper._translation_stats = {resource_slug: {}}
         api.ResourceTranslationsAsyncUpload.upload.return_value = {
             "translations_created": 0,
@@ -1480,28 +1611,26 @@ class TestTransifex(TestCase):
         pofile_revision = None
         pofile_obj.metadata.pop("POT-Creation-Date", None)
         pofile_obj.metadata.pop("PO-Revision-Date", None)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {}
 
-        with mock.patch.object(
-            self.helper, "get_transifex_resource_stats"
-        ) as mock_resource_stats:
-            mock_resource_stats.return_value = {
-                resource_slug: {
-                    "datetime_created": str(transifex_creation),
-                    "datetime_modified": str(transifex_revision),
-                },
-            }
-            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
-                new_pofile_obj = self.helper.normalize_pofile_dates(
-                    transifex_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                    pofile_creation,
-                    pofile_revision,
-                    transifex_creation,
-                    transifex_revision,
-                )
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_dates(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                pofile_creation,
+                pofile_revision,
+                transifex_creation,
+                transifex_revision,
+            )
 
         mock_pofile_save.assert_called()
         self.assertEqual(
@@ -1513,7 +1642,7 @@ class TestTransifex(TestCase):
             str(transifex_revision),
         )
 
-    def test_normalize_pofile_dates_update_pofile_creation_newer(self):
+    def test_normalize_pofile_dates_update_pofile_creation_differs(self):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -1529,28 +1658,26 @@ class TestTransifex(TestCase):
         pofile_revision = transifex_revision
         pofile_obj.metadata["POT-Creation-Date"] = str(pofile_creation)
         pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {}
 
-        with mock.patch.object(
-            self.helper, "get_transifex_resource_stats"
-        ) as mock_resource_stats:
-            mock_resource_stats.return_value = {
-                resource_slug: {
-                    "datetime_created": str(transifex_creation),
-                    "datetime_modified": str(transifex_revision),
-                },
-            }
-            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
-                new_pofile_obj = self.helper.normalize_pofile_dates(
-                    transifex_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                    pofile_creation,
-                    pofile_revision,
-                    transifex_creation,
-                    transifex_revision,
-                )
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_dates(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                pofile_creation,
+                pofile_revision,
+                transifex_creation,
+                transifex_revision,
+            )
 
         mock_pofile_save.assert_called_once()
         self.assertEqual(
@@ -1558,53 +1685,7 @@ class TestTransifex(TestCase):
             str(transifex_creation),
         )
 
-    def test_normalize_pofile_dates_update_pofile_creation_older(self):
-        transifex_code = "x_trans_code_x"
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
-        transifex_creation = dateutil.parser.isoparse(
-            "2021-02-02 02:02:02+00:00"
-        )
-        transifex_revision = dateutil.parser.isoparse(
-            "2021-03-03 03:03:03+00:00"
-        )
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
-        pofile_revision = transifex_revision
-        pofile_obj.metadata["POT-Creation-Date"] = str(pofile_creation)
-        pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
-
-        with self.assertLogs(self.helper.log) as log_context:
-            with mock.patch.object(
-                self.helper, "get_transifex_resource_stats"
-            ) as mock_resource_stats:
-                mock_resource_stats.return_value = {
-                    resource_slug: {
-                        "datetime_created": str(transifex_creation),
-                        "datetime_modified": str(transifex_revision),
-                    },
-                }
-                with mock.patch.object(
-                    polib.POFile, "save"
-                ) as mock_pofile_save:
-                    self.helper.normalize_pofile_dates(
-                        transifex_code,
-                        resource_slug,
-                        resource_name,
-                        pofile_path,
-                        pofile_obj,
-                        pofile_creation,
-                        pofile_revision,
-                        transifex_creation,
-                        transifex_revision,
-                    )
-
-        mock_pofile_save.assert_not_called()
-        self.assertTrue(log_context.output[0].startswith("ERROR:"))
-        self.assertIn("'POT-Creation-Date' mismatch", log_context.output[0])
-
-    def test_normalize_pofile_dates_update_pofile_entries_same(self):
+    def test_normalize_pofile_dates_update_revisions_differ_entries_same(self):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -1620,6 +1701,13 @@ class TestTransifex(TestCase):
         pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
         pofile_obj.metadata["POT-Creation-Date"] = str(pofile_creation)
         pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {}
 
         with mock.patch.object(
             self.helper, "transifex_get_pofile_content"
@@ -1627,29 +1715,18 @@ class TestTransifex(TestCase):
             mock_transifex_content.return_value = bytes(
                 POFILE_CONTENT, "utf-8"
             )
-            with mock.patch.object(
-                self.helper, "get_transifex_resource_stats"
-            ) as mock_resource_stats:
-                mock_resource_stats.return_value = {
-                    resource_slug: {
-                        "datetime_created": str(transifex_creation),
-                        "datetime_modified": str(transifex_revision),
-                    },
-                }
-                with mock.patch.object(
-                    polib.POFile, "save"
-                ) as mock_pofile_save:
-                    new_pofile_obj = self.helper.normalize_pofile_dates(
-                        transifex_code,
-                        resource_slug,
-                        resource_name,
-                        pofile_path,
-                        pofile_obj,
-                        pofile_creation,
-                        pofile_revision,
-                        transifex_creation,
-                        transifex_revision,
-                    )
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                new_pofile_obj = self.helper.normalize_pofile_dates(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                    pofile_creation,
+                    pofile_revision,
+                    transifex_creation,
+                    transifex_revision,
+                )
 
         mock_pofile_save.assert_called_once()
         self.assertEqual(
@@ -1657,7 +1734,9 @@ class TestTransifex(TestCase):
             str(transifex_revision),
         )
 
-    def test_normalize_pofile_dates_update_pofile_entries_different(self):
+    def test_normalize_pofile_dates_update_revisions_differ_entries_differ(
+        self,
+    ):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -1675,6 +1754,20 @@ class TestTransifex(TestCase):
         pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
         pofile_obj.metadata["POT-Creation-Date"] = str(pofile_creation)
         pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {
+            resource_slug: {
+                transifex_code: {
+                    "untranslated_strings": 1,
+                    "translated_strings": 1,
+                },
+            },
+        }
 
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(
@@ -1684,28 +1777,19 @@ class TestTransifex(TestCase):
                     POFILE_CONTENT, "utf-8"
                 )
                 with mock.patch.object(
-                    self.helper, "get_transifex_resource_stats"
-                ) as mock_resource_stats:
-                    mock_resource_stats.return_value = {
-                        resource_slug: {
-                            "datetime_created": str(transifex_creation),
-                            "datetime_modified": str(transifex_revision),
-                        },
-                    }
-                    with mock.patch.object(
-                        polib.POFile, "save"
-                    ) as mock_pofile_save:
-                        self.helper.normalize_pofile_dates(
-                            transifex_code,
-                            resource_slug,
-                            resource_name,
-                            pofile_path,
-                            pofile_obj,
-                            pofile_creation,
-                            pofile_revision,
-                            transifex_creation,
-                            transifex_revision,
-                        )
+                    polib.POFile, "save"
+                ) as mock_pofile_save:
+                    self.helper.normalize_pofile_dates(
+                        transifex_code,
+                        resource_slug,
+                        resource_name,
+                        pofile_path,
+                        pofile_obj,
+                        pofile_creation,
+                        pofile_revision,
+                        transifex_creation,
+                        transifex_revision,
+                    )
 
         mock_pofile_save.assert_not_called()
         self.assertTrue(log_context.output[0].startswith("ERROR:"))

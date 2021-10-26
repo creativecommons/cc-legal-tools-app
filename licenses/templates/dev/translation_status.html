@@ -49,7 +49,7 @@
         <td>{{ info.name|safe }}</td>
         {% if info.percent_translated == 0 %}
         <td style="background-color:#ffeeee;text-align:right;">
-        {% elif info.percent_translated < 80 %}
+        {% elif info.percent_translated < threshold %}
         <td style="background-color:#ffffee;text-align:right;">
         {% else %}
         <td style="background-color:#eeffee;text-align:right;">

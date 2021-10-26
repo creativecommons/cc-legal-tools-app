@@ -467,6 +467,8 @@ def view_translation_status(request):
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
 
     for language_code, language_data in settings.DEEDS_UX_PO_FILE_INFO.items():
+        if language_code == settings.LANGUAGE_CODE:
+            continue
         try:
             language_info = translation.get_language_info(language_code)
             bidi = language_info["bidi"]

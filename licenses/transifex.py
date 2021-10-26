@@ -6,7 +6,6 @@ import logging
 from typing import Iterable
 
 # Third-party
-import dateutil.parser
 import git
 import polib
 import requests
@@ -21,6 +20,7 @@ from i18n.utils import (
     get_pofile_path,
     get_pofile_revision_date,
     map_django_to_transifex_language_code,
+    parse_date,
 )
 
 LEGALCODES_KEY = "__LEGALCODES__"
@@ -79,13 +79,16 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources
         https://transifex.github.io/openapi/#tag/Resources
         """
+        self.api_project.reload()
         stats = {}
         resources = sorted(
             self.api_project.fetch("resources").all(), key=lambda x: x.id
         )
         for resource in resources:
-            r_slug = resource.attributes["slug"]
-            stats[r_slug] = resource.attributes
+            resource_slug = resource.attributes["slug"]
+            if resource_slug in ["cc-search", "deeds-choosers"]:
+                continue
+            stats[resource_slug] = resource.attributes
         return stats
 
     def get_transifex_translation_stats(self):
@@ -99,6 +102,7 @@ class TransifexHelper:
         Uses Transifex API 3.0: Statistics
         https://transifex.github.io/openapi/#tag/Statistics
         """
+        self.api_project.reload()
         stats = {}
         languages_stats = sorted(
             self.api.ResourceLanguageStats.filter(
@@ -114,7 +118,6 @@ class TransifexHelper:
             if resource_slug not in stats:
                 stats[resource_slug] = {}
             stats[resource_slug][transifex_code] = l_stats.attributes
-
         return stats
 
     @property
@@ -233,15 +236,24 @@ class TransifexHelper:
             project=self.api_project, slug=resource_slug
         )
         for entry in pofile_obj:
-            # Remove duplicate translated strings
-            if entry.msgid == entry.msgstr:
-                entry.msgstr = ""
+            # Remove message strings
+            entry.msgstr = ""
         pofile_content = get_pofile_content(pofile_obj)
-        self.api.ResourceStringsAsyncUpload.upload(
+        result = self.api.ResourceStringsAsyncUpload.upload(
             resource=resource,
             content=pofile_content,
         )
-        self.clear_transifex_stats()
+        results = ""
+        for key, value in result.items():
+            results = f"{results}\n     {key}: {value}"
+        self.log.info(f"Resource upload results:{results}")
+        if not result["strings_created"]:
+            self.log.critical("Resource upload failed")
+        elif result["strings_skipped"]:
+            self.log.warning("Resource strings skipped")
+            self.clear_transifex_stats()
+        else:
+            self.clear_transifex_stats()
 
     def add_translation_to_transifex_resource(
         self,
@@ -305,13 +317,15 @@ class TransifexHelper:
                 language=language.id,
                 resource=resource,
             )
-            created = result["translations_created"]
-            updated = result["translations_updated"]
-            if not created and not updated:
-                self.log.error(
-                    f"Translation upload failed: created: {created};"
-                    f" updated: {updated}"
-                )
+            results = ""
+            for key, value in result.items():
+                results = f"{results}\n     {key}: {value}"
+            self.log.info(f"Resource upload results:{results}")
+            if (
+                not result["translations_created"]
+                and not result["translations_updated"]
+            ):
+                self.log.critical("Translation upload failed")
             else:
                 self.clear_transifex_stats()
 
@@ -663,12 +677,20 @@ class TransifexHelper:
         transifex_creation,
         transifex_revision,
     ):
+        """
+        Normalize PO File metadata datetime fields. As the Transifex API does
+        not allow us to modify datetime metadata in Transifex, we update the PO
+        Files whenever it is safe to do so (whenever it won't indicate a false
+        content equality).
+        """
         pad = len(pofile_path)
         transifex_label = f"{transifex_code} Transifex {resource_slug}.po"
 
         # Process creation date
-        if pofile_creation is None or transifex_creation < pofile_creation:
-            # Normalize Local PO File revision date if its empty or invalid
+        if transifex_creation != pofile_creation:
+            # Normalize Local PO File creation date to match Transifex
+            # (Transifex API 3.0 does not allow for modifcation of Transifex
+            #  creation datetimes)
             pofile_obj = self.update_pofile_creation_datetime(
                 transifex_code,
                 resource_slug,
@@ -677,13 +699,6 @@ class TransifexHelper:
                 pofile_obj,
                 pofile_creation,
                 transifex_creation,
-            )
-        elif transifex_creation != pofile_creation:
-            self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: 'POT-Creation-Date' mismatch:"
-                f"\n{transifex_label:>{pad}}: {transifex_creation}"
-                f"\n{pofile_path}: {pofile_creation}"
             )
 
         # Process revision date
@@ -736,11 +751,29 @@ class TransifexHelper:
                     transifex_revision,
                 )
             else:
+                pofile_translated = len(pofile_obj.translated_entries())
+                pofile_untranslated = len(pofile_obj.untranslated_entries())
+                transifex_untranslated = self.translation_stats[resource_slug][
+                    transifex_code
+                ]["untranslated_strings"]
+                transifex_translated = self.translation_stats[resource_slug][
+                    transifex_code
+                ]["translated_strings"]
                 self.log.error(
                     f"{self.nop}{resource_name} ({resource_slug})"
+                    # Transifex
                     f" {transifex_code}: 'PO-Revision-Date' mismatch:"
                     f"\n{transifex_label:>{pad}}: {transifex_revision}"
+                    f"\n{'translated strings':>{pad}}:"
+                    f" {transifex_translated}"
+                    f"\n{'untranslated strings':>{pad}}:"
+                    f" {transifex_untranslated}"
+                    # Local PO File
                     f"\n{pofile_path}: {pofile_revision}"
+                    f"\n{'translated strings':>{pad}}:"
+                    f" {pofile_translated}"
+                    f"\n{'untranslated strings':>{pad}}:"
+                    f" {pofile_untranslated}"
                 )
 
         return pofile_obj
@@ -883,13 +916,6 @@ class TransifexHelper:
             pofile_creation = resource["creation_date"]
             pofile_revision = resource["revision_date"]
 
-            transifex_creation = dateutil.parser.isoparse(
-                self.resource_stats[resource_slug]["datetime_created"]
-            )
-            transifex_revision = dateutil.parser.isoparse(
-                self.resource_stats[resource_slug]["datetime_modified"]
-            )
-
             # Normalize deterministic metadata
             pofile_obj = self.normalize_pofile_metadata(
                 language_code,
@@ -908,6 +934,21 @@ class TransifexHelper:
                 pofile_path,
                 pofile_obj,
             )
+
+            if resource_slug not in self.resource_stats:
+                self.log.critical(
+                    f"{resource_name} ({resource_slug}) has not yet been"
+                    " added to Transifex. Aborting resource processing."
+                )
+                continue
+
+            transifex_creation = parse_date(
+                self.resource_stats[resource_slug]["datetime_created"]
+            )
+            transifex_revision = parse_date(
+                self.resource_stats[resource_slug]["datetime_modified"]
+            )
+
             pofile_obj = self.normalize_pofile_dates(
                 transifex_code,
                 resource_slug,
@@ -919,27 +960,6 @@ class TransifexHelper:
                 transifex_creation,
                 transifex_revision,
             )
-            # # UpdateSource
-            # # We're doing English, which is the source language.
-            # self.log.info(
-            # f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
-            # f" Transifex: updating source (all msgid entries) using"
-            # f" {pofile_path}."
-            # )
-            # if self.dryrun:
-            #     return
-            # # https://docs.transifex.com/api/resources
-            # #
-            # # Update the source messages on Transifex from our local .pofile.
-            # files = self.files_argument(
-            #    "content", pofile_path, pofile_content
-            # )
-            # self.request20(
-            # "put",
-            # f"project/{self.project_slug}/resource/{resource_slug}"
-            # "/content/",
-            # files=files,
-            # )
 
             # Translations
             for language_code, translation in resource["translations"].items():
@@ -950,15 +970,6 @@ class TransifexHelper:
                 pofile_obj = translation["pofile_obj"]
                 pofile_creation = translation["creation_date"]
                 pofile_revision = translation["revision_date"]
-
-                transifex_creation = dateutil.parser.isoparse(
-                    self.resource_stats[resource_slug]["datetime_created"]
-                )
-                transifex_revision = dateutil.parser.isoparse(
-                    self.translation_stats[resource_slug][transifex_code][
-                        "last_translation_update"
-                    ]
-                )
 
                 # Normalize deterministic metadata
                 pofile_obj = self.normalize_pofile_metadata(
@@ -985,6 +996,15 @@ class TransifexHelper:
                         " translation language processing."
                     )
                     continue
+
+                transifex_creation = parse_date(
+                    self.resource_stats[resource_slug]["datetime_created"]
+                )
+                transifex_revision = parse_date(
+                    self.translation_stats[resource_slug][transifex_code][
+                        "last_translation_update"
+                    ]
+                )
 
                 # Normalize Creation and Revision dates in local PO files
                 pofile_obj = self.normalize_pofile_dates(
