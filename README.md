@@ -73,22 +73,22 @@ Use the following instructions to start the project with Docker compose.
         ```
         docker-compose build
         ```
-   5. Run database migrations
+   5. Run the containers
+        ```
+        docker-compose up
+        ```
+   6. Run database migrations
         ```
         docker-compose exec app ./manage.py migrate
         ```
-   6. Clear data in the database
+   7. Clear data in the database
         ```
         docker-compose exec app ./manage.py clear_license_data
         ```
-   7. Load legacy HTML in the database
+   8. Load legacy HTML in the database
         ```
         docker-compose exec app ./manage.py load_html_files
         ```
-2. Run the containers
-    ```
-    docker-compose up
-    ```
 
 The commands above will create 3 docker containers:
 1. **app** ([127.0.0.1:8000](http://127.0.0.1:8000/)): this Djano application
