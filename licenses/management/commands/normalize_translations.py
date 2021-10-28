@@ -33,13 +33,13 @@ class Command(BaseCommand):
             "--deeds-ux",
             "--deedsux",
             action="store_true",
-            help="limit translation domain normalization to Deeds & UX",
+            help="limit translation domain to Deeds & UX",
         )
         limit_domain.add_argument(
             "--legal-code",
             "--legalcode",
             action="store_true",
-            help="limit translation domain normalization to Legal Codes",
+            help="limit translation domains to Legal Codes",
         )
         parser.add_argument(
             "-l",
