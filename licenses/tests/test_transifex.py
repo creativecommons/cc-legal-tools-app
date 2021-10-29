@@ -1,5 +1,6 @@
 # Standard library
 import datetime
+from copy import deepcopy
 from unittest import mock
 
 # Third-party
@@ -542,6 +543,8 @@ class TestTransifex(TestCase):
             {}, legal_codes, limit_language
         )
 
+    # Test: build_local_data #################################################
+
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
             "af": {
@@ -705,6 +708,509 @@ class TestTransifex(TestCase):
         self.assertEqual(
             list(local_data["deeds_ux"]["translations"].keys()), ["nl"]
         )
+
+    # Test: resource_present #################################################
+
+    def test_resource_present_false(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        self.helper._resource_stats = {}
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resource_present(resource_slug, resource_name)
+
+        self.assertTrue(log_context.output[0].startswith("CRITICAL:"))
+        self.assertIn("Aborting resource processing.", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resource_present_true(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        self.helper._resource_stats = {resource_slug: {}}
+
+        result = self.helper.resource_present(resource_slug, resource_name)
+
+        self.assertTrue(result)
+
+    # Test: translation_supported ############################################
+
+    def test_translation_supported_false(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_code = "x_trans_code_x"
+        self.helper._translation_stats = {resource_slug: {}}
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translation_supported(
+                resource_slug, resource_name, transifex_code
+            )
+
+        self.assertTrue(log_context.output[0].startswith("CRITICAL:"))
+        self.assertIn(
+            "Aborting translation language processing.", log_context.output[0]
+        )
+        self.assertFalse(result)
+
+    def test_translation_supported_true(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_code = "x_trans_code_x"
+        self.helper._translation_stats = {resource_slug: {transifex_code: {}}}
+
+        result = self.helper.translation_supported(
+            resource_slug, resource_name, transifex_code
+        )
+
+        self.assertTrue(result)
+
+    # Test: resources_metadata_identical #####################################
+
+    def test_resources_metadata_identical_false_differ_creation(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
+        pofile_string_count = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
+        transifex_revision = pofile_revision
+        transifex_string_count = pofile_string_count
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_false_differ_revision(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = pofile_creation
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_string_count = pofile_string_count
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertNotIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_false_differ_string_count(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_string_count = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_false_differ_all(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-04-04 04:04:04+00:00"
+        )
+        transifex_string_count = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_true(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_string_count = pofile_string_count
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("string count:", log_context.output[0])
+        self.assertTrue(result)
+
+    # Test: translations_metadata_identical ##################################
+
+    def test_translations_metadata_identical_false_differ_creation(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
+        pofile_translated = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
+        transifex_revision = pofile_revision
+        transifex_translated = pofile_translated
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_false_differ_revision(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = pofile_creation
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_translated = pofile_translated
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertNotIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_false_differ_translated(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_translated = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_false_differ_all(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-04-04 04:04:04+00:00"
+        )
+        transifex_translated = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_true(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_translated = pofile_translated
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("translated entries:", log_context.output[0])
+        self.assertTrue(result)
+
+    # Test: diff_entry #######################################################
+
+    def test_diff_entries(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_entry = pofile_obj[0]
+        transifex_obj = polib.pofile(pofile=POFILE_CONTENT)
+        transifex_entry = transifex_obj[0]
+        transifex_entry.msgstr = transifex_entry.msgstr.replace(
+            "Attribution", "XXXXXXXXXXX"
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.diff_entry(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_entry,
+                transifex_entry,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "--- x_name_x PO File x_path_x\n\n"
+            "+++ x_name_x Transifex x_slug_x x_trans_code_x\n\n",
+            log_context.output[0],
+        )
+        self.assertIn(
+            '-msgstr "Attribution-NoDerivatives 4.0 International"\n'
+            '+msgstr "XXXXXXXXXXX-NoDerivatives 4.0 International"\n',
+            log_context.output[0],
+        )
+
+    # Test: diff_translations ###############################################
+
+    def test_diff_translations_differences(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        colordiff = False
+        pofile_entry = pofile_obj[0]
+        transifex_entry = deepcopy(pofile_obj[0])
+        transifex_entry.msgstr = transifex_entry.msgstr.replace(
+            "Attribution", "XXXXXXXXXXX"
+        )
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "Attribution", "XXXXXXXXXXX"
+            ).encode("utf-8"),
+        )
+        self.helper.diff_entry = mock.Mock()
+
+        self.helper.diff_translations(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+            colordiff,
+        )
+
+        self.helper.transifex_get_pofile_content.assert_called_once()
+        self.helper.transifex_get_pofile_content.assert_called_with(
+            resource_slug, transifex_code
+        )
+        self.helper.diff_entry.assert_called_once()
+        self.helper.diff_entry.assert_called_with(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_entry,
+            transifex_entry,
+            colordiff,
+        )
+
+    def test_diff_translations_same(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        colordiff = False
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.encode("utf-8")
+        )
+        self.helper.diff_entry = mock.Mock()
+
+        self.helper.diff_translations(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+            colordiff,
+        )
+
+        self.helper.transifex_get_pofile_content.assert_called_once()
+        self.helper.transifex_get_pofile_content.assert_called_with(
+            resource_slug, transifex_code
+        )
+        self.helper.diff_entry.assert_not_called()
 
     # Test: add_resource_to_transifex ########################################
 
@@ -924,7 +1430,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set stats so we do not have to also mock them here
         self.helper._resource_stats = {}
         self.helper._translation_stats = {}
 
@@ -950,7 +1455,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set stats so we do not have to also mock them here
         self.helper._resource_stats = {}
         self.helper._translation_stats = {}
 
@@ -1712,8 +2216,8 @@ class TestTransifex(TestCase):
         with mock.patch.object(
             self.helper, "transifex_get_pofile_content"
         ) as mock_transifex_content:
-            mock_transifex_content.return_value = bytes(
-                POFILE_CONTENT, "utf-8"
+            mock_transifex_content.return_value = POFILE_CONTENT.encode(
+                "utf-8"
             )
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 new_pofile_obj = self.helper.normalize_pofile_dates(
@@ -1773,8 +2277,8 @@ class TestTransifex(TestCase):
             with mock.patch.object(
                 self.helper, "transifex_get_pofile_content"
             ) as mock_transifex_content:
-                mock_transifex_content.return_value = bytes(
-                    POFILE_CONTENT, "utf-8"
+                mock_transifex_content.return_value = POFILE_CONTENT.encode(
+                    "utf-8"
                 )
                 with mock.patch.object(
                     polib.POFile, "save"
