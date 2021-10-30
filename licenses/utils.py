@@ -100,15 +100,6 @@ def save_redirect(output_dir, redirect_data):
     save_bytes_to_file(content, output_filename)
 
 
-def get_code_from_jurisdiction_url(url):
-    pieces = urllib.parse.urlsplit(url).path.strip("/").split("/")
-    try:
-        code = pieces[1]
-    except IndexError:
-        code = ""
-    return code
-
-
 def parse_legal_code_filename(filename):
     """
     Given the filename where the HTML text of a license is stored,
@@ -277,31 +268,6 @@ def validate_dictionary_is_all_text(d):
         else:
             newdict[k] = v
     return newdict
-
-
-def save_dict_to_pofile(pofile: POFile, messages: dict):
-    """
-    We have a dictionary mapping string message keys to string message values
-    or dictionaries of the same.
-    Write out a .po file of the data.
-    """
-    for message_key, value in messages.items():
-        pofile.append(POEntry(msgid=message_key, msgstr=value.strip()))
-
-
-def strip_list_whitespace(direction: str, list_of_str: list) -> list:
-    """Strips whitespace from strings in a list of strings
-
-    Arguments:
-        direction: (string) Determines whether to strip whitespace
-        to the left, right, or both sides of a string
-        list_of_str: (list) list of strings
-    """
-    if direction == "left":
-        return [s.lstrip() for s in list_of_str]
-    if direction == "right":
-        return [s.rstrip() for s in list_of_str]
-    return [s.strip() for s in list_of_str]
 
 
 def cleanup_current_branch_output(branch_list: list) -> list:
