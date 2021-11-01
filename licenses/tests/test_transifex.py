@@ -1,9 +1,12 @@
 # Standard library
+import datetime
+from copy import deepcopy
 from unittest import mock
-from unittest.mock import MagicMock
 
 # Third-party
+import dateutil.parser
 import polib
+from dateutil.tz import tzutc
 from django.conf import settings
 from django.test import TestCase, override_settings
 
@@ -50,18 +53,12 @@ msgstr "english text"
 """
 
 
-# To shorten lines of code, make a short alias
-# for  'mock.patch' and 'mock.patch.object'
-mp = mock.patch
-mpo = mock.patch.object
-
-
 class DummyRepo:
     def __init__(self, path):
-        self.index = MagicMock()
-        self.remotes = MagicMock()
-        self.branches = MagicMock()
-        self.heads = MagicMock()
+        self.index = mock.MagicMock()
+        self.remotes = mock.MagicMock()
+        self.branches = mock.MagicMock()
+        self.heads = mock.MagicMock()
 
     # def __str__(self):
     #     return "a dummy repo"
@@ -134,6 +131,18 @@ class TestTransifex(TestCase):
     def test_resource_stats(self):
         resources = [
             mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:cc-search",
+                attributes={
+                    "slug": "cc-search",
+                },
+            ),
+            mock.Mock(
+                id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:deeds-choosers",
+                attributes={
+                    "slug": "deeds-choosers",
+                },
+            ),
+            mock.Mock(
                 id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:by-nc-nd_40",
                 attributes={
                     "accept_translations": True,
@@ -175,12 +184,16 @@ class TestTransifex(TestCase):
         stats = self.helper.resource_stats
 
         all_resources.assert_called_once()
+        self.assertNotIn("cc-search", stats)
+        self.assertNotIn("deeds-choosers", stats)
+        self.assertIn("by-nc-nd_40", stats)
         self.assertEqual(
             "2020-09-21T15:22:49Z", stats["by-nc-nd_40"]["datetime_created"]
         )
+        self.assertIn("by-nc-sa_40", stats)
         self.assertEqual(2289, stats["by-nc-sa_40"]["word_count"])
 
-    def test_translation_stats(self):
+    def test_(self):
         languages_stats = [
             mock.Mock(
                 id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:cc-search:l:es",
@@ -414,19 +427,790 @@ class TestTransifex(TestCase):
             self.helper._resource_stats
             self.helper._translation_stats
 
-    def test_build_local_data(self):
+    def test_check_data_repo_is_clean_true(self):
+        mock_repo = mock.Mock(
+            __str__=mock.Mock(return_value="mock_repo"),
+            is_dirty=mock.Mock(return_value=False),
+        )
+        with mock.patch("git.Repo") as git_repo:
+            result = self.helper.check_data_repo_is_clean(mock_repo)
+        git_repo.assert_not_called()
+        self.assertTrue(result)
+
+    @override_settings(DATA_REPOSITORY_DIR="/trans/repo")
+    def test_check_data_repo_is_clean_false(self):
+        mock_repo = mock.Mock(
+            __str__=mock.Mock(return_value="mock_repo"),
+            is_dirty=mock.Mock(return_value=True),
+        )
+        with mock.patch("git.Repo") as git_repo:
+            git_repo.return_value.__enter__.return_value = mock_repo
+            result = self.helper.check_data_repo_is_clean()
+        git_repo.assert_called_once()
+        self.assertFalse(result)
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "af": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_get_local_data_all(self):
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="de")
-        legal_codes = LegalCode.objects.all()
+        legal_codes = list(
+            LegalCode.objects.valid()
+            .translated()
+            .exclude(language_code=settings.LANGUAGE_CODE)
+        )
+        limit_language = None
+        self.helper.build_local_data = mock.Mock()
 
-        local_data = self.helper.build_local_data(legal_codes)
+        self.helper.get_local_data(limit_domain=None, limit_language=None)
 
-        self.assertEqual(local_data["deeds_ux"]["name"], "Deeds & UX")
+        self.helper.build_local_data.assert_called_once()
+        self.helper.build_local_data.assert_called_with(
+            deeds_ux, legal_codes, limit_language
+        )
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "es": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_get_local_data_limit_to_deeds_ux(self):
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="de")
+        limit_language = None
+        self.helper.build_local_data = mock.Mock()
+
+        self.helper.get_local_data(
+            limit_domain="deeds_ux", limit_language=None
+        )
+
+        self.helper.build_local_data.assert_called_once()
+        self.helper.build_local_data.assert_called_with(
+            deeds_ux, [], limit_language
+        )
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "es": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_get_local_data_limit_to_legal_code(self):
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        legal_codes = list(
+            LegalCode.objects.valid()
+            .translated()
+            .exclude(language_code=settings.LANGUAGE_CODE)
+        )
+        limit_language = None
+        self.helper.build_local_data = mock.Mock()
+
+        self.helper.get_local_data(
+            limit_domain="legal_code", limit_language=None
+        )
+
+        self.helper.build_local_data.assert_called_once()
+        self.helper.build_local_data.assert_called_with(
+            {}, legal_codes, limit_language
+        )
+
+    # Test: build_local_data #################################################
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "af": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+            "en": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_build_local_data(self):
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code="en")
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        legal_codes = list(LegalCode.objects.valid().translated())
+        limit_language = None
+
+        local_data = self.helper.build_local_data(
+            deeds_ux, legal_codes, limit_language
+        )
+
+        self.assertIn("by_40", local_data)
+        self.assertIn("name", local_data["by_40"])
         self.assertEqual(local_data["by_40"]["name"], "CC BY 4.0")
         self.assertEqual(
-            list(local_data["by_40"]["translations"].keys()), ["de"]
+            list(local_data["by_40"]["translations"].keys()), ["es", "nl"]
         )
+        self.assertIn("deeds_ux", local_data)
+        self.assertIn("name", local_data["deeds_ux"])
+        self.assertEqual(local_data["deeds_ux"]["name"], "Deeds & UX")
+        self.assertIn("translations", local_data["deeds_ux"])
+        self.assertEqual(
+            list(local_data["deeds_ux"]["translations"].keys()), ["af"]
+        )
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "af": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+            "be": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_build_local_data_limit_to_deeds_ux(self):
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        legal_codes = []
+        limit_language = None
+
+        local_data = self.helper.build_local_data(
+            deeds_ux, legal_codes, limit_language
+        )
+
+        self.assertNotIn("by_40", local_data)
+        self.assertIn("deeds_ux", local_data)
+        self.assertIn("name", local_data["deeds_ux"])
+        self.assertEqual(local_data["deeds_ux"]["name"], "Deeds & UX")
+        self.assertIn("translations", local_data["deeds_ux"])
+        self.assertEqual(
+            list(local_data["deeds_ux"]["translations"].keys()), ["af", "be"]
+        )
+
+    @override_settings(DEEDS_UX_PO_FILE_INFO={})
+    def test_build_local_data_limit_to_legal_code(self):
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        legal_codes = list(
+            LegalCode.objects.valid()
+            .translated()
+            .exclude(language_code=settings.LANGUAGE_CODE)
+        )
+        limit_language = None
+
+        local_data = self.helper.build_local_data(
+            deeds_ux, legal_codes, limit_language
+        )
+
+        self.assertIn("by_40", local_data)
+        self.assertIn("name", local_data["by_40"])
+        self.assertEqual(local_data["by_40"]["name"], "CC BY 4.0")
+        self.assertIn("translations", local_data["by_40"])
+        self.assertEqual(
+            list(local_data["by_40"]["translations"].keys()), ["es", "nl"]
+        )
+        self.assertNotIn("deeds_ux", local_data)
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "es": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+            "nl": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_build_local_data_limit_language(self):
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        legal_codes = list(
+            LegalCode.objects.valid()
+            .translated()
+            .exclude(language_code=settings.LANGUAGE_CODE)
+        )
+        limit_language = "nl"
+
+        local_data = self.helper.build_local_data(
+            deeds_ux, legal_codes, limit_language
+        )
+
+        self.assertIn("by_40", local_data)
+        self.assertIn("name", local_data["by_40"])
+        self.assertEqual(local_data["by_40"]["name"], "CC BY 4.0")
+        self.assertIn("translations", local_data["by_40"])
+        self.assertEqual(
+            list(local_data["by_40"]["translations"].keys()), ["nl"]
+        )
+        self.assertIn("deeds_ux", local_data)
+        self.assertIn("name", local_data["deeds_ux"])
+        self.assertEqual(local_data["deeds_ux"]["name"], "Deeds & UX")
+        self.assertIn("translations", local_data["deeds_ux"])
+        self.assertEqual(
+            list(local_data["deeds_ux"]["translations"].keys()), ["nl"]
+        )
+
+    # Test: resource_present #################################################
+
+    def test_resource_present_false(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        self.helper._resource_stats = {}
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resource_present(resource_slug, resource_name)
+
+        self.assertTrue(log_context.output[0].startswith("CRITICAL:"))
+        self.assertIn("Aborting resource processing.", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resource_present_true(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        self.helper._resource_stats = {resource_slug: {}}
+
+        result = self.helper.resource_present(resource_slug, resource_name)
+
+        self.assertTrue(result)
+
+    # Test: translation_supported ############################################
+
+    def test_translation_supported_false(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_code = "x_trans_code_x"
+        self.helper._translation_stats = {resource_slug: {}}
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translation_supported(
+                resource_slug, resource_name, transifex_code
+            )
+
+        self.assertTrue(log_context.output[0].startswith("CRITICAL:"))
+        self.assertIn(
+            "Aborting translation language processing.", log_context.output[0]
+        )
+        self.assertFalse(result)
+
+    def test_translation_supported_true(self):
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_code = "x_trans_code_x"
+        self.helper._translation_stats = {resource_slug: {transifex_code: {}}}
+
+        result = self.helper.translation_supported(
+            resource_slug, resource_name, transifex_code
+        )
+
+        self.assertTrue(result)
+
+    # Test: resources_metadata_identical #####################################
+
+    def test_resources_metadata_identical_false_differ_creation(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
+        pofile_string_count = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
+        transifex_revision = pofile_revision
+        transifex_string_count = pofile_string_count
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_false_differ_revision(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = pofile_creation
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_string_count = pofile_string_count
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertNotIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_false_differ_string_count(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_string_count = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_false_differ_all(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-04-04 04:04:04+00:00"
+        )
+        transifex_string_count = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertIn("string count:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_resources_metadata_identical_true(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_string_count = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_string_count = pofile_string_count
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("string count:", log_context.output[0])
+        self.assertTrue(result)
+
+    # Test: translations_metadata_identical ##################################
+
+    def test_translations_metadata_identical_false_differ_creation(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
+        pofile_translated = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
+        transifex_revision = pofile_revision
+        transifex_translated = pofile_translated
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_false_differ_revision(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = pofile_creation
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_translated = pofile_translated
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertNotIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_false_differ_translated(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_translated = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_false_differ_all(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-03-03 03:03:03+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-04-04 04:04:04+00:00"
+        )
+        transifex_translated = 2
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("ERROR:"))
+        self.assertIn("creation:", log_context.output[0])
+        self.assertIn("revision:", log_context.output[0])
+        self.assertIn("translated entries:", log_context.output[0])
+        self.assertFalse(result)
+
+    def test_translations_metadata_identical_true(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_creation = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_revision = dateutil.parser.isoparse("2021-02-02 02:02:02+00:00")
+        pofile_translated = 1
+        transifex_creation = pofile_creation
+        transifex_revision = pofile_revision
+        transifex_translated = pofile_translated
+
+        with self.assertLogs(self.helper.log) as log_context:
+            result = self.helper.translations_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_translated,
+                transifex_creation,
+                transifex_revision,
+                transifex_translated,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertNotIn("creation:", log_context.output[0])
+        self.assertNotIn("revision:", log_context.output[0])
+        self.assertNotIn("translated entries:", log_context.output[0])
+        self.assertTrue(result)
+
+    # Test: diff_entry #######################################################
+
+    def test_diff_entries(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_entry = pofile_obj[0]
+        transifex_obj = polib.pofile(pofile=POFILE_CONTENT)
+        transifex_entry = transifex_obj[0]
+        transifex_entry.msgstr = transifex_entry.msgstr.replace(
+            "Attribution", "XXXXXXXXXXX"
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.diff_entry(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_entry,
+                transifex_entry,
+            )
+
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "--- x_name_x PO File x_path_x\n\n"
+            "+++ x_name_x Transifex x_slug_x x_trans_code_x\n\n",
+            log_context.output[0],
+        )
+        self.assertIn(
+            '-msgstr "Attribution-NoDerivatives 4.0 International"\n'
+            '+msgstr "XXXXXXXXXXX-NoDerivatives 4.0 International"\n',
+            log_context.output[0],
+        )
+
+    # Test: diff_translations ###############################################
+
+    def test_diff_translations_differences(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        colordiff = False
+        pofile_entry = pofile_obj[0]
+        transifex_entry = deepcopy(pofile_obj[0])
+        transifex_entry.msgstr = transifex_entry.msgstr.replace(
+            "Attribution", "XXXXXXXXXXX"
+        )
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "Attribution", "XXXXXXXXXXX"
+            ).encode("utf-8"),
+        )
+        self.helper.diff_entry = mock.Mock()
+
+        self.helper.diff_translations(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+            colordiff,
+        )
+
+        self.helper.transifex_get_pofile_content.assert_called_once()
+        self.helper.transifex_get_pofile_content.assert_called_with(
+            resource_slug, transifex_code
+        )
+        self.helper.diff_entry.assert_called_once()
+        self.helper.diff_entry.assert_called_with(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_entry,
+            transifex_entry,
+            colordiff,
+        )
+
+    def test_diff_translations_same(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        colordiff = False
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.encode("utf-8")
+        )
+        self.helper.diff_entry = mock.Mock()
+
+        self.helper.diff_translations(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+            colordiff,
+        )
+
+        self.helper.transifex_get_pofile_content.assert_called_once()
+        self.helper.transifex_get_pofile_content.assert_called_with(
+            resource_slug, transifex_code
+        )
+        self.helper.diff_entry.assert_not_called()
 
     # Test: add_resource_to_transifex ########################################
 
@@ -436,7 +1220,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {"x_slug_x": None}
 
         self.helper.add_resource_to_transifex(
@@ -451,7 +1234,8 @@ class TestTransifex(TestCase):
         self.helper.api.Resource.get.assert_not_called()
         self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
 
-    def test_add_resource_to_transifex_missing(self):
+    def test_add_resource_to_transifex_missing_created(self):
+        api = self.helper.api
         language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -459,23 +1243,27 @@ class TestTransifex(TestCase):
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
             attributes={"i18n_type": "PO"},
         )
-        self.helper.api.Resource.get = mock.Mock(return_value=resource)
+        api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceStringsAsyncUpload.upload = mock.Mock(
+            return_value={"strings_created": 1, "strings_skipped": 0}
+        )
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {}
+        self.helper.clear_transifex_stats = mock.Mock()
 
-        self.helper.add_resource_to_transifex(
-            language_code,
-            resource_slug,
-            resource_name,
-            pofile_path,
-            pofile_obj,
-        )
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.add_resource_to_transifex(
+                language_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
 
-        self.helper.api.Resource.create.assert_called_once()
-        self.helper.api.Resource.create.assert_called_with(
+        api.Resource.create.assert_called_once()
+        api.Resource.create.assert_called_with(
             name=resource_name,
             slug=resource_slug,
             relationships={
@@ -483,14 +1271,134 @@ class TestTransifex(TestCase):
                 "project": self.helper.api_project,
             },
         )
-        self.helper.api.Resource.get.assert_called_once()
-        self.helper.api.ResourceStringsAsyncUpload.upload.assert_called_once()
-        self.helper.api.ResourceStringsAsyncUpload.upload.assert_called_with(
+        api.Resource.get.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_with(
             resource=resource,
             content=pofile_content.replace(
-                'msgstr "english text"', 'msgstr ""'
-            ),
+                'msgstr "Attribution-NoDerivatives 4.0 International"',
+                'msgstr ""',
+            ).replace('msgstr "english text"', 'msgstr ""'),
         )
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "Transifex does not yet contain resource", log_context.output[0]
+        )
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn("Resource upload results", log_context.output[1])
+        self.helper.clear_transifex_stats.assert_called_once()
+
+    def test_add_resource_to_transifex_missing_failed(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceStringsAsyncUpload.upload = mock.Mock(
+            return_value={"strings_created": 0, "strings_skipped": 0}
+        )
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {}
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.add_resource_to_transifex(
+                language_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        api.Resource.create.assert_called_once()
+        api.Resource.create.assert_called_with(
+            name=resource_name,
+            slug=resource_slug,
+            relationships={
+                "i18n_format": self.helper.api_i18n_format,
+                "project": self.helper.api_project,
+            },
+        )
+        api.Resource.get.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content.replace(
+                'msgstr "Attribution-NoDerivatives 4.0 International"',
+                'msgstr ""',
+            ).replace('msgstr "english text"', 'msgstr ""'),
+        )
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "Transifex does not yet contain resource", log_context.output[0]
+        )
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn("Resource upload results", log_context.output[1])
+        self.assertTrue(log_context.output[2].startswith("CRITICAL:"))
+        self.assertIn("Resource upload failed", log_context.output[2])
+        self.helper.clear_transifex_stats.assert_not_called()
+
+    def test_add_resource_to_transifex_missing_some_skipped(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceStringsAsyncUpload.upload = mock.Mock(
+            return_value={"strings_created": 1, "strings_skipped": 1}
+        )
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {}
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.add_resource_to_transifex(
+                language_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        api.Resource.create.assert_called_once()
+        api.Resource.create.assert_called_with(
+            name=resource_name,
+            slug=resource_slug,
+            relationships={
+                "i18n_format": self.helper.api_i18n_format,
+                "project": self.helper.api_project,
+            },
+        )
+        api.Resource.get.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content.replace(
+                'msgstr "Attribution-NoDerivatives 4.0 International"',
+                'msgstr ""',
+            ).replace('msgstr "english text"', 'msgstr ""'),
+        )
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn(
+            "Transifex does not yet contain resource", log_context.output[0]
+        )
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn("Resource upload results", log_context.output[1])
+        self.assertTrue(log_context.output[2].startswith("WARNING:"))
+        self.assertIn("Resource strings skipped", log_context.output[2])
+        self.helper.clear_transifex_stats.assert_called_once()
 
     def test_add_resource_to_transifex_dryrun(self):
         self.helper.dryrun = True
@@ -499,7 +1407,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {}
 
         self.helper.add_resource_to_transifex(
@@ -523,7 +1430,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set stats so we do not have to also mock them here
         self.helper._resource_stats = {}
         self.helper._translation_stats = {}
 
@@ -549,7 +1455,6 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
-        # Set stats so we do not have to also mock them here
         self.helper._resource_stats = {}
         self.helper._translation_stats = {}
 
@@ -577,9 +1482,7 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {resource_slug: None}
-        # Set translation stats so we do not have to also mock it here
         self.helper._translation_stats = {
             resource_slug: {language_code: {"translated_strings": 99}}
         }
@@ -604,9 +1507,7 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {resource_slug: None}
-        # Set translation stats so we do not have to also mock it here
         self.helper._translation_stats = {resource_slug: {}}
 
         self.helper.add_translation_to_transifex_resource(
@@ -621,7 +1522,7 @@ class TestTransifex(TestCase):
         api.Resource.get.assert_called_once()
         api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_missing(self):
+    def test_add_translation_to_transifex_missing_with_changes(self):
         api = self.helper.api
         language_code = "x_lang_code_x"
         transifex_code = map_django_to_transifex_language_code(language_code)
@@ -639,10 +1540,13 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
-        # Set resource stats so we do not have to also mock it here
         self.helper._resource_stats = {resource_slug: {}}
-        # Set translation stats so we do not have to also mock it here
         self.helper._translation_stats = {resource_slug: {}}
+        api.ResourceTranslationsAsyncUpload.upload.return_value = {
+            "translations_created": 1,
+            "translations_updated": 1,
+        }
+        self.helper.clear_transifex_stats = mock.Mock()
 
         self.helper.add_translation_to_transifex_resource(
             language_code,
@@ -660,6 +1564,51 @@ class TestTransifex(TestCase):
             content=pofile_content,
             language=language.id,
         )
+        self.helper.clear_transifex_stats.assert_called_once()
+
+    def test_add_translation_to_transifex_missing_no_changes(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        transifex_code = map_django_to_transifex_language_code(language_code)
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
+        )
+        self.helper.api.Language.get = mock.Mock(return_value=language)
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        self.helper.api.Resource.get = mock.Mock(return_value=resource)
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {resource_slug: {}}
+        self.helper._translation_stats = {resource_slug: {}}
+        api.ResourceTranslationsAsyncUpload.upload.return_value = {
+            "translations_created": 0,
+            "translations_updated": 0,
+        }
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        self.helper.add_translation_to_transifex_resource(
+            language_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
+
+        api.Language.get.assert_called_once()
+        api.Resource.get.assert_called_once()
+        api.ResourceTranslationsAsyncUpload.upload.assert_called_once()
+        api.ResourceTranslationsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content,
+            language=language.id,
+        )
+        self.helper.clear_transifex_stats.assert_not_called()
 
     # Test: normalize_pofile_language ########################################
 
@@ -671,7 +1620,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language(
                 language_code,
                 transifex_code,
@@ -692,7 +1641,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language(
                 language_code,
                 transifex_code,
@@ -715,7 +1664,7 @@ class TestTransifex(TestCase):
         pofile_obj.metadata.pop("Language-Django", None)
         pofile_obj.metadata.pop("Language-Transifex", None)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_language(
                 language_code,
                 transifex_code,
@@ -737,7 +1686,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_language(
                 language_code,
                 transifex_code,
@@ -759,7 +1708,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language_team(
                 transifex_code,
                 resource_slug,
@@ -781,7 +1730,7 @@ class TestTransifex(TestCase):
             f"/{transifex_code}/"
         )
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language_team(
                 transifex_code,
                 resource_slug,
@@ -800,7 +1749,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language_team(
                 transifex_code,
                 resource_slug,
@@ -818,7 +1767,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language_team(
                 transifex_code,
                 resource_slug,
@@ -837,7 +1786,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata.pop("Language-Team", None)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_language_team(
                 transifex_code,
                 resource_slug,
@@ -859,7 +1808,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata.pop("Last-Translator", None)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_last_translator(
                 transifex_code,
                 resource_slug,
@@ -879,7 +1828,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata["Last-Translator"] = "valid_email@example.com"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_last_translator(
                 transifex_code,
                 resource_slug,
@@ -899,7 +1848,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata["Last-Translator"] = "FULL NAME <EMAIL@ADDRESS>"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_last_translator(
                 transifex_code,
                 resource_slug,
@@ -918,7 +1867,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata["Last-Translator"] = "FULL NAME <EMAIL@ADDRESS>"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_last_translator(
                 transifex_code,
                 resource_slug,
@@ -940,7 +1889,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata["Project-Id-Version"] = resource_slug
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_project_id(
                 transifex_code,
                 resource_slug,
@@ -960,7 +1909,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata["Project-Id-Version"] = "PACKAGE VERSION"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_project_id(
                 transifex_code,
                 resource_slug,
@@ -979,7 +1928,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata["Project-Id-Version"] = "PACKAGE VERSION"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_project_id(
                 transifex_code,
                 resource_slug,
@@ -1002,7 +1951,7 @@ class TestTransifex(TestCase):
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata.pop("Project-Id-Version", None)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_project_id(
                 transifex_code,
                 resource_slug,
@@ -1028,7 +1977,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_metadata(
                 language_code,
                 transifex_code,
@@ -1041,9 +1990,9 @@ class TestTransifex(TestCase):
         mock_pofile_save.assert_not_called()
         self.assertEqual(pofile_obj, new_pofile_obj)
 
-    # Test: update_pofile_creation_to_match_transifex ########################
+    # Test: update_pofile_creation_datetime ##################################
 
-    def test_update_pofile_creation_to_match_transifex_dryrun(self):
+    def test_update_pofile_creation_datetime_dryrun(self):
         self.helper.dryrun = True
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
@@ -1054,8 +2003,8 @@ class TestTransifex(TestCase):
         pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
         transifex_creation = "2021-02-02 02:02:02+00:00"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
-            self.helper.update_pofile_creation_to_match_transifex(
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            self.helper.update_pofile_creation_datetime(
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -1067,7 +2016,7 @@ class TestTransifex(TestCase):
 
         mock_pofile_save.assert_not_called()
 
-    def test_update_pofile_creation_to_match_transifex_save(self):
+    def test_update_pofile_creation_datetime_save(self):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
@@ -1077,17 +2026,15 @@ class TestTransifex(TestCase):
         pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
         transifex_creation = "2021-02-02 02:02:02+00:00"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
-            new_pofile_obj = (
-                self.helper.update_pofile_creation_to_match_transifex(
-                    transifex_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                    pofile_creation,
-                    transifex_creation,
-                )
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.update_pofile_creation_datetime(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                pofile_creation,
+                transifex_creation,
             )
 
         mock_pofile_save.assert_called()
@@ -1095,9 +2042,9 @@ class TestTransifex(TestCase):
             new_pofile_obj.metadata["POT-Creation-Date"], transifex_creation
         )
 
-    # Test: update_pofile_revision_to_match_transifex ########################
+    # Test: update_pofile_revision_datetime ##################################
 
-    def test_update_pofile_revision_to_match_transifex_dryrun(self):
+    def test_update_pofile_revision_datetime_dryrun(self):
         self.helper.dryrun = True
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
@@ -1108,8 +2055,8 @@ class TestTransifex(TestCase):
         pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
         transifex_revision = "2021-02-02 02:02:02+00:00"
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
-            self.helper.update_pofile_revision_to_match_transifex(
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            self.helper.update_pofile_revision_datetime(
                 transifex_code,
                 resource_slug,
                 resource_name,
@@ -1121,32 +2068,33 @@ class TestTransifex(TestCase):
 
         mock_pofile_save.assert_not_called()
 
-    def test_update_pofile_revision_to_match_transifex_save(self):
+    def test_update_pofile_revision_datetime_save(self):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_revision = "2021-01-01 01:01:01+00:00"
-        pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
-        transifex_revision = "2021-02-02 02:02:02+00:00"
+        pofile_revision = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
+        pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
 
-        with mpo(polib.POFile, "save") as mock_pofile_save:
-            new_pofile_obj = (
-                self.helper.update_pofile_revision_to_match_transifex(
-                    transifex_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                    pofile_revision,
-                    transifex_revision,
-                )
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.update_pofile_revision_datetime(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                pofile_revision,
+                transifex_revision,
             )
 
         mock_pofile_save.assert_called()
         self.assertEqual(
-            new_pofile_obj.metadata["PO-Revision-Date"], transifex_revision
+            new_pofile_obj.metadata["PO-Revision-Date"],
+            str(transifex_revision),
         )
 
     # Test: normalize_pofile_dates ########################
@@ -1155,195 +2103,204 @@ class TestTransifex(TestCase):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01+00:00"
-        transifex_revision = "2021-02-02 02:02:02+00:00"
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-01-01 01:01:01+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_creation = None
+        pofile_revision = None
         pofile_obj.metadata.pop("POT-Creation-Date", None)
         pofile_obj.metadata.pop("PO-Revision-Date", None)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {}
 
-        with mpo(
-            self.helper, "get_transifex_resource_stats"
-        ) as mock_resource_stats:
-            mock_resource_stats.return_value = {
-                resource_slug: {
-                    "datetime_created": transifex_creation,
-                    "datetime_modified": transifex_revision,
-                },
-            }
-            with mpo(polib.POFile, "save") as mock_pofile_save:
-                new_pofile_obj = self.helper.normalize_pofile_dates(
-                    transifex_code,
-                    resource_slug,
-                    resource_name,
-                    pofile_path,
-                    pofile_obj,
-                )
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_dates(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                pofile_creation,
+                pofile_revision,
+                transifex_creation,
+                transifex_revision,
+            )
 
         mock_pofile_save.assert_called()
         self.assertEqual(
-            new_pofile_obj.metadata["POT-Creation-Date"], transifex_creation
+            new_pofile_obj.metadata["POT-Creation-Date"],
+            str(transifex_creation),
         )
         self.assertEqual(
-            new_pofile_obj.metadata["PO-Revision-Date"], transifex_revision
+            new_pofile_obj.metadata["PO-Revision-Date"],
+            str(transifex_revision),
         )
 
-    def test_normalize_pofile_dates_update_pofile_creation_newer(self):
+    def test_normalize_pofile_dates_update_pofile_creation_differs(self):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01+00:00"
-        transifex_revision = "2021-02-02 02:02:02+00:00"
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-01-01 01:01:01+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_creation = "2021-03-03 03:03:03+00:00"
-        pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
-        pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
+        pofile_creation = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
+        pofile_revision = transifex_revision
+        pofile_obj.metadata["POT-Creation-Date"] = str(pofile_creation)
+        pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {}
 
-        with mpo(
-            self.helper, "get_transifex_resource_stats"
-        ) as mock_resource_stats:
-            mock_resource_stats.return_value = {
-                resource_slug: {
-                    "datetime_created": transifex_creation,
-                    "datetime_modified": transifex_revision,
-                },
-            }
-            with mpo(polib.POFile, "save") as mock_pofile_save:
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_dates(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                pofile_creation,
+                pofile_revision,
+                transifex_creation,
+                transifex_revision,
+            )
+
+        mock_pofile_save.assert_called_once()
+        self.assertEqual(
+            new_pofile_obj.metadata["POT-Creation-Date"],
+            str(transifex_creation),
+        )
+
+    def test_normalize_pofile_dates_update_revisions_differ_entries_same(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-01-01 01:01:01+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_creation = transifex_creation
+        pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
+        pofile_obj.metadata["POT-Creation-Date"] = str(pofile_creation)
+        pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {}
+
+        with mock.patch.object(
+            self.helper, "transifex_get_pofile_content"
+        ) as mock_transifex_content:
+            mock_transifex_content.return_value = POFILE_CONTENT.encode(
+                "utf-8"
+            )
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 new_pofile_obj = self.helper.normalize_pofile_dates(
                     transifex_code,
                     resource_slug,
                     resource_name,
                     pofile_path,
                     pofile_obj,
+                    pofile_creation,
+                    pofile_revision,
+                    transifex_creation,
+                    transifex_revision,
                 )
 
         mock_pofile_save.assert_called_once()
         self.assertEqual(
-            new_pofile_obj.metadata["POT-Creation-Date"], transifex_creation
+            new_pofile_obj.metadata["PO-Revision-Date"],
+            str(transifex_revision),
         )
 
-    def test_normalize_pofile_dates_update_pofile_creation_older(self):
+    def test_normalize_pofile_dates_update_revisions_differ_entries_differ(
+        self,
+    ):
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         resource_name = "x_name_x"
-        transifex_creation = "2021-02-02 02:02:02+00:00"
-        transifex_revision = "2021-03-03 03:03:03+00:00"
+        transifex_creation = dateutil.parser.isoparse(
+            "2021-01-01 01:01:01+00:00"
+        )
+        transifex_revision = dateutil.parser.isoparse(
+            "2021-02-02 02:02:02+00:00"
+        )
         pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_creation = "2021-01-01 01:01:01+00:00"
-        pofile_obj.metadata["POT-Creation-Date"] = pofile_creation
-        pofile_obj.metadata["PO-Revision-Date"] = transifex_revision
+        pofile_obj = polib.pofile(
+            pofile=POFILE_CONTENT.replace("International", "Intergalactic")
+        )
+        pofile_creation = transifex_creation
+        pofile_revision = dateutil.parser.isoparse("2021-03-03 03:03:03+00:00")
+        pofile_obj.metadata["POT-Creation-Date"] = str(pofile_creation)
+        pofile_obj.metadata["PO-Revision-Date"] = str(pofile_revision)
+        self.helper._resource_stats = {
+            resource_slug: {
+                "datetime_created": str(transifex_creation),
+                "datetime_modified": str(transifex_revision),
+            },
+        }
+        self.helper._translation_stats = {
+            resource_slug: {
+                transifex_code: {
+                    "untranslated_strings": 1,
+                    "translated_strings": 1,
+                },
+            },
+        }
 
         with self.assertLogs(self.helper.log) as log_context:
-            with mpo(
-                self.helper, "get_transifex_resource_stats"
-            ) as mock_resource_stats:
-                mock_resource_stats.return_value = {
-                    resource_slug: {
-                        "datetime_created": transifex_creation,
-                        "datetime_modified": transifex_revision,
-                    },
-                }
-                with mpo(polib.POFile, "save") as mock_pofile_save:
+            with mock.patch.object(
+                self.helper, "transifex_get_pofile_content"
+            ) as mock_transifex_content:
+                mock_transifex_content.return_value = POFILE_CONTENT.encode(
+                    "utf-8"
+                )
+                with mock.patch.object(
+                    polib.POFile, "save"
+                ) as mock_pofile_save:
                     self.helper.normalize_pofile_dates(
                         transifex_code,
                         resource_slug,
                         resource_name,
                         pofile_path,
                         pofile_obj,
+                        pofile_creation,
+                        pofile_revision,
+                        transifex_creation,
+                        transifex_revision,
                     )
-
-        mock_pofile_save.assert_not_called()
-        self.assertTrue(log_context.output[0].startswith("ERROR:"))
-        self.assertIn("'POT-Creation-Date' mismatch", log_context.output[0])
-
-    def test_normalize_pofile_dates_update_pofile_entries_same(self):
-        transifex_code = "x_trans_code_x"
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01+00:00"
-        transifex_revision = "2021-02-02 02:02:02+00:00"
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_revision = "2021-03-03 03:03:03+00:00"
-        pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
-        pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
-
-        with mpo(
-            self.helper, "transifex_get_pofile_content"
-        ) as mock_transifex_content:
-            mock_transifex_content.return_value = bytes(
-                POFILE_CONTENT, "utf-8"
-            )
-            with mpo(
-                self.helper, "get_transifex_resource_stats"
-            ) as mock_resource_stats:
-                mock_resource_stats.return_value = {
-                    resource_slug: {
-                        "datetime_created": transifex_creation,
-                        "datetime_modified": transifex_revision,
-                    },
-                }
-                with mpo(polib.POFile, "save") as mock_pofile_save:
-                    new_pofile_obj = self.helper.normalize_pofile_dates(
-                        transifex_code,
-                        resource_slug,
-                        resource_name,
-                        pofile_path,
-                        pofile_obj,
-                    )
-
-        mock_pofile_save.assert_called_once()
-        self.assertEqual(
-            new_pofile_obj.metadata["PO-Revision-Date"], transifex_revision
-        )
-
-    def test_normalize_pofile_dates_update_pofile_entries_different(self):
-        transifex_code = "x_trans_code_x"
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
-        transifex_creation = "2021-01-01 01:01:01+00:00"
-        transifex_revision = "2021-02-02 02:02:02+00:00"
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(
-            pofile=POFILE_CONTENT.replace("International", "Intergalactic")
-        )
-        pofile_revision = "2021-03-03 03:03:03+00:00"
-        pofile_obj.metadata["POT-Creation-Date"] = transifex_creation
-        pofile_obj.metadata["PO-Revision-Date"] = pofile_revision
-
-        with self.assertLogs(self.helper.log) as log_context:
-            with mpo(
-                self.helper, "transifex_get_pofile_content"
-            ) as mock_transifex_content:
-                mock_transifex_content.return_value = bytes(
-                    POFILE_CONTENT, "utf-8"
-                )
-                with mpo(
-                    self.helper, "get_transifex_resource_stats"
-                ) as mock_resource_stats:
-                    mock_resource_stats.return_value = {
-                        resource_slug: {
-                            "datetime_created": transifex_creation,
-                            "datetime_modified": transifex_revision,
-                        },
-                    }
-                    with mpo(polib.POFile, "save") as mock_pofile_save:
-                        self.helper.normalize_pofile_dates(
-                            transifex_code,
-                            resource_slug,
-                            resource_name,
-                            pofile_path,
-                            pofile_obj,
-                        )
 
         mock_pofile_save.assert_not_called()
         self.assertTrue(log_context.output[0].startswith("ERROR:"))
         self.assertIn("'PO-Revision-Date' mismatch", log_context.output[0])
 
     # def test_update_source_messages(self):
-    #     with mpo(self.helper, "request20") as mock_request:
+    #     with mock.patch.object(self.helper, "request20") as mock_request:
     #         self.helper.update_source_messages(
     #             "slug", "pofilename", "pofilecontent"
     #         )
@@ -1363,7 +2320,7 @@ class TestTransifex(TestCase):
     #     )
 
     # def test_update_translations(self):
-    #     with mpo(self.helper, "request20") as mock_request:
+    #     with mock.patch.object(self.helper, "request20") as mock_request:
     #         self.helper.update_translations(
     #             "slug", "lang", "pofilename", "pofilecontent"
     #         )
@@ -1389,9 +2346,11 @@ class TestTransifex(TestCase):
     #     legal_code = LegalCodeFactory(language_code="es")
     #     test_pofile = polib.POFile()
     #
-    #     with mpo(self.helper, "get_transifex_resource_stats") as mock_gtr:
+    #     with mock.patch.object(
+    #         self.helper, "get_transifex_resource_stats"
+    #     ) as mock_gtr:
     #         mock_gtr.return_value = []
-    #         with mpo(legal_code, "get_pofile") as mock_gpwem:
+    #         with mock.patch.object(legal_code, "get_pofile") as mock_gpwem:
     #             mock_gpwem.return_value = test_pofile
     #             with self.assertRaisesMessage(
     #                 ValueError, "Must upload English first"
@@ -1414,11 +2373,17 @@ class TestTransifex(TestCase):
     #         }
     #     ]
     #     test_pofile = polib.POFile()
-    #     with mpo(self.helper, "get_transifex_resource_stats") as mock_gtr:
+    #     with mock.patch.object(
+    #         self.helper, "get_transifex_resource_stats"
+    #     ) as mock_gtr:
     #         mock_gtr.return_value = test_resources
-    #         with mp("licenses.transifex.get_pofile_content") as mock_gpc:
+    #         with mock.patch(
+    #             "licenses.transifex.get_pofile_content"
+    #         ) as mock_gpc:
     #             mock_gpc.return_value = "not really"
-    #             with mpo(self.helper, "update_source_messages") as mock_usm:
+    #             with mock.patch.object(
+    #                 self.helper, "update_source_messages"
+    #             ) as mock_usm:
     #                 self.helper.add_resource_to_transifex(
     #                     legal_code, test_pofile
     #                 )
@@ -1442,11 +2407,17 @@ class TestTransifex(TestCase):
     #         }
     #     ]
     #     test_pofile = mock.MagicMock()
-    #     with mpo(self.helper, "get_transifex_resource_stats") as mock_gtr:
+    #     with mock.patch.object(
+    #         self.helper, "get_transifex_resource_stats"
+    #     ) as mock_gtr:
     #         mock_gtr.return_value = test_resources
-    #         with mp("licenses.transifex.get_pofile_content") as mock_gpc:
+    #         with mock.patch(
+    #             "licenses.transifex.get_pofile_content"
+    #         ) as mock_gpc:
     #             mock_gpc.return_value = "not really"
-    #             with mpo(self.helper, "update_translations") as mock_ut:
+    #             with mock.patch.object(
+    #                 self.helper, "update_translations"
+    #             ) as mock_ut:
     #                 self.helper.add_resource_to_transifex(
     #                     legal_code, test_pofile
     #                 )
@@ -1463,13 +2434,13 @@ class TestTransifex(TestCase):
     # def test_get_transifex_resource_stats(self):
     #     # First call returns a response whose json value is a list of dicts
     #     # with slug keys
-    #     call0_response = MagicMock()
+    #     call0_response = mock.MagicMock()
     #     call0_response.json.return_value = [{"slug": "slug0"}]
     #
     #     # second call is more data about slug0 - FIXME
-    #     call1_response = MagicMock()
+    #     call1_response = mock.MagicMock()
     #     call1_response.json.return_value = {"stats": "stats1"}
-    #     with mpo(self.helper, "request25") as mock_request25:
+    #     with mock.patch.object(self.helper, "request25") as mock_request25:
     #         # Return values for each call to request25
     #         mock_request25.side_effect = [
     #             call0_response,
@@ -1494,7 +2465,7 @@ class TestTransifex(TestCase):
 # )
 # class CheckForTranslationUpdatesTest(TestCase):
 #     def test_check_for_translation_updates_with_dirty_repo(self):
-#         mock_repo = MagicMock()
+#         mock_repo = mock.MagicMock()
 #         mock_repo.__str__.return_value = "mock_repo"
 #         mock_repo.is_dirty.return_value = True
 #         with mock.patch.object(git, "Repo") as mock_Repo:
@@ -1506,7 +2477,7 @@ class TestTransifex(TestCase):
 #                 helper.check_for_translation_updates()
 #
 #     def test_check_for_translation_updates_with_no_legal_codes(self):
-#         mock_repo = MagicMock()
+#         mock_repo = mock.MagicMock()
 #         mock_repo.__str__.return_value = "mock_repo"
 #         mock_repo.is_dirty.return_value = False
 #         with mock.patch.object(git, "Repo") as mock_Repo:
@@ -1594,7 +2565,7 @@ class TestTransifex(TestCase):
 #             # it's still the first time
 #             timestamp = first_translation_update_datetime.isoformat()
 #
-#         mock_repo = MagicMock()
+#         mock_repo = mock.MagicMock()
 #         mock_repo.is_dirty.return_value = False
 #
 #         legal_codes = [legal_code]
@@ -1607,15 +2578,15 @@ class TestTransifex(TestCase):
 #
 #         helper = TransifexHelper()
 #
-#         with mpo(
+#         with mock.patch.object(
 #             helper, "handle_legal_codes_with_updated_translations"
-#         ) as mock_handle_legal_codes, mpo(
+#         ) as mock_handle_legal_codes, mock.patch.object(
 #             helper, "get_transifex_resource_stats"
-#         ) as mock_get_transifex_resource_stats, mpo(
+#         ) as mock_get_transifex_resource_stats, mock.patch.object(
 #             helper, "add_resource_to_transifex"
-#         ) as mock_add_resource_to_transifex, mpo(
+#         ) as mock_add_resource_to_transifex, mock.patch.object(
 #             LegalCode, "get_pofile"
-#         ) as mock_get_pofile, mpo(
+#         ) as mock_get_pofile, mock.patch.object(
 #             helper, "add_resource_to_transifex"
 #         ) as mock_upload:
 #             if resource_exists:
@@ -1721,7 +2692,9 @@ class TestTransifex(TestCase):
 #             license__unit="by-nd",
 #             language_code="de",
 #         )
-#         with mpo(helper, "handle_updated_translation_branch") as mock_handle:
+#         with mock.patch.object(
+#             helper, "handle_updated_translation_branch"
+#         ) as mock_handle:
 #             result = helper.handle_legal_codes_with_updated_translations(
 #                 dummy_repo, [legal_code1, legal_code2]
 #             )
@@ -1751,11 +2724,13 @@ class TestTransifex(TestCase):
 #             license__unit="by-nd",
 #             language_code="fr",
 #         )
-#         with mp("licenses.transifex.setup_local_branch") as mock_setup, mpo(
+#         with mock.patch(
+#             "licenses.transifex.setup_local_branch"
+#         ) as mock_setup, mock.patch.object(
 #             helper, "update_branch_for_legal_code"
-#         ) as mock_update_branch, mp(
+#         ) as mock_update_branch, mock.patch(
 #             "licenses.transifex.call_command"
-#         ) as mock_call_command, mp(
+#         ) as mock_call_command, mock.patch(
 #             "licenses.transifex.commit_and_push_changes"
 #         ) as mock_commit:
 #             # setup_local_branch
@@ -1808,9 +2783,9 @@ class TestTransifex(TestCase):
 #         content = b"wxyz"
 #         # transifex_get_pofile_content
 #         # save_content_as_pofile_and_mofile
-#         with mpo(
+#         with mock.patch.object(
 #             helper, "transifex_get_pofile_content"
-#         ) as mock_get_content, mp(
+#         ) as mock_get_content, mock.patch(
 #             "licenses.transifex.save_content_as_pofile_and_mofile"
 #         ) as mock_save:
 #             mock_get_content.return_value = content

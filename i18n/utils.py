@@ -176,16 +176,22 @@ def get_pofile_path(
     return pofile_path
 
 
+def parse_date(date_str: str):
+    if date_str is None:
+        return None
+    try:
+        date = dateutil.parser.isoparse(date_str)
+        return date
+    except ValueError:
+        return None
+
+
 def get_pofile_creation_date(pofile_obj: polib.POFile):
     try:
         po_creation_date = pofile_obj.metadata["POT-Creation-Date"]
     except KeyError:
         return None
-    try:
-        creation_date = dateutil.parser.parse(po_creation_date)
-        return creation_date
-    except dateutil.parser._parser.ParserError:
-        return None
+    return parse_date(po_creation_date)
 
 
 def get_pofile_revision_date(pofile_obj: polib.POFile):
@@ -193,11 +199,7 @@ def get_pofile_revision_date(pofile_obj: polib.POFile):
         po_revision_date = pofile_obj.metadata["PO-Revision-Date"]
     except KeyError:
         return None
-    try:
-        revision_date = dateutil.parser.parse(po_revision_date)
-        return revision_date
-    except dateutil.parser._parser.ParserError:
-        return None
+    return parse_date(po_revision_date)
 
 
 def map_django_to_redirects_language_codes(django_language_code: str) -> list:
@@ -360,7 +362,10 @@ def load_deeds_ux_translations():
             "metadata": pofile_obj.metadata,
         }
         update_lang_info(language_code)
-        if percent_translated < settings.TRANSLATION_THRESHOLD:
+        if (
+            percent_translated < settings.TRANSLATION_THRESHOLD
+            and language_code != settings.LANGUAGE_CODE
+        ):
             continue
         languages_mostly_translated.append(language_code)
     deeds_ux_po_file_info = dict(sorted(deeds_ux_po_file_info.items()))

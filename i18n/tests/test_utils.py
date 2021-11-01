@@ -1,10 +1,12 @@
 # Standard library
+import datetime
 import os
 from unittest import mock
 from unittest.mock import MagicMock
 
 # Third-party
 import polib
+from dateutil.tz import tzutc
 from django.test import TestCase, override_settings
 
 # First-party/Local
@@ -19,6 +21,7 @@ from i18n.utils import (
     map_django_to_redirects_language_codes_lowercase,
     map_django_to_transifex_language_code,
     map_legacy_to_django_language_code,
+    parse_date,
     save_content_as_pofile_and_mofile,
 )
 
@@ -29,6 +32,34 @@ TEST_POFILE = os.path.join(
     "LC_MESSAGES",
     "test-4.0.po",
 )
+
+
+class UtilTest(TestCase):
+    def test_parse_date_good(self):
+        parse_result = parse_date("2020-06-29 12:54:48+00:0")
+        self.assertEqual(
+            parse_result,
+            datetime.datetime(2020, 6, 29, 12, 54, 48, tzinfo=tzutc()),
+        )
+
+        parse_result = parse_date("2020-06-29T12:54:48Z")
+        self.assertEqual(
+            parse_result,
+            datetime.datetime(2020, 6, 29, 12, 54, 48, tzinfo=tzutc()),
+        )
+
+    def test_parse_date_none(self):
+        parse_result = parse_date(None)
+        self.assertEqual(
+            parse_result,
+            None,
+        )
+
+        parse_result = parse_date("")
+        self.assertEqual(
+            parse_result,
+            None,
+        )
 
 
 class I18NTest(TestCase):
