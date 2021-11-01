@@ -10,7 +10,6 @@ from unittest.mock import MagicMock
 from bs4 import BeautifulSoup
 from django.test import TestCase
 from django.urls import Resolver404, URLResolver
-from polib import POEntry
 
 # First-party/Local
 from licenses import utils
@@ -438,7 +437,6 @@ class TestMisc(TestCase):
             {"a": {"b": "foo"}},
             utils.validate_dictionary_is_all_text({"a": {"b": "foo"}}),
         )
-
 
     def test_cleanup_current_branch_output(self):
         expected_list = ["some-branch", "another-branch", "main"]

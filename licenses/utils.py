@@ -2,14 +2,11 @@
 import logging
 import os
 import posixpath
-import urllib
-import urllib.parse
 
 # Third-party
 from bs4 import NavigableString
 from django.conf import settings
 from django.urls import get_resolver
-from polib import POEntry, POFile
 
 # First-party/Local
 import licenses.models
