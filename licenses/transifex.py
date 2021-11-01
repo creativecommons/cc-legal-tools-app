@@ -1,7 +1,8 @@
 """
-Deal with Transifex
+Interface with Transifex
 """
 # Standard library
+import difflib
 import logging
 from typing import Iterable
 
@@ -753,16 +754,13 @@ class TransifexHelper:
             else:
                 pofile_translated = len(pofile_obj.translated_entries())
                 pofile_untranslated = len(pofile_obj.untranslated_entries())
-                transifex_untranslated = self.translation_stats[resource_slug][
-                    transifex_code
-                ]["untranslated_strings"]
-                transifex_translated = self.translation_stats[resource_slug][
-                    transifex_code
-                ]["translated_strings"]
+                t_stats = self.translation_stats[resource_slug][transifex_code]
+                transifex_translated = t_stats["translated_strings"]
+                transifex_untranslated = t_stats["untranslated_strings"]
                 self.log.error(
                     f"{self.nop}{resource_name} ({resource_slug})"
-                    # Transifex
                     f" {transifex_code}: 'PO-Revision-Date' mismatch:"
+                    # Transifex
                     f"\n{transifex_label:>{pad}}: {transifex_revision}"
                     f"\n{'translated strings':>{pad}}:"
                     f" {transifex_translated}"
@@ -897,6 +895,32 @@ class TransifexHelper:
 
         return local_data
 
+    def resource_present(self, resource_slug, resource_name):
+        if resource_slug not in self.resource_stats:
+            self.log.critical(
+                f"{resource_name} ({resource_slug}) has not yet been"
+                " added to Transifex. Aborting resource processing."
+            )
+            return False
+        else:
+            return True
+
+    def translation_supported(
+        self,
+        resource_slug,
+        resource_name,
+        transifex_code,
+    ):
+        if transifex_code not in self.translation_stats[resource_slug]:
+            self.log.critical(
+                f"{resource_name} ({resource_slug}) {transifex_code}:"
+                " Language not yet supported by Transifex. Aborting"
+                " translation language processing."
+            )
+            return False
+        else:
+            return True
+
     def normalize_translations(
         self, limit_domain, limit_language
     ):  # pragma: no cover
@@ -935,19 +959,12 @@ class TransifexHelper:
                 pofile_obj,
             )
 
-            if resource_slug not in self.resource_stats:
-                self.log.critical(
-                    f"{resource_name} ({resource_slug}) has not yet been"
-                    " added to Transifex. Aborting resource processing."
-                )
+            if not self.resource_present(resource_slug, resource_name):
                 continue
 
-            transifex_creation = parse_date(
-                self.resource_stats[resource_slug]["datetime_created"]
-            )
-            transifex_revision = parse_date(
-                self.resource_stats[resource_slug]["datetime_modified"]
-            )
+            r_stats = self.resource_stats[resource_slug]
+            transifex_creation = parse_date(r_stats["datetime_created"])
+            transifex_revision = parse_date(r_stats["datetime_modified"])
 
             pofile_obj = self.normalize_pofile_dates(
                 transifex_code,
@@ -968,8 +985,6 @@ class TransifexHelper:
                 )
                 pofile_path = translation["pofile_path"]
                 pofile_obj = translation["pofile_obj"]
-                pofile_creation = translation["creation_date"]
-                pofile_revision = translation["revision_date"]
 
                 # Normalize deterministic metadata
                 pofile_obj = self.normalize_pofile_metadata(
@@ -981,6 +996,11 @@ class TransifexHelper:
                     pofile_obj,
                 )
 
+                if not self.translation_supported(
+                    resource_slug, resource_name, transifex_code
+                ):
+                    continue
+
                 # Ensure translation is on Transifex
                 self.add_translation_to_transifex_resource(
                     language_code,
@@ -989,21 +1009,11 @@ class TransifexHelper:
                     pofile_path,
                     pofile_obj,
                 )
-                if transifex_code not in self.translation_stats[resource_slug]:
-                    self.log.critical(
-                        f"{resource_name} ({resource_slug}) {transifex_code}:"
-                        " Language not yet supported by Transifex. Aborting"
-                        " translation language processing."
-                    )
-                    continue
 
-                transifex_creation = parse_date(
-                    self.resource_stats[resource_slug]["datetime_created"]
-                )
+                t_stats = self.translation_stats[resource_slug][transifex_code]
+                # transifex_creation is a resource stat and is set above
                 transifex_revision = parse_date(
-                    self.translation_stats[resource_slug][transifex_code][
-                        "last_translation_update"
-                    ]
+                    t_stats["last_translation_update"]
                 )
 
                 # Normalize Creation and Revision dates in local PO files
@@ -1018,6 +1028,261 @@ class TransifexHelper:
                     transifex_creation,
                     transifex_revision,
                 )
+
+    def resources_metadata_identical(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_creation,
+        pofile_revision,
+        pofile_string_count,
+        transifex_creation,
+        transifex_revision,
+        transifex_string_count,
+    ):
+        differ = []
+        if pofile_creation != transifex_creation:
+            differ.append(
+                f"\n    PO File creation:   {pofile_creation}"
+                f"\n    Transifex creation: {transifex_creation}"
+            )
+        if pofile_revision != transifex_revision:
+            differ.append(
+                f"\n    PO File revision:   {pofile_revision}"
+                f"\n    Transifex revision: {transifex_revision}"
+            )
+        if pofile_string_count != transifex_string_count:
+            differ.append(
+                f"\n    PO File string count:   {pofile_string_count:>4}"
+                f"\n    Transifex string count: {transifex_string_count:>4}"
+            )
+        if differ:
+            differ = "".join(differ)
+            self.log.error(
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Resources differ:"
+                f"\n  PO File path: {pofile_path}{differ}"
+            )
+            return False
+        else:
+            self.log.info(
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Resources appear to be identical"
+                " based on metadata"
+            )
+            return True
+
+    def translations_metadata_identical(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_creation,
+        pofile_revision,
+        pofile_translated,
+        transifex_creation,
+        transifex_revision,
+        transifex_translated,
+    ):
+        differ = []
+        if pofile_creation != transifex_creation:
+            differ.append(
+                f"\n    PO File creation:   {pofile_creation}"
+                f"\n    Transifex creation: {transifex_creation}"
+            )
+        if pofile_revision != transifex_revision:
+            differ.append(
+                f"\n    PO File revision:   {pofile_revision}"
+                f"\n    Transifex revision: {transifex_revision}"
+            )
+        if pofile_translated != transifex_translated:
+            differ.append(
+                f"\n    PO File translated entries:   {pofile_translated:>4}"
+                f"\n    Transifex translated entries:"
+                f" {transifex_translated:>4}"
+            )
+        if differ:
+            differ = "".join(differ)
+            self.log.error(
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Translations differ:"
+                f"\n  PO File path: {pofile_path}{differ}"
+            )
+            return False
+        else:
+            self.log.info(
+                f"{self.nop}{resource_name} ({resource_slug})"
+                f" {transifex_code}: Translations appear to be identical"
+                " based on metadata"
+            )
+            return True
+
+    def diff_entry(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_entry,
+        transifex_entry,
+        colordiff=False,
+    ):
+        """Display entries as a colorized unified diff."""
+        diff = list(
+            difflib.unified_diff(
+                str(pofile_entry).split("\n"),
+                str(transifex_entry).split("\n"),
+                fromfile=f"{resource_name} PO File {pofile_path}",
+                tofile=(
+                    f"{resource_name} Transifex {resource_slug}"
+                    f" {transifex_code}"
+                ),
+                # Number of lines of context (n) is set very high to ensure
+                # that the all comments and the entire msgid are shown
+                n=999,
+            )
+        )
+        if colordiff:  # pragma: no cover
+            rst = "\033[0m"
+            for i, line in enumerate(diff):
+                if line.startswith("---"):
+                    diff[i] = f"\033[91m{line.rstrip()}{rst}"
+                elif line.startswith("+++"):
+                    diff[i] = f"\033[92m{line.rstrip()}{rst}"
+                elif line.startswith("@"):
+                    diff[i] = f"\033[36m{line.rstrip()}{rst}"
+                elif line.startswith("-"):
+                    diff[i] = f"\033[31m{line}{rst}"
+                elif line.startswith("+"):
+                    diff[i] = f"\033[32m{line}{rst}"
+                else:
+                    diff[i] = f"\033[90m{line}{rst}"
+        diff = "\n".join(diff)
+        self.log.warn(f"\n{diff}")
+
+    def diff_translations(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+        colordiff,
+    ):
+        transifex_pofile_content = self.transifex_get_pofile_content(
+            resource_slug, transifex_code
+        )
+        transifex_pofile_obj = polib.pofile(
+            pofile=transifex_pofile_content.decode(), encoding="utf-8"
+        )
+        for index, entry in enumerate(pofile_obj):
+            pofile_entry = entry
+            transifex_entry = transifex_pofile_obj[index]
+            if pofile_entry != transifex_entry:
+                self.diff_entry(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_entry,
+                    transifex_entry,
+                    colordiff,
+                )
+
+    def compare_translations(
+        self, limit_domain, limit_language, force, colordiff
+    ):  # pragma: no cover
+        self.check_data_repo_is_clean()
+        local_data = self.get_local_data(limit_domain, limit_language)
+        if force:
+            self.log.critical("force not yet implimented")
+
+        # Resources & Sources
+        for resource_slug, resource in local_data.items():
+            language_code = settings.LANGUAGE_CODE
+            transifex_code = map_django_to_transifex_language_code(
+                language_code
+            )
+            resource_name = resource["name"]
+
+            pofile_path = resource["pofile_path"]
+            pofile_obj = resource["pofile_obj"]
+            pofile_creation = resource["creation_date"]
+            pofile_revision = resource["revision_date"]
+            pofile_string_count = len(
+                [e for e in pofile_obj if not e.obsolete]
+            )
+
+            if not self.resource_present(resource_slug, resource_name):
+                continue
+
+            r_stats = self.resource_stats[resource_slug]
+            transifex_creation = parse_date(r_stats["datetime_created"])
+            transifex_revision = parse_date(r_stats["datetime_modified"])
+            transifex_string_count = r_stats["string_count"]
+
+            metadata_identical = self.resources_metadata_identical(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_creation,
+                pofile_revision,
+                pofile_string_count,
+                transifex_creation,
+                transifex_revision,
+                transifex_string_count,
+            )
+            if force or not metadata_identical:
+                self.log.critical("diff not yet implimented")
+
+            # Translations
+            for language_code, translation in resource["translations"].items():
+                transifex_code = map_django_to_transifex_language_code(
+                    language_code
+                )
+                pofile_path = translation["pofile_path"]
+                pofile_obj = translation["pofile_obj"]
+                pofile_creation = translation["creation_date"]
+                pofile_revision = translation["revision_date"]
+                pofile_translated = len(pofile_obj.translated_entries())
+
+                if not self.translation_supported(
+                    resource_slug, resource_name, transifex_code
+                ):
+                    continue
+
+                t_stats = self.translation_stats[resource_slug][transifex_code]
+                # transifex_creation is a resource stat and is set above
+                transifex_revision = parse_date(
+                    t_stats["last_translation_update"]
+                )
+                transifex_translated = t_stats["translated_strings"]
+
+                metadata_identical = self.translations_metadata_identical(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_creation,
+                    pofile_revision,
+                    pofile_translated,
+                    transifex_creation,
+                    transifex_revision,
+                    transifex_translated,
+                )
+                if force or not metadata_identical:
+                    self.diff_translations(
+                        transifex_code,
+                        resource_slug,
+                        resource_name,
+                        pofile_path,
+                        pofile_obj,
+                        colordiff,
+                    )
 
     def check_for_translation_updates_with_repo_and_legal_codes(
         self,
