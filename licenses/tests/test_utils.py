@@ -10,7 +10,6 @@ from unittest.mock import MagicMock
 from bs4 import BeautifulSoup
 from django.test import TestCase
 from django.urls import Resolver404, URLResolver
-from polib import POEntry
 
 # First-party/Local
 from licenses import utils
@@ -170,24 +169,6 @@ class SaveURLAsStaticFileTest(TestCase):
             language_code="LANGUAGE_CODE",
         )
         mock_save.assert_called_with("STRING", "/OUTPUT_DIR/FILE_PATH")
-
-
-class GetJurisdictionCodeTest(TestCase):
-    def test_get_code_from_jurisdiction_url(self):
-        # Just returns the last portion of the path
-        self.assertEqual(
-            "foo",
-            utils.get_code_from_jurisdiction_url(
-                "http://example.com/bar/foo/"
-            ),
-        )
-        self.assertEqual(
-            "foo",
-            utils.get_code_from_jurisdiction_url("http://example.com/bar/foo"),
-        )
-        self.assertEqual(
-            "", utils.get_code_from_jurisdiction_url("http://example.com")
-        )
 
 
 class ParseLegalcodeFilenameTest(TestCase):
@@ -455,31 +436,6 @@ class TestMisc(TestCase):
         self.assertEqual(
             {"a": {"b": "foo"}},
             utils.validate_dictionary_is_all_text({"a": {"b": "foo"}}),
-        )
-
-    def test_save_dict_to_pofile(self):
-        mock_pofile = MagicMock()
-        mock_pofile.append = MagicMock()
-        messages = {"a": "one", "b": "two"}
-        utils.save_dict_to_pofile(mock_pofile, messages)
-        self.assertEqual([], mock_pofile.call_args_list)
-        self.assertEqual(2, len(mock_pofile.append.call_args_list))
-        args, kwargs = mock_pofile.append.call_args_list[0]
-        self.assertTrue(isinstance(args[0], POEntry))
-
-    def test_strip_list_whitespace(self):
-        expected_list = ["left", "right", "center"]
-        left_list = [" left", " right", " center"]
-        right_list = ["left ", "right ", "center "]
-        center_list = [" left ", " right ", " center "]
-        self.assertEqual(
-            utils.strip_list_whitespace("left", left_list), expected_list
-        )
-        self.assertEqual(
-            utils.strip_list_whitespace("right", right_list), expected_list
-        )
-        self.assertEqual(
-            utils.strip_list_whitespace("center", center_list), expected_list
         )
 
     def test_cleanup_current_branch_output(self):

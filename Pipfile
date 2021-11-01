@@ -17,7 +17,6 @@ psycopg2-binary = "*"
 python-dateutil = "*"
 PyYAML = "*"
 transifex-python = "*"
-urllib3 = "*"
 whitenoise = "*"
 
 [dev-packages]
