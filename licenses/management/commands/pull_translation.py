@@ -23,53 +23,32 @@ LOG_LEVELS = {
 class Command(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         parser.add_argument(
-            "-f",
-            "--force",
+            "-n",
+            "--dryrun",
             action="store_true",
-            help="force a string comparison even if dates and counts match",
+            help="dry run: do not make any changes",
         )
-        limit_domain = parser.add_mutually_exclusive_group()
-        limit_domain.add_argument(
+        parser.add_argument(
             "-d",
             "--domain",
             action="store",
+            required=True,
             help="limit translation domain to specified domain",
-        )
-        limit_domain.add_argument(
-            "--deeds-ux",
-            "--deedsux",
-            action="store_true",
-            help="limit translation domain to Deeds & UX",
-        )
-        limit_domain.add_argument(
-            "--legal-code",
-            "--legalcode",
-            action="store_true",
-            help="limit translation domains to Legal Codes",
         )
         parser.add_argument(
             "-l",
             "--language",
             action="store",
+            required=True,
             help="limit translation language to specified Language Code",
         )
 
     def main(self, **options):
-        if options["deeds_ux"]:
-            limit_domain = "deeds_ux"
-        elif options["legal_code"]:
-            limit_domain = "legal_code"
-        else:
-            limit_domain = options["domain"]
-        limit_language = options["language"]
-        if limit_language is not None and limit_language not in LANG_INFO:
-            raise CommandError(f"Invalid language code: {limit_language}")
-        colordiff = True
+        if options["language"] not in LANG_INFO:
+            raise CommandError(f"Invalid language code: {options['language']}")
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
-        transifex = TransifexHelper(dryrun=True, logger=LOG)
-        transifex.compare_translations(
-            limit_domain, limit_language, options["force"], colordiff
-        )
+        transifex = TransifexHelper(dryrun=options["dryrun"], logger=LOG)
+        transifex.pull_translation(options["domain"], options["language"])
 
     def handle(self, **options):
         try:

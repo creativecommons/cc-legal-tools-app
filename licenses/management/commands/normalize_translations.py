@@ -30,6 +30,12 @@ class Command(BaseCommand):
         )
         limit_domain = parser.add_mutually_exclusive_group()
         limit_domain.add_argument(
+            "-d",
+            "--domain",
+            action="store",
+            help="limit translation domain to specified domain",
+        )
+        limit_domain.add_argument(
             "--deeds-ux",
             "--deedsux",
             action="store_true",
@@ -54,7 +60,7 @@ class Command(BaseCommand):
         elif options["legal_code"]:
             limit_domain = "legal_code"
         else:
-            limit_domain = None
+            limit_domain = options["domain"]
         limit_language = options["language"]
         if limit_language is not None and limit_language not in LANG_INFO:
             raise CommandError(f"Invalid language code: {limit_language}")
