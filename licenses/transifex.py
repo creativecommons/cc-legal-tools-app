@@ -20,6 +20,7 @@ from i18n.utils import (
     get_pofile_creation_date,
     get_pofile_path,
     get_pofile_revision_date,
+    load_deeds_ux_translations,
     map_django_to_transifex_language_code,
     parse_date,
 )
@@ -1441,6 +1442,8 @@ class TransifexHelper:
 
         # Normalize newly updated local PO File
         if not self.dryrun:
+            if limit_domain and limit_domain == "deeds_ux":
+                load_deeds_ux_translations()
             self.normalize_translations(limit_domain, limit_language)
 
     def check_for_translation_updates_with_repo_and_legal_codes(
