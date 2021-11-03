@@ -449,6 +449,8 @@ class TestTransifex(TestCase):
         git_repo.assert_called_once()
         self.assertFalse(result)
 
+    # Test: get_local_data ###################################################
+
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
             "af": {
@@ -462,6 +464,8 @@ class TestTransifex(TestCase):
         }
     )
     def test_get_local_data_all(self):
+        limit_domain = None
+        limit_language = None
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
@@ -471,15 +475,12 @@ class TestTransifex(TestCase):
             .translated()
             .exclude(language_code=settings.LANGUAGE_CODE)
         )
-        limit_language = None
         self.helper.build_local_data = mock.Mock()
 
-        self.helper.get_local_data(limit_domain=None, limit_language=None)
+        self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with(
-            deeds_ux, legal_codes, limit_language
-        )
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
 
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
@@ -494,21 +495,18 @@ class TestTransifex(TestCase):
         }
     )
     def test_get_local_data_limit_to_deeds_ux(self):
+        limit_domain = "deeds_ux"
+        limit_language = None
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="de")
-        limit_language = None
         self.helper.build_local_data = mock.Mock()
 
-        self.helper.get_local_data(
-            limit_domain="deeds_ux", limit_language=None
-        )
+        self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with(
-            deeds_ux, [], limit_language
-        )
+        self.helper.build_local_data.assert_called_with(deeds_ux, [])
 
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
@@ -523,6 +521,8 @@ class TestTransifex(TestCase):
         }
     )
     def test_get_local_data_limit_to_legal_code(self):
+        limit_domain = "legal_code"
+        limit_language = None
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="es")
@@ -531,16 +531,65 @@ class TestTransifex(TestCase):
             .translated()
             .exclude(language_code=settings.LANGUAGE_CODE)
         )
-        limit_language = None
         self.helper.build_local_data = mock.Mock()
 
-        self.helper.get_local_data(
-            limit_domain="legal_code", limit_language=None
+        self.helper.get_local_data(limit_domain, limit_language)
+
+        self.helper.build_local_data.assert_called_once()
+        self.helper.build_local_data.assert_called_with({}, legal_codes)
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "es": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+            "nl": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_get_local_data_limit_to_by_40_nl(self):
+        limit_domain = "by_40"
+        limit_language = "nl"
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        license = LicenseFactory(unit="by-sa", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        legal_codes = list(
+            LegalCode.objects.valid()
+            .translated()
+            .exclude(language_code=settings.LANGUAGE_CODE)
         )
+        legal_codes_expected = list(
+            LegalCode.objects.valid()
+            .translated()
+            .filter(
+                language_code=limit_language,
+                license__unit="by",
+                license__version="4.0",
+            )
+        )
+        self.helper.build_local_data = mock.Mock()
+
+        self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
         self.helper.build_local_data.assert_called_with(
-            {}, legal_codes, limit_language
+            {}, legal_codes_expected
         )
 
     # Test: build_local_data #################################################
@@ -572,11 +621,8 @@ class TestTransifex(TestCase):
         LegalCodeFactory(license=license, language_code="es")
         LegalCodeFactory(license=license, language_code="nl")
         legal_codes = list(LegalCode.objects.valid().translated())
-        limit_language = None
 
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
+        local_data = self.helper.build_local_data(deeds_ux, legal_codes)
 
         self.assertIn("by_40", local_data)
         self.assertIn("name", local_data["by_40"])
@@ -615,11 +661,8 @@ class TestTransifex(TestCase):
     def test_build_local_data_limit_to_deeds_ux(self):
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         legal_codes = []
-        limit_language = None
 
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
+        local_data = self.helper.build_local_data(deeds_ux, legal_codes)
 
         self.assertNotIn("by_40", local_data)
         self.assertIn("deeds_ux", local_data)
@@ -642,11 +685,8 @@ class TestTransifex(TestCase):
             .translated()
             .exclude(language_code=settings.LANGUAGE_CODE)
         )
-        limit_language = None
 
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
+        local_data = self.helper.build_local_data(deeds_ux, legal_codes)
 
         self.assertIn("by_40", local_data)
         self.assertIn("name", local_data["by_40"])
@@ -656,58 +696,6 @@ class TestTransifex(TestCase):
             list(local_data["by_40"]["translations"].keys()), ["es", "nl"]
         )
         self.assertNotIn("deeds_ux", local_data)
-
-    @override_settings(
-        DEEDS_UX_PO_FILE_INFO={
-            "es": {
-                "creation_date": datetime.datetime(
-                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
-                ),
-                "revision_date": datetime.datetime(
-                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
-                ),
-            },
-            "nl": {
-                "creation_date": datetime.datetime(
-                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
-                ),
-                "revision_date": datetime.datetime(
-                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
-                ),
-            },
-        }
-    )
-    def test_build_local_data_limit_language(self):
-        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
-        legal_codes = list(
-            LegalCode.objects.valid()
-            .translated()
-            .exclude(language_code=settings.LANGUAGE_CODE)
-        )
-        limit_language = "nl"
-
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
-
-        self.assertIn("by_40", local_data)
-        self.assertIn("name", local_data["by_40"])
-        self.assertEqual(local_data["by_40"]["name"], "CC BY 4.0")
-        self.assertIn("translations", local_data["by_40"])
-        self.assertEqual(
-            list(local_data["by_40"]["translations"].keys()), ["nl"]
-        )
-        self.assertIn("deeds_ux", local_data)
-        self.assertIn("name", local_data["deeds_ux"])
-        self.assertEqual(local_data["deeds_ux"]["name"], "Deeds & UX")
-        self.assertIn("translations", local_data["deeds_ux"])
-        self.assertEqual(
-            list(local_data["deeds_ux"]["translations"].keys()), ["nl"]
-        )
 
     # Test: resource_present #################################################
 
