@@ -868,10 +868,6 @@ class TransifexHelper:
         resource_name,
         pofile_path,
         pofile_obj,
-        pofile_creation,
-        pofile_revision,
-        transifex_creation,
-        transifex_revision,
     ):
         transifex_pofile_content = self.transifex_get_pofile_content(
             resource_slug, transifex_code
@@ -1303,10 +1299,6 @@ class TransifexHelper:
                         resource_name,
                         pofile_path,
                         pofile_obj,
-                        pofile_creation,
-                        pofile_revision,
-                        transifex_creation,
-                        transifex_revision,
                     )
 
                 # Normalize Creation and Revision dates in local PO File
