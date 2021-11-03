@@ -657,8 +657,8 @@ class TransifexHelper:
         self.log.info(
             f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
             " Correcting PO file 'PO-Revision-Date' to match Transifex:"
-            f"\n{label:>{pad}}: {transifex_revision}"
             f"\n{pofile_path}: {pofile_revision}"
+            f"\n{label:>{pad}}: {transifex_revision}"
         )
         if self.dryrun:
             return pofile_obj
@@ -998,10 +998,9 @@ class TransifexHelper:
             " overwriting local translation with Transifex translation:"
             f" {pofile_path}"
         )
-        pofile_obj = transifex_obj
         if not self.dryrun:
-            pofile_obj.save(pofile_path)
-        return pofile_obj
+            transifex_obj.save(pofile_path)
+        return transifex_obj
 
     def check_data_repo_is_clean(self, repo=None):
         if not repo:
