@@ -1091,6 +1091,75 @@ class TestTransifex(TestCase):
         self.assertNotIn("translated entries:", log_context.output[0])
         self.assertTrue(result)
 
+    # Test: safesync_pofile ##################################################
+
+    def test_safesync_pofile_with_changes(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj[0].msgstr = ""
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "Attribution", "XXXXXXXXXXX"
+            ).encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_pofile(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(
+            pofile_obj_new[0].msgstr,
+            "XXXXXXXXXXX-NoDerivatives 4.0 International",
+        )
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertIn(
+            "  msgid    0: 'license_medium'",
+            log_context.output[0],
+        )
+        mock_pofile_save.assert_called_once()
+
+    def test_safesync_pofile_with_changes_dryrun(self):
+        self.helper.dryrun = True
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj[0].msgstr = ""
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "Attribution", "XXXXXXXXXXX"
+            ).encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_pofile(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(pofile_obj_new[0].msgstr, "")
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertIn(
+            "  msgid    0: 'license_medium'",
+            log_context.output[0],
+        )
+        mock_pofile_save.assert_not_called()
+
+
     # Test: diff_entry #######################################################
 
     def test_diff_entries(self):
