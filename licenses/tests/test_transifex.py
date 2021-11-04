@@ -497,16 +497,17 @@ class TestTransifex(TestCase):
     def test_get_local_data_limit_to_deeds_ux(self):
         limit_domain = "deeds_ux"
         limit_language = None
-        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="de")
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        legal_codes = []
         self.helper.build_local_data = mock.Mock()
 
         self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with(deeds_ux, [])
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
 
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
@@ -526,6 +527,7 @@ class TestTransifex(TestCase):
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="es")
+        deeds_ux = {}
         legal_codes = list(
             LegalCode.objects.valid()
             .translated()
@@ -536,7 +538,47 @@ class TestTransifex(TestCase):
         self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with({}, legal_codes)
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "es": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+            "nl": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_get_local_data_limit_to_deeds_ux_nl(self):
+        limit_domain = "deeds_ux"
+        limit_language = "nl"
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        license = LicenseFactory(unit="by-sa", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        deeds_ux = {"nl": settings.DEEDS_UX_PO_FILE_INFO["nl"]}
+        legal_codes = []
+        self.helper.build_local_data = mock.Mock()
+
+        self.helper.get_local_data(limit_domain, limit_language)
+
+        self.helper.build_local_data.assert_called_once()
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
 
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
@@ -569,12 +611,8 @@ class TestTransifex(TestCase):
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="es")
         LegalCodeFactory(license=license, language_code="nl")
+        deeds_ux = {}
         legal_codes = list(
-            LegalCode.objects.valid()
-            .translated()
-            .exclude(language_code=settings.LANGUAGE_CODE)
-        )
-        legal_codes_expected = list(
             LegalCode.objects.valid()
             .translated()
             .filter(
@@ -588,9 +626,7 @@ class TestTransifex(TestCase):
         self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with(
-            {}, legal_codes_expected
-        )
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
 
     # Test: build_local_data #################################################
 
@@ -1093,25 +1129,54 @@ class TestTransifex(TestCase):
 
     # Test: safesync_pofile ##################################################
 
-    def test_safesync_pofile_with_changes(self):
+    def test_safesync_pofile_mispatched_msgids(self):
+        language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_obj[0].msgstr = ""
         self.helper.transifex_get_pofile_content = mock.Mock(
             return_value=POFILE_CONTENT.replace(
-                "Attribution", "XXXXXXXXXXX"
+                "license_medium",
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
             ).encode("utf-8")
         )
 
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 pofile_obj_new = self.helper.safesync_pofile(
+                    language_code,
                     transifex_code,
                     resource_slug,
-                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(pofile_obj_new, pofile_obj)
+        self.assertTrue(log_context.output[0].startswith("CRITICAL:"))
+        self.assertIn("Transifex msgid do not match", log_context.output[0])
+        mock_pofile_save.assert_not_called
+
+    def test_safesync_pofile_with_changes(self):
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj[0].msgstr = ""
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace("Attribution", "XXXXXXXXXXX")
+            .replace('msgstr "english text"', 'msgstr "english text!!!!!!"')
+            .encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_pofile(
+                    language_code,
+                    transifex_code,
+                    resource_slug,
                     pofile_path,
                     pofile_obj,
                 )
@@ -1129,9 +1194,9 @@ class TestTransifex(TestCase):
 
     def test_safesync_pofile_with_changes_dryrun(self):
         self.helper.dryrun = True
+        language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj[0].msgstr = ""
@@ -1144,9 +1209,9 @@ class TestTransifex(TestCase):
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 pofile_obj_new = self.helper.safesync_pofile(
+                    language_code,
                     transifex_code,
                     resource_slug,
-                    resource_name,
                     pofile_path,
                     pofile_obj,
                 )
@@ -1158,7 +1223,6 @@ class TestTransifex(TestCase):
             log_context.output[0],
         )
         mock_pofile_save.assert_not_called()
-
 
     # Test: diff_entry #######################################################
 
