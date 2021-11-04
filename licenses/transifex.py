@@ -864,9 +864,9 @@ class TransifexHelper:
 
     def safesync_pofile(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_obj,
     ):
@@ -881,25 +881,47 @@ class TransifexHelper:
             pofile_entry = entry
             transifex_entry = transifex_pofile_obj[index]
             if pofile_entry != transifex_entry:
+                # Prep msgids for display
+                if len(pofile_entry.msgid) > 60:  # pragma: no cover
+                    l_msgid = f"{pofile_entry.msgid[:62]}..."
+                else:  # pragma: no cover
+                    l_msgid = pofile_entry.msgid
+                if len(pofile_entry.msgid) > 60:  # pragma: no cover
+                    t_msgid = f"{transifex_entry.msgid[:62]}..."
+                else:  # pragma: no cover
+                    t_msgid = transifex_entry.msgid
+
+                # Ensure we're comparing the same entries
                 if pofile_entry.msgid != transifex_entry.msgid:
+                    self.log.critical(
+                        f"{self.nop}{resource_slug} {language_code}"
+                        f" ({transifex_code}) Local PO File msgid and"
+                        " Transifex msgid do not match:"
+                        "\n    PO File: '{t_msgid}'"
+                        "\n  Transifex: '{t_msgid}'"
+                    )
                     continue
+
+                # Skip if local PO FILE entry is translated (even though it
+                # differs from Transifex)
                 if (
                     pofile_entry.msgstr is not None
                     and pofile_entry.msgstr != ""
                 ):
                     continue
-                if len(pofile_entry.msgid) > 65:
-                    msgid = f"{pofile_entry.msgid[:62]}..."
-                else:
-                    msgid = pofile_entry.msgid
-                changes.append(f"msgid {index:>4}: '{msgid}'")
+
+                # Add missing translation
+                changes.append(f"msgid {index:>4}: '{l_msgid}'")
                 if not self.dryrun:
                     pofile_entry.msgstr = transifex_entry.msgstr
+
         if changes:
             changes = "\n  ".join(changes)
             self.log.info(
-                f"{self.nop}Adding translation from Transifex to PO File:\n"
-                f"  {changes}"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}) Adding translation from Transifex to"
+                " PO File:"
+                f"\n  {changes}"
             )
             if not self.dryrun:
                 pofile_obj.save(pofile_path)
@@ -984,7 +1006,7 @@ class TransifexHelper:
         transifex_code,
         pofile_path,
         pofile_obj,
-    ):
+    ):  # pragma: no cover
         # Get Transifex PO File
         transifex_pofile_content = self.transifex_get_pofile_content(
             resource_slug, transifex_code
@@ -1294,9 +1316,9 @@ class TransifexHelper:
                 ):
                     # Add missing translations to local PO File
                     pofile_obj = self.safesync_pofile(
-                        transifex_code,
                         resource_slug,
-                        resource_name,
+                        language_code,
+                        transifex_code,
                         pofile_path,
                         pofile_obj,
                     )
