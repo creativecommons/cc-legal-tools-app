@@ -855,7 +855,7 @@ class TransifexHelper:
             )
             return False
         else:
-            self.log.info(
+            self.log.debug(
                 f"{self.nop}{resource_name} ({resource_slug})"
                 f" {transifex_code}: Translations appear to be identical"
                 " based on metadata"

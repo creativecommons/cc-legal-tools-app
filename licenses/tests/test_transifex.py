@@ -1107,7 +1107,7 @@ class TestTransifex(TestCase):
         transifex_revision = pofile_revision
         transifex_translated = pofile_translated
 
-        with self.assertLogs(self.helper.log) as log_context:
+        with self.assertLogs(self.helper.log, level="DEBUG") as log_context:
             result = self.helper.translations_metadata_identical(
                 transifex_code,
                 resource_slug,
@@ -1121,7 +1121,7 @@ class TestTransifex(TestCase):
                 transifex_translated,
             )
 
-        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertTrue(log_context.output[0].startswith("DEBUG:"))
         self.assertNotIn("creation:", log_context.output[0])
         self.assertNotIn("revision:", log_context.output[0])
         self.assertNotIn("translated entries:", log_context.output[0])
