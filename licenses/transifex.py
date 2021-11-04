@@ -883,9 +883,9 @@ class TransifexHelper:
             if pofile_entry != transifex_entry:
                 # Prep msgids for display
                 if len(pofile_entry.msgid) > 60:  # pragma: no cover
-                    l_msgid = f"{pofile_entry.msgid[:62]}..."
+                    p_msgid = f"{pofile_entry.msgid[:62]}..."
                 else:  # pragma: no cover
-                    l_msgid = pofile_entry.msgid
+                    p_msgid = pofile_entry.msgid
                 if len(pofile_entry.msgid) > 60:  # pragma: no cover
                     t_msgid = f"{transifex_entry.msgid[:62]}..."
                 else:  # pragma: no cover
@@ -897,8 +897,8 @@ class TransifexHelper:
                         f"{self.nop}{resource_slug} {language_code}"
                         f" ({transifex_code}) Local PO File msgid and"
                         " Transifex msgid do not match:"
-                        "\n    PO File: '{t_msgid}'"
-                        "\n  Transifex: '{t_msgid}'"
+                        f"\n    PO File: '{p_msgid}'"
+                        f"\n  Transifex: '{t_msgid}'"
                     )
                     continue
 
@@ -911,7 +911,7 @@ class TransifexHelper:
                     continue
 
                 # Add missing translation
-                changes.append(f"msgid {index:>4}: '{l_msgid}'")
+                changes.append(f"msgid {index:>4}: '{p_msgid}'")
                 if not self.dryrun:
                     pofile_entry.msgstr = transifex_entry.msgstr
 
