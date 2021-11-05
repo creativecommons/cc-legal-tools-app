@@ -331,6 +331,49 @@ class TransifexHelper:
             else:
                 self.clear_transifex_stats()
 
+    def push_translation_to_transifex_resource(
+        self,
+        resource_slug,
+        language_code,
+        transifex_code,
+        pofile_obj,
+    ):
+        """
+        Add translation to Transifex resource.
+
+        Uses transifex-python
+        https://github.com/transifex/transifex-python/tree/devel/transifex/api
+
+        Uses Transifex API 3.0: Resources Translations
+        https://transifex.github.io/openapi/index.html#tag/Resource-Translations
+        """
+        pofile_content = get_pofile_content(pofile_obj)
+        language = self.api.Language.get(code=transifex_code)
+        resource = self.api.Resource.get(
+            project=self.api_project, slug=resource_slug
+        )
+        self.log.info(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            " Pushing translation to Transifex."
+        )
+        if not self.dryrun:
+            result = self.api.ResourceTranslationsAsyncUpload.upload(
+                content=pofile_content,
+                language=language.id,
+                resource=resource,
+            )
+            results = ""
+            for key, value in result.items():
+                results = f"{results}\n     {key}: {value}"
+            self.log.info(f"Resource upload results:{results}")
+            if (
+                not result["translations_created"]
+                and not result["translations_updated"]
+            ):
+                self.log.critical("Translation upload failed")
+            else:
+                self.clear_transifex_stats()
+
     # def update_branch_for_legal_code(self, repo, legal_code, branch_object):
     #     """
     #     Pull down the latest translation for the legal_code and update
@@ -1341,8 +1384,6 @@ class TransifexHelper:
     ):  # pragma: no cover
         self.check_data_repo_is_clean()
         local_data = self.get_local_data(limit_domain, limit_language)
-        if force:
-            self.log.critical("force not yet implimented")
 
         # Resources & Sources
         for resource_slug, resource in local_data.items():
@@ -1381,7 +1422,7 @@ class TransifexHelper:
                 transifex_string_count,
             )
             if force or not metadata_identical:
-                self.log.critical("diff not yet implimented")
+                self.log.critical("resource diff not yet implimented")
 
             # Translations
             for language_code, translation in resource["translations"].items():
@@ -1463,6 +1504,44 @@ class TransifexHelper:
                 )
 
         # Normalize newly updated local PO File
+        if not self.dryrun:
+            if limit_domain and limit_domain == "deeds_ux":
+                load_deeds_ux_translations()
+            self.normalize_translations(limit_domain, limit_language)
+
+    def push_translation(
+        self, limit_domain, limit_language
+    ):  # pragma: no cover
+        self.check_data_repo_is_clean()
+        local_data = self.get_local_data(limit_domain, limit_language)
+
+        # Resources & Sources
+        for resource_slug, resource in local_data.items():
+            resource_name = resource["name"]
+
+            if not self.resource_present(resource_slug, resource_name):
+                continue
+
+            # Translations
+            for language_code, translation in resource["translations"].items():
+                transifex_code = map_django_to_transifex_language_code(
+                    language_code
+                )
+                pofile_obj = translation["pofile_obj"]
+
+                if not self.translation_supported(
+                    resource_slug, resource_name, transifex_code
+                ):
+                    continue
+
+                self.push_translation_to_transifex_resource(
+                    resource_slug,
+                    language_code,
+                    transifex_code,
+                    pofile_obj,
+                )
+
+        # Normalize local PO File to match newly updated Transifex translation
         if not self.dryrun:
             if limit_domain and limit_domain == "deeds_ux":
                 load_deeds_ux_translations()
