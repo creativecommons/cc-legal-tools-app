@@ -1006,7 +1006,7 @@ class TransifexHelper:
         transifex_code,
         pofile_path,
         pofile_obj,
-    ):  # pragma: no cover
+    ):
         # Get Transifex PO File
         transifex_pofile_content = self.transifex_get_pofile_content(
             resource_slug, transifex_code

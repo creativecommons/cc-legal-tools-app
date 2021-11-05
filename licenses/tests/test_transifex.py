@@ -1333,6 +1333,55 @@ class TestTransifex(TestCase):
         )
         self.helper.diff_entry.assert_not_called()
 
+    # Test: save_transifex_to_pofile #########################################
+
+    def test_save_transifex_to_pofile(self):
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = "x_pofile_obj_x"
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                new_pofile_obj = self.helper.save_transifex_to_pofile(
+                    resource_slug,
+                    language_code,
+                    transifex_code,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        mock_pofile_save.assert_called_once()
+
+    def test_save_transifex_to_pofile_dryrun(self):
+        self.helper.dryrun = True
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = "x_pofile_obj_x"
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                new_pofile_obj = self.helper.save_transifex_to_pofile(
+                    resource_slug,
+                    language_code,
+                    transifex_code,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        mock_pofile_save.assert_not_called()
+
     # Test: add_resource_to_transifex ########################################
 
     def test_add_resource_to_transifex_present(self):
