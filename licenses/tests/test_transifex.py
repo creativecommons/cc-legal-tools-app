@@ -1347,7 +1347,7 @@ class TestTransifex(TestCase):
 
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
-                new_pofile_obj = self.helper.save_transifex_to_pofile(
+                self.helper.save_transifex_to_pofile(
                     resource_slug,
                     language_code,
                     transifex_code,
@@ -1371,7 +1371,7 @@ class TestTransifex(TestCase):
 
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
-                new_pofile_obj = self.helper.save_transifex_to_pofile(
+                self.helper.save_transifex_to_pofile(
                     resource_slug,
                     language_code,
                     transifex_code,
