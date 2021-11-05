@@ -776,9 +776,9 @@ class TransifexHelper:
 
     def resources_metadata_identical(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_creation,
         pofile_revision,
@@ -806,15 +806,15 @@ class TransifexHelper:
         if differ:
             differ = "".join(differ)
             self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Resources differ:"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Resources differ:"
                 f"\n  PO File path: {pofile_path}{differ}"
             )
             return False
         else:
             self.log.debug(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Resources appear to be identical"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Resources appear to be identical"
                 " based on metadata"
             )
             return True
@@ -1371,9 +1371,9 @@ class TransifexHelper:
             transifex_string_count = r_stats["string_count"]
 
             metadata_identical = self.resources_metadata_identical(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_creation,
                 pofile_revision,
