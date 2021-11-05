@@ -314,7 +314,7 @@ class TransifexHelper:
         )
         self.log.info(
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
-            f" Uploading translation to Transifex using:  {pofile_path}."
+            f" Uploading translation to Transifex using: {pofile_path}."
         )
         if not self.dryrun:
             result = self.api.ResourceTranslationsAsyncUpload.upload(
