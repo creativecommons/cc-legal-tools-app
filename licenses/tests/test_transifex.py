@@ -449,6 +449,8 @@ class TestTransifex(TestCase):
         git_repo.assert_called_once()
         self.assertFalse(result)
 
+    # Test: get_local_data ###################################################
+
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
             "af": {
@@ -462,6 +464,8 @@ class TestTransifex(TestCase):
         }
     )
     def test_get_local_data_all(self):
+        limit_domain = None
+        limit_language = None
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
@@ -471,15 +475,12 @@ class TestTransifex(TestCase):
             .translated()
             .exclude(language_code=settings.LANGUAGE_CODE)
         )
-        limit_language = None
         self.helper.build_local_data = mock.Mock()
 
-        self.helper.get_local_data(limit_domain=None, limit_language=None)
+        self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with(
-            deeds_ux, legal_codes, limit_language
-        )
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
 
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
@@ -494,21 +495,19 @@ class TestTransifex(TestCase):
         }
     )
     def test_get_local_data_limit_to_deeds_ux(self):
-        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        limit_domain = "deeds_ux"
+        limit_language = None
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="de")
-        limit_language = None
+        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
+        legal_codes = []
         self.helper.build_local_data = mock.Mock()
 
-        self.helper.get_local_data(
-            limit_domain="deeds_ux", limit_language=None
-        )
+        self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with(
-            deeds_ux, [], limit_language
-        )
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
 
     @override_settings(
         DEEDS_UX_PO_FILE_INFO={
@@ -523,25 +522,111 @@ class TestTransifex(TestCase):
         }
     )
     def test_get_local_data_limit_to_legal_code(self):
+        limit_domain = "legal_code"
+        limit_language = None
         license = LicenseFactory(unit="by", version="4.0")
         LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
         LegalCodeFactory(license=license, language_code="es")
+        deeds_ux = {}
         legal_codes = list(
             LegalCode.objects.valid()
             .translated()
             .exclude(language_code=settings.LANGUAGE_CODE)
         )
-        limit_language = None
         self.helper.build_local_data = mock.Mock()
 
-        self.helper.get_local_data(
-            limit_domain="legal_code", limit_language=None
-        )
+        self.helper.get_local_data(limit_domain, limit_language)
 
         self.helper.build_local_data.assert_called_once()
-        self.helper.build_local_data.assert_called_with(
-            {}, legal_codes, limit_language
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "es": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+            "nl": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_get_local_data_limit_to_deeds_ux_nl(self):
+        limit_domain = "deeds_ux"
+        limit_language = "nl"
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        license = LicenseFactory(unit="by-sa", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        deeds_ux = {"nl": settings.DEEDS_UX_PO_FILE_INFO["nl"]}
+        legal_codes = []
+        self.helper.build_local_data = mock.Mock()
+
+        self.helper.get_local_data(limit_domain, limit_language)
+
+        self.helper.build_local_data.assert_called_once()
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
+
+    @override_settings(
+        DEEDS_UX_PO_FILE_INFO={
+            "es": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+            "nl": {
+                "creation_date": datetime.datetime(
+                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
+                ),
+                "revision_date": datetime.datetime(
+                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
+                ),
+            },
+        }
+    )
+    def test_get_local_data_limit_to_by_40_nl(self):
+        limit_domain = "by_40"
+        limit_language = "nl"
+        license = LicenseFactory(unit="by", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        license = LicenseFactory(unit="by-sa", version="4.0")
+        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(license=license, language_code="es")
+        LegalCodeFactory(license=license, language_code="nl")
+        deeds_ux = {}
+        legal_codes = list(
+            LegalCode.objects.valid()
+            .translated()
+            .filter(
+                language_code=limit_language,
+                license__unit="by",
+                license__version="4.0",
+            )
         )
+        self.helper.build_local_data = mock.Mock()
+
+        self.helper.get_local_data(limit_domain, limit_language)
+
+        self.helper.build_local_data.assert_called_once()
+        self.helper.build_local_data.assert_called_with(deeds_ux, legal_codes)
 
     # Test: build_local_data #################################################
 
@@ -572,11 +657,8 @@ class TestTransifex(TestCase):
         LegalCodeFactory(license=license, language_code="es")
         LegalCodeFactory(license=license, language_code="nl")
         legal_codes = list(LegalCode.objects.valid().translated())
-        limit_language = None
 
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
+        local_data = self.helper.build_local_data(deeds_ux, legal_codes)
 
         self.assertIn("by_40", local_data)
         self.assertIn("name", local_data["by_40"])
@@ -615,11 +697,8 @@ class TestTransifex(TestCase):
     def test_build_local_data_limit_to_deeds_ux(self):
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         legal_codes = []
-        limit_language = None
 
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
+        local_data = self.helper.build_local_data(deeds_ux, legal_codes)
 
         self.assertNotIn("by_40", local_data)
         self.assertIn("deeds_ux", local_data)
@@ -642,11 +721,8 @@ class TestTransifex(TestCase):
             .translated()
             .exclude(language_code=settings.LANGUAGE_CODE)
         )
-        limit_language = None
 
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
+        local_data = self.helper.build_local_data(deeds_ux, legal_codes)
 
         self.assertIn("by_40", local_data)
         self.assertIn("name", local_data["by_40"])
@@ -656,58 +732,6 @@ class TestTransifex(TestCase):
             list(local_data["by_40"]["translations"].keys()), ["es", "nl"]
         )
         self.assertNotIn("deeds_ux", local_data)
-
-    @override_settings(
-        DEEDS_UX_PO_FILE_INFO={
-            "es": {
-                "creation_date": datetime.datetime(
-                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
-                ),
-                "revision_date": datetime.datetime(
-                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
-                ),
-            },
-            "nl": {
-                "creation_date": datetime.datetime(
-                    2020, 6, 29, 12, 54, 48, tzinfo=tzutc()
-                ),
-                "revision_date": datetime.datetime(
-                    2021, 7, 28, 15, 4, 31, tzinfo=tzutc()
-                ),
-            },
-        }
-    )
-    def test_build_local_data_limit_language(self):
-        deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
-        legal_codes = list(
-            LegalCode.objects.valid()
-            .translated()
-            .exclude(language_code=settings.LANGUAGE_CODE)
-        )
-        limit_language = "nl"
-
-        local_data = self.helper.build_local_data(
-            deeds_ux, legal_codes, limit_language
-        )
-
-        self.assertIn("by_40", local_data)
-        self.assertIn("name", local_data["by_40"])
-        self.assertEqual(local_data["by_40"]["name"], "CC BY 4.0")
-        self.assertIn("translations", local_data["by_40"])
-        self.assertEqual(
-            list(local_data["by_40"]["translations"].keys()), ["nl"]
-        )
-        self.assertIn("deeds_ux", local_data)
-        self.assertIn("name", local_data["deeds_ux"])
-        self.assertEqual(local_data["deeds_ux"]["name"], "Deeds & UX")
-        self.assertIn("translations", local_data["deeds_ux"])
-        self.assertEqual(
-            list(local_data["deeds_ux"]["translations"].keys()), ["nl"]
-        )
 
     # Test: resource_present #################################################
 
@@ -913,7 +937,7 @@ class TestTransifex(TestCase):
         transifex_revision = pofile_revision
         transifex_string_count = pofile_string_count
 
-        with self.assertLogs(self.helper.log) as log_context:
+        with self.assertLogs(self.helper.log, level="DEBUG") as log_context:
             result = self.helper.resources_metadata_identical(
                 transifex_code,
                 resource_slug,
@@ -927,7 +951,7 @@ class TestTransifex(TestCase):
                 transifex_string_count,
             )
 
-        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertTrue(log_context.output[0].startswith("DEBUG:"))
         self.assertNotIn("creation:", log_context.output[0])
         self.assertNotIn("revision:", log_context.output[0])
         self.assertNotIn("string count:", log_context.output[0])
@@ -1083,7 +1107,7 @@ class TestTransifex(TestCase):
         transifex_revision = pofile_revision
         transifex_translated = pofile_translated
 
-        with self.assertLogs(self.helper.log) as log_context:
+        with self.assertLogs(self.helper.log, level="DEBUG") as log_context:
             result = self.helper.translations_metadata_identical(
                 transifex_code,
                 resource_slug,
@@ -1097,11 +1121,108 @@ class TestTransifex(TestCase):
                 transifex_translated,
             )
 
-        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertTrue(log_context.output[0].startswith("DEBUG:"))
         self.assertNotIn("creation:", log_context.output[0])
         self.assertNotIn("revision:", log_context.output[0])
         self.assertNotIn("translated entries:", log_context.output[0])
         self.assertTrue(result)
+
+    # Test: safesync_pofile ##################################################
+
+    def test_safesync_pofile_mispatched_msgids(self):
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "license_medium",
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            ).encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_pofile(
+                    language_code,
+                    transifex_code,
+                    resource_slug,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(pofile_obj_new, pofile_obj)
+        self.assertTrue(log_context.output[0].startswith("CRITICAL:"))
+        self.assertIn("Transifex msgid do not match", log_context.output[0])
+        mock_pofile_save.assert_not_called
+
+    def test_safesync_pofile_with_changes(self):
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj[0].msgstr = ""
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace("Attribution", "XXXXXXXXXXX")
+            .replace('msgstr "english text"', 'msgstr "english text!!!!!!"')
+            .encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_pofile(
+                    language_code,
+                    transifex_code,
+                    resource_slug,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(
+            pofile_obj_new[0].msgstr,
+            "XXXXXXXXXXX-NoDerivatives 4.0 International",
+        )
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertIn(
+            "  msgid    0: 'license_medium'",
+            log_context.output[0],
+        )
+        mock_pofile_save.assert_called_once()
+
+    def test_safesync_pofile_with_changes_dryrun(self):
+        self.helper.dryrun = True
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj[0].msgstr = ""
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "Attribution", "XXXXXXXXXXX"
+            ).encode("utf-8")
+        )
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_pofile(
+                    language_code,
+                    transifex_code,
+                    resource_slug,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(pofile_obj_new[0].msgstr, "")
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertIn(
+            "  msgid    0: 'license_medium'",
+            log_context.output[0],
+        )
+        mock_pofile_save.assert_not_called()
 
     # Test: diff_entry #######################################################
 
