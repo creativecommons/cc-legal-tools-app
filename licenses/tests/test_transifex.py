@@ -1223,10 +1223,11 @@ class TestTransifex(TestCase):
 
     # Test: diff_entry #######################################################
 
-    def test_diff_entries(self):
-        transifex_code = "x_trans_code_x"
-        resource_slug = "x_slug_x"
+    def test_diff_entry(self):
         resource_name = "x_name_x"
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_entry = pofile_obj[0]
@@ -1238,9 +1239,10 @@ class TestTransifex(TestCase):
 
         with self.assertLogs(self.helper.log) as log_context:
             self.helper.diff_entry(
-                transifex_code,
-                resource_slug,
                 resource_name,
+                resource_slug,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_entry,
                 transifex_entry,
@@ -1248,8 +1250,9 @@ class TestTransifex(TestCase):
 
         self.assertTrue(log_context.output[0].startswith("WARNING:"))
         self.assertIn(
-            "--- x_name_x PO File x_path_x\n\n"
-            "+++ x_name_x Transifex x_slug_x x_trans_code_x\n\n",
+            f"--- {resource_name} PO File {pofile_path}\n\n"
+            f"+++ {resource_name} Transifex {resource_slug} {language_code}"
+            f" ({transifex_code})\n\n",
             log_context.output[0],
         )
         self.assertIn(
@@ -1261,9 +1264,10 @@ class TestTransifex(TestCase):
     # Test: diff_translations ###############################################
 
     def test_diff_translations_differences(self):
-        transifex_code = "x_trans_code_x"
-        resource_slug = "x_slug_x"
         resource_name = "x_name_x"
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         colordiff = False
@@ -1280,9 +1284,10 @@ class TestTransifex(TestCase):
         self.helper.diff_entry = mock.Mock()
 
         self.helper.diff_translations(
-            transifex_code,
-            resource_slug,
             resource_name,
+            resource_slug,
+            language_code,
+            transifex_code,
             pofile_path,
             pofile_obj,
             colordiff,
@@ -1294,9 +1299,10 @@ class TestTransifex(TestCase):
         )
         self.helper.diff_entry.assert_called_once()
         self.helper.diff_entry.assert_called_with(
-            transifex_code,
-            resource_slug,
             resource_name,
+            resource_slug,
+            language_code,
+            transifex_code,
             pofile_path,
             pofile_entry,
             transifex_entry,
@@ -1304,9 +1310,10 @@ class TestTransifex(TestCase):
         )
 
     def test_diff_translations_same(self):
-        transifex_code = "x_trans_code_x"
-        resource_slug = "x_slug_x"
         resource_name = "x_name_x"
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         colordiff = False
@@ -1316,9 +1323,10 @@ class TestTransifex(TestCase):
         self.helper.diff_entry = mock.Mock()
 
         self.helper.diff_translations(
-            transifex_code,
-            resource_slug,
             resource_name,
+            resource_slug,
+            language_code,
+            transifex_code,
             pofile_path,
             pofile_obj,
             colordiff,

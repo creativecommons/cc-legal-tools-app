@@ -821,9 +821,9 @@ class TransifexHelper:
 
     def translations_metadata_identical(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_creation,
         pofile_revision,
@@ -852,15 +852,15 @@ class TransifexHelper:
         if differ:
             differ = "".join(differ)
             self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Translations differ:"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Translations differ:"
                 f"\n  PO File path: {pofile_path}{differ}"
             )
             return False
         else:
             self.log.debug(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Translations appear to be identical"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Translations appear to be identical"
                 " based on metadata"
             )
             return True
@@ -932,9 +932,10 @@ class TransifexHelper:
 
     def diff_entry(
         self,
-        transifex_code,
-        resource_slug,
         resource_name,
+        resource_slug,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_entry,
         transifex_entry,
@@ -948,7 +949,7 @@ class TransifexHelper:
                 fromfile=f"{resource_name} PO File {pofile_path}",
                 tofile=(
                     f"{resource_name} Transifex {resource_slug}"
-                    f" {transifex_code}"
+                    f" {language_code} ({transifex_code})"
                 ),
                 # Number of lines of context (n) is set very high to ensure
                 # that the all comments and the entire msgid are shown
@@ -975,9 +976,10 @@ class TransifexHelper:
 
     def diff_translations(
         self,
-        transifex_code,
-        resource_slug,
         resource_name,
+        resource_slug,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_obj,
         colordiff,
@@ -993,9 +995,10 @@ class TransifexHelper:
             transifex_entry = transifex_pofile_obj[index]
             if pofile_entry != transifex_entry:
                 self.diff_entry(
-                    transifex_code,
-                    resource_slug,
                     resource_name,
+                    resource_slug,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_entry,
                     transifex_entry,
@@ -1307,9 +1310,9 @@ class TransifexHelper:
 
                 # Compare metadata
                 if not self.translations_metadata_identical(
-                    transifex_code,
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_creation,
                     pofile_revision,
@@ -1409,9 +1412,9 @@ class TransifexHelper:
                 transifex_translated = t_stats["translated_strings"]
 
                 metadata_identical = self.translations_metadata_identical(
-                    transifex_code,
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_creation,
                     pofile_revision,
@@ -1422,9 +1425,10 @@ class TransifexHelper:
                 )
                 if force or not metadata_identical:
                     self.diff_translations(
-                        transifex_code,
-                        resource_slug,
                         resource_name,
+                        resource_slug,
+                        language_code,
+                        transifex_code,
                         pofile_path,
                         pofile_obj,
                         colordiff,
