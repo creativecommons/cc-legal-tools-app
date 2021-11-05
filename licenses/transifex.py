@@ -257,89 +257,18 @@ class TransifexHelper:
         else:
             self.clear_transifex_stats()
 
-    def add_translation_to_transifex_resource(
-        self,
-        language_code,
-        resource_slug,
-        resource_name,
-        pofile_path,
-        pofile_obj,
-    ):
-        """
-        Add translation to Transifex resource.
-
-        Uses transifex-python
-        https://github.com/transifex/transifex-python/tree/devel/transifex/api
-
-        Uses Transifex API 3.0: Resources Translations
-        https://transifex.github.io/openapi/index.html#tag/Resource-Translations
-        """
-        transifex_code = map_django_to_transifex_language_code(language_code)
-        if language_code == settings.LANGUAGE_CODE:
-            raise ValueError(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: This function,"
-                " add_translation_to_transifex_resource(), is for"
-                " translations, not sources."
-            )
-        elif resource_slug not in self.resource_stats.keys():
-            raise ValueError(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex does not yet contain resource."
-                " The add_resource_to_transifex() function must be called"
-                " before this one: add_translation_to_transifex_resource()."
-            )
-        elif (
-            resource_slug in self.translation_stats
-            and transifex_code in self.translation_stats[resource_slug]
-            and self.translation_stats[resource_slug][transifex_code].get(
-                "translated_strings", 0
-            )
-            > 0
-        ):
-            self.log.debug(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex already contains translation."
-            )
-            return
-
-        pofile_content = get_pofile_content(pofile_obj)
-        language = self.api.Language.get(code=transifex_code)
-        resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
-        )
-        self.log.info(
-            f"{self.nop}{resource_name} ({resource_slug})"
-            f" {transifex_code}: Transifex does not yet contain"
-            f" translation. Added using {pofile_path}."
-        )
-        if not self.dryrun:
-            result = self.api.ResourceTranslationsAsyncUpload.upload(
-                content=pofile_content,
-                language=language.id,
-                resource=resource,
-            )
-            results = ""
-            for key, value in result.items():
-                results = f"{results}\n     {key}: {value}"
-            self.log.info(f"Resource upload results:{results}")
-            if (
-                not result["translations_created"]
-                and not result["translations_updated"]
-            ):
-                self.log.critical("Translation upload failed")
-            else:
-                self.clear_transifex_stats()
-
-    def push_translation_to_transifex_resource(
+    def upload_translation_to_transifex_resource(
         self,
         resource_slug,
         language_code,
         transifex_code,
+        pofile_path,
         pofile_obj,
+        push_overwrite=False,
     ):
         """
-        Add translation to Transifex resource.
+        Upload translation to Transifex resource (defaults to only uploading
+        if translation does not yet exist on Transifex).
 
         Uses transifex-python
         https://github.com/transifex/transifex-python/tree/devel/transifex/api
@@ -347,6 +276,37 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources Translations
         https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
+        if not push_overwrite:
+            if language_code == settings.LANGUAGE_CODE:
+                raise ValueError(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): This function,"
+                    " upload_translation_to_transifex_resource(), is for"
+                    " translations, not sources."
+                )
+            elif resource_slug not in self.resource_stats.keys():
+                raise ValueError(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): Transifex does not yet contain"
+                    " resource. The add_resource_to_transifex() function must"
+                    " be called before this one "
+                    " [upload_translation_to_transifex_resource()]."
+                )
+            elif (
+                resource_slug in self.translation_stats
+                and transifex_code in self.translation_stats[resource_slug]
+                and self.translation_stats[resource_slug][transifex_code].get(
+                    "translated_strings", 0
+                )
+                > 0
+            ):
+                self.log.debug(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): Transifex already contains"
+                    " translation."
+                )
+                return
+
         pofile_content = get_pofile_content(pofile_obj)
         language = self.api.Language.get(code=transifex_code)
         resource = self.api.Resource.get(
@@ -354,7 +314,7 @@ class TransifexHelper:
         )
         self.log.info(
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
-            " Pushing translation to Transifex."
+            f" Uploading translation to Transifex using:  {pofile_path}."
         )
         if not self.dryrun:
             result = self.api.ResourceTranslationsAsyncUpload.upload(
@@ -1329,12 +1289,13 @@ class TransifexHelper:
                     continue
 
                 # Ensure translation is on Transifex
-                self.add_translation_to_transifex_resource(
-                    language_code,
+                self.upload_translation_to_transifex_resource(
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_obj,
+                    push_overwrite=False,
                 )
 
                 t_stats = self.translation_stats[resource_slug][transifex_code]
@@ -1527,6 +1488,7 @@ class TransifexHelper:
                 transifex_code = map_django_to_transifex_language_code(
                     language_code
                 )
+                pofile_path = translation["pofile_path"]
                 pofile_obj = translation["pofile_obj"]
 
                 if not self.translation_supported(
@@ -1534,11 +1496,13 @@ class TransifexHelper:
                 ):
                     continue
 
-                self.push_translation_to_transifex_resource(
+                self.upload_translation_to_transifex_resource(
                     resource_slug,
                     language_code,
                     transifex_code,
+                    pofile_path,
                     pofile_obj,
+                    push_overwrite=True,
                 )
 
         # Normalize local PO File to match newly updated Transifex translation

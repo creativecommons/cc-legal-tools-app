@@ -11,10 +11,7 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 
 # First-party/Local
-from i18n.utils import (
-    get_pofile_content,
-    map_django_to_transifex_language_code,
-)
+from i18n.utils import get_pofile_content
 from licenses.models import LegalCode
 from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 from licenses.transifex import (
@@ -1591,53 +1588,63 @@ class TestTransifex(TestCase):
         self.helper.api.Resource.get.assert_not_called()
         self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
 
-    # Test: add_translation_to_transifex_resource ############################
+    # Test: upload_translation_to_transifex_resource #########################
 
-    def test_add_translation_to_transifex_resource_is_source(self):
+    def test_upload_translation_to_transifex_resource_is_source(self):
         api = self.helper.api
-        language_code = settings.LANGUAGE_CODE
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = settings.LANGUAGE_CODE
+        transifex_code = settings.LANGUAGE_CODE
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
+        push_overwrite = False
         self.helper._resource_stats = {}
         self.helper._translation_stats = {}
 
         with self.assertRaises(ValueError) as cm:
-            self.helper.add_translation_to_transifex_resource(
-                language_code,
+            self.helper.upload_translation_to_transifex_resource(
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
+                push_overwrite,
             )
 
-        self.assertIn("x_name_x (x_slug_x) en", str(cm.exception))
+        self.assertIn(
+            f"{resource_slug} {language_code} ({transifex_code}):",
+            str(cm.exception),
+        )
         self.assertIn("is for translations, not sources.", str(cm.exception))
         api.Language.get.assert_not_called()
         api.Resource.get.assert_not_called()
         api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_resource_missing_source(self):
+    def test_upload_translation_to_transifex_resource_missing_source(self):
         api = self.helper.api
-        language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
+        push_overwrite = False
         self.helper._resource_stats = {}
         self.helper._translation_stats = {}
 
         with self.assertRaises(ValueError) as cm:
-            self.helper.add_translation_to_transifex_resource(
-                language_code,
+            self.helper.upload_translation_to_transifex_resource(
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
+                push_overwrite,
             )
 
-        self.assertIn("x_name_x (x_slug_x) x_lang_code_x", str(cm.exception))
+        self.assertIn(
+            f"{resource_slug} {language_code} ({transifex_code}):",
+            str(cm.exception),
+        )
         self.assertIn(
             "Transifex does not yet contain resource.", str(cm.exception)
         )
@@ -1645,85 +1652,90 @@ class TestTransifex(TestCase):
         api.Resource.get.assert_not_called()
         api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_present(self):
+    def test_upload_translation_to_transifex_resource_present(self):
         api = self.helper.api
-        language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = False
         self.helper._resource_stats = {resource_slug: None}
         self.helper._translation_stats = {
-            resource_slug: {language_code: {"translated_strings": 99}}
+            resource_slug: {transifex_code: {"translated_strings": 99}}
         }
 
-        self.helper.add_translation_to_transifex_resource(
-            language_code,
+        self.helper.upload_translation_to_transifex_resource(
             resource_slug,
-            resource_name,
+            language_code,
+            transifex_code,
             pofile_path,
             pofile_obj,
+            push_overwrite,
         )
 
         api.Language.get.assert_not_called()
         api.Resource.get.assert_not_called()
         api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_resource_dryrun(self):
+    def test_upload_translation_to_transifex_resource_dryrun(self):
         api = self.helper.api
         self.helper.dryrun = True
-        language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = False
         self.helper._resource_stats = {resource_slug: None}
         self.helper._translation_stats = {resource_slug: {}}
 
-        self.helper.add_translation_to_transifex_resource(
-            language_code,
+        self.helper.upload_translation_to_transifex_resource(
             resource_slug,
-            resource_name,
+            language_code,
+            transifex_code,
             pofile_path,
             pofile_obj,
+            push_overwrite,
         )
 
         api.Language.get.assert_called_once()
         api.Resource.get.assert_called_once()
         api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
 
-    def test_add_translation_to_transifex_missing_with_changes(self):
+    def test_upload_translation_to_transifex_resource_miss_with_changes(self):
         api = self.helper.api
+        resource_slug = "x_slug_x"
         language_code = "x_lang_code_x"
-        transifex_code = map_django_to_transifex_language_code(language_code)
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = False
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {resource_slug: {}}
+        self.helper._translation_stats = {resource_slug: {}}
         language = mock.Mock(
             id=f"l:{transifex_code}",
         )
         self.helper.api.Language.get = mock.Mock(return_value=language)
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
             attributes={"i18n_type": "PO"},
         )
         self.helper.api.Resource.get = mock.Mock(return_value=resource)
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_content = get_pofile_content(pofile_obj)
-        self.helper._resource_stats = {resource_slug: {}}
-        self.helper._translation_stats = {resource_slug: {}}
         api.ResourceTranslationsAsyncUpload.upload.return_value = {
             "translations_created": 1,
             "translations_updated": 1,
         }
         self.helper.clear_transifex_stats = mock.Mock()
 
-        self.helper.add_translation_to_transifex_resource(
-            language_code,
+        self.helper.upload_translation_to_transifex_resource(
             resource_slug,
-            resource_name,
+            language_code,
+            transifex_code,
             pofile_path,
             pofile_obj,
+            push_overwrite,
         )
 
         api.Language.get.assert_called_once()
@@ -1736,38 +1748,39 @@ class TestTransifex(TestCase):
         )
         self.helper.clear_transifex_stats.assert_called_once()
 
-    def test_add_translation_to_transifex_missing_no_changes(self):
+    def test_upload_translation_to_transifex_resource_push(self):
         api = self.helper.api
+        resource_slug = "x_slug_x"
         language_code = "x_lang_code_x"
-        transifex_code = map_django_to_transifex_language_code(language_code)
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = True
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {}
+        self.helper._translation_stats = {}
         language = mock.Mock(
             id=f"l:{transifex_code}",
         )
         self.helper.api.Language.get = mock.Mock(return_value=language)
-        resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
             attributes={"i18n_type": "PO"},
         )
         self.helper.api.Resource.get = mock.Mock(return_value=resource)
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_content = get_pofile_content(pofile_obj)
-        self.helper._resource_stats = {resource_slug: {}}
-        self.helper._translation_stats = {resource_slug: {}}
         api.ResourceTranslationsAsyncUpload.upload.return_value = {
-            "translations_created": 0,
-            "translations_updated": 0,
+            "translations_created": 1,
+            "translations_updated": 1,
         }
         self.helper.clear_transifex_stats = mock.Mock()
 
-        self.helper.add_translation_to_transifex_resource(
-            language_code,
+        self.helper.upload_translation_to_transifex_resource(
             resource_slug,
-            resource_name,
+            language_code,
+            transifex_code,
             pofile_path,
             pofile_obj,
+            push_overwrite,
         )
 
         api.Language.get.assert_called_once()
@@ -1778,6 +1791,54 @@ class TestTransifex(TestCase):
             content=pofile_content,
             language=language.id,
         )
+        self.helper.clear_transifex_stats.assert_called_once()
+
+    def test_upload_translation_to_transifex_resource_no_changes(self):
+        api = self.helper.api
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = False
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {resource_slug: {}}
+        self.helper._translation_stats = {resource_slug: {}}
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
+        )
+        self.helper.api.Language.get = mock.Mock(return_value=language)
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        self.helper.api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceTranslationsAsyncUpload.upload.return_value = {
+            "translations_created": 0,
+            "translations_updated": 0,
+        }
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.upload_translation_to_transifex_resource(
+                resource_slug,
+                language_code,
+                transifex_code,
+                pofile_path,
+                pofile_obj,
+                push_overwrite,
+            )
+
+        api.Language.get.assert_called_once()
+        api.Resource.get.assert_called_once()
+        api.ResourceTranslationsAsyncUpload.upload.assert_called_once()
+        api.ResourceTranslationsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content,
+            language=language.id,
+        )
+        self.assertTrue(log_context.output[2].startswith("CRITICAL:"))
+        self.assertIn("Translation upload failed", log_context.output[2])
         self.helper.clear_transifex_stats.assert_not_called()
 
     # Test: normalize_pofile_language ########################################
