@@ -2225,9 +2225,9 @@ class TestTransifex(TestCase):
 
     def test_update_pofile_creation_datetime_dryrun(self):
         self.helper.dryrun = True
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_creation = "2021-01-01 01:01:01+00:00"
@@ -2236,9 +2236,9 @@ class TestTransifex(TestCase):
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.update_pofile_creation_datetime(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_creation,
@@ -2248,9 +2248,9 @@ class TestTransifex(TestCase):
         mock_pofile_save.assert_not_called()
 
     def test_update_pofile_creation_datetime_save(self):
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_creation = "2021-01-01 01:01:01+00:00"
@@ -2259,9 +2259,9 @@ class TestTransifex(TestCase):
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.update_pofile_creation_datetime(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_creation,
@@ -2277,9 +2277,9 @@ class TestTransifex(TestCase):
 
     def test_update_pofile_revision_datetime_dryrun(self):
         self.helper.dryrun = True
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_revision = "2021-01-01 01:01:01+00:00"
@@ -2288,9 +2288,9 @@ class TestTransifex(TestCase):
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.update_pofile_revision_datetime(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_revision,
@@ -2300,9 +2300,9 @@ class TestTransifex(TestCase):
         mock_pofile_save.assert_not_called()
 
     def test_update_pofile_revision_datetime_save(self):
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_revision = dateutil.parser.isoparse("2021-01-01 01:01:01+00:00")
@@ -2313,9 +2313,9 @@ class TestTransifex(TestCase):
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.update_pofile_revision_datetime(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_revision,
@@ -2331,9 +2331,9 @@ class TestTransifex(TestCase):
     # Test: normalize_pofile_dates ########################
 
     def test_normalize_pofile_dates_update_pofile_dates_missing(self):
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         transifex_creation = dateutil.parser.isoparse(
             "2021-01-01 01:01:01+00:00"
         )
@@ -2356,9 +2356,9 @@ class TestTransifex(TestCase):
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_dates(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_creation,
@@ -2378,9 +2378,9 @@ class TestTransifex(TestCase):
         )
 
     def test_normalize_pofile_dates_update_pofile_creation_differs(self):
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         transifex_creation = dateutil.parser.isoparse(
             "2021-01-01 01:01:01+00:00"
         )
@@ -2403,9 +2403,9 @@ class TestTransifex(TestCase):
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             new_pofile_obj = self.helper.normalize_pofile_dates(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_creation,
@@ -2421,9 +2421,9 @@ class TestTransifex(TestCase):
         )
 
     def test_normalize_pofile_dates_update_revisions_differ_entries_same(self):
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         transifex_creation = dateutil.parser.isoparse(
             "2021-01-01 01:01:01+00:00"
         )
@@ -2452,9 +2452,9 @@ class TestTransifex(TestCase):
             )
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 new_pofile_obj = self.helper.normalize_pofile_dates(
-                    transifex_code,
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_obj,
                     pofile_creation,
@@ -2472,9 +2472,9 @@ class TestTransifex(TestCase):
     def test_normalize_pofile_dates_update_revisions_differ_entries_differ(
         self,
     ):
-        transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
-        resource_name = "x_name_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         transifex_creation = dateutil.parser.isoparse(
             "2021-01-01 01:01:01+00:00"
         )
@@ -2515,9 +2515,9 @@ class TestTransifex(TestCase):
                     polib.POFile, "save"
                 ) as mock_pofile_save:
                     self.helper.normalize_pofile_dates(
-                        transifex_code,
                         resource_slug,
-                        resource_name,
+                        language_code,
+                        transifex_code,
                         pofile_path,
                         pofile_obj,
                         pofile_creation,
