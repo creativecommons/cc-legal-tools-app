@@ -36,7 +36,7 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo apt-get update
-        sudo apt-get install -y pandoc
+        sudo apt-get install -y --no-install-recommends gcc gettext pandoc
 
     # https://github.com/actions/checkout
     - name: Checkout cc-licenses
@@ -67,22 +67,22 @@ jobs:
 
     - name: Install Python dependencies
       run: |
-        pipenv sync --dev
+        pipenv sync --dev --system
 
     - name: Update Django database schema
       env:
         DATA_REPOSITORY_DIR: cc-licenses-data
       run: |
-        pipenv run ./manage.py migrate
+        ./manage.py migrate
 
     - name: Start Django development web server
       env:
         DATA_REPOSITORY_DIR: cc-licenses-data
 
       run: |
-        pipenv run ./manage.py runserver &>/dev/null &
+        ./manage.py runserver &>/dev/null &
 
     # https://github.com/pre-commit/action
-    - uses: pre-commit/action@v2.0.0
+    - uses: pre-commit/action@v2.0.3
       env:
         DATA_REPOSITORY_DIR: cc-licenses-data
