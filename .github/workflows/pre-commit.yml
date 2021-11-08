@@ -61,9 +61,11 @@ jobs:
         python-version: "3.7"
 
     - name: Install pipenv
+      # Use pipenv 2021.5.29 to circumvent errors:
+      # https://github.com/pypa/pipenv/issues/4833
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install pipenv
+        python -m pip install --no-cache-dir --upgrade pip
+        python -m pip install --no-cache-dir pipenv==2021.5.29
 
     - name: Install Python dependencies
       run: |
