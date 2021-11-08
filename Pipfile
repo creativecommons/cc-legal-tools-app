@@ -20,7 +20,7 @@ transifex-python = "*"
 whitenoise = "*"
 
 [dev-packages]
-black = "==21.9b0"
+black = "==21.10b0"
 coverage = "*"
 django-debug-toolbar = "*"
 factory-boy = "*"
