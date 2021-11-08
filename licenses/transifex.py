@@ -257,16 +257,18 @@ class TransifexHelper:
         else:
             self.clear_transifex_stats()
 
-    def add_translation_to_transifex_resource(
+    def upload_translation_to_transifex_resource(
         self,
-        language_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_obj,
+        push_overwrite=False,
     ):
         """
-        Add translation to Transifex resource.
+        Upload translation to Transifex resource (defaults to only uploading
+        if translation does not yet exist on Transifex).
 
         Uses transifex-python
         https://github.com/transifex/transifex-python/tree/devel/transifex/api
@@ -274,34 +276,36 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources Translations
         https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
-        transifex_code = map_django_to_transifex_language_code(language_code)
-        if language_code == settings.LANGUAGE_CODE:
-            raise ValueError(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: This function,"
-                " add_translation_to_transifex_resource(), is for"
-                " translations, not sources."
-            )
-        elif resource_slug not in self.resource_stats.keys():
-            raise ValueError(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex does not yet contain resource."
-                " The add_resource_to_transifex() function must be called"
-                " before this one: add_translation_to_transifex_resource()."
-            )
-        elif (
-            resource_slug in self.translation_stats
-            and transifex_code in self.translation_stats[resource_slug]
-            and self.translation_stats[resource_slug][transifex_code].get(
-                "translated_strings", 0
-            )
-            > 0
-        ):
-            self.log.debug(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Transifex already contains translation."
-            )
-            return
+        if not push_overwrite:
+            if language_code == settings.LANGUAGE_CODE:
+                raise ValueError(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): This function,"
+                    " upload_translation_to_transifex_resource(), is for"
+                    " translations, not sources."
+                )
+            elif resource_slug not in self.resource_stats.keys():
+                raise ValueError(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): Transifex does not yet contain"
+                    " resource. The add_resource_to_transifex() function must"
+                    " be called before this one "
+                    " [upload_translation_to_transifex_resource()]."
+                )
+            elif (
+                resource_slug in self.translation_stats
+                and transifex_code in self.translation_stats[resource_slug]
+                and self.translation_stats[resource_slug][transifex_code].get(
+                    "translated_strings", 0
+                )
+                > 0
+            ):
+                self.log.debug(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): Transifex already contains"
+                    " translation."
+                )
+                return
 
         pofile_content = get_pofile_content(pofile_obj)
         language = self.api.Language.get(code=transifex_code)
@@ -309,9 +313,8 @@ class TransifexHelper:
             project=self.api_project, slug=resource_slug
         )
         self.log.info(
-            f"{self.nop}{resource_name} ({resource_slug})"
-            f" {transifex_code}: Transifex does not yet contain"
-            f" translation. Added using {pofile_path}."
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f" Uploading translation to Transifex using: {pofile_path}."
         )
         if not self.dryrun:
             result = self.api.ResourceTranslationsAsyncUpload.upload(
@@ -621,9 +624,9 @@ class TransifexHelper:
 
     def update_pofile_creation_datetime(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_obj,
         pofile_creation,
@@ -632,7 +635,7 @@ class TransifexHelper:
         pad = len(pofile_path)
         label = f"Transifex {resource_slug} {transifex_code}"
         self.log.info(
-            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
             " Correcting PO file 'POT-Creation-Date' to match Transifex:"
             f"\n{pofile_path}: {pofile_creation}"
             f"\n{label:>{pad}}: {transifex_creation}"
@@ -645,9 +648,9 @@ class TransifexHelper:
 
     def update_pofile_revision_datetime(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_obj,
         pofile_revision,
@@ -656,7 +659,7 @@ class TransifexHelper:
         pad = len(pofile_path)
         label = f"Transifex {resource_slug} {transifex_code}"
         self.log.info(
-            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
             " Correcting PO file 'PO-Revision-Date' to match Transifex:"
             f"\n{pofile_path}: {pofile_revision}"
             f"\n{label:>{pad}}: {transifex_revision}"
@@ -669,9 +672,9 @@ class TransifexHelper:
 
     def normalize_pofile_dates(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_obj,
         pofile_creation,
@@ -694,9 +697,9 @@ class TransifexHelper:
             # (Transifex API 3.0 does not allow for modifcation of Transifex
             #  creation datetimes)
             pofile_obj = self.update_pofile_creation_datetime(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_creation,
@@ -707,9 +710,9 @@ class TransifexHelper:
         if pofile_revision is None:
             # Normalize Local PO File revision date if its empty or invalid
             pofile_obj = self.update_pofile_revision_datetime(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_revision,
@@ -738,9 +741,9 @@ class TransifexHelper:
                 # We can only normalize dates in one direction (normalize PO
                 # Files).
                 pofile_obj = self.update_pofile_revision_datetime(
-                    transifex_code,
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_obj,
                     pofile_revision,
@@ -753,8 +756,8 @@ class TransifexHelper:
                 transifex_translated = t_stats["translated_strings"]
                 transifex_untranslated = t_stats["untranslated_strings"]
                 self.log.error(
-                    f"{self.nop}{resource_name} ({resource_slug})"
-                    f" {transifex_code}: 'PO-Revision-Date' mismatch:"
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): 'PO-Revision-Date' mismatch:"
                     # Transifex
                     f"\n{transifex_label:>{pad}}: {transifex_revision}"
                     f"\n{'translated strings':>{pad}}:"
@@ -773,9 +776,9 @@ class TransifexHelper:
 
     def resources_metadata_identical(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_creation,
         pofile_revision,
@@ -803,24 +806,24 @@ class TransifexHelper:
         if differ:
             differ = "".join(differ)
             self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Resources differ:"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Resources differ:"
                 f"\n  PO File path: {pofile_path}{differ}"
             )
             return False
         else:
             self.log.debug(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Resources appear to be identical"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Resources appear to be identical"
                 " based on metadata"
             )
             return True
 
     def translations_metadata_identical(
         self,
-        transifex_code,
         resource_slug,
-        resource_name,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_creation,
         pofile_revision,
@@ -849,15 +852,15 @@ class TransifexHelper:
         if differ:
             differ = "".join(differ)
             self.log.error(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Translations differ:"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Translations differ:"
                 f"\n  PO File path: {pofile_path}{differ}"
             )
             return False
         else:
             self.log.debug(
-                f"{self.nop}{resource_name} ({resource_slug})"
-                f" {transifex_code}: Translations appear to be identical"
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Translations appear to be identical"
                 " based on metadata"
             )
             return True
@@ -929,9 +932,10 @@ class TransifexHelper:
 
     def diff_entry(
         self,
-        transifex_code,
-        resource_slug,
         resource_name,
+        resource_slug,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_entry,
         transifex_entry,
@@ -945,7 +949,7 @@ class TransifexHelper:
                 fromfile=f"{resource_name} PO File {pofile_path}",
                 tofile=(
                     f"{resource_name} Transifex {resource_slug}"
-                    f" {transifex_code}"
+                    f" {language_code} ({transifex_code})"
                 ),
                 # Number of lines of context (n) is set very high to ensure
                 # that the all comments and the entire msgid are shown
@@ -972,9 +976,10 @@ class TransifexHelper:
 
     def diff_translations(
         self,
-        transifex_code,
-        resource_slug,
         resource_name,
+        resource_slug,
+        language_code,
+        transifex_code,
         pofile_path,
         pofile_obj,
         colordiff,
@@ -990,9 +995,10 @@ class TransifexHelper:
             transifex_entry = transifex_pofile_obj[index]
             if pofile_entry != transifex_entry:
                 self.diff_entry(
-                    transifex_code,
-                    resource_slug,
                     resource_name,
+                    resource_slug,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_entry,
                     transifex_entry,
@@ -1006,7 +1012,7 @@ class TransifexHelper:
         transifex_code,
         pofile_path,
         pofile_obj,
-    ):  # pragma: no cover
+    ):
         # Get Transifex PO File
         transifex_pofile_content = self.transifex_get_pofile_content(
             resource_slug, transifex_code
@@ -1248,9 +1254,9 @@ class TransifexHelper:
             transifex_revision = parse_date(r_stats["datetime_modified"])
 
             pofile_obj = self.normalize_pofile_dates(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_obj,
                 pofile_creation,
@@ -1286,12 +1292,13 @@ class TransifexHelper:
                     continue
 
                 # Ensure translation is on Transifex
-                self.add_translation_to_transifex_resource(
-                    language_code,
+                self.upload_translation_to_transifex_resource(
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_obj,
+                    push_overwrite=False,
                 )
 
                 t_stats = self.translation_stats[resource_slug][transifex_code]
@@ -1303,9 +1310,9 @@ class TransifexHelper:
 
                 # Compare metadata
                 if not self.translations_metadata_identical(
-                    transifex_code,
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_creation,
                     pofile_revision,
@@ -1325,9 +1332,9 @@ class TransifexHelper:
 
                 # Normalize Creation and Revision dates in local PO File
                 pofile_obj = self.normalize_pofile_dates(
-                    transifex_code,
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_obj,
                     pofile_creation,
@@ -1341,8 +1348,6 @@ class TransifexHelper:
     ):  # pragma: no cover
         self.check_data_repo_is_clean()
         local_data = self.get_local_data(limit_domain, limit_language)
-        if force:
-            self.log.critical("force not yet implimented")
 
         # Resources & Sources
         for resource_slug, resource in local_data.items():
@@ -1369,9 +1374,9 @@ class TransifexHelper:
             transifex_string_count = r_stats["string_count"]
 
             metadata_identical = self.resources_metadata_identical(
-                transifex_code,
                 resource_slug,
-                resource_name,
+                language_code,
+                transifex_code,
                 pofile_path,
                 pofile_creation,
                 pofile_revision,
@@ -1381,7 +1386,7 @@ class TransifexHelper:
                 transifex_string_count,
             )
             if force or not metadata_identical:
-                self.log.critical("diff not yet implimented")
+                self.log.critical("resource diff not yet implimented")
 
             # Translations
             for language_code, translation in resource["translations"].items():
@@ -1407,9 +1412,9 @@ class TransifexHelper:
                 transifex_translated = t_stats["translated_strings"]
 
                 metadata_identical = self.translations_metadata_identical(
-                    transifex_code,
                     resource_slug,
-                    resource_name,
+                    language_code,
+                    transifex_code,
                     pofile_path,
                     pofile_creation,
                     pofile_revision,
@@ -1420,9 +1425,10 @@ class TransifexHelper:
                 )
                 if force or not metadata_identical:
                     self.diff_translations(
-                        transifex_code,
-                        resource_slug,
                         resource_name,
+                        resource_slug,
+                        language_code,
+                        transifex_code,
                         pofile_path,
                         pofile_obj,
                         colordiff,
@@ -1463,6 +1469,47 @@ class TransifexHelper:
                 )
 
         # Normalize newly updated local PO File
+        if not self.dryrun:
+            if limit_domain and limit_domain == "deeds_ux":
+                load_deeds_ux_translations()
+            self.normalize_translations(limit_domain, limit_language)
+
+    def push_translation(
+        self, limit_domain, limit_language
+    ):  # pragma: no cover
+        self.check_data_repo_is_clean()
+        local_data = self.get_local_data(limit_domain, limit_language)
+
+        # Resources & Sources
+        for resource_slug, resource in local_data.items():
+            resource_name = resource["name"]
+
+            if not self.resource_present(resource_slug, resource_name):
+                continue
+
+            # Translations
+            for language_code, translation in resource["translations"].items():
+                transifex_code = map_django_to_transifex_language_code(
+                    language_code
+                )
+                pofile_path = translation["pofile_path"]
+                pofile_obj = translation["pofile_obj"]
+
+                if not self.translation_supported(
+                    resource_slug, resource_name, transifex_code
+                ):
+                    continue
+
+                self.upload_translation_to_transifex_resource(
+                    resource_slug,
+                    language_code,
+                    transifex_code,
+                    pofile_path,
+                    pofile_obj,
+                    push_overwrite=True,
+                )
+
+        # Normalize local PO File to match newly updated Transifex translation
         if not self.dryrun:
             if limit_domain and limit_domain == "deeds_ux":
                 load_deeds_ux_translations()
