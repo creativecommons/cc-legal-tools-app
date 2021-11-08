@@ -29,25 +29,25 @@ repos:
     hooks:
       - id: black
         name: "Black"
-        entry: pipenv run black --check
+        entry: black --check
         language: system
         types: ["file", "python", "text"]
 
       - id: flake8
         name: "Flake8"
-        entry: pipenv run flake8
+        entry: flake8
         language: system
         types: ["file", "python", "text"]
 
       - id: isort
         name: "isort"
-        entry: pipenv run isort --check --filter-files
+        entry: isort --check --filter-files
         language: system
         types: ["file", "python", "text"]
 
       - id: missing-migrations
         name: 'Missing migrations'
-        entry: pipenv run ./manage.py makemigrations --check
+        entry: ./manage.py makemigrations --check
         language: system
         types: ["file", "python", "text"]
         pass_filenames: false
@@ -55,7 +55,7 @@ repos:
       # This test fails if web server is not running
       - id: coverage-test
         name: 'Run Django tests'
-        entry: pipenv run coverage run manage.py test --noinput --keepdb
+        entry: coverage run manage.py test --noinput --keepdb
         language: system
         types: ["file", "python", "text"]
         pass_filenames: false
@@ -63,7 +63,7 @@ repos:
 
       - id: coverage-report
         name: 'Confirm test coverage'
-        entry: pipenv run coverage report
+        entry: coverage report
         language: system
         types: ["file", "python", "text"]
         pass_filenames: false
