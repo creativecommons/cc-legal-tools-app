@@ -48,11 +48,15 @@ printf "\e[1m\e[7m %-80s\e[0m\n" 'Clean-up legacy ccEngine translations'
 for _file in ../cc.i18n/cc/i18n/po/*/cc_org.po; do
     echo "${_file}"
     # Patterns
-    # 1. Remove File Separator control character (present in a Korean msgstr)
-    # 2. Deed Share & Deed Adapt: clean-up whitespace
+    # 1. Deed Share & Deed Adapt: clean-up whitespace
+    # 2. Deed Attribution Description: clean-up whitespace
+    # 3. Korean Translation: remove File Separator control character
+    # 4. Spansish Translation: clean-up whitespace
     "${_sed}" \
-        -e's#\x1C##g' \
         -e's#strong>  &mdash#strong> \&mdash#g' \
+        -e's#span>.  You#span>. You#g' \
+        -e's#\x1C##g' \
+        -e's# Adaptar#Adaptar#g' \
         -i "${_file}"
 done
 
