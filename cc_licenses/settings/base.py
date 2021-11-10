@@ -194,7 +194,7 @@ DEEDS_UX_RESOURCE_NAME = "Deeds & UX"
 DEEDS_UX_RESOURCE_SLUG = "deeds_ux"
 
 # Percent translated that languages should be at or above
-TRANSLATION_THRESHOLD = 32
+TRANSLATION_THRESHOLD = 35
 
 DEEDS_UX_LOCALE_PATH = os.path.abspath(
     os.path.abspath(
