@@ -1,15 +1,23 @@
 #!/bin/bash
 #
 # Concatenate legacy ccEngine translations into cc-licenses
-#
+set -o errexit
 set -o errtrace
 set -o nounset
 
 # Change directory to cc-licenses (grandparent directory of this script)
 cd ${0%/*}/../
 
+if command -v gsed >dev/null; then
+    _sed=gsed
+elif sed --version >/de/vnull; then
+    _sed=sed
+else
+    echo 'GNU sed is required. If on macOS install via `gnu-sed`' 1>&2
+    exit 1
+fi
 if ! docker-compose exec app true 2>/dev/null; then
-    echo 'The app container/services is not avaialable.'
+    echo 'The app container/services is not available.'
     echo 'First run `docker-compose up`.'
     exit 1
 fi 1>&2
@@ -26,8 +34,8 @@ if ! command -v msgcat &>/dev/null; then
     exit 1
 fi 1>&2
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment nofuzzy_makemessages'
-docker-compose exec app coverage run manage.py \
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management nofuzzy_makemessages'
+docker-compose exec app ./manage.py \
     nofuzzy_makemessages \
         --all \
         --symlinks \
@@ -35,6 +43,22 @@ docker-compose exec app coverage run manage.py \
         --ignore **/includes/legalcode_zero.html \
         --no-obsolete
 echo
+
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Clean-up legacy ccEngine translations'
+for _file in ../cc.i18n/cc/i18n/po/*/cc_org.po; do
+    echo "${_file}"
+    # Patterns
+    # 1. Deed Share & Deed Adapt: clean-up whitespace
+    # 2. Deed Attribution Description: clean-up whitespace
+    # 3. Korean Translation: remove File Separator control character
+    # 4. Spansish Translation: clean-up whitespace
+    "${_sed}" \
+        -e's#strong>  &mdash#strong> \&mdash#g' \
+        -e's#span>.  You#span>. You#g' \
+        -e's#\x1C##g' \
+        -e's# Adaptar#Adaptar#g' \
+        -i "${_file}"
+done
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Concatenate legacy ccEngine translations'
 for _locale_dir in $(find ../cc-licenses-data/locale/* -maxdepth 0 -type d); do
@@ -97,8 +121,8 @@ for _locale_dir in $(find ../cc-licenses-data/locale/* -maxdepth 0 -type d); do
 done
 echo
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment nofuzzy_makemessages'
-docker-compose exec app coverage run manage.py \
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management nofuzzy_makemessages'
+docker-compose exec app ./manage.py \
     nofuzzy_makemessages \
         --all \
         --symlinks \
@@ -107,7 +131,13 @@ docker-compose exec app coverage run manage.py \
         --no-obsolete
 echo
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment compilemessages'
-docker-compose exec app coverage run manage.py \
-    compilemessages
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management format_pofile'
+docker-compose exec app ./manage.py format_pofile locale
 echo
+
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Reminders'
+echo '- Changes were made to ccEngine repository (../cc.i18n). It is probably'
+echo '  best if you restore it.'
+echo '- Next run the following Django management commands:'
+echo '  1. normalize_translations'
+echo '  2. compile_messages'
