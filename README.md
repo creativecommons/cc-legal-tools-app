@@ -64,7 +64,8 @@ Use the following instructions to start the project with Docker compose.
 1. Initial Setup
    1. Ensure the [Data Repository](#data-repository), above,  is in place
    2. Install Docker ([Install Docker Engine | Docker
-      Documentation][installdocker])
+      Documentation][installdocker]) and Docker Compose ([Install Docker
+      Compose | Docker Documentation][installcompose])
    3. Create Django local settings file
         ```
         cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
@@ -99,6 +100,7 @@ The commands above will create 3 docker containers:
    serving [creativecommons/cc-licenses-data][repodata]/docs.
 
 [installdocker]: https://docs.docker.com/engine/install/
+[installcompose]: https://docs.docker.com/compose/install/
 [repodata]:https://github.com/creativecommons/cc-licenses-data
 
 
