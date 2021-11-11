@@ -8,9 +8,9 @@ set -o nounset
 # Change directory to cc-licenses (grandparent directory of this script)
 cd ${0%/*}/../
 
-if command -v gsed >dev/null; then
+if command -v gsed >/dev/null; then
     _sed=gsed
-elif sed --version >/de/vnull; then
+elif sed --version >/dev/null; then
     _sed=sed
 else
     echo 'GNU sed is required. If on macOS install via `gnu-sed`' 1>&2
