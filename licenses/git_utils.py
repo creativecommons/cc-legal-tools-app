@@ -67,7 +67,12 @@ def get_branch(repo_or_remote, name):
     if isinstance(repo_or_remote, git.Remote):
         remote = repo_or_remote
         prefix_length = len(remote.name) + 1  # "origin/"
-        for ref in remote.refs:
+        for ref in remote.refs:  # pragma: no cover
+            # TODO: investigate coveragepy exclusion after upgrade to
+            # Python 3.10. This code has been confirmed to execute during
+            # tests. May be an issue with Python pre-3.10 tracing. Examples:
+            # https://github.com/nedbat/coveragepy/issues/198
+            # https://github.com/nedbat/coveragepy/issues/1175
             full_name = ref.name
             if full_name[prefix_length:] == name:
                 return ref
@@ -84,10 +89,12 @@ def branch_exists(repo_or_remote, name):
 
 
 def kill_branch(repo, name):
-    # delete the branch, regardless
+    """
+    Delete the branch, regardless
+    """
     # Checkout another branch to make sure we can delete the one we want
-    # Also makes sure we can't delete "develop"
-    repo.heads.develop.checkout()
+    # Also makes sure we can't delete "main" (default branch)
+    repo.heads.main.checkout()
     # Delete the local branch
     repo.delete_head(name, force=True)
 
@@ -121,7 +128,13 @@ def setup_local_branch(repo: git.Repo, branch_name: str):
         if branch_exists(origin, branch_name):
             repo.create_head(branch_name, get_branch(origin, branch_name))
             branch = get_branch(repo, branch_name)
-            if not branch.tracking_branch():
+            if not branch.tracking_branch():  # pragma: no cover
+                # TODO: investigate coveragepy exclusion after upgrade to
+                # Python 3.10. This code has been confirmed to execute during
+                # tests. May be an issue with Python pre-3.10 tracing.
+                # Examples:
+                # https://github.com/nedbat/coveragepy/issues/198
+                # https://github.com/nedbat/coveragepy/issues/1175
                 branch.set_tracking_branch(get_branch(origin, branch_name))
             assert branch.tracking_branch()
             branch.checkout(force=True)
@@ -137,7 +150,13 @@ def setup_local_branch(repo: git.Repo, branch_name: str):
         # branch exists.
         branch = get_branch(repo, branch_name)
         branch.checkout(force=True)
-        if branch.tracking_branch():
+        if branch.tracking_branch():  # pragma: no cover
+            # TODO: investigate coveragepy exclusion after upgrade to Python
+            # 3.10. This code has been confirmed to execute during tests. May
+            # be an issue with Python pre-3.10 tracing. Examples:
+            # https://github.com/nedbat/coveragepy/issues/198
+            # https://github.com/nedbat/coveragepy/issues/1175
+
             # Use upstream branch tip commit
             repo.head.reset(
                 f"origin/{branch_name}", index=True, working_tree=True

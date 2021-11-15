@@ -15,6 +15,7 @@ from licenses.git_utils import (
     branch_exists,
     commit_and_push_changes,
     get_branch,
+    kill_branch,
     push_current_branch,
     run_git,
     setup_local_branch,
@@ -78,6 +79,7 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
                         "Mock_Error", 1, stderr="protocol error"
                     )
                     setup_local_branch(self.local_repo, "branch_name")
+
             self.assertEqual(
                 mock_err.getvalue().strip(),
                 "ERROR: git origin.fetch() stderr: 'protocol error'. Check git"
@@ -100,6 +102,7 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         setup_local_branch(self.local_repo, "ourbranch")
 
         our_branch = self.local_repo.heads.ourbranch
+
         self.assertEqual(self.origin_repo.heads.main.commit, our_branch.commit)
         self.assertNotEqual(
             self.origin_repo.heads.otherbranch.commit, our_branch.commit
@@ -115,6 +118,7 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
 
         setup_local_branch(self.local_repo, "ourbranch")
         our_branch = self.local_repo.heads.ourbranch
+
         self.assertEqual(
             self.origin_repo.heads.ourbranch.commit, our_branch.commit
         )
@@ -150,6 +154,19 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         our_branch = self.local_repo.heads.ourbranch
         self.assertEqual(upstream_commit, our_branch.commit)
         self.assertNotEqual(old_local_repo_commit, our_branch.commit)
+
+    def test_kill_branch(self):
+        self.origin_repo.create_head("deletemebranch")
+
+        kill_branch(self.origin_repo, "deletemebranch")
+
+        self.assertTrue(self.origin_repo.heads.main)
+        with self.assertRaises(AttributeError) as cm:
+            self.origin_repo.heads.deletemebranch
+        self.assertEqual(
+            str(cm.exception),
+            "'IterableList' object has no attribute 'deletemebranch'",
+        )
 
 
 @override_settings(DATA_REPOSITORY_DIR="/trans/repo")
