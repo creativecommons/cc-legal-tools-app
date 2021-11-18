@@ -17,7 +17,7 @@ services:
     tmpfs:
       - /var/lib/postgresql/pg_stat_tmp
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - ./tmp/data/db:/var/lib/postgresql/data
 
   app:
     build: .
