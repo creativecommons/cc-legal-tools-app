@@ -15,11 +15,11 @@ APP_VERBOSE_NAME = APP_NAME.title()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # SETTINGS_DIR is where this settings file is
 SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))
-# PROJECT_DIR is the directory under root that contains the settings directory,
+# DJANGO_ROOT is the directory under root that contains the settings directory,
 #             urls.py, and other global stuff.
-PROJECT_DIR = os.path.dirname(SETTINGS_DIR)
-# ROOT_DIR is the top directory under source control
-ROOT_DIR = os.path.dirname(PROJECT_DIR)
+DJANGO_ROOT = os.path.dirname(SETTINGS_DIR)
+# PROJECT_ROOT is the top directory under source control
+PROJECT_ROOT = os.path.dirname(DJANGO_ROOT)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -59,7 +59,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(PROJECT_DIR, "templates"),
+            os.path.join(PROJECT_ROOT, "templates"),
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -89,7 +89,7 @@ DATABASES = {
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(ROOT_DIR, "public", "media")
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, "public", "media")
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -177,7 +177,7 @@ DATA_REPOSITORY_DIR = os.path.abspath(
     os.path.realpath(
         os.getenv(
             "DATA_REPOSITORY_DIR",
-            os.path.join(ROOT_DIR, "..", "cc-licenses-data"),
+            os.path.join(PROJECT_ROOT, "..", "cc-licenses-data"),
         )
     )
 )
@@ -281,14 +281,14 @@ USE_TZ = True
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(ROOT_DIR, "public", "static")
+STATIC_ROOT = os.path.join(PROJECT_ROOT, "public", "static")
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = "/static/"
 
 # Additional locations of static files
-STATICFILES_DIRS = (os.path.join(PROJECT_DIR, "static"),)
+STATICFILES_DIRS = (os.path.join(DJANGO_ROOT, "static"),)
 
 # If using Celery, tell it to obey our logging configuration.
 CELERYD_HIJACK_ROOT_LOGGER = False

@@ -35,13 +35,13 @@ def setup_to_call_git():
     env = os.environ
     # Use custom ssh command to use the deploy key when pushing
     if "GIT_SSH" not in env:
-        env["GIT_SSH"] = os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh")
+        env["GIT_SSH"] = os.path.join(settings.PROJECT_ROOT, "ssh_wrapper.sh")
     if "TRANSLATION_REPOSITORY_DEPLOY_KEY" not in env:
         env[
             "TRANSLATION_REPOSITORY_DEPLOY_KEY"
         ] = settings.TRANSLATION_REPOSITORY_DEPLOY_KEY
     if "PROJECT_ROOT" not in env:
-        env["PROJECT_ROOT"] = settings.ROOT_DIR
+        env["PROJECT_ROOT"] = settings.PROJECT_ROOT
 
 
 def remote_branch_names(remote: git.Remote) -> List[str]:
