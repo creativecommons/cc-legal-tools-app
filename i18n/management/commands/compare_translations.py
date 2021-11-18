@@ -9,7 +9,7 @@ from git.exc import GitCommandError, RepositoryDirtyError
 from requests.exceptions import HTTPError
 
 # First-party/Local
-from licenses.transifex import TransifexHelper
+from i18n.transifex import TransifexHelper
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
@@ -23,10 +23,10 @@ LOG_LEVELS = {
 class Command(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         parser.add_argument(
-            "-n",
-            "--dryrun",
+            "-f",
+            "--force",
             action="store_true",
-            help="dry run: do not make any changes",
+            help="force a string comparison even if dates and counts match",
         )
         limit_domain = parser.add_mutually_exclusive_group()
         limit_domain.add_argument(
@@ -64,9 +64,12 @@ class Command(BaseCommand):
         limit_language = options["language"]
         if limit_language is not None and limit_language not in LANG_INFO:
             raise CommandError(f"Invalid language code: {limit_language}")
+        colordiff = True
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
-        transifex = TransifexHelper(dryrun=options["dryrun"], logger=LOG)
-        transifex.normalize_translations(limit_domain, limit_language)
+        transifex = TransifexHelper(dryrun=True, logger=LOG)
+        transifex.compare_translations(
+            limit_domain, limit_language, options["force"], colordiff
+        )
 
     def handle(self, **options):
         try:

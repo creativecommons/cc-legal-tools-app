@@ -142,7 +142,12 @@ LOGGING = {
         },
     },
     "loggers": {
-        f"{APP_NAME}.management.commands": {
+        "i18n.management.commands": {
+            "handlers": ["handle_mgmt"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "licenses.management.commands": {
             "handlers": ["handle_mgmt"],
             "level": "DEBUG",
             "propagate": False,

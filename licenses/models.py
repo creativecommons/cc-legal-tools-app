@@ -33,7 +33,7 @@ from licenses import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from licenses.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 
 # TODO: update as part of translation rewrite
-# from licenses.transifex import TransifexHelper
+# from i18n.transifex import TransifexHelper
 
 MAX_LANGUAGE_CODE_LENGTH = 15
 
