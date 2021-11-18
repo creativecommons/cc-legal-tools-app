@@ -4,7 +4,7 @@
 ## Licenses and Public Domain Declarations
 
 The project title, *Creative Commons Licenses*, has been shortened for
-convenience. This project also includes the Public Domain declarations.
+convenience. This project also includes the Public Domain Declarations.
 
 
 ## Not the live site
