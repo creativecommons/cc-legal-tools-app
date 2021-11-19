@@ -6,16 +6,7 @@ HTML, internationalization and localization files, etc.). It consumes and
 generates data in the [creativecommons/cc-legal-tools-data][repodata]
 repository.
 
-Other CC legal tools include:
-- [creativecommons/chooser][chooser]: The new and improved CC license
-  selection tool.
-- [creativecommons/legaldb][legaldb]: CC Legal Database: curated repository of
-  Case Law and Scholarship data from around the world in a Django based
-  websitee
-
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
-[chooser]: https://github.com/creativecommons/chooser/
-[legaldb]: https://github.com/creativecommons/legaldb
 
 
 ## Not the live site
@@ -272,14 +263,14 @@ The metadata can be downloaded by visiting URL path:
 There are two main models (Django terminology for tables) in
 [`legal_tools/models.py`](legal_tools/models.py):
 1. `LegalCode`
-2. `Licenses`
+2. `Tool`
 
-A License can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`)
-which is a proxy for the complete set of permissions, requirements, and
-prohibitions; a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction`
-for ports. So we might refer to the license by it's **identifier** "BY 3.0 AM"
-which would be the 3.0 version of the BY license terms as ported to the Armenia
-jurisdiction. For additional information see: [**Legal Tools Namespace** -
+A Tool can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`) which
+is a proxy for the complete set of permissions, requirements, and prohibitions;
+a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction` for ports. So we
+might refer to the tool by it's **identifier** "BY 3.0 AM" which would be the
+3.0 version of the BY license terms as ported to the Armenia jurisdiction. For
+additional information see: [**Legal Tools Namespace** -
 creativecommons/cc-legal-tools-data: CC Legal Tools Data (static HTML, language
 files, etc.)][namespace].
 
@@ -298,7 +289,7 @@ There are three places legal code text could be:
 The text that's in gettext files can be translated via Transifex at [Creative
 Commons localization][cctransifex]. For additional information the Django
 translation domains / Transifex resources, see [How the license translation is
-implemented](#how-the-license-translation-is-implemented), below.
+implemented](#how-the-tool-translation-is-implemented), below.
 
 Documentation:
 - [Models | Django documentation | Django][djangomodels]
@@ -311,9 +302,9 @@ Documentation:
 [djangotemplates]: https://docs.djangoproject.com/en/3.2/topics/templates/
 
 
-## Importing the existing license text
+## Importing the existing legal tool text
 
-The process of getting the text into the site varies by license.
+The process of getting the text into the site varies by legal tool.
 
 Note that once the site is up and running in production, the data in the site
 will become the canonical source, and the process described here should not
@@ -350,7 +341,7 @@ code:
 ### Import Process
 
 This process will read the HTML files from the specified directory, populate
-`LegalCode` and `License` models, and create `.po` files in
+`LegalCode` and `Tool` models, and create `.po` files in
 [creativecommons/cc-legal-tools-data][repodata].
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
@@ -414,7 +405,7 @@ Documentation:
 [transauth]: https://transifex.github.io/openapi/index.html#section/Authentication
 
 
-### How the license translation is implemented
+### How the tool translation is implemented
 
 Django Translation uses two sets of Gettext Files in the
 [creativecommons/cc-legal-tools-data][repodata] repository (the [Data
