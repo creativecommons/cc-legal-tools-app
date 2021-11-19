@@ -21,11 +21,11 @@
   <li><a href="#">This will be a link to a preview site.</a></li>
   </ul>
 
-  <h2>Licenses with changed translations</h2>
+  <h2>Tools with changed translations</h2>
   <table border="1">
   <thead>
   <tr>
-    <th>License</th>
+    <th>Tool</th>
     <th>Last updated in Transifex</th>
     <th># of translated messages</th>
     <th>Total # of messages</th>
@@ -36,7 +36,7 @@
   {% for code in branch.legal_codes.all %}
     {% with pofile=code.get_pofile %}
       <tr>
-      <td>{{ code.license.identifier }}</td>
+      <td>{{ code.tool.identifier }}</td>
       <td>{{ code.translation_last_update|default_if_none:"-" }}</td>
       <td>{{ pofile.translated_entries|length }}</td>
       <td>{{ pofile|length }}</td>

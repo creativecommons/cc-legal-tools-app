@@ -13,7 +13,7 @@ from legal_tools.templatetags.license_tags import (
 from legal_tools.utils import compute_canonical_url
 
 
-class LicenseTagsTest(TestCase):
+class ToolTagsTest(TestCase):
     def test_units(self):
         expected = ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa"]
         data = [

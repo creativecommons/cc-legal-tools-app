@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block canonical_url %}{{ license.canonical_url }}{% endblock %}
+{% block canonical_url %}{{ tool.canonical_url }}{% endblock %}
 {% block title %}{{ legal_code.title }} Deed &mdash; Creative Commons{% endblock %}
 
 {% block active-breadcrumb-li %}
@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block next_btn_section %}
-{% if not license.deed_only %}
+{% if not tool.deed_only %}
 <div class="level container">
   <div class="level-item level-right">
     <button id="next-btn" class="button tiny is-pulled-right" data-href="{{ legal_code_rel_path }}">{% trans "See the legal code" %}</button>
@@ -20,17 +20,17 @@
 
 {% block content %}
   <div class="container">
-    {% if license.deprecated_on %}
+    {% if tool.deprecated_on %}
       {% include 'includes/deprecated.html' %}
     {% endif %}
 
     {% include body_template %}
 
-    {% if category == "licenses" and license.version == "4.0" %}
+    {% if category == "licenses" and tool.version == "4.0" %}
       {% include 'includes/disclaimer_40.html' %}
-    {% elif license.unit == "zero" %}
+    {% elif tool.unit == "zero" %}
       {% include 'includes/disclaimer_zero.html' %}
-    {% elif license.unit == "certification" %}
+    {% elif tool.unit == "certification" %}
       {% include 'includes/disclaimer_certification.html' %}
     {% endif %}
     <div class="columns margin-top-normal is-vcentered" >

@@ -1,7 +1,7 @@
 # Standard library
 import re
 
-default_app_config = "legal_tools.apps.LicensesConfig"
+default_app_config = "legal_tools.apps.LegalToolsConfig"
 
 FREEDOM_LEVEL_MAX = 1
 FREEDOM_LEVEL_MID = 2

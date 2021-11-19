@@ -42,7 +42,7 @@ ${DOCKER_DB_RUN} psql -d template1 \
 echo
 
 #printf "\e[1m\e[7m %-80s\e[0m\n" 'Reset migrations'
-#docker-compose exec app ./manage.py migrate --fake licenses zero
+#docker-compose exec app ./manage.py migrate --fake legal_tools zero
 #echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Perform migrations'

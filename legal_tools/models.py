@@ -84,7 +84,7 @@ UNITS_DEED_ONLY = [
 
 
 class LegalCodeQuerySet(models.QuerySet):
-    # We'll create LegalCode and License objects for all the by licenses,
+    # We'll create LegalCode and Tool objects for all the by licenses,
     # and the zero_1.0 ones.
     # We're just doing these units and versions for now:
     # by* 4.0
@@ -93,37 +93,37 @@ class LegalCodeQuerySet(models.QuerySet):
 
     # Queries for LegalCode objects
     LICENSES_ALL_QUERY = Q(
-        license__unit__in=UNITS_LICENSES,
+        tool__unit__in=UNITS_LICENSES,
     )
     LICENSES_40_QUERY = Q(
-        license__unit__in=UNITS_LICENSES,
-        license__version="4.0",
+        tool__unit__in=UNITS_LICENSES,
+        tool__version="4.0",
     )
     LICENSES_30_QUERY = Q(
-        license__unit__in=UNITS_LICENSES,
-        license__version="3.0",
+        tool__unit__in=UNITS_LICENSES,
+        tool__version="3.0",
     )
     LICENSES_25_QUERY = Q(
-        license__unit__in=UNITS_LICENSES,
-        license__version="2.5",
+        tool__unit__in=UNITS_LICENSES,
+        tool__version="2.5",
     )
     LICENSES_21_QUERY = Q(
-        license__unit__in=UNITS_LICENSES,
-        license__version="2.1",
+        tool__unit__in=UNITS_LICENSES,
+        tool__version="2.1",
     )
     LICENSES_20_QUERY = Q(
-        license__unit__in=UNITS_LICENSES,
-        license__version="2.0",
+        tool__unit__in=UNITS_LICENSES,
+        tool__version="2.0",
     )
     LICENSES_10_QUERY = Q(
-        license__unit__in=UNITS_LICENSES,
-        license__version="1.0",
+        tool__unit__in=UNITS_LICENSES,
+        tool__version="1.0",
     )
 
     # All of the Public Domain declarations are at version 1.0
-    PUBLIC_DOMAIN_ALL_QUERY = Q(license__unit__in=UNITS_PUBLIC_DOMAIN)
+    PUBLIC_DOMAIN_ALL_QUERY = Q(tool__unit__in=UNITS_PUBLIC_DOMAIN)
 
-    PUBLIC_DOMAIN_ZERO_QUERY = Q(license__unit="zero")
+    PUBLIC_DOMAIN_ZERO_QUERY = Q(tool__unit="zero")
 
     def translated(self):
         """
@@ -140,7 +140,7 @@ class LegalCodeQuerySet(models.QuerySet):
         """
         Return a queryset of the LegalCode objects that exist and are valid
         ones that we expect to work. This will change over time as we add
-        support for more licenses.
+        support for more tools.
         """
 
         return self.filter(
@@ -151,7 +151,7 @@ class LegalCodeQuerySet(models.QuerySet):
         """
         Return a queryset of the LegalCode objects that exist and are valid
         ones that we expect to work. This will change over time as we add
-        support for more licenses.
+        support for more tools.
         """
 
         return {
@@ -180,8 +180,8 @@ class LegalCodeQuerySet(models.QuerySet):
 
 
 class LegalCode(models.Model):
-    license = models.ForeignKey(
-        "legal_tools.License",
+    tool = models.ForeignKey(
+        "legal_tools.Tool",
         on_delete=models.CASCADE,
         related_name="legal_codes",
     )
@@ -204,7 +204,7 @@ class LegalCode(models.Model):
     )
     title = models.CharField(
         max_length=112,
-        help_text="License title in this language, e.g."
+        help_text="Tool title in this language, e.g."
         " 'Atribución/Reconocimiento 4.0 Internacional'",
         blank=True,
         default="",
@@ -221,30 +221,30 @@ class LegalCode(models.Model):
     objects = LegalCodeQuerySet.as_manager()
 
     class Meta:
-        ordering = ["license", "language_code"]
+        ordering = ["tool", "language_code"]
 
     def __str__(self):
-        return f"LegalCode<{self.language_code}, {self.license}>"
+        return f"LegalCode<{self.language_code}, {self.tool}>"
 
     def save(self, *args, **kwargs):
         self.deed_url = build_path(
-            self.license.canonical_url,
+            self.tool.canonical_url,
             "deed",
             self.language_code,
         )
         self.legal_code_url = build_path(
-            self.license.canonical_url,
+            self.tool.canonical_url,
             "legalcode",
             self.language_code,
         )
         # NOTE: plaintext functionality disabled
-        # unit = self.license.unit
+        # unit = self.tool.unit
         # if (
-        #     (unit in UNITS_LICENSES and float(self.license.version) > 2.5)
+        #     (unit in UNITS_LICENSES and float(self.tool.version) > 2.5)
         #     or unit == "zero"
         # ) and self.language_code == "en":
         #     self.plain_text_url = build_path(
-        #         self.license.canonical_url,
+        #         self.tool.canonical_url,
         #         "legalcode.txt",
         #         self.language_code,
         #     )
@@ -252,12 +252,9 @@ class LegalCode(models.Model):
 
     def _get_save_path(self):
         """
-        If saving the deed or license as a static file, this returns
-        the relative path where the saved file should be, not including
-        the actual filename.
-
-        If saving the license as a static file, this returns the relative
-        path of the file to save it as.
+        If saving the deed or legal code as a static file, this returns the
+        relative path where the saved file should be, not including the actual
+        filename.
 
         ported Licenses 3.0 and earlier
             Formula
@@ -285,22 +282,22 @@ class LegalCode(models.Model):
                 licenses/by/4.0/
         """
 
-        license = self.license
-        unit = license.unit.lower()
-        if license.jurisdiction_code:
+        tool = self.tool
+        unit = tool.unit.lower()
+        if tool.jurisdiction_code:
             # ported Licenses 3.0 and earlier
             return os.path.join(
-                license.category,  # licenses or publicdomain
+                tool.category,  # licenses or publicdomain
                 unit,  # ex. by, by-nc-nd
-                license.version,  # ex. 1.0, 2.0
-                license.jurisdiction_code,  # ex. ca, tw
+                tool.version,  # ex. 1.0, 2.0
+                tool.jurisdiction_code,  # ex. ca, tw
             )
         else:
             # unported Licenses 3.0, Licenses 4.0, and Public Domain:
             return os.path.join(
-                license.category,  # licenses or  publicdomain
+                tool.category,  # licenses or publicdomain
                 unit,  # ex. by, by-nc-nd, zero
-                license.version,  # ex. 1.0, 4.0
+                tool.version,  # ex. 1.0, 4.0
             )
 
     def get_publish_files(self, document):
@@ -313,8 +310,8 @@ class LegalCode(models.Model):
            different language code formats and character case.
         """
         language_code = self.language_code
-        license = self.license
-        juris_code = license.jurisdiction_code
+        tool = self.tool
+        juris_code = tool.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
         filename = f"{document}.{self.language_code}.html"
         relpath = os.path.join(self._get_save_path(), filename)
@@ -365,11 +362,11 @@ class LegalCode(models.Model):
 
     def has_english(self):
         """
-        Return True if there's an English translation for the same license.
+        Return True if there's an English translation for the same tool.
         """
         return (
             self.language_code == "en"
-            or self.license.legal_codes.filter(language_code="en").exists()
+            or self.tool.legal_codes.filter(language_code="en").exists()
         )
 
     def branch_name(self):
@@ -380,29 +377,29 @@ class LegalCode(models.Model):
         "by* 4.0" licenses use "cc4" for the unit part. This has to be a valid
         DNS domain, so we also change any _ to - and remove any periods.
         """
-        license = self.license
+        tool = self.tool
         parts = []
-        if license.unit.startswith("by") and license.version == "4.0":
+        if tool.unit.startswith("by") and tool.version == "4.0":
             parts.append("cc4")
         else:
-            parts.extend([license.unit, license.version])
+            parts.extend([tool.unit, tool.version])
         parts.append(self.language_code)
-        if license.jurisdiction_code:
-            parts.append(license.jurisdiction_code)
+        if tool.jurisdiction_code:
+            parts.append(tool.jurisdiction_code)
         return "-".join(parts).replace("_", "-").replace(".", "").lower()
 
     def identifier(self):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
-        return self.license.identifier()
+        return self.tool.identifier()
 
     @property
     def translation_domain(self):
-        return self.license.resource_slug
+        return self.tool.resource_slug
 
     def get_translation_object(self):
-        domain = self.license.resource_slug
+        domain = self.tool.resource_slug
         return get_translation_object(
             django_language_code=self.language_code,
             domain=domain,
@@ -415,8 +412,8 @@ class LegalCode(models.Model):
 
     def get_english_pofile_path(self) -> str:
         if self.language_code != settings.LANGUAGE_CODE:
-            # Same license, just in English translation:
-            english_legal_code = self.license.get_legal_code_for_language_code(
+            # Same tool, just in English translation:
+            english_legal_code = self.tool.get_legal_code_for_language_code(
                 settings.LANGUAGE_CODE
             )
             return english_legal_code.translation_filename()
@@ -429,22 +426,22 @@ class LegalCode(models.Model):
         pofile_path = get_pofile_path(
             locale_or_legalcode="legalcode",
             language_code=self.language_code,
-            translation_domain=self.license.resource_slug,
+            translation_domain=self.tool.resource_slug,
         )
         return pofile_path
 
 
-class License(models.Model):
+class Tool(models.Model):
     canonical_url = models.URLField(
         "Canonical URL",
         max_length=200,
-        help_text="The license's unique identifier, e.g."
+        help_text="The tool's unique identifier, e.g."
         " 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
     )
     unit = models.CharField(
         max_length=20,
-        help_text="shorthand representation for which class of licenses this"
+        help_text="shorthand representation for which class of tools this"
         " falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
         " 'devnations', ...",
     )
@@ -479,7 +476,7 @@ class License(models.Model):
         default=None,
         on_delete=models.CASCADE,
         related_name="source_of",
-        help_text="another license that this is the translation of",
+        help_text="another tool that this is the translation of",
     )
     is_replaced_by = models.ForeignKey(
         "self",
@@ -488,7 +485,7 @@ class License(models.Model):
         default=None,
         on_delete=models.CASCADE,
         related_name="replaces",
-        help_text="another license that has replaced this one",
+        help_text="another tool that has replaced this one",
     )
     is_based_on = models.ForeignKey(
         "self",
@@ -497,13 +494,13 @@ class License(models.Model):
         default=None,
         on_delete=models.CASCADE,
         related_name="base_of",
-        help_text="another license that this one is based on",
+        help_text="another tool that this one is based on",
     )
     deprecated_on = models.DateField(
         blank=True,
         null=True,
         default=None,
-        help_text="if set, the date on which this license was deprecated",
+        help_text="if set, the date on which this tool was deprecated",
     )
 
     deed_only = models.BooleanField(default=False)
@@ -525,13 +522,11 @@ class License(models.Model):
         ordering = ["-version", "unit", "jurisdiction_code"]
 
     def __str__(self):
-        return (
-            f"License<{self.unit},{self.version}," f"{self.jurisdiction_code}>"
-        )
+        return f"Tool<{self.unit},{self.version}," f"{self.jurisdiction_code}>"
 
     def get_metadata(self):
         """
-        Return a dictionary with the metadata for this license.
+        Return a dictionary with the metadata for this tool.
         """
         language_default = get_default_language_for_jurisdiction(
             self.jurisdiction_code
@@ -577,7 +572,7 @@ class License(models.Model):
     def logos(self):
         """
         Return an iterable of the codes for the logos that should be
-        displayed with this license. E.g.:
+        displayed with this tool. E.g.:
         ["cc-logo", "cc-zero", "cc-by"]
         """
         result = ["cc-logo"]  # Everybody gets this
@@ -595,7 +590,7 @@ class License(models.Model):
 
     def get_legal_code_for_language_code(self, language_code):
         """
-        Return the LegalCode object for this license and language.
+        Return the LegalCode object for this tool and language.
         """
         if not language_code:
             language_code = translation.get_language()
@@ -607,12 +602,12 @@ class License(models.Model):
 
     @property
     def resource_name(self):
-        """Human-readable name for the translation resource for this license"""
+        """Human-readable name for the translation resource for this tool"""
         return self.identifier()
 
     @property
     def resource_slug(self):
-        # Transifex translation resource slug for this license.
+        # Transifex translation resource slug for this tool.
         # letters, numbers, underscores or hyphens.
         # No periods.
         # All lowercase.
@@ -625,25 +620,25 @@ class License(models.Model):
         return slug
 
     def rdf(self):
-        """Generate RDF for this license?"""
+        """Generate RDF for this tool?"""
         return "RDF Generation Not Implemented"  # FIXME if needed
 
     def identifier(self):
         """
         Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
-        license = self
-        identifier = f"{license.unit} {license.version}"
+        tool = self
+        identifier = f"{tool.unit} {tool.version}"
 
-        if license.unit == "mark":
-            identifier = f"PDM {license.version}"
-        elif license.unit == "zero":
-            identifier = f"CC0 {license.version}"
-        elif license.unit in UNITS_LICENSES:
+        if tool.unit == "mark":
+            identifier = f"PDM {tool.version}"
+        elif tool.unit == "zero":
+            identifier = f"CC0 {tool.version}"
+        elif tool.unit in UNITS_LICENSES:
             identifier = f"CC {identifier}"
 
-        if license.jurisdiction_code:
-            identifier = f"{identifier} {license.jurisdiction_code}"
+        if tool.jurisdiction_code:
+            identifier = f"{identifier} {tool.jurisdiction_code}"
         identifier = identifier.upper()
         return identifier
 

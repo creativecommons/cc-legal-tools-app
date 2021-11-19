@@ -13,8 +13,8 @@ from django.urls import Resolver404, URLResolver
 
 # First-party/Local
 from legal_tools import utils
-from legal_tools.models import License
-from .factories import LegalCodeFactory, LicenseFactory
+from legal_tools.models import Tool
+from .factories import LegalCodeFactory, ToolFactory
 
 
 class LoggingTest(TestCase):
@@ -313,31 +313,32 @@ class ParseLegalcodeFilenameTest(TestCase):
             utils.parse_legal_code_filename("by_3.0_zz")
 
 
-class GetLicenseUtilityTest(TestCase):
-    """Test django-distill utility functions for
-    generating an iterable of license dictionaries
+class GetToolUtilityTest(TestCase):
+    """
+    Test django-distill utility functions for generating an iterable of legal
+    tool dictionaries
     """
 
     def setUp(self):
-        self.license1 = LicenseFactory(unit="by", version="4.0")
-        self.license2 = LicenseFactory(unit="by-nc", version="4.0")
-        self.license3 = LicenseFactory(
+        self.license1 = ToolFactory(unit="by", version="4.0")
+        self.license2 = ToolFactory(unit="by-nc", version="4.0")
+        self.license3 = ToolFactory(
             unit="by-nd", version="3.0", jurisdiction_code="hk"
         )
-        self.license4 = LicenseFactory(
+        self.license4 = ToolFactory(
             unit="by-nc-sa", version="3.0", jurisdiction_code="us"
         )
-        self.license5 = LicenseFactory(
+        self.license5 = ToolFactory(
             unit="by-na", version="3.0", jurisdiction_code="nl"
         )
-        self.license6 = LicenseFactory(unit="by", version="")  # zero
-        self.license7 = LicenseFactory(unit="by", version="2.5")
-        self.license8 = LicenseFactory(unit="by", version="2.0")
-        self.license9 = LicenseFactory(unit="by", version="2.1")
+        self.license6 = ToolFactory(unit="by", version="")  # zero
+        self.license7 = ToolFactory(unit="by", version="2.5")
+        self.license8 = ToolFactory(unit="by", version="2.0")
+        self.license9 = ToolFactory(unit="by", version="2.1")
 
-        for license in License.objects.all():
-            LegalCodeFactory(license=license, language_code="en")
-            LegalCodeFactory(license=license, language_code="fr")
+        for tool in Tool.objects.all():
+            LegalCodeFactory(tool=tool, language_code="en")
+            LegalCodeFactory(tool=tool, language_code="fr")
 
 
 class TestComputeCanonicalURL(TestCase):

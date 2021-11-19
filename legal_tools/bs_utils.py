@@ -56,7 +56,7 @@ def text_up_to(tag, tagname):
 
 def name_and_text(tag: Tag):
     """
-    This is for parsing dictionary-like elements in the license.
+    This is for parsing dictionary-like elements in the tool.
 
     If a tag contains text, where the first part has a tag around it
     for formatting (typically 'strong' or 'span'), extract the part

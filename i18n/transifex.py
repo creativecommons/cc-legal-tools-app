@@ -343,7 +343,7 @@ class TransifexHelper:
     #     transifex_code = map_django_to_transifex_language_code(
     #         legal_code.language_code
     #     )
-    #     resource_slug = legal_code.license.resource_slug
+    #     resource_slug = legal_code.tool.resource_slug
     #     self.log.info(
     #         f"\tUpdating {resource_slug} {legal_code.language_code}"
     #     )
@@ -385,7 +385,7 @@ class TransifexHelper:
     #         return
     #     branch_name = legal_codes[0].branch_name()
     #     language_code = legal_codes[0].language_code
-    #     version = legal_codes[0].license.version
+    #     version = legal_codes[0].tool.version
     #
     #     self.log.info(f"Updating branch {branch_name}")
     #
@@ -1146,8 +1146,8 @@ class TransifexHelper:
 
         # Legal Code - Sources
         for legal_code in legal_codes:
-            resource_name = legal_code.license.identifier()
-            resource_slug = legal_code.license.resource_slug
+            resource_name = legal_code.tool.identifier()
+            resource_slug = legal_code.tool.resource_slug
             if resource_slug in local_data:
                 continue
             pofile_path = legal_code.get_english_pofile_path()
@@ -1165,7 +1165,7 @@ class TransifexHelper:
 
         # Legal Code - Translations
         for legal_code in legal_codes:
-            resource_slug = legal_code.license.resource_slug
+            resource_slug = legal_code.tool.resource_slug
             language_code = legal_code.language_code
             if language_code == settings.LANGUAGE_CODE:
                 continue
@@ -1567,7 +1567,7 @@ class TransifexHelper:
         #     if last_tx_update <= legal_code.translation_last_update:
         #         # No change
         #         self.log.debug(
-        #             f"No changes for {legal_code.license.identifier()}"
+        #             f"No changes for {legal_code.tool.identifier()}"
         #         )
         #         continue
         #

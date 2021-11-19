@@ -11,7 +11,7 @@
   <div class="column is-one-quarter"></div>
   <div class="column columns padding-vertical-normal">
     <div class="column is-three-quarters padding-top-normal">
-      Version {{ legal_code.license.version }} &#8226;
+      Version {{ legal_code.tool.version }} &#8226;
       See the <a href="https://creativecommons.org/legal-code-errata/">errata page</a> for any corrections and the date of change
       {% if legal_code.translation_last_update %}
         &#8226; Translation published {{ legal_code.translation_last_update|date:'Y/m/d' }}
@@ -33,17 +33,17 @@
     {% endif %}
     <div class="column">
       {% include 'includes/licenses_header.html' %}  {#  Title and icons #}
-      {% if license.deprecated_on %}
+      {% if tool.deprecated_on %}
         {% include 'includes/deprecated.html' %} {# Retired legal tool notice #}
       {% endif %}
       {% if not legal_code.html %}
         {% include 'includes/about_cc_and_license.html' %}  {#  CC IS NOT A LAW FIRM #}
         {% include 'includes/use_of_licenses.html' %}  {# Considerations... #}
-        {% if license.category == "publicdomain" and license.unit == "zero" %}
+        {% if tool.category == "publicdomain" and tool.unit == "zero" %}
           {% include 'includes/legalcode_zero.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
-        {% elif license.category == "licenses" and license.version == "4.0" %}
+        {% elif tool.category == "licenses" and tool.version == "4.0" %}
           {% include 'includes/legalcode_licenses_4.0.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
-        {% elif license.category == "licenses" and license.version == "3.0" and not license.jurisdiction_code %}
+        {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
           {% include 'includes/legalcode_licenses_3.0_unported.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
         {% else %}
           <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black    ">

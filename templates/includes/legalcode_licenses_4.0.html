@@ -191,7 +191,7 @@
               </ol>
             </li>
             <li id="s3a2" class="padding-{% start %}-normal padding-bottom-normal">{% blocktrans trimmed %}You may satisfy the conditions in Section <a href="#s3a1">3(a)(1)</a> in any reasonable manner based on the medium, means, and context in which You Share the Licensed Material. For example, it may be reasonable to satisfy the conditions by providing a URI or hyperlink to a resource that includes the required information.{% endblocktrans %}</li>
-            {% with sharing_adapted=legal_code.license.include_share_adapted_material_clause %}
+            {% with sharing_adapted=legal_code.tool.include_share_adapted_material_clause %}
               <li id="s3a3" class="padding-{% start %}-normal {% if sharing_adapted %}padding-bottom-normal{% else %}padding-bottom-small{% endif %}">{% blocktrans trimmed %}If requested by the Licensor, You must remove any of the information
               required by Section <a href="#s3a1A">3(a)(1)(A)</a> to the extent
               reasonably practicable.{% endblocktrans %}</li>
@@ -202,7 +202,7 @@
           </ol>
         </li>
 
-        {% if "sa" in legal_code.license.unit %}
+        {% if "sa" in legal_code.tool.unit %}
           <li id="s3b" class="padding-{% start %}-normal padding-bottom-normal"><strong>{% blocktrans trimmed %}ShareAlike{% endblocktrans %}</strong>.
             <p class="padding-top-normal padding-bottom-normal">{% blocktrans trimmed %}In addition to the conditions in Section <a href="#s3a">3(a)</a>, if You Share Adapted Material You produce, the following conditions also apply.{% endblocktrans %}</p>
             <ol class="padding-{% start %}-normal">

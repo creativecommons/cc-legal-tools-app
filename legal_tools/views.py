@@ -27,7 +27,7 @@ from legal_tools.models import (
     UNITS_LICENSES,
     UNITS_PUBLIC_DOMAIN,
     LegalCode,
-    License,
+    Tool,
     TranslationBranch,
 )
 
@@ -37,11 +37,11 @@ NUM_COMMITS = 3
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
 
 
-def get_category_and_category_title(category=None, license=None):
+def get_category_and_category_title(category=None, tool=None):
     # category
     if not category:
-        if license:
-            category = license.category
+        if tool:
+            category = tool.category
         else:
             category = "licenses"
     # category_title
@@ -164,37 +164,37 @@ def normalize_path_and_lang(request_path, jurisdiction, language_code):
 
 def view_dev_home(request, category=None):
     """
-    For test purposes, this displays all the available deeds and licenses in
+    For test purposes, this displays all the available deeds and legal code in
     tables. This is not intended for public use and should not be included in
     the generation of static files.
     """
-    # Get the list of units and languages that occur among the licenses
+    # Get the list of units and languages that occur among the tools
     # to let the template iterate over them as it likes.
     legal_code_objects = (
         LegalCode.objects.valid()
-        .select_related("license")
+        .select_related("tool")
         .order_by(
-            "-license__version",
-            "license__jurisdiction_code",
+            "-tool__version",
+            "tool__jurisdiction_code",
             "language_code",
-            "license__unit",
+            "tool__unit",
         )
     )
     licenses = []
     publicdomain = []
     path_start = os.path.dirname(request.path)
     for lc in legal_code_objects:
-        lc_category = lc.license.category
-        lc_unit = lc.license.unit
-        lc_version = lc.license.version
+        lc_category = lc.tool.category
+        lc_unit = lc.tool.unit
+        lc_version = lc.tool.version
         lc_language_default = get_default_language_for_jurisdiction(
-            lc.license.jurisdiction_code,
+            lc.tool.jurisdiction_code,
         )
         jurisdiction_name = get_jurisdiction_name(
             lc_category,
             lc_unit,
             lc_version,
-            lc.license.jurisdiction_code,
+            lc.tool.jurisdiction_code,
         )
         deed_rel_path = get_deed_rel_path(
             lc.deed_url,
@@ -208,13 +208,13 @@ def view_dev_home(request, category=None):
             jurisdiction_name=jurisdiction_name,
             unit=lc_unit,
             language_code=lc.language_code,
-            deed_only=lc.license.deed_only,
+            deed_only=lc.tool.deed_only,
             deed_translated=deed_translated,
             deed_url=deed_rel_path,
             legal_code_url=os.path.relpath(
                 lc.legal_code_url, start=path_start
             ),
-            identifier=lc.license.identifier(),
+            identifier=lc.tool.identifier(),
         )
         if lc_category == "licenses":
             licenses.append(data)
@@ -266,16 +266,16 @@ def view_deed(
     #
     # Initially set legal_code based on language_default.
     legal_code = LegalCode.objects.filter(
-        license__unit=unit,
-        license__version=version,
-        license__jurisdiction_code=jurisdiction,
+        tool__unit=unit,
+        tool__version=version,
+        tool__jurisdiction_code=jurisdiction,
         language_code=language_default,
     )[0]
     legal_code_languages = []
     for possible_legal_code in LegalCode.objects.filter(
-        license__unit=unit,
-        license__version=version,
-        license__jurisdiction_code=jurisdiction,
+        tool__unit=unit,
+        tool__version=version,
+        tool__jurisdiction_code=jurisdiction,
     ):
         legal_code_languages.append(possible_legal_code.language_code)
     if (
@@ -283,16 +283,16 @@ def view_deed(
         and language_code in legal_code_languages
     ):
         legal_code = LegalCode.objects.filter(
-            license__unit=unit,
-            license__version=version,
-            license__jurisdiction_code=jurisdiction,
+            tool__unit=unit,
+            tool__version=version,
+            tool__jurisdiction_code=jurisdiction,
             language_code=language_code,
         )[0]
 
-    license = legal_code.license
+    tool = legal_code.tool
     category, category_title = get_category_and_category_title(
         category,
-        license,
+        tool,
     )
     languages_and_links = get_languages_and_links_for_deeds_ux(
         request_path=request.path,
@@ -307,13 +307,13 @@ def view_deed(
         legal_code_languages,
     )
 
-    if license.unit in UNITS_LICENSES:
+    if tool.unit in UNITS_LICENSES:
         body_template = "includes/deed_body_licenses.html"
-    elif license.unit == "zero":
+    elif tool.unit == "zero":
         body_template = "includes/deed_body_zero.html"
-    elif license.unit == "mark":
+    elif tool.unit == "mark":
         body_template = "includes/deed_body_mark.html"
-    elif license.unit == "certification":
+    elif tool.unit == "certification":
         body_template = "includes/deed_body_certification.html"
     else:
         body_template = "includes/deed_body_unimplemented.html"
@@ -327,11 +327,11 @@ def view_deed(
             "body_template": body_template,
             "category": category,
             "category_title": category_title,
-            "identifier": license.identifier(),
+            "identifier": tool.identifier(),
             "languages_and_links": languages_and_links,
             "legal_code": legal_code,
             "legal_code_rel_path": legal_code_rel_path,
-            "license": license,
+            "tool": tool,
         },
     )
     html_response.content = bytes(
@@ -371,16 +371,16 @@ def view_legal_code(
         legal_code_url=request.path,
     )
 
-    license = legal_code.license
+    tool = legal_code.tool
     category, category_title = get_category_and_category_title(
         category,
-        license,
+        tool,
     )
 
     language_code = legal_code.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legal_codes(
         path_start=path_start,
-        legal_codes=license.legal_codes.all(),
+        legal_codes=tool.legal_codes.all(),
         selected_language_code=language_code,
     )
 
@@ -397,10 +397,10 @@ def view_legal_code(
             "category": category,
             "category_title": category_title,
             "deed_rel_path": deed_rel_path,
-            "identifier": license.identifier(),
+            "identifier": tool.identifier(),
             "languages_and_links": languages_and_links,
             "legal_code": legal_code,
-            "license": license,
+            "tool": tool,
         },
     )
 
@@ -454,7 +454,7 @@ def view_translation_status(request):
 
     legal_code_objects = (
         LegalCode.objects.valid()
-        .select_related("license")
+        .select_related("tool")
         .order_by(
             "language_code",
         )
@@ -588,11 +588,9 @@ def view_branch_status(request, id):
 
 def view_metadata(request):
     data = {"licenses": [], "publicdomain": []}
-    for license in License.objects.all():
-        category = license.category
-        data[category].append(
-            {f"{license.resource_slug}": license.get_metadata()}
-        )
+    for tool in Tool.objects.all():
+        category = tool.category
+        data[category].append({f"{tool.resource_slug}": tool.get_metadata()})
     yaml_bytes = yaml.dump(
         data, default_flow_style=False, encoding="utf-8", allow_unicode=True
     )

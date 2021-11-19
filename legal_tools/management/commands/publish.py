@@ -51,8 +51,8 @@ class Command(BaseCommand):
     branch in cc-legal-tools-data repository
 
     Arguments:
-        branch_name - Branch name in cc-license-data to pull translations from
-                      and publish artifacts too.
+        branch_name - Branch name in cc-legal-tools-data to pull translations
+                      from and publish artifacts too.
         list_branches - A list of active branches in cc-legal-tools-data will
                         be displayed
 
@@ -203,20 +203,20 @@ class Command(BaseCommand):
             relpath="licenses/metadata.yaml",
         )
 
-    def run_copy_licenses_rdfs(self):
+    def run_copy_tools_rdfs(self):
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
         output_dir = self.output_dir
-        licenses_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
-        licenses_rdfs = [
+        tools_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
+        tools_rdfs = [
             rdf_file
-            for rdf_file in os.listdir(licenses_rdf_dir)
-            if os.path.isfile(os.path.join(licenses_rdf_dir, rdf_file))
+            for rdf_file in os.listdir(tools_rdf_dir)
+            if os.path.isfile(os.path.join(tools_rdf_dir, rdf_file))
         ]
-        licenses_rdfs.sort()
+        tools_rdfs.sort()
         LOG.info("Copying legal code RDFs")
         LOG.debug(f"{hostname}:{output_dir}")
-        for rdf in licenses_rdfs:
+        for rdf in tools_rdfs:
             if rdf.endswith(".rdf"):
                 name = rdf[:-4]
             else:
@@ -227,7 +227,7 @@ class Command(BaseCommand):
             relative_name = relative_name.replace("xu/", "")
             dest_file = os.path.join(output_dir, relative_name)
             os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-            copyfile(os.path.join(licenses_rdf_dir, rdf), dest_file)
+            copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
             LOG.debug(f"    {relative_name}")
 
     def run_copy_meta_rdfs(self):
@@ -312,7 +312,7 @@ class Command(BaseCommand):
     def distill_and_copy(self):
         self.run_clean_output_dir()
         self.run_django_distill()
-        self.run_copy_licenses_rdfs()
+        self.run_copy_tools_rdfs()
         self.run_copy_meta_rdfs()
         self.run_copy_legal_code_plaintext()
 

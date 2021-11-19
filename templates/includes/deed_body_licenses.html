@@ -13,7 +13,7 @@
 
   {% elif legal_code|is_one_of:"nc-sampling+,sampling,sampling+" %}
 
-    {% if license.prohibits_commercial_use %}
+    {% if tool.prohibits_commercial_use %}
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for noncommercial purposes.{% endblocktrans %}</p>
     {% else %}
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for commercial or noncommercial purposes.{% endblocktrans %}</p>
@@ -25,14 +25,14 @@
 
   {% else %}
 
-    {% if license.prohibits_commercial_use %}
+    {% if tool.prohibits_commercial_use %}
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>Share</strong> &mdash; copy and redistribute the material in any medium or format{% endblocktrans %}</p>
     {% else %}
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>Share</strong> — copy and redistribute the material in any medium or format for any purpose, even commercially.{% endblocktrans %}</p>
     {% endif %}
 
-    {% if license.permits_derivative_works %}
-      {% if license.prohibits_commercial_use %}
+    {% if tool.permits_derivative_works %}
+      {% if tool.prohibits_commercial_use %}
         <p class="has-text-black body-big padding-bottom-small">{% blocktrans %}<strong>Adapt</strong> &mdash; remix, transform, and build upon the material{% endblocktrans %}
         </p>
       {% else %}
@@ -53,7 +53,7 @@
   </h3>
   <div class="columns is-multiline">
 
-  {% if license.prohibits_high_income_nation_use %}
+  {% if tool.prohibits_high_income_nation_use %}
     <div class="column is-1">
       {# empty div because there is no icon, but we need spacing #}
     </div>
@@ -65,7 +65,7 @@
     </div>
   {% endif %}
 
-  {% if license.requires_attribution %}
+  {% if tool.requires_attribution %}
     <div class="column is-1">
       {% include 'includes/snippet/icon.html' with icon_type='cc-by' %}
     </div>
@@ -77,7 +77,7 @@
     </div>
   {% endif %}
 
-  {% if license.prohibits_commercial_use %}
+  {% if tool.prohibits_commercial_use %}
     <div class="column is-1">
       {% include 'includes/snippet/icon.html' with icon_type='cc-nc' %}
     </div>
@@ -89,7 +89,7 @@
     </div>
   {% endif %}
 
-  {% if license.requires_share_alike %}
+  {% if tool.requires_share_alike %}
     <div class="column is-1">
       {% include 'includes/snippet/icon.html' with icon_type='cc-sa' %}
     </div>
@@ -100,7 +100,7 @@
     </div>
   {% endif %}
 
-  {% if not license.permits_derivative_works %}
+  {% if not tool.permits_derivative_works %}
     <div class="column is-1">
       {% include 'includes/snippet/icon.html' with icon_type='cc-nd' %}
     </div>

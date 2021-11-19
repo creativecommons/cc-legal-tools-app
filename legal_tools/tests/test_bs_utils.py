@@ -63,7 +63,7 @@ class TestBSUtils(TestCase):
 
     def test_name_and_text(self):
         """
-        This is for parsing dictionary-like elements in the license.
+        This is for parsing dictionary-like elements in the legal tool.
 
         If a tag contains text, where the first part has a tag around it
         for formatting (typically 'strong' or 'span'), extract the part

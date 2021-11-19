@@ -2,7 +2,7 @@
 import factory.fuzzy
 
 # First-party/Local
-from legal_tools.models import LegalCode, License, TranslationBranch
+from legal_tools.models import LegalCode, Tool, TranslationBranch
 
 # The language codes we already have translations for
 language_codes = [
@@ -38,9 +38,9 @@ language_codes = [
 ]
 
 
-class LicenseFactory(factory.django.DjangoModelFactory):
+class ToolFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = License
+        model = Tool
 
     canonical_url = factory.Faker("url")
     unit = factory.fuzzy.FuzzyChoice(
@@ -67,7 +67,7 @@ class LegalCodeFactory(factory.django.DjangoModelFactory):
         model = LegalCode
 
     language_code = factory.fuzzy.FuzzyChoice(language_codes)
-    license = factory.SubFactory(LicenseFactory)
+    tool = factory.SubFactory(ToolFactory)
 
 
 class TranslationBranchFactory(factory.django.DjangoModelFactory):
@@ -95,6 +95,6 @@ class TranslationBranchFactory(factory.django.DjangoModelFactory):
             self.legal_codes.add(
                 LegalCodeFactory(
                     language_code=self.language_code,
-                    license__version=self.version,
+                    tool__version=self.version,
                 )
             )

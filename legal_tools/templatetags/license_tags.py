@@ -68,4 +68,4 @@ def current_letter():
 @register.filter
 def is_one_of(legal_code, arg):
     codes = arg.split(",")
-    return legal_code.license.unit in codes
+    return legal_code.tool.unit in codes

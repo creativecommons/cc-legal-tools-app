@@ -73,25 +73,25 @@ def get_translation_object(
 ) -> translation.trans_real.DjangoTranslation:
     """
     Return a DjangoTranslation object suitable to activate when we're wanting
-    to render templates for this language code and domain.  (The domain is
+    to render templates for this language code and domain. (The domain is
     typically specific to one or a few licenses that have common translations.)
 
     This fuction requires the legal code locales path to have been added to
     Django settings.LOCALE_PATHS
     """
 
-    # Start with a translation object for the domain for this license.
-    license_translation_object = translation.trans_real.DjangoTranslation(
+    # Start with a translation object for the domain for this tool.
+    tool_translation_object = translation.trans_real.DjangoTranslation(
         language=django_language_code,
         domain=domain,
     )
     # Add a fallback to the standard Django translation for this language. This
     # gets us the non-legal-code parts of the pages.
-    license_translation_object.add_fallback(
+    tool_translation_object.add_fallback(
         translation.trans_real.translation(django_language_code)
     )
 
-    return license_translation_object
+    return tool_translation_object
 
 
 @contextmanager

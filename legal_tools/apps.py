@@ -7,7 +7,7 @@ from i18n.utils import load_deeds_ux_translations, update_lang_info
 from legal_tools.git_utils import setup_to_call_git
 
 
-class LicensesConfig(AppConfig):
+class LegalToolsConfig(AppConfig):
     # required: must be the Full dotted path to the app
     name = settings.APP_NAME
     # optional: app label, must be unique in Django project

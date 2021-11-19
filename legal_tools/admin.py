@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 # First-party/Local
-from legal_tools.models import LegalCode, License, TranslationBranch
+from legal_tools.models import LegalCode, Tool, TranslationBranch
 
 
 @admin.register(TranslationBranch)
@@ -28,7 +28,7 @@ class TranslationBranchAdmin(admin.ModelAdmin):
 class LegalCodeAdmin(admin.ModelAdmin):
     fields = [
         "title",
-        "license",
+        "tool",
         "language_code",
         "legal_code_url",
         "deed_url",
@@ -39,14 +39,14 @@ class LegalCodeAdmin(admin.ModelAdmin):
     ]
     list_display = [
         "language_code",
-        "license",
+        "tool",
     ]
     list_filter = [
-        "license__unit",
+        "tool__unit",
         "language_code",
     ]
     raw_id_fields = [
-        "license",
+        "tool",
     ]
 
 
@@ -55,12 +55,12 @@ class LegalCodeInline(admin.TabularInline):
     list_display = [
         "url",
         "language_code",
-        "license",
+        "tool",
     ]
 
 
-@admin.register(License)
-class LicenseAdmin(admin.ModelAdmin):
+@admin.register(Tool)
+class ToolAdmin(admin.ModelAdmin):
     fields = [
         "canonical_url",
         "unit",

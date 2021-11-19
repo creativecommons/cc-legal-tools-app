@@ -5,7 +5,7 @@ import logging
 from django.core.management import BaseCommand
 
 # First-party/Local
-from legal_tools.models import LegalCode, License
+from legal_tools.models import LegalCode, Tool
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
@@ -20,4 +20,4 @@ class Command(BaseCommand):
     def handle(self, **options):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         LegalCode.objects.all().delete()
-        License.objects.all().delete()
+        Tool.objects.all().delete()

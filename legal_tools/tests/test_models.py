@@ -9,10 +9,10 @@ from django.utils.translation import override
 
 # First-party/Local
 from legal_tools import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
-from legal_tools.models import LegalCode, License
+from legal_tools.models import LegalCode, Tool
 from legal_tools.tests.factories import (
     LegalCodeFactory,
-    LicenseFactory,
+    ToolFactory,
     TranslationBranchFactory,
 )
 
@@ -23,28 +23,28 @@ from legal_tools.tests.factories import (
 
 class LegalCodeQuerySetTest(TestCase):
     def test_translated(self):
-        bylicense30ported = LicenseFactory(
+        bylicense30ported = ToolFactory(
             unit="by-nc", version="3.0", jurisdiction_code="ar"
         )
-        bylicense30unported = LicenseFactory(
+        bylicense30unported = ToolFactory(
             unit="by-nc", version="3.0", jurisdiction_code=""
         )
 
-        bylicense40 = LicenseFactory(
+        bylicense40 = ToolFactory(
             unit="by-nc", version="4.0", jurisdiction_code=""
         )
 
-        zerov1license = LicenseFactory(
+        zerov1declaration = ToolFactory(
             unit="zero", version="1.0", jurisdiction_code=""
         )
 
         should_be_translated = [
-            LegalCodeFactory(license=bylicense40),
-            LegalCodeFactory(license=zerov1license),
+            LegalCodeFactory(tool=bylicense40),
+            LegalCodeFactory(tool=zerov1declaration),
         ]
         should_not_be_translated = [
-            LegalCodeFactory(license=bylicense30ported),
-            LegalCodeFactory(license=bylicense30unported),
+            LegalCodeFactory(tool=bylicense30ported),
+            LegalCodeFactory(tool=bylicense30unported),
         ]
         self.assertCountEqual(
             should_be_translated, list(LegalCode.objects.translated())
@@ -55,45 +55,45 @@ class LegalCodeQuerySetTest(TestCase):
         )
 
     def test_valid(self):
-        bylicense30ported = LicenseFactory(
+        bylicense30ported = ToolFactory(
             unit="by-nc", version="3.0", jurisdiction_code="ar"
         )
-        bylicense30unported = LicenseFactory(
+        bylicense30unported = ToolFactory(
             unit="by-nc", version="3.0", jurisdiction_code=""
         )
-        nonbylicense30ported = LicenseFactory(
+        nonbylicense30ported = ToolFactory(
             unit="xyz", version="3.0", jurisdiction_code="ar"
         )
-        nonbylicense30unported = LicenseFactory(
+        nonbylicense30unported = ToolFactory(
             unit="xyz", version="3.0", jurisdiction_code=""
         )
 
-        bylicense40 = LicenseFactory(
+        bylicense40 = ToolFactory(
             unit="by-nc", version="4.0", jurisdiction_code=""
         )
-        nonbylicense40 = LicenseFactory(
+        nonbylicense40 = ToolFactory(
             unit="xyz", version="4.0", jurisdiction_code=""
         )
 
-        zerov1license = LicenseFactory(
+        zerov1declaration = ToolFactory(
             unit="zero", version="1.0", jurisdiction_code=""
         )
-        nonzerov1license = LicenseFactory(
+        nonzerov1declaration = ToolFactory(
             unit="xyz", version="1.0", jurisdiction_code=""
         )
 
         # Test valid()
         should_be_valid = [
-            LegalCodeFactory(license=bylicense30ported),
-            LegalCodeFactory(license=bylicense30unported),
-            LegalCodeFactory(license=bylicense40),
-            LegalCodeFactory(license=zerov1license),
+            LegalCodeFactory(tool=bylicense30ported),
+            LegalCodeFactory(tool=bylicense30unported),
+            LegalCodeFactory(tool=bylicense40),
+            LegalCodeFactory(tool=zerov1declaration),
         ]
         should_not_be_valid = [
-            LegalCodeFactory(license=nonbylicense30ported),
-            LegalCodeFactory(license=nonbylicense30unported),
-            LegalCodeFactory(license=nonbylicense40),
-            LegalCodeFactory(license=nonzerov1license),
+            LegalCodeFactory(tool=nonbylicense30ported),
+            LegalCodeFactory(tool=nonbylicense30unported),
+            LegalCodeFactory(tool=nonbylicense40),
+            LegalCodeFactory(tool=nonzerov1declaration),
         ]
         self.assertCountEqual(should_be_valid, list(LegalCode.objects.valid()))
         self.assertCountEqual(
@@ -125,7 +125,7 @@ class LegalCodeModelTest(TestCase):
         self.assertEqual(
             str(legal_code),
             f"LegalCode<{legal_code.language_code},"
-            f" {str(legal_code.license)}>",
+            f" {str(legal_code.tool)}>",
         )
 
     def test_translation_domain(self):
@@ -138,9 +138,9 @@ class LegalCodeModelTest(TestCase):
         for expected, unit, version, jurisdiction, language in data:
             with self.subTest(expected):
                 legal_code = LegalCodeFactory(
-                    license__unit=unit,
-                    license__version=version,
-                    license__jurisdiction_code=jurisdiction,
+                    tool__unit=unit,
+                    tool__version=version,
+                    tool__jurisdiction_code=jurisdiction,
                     language_code=language,
                 )
                 self.assertEqual(expected, legal_code.translation_domain)
@@ -167,7 +167,7 @@ class LegalCodeModelTest(TestCase):
 
         for expected, unit, version, jurisdiction, language in data:
             with self.subTest(expected):
-                license = LicenseFactory(
+                tool = ToolFactory(
                     unit=unit,
                     version=version,
                     jurisdiction_code=jurisdiction,
@@ -175,28 +175,28 @@ class LegalCodeModelTest(TestCase):
                 self.assertEqual(
                     expected,
                     LegalCodeFactory(
-                        license=license, language_code=language
+                        tool=tool, language_code=language
                     ).translation_filename(),
                 )
 
     # NOTE: plaintext functionality disabled
     # def test_plain_text_url(self):
     #     lc0 = LegalCodeFactory(
-    #         license__unit="by",
-    #         license__version="4.0",
-    #         license__jurisdiction_code="",
+    #         tool__unit="by",
+    #         tool__version="4.0",
+    #         tool__jurisdiction_code="",
     #         language_code="en",
     #     )
     #     lc1 = LegalCodeFactory(
-    #         license__unit="by",
-    #         license__version="4.0",
-    #         license__jurisdiction_code="",
+    #         tool__unit="by",
+    #         tool__version="4.0",
+    #         tool__jurisdiction_code="",
     #         language_code="fr",
     #     )
     #     lc2 = LegalCodeFactory(
-    #         license__unit="by",
-    #         license__version="4.0",
-    #         license__jurisdiction_code="",
+    #         tool__unit="by",
+    #         tool__version="4.0",
+    #         tool__jurisdiction_code="",
     #         language_code="ar",
     #     )
     #     self.assertEqual(
@@ -221,17 +221,17 @@ class LegalCodeModelTest(TestCase):
     @override_settings(DATA_REPOSITORY_DIR="/some/dir")
     def test_get_english_pofile_path(self):
         legal_code = LegalCodeFactory(
-            license__version="4.0",
-            license__unit="by-sa",
+            tool__version="4.0",
+            tool__unit="by-sa",
             language_code="de",
         )
         legal_code_en = LegalCodeFactory(
-            license=legal_code.license, language_code=settings.LANGUAGE_CODE
+            tool=legal_code.tool, language_code=settings.LANGUAGE_CODE
         )
         expected_path = "/some/dir/legalcode/en/LC_MESSAGES/by-sa_40.po"
 
         with mock.patch.object(
-            License, "get_legal_code_for_language_code"
+            Tool, "get_legal_code_for_language_code"
         ) as mock_glfl:
             mock_glfl.return_value = legal_code_en
             self.assertEqual(
@@ -247,8 +247,8 @@ class LegalCodeModelTest(TestCase):
         # get_translation_object on the model calls the
         # i18n.utils.get_translation_object.
         legal_code = LegalCodeFactory(
-            license__version="4.0",
-            license__unit="by-sa",
+            tool__version="4.0",
+            tool__unit="by-sa",
             language_code="de",
         )
 
@@ -262,30 +262,30 @@ class LegalCodeModelTest(TestCase):
 
     def test_branch_name(self):
         legal_code = LegalCodeFactory(
-            license__version="4.0",
-            license__unit="by-sa",
+            tool__version="4.0",
+            tool__unit="by-sa",
             language_code="de",
         )
         self.assertEqual("cc4-de", legal_code.branch_name())
         legal_code = LegalCodeFactory(
-            license__version="3.5",
-            license__unit="other",
+            tool__version="3.5",
+            tool__unit="other",
             language_code="de",
         )
         self.assertEqual("other-35-de", legal_code.branch_name())
         legal_code = LegalCodeFactory(
-            license__version="3.5",
-            license__unit="other",
+            tool__version="3.5",
+            tool__unit="other",
             language_code="de",
-            license__jurisdiction_code="xyz",
+            tool__jurisdiction_code="xyz",
         )
         self.assertEqual("other-35-de-xyz", legal_code.branch_name())
 
     def test_has_english(self):
-        license = LicenseFactory()
-        lc_fr = LegalCodeFactory(license=license, language_code="fr")
+        tool = ToolFactory()
+        lc_fr = LegalCodeFactory(tool=tool, language_code="fr")
         self.assertFalse(lc_fr.has_english())
-        lc_en = LegalCodeFactory(license=license, language_code="en")
+        lc_en = LegalCodeFactory(tool=tool, language_code="en")
         self.assertTrue(lc_fr.has_english())
         self.assertTrue(lc_en.has_english())
 
@@ -299,18 +299,18 @@ class LegalCodeModelTest(TestCase):
             expected_deed_path,
             expected_deed_symlinks,
             expected_deed_redirects_data,
-            expected_license_path,
-            expected_license_symlinks,
-            expected_license_redirects_data,
+            expected_tool_path,
+            expected_tool_symlinks,
+            expected_tool_redirects_data,
         ) in data:
-            license = LicenseFactory(
+            tool = ToolFactory(
                 category=category,
                 unit=unit,
                 version=version,
                 jurisdiction_code=jurisdiction_code,
             )
             legal_code = LegalCodeFactory(
-                license=license, language_code=language_code
+                tool=tool, language_code=language_code
             )
             self.assertEqual(
                 [
@@ -322,9 +322,9 @@ class LegalCodeModelTest(TestCase):
             )
             self.assertEqual(
                 [
-                    expected_license_path,
-                    expected_license_symlinks,
-                    expected_license_redirects_data,
+                    expected_tool_path,
+                    expected_tool_symlinks,
+                    expected_tool_redirects_data,
                 ],
                 legal_code.get_publish_files("legalcode"),
             )
@@ -706,8 +706,8 @@ class LegalCodeModelTest(TestCase):
         )
 
     def test_get_redirect_pairs_4(self):
-        license = LicenseFactory(category="license", unit="by", version="4.0")
-        legal_code = LegalCodeFactory(license=license, language_code="nl")
+        tool = ToolFactory(category="license", unit="by", version="4.0")
+        legal_code = LegalCodeFactory(tool=tool, language_code="nl")
         redirect_pairs = legal_code.get_redirect_pairs("deed")
         self.assertEqual(
             [["license/by/4.0/deed.NL", "license/by/4.0/deed.nl"]],
@@ -715,22 +715,22 @@ class LegalCodeModelTest(TestCase):
         )
 
 
-class LicenseModelTest(TestCase):
+class ToolModelTest(TestCase):
     def test_nc(self):
-        self.assertFalse(LicenseFactory(unit="xyz").nc)
-        self.assertTrue(LicenseFactory(unit="by-nc-xyz").nc)
+        self.assertFalse(ToolFactory(unit="xyz").nc)
+        self.assertTrue(ToolFactory(unit="by-nc-xyz").nc)
 
     def test_nd(self):
-        self.assertFalse(LicenseFactory(unit="xyz").nd)
-        self.assertTrue(LicenseFactory(unit="by-nd-xyz").nd)
+        self.assertFalse(ToolFactory(unit="xyz").nd)
+        self.assertTrue(ToolFactory(unit="by-nd-xyz").nd)
 
     def test_sa(self):
-        self.assertFalse(LicenseFactory(unit="xyz").sa)
-        self.assertTrue(LicenseFactory(unit="xyz-sa").sa)
+        self.assertFalse(ToolFactory(unit="xyz").sa)
+        self.assertTrue(ToolFactory(unit="xyz-sa").sa)
 
     def test_get_metadata(self):
         # Ported
-        license = LicenseFactory(
+        tool = ToolFactory(
             **{
                 "canonical_url": (
                     "https://creativecommons.org/licenses/by-nc/3.0/xyz/"
@@ -752,10 +752,10 @@ class LicenseModelTest(TestCase):
             }
         )
 
-        LegalCodeFactory(license=license, language_code="pt")
-        LegalCodeFactory(license=license, language_code="en")
+        LegalCodeFactory(tool=tool, language_code="pt")
+        LegalCodeFactory(tool=tool, language_code="en")
 
-        data = license.get_metadata()
+        data = tool.get_metadata()
         expected_data = {
             "jurisdiction_name": "xyz",
             "unit": "by-nc",
@@ -780,7 +780,7 @@ class LicenseModelTest(TestCase):
             self.assertEqual(expected_data[key], data[key])
 
         # Unported
-        license = LicenseFactory(
+        tool = ToolFactory(
             **{
                 "canonical_url": (
                     "https://creativecommons.org/licenses/by-nc/3.0/"
@@ -802,9 +802,9 @@ class LicenseModelTest(TestCase):
             }
         )
 
-        LegalCodeFactory(license=license, language_code="en")
+        LegalCodeFactory(tool=tool, language_code="en")
 
-        data = license.get_metadata()
+        data = tool.get_metadata()
         expected_data = {
             "unit": "by-nc",
             "version": "3.0",
@@ -827,7 +827,7 @@ class LicenseModelTest(TestCase):
             self.assertEqual(expected_data[key], data[key])
 
         # Deprecated
-        license = LicenseFactory(
+        tool = ToolFactory(
             **{
                 "canonical_url": (
                     "https://creativecommons.org/licenses/sampling/1.0/"
@@ -850,9 +850,9 @@ class LicenseModelTest(TestCase):
             }
         )
 
-        LegalCodeFactory(license=license, language_code="en")
+        LegalCodeFactory(tool=tool, language_code="en")
 
-        data = license.get_metadata()
+        data = tool.get_metadata()
         expected_data = {
             "unit": "sampling",
             "version": "1.0",
@@ -876,7 +876,7 @@ class LicenseModelTest(TestCase):
             self.assertEqual(expected_data[key], data[key])
 
         # Deed-only
-        license = LicenseFactory(
+        tool = ToolFactory(
             **{
                 "canonical_url": (
                     "https://creativecommons.org/publicdomain/mark/1.0/"
@@ -900,9 +900,9 @@ class LicenseModelTest(TestCase):
             }
         )
 
-        LegalCodeFactory(license=license, language_code="en")
+        LegalCodeFactory(tool=tool, language_code="en")
 
-        data = license.get_metadata()
+        data = tool.get_metadata()
         expected_data = {
             "unit": "mark",
             "version": "1.0",
@@ -923,14 +923,14 @@ class LicenseModelTest(TestCase):
             self.assertEqual(expected_data[key], data[key])
 
     def test_logos(self):
-        # Every license includes "cc-logo"
-        self.assertIn("cc-logo", LicenseFactory().logos())
+        # Every tool includes "cc-logo"
+        self.assertIn("cc-logo", ToolFactory().logos())
         self.assertEqual(
-            ["cc-logo", "cc-zero"], LicenseFactory(unit="zero").logos()
+            ["cc-logo", "cc-zero"], ToolFactory(unit="zero").logos()
         )
         self.assertEqual(
             ["cc-logo", "cc-by"],
-            LicenseFactory(
+            ToolFactory(
                 unit="by",
                 version="4.0",
                 prohibits_commercial_use=False,
@@ -940,7 +940,7 @@ class LicenseModelTest(TestCase):
         )
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-nc"],
-            LicenseFactory(
+            ToolFactory(
                 unit="by-nc",
                 version="3.0",
                 prohibits_commercial_use=True,
@@ -950,7 +950,7 @@ class LicenseModelTest(TestCase):
         )
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-nd"],
-            LicenseFactory(
+            ToolFactory(
                 unit="by-nd",
                 version="4.0",
                 prohibits_commercial_use=False,
@@ -960,7 +960,7 @@ class LicenseModelTest(TestCase):
         )
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-sa"],
-            LicenseFactory(
+            ToolFactory(
                 unit="by-sa",
                 version="4.0",
                 prohibits_commercial_use=False,
@@ -970,7 +970,7 @@ class LicenseModelTest(TestCase):
         )
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-nc", "cc-sa"],
-            LicenseFactory(
+            ToolFactory(
                 unit="by-nc-sa",
                 version="4.0",
                 prohibits_commercial_use=True,
@@ -980,7 +980,7 @@ class LicenseModelTest(TestCase):
         )
         self.assertEqual(
             ["cc-logo", "cc-by", "cc-nc", "cc-sa"],
-            LicenseFactory(
+            ToolFactory(
                 unit="by-nc-sa",
                 version="3.0",
                 prohibits_commercial_use=True,
@@ -990,105 +990,100 @@ class LicenseModelTest(TestCase):
         )
 
     def test_get_legal_code_for_language_code(self):
-        license = LicenseFactory()
+        tool = ToolFactory()
 
-        lc_pt = LegalCodeFactory(license=license, language_code="pt")
-        lc_en = LegalCodeFactory(license=license, language_code="en")
+        lc_pt = LegalCodeFactory(tool=tool, language_code="pt")
+        lc_en = LegalCodeFactory(tool=tool, language_code="en")
 
         with override(language="pt"):
-            result = license.get_legal_code_for_language_code(None)
+            result = tool.get_legal_code_for_language_code(None)
             self.assertEqual(lc_pt.id, result.id)
-        result = license.get_legal_code_for_language_code("pt")
+        result = tool.get_legal_code_for_language_code("pt")
         self.assertEqual(lc_pt.id, result.id)
-        result = license.get_legal_code_for_language_code("en")
+        result = tool.get_legal_code_for_language_code("en")
         self.assertEqual(lc_en.id, result.id)
         with self.assertRaises(LegalCode.DoesNotExist):
-            license.get_legal_code_for_language_code("en_us")
+            tool.get_legal_code_for_language_code("en_us")
 
     def test_resource_name(self):
-        license = LicenseFactory(
+        tool = ToolFactory(
             unit="qwerty", version="2.7", jurisdiction_code="zys"
         )
-        self.assertEqual("QWERTY 2.7 ZYS", license.resource_name)
-        license = LicenseFactory(
-            unit="qwerty", version="2.7", jurisdiction_code=""
-        )
-        self.assertEqual("QWERTY 2.7", license.resource_name)
+        self.assertEqual("QWERTY 2.7 ZYS", tool.resource_name)
+        tool = ToolFactory(unit="qwerty", version="2.7", jurisdiction_code="")
+        self.assertEqual("QWERTY 2.7", tool.resource_name)
 
     def test_resource_slug(self):
-        license = LicenseFactory(
+        tool = ToolFactory(
             unit="qwerty", version="2.7", jurisdiction_code="zys"
         )
-        self.assertEqual("qwerty_27_zys", license.resource_slug)
-        license = LicenseFactory(
-            unit="qwerty", version="2.7", jurisdiction_code=""
-        )
-        self.assertEqual("qwerty_27", license.resource_slug)
+        self.assertEqual("qwerty_27_zys", tool.resource_slug)
+        tool = ToolFactory(unit="qwerty", version="2.7", jurisdiction_code="")
+        self.assertEqual("qwerty_27", tool.resource_slug)
 
     def test_str(self):
-        license = LicenseFactory(
+        tool = ToolFactory(
             unit="bx-oh", version="1.3", jurisdiction_code="any"
         )
         self.assertEqual(
-            str(license),
-            f"License<{license.unit},{license.version},"
-            f"{license.jurisdiction_code}>",
+            str(tool),
+            f"Tool<{tool.unit},{tool.version}," f"{tool.jurisdiction_code}>",
         )
 
     def test_rdf(self):
-        license = LicenseFactory(
+        tool = ToolFactory(
             unit="bx-oh", version="1.3", jurisdiction_code="any"
         )
-        self.assertEqual("RDF Generation Not Implemented", license.rdf())
+        self.assertEqual("RDF Generation Not Implemented", tool.rdf())
 
     # def test_default_language_code(self):
-    #     license = LicenseFactory(
+    #     tool = ToolFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code=""
     #     )
     #     self.assertEqual(
-    #         settings.LANGUAGE_CODE, license.default_language_code()
+    #         settings.LANGUAGE_CODE, tool.default_language_code()
     #     )
-    #     license = LicenseFactory(
+    #     tool = ToolFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code="fr"
     #     )
-    #     self.assertEqual("fr", license.default_language_code())
+    #     self.assertEqual("fr", tool.default_language_code())
     #
     # def test_get_deed_url(self):
     #     # https://creativecommons.org/licenses/by-sa/4.0/
     #     # https://creativecommons.org/licenses/by-sa/4.0/deed.es
     #     # https://creativecommons.org/licenses/by/3.0/es/
     #     # https://creativecommons.org/licenses/by/3.0/es/deed.fr
-    #     license = LicenseFactory(
+    #     tool = ToolFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code="ae"
     #     )
-    #     self.assertEqual("/licenses/bx-oh/1.3/ae/", license.deed_url)
-    #     license = LicenseFactory(
+    #     self.assertEqual("/licenses/bx-oh/1.3/ae/", tool.deed_url)
+    #     tool = ToolFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code=""
     #     )
-    #     self.assertEqual("/licenses/bx-oh/1.3/", license.deed_url)
+    #     self.assertEqual("/licenses/bx-oh/1.3/", tool.deed_url)
     #
     # def test_get_deed_url_for_language(self):
-    #     license = LicenseFactory(
+    #     tool = ToolFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code="ae"
     #     )
     #     self.assertEqual(
     #         "/licenses/bx-oh/1.3/ae/deed.fr",
-    #         license.get_deed_url_for_language("fr"),
+    #         tool.get_deed_url_for_language("fr"),
     #     )
-    #     license = LicenseFactory(
+    #     tool = ToolFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code=""
     #     )
     #     self.assertEqual(
     #         "/licenses/bx-oh/1.3/deed.es",
-    #         license.get_deed_url_for_language("es"),
+    #         tool.get_deed_url_for_language("es"),
     #     )
 
     def test_sampling_plus(self):
-        self.assertTrue(LicenseFactory(unit="nc-sampling+").sampling_plus)
-        self.assertTrue(LicenseFactory(unit="sampling+").sampling_plus)
-        self.assertFalse(LicenseFactory(unit="sampling").sampling_plus)
-        self.assertFalse(LicenseFactory(unit="MIT").sampling_plus)
-        self.assertFalse(LicenseFactory(unit="by-nc-nd-sa").sampling_plus)
+        self.assertTrue(ToolFactory(unit="nc-sampling+").sampling_plus)
+        self.assertTrue(ToolFactory(unit="sampling+").sampling_plus)
+        self.assertFalse(ToolFactory(unit="sampling").sampling_plus)
+        self.assertFalse(ToolFactory(unit="MIT").sampling_plus)
+        self.assertFalse(ToolFactory(unit="by-nc-nd-sa").sampling_plus)
 
     def test_level_of_freedom(self):
         data = [
@@ -1102,8 +1097,8 @@ class LicenseModelTest(TestCase):
         ]
         for unit, expected_freedom in data:
             with self.subTest(unit):
-                license = LicenseFactory(unit=unit)
-                self.assertEqual(expected_freedom, license.level_of_freedom)
+                tool = ToolFactory(unit=unit)
+                self.assertEqual(expected_freedom, tool.level_of_freedom)
 
     # TODO: update as part of translation rewrite
     # @override_settings(
@@ -1113,10 +1108,10 @@ class LicenseModelTest(TestCase):
     # def test_tx_upload_messages(self):
     #     language_code = "es"
     #     legal_code = LegalCodeFactory(language_code=language_code)
-    #     license = legal_code.license
+    #     tool = legal_code.tool
     #     test_pofile = polib.POFile()
     #     with mock.patch.object(
-    #         license, "get_legal_code_for_language_code"
+    #         tool, "get_legal_code_for_language_code"
     #     ) as mock_glflc:
     #         mock_glflc.return_value = legal_code
     #         with mock.patch.object(
@@ -1126,13 +1121,13 @@ class LicenseModelTest(TestCase):
     #                 LegalCode, "get_pofile"
     #             ) as mock_get_pofile:
     #                 mock_get_pofile.return_value = test_pofile
-    #                 license.tx_upload_messages()
+    #                 tool.tx_upload_messages()
     #     mock_glflc.assert_called_with("en")
     #     mock_umtt.assert_called_with(legal_code=legal_code)
 
     def test_superseded(self):
-        lic1 = LicenseFactory()
-        lic2 = LicenseFactory(is_replaced_by=lic1)
+        lic1 = ToolFactory()
+        lic2 = ToolFactory(is_replaced_by=lic1)
         self.assertTrue(lic2.superseded)
         self.assertFalse(lic1.superseded)
 

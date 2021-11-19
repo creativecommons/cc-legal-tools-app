@@ -179,9 +179,9 @@ def parse_legal_code_filename(filename):
 
 def compute_canonical_url(category, unit, version, jurisdiction_code):
     """
-    Compute the unique canonical URL for a license with the given
-    attributes. Note that a "License" is language-independent, unlike a
-    "LegalCode" but it can have a jurisdiction.
+    Compute the unique canonical URL for a license with the given attributes.
+    Note that a "Tool" can have a jurisdiction, but is language-independent
+    (unlike a "LegalCode", which is associated with a language).
 
     E.g.
 

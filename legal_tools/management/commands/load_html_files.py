@@ -23,7 +23,7 @@ from legal_tools.bs_utils import (
     nested_text,
     text_up_to,
 )
-from legal_tools.models import LegalCode, License
+from legal_tools.models import LegalCode, Tool
 from legal_tools.utils import (
     clean_string,
     parse_legal_code_filename,
@@ -42,8 +42,8 @@ NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S+0000")
 
 class Command(BaseCommand):
     """
-    Read the HTML files from a directory, figure out which licenses they are,
-    and create and populate the corresponding License and LegalCode objects.
+    Read the HTML files from a directory, figure out which tools they are,
+    and create and populate the corresponding LegalCode and Tool objects.
     Then parse the HTML and create or update the .po and .mo files.
     """
 
@@ -74,7 +74,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "--versions",
-            help="comma-separated license versions to include, e.g."
+            help="comma-separated tool versions to include, e.g."
             " '1.0,3.0,4.0'",
         )
         parser.add_argument(
@@ -120,7 +120,7 @@ class Command(BaseCommand):
         else:
             versions_to_include = None
 
-        licenses_created = 0
+        tools_created = 0
         legal_codes_created = 0
         legal_codes_to_import = []
 
@@ -210,8 +210,8 @@ class Command(BaseCommand):
                 prohibits_commercial_use = False
                 prohibits_high_income_nation_use = False
 
-            # Find or create a License object
-            license, created = License.objects.get_or_create(
+            # Find or create a Tool object
+            tool, created = Tool.objects.get_or_create(
                 canonical_url=canonical_url,
                 category=category,
                 defaults=dict(
@@ -234,10 +234,10 @@ class Command(BaseCommand):
                 ),
             )
             if created:
-                licenses_created += 1
+                tools_created += 1
             # Find or create a LegalCode object
             legal_code, created = LegalCode.objects.get_or_create(
-                license=license,
+                tool=tool,
                 language_code=language_code,
                 defaults=dict(
                     html_file=fullpath,
@@ -270,17 +270,17 @@ class Command(BaseCommand):
             for legal_code in legal_codes_to_import.filter(
                 language_code=language_code,
             ).order_by(
-                "-license__version",
-                "license__unit",
-                "license__jurisdiction_code",
+                "-tool__version",
+                "tool__unit",
+                "tool__jurisdiction_code",
             ):
-                license = legal_code.license
-                unit = license.unit
-                version = license.version
+                tool = legal_code.tool
+                unit = tool.unit
+                version = tool.version
                 support_po_files = False
 
                 # Deed-only
-                if license.deed_only:
+                if tool.deed_only:
                     if unit == "mark":
                         legal_code.title = "Public Domain Mark 1.0"
                         legal_code.save()
@@ -300,14 +300,14 @@ class Command(BaseCommand):
                 with open(legal_code.html_file, "r", encoding="utf-8") as f:
                     content = f.read()
 
-                if license.category == "licenses":
+                if tool.category == "licenses":
                     if version == "4.0":
                         support_po_files = True
                         messages_text = self.import_by_40_license_html(
                             content=content,
                             legal_code=legal_code,
                         )
-                    elif version == "3.0" and not license.jurisdiction_code:
+                    elif version == "3.0" and not tool.jurisdiction_code:
                         # 3.0 Unported license: we parse out the messages like
                         # 4.0
                         messages_text = (
@@ -353,9 +353,9 @@ class Command(BaseCommand):
         english_by_unit_version,
         messages_text,
     ):
-        license = legal_code.license
-        unit = license.unit
-        version = license.version
+        tool = legal_code.tool
+        unit = tool.unit
+        version = tool.version
         po_filename = legal_code.translation_filename()
         transifex_language = map_django_to_transifex_language_code(
             language_code
@@ -394,7 +394,7 @@ class Command(BaseCommand):
             "MIME-Version": "1.0",
             "PO-Revision-Date": NOW,
             "Percent-Translated": pofile.percent_translated(),
-            "Project-Id-Version": legal_code.license.resource_slug,
+            "Project-Id-Version": legal_code.tool.resource_slug,
         }
 
         directory = os.path.dirname(po_filename)
@@ -409,9 +409,9 @@ class Command(BaseCommand):
         save_pofile_as_pofile_and_mofile(pofile, po_filename)
 
     def import_zero_license_html(self, *, content, legal_code):
-        license = legal_code.license
-        assert license.version == "1.0", f"{license.version} is not '1.0'"
-        assert license.unit == "zero", f"{license.unit} is not 'zero'"
+        tool = legal_code.tool
+        assert tool.version == "1.0", f"{tool.version} is not '1.0'"
+        assert tool.unit == "zero", f"{tool.unit} is not 'zero'"
         messages = {}
         raw_html = content
         # Parse the raw HTML to a BeautifulSoup object.
@@ -492,12 +492,12 @@ class Command(BaseCommand):
         """
         Returns a dictionary mapping our internal keys to strings.
         """
-        license = legal_code.license
-        unit = license.unit
+        tool = legal_code.tool
+        unit = tool.unit
         language_code = legal_code.language_code
         html_file = os.path.basename(legal_code.html_file)
-        assert license.version == "4.0", f"{license.version} is not '4.0'"
-        assert license.unit.startswith("by")
+        assert tool.version == "4.0", f"{tool.version} is not '4.0'"
+        assert tool.unit.startswith("by")
 
         messages = {}
         raw_html = content
