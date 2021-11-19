@@ -5,7 +5,7 @@ set -o errexit
 set -o errtrace
 set -o nounset
 
-# Change directory to cc-licenses (grandparent directory of this script)
+# Change directory to cc-legal-tools-app (grandparent directory of this script)
 cd ${0%/*}/../
 
 if ! docker-compose exec app true 2>/dev/null; then

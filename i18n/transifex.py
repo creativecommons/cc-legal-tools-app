@@ -14,7 +14,7 @@ from django.conf import settings
 from transifex.api import transifex_api
 
 # First-party/Local
-import licenses.models
+import legal_tools.models
 from i18n.utils import (
     get_pofile_content,
     get_pofile_creation_date,
@@ -393,7 +393,7 @@ class TransifexHelper:
     #
     #     # Track the translation update using a TranslationBranch object
     #     # First-party/Local
-    #     from licenses.models import TranslationBranch
+    #     from legal_tools.models import TranslationBranch
     #
     #     branch_object, _ = TranslationBranch.objects.get_or_create(
     #         branch_name=branch_name,
@@ -435,7 +435,7 @@ class TransifexHelper:
     #     # objects with their new translation_last_updates, and the branch
     #     # object.
     #     # First-party/Local
-    #     from licenses.models import LegalCode
+    #     from legal_tools.models import LegalCode
     #
     #     LegalCode.objects.bulk_update(
     #         legal_codes,
@@ -1055,7 +1055,7 @@ class TransifexHelper:
         valid_domains = []
         if limit_domain and limit_domain != "deeds_ux":
             for legal_code in (
-                licenses.models.LegalCode.objects.valid()
+                legal_tools.models.LegalCode.objects.valid()
                 .translated()
                 .filter(language_code=settings.LANGUAGE_CODE)
             ):
@@ -1072,14 +1072,14 @@ class TransifexHelper:
         ):
             if limit_language:
                 legal_codes = list(
-                    licenses.models.LegalCode.objects.valid()
+                    legal_tools.models.LegalCode.objects.valid()
                     .translated()
                     .exclude(language_code=settings.LANGUAGE_CODE)
                     .filter(language_code=limit_language)
                 )
             else:
                 legal_codes = list(
-                    licenses.models.LegalCode.objects.valid()
+                    legal_tools.models.LegalCode.objects.valid()
                     .translated()
                     .exclude(language_code=settings.LANGUAGE_CODE)
                 )
@@ -1097,7 +1097,7 @@ class TransifexHelper:
     def build_local_data(
         self,
         deeds_ux: dict,
-        legal_codes: Iterable["licenses.models.LegalCode"],
+        legal_codes: Iterable["legal_tools.models.LegalCode"],
     ):
         local_data = {}
 
@@ -1518,7 +1518,7 @@ class TransifexHelper:
     def check_for_translation_updates_with_repo_and_legal_codes(
         self,
         repo: git.Repo,
-        legal_codes: Iterable["licenses.models.LegalCode"],
+        legal_codes: Iterable["legal_tools.models.LegalCode"],
         update_repo=False,
     ):  # pragma: no cover
         """
@@ -1590,7 +1590,7 @@ class TransifexHelper:
         """
         pass
         # legal_codes = (
-        #     licenses.models.LegalCode.objects.valid()
+        #     legal_tools.models.LegalCode.objects.valid()
         #     .translated()
         #     .exclude(language_code=settings.LANGUAGE_CODE)
         # )

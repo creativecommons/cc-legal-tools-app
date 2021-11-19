@@ -2,7 +2,7 @@
 
 ## Overview
 
-Cc_Licenses is deployed on the following stack.
+cc-legal-tools-app is deployed on the following stack.
 
 - OS: Ubuntu 18.04 LTS or 20.04 LTS
 - Python: 3.7 (or higher)
@@ -26,11 +26,11 @@ Automating this is left as an exercise for the reader.
 
 If you haven't before, clone the repo:
 
-    $ git clone git@github.com:creativecommons/cc-licenses.git
+    $ git clone git@github.com:creativecommons/cc-legal-tools-app.git
 
 Change to the new directory for the rest of these steps:
 
-    $ cd cc-licenses
+    $ cd cc-legal-tools-app
 
 Check out the "main" branch:
 
@@ -49,11 +49,11 @@ Create a virtual environment using Python 3.7:
 
     $ python3 --version
     Python 3.7.7
-    $ python3 -m venv /somepath/cc-licenses-venv
+    $ python3 -m venv /somepath/cc-legal-tools-app-venv
 
 Activate the venv:
 
-    $ . /somepath/cc-licenses-venv/bin/activate
+    $ . /somepath/cc-legal-tools-app-venv/bin/activate
 
 Install the Python requirements for production into the virtual environment:
 
@@ -66,7 +66,7 @@ variables to be set before starting Django.
 
 Tell Django to use the deploy settings:
 
-    $ export DJANGO_SETTINGS_MODULE=cc_licenses.settings.deploy
+    $ export DJANGO_SETTINGS_MODULE=cc_legal_tools.settings.deploy
 
 Set the ENVIRONMENT environment variable to a name to distinguish this deploy
 from others, e.g. "staging" or "production":
@@ -149,7 +149,7 @@ We generally build this into our deploy process.
 
 1.  Activate the virtual env:
 
-        $ . /somepath/cc-licenses-venv/bin/activate
+        $ . /somepath/cc-legal-tools-app-venv/bin/activate
 
 2.  Set all the environment variables (above).
 
@@ -175,7 +175,7 @@ before gunicorn is started. (You can set them on the gunicorn command line with
 `-e`, but it gets unwieldy.)
 
     $ cd path-where-we-checked-out-the-code
-    $ /somepath/cc-licenses-venv/bin/gunicorn --bind unix:/tmp/portfile cc_licenses.wsgi
+    $ /somepath/cc-legal-tools-app-venv/bin/gunicorn --bind unix:/tmp/portfile cc_legal_tools.wsgi
 
 Gunicorn has lots of options for tuning which you can look up.
 

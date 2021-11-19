@@ -27,7 +27,7 @@ if you were to add a new PO file to be translated. An example would be if you
 were to add frontend JS translations.
 
 1. Create a project on Transifex. This documentation will assume that you named
-   it `cc_licenses`.
+   it `cc_legal_tools`.
 
 2. In the repo, create your Transifex config file:
 
@@ -35,7 +35,7 @@ were to add frontend JS translations.
 
 3. Tell Transifex where your files are, and how to link them to Transifex:
 
-        tx set --auto-local -r cc_licenses.deeds_ux \
+        tx set --auto-local -r cc_legal_tools.deeds_ux \
             'locale/<lang>/LC_MESSAGES/deeds_ux.po' \
             --source-lang en --type PO --execute
 

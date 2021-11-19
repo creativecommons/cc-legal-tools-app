@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# Concatenate legacy ccEngine translations into cc-licenses
+# Concatenate legacy ccEngine translations into cc-legal-tools-app
 set -o errexit
 set -o errtrace
 set -o nounset
 
-# Change directory to cc-licenses (grandparent directory of this script)
+# Change directory to cc-legal-tools-app (grandparent directory of this script)
 cd ${0%/*}/../
 
 if command -v gsed >/dev/null; then
@@ -61,7 +61,7 @@ for _file in ../cc.i18n/cc/i18n/po/*/cc_org.po; do
 done
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Concatenate legacy ccEngine translations'
-for _locale_dir in $(find ../cc-licenses-data/locale/* -maxdepth 0 -type d); do
+for _locale_dir in $(find ../cc-legal-tools-data/locale/* -maxdepth 0 -type d); do
     _locale="${_locale_dir##*/}"
     echo "${_locale}"
     _po_current="${_locale_dir}/LC_MESSAGES/django.po"

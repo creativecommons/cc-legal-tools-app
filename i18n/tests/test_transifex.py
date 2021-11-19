@@ -17,8 +17,8 @@ from i18n.transifex import (
     _empty_branch_object,
 )
 from i18n.utils import get_pofile_content
-from licenses.models import LegalCode
-from licenses.tests.factories import LegalCodeFactory, LicenseFactory
+from legal_tools.models import LegalCode
+from legal_tools.tests.factories import LegalCodeFactory, LicenseFactory
 
 TEST_PROJ_SLUG = "x_proj_x"
 TEST_ORG_SLUG = "x_org_x"
