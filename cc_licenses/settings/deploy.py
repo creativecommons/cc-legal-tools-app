@@ -62,11 +62,11 @@ else:
 
 
 STATIC_ROOT = os.getenv(
-    "STATIC_ROOT", os.path.join(ROOT_DIR, "static")  # noqa: F405
+    "STATIC_ROOT", os.path.join(PROJECT_ROOT, "static")  # noqa: F405
 )
 
 MEDIA_ROOT = os.getenv(
-    "MEDIA_ROOT", os.path.join(ROOT_DIR, "media")  # noqa: F405
+    "MEDIA_ROOT", os.path.join(PROJECT_ROOT, "media")  # noqa: F405
 )
 
 EMAIL_HOST = os.environ.get("EMAIL_HOST", "localhost")

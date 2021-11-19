@@ -285,14 +285,14 @@ class SetupToCallGitTest(TestCase):
                     del os.environ[name]
             setup_to_call_git()
             self.assertEqual(
-                os.path.join(settings.ROOT_DIR, "ssh_wrapper.sh"),
+                os.path.join(settings.PROJECT_ROOT, "ssh_wrapper.sh"),
                 os.environ["GIT_SSH"],
             )
             self.assertEqual(
                 settings.TRANSLATION_REPOSITORY_DEPLOY_KEY,
                 os.environ["TRANSLATION_REPOSITORY_DEPLOY_KEY"],
             )
-            self.assertEqual(settings.ROOT_DIR, os.environ["PROJECT_ROOT"])
+            self.assertEqual(settings.PROJECT_ROOT, os.environ["PROJECT_ROOT"])
 
     def test_setup_to_call_git_full_env(self):
         # If value in env, use them

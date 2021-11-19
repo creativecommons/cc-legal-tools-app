@@ -9,7 +9,7 @@ from git.exc import GitCommandError, RepositoryDirtyError
 from requests.exceptions import HTTPError
 
 # First-party/Local
-from licenses.transifex import TransifexHelper
+from i18n.transifex import TransifexHelper
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {

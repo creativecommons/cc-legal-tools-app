@@ -52,7 +52,7 @@ class Command(BaseCommand):
             os.path.join(settings.LEGACY_DIR, "legalcode")
         )
         relative_input_dir = os.path.relpath(
-            default_input_dir, start=os.path.abspath(settings.ROOT_DIR)
+            default_input_dir, start=os.path.abspath(settings.PROJECT_ROOT)
         )
         parser.add_argument(
             "input_directory",

@@ -17,7 +17,7 @@ from licenses.tests.factories import (
 )
 
 # TODO: update as part of translation rewrite
-# from licenses.transifex import TransifexHelper
+# from i18n.transifex import TransifexHelper
 # from licenses.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
 
 

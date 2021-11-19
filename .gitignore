@@ -14,10 +14,8 @@ build/
 # Unit test / coverage reports
 .coverage
 
-# Django stuff:
+# Django development
 */settings/local.py
-log/
-public/
 
 # Environments
 .env
@@ -33,9 +31,6 @@ venv.bak/
 *.sw[po]
 *~
 
-# Postgres data
-data/
-
 # Pyenv
 .python-version
 
@@ -45,3 +40,8 @@ data/
 # Container files
 .bash_history
 .ssh
+
+# Temporary files, includes:
+#  tmp/public (Django)
+#  tmp/data (Postgres container data)
+tmp

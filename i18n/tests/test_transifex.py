@@ -11,14 +11,14 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 
 # First-party/Local
-from i18n.utils import get_pofile_content
-from licenses.models import LegalCode
-from licenses.tests.factories import LegalCodeFactory, LicenseFactory
-from licenses.transifex import (
+from i18n.transifex import (
     LEGALCODES_KEY,
     TransifexHelper,
     _empty_branch_object,
 )
+from i18n.utils import get_pofile_content
+from licenses.models import LegalCode
+from licenses.tests.factories import LegalCodeFactory, LicenseFactory
 
 TEST_PROJ_SLUG = "x_proj_x"
 TEST_ORG_SLUG = "x_org_x"
@@ -105,7 +105,7 @@ class TestTransifex(TestCase):
         i18n_format_po.__str__ = mock.Mock(return_value=i18n_format_po.id)
         i18n_format_xd = mock.Mock(id="XD")
         i18n_format_xd.__str__ = mock.Mock(return_value=i18n_format_xd.id)
-        with mock.patch("licenses.transifex.transifex_api") as api:
+        with mock.patch("i18n.transifex.transifex_api") as api:
             api.Organization.get = mock.Mock(return_value=organization)
             api.I18nFormat.filter = mock.Mock(
                 return_value=[
@@ -2617,7 +2617,7 @@ class TestTransifex(TestCase):
     #     ) as mock_gtr:
     #         mock_gtr.return_value = test_resources
     #         with mock.patch(
-    #             "licenses.transifex.get_pofile_content"
+    #             "i18n.transifex.get_pofile_content"
     #         ) as mock_gpc:
     #             mock_gpc.return_value = "not really"
     #             with mock.patch.object(
@@ -2651,7 +2651,7 @@ class TestTransifex(TestCase):
     #     ) as mock_gtr:
     #         mock_gtr.return_value = test_resources
     #         with mock.patch(
-    #             "licenses.transifex.get_pofile_content"
+    #             "i18n.transifex.get_pofile_content"
     #         ) as mock_gpc:
     #             mock_gpc.return_value = "not really"
     #             with mock.patch.object(
@@ -2964,13 +2964,13 @@ class TestTransifex(TestCase):
 #             language_code="fr",
 #         )
 #         with mock.patch(
-#             "licenses.transifex.setup_local_branch"
+#             "i18n.transifex.setup_local_branch"
 #         ) as mock_setup, mock.patch.object(
 #             helper, "update_branch_for_legal_code"
 #         ) as mock_update_branch, mock.patch(
-#             "licenses.transifex.call_command"
+#             "i18n.transifex.call_command"
 #         ) as mock_call_command, mock.patch(
-#             "licenses.transifex.commit_and_push_changes"
+#             "i18n.transifex.commit_and_push_changes"
 #         ) as mock_commit:
 #             # setup_local_branch
 #             # update_branch_for_legal_code
@@ -3025,7 +3025,7 @@ class TestTransifex(TestCase):
 #         with mock.patch.object(
 #             helper, "transifex_get_pofile_content"
 #         ) as mock_get_content, mock.patch(
-#             "licenses.transifex.save_content_as_pofile_and_mofile"
+#             "i18n.transifex.save_content_as_pofile_and_mofile"
 #         ) as mock_save:
 #             mock_get_content.return_value = content
 #             mock_save.return_value = [legal_code.translation_filename()]
