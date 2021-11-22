@@ -7,7 +7,7 @@
       <li>
         <ul>
 
-        {% if license.unit == "zero" %}
+        {% if tool.unit == "zero" %}
           <li class="columns">
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class="is-block column" href="#sop">{% blocktrans trimmed %}Statement of Purpose{% endblocktrans %}</a>
@@ -29,7 +29,7 @@
             <a class="is-block column" href="#limitations">{% blocktrans trimmed %}4. Limitations and Disclaimers.{% endblocktrans %}</a>
           </li>
 
-        {% elif category == "licenses" and license.version == "4.0" %}
+        {% elif category == "licenses" and tool.version == "4.0" %}
           <li class="columns">
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class="is-block column" href="#s1">{% blocktrans trimmed %}Section 1 – Definitions.{% endblocktrans %}</a>
@@ -63,7 +63,7 @@
             <a class=" is-block column" href="#s8">{% blocktrans trimmed %}Section 8 – Interpretation.{% endblocktrans %}</a>
           </li>
 
-        {% elif category == "licenses" and license.version == "3.0" and license.jurisdiction_code == "" %}
+        {% elif category == "licenses" and tool.version == "3.0" and tool.jurisdiction_code == "" %}
           <li class="columns">
             <div class="body-bigger is-inline-block column is-1 py-0 my-0">&#8226;</div>
             <a class="is-block column" href="#definitions">{% blocktrans trimmed %}1. Definitions{% endblocktrans %}</a>

@@ -17,8 +17,8 @@ from i18n.transifex import (
     _empty_branch_object,
 )
 from i18n.utils import get_pofile_content
-from licenses.models import LegalCode
-from licenses.tests.factories import LegalCodeFactory, LicenseFactory
+from legal_tools.models import LegalCode
+from legal_tools.tests.factories import LegalCodeFactory, ToolFactory
 
 TEST_PROJ_SLUG = "x_proj_x"
 TEST_ORG_SLUG = "x_org_x"
@@ -464,9 +464,9 @@ class TestTransifex(TestCase):
         limit_domain = None
         limit_language = None
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="de")
+        tool = ToolFactory(unit="by", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="de")
         legal_codes = list(
             LegalCode.objects.valid()
             .translated()
@@ -494,9 +494,9 @@ class TestTransifex(TestCase):
     def test_get_local_data_limit_to_deeds_ux(self):
         limit_domain = "deeds_ux"
         limit_language = None
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="de")
+        tool = ToolFactory(unit="by", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="de")
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
         legal_codes = []
         self.helper.build_local_data = mock.Mock()
@@ -521,9 +521,9 @@ class TestTransifex(TestCase):
     def test_get_local_data_limit_to_legal_code(self):
         limit_domain = "legal_code"
         limit_language = None
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
+        tool = ToolFactory(unit="by", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="es")
         deeds_ux = {}
         legal_codes = list(
             LegalCode.objects.valid()
@@ -560,14 +560,14 @@ class TestTransifex(TestCase):
     def test_get_local_data_limit_to_deeds_ux_nl(self):
         limit_domain = "deeds_ux"
         limit_language = "nl"
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
-        license = LicenseFactory(unit="by-sa", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
+        tool = ToolFactory(unit="by", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="es")
+        LegalCodeFactory(tool=tool, language_code="nl")
+        tool = ToolFactory(unit="by-sa", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="es")
+        LegalCodeFactory(tool=tool, language_code="nl")
         deeds_ux = {"nl": settings.DEEDS_UX_PO_FILE_INFO["nl"]}
         legal_codes = []
         self.helper.build_local_data = mock.Mock()
@@ -600,22 +600,22 @@ class TestTransifex(TestCase):
     def test_get_local_data_limit_to_by_40_nl(self):
         limit_domain = "by_40"
         limit_language = "nl"
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
-        license = LicenseFactory(unit="by-sa", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
+        tool = ToolFactory(unit="by", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="es")
+        LegalCodeFactory(tool=tool, language_code="nl")
+        tool = ToolFactory(unit="by-sa", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="es")
+        LegalCodeFactory(tool=tool, language_code="nl")
         deeds_ux = {}
         legal_codes = list(
             LegalCode.objects.valid()
             .translated()
             .filter(
                 language_code=limit_language,
-                license__unit="by",
-                license__version="4.0",
+                tool__unit="by",
+                tool__version="4.0",
             )
         )
         self.helper.build_local_data = mock.Mock()
@@ -649,10 +649,10 @@ class TestTransifex(TestCase):
     )
     def test_build_local_data(self):
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code="en")
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
+        tool = ToolFactory(unit="by", version="4.0")
+        LegalCodeFactory(tool=tool, language_code="en")
+        LegalCodeFactory(tool=tool, language_code="es")
+        LegalCodeFactory(tool=tool, language_code="nl")
         legal_codes = list(LegalCode.objects.valid().translated())
 
         local_data = self.helper.build_local_data(deeds_ux, legal_codes)
@@ -709,10 +709,10 @@ class TestTransifex(TestCase):
     @override_settings(DEEDS_UX_PO_FILE_INFO={})
     def test_build_local_data_limit_to_legal_code(self):
         deeds_ux = settings.DEEDS_UX_PO_FILE_INFO
-        license = LicenseFactory(unit="by", version="4.0")
-        LegalCodeFactory(license=license, language_code=settings.LANGUAGE_CODE)
-        LegalCodeFactory(license=license, language_code="es")
-        LegalCodeFactory(license=license, language_code="nl")
+        tool = ToolFactory(unit="by", version="4.0")
+        LegalCodeFactory(tool=tool, language_code=settings.LANGUAGE_CODE)
+        LegalCodeFactory(tool=tool, language_code="es")
+        LegalCodeFactory(tool=tool, language_code="nl")
         legal_codes = list(
             LegalCode.objects.valid()
             .translated()
@@ -2601,14 +2601,14 @@ class TestTransifex(TestCase):
 
     # def test_upload_messages_english_resource_exists(self):
     #     # English because it's the source messages and is handled differently
-    #     license = LicenseFactory(unit="by-nd", version="4.0")
+    #     tool = ToolFactory(unit="by-nd", version="4.0")
     #     legal_code = LegalCodeFactory(
-    #         license=license,
+    #         tool=tool,
     #         language_code=settings.LANGUAGE_CODE,
     #     )
     #     test_resources = [
     #         {
-    #             "slug": license.resource_slug,
+    #             "slug": tool.resource_slug,
     #         }
     #     ]
     #     test_pofile = polib.POFile()
@@ -2638,11 +2638,11 @@ class TestTransifex(TestCase):
     # def test_upload_messages_non_english_resource_exists(self):
     #     # non-English because it's not the source messages and is handled
     #     # differently
-    #     license = LicenseFactory(unit="by-nd", version="4.0")
-    #     legal_code = LegalCodeFactory(license=license, language_code="fr")
+    #     tool = ToolFactory(unit="by-nd", version="4.0")
+    #     legal_code = LegalCodeFactory(tool=tool, language_code="fr")
     #     test_resources = [
     #         {
-    #             "slug": license.resource_slug,
+    #             "slug": tool.resource_slug,
     #         }
     #     ]
     #     test_pofile = mock.MagicMock()
@@ -2766,7 +2766,7 @@ class TestTransifex(TestCase):
 #         convoluted.
 #         """
 #         language_code = "zh-Hans"
-#         license = LicenseFactory(version="4.0", unit="by-nd")
+#         tool = ToolFactory(version="4.0", unit="by-nd")
 #
 #         first_translation_update_datetime = datetime.datetime(
 #             2007, 1, 25, 12, 0, 0, tzinfo=utc
@@ -2783,16 +2783,16 @@ class TestTransifex(TestCase):
 #             legal_code_last_update = first_translation_update_datetime
 #
 #         legal_code = LegalCodeFactory(
-#             license=license,
+#             tool=tool,
 #             language_code=language_code,
 #             translation_last_update=legal_code_last_update,
 #         )
-#         resource_slug = license.resource_slug
+#         resource_slug = tool.resource_slug
 #
 #         # Will need an English legal_code if we need to create the resource
 #         if not resource_exists and language_code != settings.LANGUAGE_CODE:
 #             LegalCodeFactory(
-#                 license=license,
+#                 tool=tool,
 #                 language_code=settings.LANGUAGE_CODE,
 #             )
 #
@@ -2878,7 +2878,7 @@ class TestTransifex(TestCase):
 #             mock_add_resource_to_transifex.assert_called_with(
 #                 language_code=legal_code.language_code,
 #                 resource_slug=resource_slug,
-#                 resource_name=legal_code.license.identifier(),
+#                 resource_name=legal_code.tool.identifier(),
 #                 pofile_path=legal_code.translation_filename(),
 #                 pofile_obj=mock_get_pofile,
 #             )
@@ -2922,13 +2922,13 @@ class TestTransifex(TestCase):
 #
 #         # legal_codes for two branches
 #         legal_code1 = LegalCodeFactory(
-#             license__version="4.0",
-#             license__unit="by-nc",
+#             tool__version="4.0",
+#             tool__unit="by-nc",
 #             language_code="fr",
 #         )
 #         legal_code2 = LegalCodeFactory(
-#             license__version="4.0",
-#             license__unit="by-nd",
+#             tool__version="4.0",
+#             tool__unit="by-nd",
 #             language_code="de",
 #         )
 #         with mock.patch.object(
@@ -2954,13 +2954,13 @@ class TestTransifex(TestCase):
 #         result = helper.handle_updated_translation_branch(dummy_repo, [])
 #         self.assertIsNone(result)
 #         legal_code1 = LegalCodeFactory(
-#             license__version="4.0",
-#             license__unit="by-nc",
+#             tool__version="4.0",
+#             tool__unit="by-nc",
 #             language_code="fr",
 #         )
 #         legal_code2 = LegalCodeFactory(
-#             license__version="4.0",
-#             license__unit="by-nd",
+#             tool__version="4.0",
+#             tool__unit="by-nd",
 #             language_code="fr",
 #         )
 #         with mock.patch(
@@ -3000,12 +3000,12 @@ class TestTransifex(TestCase):
 #         helper = TransifexHelper()
 #         dummy_repo = DummyRepo("/trans/repo")
 #         legal_code = LegalCodeFactory(
-#             license__version="4.0",
-#             license__unit="by-nc",
+#             tool__version="4.0",
+#             tool__unit="by-nc",
 #             language_code="fr",
 #         )
 #         helper._stats = {
-#             legal_code.license.resource_slug: {
+#             legal_code.tool.resource_slug: {
 #                 legal_code.language_code: {
 #                     "translated": {
 #                         "last_activity": now().isoformat(),
@@ -3015,7 +3015,7 @@ class TestTransifex(TestCase):
 #         }
 #         trb = TranslationBranch.objects.create(
 #             branch_name=legal_code.branch_name(),
-#             version=legal_code.license.version,
+#             version=legal_code.tool.version,
 #             language_code=legal_code.language_code,
 #             complete=False,
 #         )
@@ -3034,7 +3034,7 @@ class TestTransifex(TestCase):
 #             )
 #         self.assertIsNone(result)
 #         mock_get_content.assert_called_with(
-#             legal_code.license.resource_slug, legal_code.language_code
+#             legal_code.tool.resource_slug, legal_code.language_code
 #         )
 #         mock_save.assert_called_with(
 #             legal_code.translation_filename(), content

@@ -5,7 +5,7 @@ set -o errexit
 set -o errtrace
 set -o nounset
 
-# Change directory to cc-licenses (grandparent directory of this script)
+# Change directory to cc-legal-tools-app (grandparent directory of this script)
 cd ${0%/*}/../
 
 if ! docker-compose exec app true 2>/dev/null; then
@@ -42,7 +42,7 @@ ${DOCKER_DB_RUN} psql -d template1 \
 echo
 
 #printf "\e[1m\e[7m %-80s\e[0m\n" 'Reset migrations'
-#docker-compose exec app ./manage.py migrate --fake licenses zero
+#docker-compose exec app ./manage.py migrate --fake legal_tools zero
 #echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Perform migrations'

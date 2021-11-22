@@ -26,14 +26,14 @@ services:
       - db
     environment:
       - DEV_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
-      - DJANGO_SETTINGS_MODULE=cc_licenses.settings.local
-    image: cc_licenses
+      - DJANGO_SETTINGS_MODULE=cc_legal_tools.settings.local
+    image: cc_legal_tools
     ports:
       - "8000:8000"
     restart: always
     volumes:
       - .:/home/cc
-      - ../cc-licenses-data:/home/cc-licenses-data
+      - ../cc-legal-tools-data:/home/cc-legal-tools-data
 
   static:
     image: nginx
@@ -41,5 +41,5 @@ services:
       - "8080:80"
     restart: always
     volumes:
-      - ../cc-licenses-data/config/:/etc/nginx/conf.d:ro
-      - ../cc-licenses-data/docs/:/usr/share/nginx/html:ro
+      - ../cc-legal-tools-data/config/:/etc/nginx/conf.d:ro
+      - ../cc-legal-tools-data/docs/:/usr/share/nginx/html:ro

@@ -1,10 +1,12 @@
-# Creative Commons Licenses
+# cc-legal-tools-app
 
+**Creative Commons (CC) Legal Tools Application.** This repository contains the
+application that manages the licenses and public domain declarations (static
+HTML, internationalization and localization files, etc.). It consumes and
+generates data in the [creativecommons/cc-legal-tools-data][repodata]
+repository.
 
-## Licenses and Public Domain Declarations
-
-The project title, *Creative Commons Licenses*, has been shortened for
-convenience. This project also includes the Public Domain Declarations.
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ## Not the live site
@@ -14,8 +16,8 @@ Though if it's deployed on a public server it could do that, performance would
 probably not be acceptable.
 
 Instead, a command line tool can be used to save all the rendered HTML pages
-for licenses and deeds as files. Then those files are used as part of the real
-creativecommons.org site, just served as static files. See details farther
+for deeds and legal code as files. Then those files are used as part of the
+real creativecommons.org site, just served as static files. See details farther
 down.
 
 For the parent project for the entire creativecommons.org site (of which this
@@ -41,12 +43,12 @@ Both versions are specified in the [`Pipfile`](Pipefile).
 
 ### Data Repository
 
-The [creativecommons/cc-licenses-data][repodata] project repository should be
-cloned into a directory adjacent to this one:
+The [creativecommons/cc-legal-tools-data][repodata] project repository should
+be cloned into a directory adjacent to this one:
 ```
 PARENT_DIR
-├── cc-licenses
-└── cc-licenses-data
+├── cc-legal-tools-app
+└── cc-legal-tools-data
 ```
 
 If it is not cloned into the default location,  the Django
@@ -54,7 +56,7 @@ If it is not cloned into the default location,  the Django
 `DATA_REPOSITORY_DIR` environment variable can be used to configure its
 location.
 
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Docker Compose Setup
@@ -68,7 +70,7 @@ Use the following instructions to start the project with Docker compose.
       Compose | Docker Documentation][installcompose])
    3. Create Django local settings file
         ```
-        cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+        cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
         ```
    4. Build the containers
         ```
@@ -97,11 +99,11 @@ The commands above will create 3 docker containers:
      long as the development server is running.
 2. **db**: PostgreSQL database backend for this Django application
 3. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
-   serving [creativecommons/cc-licenses-data][repodata]/docs.
+   serving [creativecommons/cc-legal-tools-data][repodata]/docs.
 
 [installdocker]: https://docs.docker.com/engine/install/
 [installcompose]: https://docs.docker.com/compose/install/
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Manual Setup
@@ -137,7 +139,7 @@ The commands above will create 3 docker containers:
 2. Configure Django and PostgreSQL
    1. Create Django local settings file
     ```
-    cp cc_licenses/settings/local.example.py cc_licenses/settings/local.py
+    cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
    2. Start PostgrSQL server
       - It's completely fine to not make a specific postgresql account. But if
@@ -155,11 +157,11 @@ The commands above will create 3 docker containers:
    3. Create project database
       - Linux:
         ```
-        sudo createdb -E UTF-8 cc_licenses
+        sudo createdb -E UTF-8 cc_legal_tools
         ```
       - macOS:
         ```
-        createdb -E UTF-8 cc_licenses
+        createdb -E UTF-8 cc_legal_tools
         ```
    4. Load database schema
     ```
@@ -214,7 +216,7 @@ Best run before every commit:
 
 Esoteric and dangerous:
 - `./dev/concatenatemessages.sh` - Concatenate legacy ccEngine translations
-  into cc-licenses
+  into cc-legal-tools-app
   - rarely used (only after source strings are updated)
 - `./dev/resetdb.sh` - Reset Django application database data (!!DANGER!!)
   - usually only helpful if you're doing model/schema work
@@ -249,9 +251,9 @@ you commit, try adding your files (`git add <FILES>`) prior to committing them.
 
 ## Data
 
-The license metadata is in a database. The metadata tracks which licenses
-exist, their translations, their ports, and their characteristics like what
-they permit, require, and prohibit.
+The legal tools metadata is in a database. The metadata tracks which legal
+tools exist, their translations, their ports, and their characteristics like
+what they permit, require, and prohibit.
 
 The metadata can be downloaded by visiting URL path:
 `127.0.0.1:8000`[`/licenses/metadata.yaml`][metadata]
@@ -259,22 +261,22 @@ The metadata can be downloaded by visiting URL path:
 [metadata]: http://127.0.0.1:8000/licenses/metadata.yaml
 
 There are two main models (Django terminology for tables) in
-[`licenses/models.py`](licenses/models.py):
+[`legal_tools/models.py`](legal_tools/models.py):
 1. `LegalCode`
-2. `Licenses`
+2. `Tool`
 
-A License can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`)
-which is a proxy for the complete set of permissions, requirements, and
-prohibitions; a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction`
-for ports. So we might refer to the license by it's **identifier** "BY 3.0 AM"
-which would be the 3.0 version of the BY license terms as ported to the Armenia
-jurisdiction. For additional information see: [**Legal Tools Namespace** -
-creativecommons/cc-licenses-data: CC Licenses data (static HTML, language
+A Tool can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`) which
+is a proxy for the complete set of permissions, requirements, and prohibitions;
+a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction` for ports. So we
+might refer to the tool by it's **identifier** "BY 3.0 AM" which would be the
+3.0 version of the BY license terms as ported to the Armenia jurisdiction. For
+additional information see: [**Legal Tools Namespace** -
+creativecommons/cc-legal-tools-data: CC Legal Tools Data (static HTML, language
 files, etc.)][namespace].
 
 There are three places legal code text could be:
 1. **gettext files** (`.po` and `.mo`) in the
-   [creativecommons/cc-licenses-data][repodata] repository (legal tools with
+   [creativecommons/cc-legal-tools-data][repodata] repository (legal tools with
    full translation support):
    - 4.0 Licenses
    - CC0
@@ -287,22 +289,22 @@ There are three places legal code text could be:
 The text that's in gettext files can be translated via Transifex at [Creative
 Commons localization][cctransifex]. For additional information the Django
 translation domains / Transifex resources, see [How the license translation is
-implemented](#how-the-license-translation-is-implemented), below.
+implemented](#how-the-tool-translation-is-implemented), below.
 
 Documentation:
 - [Models | Django documentation | Django][djangomodels]
 - [Templates | Django documentation | Django][djangotemplates]
 
-[namespace]: https://github.com/creativecommons/cc-licenses-data#legal-tools-namespace
-[unportedtemplate]: licenses/templates/includes/legalcode_licenses_3.0_unported.html
+[namespace]: https://github.com/creativecommons/cc-legal-tools-data#legal-tools-namespace
+[unportedtemplate]: templates/includes/legalcode_licenses_3.0_unported.html
 [cctransifex]: https://www.transifex.com/creativecommons/public/
 [djangomodels]: https://docs.djangoproject.com/en/3.2/topics/db/models/
 [djangotemplates]: https://docs.djangoproject.com/en/3.2/topics/templates/
 
 
-## Importing the existing license text
+## Importing the existing legal tool text
 
-The process of getting the text into the site varies by license.
+The process of getting the text into the site varies by legal tool.
 
 Note that once the site is up and running in production, the data in the site
 will become the canonical source, and the process described here should not
@@ -310,7 +312,7 @@ need to be repeated after that.
 
 The implementation is the Django management command `load_html_files`, which
 reads from the legacy HTML legal code files in the
-[creativecommons/cc-licenses-data][repodata] repository, and populates the
+[creativecommons/cc-legal-tools-data][repodata] repository, and populates the
 database records and translation files.
 
 `load_html_files` uses [BeautifulSoup4][bs4docs] to parse the legacy HTML legal
@@ -333,14 +335,14 @@ code:
      `LegalCode` model
 
 [bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-[repodata]: https://github.com/creativecommons/cc-licenses-data
+[repodata]: https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Import Process
 
 This process will read the HTML files from the specified directory, populate
-`LegalCode` and `License` models, and create `.po` files in
-[creativecommons/cc-licenses-data][repodata].
+`LegalCode` and `Tool` models, and create `.po` files in
+[creativecommons/cc-legal-tools-data][repodata].
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
@@ -353,11 +355,12 @@ This process will read the HTML files from the specified directory, populate
     docker-compose exec app ./manage.py load_html_files
     ```
 5. Optionally (and only as appropriate):
-   1. commit `.po` file changes in [creativecommons/cc-licenses-data][repodata]
+   1. commit `.po` file changes in
+      [creativecommons/cc-legal-tools-data][repodata]
    2. [Translation Update Process](#translation-update-process), below
    3. [Generate Static Files](#generate-static-files), below
 
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Import Dependency Documentation
@@ -378,11 +381,11 @@ there with access to these translations. Then follow the [Authentication -
 Transifex API v3][transauth]: to get an API token, and set
 `TRANSIFEX["API_TOKEN"]` in your environment with its value.
 
-The [creativecommons/cc-licenses-data][repodata] repository must be cloned
-next to this `cc-licenses` repository. (It can be elsewhere, then you need to
-set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a URL that
-starts with `git@github...` and not `https://github...`, or you won't be able
-to push to it. Also see [Data Repository](#data-repository), above.
+The [creativecommons/cc-legal-tools-data][repodata] repository must be cloned
+next to this `cc-legal-tools-app` repository. (It can be elsewhere, then you need
+to set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a URL
+that starts with `git@github...` and not `https://github...`, or you won't be
+able to push to it. Also see [Data Repository](#data-repository), above.
 
 In production, the `check_for_translation_updates` management command should be
 run hourly. See [Check for Translation
@@ -398,14 +401,14 @@ Documentation:
 - [Translation | Django documentation | Django][djangotranslation]
 
 [babel]: http://babel.pocoo.org/en/latest/index.html
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 [transauth]: https://transifex.github.io/openapi/index.html#section/Authentication
 
 
-### How the license translation is implemented
+### How the tool translation is implemented
 
 Django Translation uses two sets of Gettext Files in the
-[creativecommons/cc-licenses-data][repodata] repository (the [Data
+[creativecommons/cc-legal-tools-data][repodata] repository (the [Data
 Repository](#data-repository), above). See that repository for detailed
 information and definitions.
 
@@ -420,7 +423,7 @@ Documentation:
 [api30intro]: https://docs.transifex.com/api-3-0/introduction-to-api-3-0
 [apisdk]: https://github.com/transifex/transifex-python/tree/devel/transifex/api
 [djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
-[repodata]: https://github.com/creativecommons/cc-licenses-data
+[repodata]: https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Check for Translation Updates
@@ -432,7 +435,7 @@ translation files in Transifex have newer last modification times than we know
 about. It performs the following process (which can also be done manually:
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Within the [creativecommons/cc-licenses-data][repodata] (the [Data
+2. Within the [creativecommons/cc-legal-tools-data][repodata] (the [Data
    Repository](#data-repository)):
    1. Checkout or create the appropriate branch.
       - For example, if a French translation file for BY 4.0 has changed, the
@@ -442,12 +445,12 @@ about. It performs the following process (which can also be done manually:
       - *This is important and easy to forget,* but without it, Django will
         keep using the old translations
    4. Commit that change and push it upstream.
-3. Within this `cc-licenses` repository:
+3. Within this `cc-legal-tools-app` repository:
    1. For each branch that has been updated, [Generate Static
       Files](#generate-static-files) (below). Use the options to update git and
       push the changes.
 
-[repodata]:https://github.com/creativecommons/cc-licenses-data
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Check for Translation Updates Dependency Documentation
@@ -475,15 +478,15 @@ changed.
 ## Generate Static Files
 
 Generating static files updates the static files in the `doc` directory of the
-[creativecommons/cc-licenses-data][repodata] repository (the [Data
+[creativecommons/cc-legal-tools-data][repodata] repository (the [Data
 Repository](#data-repository), above).
 
 
 ### Static Files Process
 
-This process will write the HTML files in the cc-licenses-data clone directory
-under `docs/`. It will not commit the changes (`--nogit`) and will not push any
-commits (`--nopush` is implied by `--nogit`).
+This process will write the HTML files in the cc-legal-tools-data clone
+directory under `docs/`. It will not commit the changes (`--nogit`) and will
+not push any commits (`--nopush` is implied by `--nogit`).
 
 1. Ensure the [Data Repository](#data-repository), above,  is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
@@ -496,11 +499,11 @@ commits (`--nopush` is implied by `--nogit`).
 ### Publishing changes to git repo
 
 When the site is deployed, to enable pushing and pulling the licenses data repo
-with GitHub, create an ssh deploy key for the cc-licenses-data repo with write
-permissions, and put the private key file (not password protected) somewhere
-safe (owned by `www-data` if on a server), and readable only by its owner
-(0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be the full
-path to that deploy key file.
+with GitHub, create an ssh deploy key for the cc-legal-tools-data repo with
+write permissions, and put the private key file (not password protected)
+somewhere safe (owned by `www-data` if on a server), and readable only by its
+owner (0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be
+the full path to that deploy key file.
 
 
 ### Publishing Dependency Documentation

@@ -1,4 +1,4 @@
-# CC Licenses Technical Spec
+# CC Legal Tools Technical Spec
 
 June 17, 2020 - Preliminary - Dan Poirier, Caktus Group
 

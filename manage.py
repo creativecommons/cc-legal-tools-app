@@ -13,11 +13,11 @@ LOG = logging.getLogger(f"{settings.APP_NAME}.management.commands")
 def main():
     if "DATABASE_URL" in os.environ:
         os.environ.setdefault(
-            "DJANGO_SETTINGS_MODULE", "cc_licenses.settings.deploy"
+            "DJANGO_SETTINGS_MODULE", "cc_legal_tools.settings.deploy"
         )
     else:
         os.environ.setdefault(
-            "DJANGO_SETTINGS_MODULE", "cc_licenses.settings.local"
+            "DJANGO_SETTINGS_MODULE", "cc_legal_tools.settings.local"
         )
 
     # Third-party
