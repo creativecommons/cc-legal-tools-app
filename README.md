@@ -1,4 +1,4 @@
-# cc-legal-tools-app-app
+# cc-legal-tools-app
 
 **Creative Commons (CC) Legal Tools Application.** This repository contains the
 application that manages the licenses and public domain declarations (static
@@ -47,7 +47,7 @@ The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
 ```
 PARENT_DIR
-├── cc-legal-tools-app-app
+├── cc-legal-tools-app
 └── cc-legal-tools-data
 ```
 
