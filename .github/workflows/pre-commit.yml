@@ -11,7 +11,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
-      DJANGO_SETTINGS_MODULE: cc_licenses.settings.ephemeral
+      DJANGO_SETTINGS_MODULE: cc_legal_tools.settings.ephemeral
 
     services:
       postgres:
