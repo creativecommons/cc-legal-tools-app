@@ -13,7 +13,6 @@ from django.urls import path, register_converter
 
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
-from legal_tools import VERSION_REGEX_STRING
 from legal_tools.views import view_deed, view_legal_code, view_metadata
 
 
@@ -73,7 +72,7 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 class VersionConverter:
 
-    regex = VERSION_REGEX_STRING
+    regex = r"[0-9]+[.][0-9]+"  # X.Y
 
     def to_python(self, value):
         return value

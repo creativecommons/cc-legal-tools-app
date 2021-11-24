@@ -8,12 +8,12 @@ from legal_tools.git_utils import setup_to_call_git
 
 
 class LegalToolsConfig(AppConfig):
-    # required: must be the Full dotted path to the app
-    name = settings.APP_NAME
+    # required: must be the full dotted path to the app
+    name = "legal_tools"
     # optional: app label, must be unique in Django project
-    label = settings.APP_LABEL
+    label = name
     # optional: verbose name
-    verbose_name = settings.APP_VERBOSE_NAME
+    verbose_name = name.replace("_", " ").title()
 
     def ready(self):
         setup_to_call_git()

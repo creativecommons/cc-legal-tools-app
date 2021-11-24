@@ -31,11 +31,12 @@ from i18n.utils import (
     map_django_to_redirects_language_codes,
     map_django_to_redirects_language_codes_lowercase,
 )
-from legal_tools import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from legal_tools.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 
+FREEDOM_LEVEL_MAX = 1
+FREEDOM_LEVEL_MID = 2
+FREEDOM_LEVEL_MIN = 3
 MAX_LANGUAGE_CODE_LENGTH = 15
-
 UNITS_LICENSES = [
     # Units are in all versions, unless otherwise noted:
     "by",

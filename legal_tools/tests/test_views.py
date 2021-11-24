@@ -416,9 +416,9 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
 
     def test_view_deed_template_body_unimplemented(self):
         lc = LegalCodeFactory(
-            tool__canonical_url="https://creativecommons.org/licenses/x/0",
+            tool__canonical_url="https://creativecommons.org/licenses/x/0.0",
             tool__unit="x",
-            tool__version="0",
+            tool__version="0.0",
             language_code="en",
         )
         url = lc.deed_url

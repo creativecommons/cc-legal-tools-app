@@ -8,10 +8,6 @@ import os
 import colorlog  # noqa: F401
 from django.conf.locale import LANG_INFO
 
-APP_NAME = "legal_tools"
-APP_LABEL = APP_NAME
-APP_VERBOSE_NAME = APP_NAME.replace("_", " ").title()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # SETTINGS_DIR is where this settings file is
 SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))

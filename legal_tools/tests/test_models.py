@@ -8,17 +8,18 @@ from django.test import TestCase, override_settings
 from django.utils.translation import override
 
 # First-party/Local
-from legal_tools import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
-from legal_tools.models import LegalCode, Tool
+from legal_tools.models import (
+    FREEDOM_LEVEL_MAX,
+    FREEDOM_LEVEL_MID,
+    FREEDOM_LEVEL_MIN,
+    LegalCode,
+    Tool,
+)
 from legal_tools.tests.factories import (
     LegalCodeFactory,
     ToolFactory,
     TranslationBranchFactory,
 )
-
-# TODO: update as part of translation rewrite
-# from i18n.transifex import TransifexHelper
-# from legal_tools.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
 
 
 class LegalCodeQuerySetTest(TestCase):

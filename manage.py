@@ -7,7 +7,7 @@ import sys
 # Third-party
 from django.conf import settings
 
-LOG = logging.getLogger(f"{settings.APP_NAME}.management.commands")
+LOG = logging.getLogger(f"management.commands")
 
 
 def main():
