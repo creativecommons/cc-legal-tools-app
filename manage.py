@@ -4,10 +4,7 @@ import logging
 import os
 import sys
 
-# Third-party
-from django.conf import settings
-
-LOG = logging.getLogger(f"management.commands")
+LOG = logging.getLogger("management.commands")
 
 
 def main():
