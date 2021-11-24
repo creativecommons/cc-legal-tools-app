@@ -34,9 +34,6 @@ from i18n.utils import (
 from legal_tools import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
 from legal_tools.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 
-# TODO: update as part of translation rewrite
-# from i18n.transifex import TransifexHelper
-
 MAX_LANGUAGE_CODE_LENGTH = 15
 
 UNITS_LICENSES = [
@@ -666,25 +663,6 @@ class Tool(models.Model):
     @property
     def include_share_adapted_material_clause(self):
         return self.unit in ["by", "by-nc"]
-
-    # TODO: update as part of translation rewrite
-    # def tx_upload_messages(self):
-    #     """
-    #     Upload the messages to Transifex,
-    #     creating the resource if it doesn't already exist.
-    #     """
-    #     # Have to do English first, they get uploaded differently as the
-    #     # "source" messages and are required if we need to first create the
-    #     # resource in Transifex.
-    #     en_legal_code = self.get_legal_code_for_language_code(
-    #         settings.LANGUAGE_CODE
-    #     )
-    #     helper = TransifexHelper()
-    #     helper.upload_messages_to_transifex(legal_code=en_legal_code)
-    #     for legal_code in self.legal_codes.exclude(
-    #         language_code=settings.LANGUAGE_CODE
-    #     ):
-    #         helper.upload_messages_to_transifex(legal_code=legal_code)
 
     @property
     def nc(self):
