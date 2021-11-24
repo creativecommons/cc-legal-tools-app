@@ -1387,33 +1387,41 @@ class TestTransifex(TestCase):
         self.assertTrue(log_context.output[0].startswith("INFO:"))
         mock_pofile_save.assert_not_called()
 
-    # Test: add_resource_to_transifex ########################################
+    # Test: upload_resource_to_transifex #####################################
 
-    def test_add_resource_to_transifex_present(self):
-        language_code = "x_lang_code_x"
+    def test_upload_resource_to_transifex_present(self):
         resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
+        push_overwrite = False
         self.helper._resource_stats = {"x_slug_x": None}
 
-        self.helper.add_resource_to_transifex(
-            language_code,
+        self.helper.upload_resource_to_transifex(
             resource_slug,
+            language_code,
+            transifex_code,
             resource_name,
             pofile_path,
             pofile_obj,
+            push_overwrite,
         )
 
         self.helper.api.Resource.create.assert_not_called()
         self.helper.api.Resource.get.assert_not_called()
         self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
 
-    def test_add_resource_to_transifex_missing_created(self):
+    def test_upload_resource_to_transifex_missing_created(self):
         api = self.helper.api
-        language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = False
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
             attributes={"i18n_type": "PO"},
@@ -1422,19 +1430,19 @@ class TestTransifex(TestCase):
         api.ResourceStringsAsyncUpload.upload = mock.Mock(
             return_value={"strings_created": 1, "strings_skipped": 0}
         )
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
         self.helper._resource_stats = {}
         self.helper.clear_transifex_stats = mock.Mock()
 
         with self.assertLogs(self.helper.log) as log_context:
-            self.helper.add_resource_to_transifex(
-                language_code,
+            self.helper.upload_resource_to_transifex(
                 resource_slug,
+                language_code,
+                transifex_code,
                 resource_name,
                 pofile_path,
                 pofile_obj,
+                push_overwrite,
             )
 
         api.Resource.create.assert_called_once()
@@ -1456,18 +1464,20 @@ class TestTransifex(TestCase):
             ).replace('msgstr "english text"', 'msgstr ""'),
         )
         self.assertTrue(log_context.output[0].startswith("WARNING:"))
-        self.assertIn(
-            "Transifex does not yet contain resource", log_context.output[0]
-        )
+        self.assertIn("Uploading resource to Transifex", log_context.output[0])
         self.assertTrue(log_context.output[1].startswith("INFO:"))
         self.assertIn("Resource upload results", log_context.output[1])
         self.helper.clear_transifex_stats.assert_called_once()
 
-    def test_add_resource_to_transifex_missing_failed(self):
+    def test_upload_resource_to_transifex_missing_failed(self):
         api = self.helper.api
-        language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = False
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
             attributes={"i18n_type": "PO"},
@@ -1476,19 +1486,19 @@ class TestTransifex(TestCase):
         api.ResourceStringsAsyncUpload.upload = mock.Mock(
             return_value={"strings_created": 0, "strings_skipped": 0}
         )
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
         self.helper._resource_stats = {}
         self.helper.clear_transifex_stats = mock.Mock()
 
         with self.assertLogs(self.helper.log) as log_context:
-            self.helper.add_resource_to_transifex(
-                language_code,
+            self.helper.upload_resource_to_transifex(
                 resource_slug,
+                language_code,
+                transifex_code,
                 resource_name,
                 pofile_path,
                 pofile_obj,
+                push_overwrite,
             )
 
         api.Resource.create.assert_called_once()
@@ -1510,20 +1520,22 @@ class TestTransifex(TestCase):
             ).replace('msgstr "english text"', 'msgstr ""'),
         )
         self.assertTrue(log_context.output[0].startswith("WARNING:"))
-        self.assertIn(
-            "Transifex does not yet contain resource", log_context.output[0]
-        )
+        self.assertIn("Uploading resource to Transifex", log_context.output[0])
         self.assertTrue(log_context.output[1].startswith("INFO:"))
         self.assertIn("Resource upload results", log_context.output[1])
         self.assertTrue(log_context.output[2].startswith("CRITICAL:"))
         self.assertIn("Resource upload failed", log_context.output[2])
         self.helper.clear_transifex_stats.assert_not_called()
 
-    def test_add_resource_to_transifex_missing_some_skipped(self):
+    def test_upload_resource_to_transifex_missing_some_skipped(self):
         api = self.helper.api
-        language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = False
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
             attributes={"i18n_type": "PO"},
@@ -1532,19 +1544,19 @@ class TestTransifex(TestCase):
         api.ResourceStringsAsyncUpload.upload = mock.Mock(
             return_value={"strings_created": 1, "strings_skipped": 1}
         )
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_content = get_pofile_content(pofile_obj)
         self.helper._resource_stats = {}
         self.helper.clear_transifex_stats = mock.Mock()
 
         with self.assertLogs(self.helper.log) as log_context:
-            self.helper.add_resource_to_transifex(
-                language_code,
+            self.helper.upload_resource_to_transifex(
                 resource_slug,
+                language_code,
+                transifex_code,
                 resource_name,
                 pofile_path,
                 pofile_obj,
+                push_overwrite,
             )
 
         api.Resource.create.assert_called_once()
@@ -1566,35 +1578,85 @@ class TestTransifex(TestCase):
             ).replace('msgstr "english text"', 'msgstr ""'),
         )
         self.assertTrue(log_context.output[0].startswith("WARNING:"))
-        self.assertIn(
-            "Transifex does not yet contain resource", log_context.output[0]
-        )
+        self.assertIn("Uploading resource to Transifex", log_context.output[0])
         self.assertTrue(log_context.output[1].startswith("INFO:"))
         self.assertIn("Resource upload results", log_context.output[1])
         self.assertTrue(log_context.output[2].startswith("WARNING:"))
         self.assertIn("Resource strings skipped", log_context.output[2])
         self.helper.clear_transifex_stats.assert_called_once()
 
-    def test_add_resource_to_transifex_dryrun(self):
+    def test_upload_resource_to_transifex_dryrun(self):
         self.helper.dryrun = True
-        language_code = "x_lang_code_x"
         resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = "x_pofile_obj_x"
+        push_overwrite = False
         self.helper._resource_stats = {}
 
-        self.helper.add_resource_to_transifex(
-            language_code,
+        self.helper.upload_resource_to_transifex(
             resource_slug,
+            language_code,
+            transifex_code,
             resource_name,
             pofile_path,
             pofile_obj,
+            push_overwrite,
         )
 
         self.helper.api.Resource.create.assert_not_called()
         self.helper.api.Resource.get.assert_not_called()
         self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
+
+    def test_upload_resource_to_transifex_present_push_overwrite(self):
+        api = self.helper.api
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        push_overwrite = True
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        api.ResourceStringsAsyncUpload.upload = mock.Mock(
+            return_value={"strings_created": 5, "strings_skipped": 9}
+        )
+        pofile_content = get_pofile_content(pofile_obj)
+        self.helper._resource_stats = {"x_slug_x": None}
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.upload_resource_to_transifex(
+                resource_slug,
+                language_code,
+                transifex_code,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                push_overwrite,
+            )
+
+        api.Resource.create.assert_not_called()
+        api.Resource.get.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_once()
+        api.ResourceStringsAsyncUpload.upload.assert_called_with(
+            resource=resource,
+            content=pofile_content.replace(
+                'msgstr "Attribution-NoDerivatives 4.0 International"',
+                'msgstr ""',
+            ).replace('msgstr "english text"', 'msgstr ""'),
+        )
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn("Uploading resource to Transifex", log_context.output[0])
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn("Resource upload results", log_context.output[1])
+        self.helper.clear_transifex_stats.assert_called_once()
 
     # Test: upload_translation_to_transifex_resource #########################
 
@@ -2578,7 +2640,7 @@ class TestTransifex(TestCase):
     #         ],
     #     )
 
-    # def test_add_resource_to_transifex_no_resource_yet_not_english(self):
+    # def test_upload_resource_to_transifex_no_resource_yet_not_english(self):
     #     # Must be english or we can't create the resource
     #     # If we try this with a non-english language and there's no resource,
     #     # we should get an error.
@@ -2594,7 +2656,7 @@ class TestTransifex(TestCase):
     #             with self.assertRaisesMessage(
     #                 ValueError, "Must upload English first"
     #             ):
-    #                 self.helper.add_resource_to_transifex(legal_code)
+    #                 self.helper.upload_resource_to_transifex(legal_code)
     #
     #     mock_gtr.assert_called_with()
     #     mock_gpwem.assert_called_with()
@@ -2623,7 +2685,7 @@ class TestTransifex(TestCase):
     #             with mock.patch.object(
     #                 self.helper, "update_source_messages"
     #             ) as mock_usm:
-    #                 self.helper.add_resource_to_transifex(
+    #                 self.helper.upload_resource_to_transifex(
     #                     legal_code, test_pofile
     #                 )
     #
@@ -2657,7 +2719,7 @@ class TestTransifex(TestCase):
     #             with mock.patch.object(
     #                 self.helper, "update_translations"
     #             ) as mock_ut:
-    #                 self.helper.add_resource_to_transifex(
+    #                 self.helper.upload_resource_to_transifex(
     #                     legal_code, test_pofile
     #                 )
     #
@@ -2746,12 +2808,6 @@ class TestTransifex(TestCase):
 #             first_time=False, changed=True
 #         )
 #
-#     def test_check_for_translation_updates_add_resource_to_transifex(self):
-#         # the resource isn't (yet) on transifex
-#         self.help_test_check_for_translation_updates(
-#             first_time=False, changed=True, resource_exists=False
-#         )
-#
 #     def test_check_for_translation_updates_upload_language(self):
 #         # The language isn't (yet) on transifex
 #         self.help_test_check_for_translation_updates(
@@ -2759,7 +2815,11 @@ class TestTransifex(TestCase):
 #         )
 #
 #     def help_test_check_for_translation_updates(
-#         self, first_time, changed, resource_exists=True, language_exists=True
+#         self,
+#         first_time,
+#         changed,
+#         resource_exists=True,
+#         language_exists=True,
 #     ):
 #         """
 #         Helper to test several conditions, since all the setup is so
@@ -2822,11 +2882,11 @@ class TestTransifex(TestCase):
 #         ) as mock_handle_legal_codes, mock.patch.object(
 #             helper, "get_transifex_resource_stats"
 #         ) as mock_get_transifex_resource_stats, mock.patch.object(
-#             helper, "add_resource_to_transifex"
-#         ) as mock_add_resource_to_transifex, mock.patch.object(
+#             helper, "upload_resource_to_transifex"
+#         ) as mock_upload_resource_to_transifex, mock.patch.object(
 #             LegalCode, "get_pofile"
 #         ) as mock_get_pofile, mock.patch.object(
-#             helper, "add_resource_to_transifex"
+#             helper, "upload_resource_to_transifex"
 #         ) as mock_upload:
 #             if resource_exists:
 #                 if language_exists:
@@ -2875,7 +2935,7 @@ class TestTransifex(TestCase):
 #
 #         if not resource_exists:
 #             # Should have tried to create resource
-#             mock_add_resource_to_transifex.assert_called_with(
+#             mock_upload_resource_to_transifex.assert_called_with(
 #                 language_code=legal_code.language_code,
 #                 resource_slug=resource_slug,
 #                 resource_name=legal_code.tool.identifier(),
@@ -2884,7 +2944,7 @@ class TestTransifex(TestCase):
 #             )
 #         else:
 #             # Not
-#             mock_add_resource_to_transifex.assert_not_called()
+#             mock_upload_resource_to_transifex.assert_not_called()
 #
 #         if language_exists:
 #             mock_upload.assert_not_called()
