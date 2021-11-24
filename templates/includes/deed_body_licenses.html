@@ -26,16 +26,14 @@
   {% else %}
 
     <p class="has-text-black body-big padding-bottom-normal">
-      {% blocktrans %}<strong>Share</strong> &mdash; copy and redistribute the material in any medium or format{% endblocktrans %}
-      {% if not tool.prohibits_commercial_use%}
+      {% blocktrans %}<strong>Share</strong> &mdash; copy and redistribute the material in any medium or format{% endblocktrans %}{% if not tool.prohibits_commercial_use%}
         {% blocktrans %}for any purpose, even commercially.{% endblocktrans %}
       {% endif %}
     </p>
 
     {% if tool.permits_derivative_works %}
       <p class="has-text-black body-big padding-bottom-small">
-        {% blocktrans %}<strong>Adapt</strong> &mdash; remix, transform, and build upon the material{% endblocktrans %}
-        {% if not tool.prohibits_commercial_use%}
+        {% blocktrans %}<strong>Adapt</strong> &mdash; remix, transform, and build upon the material{% endblocktrans %}{% if not tool.prohibits_commercial_use%}
           {% blocktrans %}for any purpose, even commercially.{% endblocktrans %}
         {% endif %}
       </p>
