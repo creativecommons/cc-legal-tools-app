@@ -1625,7 +1625,12 @@ class TestTransifex(TestCase):
         )
         api.Resource.get = mock.Mock(return_value=resource)
         api.ResourceStringsAsyncUpload.upload = mock.Mock(
-            return_value={"strings_created": 5, "strings_skipped": 9}
+            return_value={
+                "strings_created": 2,
+                "strings_updated": 5,
+                "strings_skipped": 0,
+                "strings_deleted": 5,
+            }
         )
         pofile_content = get_pofile_content(pofile_obj)
         self.helper._resource_stats = {"x_slug_x": None}
