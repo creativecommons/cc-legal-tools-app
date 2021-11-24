@@ -341,11 +341,15 @@ class MappingTest(TestCase):
 #     dirname = os.path.dirname(__file__)
 #     filepath = os.path.join(dirname, "testdata.csv")
 #     result = get_well_translated_langs(
-#         threshold=80, trans_file=filepath, append_english=False
+#         threshold=settings.TRANSLATION_THRESHOLD,
+#         trans_file=filepath,
+#         append_english=False,
 #     )
 #     self.assertEqual([], result)
 #     result = get_well_translated_langs(
-#         threshold=80, trans_file=filepath, append_english=True
+#         threshold=settings.TRANSLATION_THRESHOLD,
+#         trans_file=filepath,
+#         append_english=True,
 #     )
 #     self.assertEqual([{"code": "en", "name": "English"}], result)
 #     result = get_well_translated_langs(
