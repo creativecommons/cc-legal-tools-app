@@ -33,6 +33,8 @@ from i18n.utils import (
 )
 from legal_tools.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 
+# For context of "freedom levels" see:
+# https://creativecommons.org/share-your-work/public-domain/freeworks/
 FREEDOM_LEVEL_MAX = 1
 FREEDOM_LEVEL_MID = 2
 FREEDOM_LEVEL_MIN = 3
