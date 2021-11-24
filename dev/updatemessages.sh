@@ -21,6 +21,7 @@ docker-compose exec app coverage run manage.py \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
+        --ignore **/includes/legalcode_menu_sidebar.html \
         --ignore **/includes/legalcode_zero.html \
         --no-obsolete \
         --verbosity 2
