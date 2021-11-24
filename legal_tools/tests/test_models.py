@@ -8,17 +8,18 @@ from django.test import TestCase, override_settings
 from django.utils.translation import override
 
 # First-party/Local
-from legal_tools import FREEDOM_LEVEL_MAX, FREEDOM_LEVEL_MID, FREEDOM_LEVEL_MIN
-from legal_tools.models import LegalCode, Tool
+from legal_tools.models import (
+    FREEDOM_LEVEL_MAX,
+    FREEDOM_LEVEL_MID,
+    FREEDOM_LEVEL_MIN,
+    LegalCode,
+    Tool,
+)
 from legal_tools.tests.factories import (
     LegalCodeFactory,
     ToolFactory,
     TranslationBranchFactory,
 )
-
-# TODO: update as part of translation rewrite
-# from i18n.transifex import TransifexHelper
-# from legal_tools.tests.test_transifex import TEST_TRANSIFEX_SETTINGS
 
 
 class LegalCodeQuerySetTest(TestCase):
@@ -1099,31 +1100,6 @@ class ToolModelTest(TestCase):
             with self.subTest(unit):
                 tool = ToolFactory(unit=unit)
                 self.assertEqual(expected_freedom, tool.level_of_freedom)
-
-    # TODO: update as part of translation rewrite
-    # @override_settings(
-    #     TRANSIFEX=TEST_TRANSIFEX_SETTINGS,
-    #     DATA_REPOSITORY_DIR="/trans/repo",
-    # )
-    # def test_tx_upload_messages(self):
-    #     language_code = "es"
-    #     legal_code = LegalCodeFactory(language_code=language_code)
-    #     tool = legal_code.tool
-    #     test_pofile = polib.POFile()
-    #     with mock.patch.object(
-    #         tool, "get_legal_code_for_language_code"
-    #     ) as mock_glflc:
-    #         mock_glflc.return_value = legal_code
-    #         with mock.patch.object(
-    #             TransifexHelper, "upload_messages_to_transifex"
-    #         ) as mock_umtt:
-    #             with mock.patch.object(
-    #                 LegalCode, "get_pofile"
-    #             ) as mock_get_pofile:
-    #                 mock_get_pofile.return_value = test_pofile
-    #                 tool.tx_upload_messages()
-    #     mock_glflc.assert_called_with("en")
-    #     mock_umtt.assert_called_with(legal_code=legal_code)
 
     def test_superseded(self):
         lic1 = ToolFactory()
