@@ -106,6 +106,11 @@ class Command(BaseCommand):
             else:
                 os.remove(item)
 
+    def run_create_robots_txt(self):
+        """Create robots.txt to discourage indexing."""
+        robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
+        save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
+
     def run_django_distill(self):
         """Outputs static files into the output dir."""
         if not os.path.isdir(settings.STATIC_ROOT):
@@ -311,6 +316,7 @@ class Command(BaseCommand):
 
     def distill_and_copy(self):
         self.run_clean_output_dir()
+        self.run_create_robots_txt()
         self.run_django_distill()
         self.run_copy_tools_rdfs()
         self.run_copy_meta_rdfs()
