@@ -259,10 +259,12 @@ def view_deed(
     language_default = get_default_language_for_jurisdiction(jurisdiction)
 
     # The Legal Code translations are specific.
+    #
     # The Deed translations are generic: all of the Deeds of a given unit share
     # the same text. Therefore, for the purpose of displaying the Deed, we do
     # not care about the language of the associated Legal Code. Instead we care
-    # only about the languages that have been mostly (>80%) translated.
+    # only about the languages that have been mostly (>TRANSLATION_THRESHOLD)
+    # translated.
     #
     # Initially set legal_code based on language_default.
     legal_code = LegalCode.objects.filter(
