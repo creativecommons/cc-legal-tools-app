@@ -27,6 +27,10 @@ docker-compose exec app coverage run manage.py \
         --verbosity 2
 echo
 
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management format_pofile'
+docker-compose exec app ./manage.py format_pofile locale
+echo
+
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment compilemessages'
 docker-compose exec app coverage run manage.py \
     compilemessages
