@@ -1124,25 +1124,50 @@ class TestTransifex(TestCase):
         self.assertNotIn("translated entries:", log_context.output[0])
         self.assertTrue(result)
 
-    # Test: safesync_pofile ##################################################
+    # Test: safesync_translation #############################################
 
-    def test_safesync_pofile_mispatched_msgids(self):
+    def test_safesync_translation_mismatched_msgids(self):
+        api = self.helper.api
         language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        self.helper.transifex_get_pofile_content = mock.Mock(
-            return_value=POFILE_CONTENT.replace(
-                "license_medium",
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-            ).encode("utf-8")
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
         )
+        api.Language.get = mock.Mock(return_value=language)
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        translations = [
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": "XXXXXXXXXXXXXXXXXXXXXXX"}
+                ),
+                strings={"other": pofile_obj[0].msgstr},
+                save=mock.Mock(),
+            ),
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[1].msgid}
+                ),
+                strings={"other": pofile_obj[1].msgstr},
+                save=mock.Mock(),
+            ),
+        ]
+        api.ResourceTranslation.filter = mock.Mock(
+            return_value=mock.Mock(
+                include=mock.Mock(return_value=translations)
+            ),
+        )
+        self.helper.clear_transifex_stats = mock.Mock()
 
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
-                pofile_obj_new = self.helper.safesync_pofile(
+                pofile_obj_new = self.helper.safesync_translation(
                     language_code,
                     transifex_code,
                     resource_slug,
@@ -1152,25 +1177,134 @@ class TestTransifex(TestCase):
 
         self.assertEqual(pofile_obj_new, pofile_obj)
         self.assertTrue(log_context.output[0].startswith("CRITICAL:"))
-        self.assertIn("Transifex msgid do not match", log_context.output[0])
+        self.assertIn(
+            "Local PO File msgid and Transifex msgid do not match",
+            log_context.output[0],
+        )
+        translations[0].save.assert_not_called()
+        translations[1].save.assert_not_called()
+        self.helper.clear_transifex_stats.assert_not_called()
         mock_pofile_save.assert_not_called
 
-    def test_safesync_pofile_with_changes(self):
+    def test_safesync_translation_with_transifex_changes(self):
+        api = self.helper.api
         language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_obj[0].msgstr = ""
-        self.helper.transifex_get_pofile_content = mock.Mock(
-            return_value=POFILE_CONTENT.replace("Attribution", "XXXXXXXXXXX")
-            .replace('msgstr "english text"', 'msgstr "english text!!!!!!"')
-            .encode("utf-8")
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
         )
+        api.Language.get = mock.Mock(return_value=language)
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        translations = [
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[0].msgid}
+                ),
+                strings=None,
+                save=mock.Mock(),
+            ),
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[1].msgid}
+                ),
+                strings={
+                    "other": pofile_obj[1].msgstr.replace(
+                        'msgstr "english text"',
+                        'msgstr "english text!!!!!!"',
+                    ),
+                },
+                save=mock.Mock(),
+            ),
+        ]
+        api.ResourceTranslation.filter = mock.Mock(
+            return_value=mock.Mock(
+                include=mock.Mock(return_value=translations)
+            ),
+        )
+        self.helper.clear_transifex_stats = mock.Mock()
 
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
-                pofile_obj_new = self.helper.safesync_pofile(
+                pofile_obj_new = self.helper.safesync_translation(
+                    language_code,
+                    transifex_code,
+                    resource_slug,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(pofile_obj_new, pofile_obj)
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertIn(
+            "Adding translation from PO File to Transifex",
+            log_context.output[0],
+        )
+        self.assertIn("  msgid    0: 'license_medium'", log_context.output[0])
+        self.assertNotIn("  msgid    1: 'english text'", log_context.output[0])
+        translations[0].save.assert_called()
+        translations[1].save.assert_not_called()
+        self.helper.clear_transifex_stats.assert_called()
+        mock_pofile_save.assert_not_called()
+
+    def test_safesync_translation_with_pofile_changes(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
+        )
+        api.Language.get = mock.Mock(return_value=language)
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        translations = [
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[0].msgid}
+                ),
+                strings={
+                    "other": pofile_obj[0].msgstr.replace(
+                        "Attribution", "XXXXXXXXXXX"
+                    ),
+                },
+                save=mock.Mock(),
+            ),
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[1].msgid}
+                ),
+                strings={
+                    "other": pofile_obj[1].msgstr.replace(
+                        'msgstr "english text"',
+                        'msgstr "english text!!!!!!"',
+                    ),
+                },
+                save=mock.Mock(),
+            ),
+        ]
+        api.ResourceTranslation.filter = mock.Mock(
+            return_value=mock.Mock(
+                include=mock.Mock(return_value=translations)
+            ),
+        )
+        self.helper.clear_transifex_stats = mock.Mock()
+        pofile_obj[0].msgstr = ""
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_translation(
                     language_code,
                     transifex_code,
                     resource_slug,
@@ -1184,28 +1318,63 @@ class TestTransifex(TestCase):
         )
         self.assertTrue(log_context.output[0].startswith("INFO:"))
         self.assertIn(
-            "  msgid    0: 'license_medium'",
+            "Adding translation from Transifex to PO File",
             log_context.output[0],
         )
+        self.assertIn("  msgid    0: 'license_medium'", log_context.output[0])
+        self.assertNotIn("  msgid    1: 'english text'", log_context.output[0])
+        translations[0].save.assert_not_called()
+        translations[1].save.assert_not_called()
+        self.helper.clear_transifex_stats.assert_not_called()
         mock_pofile_save.assert_called_once()
 
-    def test_safesync_pofile_with_changes_dryrun(self):
-        self.helper.dryrun = True
+    def test_safesync_translation_with_both_changes(self):
+        api = self.helper.api
         language_code = "x_lang_code_x"
         transifex_code = "x_trans_code_x"
         resource_slug = "x_slug_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        pofile_obj[0].msgstr = ""
-        self.helper.transifex_get_pofile_content = mock.Mock(
-            return_value=POFILE_CONTENT.replace(
-                "Attribution", "XXXXXXXXXXX"
-            ).encode("utf-8")
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
         )
+        api.Language.get = mock.Mock(return_value=language)
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        translations = [
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[0].msgid}
+                ),
+                strings={
+                    "other": pofile_obj[0].msgstr.replace(
+                        "Attribution", "XXXXXXXXXXX"
+                    ),
+                },
+                save=mock.Mock(),
+            ),
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[1].msgid}
+                ),
+                strings={"other": ""},
+                save=mock.Mock(),
+            ),
+        ]
+        api.ResourceTranslation.filter = mock.Mock(
+            return_value=mock.Mock(
+                include=mock.Mock(return_value=translations)
+            ),
+        )
+        self.helper.clear_transifex_stats = mock.Mock()
+        pofile_obj[0].msgstr = ""
 
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
-                pofile_obj_new = self.helper.safesync_pofile(
+                pofile_obj_new = self.helper.safesync_translation(
                     language_code,
                     transifex_code,
                     resource_slug,
@@ -1213,12 +1382,106 @@ class TestTransifex(TestCase):
                     pofile_obj,
                 )
 
-        self.assertEqual(pofile_obj_new[0].msgstr, "")
+        self.assertEqual(
+            pofile_obj_new[0].msgstr,
+            "XXXXXXXXXXX-NoDerivatives 4.0 International",
+        )
         self.assertTrue(log_context.output[0].startswith("INFO:"))
         self.assertIn(
-            "  msgid    0: 'license_medium'",
+            "Adding translation from PO File to Transifex",
             log_context.output[0],
         )
+        self.assertNotIn(
+            "  msgid    0: 'license_medium'", log_context.output[0]
+        )
+        self.assertIn("  msgid    1: 'english text'", log_context.output[0])
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn(
+            "Adding translation from Transifex to PO File",
+            log_context.output[1],
+        )
+        self.assertIn("  msgid    0: 'license_medium'", log_context.output[1])
+        self.assertNotIn("  msgid    1: 'english text'", log_context.output[1])
+        translations[0].save.assert_not_called()
+        translations[1].save.assert_called()
+        self.helper.clear_transifex_stats.assert_called()
+        mock_pofile_save.assert_called_once()
+
+    def test_safesync_translation_with_both_changes_dryrun(self):
+        api = self.helper.api
+        self.helper.dryrun = True
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
+        )
+        api.Language.get = mock.Mock(return_value=language)
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        translations = [
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[0].msgid}
+                ),
+                strings={
+                    "other": pofile_obj[0].msgstr.replace(
+                        "Attribution", "XXXXXXXXXXX"
+                    ),
+                },
+                save=mock.Mock(),
+            ),
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[1].msgid}
+                ),
+                strings={"other": ""},
+                save=mock.Mock(),
+            ),
+        ]
+        api.ResourceTranslation.filter = mock.Mock(
+            return_value=mock.Mock(
+                include=mock.Mock(return_value=translations)
+            ),
+        )
+        self.helper.clear_transifex_stats = mock.Mock()
+        pofile_obj[0].msgstr = ""
+
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+                pofile_obj_new = self.helper.safesync_translation(
+                    language_code,
+                    transifex_code,
+                    resource_slug,
+                    pofile_path,
+                    pofile_obj,
+                )
+
+        self.assertEqual(pofile_obj_new, pofile_obj)
+        self.assertTrue(log_context.output[0].startswith("INFO:"))
+        self.assertIn(
+            "Adding translation from PO File to Transifex",
+            log_context.output[0],
+        )
+        self.assertNotIn(
+            "  msgid    0: 'license_medium'", log_context.output[0]
+        )
+        self.assertIn("  msgid    1: 'english text'", log_context.output[0])
+        self.assertTrue(log_context.output[1].startswith("INFO:"))
+        self.assertIn(
+            "Adding translation from Transifex to PO File",
+            log_context.output[1],
+        )
+        self.assertIn("  msgid    0: 'license_medium'", log_context.output[1])
+        self.assertNotIn("  msgid    1: 'english text'", log_context.output[1])
+        translations[0].save.assert_not_called()
+        translations[1].save.assert_not_called()
+        self.helper.clear_transifex_stats.assert_not_called()
         mock_pofile_save.assert_not_called()
 
     # Test: diff_entry #######################################################
