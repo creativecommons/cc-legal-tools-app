@@ -12,6 +12,7 @@ import polib
 import requests
 from django.conf import settings
 from transifex.api import transifex_api
+from transifex.api.jsonapi.exceptions import JsonApiException
 
 # First-party/Local
 import legal_tools.models
@@ -890,9 +891,19 @@ class TransifexHelper:
         resource = self.api.Resource.get(
             project=self.api_project, slug=resource_slug
         )
-        translations = self.api.ResourceTranslation.filter(
-            language=language, resource=resource
-        ).include("resource_string")
+        # Catch 500 error (consistently thrown with Transifex Code sr@latin)
+        try:
+            translations = self.api.ResourceTranslation.filter(
+                language=language, resource=resource
+            ).include("resource_string")
+            _ = translations[0]  # reference data to expose exception
+        except JsonApiException as e:  # pragma: no cover
+            self.log.critical(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): JsonApiError: {e.code} - {e.detail}"
+                f" (HTTP Status {e.status_code})"
+            )
+            return pofile_obj
         changes_pofile = []
         changes_transifex = []
         transifex_strings_updated = []
