@@ -1611,11 +1611,11 @@ class TransifexHelper:
             push_overwrite=True,
         )
 
-        # Normalize local PO File to match newly updated Transifex translation
-        if not self.dryrun:
-            if limit_domain == "deeds_ux":
-                load_deeds_ux_translations()
-            # self.normalize_translations(limit_domain, limit_language)
+        # # Normalize local PO File to match newly updated Transifex resource
+        # if not self.dryrun:
+        #     if limit_domain == "deeds_ux":
+        #         load_deeds_ux_translations()
+        #     self.normalize_translations(limit_domain, limit_language)
 
     def check_for_translation_updates_with_repo_and_legal_codes(
         self,
