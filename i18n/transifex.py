@@ -1396,6 +1396,14 @@ class TransifexHelper:
                         pofile_path,
                         pofile_obj,
                     )
+                    # reload Transifex translation stats
+                    t_stats = self.translation_stats[resource_slug][
+                        transifex_code
+                    ]
+                    transifex_revision = parse_date(
+                        t_stats["last_translation_update"]
+                    )
+                    transifex_translated = t_stats["translated_strings"]
 
                 # Normalize Creation and Revision dates in local PO File
                 pofile_obj = self.normalize_pofile_dates(
