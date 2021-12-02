@@ -12,6 +12,7 @@ import polib
 import requests
 from django.conf import settings
 from transifex.api import transifex_api
+from transifex.api.jsonapi.exceptions import JsonApiException
 
 # First-party/Local
 import legal_tools.models
@@ -213,7 +214,7 @@ class TransifexHelper:
             if resource_slug in self.resource_stats.keys():
                 self.log.debug(
                     f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}):: Transifex already contains"
+                    f" ({transifex_code}): Transifex already contains"
                     " resource."
                 )
                 return
@@ -868,7 +869,7 @@ class TransifexHelper:
             )
             return True
 
-    def safesync_pofile(
+    def safesync_translation(
         self,
         resource_slug,
         language_code,
@@ -876,53 +877,124 @@ class TransifexHelper:
         pofile_path,
         pofile_obj,
     ):
-        transifex_pofile_content = self.transifex_get_pofile_content(
-            resource_slug, transifex_code
+        """
+        Sync local PO Files and Transifex (changes are only made if a
+        translation message exists on one, but not the other).
+
+        Uses transifex-python
+        https://github.com/transifex/transifex-python/tree/devel/transifex/api
+
+        Uses Transifex API 3.0: Resources Translations
+        https://transifex.github.io/openapi/index.html#tag/Resource-Translations
+        """
+        language = self.api.Language.get(code=transifex_code)
+        resource = self.api.Resource.get(
+            project=self.api_project, slug=resource_slug
         )
-        transifex_pofile_obj = polib.pofile(
-            pofile=transifex_pofile_content.decode(), encoding="utf-8"
-        )
-        changes = []
+        # Catch 500 error (consistently thrown with Transifex Code sr@latin)
+        try:
+            translations = self.api.ResourceTranslation.filter(
+                language=language, resource=resource
+            ).include("resource_string")
+            _ = translations[0]  # reference data to expose exception
+        except JsonApiException as e:  # pragma: no cover
+            self.log.critical(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): JsonApiError: {e.code} - {e.detail}"
+                f" (HTTP Status {e.status_code})"
+            )
+            return pofile_obj
+        changes_pofile = []
+        changes_transifex = []
+        transifex_strings_updated = []
+
         for index, entry in enumerate(pofile_obj):
             pofile_entry = entry
-            transifex_entry = transifex_pofile_obj[index]
-            if pofile_entry != transifex_entry:
-                # Prep msgids for display
-                if len(pofile_entry.msgid) > 60:  # pragma: no cover
-                    p_msgid = f"{pofile_entry.msgid[:62]}..."
-                else:  # pragma: no cover
-                    p_msgid = pofile_entry.msgid
-                if len(pofile_entry.msgid) > 60:  # pragma: no cover
-                    t_msgid = f"{transifex_entry.msgid[:62]}..."
-                else:  # pragma: no cover
-                    t_msgid = transifex_entry.msgid
+            transifex_msgid = translations[index].resource_string.strings[
+                "other"
+            ]
+            if translations[index].strings:
+                transifex_msgstr = translations[index].strings["other"]
+            else:
+                transifex_msgstr = ""
 
-                # Ensure we're comparing the same entries
-                if pofile_entry.msgid != transifex_entry.msgid:
-                    self.log.critical(
-                        f"{self.nop}{resource_slug} {language_code}"
-                        f" ({transifex_code}) Local PO File msgid and"
-                        " Transifex msgid do not match:"
-                        f"\n    PO File: '{p_msgid}'"
-                        f"\n  Transifex: '{t_msgid}'"
-                    )
-                    continue
+            # Prep msgids for display
+            if len(pofile_entry.msgid) > 60:  # pragma: no cover
+                p_msgid = f"{pofile_entry.msgid[:62]}..."
+            else:  # pragma: no cover
+                p_msgid = pofile_entry.msgid
+            if len(pofile_entry.msgid) > 60:  # pragma: no cover
+                t_msgid = f"{transifex_msgid[:62]}..."
+            else:  # pragma: no cover
+                t_msgid = transifex_msgid
 
-                # Skip if local PO FILE entry is translated (even though it
-                # differs from Transifex)
+            # Ensure we're comparing the same entries
+            if pofile_entry.msgid != transifex_msgid:
+                self.log.critical(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}) Local PO File msgid and"
+                    " Transifex msgid do not match:"
+                    f"\n    PO File: '{p_msgid}'"
+                    f"\n  Transifex: '{t_msgid}'"
+                )
+                continue
+
+            if pofile_entry.msgstr != transifex_msgstr:
+                # Skip if neither local PO File nor Transifex are empty
                 if (
                     pofile_entry.msgstr is not None
                     and pofile_entry.msgstr != ""
-                ):
+                    and transifex_msgstr is not None
+                    and transifex_msgstr != ""
+                ):  # pragma: no cover
+                    # TODO: remove coveragepy exclusion after upgrade to
+                    # Python 3.10
+                    # https://github.com/nedbat/coveragepy/issues/198
                     continue
+                # Local PO file has translation and Transifex is empty
+                elif (
+                    pofile_entry.msgstr is not None
+                    and pofile_entry.msgstr != ""
+                    and (transifex_msgstr is None or transifex_msgstr == "")
+                ):
+                    changes_transifex.append(f"msgid {index:>4}: '{t_msgid}'")
+                    transifex_strings_updated.append(index)
+                # Transifex has translation and local PO File is empty
+                elif (
+                    transifex_msgstr is not None
+                    and transifex_msgstr != ""
+                    and (
+                        pofile_entry.msgstr is None
+                        or pofile_entry.msgstr == ""
+                    )
+                ):  # pragma: no cover
+                    # TODO: remove coveragepy exclusion after upgrade to
+                    # Python 3.10
+                    # https://github.com/nedbat/coveragepy/issues/198
+                    #
+                    # Add missing translation
+                    changes_pofile.append(f"msgid {index:>4}: '{p_msgid}'")
+                    if not self.dryrun:
+                        pofile_entry.msgstr = transifex_msgstr
 
-                # Add missing translation
-                changes.append(f"msgid {index:>4}: '{p_msgid}'")
-                if not self.dryrun:
-                    pofile_entry.msgstr = transifex_entry.msgstr
-
-        if changes:
-            changes = "\n  ".join(changes)
+        # Upload missing translations to Transifex
+        if changes_transifex:
+            changes = "\n  ".join(changes_transifex)
+            self.log.info(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}) Adding translation from PO File to"
+                " Transifex:"
+                f"\n  {changes}"
+            )
+            if not self.dryrun:
+                for index in transifex_strings_updated:
+                    translations[index].save(
+                        strings={"other": pofile_obj[index].msgstr}
+                    )
+                self.clear_transifex_stats()
+        # Save misssing translations to local PO File
+        if changes_pofile:
+            changes = "\n  ".join(changes_pofile)
             self.log.info(
                 f"{self.nop}{resource_slug} {language_code}"
                 f" ({transifex_code}) Adding translation from Transifex to"
@@ -1044,7 +1116,8 @@ class TransifexHelper:
 
     def get_local_data(self, limit_domain, limit_language):
         self.log.debug(
-            f"limit_domain: {limit_domain}, limit_language: {limit_language}"
+            f"{self.nop}limit_domain: {limit_domain}, limit_language:"
+            f" {limit_language}"
         )
 
         # Deeds & UX
@@ -1327,13 +1400,21 @@ class TransifexHelper:
                     transifex_translated,
                 ):
                     # Add missing translations to local PO File
-                    pofile_obj = self.safesync_pofile(
+                    pofile_obj = self.safesync_translation(
                         resource_slug,
                         language_code,
                         transifex_code,
                         pofile_path,
                         pofile_obj,
                     )
+                    # reload Transifex translation stats
+                    t_stats = self.translation_stats[resource_slug][
+                        transifex_code
+                    ]
+                    transifex_revision = parse_date(
+                        t_stats["last_translation_update"]
+                    )
+                    transifex_translated = t_stats["translated_strings"]
 
                 # Normalize Creation and Revision dates in local PO File
                 pofile_obj = self.normalize_pofile_dates(
@@ -1541,11 +1622,11 @@ class TransifexHelper:
             push_overwrite=True,
         )
 
-        # Normalize local PO File to match newly updated Transifex translation
-        if not self.dryrun:
-            if limit_domain == "deeds_ux":
-                load_deeds_ux_translations()
-            # self.normalize_translations(limit_domain, limit_language)
+        # # Normalize local PO File to match newly updated Transifex resource
+        # if not self.dryrun:
+        #     if limit_domain == "deeds_ux":
+        #         load_deeds_ux_translations()
+        #     self.normalize_translations(limit_domain, limit_language)
 
     def check_for_translation_updates_with_repo_and_legal_codes(
         self,
