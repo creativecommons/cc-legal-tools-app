@@ -1,10 +1,10 @@
 # Whether this GitHub repo is engineering related
 engineering_project: true
 # Name of the repository/project in English
-english_name: CC Licenses
+english_name: CC Legal Tools Application
 # All technologies used
-technologies: Python, HTML
+technologies: Django, Python
 # Whether this repository should be featured on the CC Open Source site
-featured: false
+featured: true
 # Slack channel name
-slack: "cc-dev-licenses"
+slack: "cc-dev-legal-tools"
