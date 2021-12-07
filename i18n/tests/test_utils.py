@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 
 # Third-party
 import polib
+from django.conf import settings
 from dateutil.tz import tzutc
 from django.test import TestCase, override_settings
 
@@ -220,7 +221,7 @@ class PofileTestWithData(TestCase):
             ]
         )
         # Open Aragonese PO FILE, read lines, and close it
-        location = "/home/cc-legal-tools-data/locale/af"
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/af"
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
@@ -229,7 +230,7 @@ class PofileTestWithData(TestCase):
             ]
         )
         # Open Dutch PO FILE, read lines, and close it
-        location = "/home/cc-legal-tools-data/locale/nl"
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/nl"
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
@@ -238,7 +239,7 @@ class PofileTestWithData(TestCase):
             ]
         )
         # Open Aranese PO FILE, read lines, and close it
-        location = "/home/cc-legal-tools-data/locale/oc_Aranes"
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/oc_Aranes"
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
@@ -247,7 +248,7 @@ class PofileTestWithData(TestCase):
             ]
         )
         # Open Serbian (Latin) PO FILE, read lines, and close it
-        location = "/home/cc-legal-tools-data/locale/sr_Latn"
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/sr_Latn"
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
@@ -256,7 +257,7 @@ class PofileTestWithData(TestCase):
             ]
         )
         # Open Chinese (Traditional) PO FILE, read lines, and close it
-        location = "/home/cc-legal-tools-data/locale/zh_Hant"
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/zh_Hant"
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
