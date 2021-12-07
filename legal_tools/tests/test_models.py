@@ -290,421 +290,500 @@ class LegalCodeModelTest(TestCase):
         self.assertTrue(lc_fr.has_english())
         self.assertTrue(lc_en.has_english())
 
-    def _test_get_publish_files(self, data):
-        for (
-            category,
-            version,
-            unit,
-            jurisdiction_code,
-            language_code,
-            expected_deed_path,
-            expected_deed_symlinks,
-            expected_deed_redirects_data,
-            expected_tool_path,
-            expected_tool_symlinks,
-            expected_tool_redirects_data,
-        ) in data:
-            tool = ToolFactory(
-                category=category,
-                unit=unit,
-                version=version,
-                jurisdiction_code=jurisdiction_code,
-            )
-            legal_code = LegalCodeFactory(
-                tool=tool, language_code=language_code
-            )
-            self.assertEqual(
+    # get_publish_files BY-NC-ND 4.0 #########################################
+    # BY-NC-ND 4.0 is an international license with multiple languages
+
+    def test_get_publish_files_by_nc_nd4_deed_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by-nc-nd",
+            tool__version="4.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("deed")
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-nc-nd/4.0/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
                 [
-                    expected_deed_path,
-                    expected_deed_symlinks,
-                    expected_deed_redirects_data,
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.en_us.html"
+                        ),
+                        "title": "",
+                    },
                 ],
-                legal_code.get_publish_files("deed"),
-            )
-            self.assertEqual(
+            ],
+            returned_list,
+        )
+
+    def test_get_publish_files_by_nc_nd4_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by-nc-nd",
+            tool__version="4.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("legalcode")
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-nc-nd/4.0/legalcode.en.html",
+                # symlinks
+                ["legalcode.html"],
+                # redirects_data
                 [
-                    expected_tool_path,
-                    expected_tool_symlinks,
-                    expected_tool_redirects_data,
+                    {
+                        "destination": "legalcode.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/legalcode.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "legalcode.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/legalcode.en_us.html"
+                        ),
+                        "title": "",
+                    },
                 ],
-                legal_code.get_publish_files("legalcode"),
-            )
-
-    def test_get_publish_files_by4(self):
-        """
-        4.0:
-            Formula
-                CATEGORY/UNIT/VERSION/DOCUMENT.LANG.html
-            Examples
-                licenses/by-nc-nd/4.0/deed.en-us.html
-                licenses/by-nc-nd/4.0/legalcode.en-us.html
-                licenses/by/4.0/deed.nl.html
-                licenses/by/4.0/legalcode.nl.html
-        """
-        self._test_get_publish_files(
-            [
-                (
-                    "licenses",
-                    "4.0",
-                    "by-nc-nd",
-                    "",
-                    "en",
-                    "licenses/by-nc-nd/4.0/deed.en.html",
-                    ["deed.html", "index.html"],
-                    [
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by-nc-nd/4.0/deed.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by-nc-nd/4.0/deed.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                    "licenses/by-nc-nd/4.0/legalcode.en.html",
-                    ["legalcode.html"],
-                    [
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by-nc-nd/4.0/legalcode.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by-nc-nd/4.0/legalcode.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                ),
-                (
-                    "licenses",
-                    "4.0",
-                    "by",
-                    "",
-                    "nl",
-                    "licenses/by/4.0/deed.nl.html",
-                    [],
-                    [],
-                    "licenses/by/4.0/legalcode.nl.html",
-                    [],
-                    [],
-                ),
-            ]
-        )
-        self._test_get_publish_files(
-            [
-                (
-                    "licenses",
-                    "4.0",
-                    "by",
-                    "",
-                    "zh-hans",
-                    "licenses/by/4.0/deed.zh-hans.html",
-                    [],
-                    [
-                        {
-                            "destination": "deed.zh-hans",
-                            "language_code": "zh-hans",
-                            "redirect_file": "licenses/by/4.0/deed.zh.html",
-                            "title": "",
-                        },
-                        {
-                            "destination": "deed.zh-hans",
-                            "language_code": "zh-hans",
-                            "redirect_file": (
-                                "licenses/by/4.0/deed.zh-cn.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "deed.zh-hans",
-                            "language_code": "zh-hans",
-                            "redirect_file": (
-                                "licenses/by/4.0/deed.zh_cn.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                    "licenses/by/4.0/legalcode.zh-hans.html",
-                    [],
-                    [
-                        {
-                            "destination": "legalcode.zh-hans",
-                            "language_code": "zh-hans",
-                            "redirect_file": (
-                                "licenses/by/4.0/legalcode.zh.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "legalcode.zh-hans",
-                            "language_code": "zh-hans",
-                            "redirect_file": (
-                                "licenses/by/4.0/legalcode.zh-cn.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "legalcode.zh-hans",
-                            "language_code": "zh-hans",
-                            "redirect_file": (
-                                "licenses/by/4.0/legalcode.zh_cn.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                ),
-            ]
+            ],
+            returned_list,
         )
 
-    def test_get_publish_files_by3(self):
-        """
-        3.0 unported
-            Formula
-                CATEGORY/UNIT/VERSION/JURISDICTION/DOCUMENT.LANG.html
-            Examples
-                licenses/by/3.0/deed.en.html
-                licenses/by/3.0/legalcode.en.html
-
-        3.0 ported
-            Formula
-                CATEGORY/UNIT/VERSION/JURISDICTION/DOCUMENT.LANG.html
-            Examples
-                licenses/by/3.0/ca/deed.en.html
-                licenses/by/3.0/ca/legalcode.en.html
-                licenses/by-sa/3.0/ca/deed.fr.html
-                licenses/by-sa/3.0/ca/legalcode.fr.html
-        """
-        # Unported
-        self._test_get_publish_files(
-            [
-                (
-                    "licenses",
-                    "3.0",
-                    "by",
-                    "",
-                    "en",
-                    "licenses/by/3.0/deed.en.html",
-                    ["deed.html", "index.html"],
-                    [
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/deed.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/deed.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                    "licenses/by/3.0/legalcode.en.html",
-                    ["legalcode.html"],
-                    [
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/legalcode.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/legalcode.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                ),
-            ]
-        )
-        # Ported with multiple languages
-        self._test_get_publish_files(
-            [
-                (
-                    "licenses",
-                    "3.0",
-                    "by",
-                    "ca",
-                    "en",
-                    "licenses/by/3.0/ca/deed.en.html",
-                    ["deed.html", "index.html"],
-                    [
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/ca/deed.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/ca/deed.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                    "licenses/by/3.0/ca/legalcode.en.html",
-                    ["legalcode.html"],
-                    [
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/ca/legalcode.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "licenses/by/3.0/ca/legalcode.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                ),
-            ]
-        )
-        self._test_get_publish_files(
-            [
-                (
-                    "licenses",
-                    "3.0",
-                    "by-sa",
-                    "ca",
-                    "fr",
-                    "licenses/by-sa/3.0/ca/deed.fr.html",
-                    [],  # no symlinks
-                    [],  # no redirects data
-                    "licenses/by-sa/3.0/ca/legalcode.fr.html",
-                    [],  # no symlinks
-                    [],  # no redirects data
-                ),
-            ]
-        )
-        # Ported with single language
-        self._test_get_publish_files(
-            [
-                (
-                    "licenses",
-                    "3.0",
-                    "by-nc-nd",
-                    "am",
-                    "hy",
-                    "licenses/by-nc-nd/3.0/am/deed.hy.html",
-                    ["deed.html", "index.html"],
-                    [],  # no redirects data
-                    "licenses/by-nc-nd/3.0/am/legalcode.hy.html",
-                    ["legalcode.html"],
-                    [],  # no redirects data
-                ),
-            ]
+    def test_get_publish_files_by_nc_nd_4_deed_zh_hant(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by-nc-nd",
+            tool__version="4.0",
+            language_code="zh-hant",
         )
 
-    def test_get_publish_files_zero(self):
-        """
-        Formula
-            CATEGORY/UNIT/VERSION/DOCUMENT.LANG.html
-        Examples
-            publicdomain/zero/1.0/deed.en.html
-            publicdomain/zero/1.0/legalcode.en.html
-        """
-        self._test_get_publish_files(
+        returned_list = legal_code.get_publish_files("deed")
+
+        self.assertEqual(
             [
-                (
-                    "publicdomain",
-                    "1.0",
-                    "zero",
-                    "",
-                    "en",
-                    "publicdomain/zero/1.0/deed.en.html",
-                    ["deed.html", "index.html"],
-                    [
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "publicdomain/zero/1.0/deed.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "deed.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "publicdomain/zero/1.0/deed.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                    "publicdomain/zero/1.0/legalcode.en.html",
-                    ["legalcode.html"],
-                    [
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "publicdomain/zero/1.0/legalcode.en-us.html"
-                            ),
-                            "title": "",
-                        },
-                        {
-                            "destination": "legalcode.en",
-                            "language_code": "en",
-                            "redirect_file": (
-                                "publicdomain/zero/1.0/legalcode.en_us.html"
-                            ),
-                            "title": "",
-                        },
-                    ],
-                ),
-            ]
+                # relpath
+                "licenses/by-nc-nd/4.0/deed.zh-hant.html",
+                # symlinks
+                [],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.zh-hant",
+                        "language_code": "zh-hant",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.zh-tw.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.zh-hant",
+                        "language_code": "zh-hant",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.zh_tw.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
         )
-        self._test_get_publish_files(
+
+    def test_get_publish_files_by_nc_nd_4_legal_code_zh_hant(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by-nc-nd",
+            tool__version="4.0",
+            language_code="zh-hant",
+        )
+
+        returned_list = legal_code.get_publish_files("legalcode")
+
+        self.assertEqual(
             [
-                (
-                    "publicdomain",
-                    "1.0",
-                    "zero",
-                    "",
-                    "ja",
-                    "publicdomain/zero/1.0/deed.ja.html",
-                    [],  # no symlinks
-                    [],  # no redirects data
-                    "publicdomain/zero/1.0/legalcode.ja.html",
-                    [],  # no symlinks
-                    [],  # no redirects data
-                ),
-            ]
+                # relpath
+                "licenses/by-nc-nd/4.0/legalcode.zh-hant.html",
+                # symlinks
+                [],
+                # redirects_data
+                [
+                    {
+                        "destination": "legalcode.zh-hant",
+                        "language_code": "zh-hant",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/legalcode.zh-tw.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "legalcode.zh-hant",
+                        "language_code": "zh-hant",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/legalcode.zh_tw.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
         )
+
+    # get_publish_files BY-NC 3.0 CA #########################################
+    # BY-NC 3.0 CA is a ported license with multiple languages
+
+    def test_get_publish_files_by_nc3_deed_ca_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__jurisdiction_code="ca",
+            tool__unit="by-nc",
+            tool__version="3.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("deed")
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-nc/3.0/ca/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc/3.0/ca/deed.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc/3.0/ca/deed.en_us.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    def test_get_publish_files_by_nc3_legal_code_ca_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__jurisdiction_code="ca",
+            tool__unit="by-nc",
+            tool__version="3.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("legalcode")
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-nc/3.0/ca/legalcode.en.html",
+                # symlinks
+                ["legalcode.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "legalcode.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc/3.0/ca/legalcode.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "legalcode.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc/3.0/ca/legalcode.en_us.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files BY-SA 3.0 AM #########################################
+    # BY-SA 3.0 AM is a ported license with a single language
+
+    def test_get_publish_files_by_sa3_deed_am_hy(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__jurisdiction_code="am",
+            tool__unit="by-sa",
+            tool__version="3.0",
+            language_code="hy",
+        )
+
+        returned_list = legal_code.get_publish_files("deed")
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-sa/3.0/am/deed.hy.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [],
+            ],
+            returned_list,
+        )
+
+    def test_get_publish_files_by_sa3_legal_code_am_hy(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__jurisdiction_code="am",
+            tool__unit="by-sa",
+            tool__version="3.0",
+            language_code="hy",
+        )
+
+        returned_list = legal_code.get_publish_files("legalcode")
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-sa/3.0/am/legalcode.hy.html",
+                # symlinks
+                ["legalcode.html"],
+                # redirects_data
+                [],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files CC0 1.0 ##############################################
+    # CC0 1.0 is an unported declaration with multiple languages
+
+    def test_get_publish_files_zero_deed_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__unit="zero",
+            tool__version="1.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("deed")
+
+        self.assertEqual(
+            [
+                # relpath
+                "publicdomain/zero/1.0/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/zero/1.0/deed.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/zero/1.0/deed.en_us.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    def test_get_publish_files_zero_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__unit="zero",
+            tool__version="1.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("legalcode")
+
+        self.assertEqual(
+            [
+                # relpath
+                "publicdomain/zero/1.0/legalcode.en.html",
+                # symlinks
+                ["legalcode.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "legalcode.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/zero/1.0/legalcode.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "legalcode.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/zero/1.0/legalcode.en_us.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    def test_get_publish_files_zero_deed_nl(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__unit="zero",
+            tool__version="1.0",
+            language_code="nl",
+        )
+
+        returned_list = legal_code.get_publish_files("deed")
+
+        self.assertEqual(
+            [
+                # relpath
+                "publicdomain/zero/1.0/deed.nl.html",
+                # symlinks
+                [],
+                # redirects_data
+                [],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files Mark 1.0 #############################################
+    # Mark 1.0 is an unported deed-only declaration
+
+    def test_get_publish_files_mark_deed(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__deed_only=True,
+            tool__unit="mark",
+            tool__version="1.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("deed")
+
+        self.assertEqual(
+            [
+                # relpath
+                "publicdomain/mark/1.0/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/deed.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/deed.en_us.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    def test_get_publish_files_mark_legal_code(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__deed_only=True,
+            tool__unit="mark",
+            tool__version="1.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_publish_files("legalcode")
+
+        self.assertEqual(
+            [
+                # relpath
+                None,
+                # symlinks
+                [],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/legalcode.en-us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/legalcode.en_us.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/legalcode.en.html"
+                        ),
+                        "title": "",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/legalcode.html"
+                        ),
+                        "title": "",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    # get_redirect_pairs #####################################################
 
     def test_get_redirect_pairs_4(self):
         tool = ToolFactory(category="license", unit="by", version="4.0")
