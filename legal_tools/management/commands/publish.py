@@ -14,6 +14,8 @@ from django.http.response import Http404
 from django.urls import reverse
 
 # First-party/Local
+from i18n import DEFAULT_CSV_FILE
+from i18n.utils import write_transstats_csv
 from legal_tools.git_utils import commit_and_push_changes, setup_local_branch
 from legal_tools.models import LegalCode, TranslationBranch
 from legal_tools.utils import (
@@ -319,6 +321,10 @@ class Command(BaseCommand):
             copyfile(os.path.join(plaintext_dir, text), dest_file)
             LOG.debug(f"    {relative_name}")
 
+    def run_write_transstats_csv(self):
+        LOG.info("Generating translations statistics CSV")
+        write_transstats_csv(DEFAULT_CSV_FILE)
+
     def distill_and_copy(self):
         self.run_clean_output_dir()
         self.run_create_robots_txt()
@@ -326,6 +332,7 @@ class Command(BaseCommand):
         self.run_copy_tools_rdfs()
         self.run_copy_meta_rdfs()
         self.run_copy_legal_code_plaintext()
+        self.run_write_transstats_csv()
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
