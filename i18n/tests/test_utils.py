@@ -6,8 +6,8 @@ from unittest.mock import MagicMock
 
 # Third-party
 import polib
-from django.conf import settings
 from dateutil.tz import tzutc
+from django.conf import settings
 from django.test import TestCase, override_settings
 
 # First-party/Local
