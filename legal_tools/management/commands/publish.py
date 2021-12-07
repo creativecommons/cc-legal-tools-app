@@ -66,28 +66,31 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser: ArgumentParser):
         parser.add_argument(
+            "-l",
+            "--list_branches",
+            action="store_true",
+            help="A list of active translation branches will be displayed.",
+        )
+
+        gitargs = parser.add_mutually_exclusive_group()
+        gitargs.add_argument(
             "-b",
             "--branch_name",
             help="Translation branch name to pull translations from and push"
             " artifacts to. Use --list_branches to see available branch names."
             " With no option, all active branches are published.",
         )
-        parser.add_argument(
-            "-l",
-            "--list_branches",
-            action="store_true",
-            help="A list of active translation branches will be displayed.",
-        )
-        parser.add_argument(
-            "--nopush",
-            action="store_true",
-            help="Update the local branches, but don't push upstream.",
-        )
-        parser.add_argument(
+        gitargs.add_argument(
             "--nogit",
             action="store_true",
             help="Update the local files without any attempt to manage them in"
             " git (implies --nopush)",
+        )
+
+        parser.add_argument(
+            "--nopush",
+            action="store_true",
+            help="Update the local branches, but don't push upstream.",
         )
 
     def _quiet(self, *args, **kwargs):
@@ -361,6 +364,13 @@ class Command(BaseCommand):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         init_utils_logger(LOG)
         self.options = options
+
+        if options.get("branch_name", None) == "main":
+            raise CommandError(
+                "Publishing to the main branch is prohibited. Changes to the"
+                " main branch should be done via a pull request."
+            )
+
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.config_dir = os.path.abspath(
             os.path.join(self.output_dir, "..", "config")
