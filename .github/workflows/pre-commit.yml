@@ -61,12 +61,9 @@ jobs:
         python-version: "3.7"
 
     - name: Install pipenv
-      # Use pipenv 2021.5.29 to circumvent errors with 2021.11.5.post0 on
-      # Ubuntu 20.04
-      # https://github.com/pypa/pipenv/issues/4833
       run: |
         python -m pip install --upgrade pip
-        python -m pip install pipenv==2021.5.29
+        python -m pip install pipenv
 
     - name: Install Python dependencies
       run: |
