@@ -9,7 +9,6 @@ from shutil import copyfile, rmtree
 # Third-party
 import git
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.core.management import BaseCommand, CommandError
 from django.http.response import Http404
 from django.urls import reverse
@@ -369,7 +368,7 @@ class Command(BaseCommand):
         self.legacy_dir = os.path.abspath(settings.LEGACY_DIR)
         git_dir = os.path.abspath(settings.DATA_REPOSITORY_DIR)
         if not self.output_dir.startswith(git_dir):
-            raise ImproperlyConfigured(
+            raise CommandError(
                 "In Django settings, DISTILL_DIR must be inside"
                 f" DATA_REPOSITORY_DIR, but DISTILL_DIR={self.output_dir} is"
                 f" outside DATA_REPOSITORY_DIR={git_dir}."
