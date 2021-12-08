@@ -1,3 +1,6 @@
+# Remember to also update the Docker Compose configuration, as appropriate:
+#   cc-legal-tools-app/docker-compose.yml
+
 name: pre-commit
 
 on:

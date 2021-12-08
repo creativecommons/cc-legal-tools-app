@@ -1,3 +1,6 @@
+# Remember to also update the GitHub Actions configuration, as appropriate:
+#   cc-legal-tools-app/.github/workflows/pre-commit.yml
+
 version: "3.6"
 
 services:
