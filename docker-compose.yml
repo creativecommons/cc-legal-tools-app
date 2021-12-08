@@ -9,9 +9,10 @@ services:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    image: postgres
+    # https://hub.docker.com/_/postgres
+    image: postgres:alpine
     restart: always
-    # Create tmpfs mount for pg_stat_tmp to resolve
+    # Create tmpfs mount for pg_stat_tmp to resolve:
     #     WARNING: could not open statistics file
     # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
     tmpfs:
@@ -27,6 +28,7 @@ services:
     environment:
       - DEV_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
       - DJANGO_SETTINGS_MODULE=cc_legal_tools.settings.local
+    # see Dockerfile
     image: cc_legal_tools
     ports:
       - "8000:8000"
@@ -36,7 +38,8 @@ services:
       - ../cc-legal-tools-data:/home/cc-legal-tools-data
 
   static:
-    image: nginx
+    # https://hub.docker.com/_/nginx
+    image: nginx:alpine
     ports:
       - "8080:80"
     restart: always
