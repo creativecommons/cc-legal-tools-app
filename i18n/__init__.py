@@ -7,15 +7,6 @@ from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-CSV_HEADERS = [
-    "lang_ietf",
-    "lang_locale",
-    "num_messages",
-    "num_trans",
-    "num_fuzzy",
-    "percent_trans",
-]
-DEFAULT_INPUT_DIR = os.path.dirname(settings.DEEDS_UX_LOCALE_PATH)
 DEFAULT_CSV_FILE = os.path.abspath(
     os.path.realpath(os.path.join(settings.DISTILL_DIR, "transstats.csv"))
 )

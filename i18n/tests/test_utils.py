@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 # Third-party
 import polib
 from dateutil.tz import tzutc
+from django.conf import settings
 from django.test import TestCase, override_settings
 
 # First-party/Local
@@ -23,6 +24,7 @@ from i18n.utils import (
     map_legacy_to_django_language_code,
     parse_date,
     save_content_as_pofile_and_mofile,
+    write_transstats_csv,
 )
 
 TEST_POFILE = os.path.join(
@@ -116,7 +118,7 @@ class TranslationTest(TestCase):
 
 
 @override_settings(DATA_REPOSITORY_DIR="/foo/bar")
-class PofileTest(TestCase):
+class PofileTestSimple(TestCase):
     def test_get_pofile_path(self):
         locale_path = get_pofile_path(
             locale_or_legalcode="locale",
@@ -197,6 +199,74 @@ class PofileTest(TestCase):
         pofile = mock_polib.pofile.return_value
         pofile.save.assert_called_with(path)
         pofile.save_as_mofile.assert_called_with("/foo/bar.mo")
+
+
+class PofileTestWithData(TestCase):
+    def test_write_transstats_csv(self):
+        output_file = "TESTFILE"
+
+        with mock.patch("builtins.open", mock.mock_open()) as mo:
+            write_transstats_csv(output_file)
+
+        call = mock.call
+        # Open output file and write CSV headers
+        mo.assert_has_calls(
+            [
+                call(output_file, "w"),
+                call().__enter__(),
+                call().write(
+                    '"lang_django","lang_locale","lang_transifex",'
+                    '"num_messages","num_trans","num_fuzzy","percent_trans"\n'
+                ),
+            ]
+        )
+        # Open Aragonese PO FILE, read lines, and close it
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/af"
+        mo.assert_has_calls(
+            [
+                call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().readlines(),
+                call().close(),
+            ]
+        )
+        # Open Dutch PO FILE, read lines, and close it
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/nl"
+        mo.assert_has_calls(
+            [
+                call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().readlines(),
+                call().close(),
+            ]
+        )
+        # Open Aranese PO FILE, read lines, and close it
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/oc_Aranes"
+        mo.assert_has_calls(
+            [
+                call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().readlines(),
+                call().close(),
+            ]
+        )
+        # Open Serbian (Latin) PO FILE, read lines, and close it
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/sr_Latn"
+        mo.assert_has_calls(
+            [
+                call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().readlines(),
+                call().close(),
+            ]
+        )
+        # Open Chinese (Traditional) PO FILE, read lines, and close it
+        location = f"{settings.DEEDS_UX_LOCALE_PATH}/zh_Hant"
+        mo.assert_has_calls(
+            [
+                call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().readlines(),
+                call().close(),
+            ]
+        )
+        # Exit without failures
+        mo.assert_has_calls([call().__exit__(None, None, None)])
 
 
 class MappingTest(TestCase):
@@ -323,104 +393,3 @@ class MappingTest(TestCase):
 
         transifex_code = map_legacy_to_django_language_code("zh_Hans")
         self.assertEqual("zh-hans", transifex_code)
-
-
-# Disabled tests (Do not belong under class MappingTest)
-
-# def test_ugettext_for_locale(self):
-#     ugettext_en = ugettext_for_locale("en")
-#     ugettext_fr = ugettext_for_locale("fr")
-#
-#     # Need something translated already in Django
-#     msg_en = "That page contains no results"
-#     msg_fr = "Cette page ne contient aucun résultat"
-#     self.assertEqual(msg_en, ugettext_en(msg_en))
-#     self.assertEqual(msg_fr, ugettext_fr(msg_en))
-#
-# def test_get_well_translated_langs(self):
-#     dirname = os.path.dirname(__file__)
-#     filepath = os.path.join(dirname, "testdata.csv")
-#     result = get_well_translated_langs(
-#         threshold=settings.TRANSLATION_THRESHOLD,
-#         trans_file=filepath,
-#         append_english=False,
-#     )
-#     self.assertEqual([], result)
-#     result = get_well_translated_langs(
-#         threshold=settings.TRANSLATION_THRESHOLD,
-#         trans_file=filepath,
-#         append_english=True,
-#     )
-#     self.assertEqual([{"code": "en", "name": "English"}], result)
-#     result = get_well_translated_langs(
-#         threshold=1, trans_file=filepath, append_english=True
-#     )
-#     # Alphabetized
-#     self.assertEqual(
-#         [
-#             {"code": "en", "name": "English"},
-#             {"code": "fr", "name": "français"},
-#         ],
-#         result,
-#     )
-#
-# def test_get_all_trans_stats(self):
-#     from i18n.utils import CACHED_TRANS_STATS
-#
-#     CACHED_TRANS_STATS.clear()
-#
-#     with self.subTest("Uses cached result"):
-#         CACHED_TRANS_STATS["unused filename"] = "ding dong"
-#         self.assertEqual(
-#             "ding dong", get_all_trans_stats("unused filename")
-#         )
-#         CACHED_TRANS_STATS.clear()
-#
-#     with self.subTest("Nonexistent file raises exception"):
-#         with self.assertRaises(IOError):
-#             get_all_trans_stats("no such filename here")
-#
-#     with self.subTest("reads CSV file"):
-#         dirname = os.path.dirname(__file__)
-#         filepath = os.path.join(dirname, "testdata.csv")
-#         result = get_all_trans_stats(filepath)
-#         self.assertEqual(
-#             {
-#                 "fr": {
-#                     "num_messages": 222,
-#                     "num_trans": 13,
-#                     "num_fuzzy": 7,
-#                     "num_untrans": 202,
-#                     "percent_trans": 75,
-#                 }
-#             },
-#             result,
-#         )
-
-# def test_applicable_langs(self):
-#     from i18n.utils import CACHED_APPLICABLE_LANGS
-#
-#     CACHED_APPLICABLE_LANGS.clear()
-#
-#     with self.subTest("uses cached result"):
-#         cache_key = ("foobar",)
-#         CACHED_APPLICABLE_LANGS[cache_key] = ["bizzle"]
-#         self.assertEqual(["bizzle"], applicable_langs("foobar"))
-#         CACHED_APPLICABLE_LANGS.clear()
-#
-#     # Should always include "en". Does NOT cache that result.
-#     with self.subTest("always includes 'en'"):
-#         self.assertEqual(["en"], applicable_langs("no such locale"))
-#         self.assertNotIn(("en",), CACHED_APPLICABLE_LANGS)
-#
-#     with self.subTest("Just the language works"):
-#         locale = "fr"
-#         self.assertEqual(["fr", "en"], applicable_langs(locale))
-#         self.assertIn((locale,), CACHED_APPLICABLE_LANGS)
-#         CACHED_APPLICABLE_LANGS.clear()
-#
-#     with self.subTest("adding the territory works too"):
-#         locale = "es_ES"
-#         self.assertEqual(["es_ES", "es", "en"], applicable_langs(locale))
-#         self.assertIn((locale,), CACHED_APPLICABLE_LANGS)
-#         CACHED_APPLICABLE_LANGS.clear()
