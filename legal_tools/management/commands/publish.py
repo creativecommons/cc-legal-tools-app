@@ -32,6 +32,11 @@ LOG_LEVELS = {
     2: logging.INFO,
     3: logging.DEBUG,
 }
+# RE: .nojekyll:
+# https://github.blog/2009-12-29-bypassing-jekyll-on-github-pages/
+# RE: CNAME
+# https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
+DOCS_IGNORE = [".nojekyll", "CNAME"]
 
 
 def list_open_translation_branches():
@@ -91,14 +96,10 @@ class Command(BaseCommand):
 
     def run_clean_output_dir(self):
         output_dir = self.output_dir
-        # RE: .nojekyll:
-        # https://github.blog/2009-12-29-bypassing-jekyll-on-github-pages/
-        # RE: CNAME
-        # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
         output_dir_items = [
             os.path.join(output_dir, item)
             for item in os.listdir(output_dir)
-            if item not in [".nojekyll", "CNAME"]
+            if item not in DOCS_IGNORE
         ]
         for item in output_dir_items:
             if os.path.isdir(item):
@@ -167,11 +168,13 @@ class Command(BaseCommand):
                     symlinks,
                     redirects_data,
                 ) = legal_code.get_publish_files("legalcode")
-                save_url_as_static_file(
-                    output_dir,
-                    url=legal_code.legal_code_url,
-                    relpath=relpath,
-                )
+                if relpath:
+                    # Deed-only tools will not return a legal code relpath
+                    save_url_as_static_file(
+                        output_dir,
+                        url=legal_code.legal_code_url,
+                        relpath=relpath,
+                    )
                 for symlink in symlinks:
                     relative_symlink(output_dir, relpath, symlink)
                 for redirect_data in redirects_data:

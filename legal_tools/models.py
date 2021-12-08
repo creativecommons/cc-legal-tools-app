@@ -314,29 +314,61 @@ class LegalCode(models.Model):
         juris_code = tool.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
         filename = f"{document}.{self.language_code}.html"
-        relpath = os.path.join(self._get_save_path(), filename)
+        if self.tool.deed_only and document == "legalcode":
+            deed_only_legalcode = True
+        else:
+            deed_only_legalcode = False
+
+        # Relative path
+        if deed_only_legalcode:
+            relpath = None
+        else:
+            relpath = os.path.join(self._get_save_path(), filename)
+
+        # Symlinks
         symlinks = []
         if language_code == language_default:
-            # Symlink default languages
-            symlinks.append(f"{document}.html")
+            if not deed_only_legalcode:
+                # Symlink default languages
+                symlinks.append(f"{document}.html")
             if document == "deed":
                 symlinks.append("index.html")
 
-        redirects_data = []
-        for redirect_code in map_django_to_redirects_language_codes_lowercase(
+        # Redirects
+        redirect_codes = map_django_to_redirects_language_codes_lowercase(
             language_code
-        ):
+        )
+        if deed_only_legalcode:
+            redirect_codes.append(language_default)
+        redirects_data = []
+        for redirect_code in redirect_codes:
             redirect_file = os.path.join(
                 self._get_save_path(), f"{document}.{redirect_code}.html"
             )
+            if deed_only_legalcode:
+                destination = f"deed.{self.language_code}"
+            else:
+                destination = f"{document}.{self.language_code}"
             redirects_data.append(
                 {
                     "redirect_file": redirect_file,
                     "title": self.title,
-                    "destination": f"{document}.{self.language_code}",
+                    "destination": destination,
                     "language_code": language_code,
                 }
             )
+        if deed_only_legalcode:
+            redirects_data.append(
+                {
+                    "redirect_file": os.path.join(
+                        self._get_save_path(), f"{document}.html"
+                    ),
+                    "title": self.title,
+                    "destination": f"deed.{self.language_code}",
+                    "language_code": language_code,
+                }
+            )
+
         return [relpath, symlinks, redirects_data]
 
     def get_redirect_pairs(self, document):
