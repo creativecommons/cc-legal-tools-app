@@ -1,3 +1,6 @@
+# Remember to also update the Docker Compose configuration, as appropriate:
+#   cc-legal-tools-app/docker-compose.yml
+
 name: pre-commit
 
 on:
@@ -11,11 +14,13 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      DATA_REPOSITORY_DIR: cc-legal-tools-data
       DJANGO_SETTINGS_MODULE: cc_legal_tools.settings.ephemeral
 
     services:
       postgres:
-        image: postgres:12.3-alpine
+        # https://hub.docker.com/_/postgres
+        image: postgres:alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -39,15 +44,15 @@ jobs:
         sudo apt-get install -y pandoc
 
     # https://github.com/actions/checkout
-    - name: Checkout cc-licenses
+    - name: Checkout cc-legal-tools-app
       uses: actions/checkout@v2
 
     # https://github.com/actions/checkout
-    - name: Checkout cc-licenses-data
+    - name: Checkout cc-legal-tools-data
       uses: actions/checkout@v2
       with:
-        repository: creativecommons/cc-licenses-data
-        path: cc-licenses-data
+        repository: creativecommons/cc-legal-tools-data
+        path: cc-legal-tools-data
 
     - name: Configure testing git identity
       run: |
@@ -70,19 +75,12 @@ jobs:
         pipenv sync --dev
 
     - name: Update Django database schema
-      env:
-        DATA_REPOSITORY_DIR: cc-licenses-data
       run: |
         pipenv run ./manage.py migrate
 
     - name: Start Django development web server
-      env:
-        DATA_REPOSITORY_DIR: cc-licenses-data
-
       run: |
         pipenv run ./manage.py runserver &>/dev/null &
 
     # https://github.com/pre-commit/action
-    - uses: pre-commit/action@v2.0.0
-      env:
-        DATA_REPOSITORY_DIR: cc-licenses-data
+    - uses: pre-commit/action@v2.0.3
