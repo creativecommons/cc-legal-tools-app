@@ -27,13 +27,13 @@ def init_utils_logger(logger: logging.Logger = None):
         LOG = logger
 
 
-def save_bytes_to_file(bytes, output_filename):
+def save_bytes_to_file(filebytes, output_filename):
     dirname = os.path.dirname(output_filename)
     if os.path.isfile(dirname):
         os.remove(dirname)
     os.makedirs(dirname, mode=0o755, exist_ok=True)
-    with open(output_filename, "wb") as f:
-        f.write(bytes)  # Bytes
+    with open(output_filename, "w+b") as f:
+        f.write(filebytes)
 
 
 class MockRequest:
@@ -68,7 +68,6 @@ def relative_symlink(src1, src2, dst):
     padding = " " * len(os.path.dirname(src2))
     src = os.path.abspath(os.path.join(src1, src2))
     dir_path, src_file = os.path.split(src)
-    # Handle ../symlinks for xu jurisdiction
     if dst.startswith("../"):
         __, dst = os.path.split(dst)
         os.path.split(src2)

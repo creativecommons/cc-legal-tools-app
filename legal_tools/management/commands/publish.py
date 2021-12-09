@@ -234,9 +234,6 @@ class Command(BaseCommand):
             else:
                 continue
             relative_name = os.path.join(*name.split("_"), "rdf")
-            # "xu" is a "user assigned code" meaning "unported"
-            # See https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#User-assigned_code_elements.  # noqa: E501
-            relative_name = relative_name.replace("xu/", "")
             dest_file = os.path.join(output_dir, relative_name)
             os.makedirs(os.path.dirname(dest_file), exist_ok=True)
             copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
