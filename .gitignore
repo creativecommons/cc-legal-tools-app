@@ -43,5 +43,6 @@ venv.bak/
 
 # Temporary files, includes:
 #  tmp/public (Django)
-#  tmp/data (Postgres container data)
-tmp
+#  db.sqlite3 (Django)
+tmp/
+db.sqlite3
