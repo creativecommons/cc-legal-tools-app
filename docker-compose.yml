@@ -5,31 +5,10 @@ version: "3.6"
 
 services:
 
-  db:
-    # Change location of pg_stat_tmp to allow it to be on tmpfs (see below)
-    command: postgres --stats_temp_directory=/var/lib/postgresql/pg_stat_tmp
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    # https://hub.docker.com/_/postgres
-    image: postgres:alpine
-    restart: always
-    # Create tmpfs mount for pg_stat_tmp to resolve:
-    #     WARNING: could not open statistics file
-    # https://stackoverflow.com/questions/66325175/docker-container-with-postgres-warning-could-not-open-statistics-file-pg-stat
-    tmpfs:
-      - /var/lib/postgresql/pg_stat_tmp
-    volumes:
-      - ./tmp/data/db:/var/lib/postgresql/data
-
   app:
     build: .
-    command: ./dev/wait-for-db-then-runserver.sh
-    depends_on:
-      - db
+    command: ./manage.py runserver 0.0.0.0:8000
     environment:
-      - DEV_DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
       - DJANGO_SETTINGS_MODULE=cc_legal_tools.settings.local
     # see Dockerfile
     image: cc_legal_tools

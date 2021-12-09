@@ -13,26 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
       DATA_REPOSITORY_DIR: cc-legal-tools-data
       DJANGO_SETTINGS_MODULE: cc_legal_tools.settings.ephemeral
-
-    services:
-      postgres:
-        # https://hub.docker.com/_/postgres
-        image: postgres:alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
 
