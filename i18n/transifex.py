@@ -891,7 +891,7 @@ class TransifexHelper:
         resource = self.api.Resource.get(
             project=self.api_project, slug=resource_slug
         )
-        # Catch 500 error (consistently thrown with Transifex Code sr@latin)
+        # Catch 500 error
         try:
             translations = self.api.ResourceTranslation.filter(
                 language=language, resource=resource
