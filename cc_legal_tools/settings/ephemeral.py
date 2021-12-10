@@ -1,7 +1,6 @@
 # Use **ONLY** for ephemeral deployments (ex. GitHub Actions).
 
 # Third-party
-import dj_database_url
 from django.core.management.utils import get_random_secret_key
 
 # First-party/Local
@@ -17,9 +16,6 @@ CELERY_ALWAYS_EAGER = True
 
 #: Tell us when a synchronous celery task fails
 CELERY_EAGER_PROPAGATES_EXCEPTIONS = True
-
-# DATABASE_URL environment variable must be set
-DATABASES["default"] = dj_database_url.config(conn_max_age=600)  # noqa: F405
 
 DEBUG = True
 

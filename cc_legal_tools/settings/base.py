@@ -20,10 +20,6 @@ PROJECT_ROOT = os.path.dirname(DJANGO_ROOT)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
-
 # Application definition
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
@@ -74,12 +70,12 @@ WSGI_APPLICATION = "cc_legal_tools.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "cc_legal_tools",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(PROJECT_ROOT, "db.sqlite3"),
     }
 }
 

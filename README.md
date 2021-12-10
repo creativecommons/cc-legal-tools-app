@@ -93,12 +93,11 @@ Use the following instructions to start the project with Docker compose.
     docker-compose up
     ```
 
-The commands above will create 3 docker containers:
+The commands above will create two docker containers:
 1. **app** ([127.0.0.1:8000](http://127.0.0.1:8000/)): this Djano application
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
-2. **db**: PostgreSQL database backend for this Django application
-3. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
+2. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
    serving [creativecommons/cc-legal-tools-data][repodata]/docs.
 
 [installdocker]: https://docs.docker.com/engine/install/
@@ -113,14 +112,14 @@ The commands above will create 3 docker containers:
    2. Install dependencies
       - Linux:
         ```
-        sudo apt-get install pandoc postgresql postgresql-contrib python3.7 python3.7-dev python3-pip
+        sudo apt-get install python3.7 python3.7-dev python3-pip
         ```
         ```
         pip3 install pipenv
         ```
       - macOS: via [Homebrew](https://brew.sh/):
         ```
-        brew install pandoc pipenv postgresql python@3.7
+        brew install pipenv python@3.7
         ```
    3. Install Python 3.7 environment and modules via pipenv to create a
       virtualenv
@@ -136,25 +135,12 @@ The commands above will create 3 docker containers:
     ```
     pipenv run pre-commit install
     ```
-2. Configure Django and PostgreSQL
+2. Configure Django
    1. Create Django local settings file
     ```
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
-   2. Start PostgrSQL server
-      - It's completely fine to not make a specific postgresql account. But if
-        you do wish to create a different user account for the project, Please
-        refer to [PostgreSQL: Documentation: Installation][postgresql-install]
-      - Linux:
-        ```
-        sudo service postgresql start
-        ```
-      - macOS:
-        ```
-        brew services run postgres
-        ```
-
-   3. Create project database
+   2. Create project database
       - Linux:
         ```
         sudo createdb -E UTF-8 cc_legal_tools
@@ -173,8 +159,6 @@ The commands above will create 3 docker containers:
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
-
-[postgresql-install]: https://www.postgresql.org/docs/current/tutorial-install.html
 
 
 ### Manual Commands
