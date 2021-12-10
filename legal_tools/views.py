@@ -204,6 +204,7 @@ def view_dev_home(request, category=None):
         )
         deed_translated = deed_rel_path.endswith(f".{lc.language_code}")
         data = dict(
+            canonical_url=lc.tool.canonical_url,
             version=lc_version,
             jurisdiction_name=jurisdiction_name,
             unit=lc_unit,

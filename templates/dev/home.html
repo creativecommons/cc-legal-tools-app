@@ -52,32 +52,35 @@ the generation of static files.
               {% regroup version_group.list by jurisdiction_name as jurisdiction_name_list %}
               {% for jurisdiction_name_group in jurisdiction_name_list %}
                 <h5>{{ jurisdiction_name_group.grouper }}</h5>
-                <table>
-                  <thead>
-                  <tr>
-                    <th>Language</th>
-                    {% for code in jurisdiction_name_group.list|units %}
-                      <th><code>{{ code }}</code></th>
-                    {% endfor %}
-                  </tr>
-                  </thead>
-                  <tbody>
-                    {% regroup jurisdiction_name_group.list by language_code as language_list %}
-                    {% for legal_code_group in language_list %}
-                      <tr>
-                        <th><code>{{ legal_code_group.grouper }}</code></th>
-                        {% for legal_code in legal_code_group.list  %}
-                          <td>
-                            <a href="{{ legal_code.deed_url }}"{% if not legal_code.deed_translated %} style="color: black; font-style: italic;"{% endif %}>{{ deed_label_translated }}</a>{% if not legal_code.deed_only %},{% endif %}
-                            {% if not legal_code.deed_only %}
-                              <a href="{{ legal_code.legal_code_url }}">{{ legal_code_label_translated }}</a>
-                            {% endif %}
-                          </td>
-                        {% endfor %}
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+                <p>
+                  Canonical URL: <a href="{{ jurisdiction_name_group.list.0.canonical_url }}"><code>{{ jurisdiction_name_group.list.0.canonical_url }}</code></a>
+                  <table>
+                    <thead>
+                    <tr>
+                      <th>Language Code</th>
+                      {% for code in jurisdiction_name_group.list|units %}
+                        <th><code>{{ code }}</code></th>
+                      {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                      {% regroup jurisdiction_name_group.list by language_code as language_list %}
+                      {% for legal_code_group in language_list %}
+                        <tr>
+                          <th><code>{{ legal_code_group.grouper }}</code></th>
+                          {% for legal_code in legal_code_group.list  %}
+                            <td>
+                              <a href="{{ legal_code.deed_url }}"{% if not legal_code.deed_translated %} style="color: black; font-style: italic;"{% endif %}>{{ deed_label_translated }}</a>{% if not legal_code.deed_only %},{% endif %}
+                              {% if not legal_code.deed_only %}
+                                <a href="{{ legal_code.legal_code_url }}">{{ legal_code_label_translated }}</a>
+                              {% endif %}
+                            </td>
+                          {% endfor %}
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </p>
               {% endfor %}
               <p><a href="#top">^top</a></p>
             {% endwith %}
@@ -93,30 +96,33 @@ the generation of static files.
           {% regroup version_group.list by jurisdiction_name as jurisdiction_name_list %}
           {% for jurisdiction_name_group in jurisdiction_name_list %}
             <h5>{{ version }} {{ jurisdiction_name_group.grouper }}</h5>
-            <table>
-              <thead>
-              <tr>
-                <th>Language</th>
-                {% for code in jurisdiction_name_group.list|units %}
-                  <th><code>{{ code }}</code></th>
-                {% endfor %}
-              </tr>
-              </thead>
-              <tbody>
-                {% regroup jurisdiction_name_group.list by language_code as language_list %}
-                {% for legal_code_group in language_list %}
-                  <tr>
-                    <th><code>{{ legal_code_group.grouper }}</code></th>
-                    {% for legal_code in legal_code_group.list  %}
-                      <td>
-                        <a href="{{ legal_code.deed_url }}"{% if not legal_code.deed_translated %} style="color: black; font-style: italic;"{% endif %}>{{ deed_label_translated }}</a>,
-                        <a href="{{ legal_code.legal_code_url }}">{{ legal_code_label_translated }}</a>
-                      </td>
-                    {% endfor %}
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+            <p>
+              Canonical URL: <a href="{{ jurisdiction_name_group.list.0.canonical_url }}"><code>{{ jurisdiction_name_group.list.0.canonical_url }}</code></a>
+              <table>
+                <thead>
+                <tr>
+                  <th>Language code</th>
+                  {% for code in jurisdiction_name_group.list|units %}
+                    <th><code>{{ code }}</code></th>
+                  {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                  {% regroup jurisdiction_name_group.list by language_code as language_list %}
+                  {% for legal_code_group in language_list %}
+                    <tr>
+                      <th><code>{{ legal_code_group.grouper }}</code></th>
+                      {% for legal_code in legal_code_group.list  %}
+                        <td>
+                          <a href="{{ legal_code.deed_url }}"{% if not legal_code.deed_translated %} style="color: black; font-style: italic;"{% endif %}>{{ deed_label_translated }}</a>,
+                          <a href="{{ legal_code.legal_code_url }}">{{ legal_code_label_translated }}</a>
+                        </td>
+                      {% endfor %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </p>
           {% endfor %}
           <p><a href="#top">^top</a></p>
         {% endwith %}
