@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% load bidi i18n static %}
 
+{% block title %}{{ legal_code.title }} Legal Code &mdash; Creative Commons{% endblock %}
+{% block tool_canonical_url %}{{ tool.canonical_url }}{% endblock %}
+
 {% block active-breadcrumb-li %}
   <li class="is-active"><a href="{{ legal_code.legal_code_url }}" aria-current="page displayed">{{ legal_code.identifier }} {% trans "Legal Code" %}</a></li>
 {% endblock %}
@@ -22,8 +25,6 @@
   </div>
 </div>
 {% endblock %}
-
-{% block title %}{{ legal_code.title }} Legal Code &mdash; Creative Commons{% endblock %}
 
 {% block content %}
   <div class="columns">
@@ -58,7 +59,6 @@
       {% include 'includes/related_links.html' with show_legal_code=True %}
     </div>
   </div>
-
 
 <style>
   #legal-code-body {
@@ -109,7 +109,6 @@
         this.parentNode.parentNode.nextSibling.nextSibling.classList.add("is-hidden");
       }
     };
-
   </script>
 {% endblock %}
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
