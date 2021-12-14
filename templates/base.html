@@ -4,7 +4,7 @@
 {# View will have set current language #}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_language_info for LANGUAGE_CODE as lang %}
-<html lang="{{ lang.code }}" class="no-js" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
+<html lang="{{ lang.code }}" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
 <head about="{% block canonical_url %} {% endblock %}">
   <meta charset="utf-8">
   <title>{% block title %}{% endblock %}</title>
@@ -14,15 +14,20 @@
   <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
   <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-{% comment %}
-{#
-We're pinning vocabulary v2020.11.1 because v2020.11.2 had a change that
-broke headers for this site. So far, I've been unable to find any
-documentation about it other than the warning in the release notes that
-there was a breaking change.
-#}
-{% endcomment %}
-  <link rel="stylesheet" href="https://unpkg.com/@creativecommons/vocabulary@v2020.11.1/css/vocabulary.css">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/@creativecommons/fonts@2020.9.3/css/fonts.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/@creativecommons/vocabulary@v2020.11.3/css/vocabulary.css"
+  />
+  <!-- Import Vue JS via CDN -->
+  <script src="https://unpkg.com/vue@next"></script>
+  <!-- Import Axios via CDN. Needed for the Global Header Component -->
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- Import the Component Library via CDN -->
+  <script src="https://unpkg.com/@creativecommons/cc-global-components@0.x.x/dist/cc-globals.min.js"></script>
 </head>
 <body typeoff="cc:License">
   {% include 'includes/header.html' %}
@@ -96,6 +101,22 @@ there was a breaking change.
       **/
       return window.location.href = this.dataset.href
     })
+  </script>
+  <script>
+    /* Import and use the Explore CC component */
+    const cc_explore = Vue.createApp({});
+    cc_explore.use(CcGlobals);
+    cc_explore.mount("#explore-cc");
+
+    /* Import and use the CC Global Header component */
+    const cc_header = Vue.createApp({});
+    cc_header.use(CcGlobals);
+    cc_header.mount("#header-cc");
+
+    /* Import and use the CC Global Footer component */
+    const cc_footer = Vue.createApp({});
+    cc_footer.use(CcGlobals);
+    cc_footer.mount("#footer-cc");
   </script>
   {% block extra-js %}
   {% endblock %}
