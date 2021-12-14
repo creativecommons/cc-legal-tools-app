@@ -6,12 +6,12 @@ register = template.Library()
 
 
 @register.simple_tag
-def start():
+def bidi_start():
     """Returns 'left' if ltr language or 'right' if rtl language"""
     return "right" if get_language_bidi() else "left"
 
 
 @register.simple_tag
-def end():
+def bidi_end():
     """Returns 'right' if ltr language or 'left' if rtl language"""
     return "left" if get_language_bidi() else "right"
