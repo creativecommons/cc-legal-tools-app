@@ -6,15 +6,15 @@
 {# if this content will be modified through the django admin in the future #}
 
 <div id="disclaimer-info-section" class="padding-bigger has-background-info-light" >
-  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% end %}-normal"></i>{% trans "Disclaimer" %}</h4>
-  <p class="has-text-black padding-{% start %}-big">
+  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% bidi_end %}-normal"></i>{% trans "Disclaimer" %}</h4>
+  <p class="has-text-black padding-{% bidi_start %}-big">
     {% blocktrans trimmed %}
       This deed highlights only some of the key features and terms of the actual license. It is not a license and
       has no legal value. You should carefully review all of the terms and conditions of the actual license before
       using the licensed material.
     {% endblocktrans %}
   </p>
-  <p class="has-text-black padding-{% start %}-big padding-top-normal">
+  <p class="has-text-black padding-{% bidi_start %}-big padding-top-normal">
     {% blocktrans trimmed %}
       Creative Commons is not a law firm and does not provide legal services. Distributing, displaying, or linking to this
       deed or the license that it summarizes does not create a lawyer-client or any other relationship.
