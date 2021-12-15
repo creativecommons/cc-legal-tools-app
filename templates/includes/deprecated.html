@@ -4,8 +4,8 @@
 {# if this content will be modified through the django admin in the future #}
 
 <div id="disclaimer-info-section" class="padding-bigger has-background-info-light" >
-  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% end %}-normal"></i>{% trans "Disclaimer" %}</h4>
-  <p class="has-text-black padding-{% start %}-big">
+  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% bidi_end %}-normal"></i>{% trans "Disclaimer" %}</h4>
+  <p class="has-text-black padding-{% bidi_start %}-big">
   {{ tool.deprecated_on }}: {% blocktrans %}Creative Commons has <a href="http://creativecommons.org/retiredlicenses">retired this legal tool</a> and does not recommend that it be applied to works.{% endblocktrans %}
   </p>
 </div>

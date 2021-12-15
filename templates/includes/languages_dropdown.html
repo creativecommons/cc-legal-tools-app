@@ -2,7 +2,7 @@
 
 <div class="locale level-right level-item has-text-black" >
   {% trans "Languages available" %}
-  <div class="control margin-{% start %}-small">
+  <div class="control margin-{% bidi_start %}-small">
     <div class="select">
       <select id="languages-dropdown">
         {% block lang-options %}
@@ -22,7 +22,7 @@
         {% endblock lang-options %}
       </select>
     </div>
-    <div class="icon is-small is-{% start %}">
+    <div class="icon is-small is-{% bidi_start %}">
       <!-- TODO Add icons here -->
     </div>
   </div>

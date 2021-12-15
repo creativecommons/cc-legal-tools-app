@@ -1,7 +1,7 @@
 {% load bidi i18n %}
 
 <div
-  class="menu padding-vertical-normal column is-half padding-{% end %}-large"
+  class="menu padding-vertical-normal column is-half padding-{% bidi_end %}-large"
 >
   <ul class="menu-list" >
     <li>
@@ -29,12 +29,12 @@
       {% endif %}
       <ul>
         {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="https://creativecommons.org/about/" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about our work" %}</a></li>
+          <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="https://creativecommons.org/about/" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about our work" %}</a></li>
         {% endif %}
-        <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="https://creativecommons.org/about/cclicenses/" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about CC Licensing" %}</a></li>
-        <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="https://creativecommons.org/donate/" class="is-inline body-big" style="font-weight: bold;">{% trans "Support our work" %}</a></li>
+        <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="https://creativecommons.org/about/cclicenses/" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about CC Licensing" %}</a></li>
+        <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="https://creativecommons.org/donate/" class="is-inline body-big" style="font-weight: bold;">{% trans "Support our work" %}</a></li>
         {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% end %}-normal padding-top-small">&#8226;</span><a href="https://chooser-beta.creativecommons.org/" class="is-inline body-big" style="font-weight: bold;">{% trans "Use the license for your own material." %}<i class="icon external-link padding-bottom-small caption"></i></a></li>
+          <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="https://chooser-beta.creativecommons.org/" class="is-inline body-big" style="font-weight: bold;">{% trans "Use the license for your own material." %}<i class="icon external-link padding-bottom-small caption"></i></a></li>
         {% endif %}
       </ul>
     </li>

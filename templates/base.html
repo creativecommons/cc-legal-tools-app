@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-{% load bidi i18n %}
-{% load static %}
+{% load bidi i18n static %}
 {# View will have set current language #}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_language_info for LANGUAGE_CODE as lang %}
@@ -32,7 +31,7 @@
 <body typeoff="cc:License">
   {% include 'includes/header.html' %}
   <main>
-    <div class="level padding-{% start %}-big padding-{% end %}-large padding-vertical-normal">
+    <div class="level padding-{% bidi_start %}-big padding-{% bidi_end %}-large padding-vertical-normal">
       {% include 'includes/skiplink.html' %}
       <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
         <ul>
