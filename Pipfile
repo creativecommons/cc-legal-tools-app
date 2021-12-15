@@ -26,6 +26,7 @@ flake8 = "*"
 isort = "*"
 link-checker = {file = "https://github.com/creativecommons/cc-link-checker/archive/v2020.09.1.zip"}
 pre-commit = "*"
+tblib = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.9"

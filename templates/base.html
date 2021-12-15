@@ -4,15 +4,17 @@
 {% get_current_language as LANGUAGE_CODE %}
 {% get_language_info for LANGUAGE_CODE as lang %}
 <html lang="{{ lang.code }}" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
-<head about="{% block canonical_url %} {% endblock %}">
-  <meta charset="utf-8">
+<head about="{% block head_about %}{% endblock %}">
+  <meta charset="utf-8"/>
   <title>{% block title %}{% endblock %}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="{% block meta-description %}{% endblock %}">
-  <meta name="author" content="{% block meta-author %}{% endblock %}">
-  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
-  <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
+  <meta name="CC-Canonical-URL" content="{% block tool_canonical_url %}{% endblock %}"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  {% block head_meta %}
+  {% endblock %}
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+  />
   <link
     rel="stylesheet"
     href="https://unpkg.com/@creativecommons/fonts@2020.9.3/css/fonts.css"
@@ -28,7 +30,7 @@
   <!-- Import the Component Library via CDN -->
   <script src="https://unpkg.com/@creativecommons/cc-global-components@0.x.x/dist/cc-globals.min.js"></script>
 </head>
-<body typeoff="cc:License">
+<body typeof="{% block body_typeof %}{% endblock %}" about="{% block body_about %}{% endblock %}">
   {% include 'includes/header.html' %}
   <main>
     <div class="level padding-{% bidi_start %}-big padding-{% bidi_end %}-large padding-vertical-normal">

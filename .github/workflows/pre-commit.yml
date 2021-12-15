@@ -42,10 +42,10 @@ jobs:
         git config --global user.name "Testing User"
 
     # https://github.com/actions/setup-python
-    - name: actions/setup-python@v2 Python 3.7
+    - name: actions/setup-python@v2 Python 3.9
       uses: actions/setup-python@v2
       with:
-        python-version: "3.7"
+        python-version: "3.9"
 
     - name: Install pipenv
       run: |
