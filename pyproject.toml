@@ -9,11 +9,12 @@ force-exclude = '''
 )
 '''
 line-length = 79
-target-version = ['py37', 'py38']
+target-version = ['py39', 'py310']
 
 
 [tool.coverage.run]
 branch = true
+concurrency = ['multiprocessing']
 omit = [
     '*/management/commands/*',
     '*/migrations/*',
@@ -28,6 +29,7 @@ omit = [
     'manage.py',
     'venv/*',
 ]
+parallel = true
 source = [
     '.',
 ]
@@ -37,6 +39,7 @@ fail_under = 98.00
 precision = 2
 show_missing = true
 skip_covered = true
+skip_empty = true
 
 
 # [tool.flake8]
