@@ -29,12 +29,12 @@ project is a component, see
 
 ## Software Versions
 
-- [Python 3.7][python37] (For parity with Debian GNU/Linux 10 [buster])
+- [Python 3.9][python39] (For parity with Debian GNU/Linux 11 [bullseye])
 - [Django 3.2][django32]
 
 Both versions are specified in the [`Pipfile`](Pipefile).
 
-[python37]: https://docs.python.org/3.7/
+[python39]: https://docs.python.org/3.9/
 [django32]: https://docs.djangoproject.com/en/3.2/
 
 
@@ -112,24 +112,24 @@ The commands above will create two docker containers:
    2. Install dependencies
       - Linux:
         ```
-        sudo apt-get install python3.7 python3.7-dev python3-pip
+        sudo apt-get install python3.9 python3.9-dev python3-pip
         ```
         ```
         pip3 install pipenv
         ```
       - macOS: via [Homebrew](https://brew.sh/):
         ```
-        brew install pipenv python@3.7
+        brew install pipenv python@3.9
         ```
-   3. Install Python 3.7 environment and modules via pipenv to create a
+   3. Install Python environment and modules via pipenv to create a
       virtualenv
       - Linux:
         ```
-        pipenv install --dev --python /usr/bin/python3.7
+        pipenv install --dev --python /usr/bin/python3.9
         ```
       - macOS: via [Homebrew](https://brew.sh/):
         ```
-        pipenv install --dev --python /usr/local/opt/python@3.7/libexec/bin/python
+        pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
         ```
    4. Install pre-commit hooks
     ```

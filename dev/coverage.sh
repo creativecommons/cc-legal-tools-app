@@ -19,9 +19,19 @@ if ! docker-compose exec app true 2>/dev/null; then
     exit 1
 fi
 
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Coverage Erase'
+docker-compose exec app coverage erase
+echo 'done.'
+echo
+
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Coverage Tests'
-docker-compose exec app coverage run manage.py test --noinput ${@:-} \
+docker-compose exec app coverage run \
+    manage.py test --noinput --parallel 4 ${@:-} \
     || exit
+echo
+
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Coverage Combine'
+docker-compose exec app coverage combine
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Coverage Report'
