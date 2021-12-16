@@ -46,9 +46,9 @@ def get_category_and_category_title(category=None, tool=None):
             category = "licenses"
     # category_title
     if category == "publicdomain":
-        category_title = "Public Domain"
+        category_title = translation.gettext("Public Domain")
     else:
-        category_title = category.title()
+        category_title = translation.gettext("Licenses")
     return category, category_title
 
 
@@ -161,6 +161,103 @@ def normalize_path_and_lang(request_path, jurisdiction, language_code):
         request_path = f"{request_path}.{language_code}"
     return request_path, language_code
 
+
+def view_list(request, category, language_code=None):
+    """
+    Display all the available deeds and legal code for the given category.
+    """
+    request.path, language_code = normalize_path_and_lang(
+        request.path, None, language_code
+    )
+    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        raise Http404(f"invalid language: {language_code}")
+    # Get the list of units and languages that occur among the tools
+    # to let the template iterate over them as it likes.
+    legal_code_objects = (
+        LegalCode.objects.valid()
+        .filter(tool__category=category)
+        .select_related("tool")
+        .order_by(
+            "-tool__version",
+            "tool__jurisdiction_code",
+            "language_code",
+            "tool__unit",
+        )
+    )
+    tools = []
+    path_start = os.path.dirname(request.path)
+    for lc in legal_code_objects:
+        lc_category = lc.tool.category
+        lc_unit = lc.tool.unit
+        lc_version = lc.tool.version
+        lc_language_default = get_default_language_for_jurisdiction(
+            lc.tool.jurisdiction_code,
+        )
+        jurisdiction_name = get_jurisdiction_name(
+            lc_category,
+            lc_unit,
+            lc_version,
+            lc.tool.jurisdiction_code,
+        )
+        deed_rel_path = get_deed_rel_path(
+            lc.deed_url,
+            path_start,
+            lc.language_code,
+            lc_language_default,
+        )
+        deed_translated = deed_rel_path.endswith(f".{lc.language_code}")
+        data = dict(
+            canonical_url=lc.tool.canonical_url,
+            version=lc_version,
+            jurisdiction_name=jurisdiction_name,
+            unit=lc_unit,
+            language_code=lc.language_code,
+            deed_only=lc.tool.deed_only,
+            deed_translated=deed_translated,
+            deed_url=deed_rel_path,
+            legal_code_url=os.path.relpath(
+                lc.legal_code_url, start=path_start
+            ),
+            identifier=lc.tool.identifier(),
+        )
+        tools.append(data)
+    category, category_title = get_category_and_category_title(
+        category,
+        None,
+    )
+    if category == "licenses":
+        # licenses
+        tools = sorted(tools, reverse=True, key=itemgetter("version"))
+        units = sorted(UNITS_LICENSES)
+        category_list = translation.gettext("Licenses List")
+    else:
+        # publicdomain
+        tools = sorted(tools, key=itemgetter("identifier"))
+        units = sorted(UNITS_PUBLIC_DOMAIN)
+        category_list = translation.gettext("Public Domain List")
+
+    languages_and_links = get_languages_and_links_for_deeds_ux(
+        request_path=request.path,
+        selected_language_code=language_code,
+    )
+    translation.activate(language_code)
+    html_response = render(
+        request,
+        template_name="list.html",
+        context={
+            "category": category,
+            "category_title": category_title,
+            "category_list": category_list,
+            "languages_and_links": languages_and_links,
+            "tools": tools,
+            "units": units,
+        },
+    )
+    html_response.content = bytes(
+        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        "utf-8",
+    )
+    return html_response
 
 def view_dev_home(request, category=None):
     """

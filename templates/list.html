@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load bidi i18n license_tags static %}
+
+{% block title %}{% blocktrans trimmed %}{{ category_list }}{% endblocktrans %}{% endblock %}
+
+{% block active-breadcrumb-li %}
+  <li class="is-active"><a href="/licenses/list" aria-current="page displayed">{{ category_list }}</a></li>
+{% endblock %}
+
+{% block content %}
+  {% trans "Deed" as deed_label_translated %}
+  {% trans "Legal Code" as legal_code_label_translated %}
+  {% trans "Canonical URL" as canonical_url_label_translated %}
+
+  <div class="columns">
+
+    <div class="column is-one-quarter toc-container">
+      <aside class="menu table-of-contents">
+        <ul class="menu-list">
+              {% regroup tools by version as version_list %}
+              {% for version_group in version_list %}
+                {% with version=version_group.grouper %}
+                  <li>
+                    <a class="link" href="#{{ category|slugify }}-{{ version }}">{{ version }} {{ category_title }}</a>
+                    <ul>
+                      {% regroup version_group.list by jurisdiction_name as jurisdiction_name_list %}
+                      {% for jurisdiction_name_group in jurisdiction_name_list %}
+                        <li>
+                          <a class="link" href="#{{ jurisdiction_name_group.grouper|slugify }}-{{ version }}"><i class="icon circle-filled"></i>{{ version }} {{ jurisdiction_name_group.grouper }}</a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  </li>
+                {% endwith %}
+              {% endfor %}
+        </ul>
+      </aside>
+    </div>
+
+    <div class="column is-three-quarters">
+      {% regroup tools by version as version_list %}
+      {% for version_group in version_list %}
+        {% with version=version_group.grouper %}
+          <h3 id="{{ category|slugify }}-{{ version }}" class="b-header">{{ version }} {{ category_title }}</h3>
+          {% regroup version_group.list by jurisdiction_name as jurisdiction_name_list %}
+          {% for jurisdiction_name_group in jurisdiction_name_list %}
+            <h4 id="{{ jurisdiction_name_group.grouper|slugify }}-{{ version }}" class="b-header">{{ version }} {{ jurisdiction_name_group.grouper }}</h4>
+            <div class="padding-bottom-big">
+            {{ canonical_url_label_translated }}: <a href="{{ jurisdiction_name_group.list.0.canonical_url }}"><code>{{ jurisdiction_name_group.list.0.canonical_url }}</code></a>
+              <div class="is-responsive">
+                <table class="table is-bordered is-striped">
+                  <thead>
+                  <tr>
+                    <th rowspan="2">{% trans "Language code" %}</th>
+                    <th colspan="{{ jurisdiction_name_group.list|units|length }}">
+                      {% trans "Legal Tools" %}
+                    </th>
+                  </tr>
+                  <tr>
+                    {% for code in jurisdiction_name_group.list|units %}
+                      <th><code>{{ code }}</code></th>
+                    {% endfor %}
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% regroup jurisdiction_name_group.list by language_code as language_list %}
+                    {% for legal_code_group in language_list %}
+                      <tr>
+                        <td data-label="{% trans "Language code" %}"><code>{{ legal_code_group.grouper }}</code></td>
+                        {% for legal_code in legal_code_group.list  %}
+                          <td data-label="{{ legal_code.unit }}">
+                            <a href="{{ legal_code.deed_url }}"{% if not legal_code.deed_translated %} style="color: black; font-style: italic;"{% endif %}>{{ deed_label_translated }}</a>,
+                            <a href="{{ legal_code.legal_code_url }}">{{ legal_code_label_translated }}</a>
+                          </td>
+                        {% endfor %}
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <a href="#top">^top</a>
+            </div>
+          {% endfor %}
+        {% endwith %}
+      {% endfor %}
+
+      <div class="columns margin-top-normal margin-bottom-normal">
+          {% include 'includes/related_links.html' with show_standard_deed=True %}
+          {% include 'includes/newsletter.html' %}
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

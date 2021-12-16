@@ -13,7 +13,7 @@ from django.urls import path, register_converter
 
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
-from legal_tools.views import view_deed, view_legal_code, view_metadata
+from legal_tools.views import view_list, view_deed, view_legal_code, view_metadata
 
 
 class CategoryConverter:
@@ -154,6 +154,21 @@ urlpatterns = [
         "licenses/metadata.yaml",
         view_metadata,
         name="metadata",
+    ),
+    #
+    # LIST PAGES
+    #
+    # List: with language
+    path(
+        "<category:category>/list.<language_code:language_code>",
+        view_list,
+        name="view_list_language_specified",
+    ),
+    # List: no language
+    path(
+        "<category:category>/list",
+        view_list,
+        name="view_list",
     ),
     #
     # DEED PAGES
