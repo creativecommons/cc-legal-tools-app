@@ -29,6 +29,18 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <!-- Import the Component Library via CDN -->
   <script src="https://unpkg.com/@creativecommons/cc-global-components@0.x.x/dist/cc-globals.min.js"></script>
+  <style>
+    body {
+      background-color: rgb(245, 245, 245);
+    }
+    html[dir="rtl"] nav.breadcrumb>ul li+li:before {
+      transform: scaleX(-1);
+    }
+    html[dir="rtl"] .breadcrumb li:first-child a {
+      padding-right: 0;
+      padding-left: .5rem;
+    }
+  </style>
 </head>
 <body typeof="{% block body_typeof %}{% endblock %}" about="{% block body_about %}{% endblock %}">
   {% include 'includes/header.html' %}
@@ -71,18 +83,6 @@
   </script>
   {% block extra-js %}
   {% endblock %}
-  </body>
-  <style>
-    body {
-      background-color: rgb(245, 245, 245);
-    }
-    html[dir="rtl"] nav.breadcrumb>ul li+li:before {
-      transform: scaleX(-1);
-    }
-    html[dir="rtl"] .breadcrumb li:first-child a {
-      padding-right: 0;
-      padding-left: .5rem;
-    }
-  </style>
+</body>
 </html>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
