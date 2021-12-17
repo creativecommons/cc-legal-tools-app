@@ -259,6 +259,7 @@ def view_list(request, category, language_code=None):
     )
     return html_response
 
+
 def view_dev_home(request, category=None):
     """
     For test purposes, this displays all the available deeds and legal code in
