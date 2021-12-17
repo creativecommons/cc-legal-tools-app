@@ -321,20 +321,22 @@ def get_default_language_for_jurisdiction(
 
 
 def get_jurisdiction_name(category, unit, version, jurisdiction_code):
-    jurisdiction_name = JURISDICTION_NAMES.get(
-        jurisdiction_code, jurisdiction_code
-    )
     # For details on nomenclature for unported licenses, see:
     # https://wiki.creativecommons.org/wiki/License_Versions
     if unit in ["zero", "mark"]:
-        jurisdiction_name = "Universal"
-    elif category == "licenses" and jurisdiction_name.lower() == "unported":
+        jurisdiction_code = "=p10"
+    elif category == "licenses" and not jurisdiction_code:
         if version == "4.0":
-            jurisdiction_name = "International"
+            jurisdiction_code = "=l40"
         elif version == "3.0":
-            jurisdiction_name = "International (unported)"
+            jurisdiction_code = "=l30"
         else:
-            jurisdiction_name = "Generic (unported)"
+            jurisdiction_code = "=l20"
+
+    jurisdiction_name = JURISDICTION_NAMES.get(
+        jurisdiction_code, "UNDEFINED"
+    )
+
     return jurisdiction_name
 
 

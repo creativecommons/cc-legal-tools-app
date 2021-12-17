@@ -13,8 +13,6 @@ DEFAULT_CSV_FILE = os.path.abspath(
 )
 # The DEFAULT_JURISDICTION_LANGUAGES and JURISDICTION_NAMES are largely based
 # on jurisdictions.rdf in the cc.licenserdf repo.
-# The language codes here are CC language codes, which sometimes differ from
-# Django language codes.
 DEFAULT_JURISDICTION_LANGUAGES = {
     # Map jurisdiction code to language code.
     # "jurisdiction code": "Django language code"
@@ -122,9 +120,10 @@ DEFAULT_JURISDICTION_LANGUAGES = {
 }
 JURISDICTION_NAMES = {
     "": gettext_lazy("Unported"),
-    "20": gettext_lazy("Generic (unported) "),
-    "30": gettext_lazy("International (unported)"),
-    "40": gettext_lazy("International"),
+    "=l20": gettext_lazy("Generic (unported) "),
+    "=l30": gettext_lazy("International (unported)"),
+    "=l40": gettext_lazy("International"),
+    "=p10": gettext_lazy("Universal"),
     "am": gettext_lazy("Armenia"),
     "ar": gettext_lazy("Argentina"),
     "at": gettext_lazy("Austria"),
