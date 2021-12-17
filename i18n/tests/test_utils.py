@@ -14,6 +14,7 @@ from django.test import TestCase, override_settings
 from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction,
+    get_jurisdiction_name,
     get_pofile_creation_date,
     get_pofile_path,
     get_pofile_revision_date,
@@ -63,6 +64,101 @@ class UtilTest(TestCase):
             None,
         )
 
+    def test_get_jurisdiction_name_licenses_40(self):
+        category = "licenses"
+        unit = "by"
+        version = "4.0"
+
+        jurisdiction_code = ""
+        self.assertEqual(
+            "International",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+    def test_get_jurisdiction_name_licenses_30(self):
+        category = "licenses"
+        unit = "by"
+        version = "3.0"
+
+        jurisdiction_code = ""
+        self.assertEqual(
+            "International (unported)",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+        jurisdiction_code = "am"
+        self.assertEqual(
+            "Armenia",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+    def test_get_jurisdiction_name_licenses_25(self):
+        category = "licenses"
+        unit = "by"
+        version = "2.5"
+
+        jurisdiction_code = ""
+        self.assertEqual(
+            "Generic (unported)",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+        jurisdiction_code = "be"
+        self.assertEqual(
+            "Belgium",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+    def test_get_jurisdiction_name_licenses_21(self):
+        category = "licenses"
+        unit = "by"
+        version = "2.1"
+
+        jurisdiction_code = ""
+        self.assertEqual(
+            "Generic (unported)",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+        jurisdiction_code = "ca"
+        self.assertEqual(
+            "Canada",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+    def test_get_jurisdiction_name_licenses_20(self):
+        category = "licenses"
+        unit = "by"
+        version = "2.0"
+
+        jurisdiction_code = ""
+        self.assertEqual(
+            "Generic (unported)",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+        jurisdiction_code = "de"
+        self.assertEqual(
+            "Germany",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+    def test_get_jurisdiction_name_licenses_10(self):
+        category = "licenses"
+        unit = "by"
+        version = "1.0"
+
+        jurisdiction_code = ""
+        self.assertEqual(
+            "Generic (unported)",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
+
+        jurisdiction_code = "ec"
+        self.assertEqual(
+            "Ecuador",
+            get_jurisdiction_name(category, unit, version, jurisdiction_code),
+        )
 
 class I18NTest(TestCase):
     def test_get_language_for_jurisdiction(self):
