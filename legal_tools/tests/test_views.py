@@ -307,7 +307,7 @@ class ToolsTestsMixin:
 
 class ViewDevHomeTest(ToolsTestsMixin, TestCase):
     def test_view_dev_index_view(self):
-        url = reverse("dev_home")
+        url = reverse("dev_index")
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed("dev/home.html")

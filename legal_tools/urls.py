@@ -158,7 +158,7 @@ urlpatterns = [
     path(
         "",
         view_dev_index,
-        name="dev_home",
+        name="dev_index",
     ),
     # METADATA ################################################################
     path(
