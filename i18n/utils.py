@@ -333,9 +333,7 @@ def get_jurisdiction_name(category, unit, version, jurisdiction_code):
         else:
             jurisdiction_code = "<=l25"
 
-    jurisdiction_name = JURISDICTION_NAMES.get(
-        jurisdiction_code, "UNDEFINED"
-    )
+    jurisdiction_name = JURISDICTION_NAMES.get(jurisdiction_code, "UNDEFINED")
 
     return jurisdiction_name
 

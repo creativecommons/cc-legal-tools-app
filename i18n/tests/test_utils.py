@@ -160,6 +160,7 @@ class UtilTest(TestCase):
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
+
 class I18NTest(TestCase):
     def test_get_language_for_jurisdiction(self):
         # 'be' default is "fr"
