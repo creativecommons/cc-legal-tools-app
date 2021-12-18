@@ -9,12 +9,14 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
 """
 
 # Third-party
-from django.urls import path, register_converter
+from django.urls import path, re_path, register_converter
 
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
 from legal_tools.views import (
+    view_branch_status,
     view_deed,
+    view_dev_index,
     view_legal_code,
     view_list,
     view_metadata,
@@ -152,17 +154,19 @@ register_converter(LangConverter, "language_code")
 
 
 urlpatterns = [
-    #
-    # METADATA
-    #
+    # DEV #####################################################################
+    path(
+        "",
+        view_dev_index,
+        name="dev_home",
+    ),
+    # METADATA ################################################################
     path(
         "licenses/metadata.yaml",
         view_metadata,
         name="metadata",
     ),
-    #
-    # LIST PAGES
-    #
+    # LIST PAGES ##############################################################
     # List: with language
     path(
         "<category:category>/list.<language_code:language_code>",
@@ -175,9 +179,21 @@ urlpatterns = [
         view_list,
         name="view_list",
     ),
-    #
-    # DEED PAGES
-    #
+    # List: Licenses list, no language
+    path(
+        "licenses/list",
+        view_list,
+        kwargs=dict(category="licenses"),
+        name="licenses_list",
+    ),
+    # List: Public Domain list, no language
+    path(
+        "publicdomain/list",
+        view_list,
+        kwargs=dict(category="publicdomain"),
+        name="publicdomain_list",
+    ),
+    # DEED PAGES ##############################################################
     # Deed: with Jurisdiction (ported), with language_code
     path(
         "<category:category>/<unit:unit>/<version:version>"
@@ -207,9 +223,7 @@ urlpatterns = [
         kwargs=dict(jurisdiction=""),
         name="view_deed_unported",
     ),
-    #
-    # LEGALCODE PAGES
-    #
+    # LEGALCODE PAGES #########################################################
     # Legalcode: with Jurisdiction (ported), with language_code
     path(
         "<category:category>/<unit:unit>/<version:version>"
@@ -247,4 +261,10 @@ urlpatterns = [
     #     kwargs=dict(jurisdiction="", is_plain_text=True),
     #     name="view_legal_code_unported",
     # ),
+    # TRANSLATION PAGES #######################################################
+    re_path(
+        r"^dev/status/(?P<id>\d+)/$",
+        view_branch_status,
+        name="branch_status",
+    ),
 ]

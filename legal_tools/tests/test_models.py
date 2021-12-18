@@ -837,7 +837,7 @@ class ToolModelTest(TestCase):
 
         data = tool.get_metadata()
         expected_data = {
-            "jurisdiction_name": "xyz",
+            "jurisdiction_name": "UNDEFINED",
             "unit": "by-nc",
             "permits_derivative_works": False,
             "permits_distribution": True,

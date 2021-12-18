@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Development</title>
+  <meta charset="utf-8"/>
+  <style>
+    body {
+      background-color: whitesmoke;
+      line-height: 150%;
+      padding: 0 2em 2em 2em;
+    }
+    table {
+      border-spacing: 0px;
+      border-collapse: collapse;
+    }
+    td, th {
+      padding: 0.2em;
+    }
+    td {
+      border: 2px solid gainsboro;
+    }
+    th {
+      border: 2px solid gray;
+    }
+    thead {
+      background-color: gainsboro;
+      position: sticky;
+      top: 0px;
+    }
+    .ballot {
+      font-size: 150%;
+      padding-left: 0.5em;
+    }
+    .font-smaller {
+      font-size: smaller;
+    }
+    .datetime {
+      font-family: monospace;
+      white-space: nowrap;
+    }
+    .helplink {
+      font-weight: normal;
+    }
+    .legal-tools-box {
+      background-color: white;
+      border: 1px solid gainsboro;
+      line-height: 200%;
+      margin: 0 -1em 0 -1em;
+      padding: 0.5em 1em 0.5em 1em;
+    }
+    .legal-tools-box li {
+      font-size: larger;
+    }
+    .long-title {
+      font-size: smaller;
+    }
+    .monospace {
+      font-family: monospace;
+    }
+    .percent {
+      font-family: monospace;
+      font-size: 105%;
+      text-align: right;
+    }
+    .status-empty {
+      color: darkred;
+    }
+    .status-hidden {
+      color: chocolate;
+    }
+    .status-displayed {
+      color: darkgreen;
+    }
+    .status-displayed {
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="development">CC-Legal-Tools Development</h1>
+  <p>
+    <strong>
+      This is a convenience page for standalone environments (ex. app
+      development, GitHub Pages) of the Creative Commons (CC) Legal Tools.
+    </strong>
+  </p>
+  <p>
+    <strong>
+      This page is not visible within integrated environments (ex. production,
+      <a href="https://github.com/creativecommons/project_creativecommons.org/"
+        target="_blank" rel="noopener noreferrer">
+        creativecommons/project_creativecommons.org</a>
+      development).
+    </strong>
+  </p>
+  <p>
+    Primary GitHub repositories for this content:
+    <ol>
+      <li>
+        <a href="https://github.com/creativecommons/cc-legal-tools-app/"
+          target="_blank" rel="noopener noreferrer">
+          creativecommons/cc-legal-tools-app
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/creativecommons/cc-legal-tools-data/"
+          target="_blank" rel="noopener noreferrer">
+          creativecommons/cc-legal-tools-data
+        </a>
+      </li>
+    </ol>
+  </p>
+
+  {% if not distilling %}
+  <h2 id="django">Django</h2>
+  <ul>
+    <li>
+      <a href="/admin/" target="_blank" rel="noopener noreferrer">
+        <code>/admin/</code> &mdash; Django administration
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'error_404' %}" target="_blank" rel="noopener noreferrer">
+        <code>{% url 'error_404' %}</code> &mdash; Error 404
+      </a>
+    </li>
+  </ul>
+  {% endif %}
+
+  <div class="legal-tools-box">
+  <h1 id="legal-tools">Legal Tools</h1>
+  <ul>
+    <li>
+      <a href="{% url 'licenses_list' %}" target="_blank"
+        rel="noopener noreferrer">
+        <code>{% url 'licenses_list' %}</code> &mdash; Licenses List
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'publicdomain_list' %}" target="_blank"
+        rel="noopener noreferrer">
+        <code>{% url 'publicdomain_list' %}</code> &mdash; Public Domain List
+      </a>
+    </li>
+{% comment %}
+{# YAML structure not yet finalized #}
+    <li>
+      <a href="{% url 'metadata' %}" target="_blank"
+        rel="noopener noreferrer">
+        <code>{% url 'metadata' %}</code>
+      </a>
+    </li>
+{% endcomment %}
+  </ul>
+  </div>
+
+  <h1 id="translation">Translation</h1>
+{% comment %}
+  <ul>
+    <li>
+      <a href="{% url 'translation_status' %}" target="_blank"
+         rel="noopener noreferrer">
+        <code>{% url 'translation_status' %}</code>
+        &mdash; Translation status
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'transstats' %}" target="_blank"
+        rel="noopener noreferrer">
+        <code>{% url 'transstats' %}</code>
+      </a>
+    </li>
+{% endcomment %}
+  </ul>
+
+  <h2 id="translation-deed-ux">Deed & UX Translation Status</h1>
+  <table>
+  <thead>
+  <tr>
+    <th>
+      Language Code
+      <a class="helplink"
+        href="https://github.com/creativecommons/cc-legal-tools-data/#language-code"
+        target="_blank" rel="noopener noreferrer">
+        [?]
+      </a>
+    </th>
+    <th>
+      Locale Name
+      <a class="helplink"
+        href="https://github.com/creativecommons/cc-legal-tools-data/#locale-name"
+        target="_blank" rel="noopener noreferrer">
+        [?]
+      </a>
+    </th>
+    <th>
+      Transifex Code
+      <a class="helplink"
+        href="https://github.com/creativecommons/cc-legal-tools-data/#transifex-code"
+        target="_blank" rel="noopener noreferrer">
+        [?]
+      </a>
+    </th>
+    <th>Language Name</th>
+    <th>Percent Translated</th>
+    <th style="white-space:nowrap;">Created (UTC)</th>
+    <th style="white-space:nowrap;">Updated (UTC)</th>
+    <th>
+      BiDi
+      <a class="helplink"
+        href="https://en.wikipedia.org/wiki/Bidirectional_text"
+        target="_blank" rel="noopener noreferrer">
+        [?]
+      </a>
+    </th>
+    <th class="long-title">Legal Codes in this language</th>
+    <th>
+      Name Local
+      <a class="helplink"
+        href="https://en.wikipedia.org/wiki/Endonym_and_exonym"
+        target="_blank" rel="noopener noreferrer">
+        [?]
+      </a>
+    </th>
+  </tr>
+  </thead>
+  </tbody>
+    {% for language_code, info in deed_ux.items %}
+      {% if info.percent_translated == 0 %}
+      <tr class="status-empty">
+      {% elif info.percent_translated < threshold %}
+      <tr class="status-hidden">
+      {% else %}
+      <tr class="status-displayed">
+      {% endif %}
+        {% if language_code == info.locale_name and info.locale_name == info.transifex_code %}
+        <td colspan="3"><code>{{ language_code }}</code></td>
+        {% elif info.locale_name == info.transifex_code %}
+        <td><code>{{ language_code }}</code></td>
+        <td colspan="2"><code>{{ info.locale_name }}</code></td>
+        {% else %}
+        <td><code>{{ language_code }}</code></td>
+        <td><code>{{ info.locale_name }}</code></td>
+        <td><code>{{ info.transifex_code }}</code></td>
+        {% endif %}
+        <td>{{ info.name|safe }}</td>
+        <td class="percent">
+        {% if info.percent_translated == 0 %}
+          {{ info.percent_translated }}%
+          <span class="ballot">&#x2610;</span> {# Ballot Box (empty) #}
+        {% elif info.percent_translated < threshold %}
+          {{ info.percent_translated }}%
+          <span class="ballot">&#x2610;</span> {# Ballot Box (empty) #}
+        {% else %}
+          {{ info.percent_translated }}%
+          <span class="ballot">&#x2611;</span> {# Ballot Box With Check #}
+        {% endif %}
+        </td>
+        <td class="datetime">{{ info.created }}</td>
+        <td class="datetime">{{ info.updated }}</td>
+        {% if info.bidi %}
+          <td style="font-weight:bold; text-align:right; white-space:nowrap;">
+            RTL &#x21E6 {# Leftwards White Arrow - Arrows #}
+          </td>
+        {% else %}
+          <td style="text-align:left; white-space:nowrap;">
+            &#x21E8 {# Rightwards White Arrow - Arrows #} LTR
+          </td>
+        {% endif %}
+        </td>
+        <td style="text-align:center; white-space:nowrap;">
+          {% if info.legal_code %}
+            &#x2714 {# Heavy Check Mark - Dingbats #}
+          {% endif %}
+        </td>
+        <td style="white-space:nowrap;">{{ info.name_local }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+  </table>
+  <ul>
+    <li>
+      The translation inclusion threshold (<code>TRANSLATION_THRESHOLD</code>)
+      is <strong class="monospace">{{ threshold }}%</strong>
+      (<span class="status-empty" style="padding-left: 0.25em;">
+        <code>= 0%</code> &#x2610;
+      </span>,
+      <span class="status-hidden" style="padding-left: 0.25em;">
+        <code>&lt; {{ threshold }}%</code> &#x2610;
+      </span>,
+      <span class="status-displayed" style="padding-left: 0.25em;">
+        <code>&ge; {{ threshold }}%</code> &#x2611;
+      </span>)
+    </li>
+  </ul>
+
+{% comment %}
+  <h2 id="translation-legal-code">Legal Code Translation Status</h1>
+  <p><em>Legal Code Translation Status is not yet implemented</em></p>
+  <table>
+  <thead>
+  <tr>
+    <th>Branch name</th>
+    <th>Language</th>
+    <th>Tool version</th>
+    <th>Legal codes changed count</th>
+    <th>Last updated in Transifex</th>
+    <th>Translated messages count</th>
+    <th>Messages total count</th>
+    <th>Percent Translated</th>
+    <th>Preview (not implemented yet)</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for branch in branches %}
+    <tr>
+      <td>
+        <a href="{% url 'branch_status' branch.id %}">
+          {{ branch.branch_name }}
+        </a>
+      </td>
+      <td>{{ branch.language_code }}</td>
+      <td>{{ branch.version }}</td>
+      <td>{{ branch.legal_codes.count }}</td>
+      <td>{{ branch.last_transifex_update|default_if_none:"-" }}</td>
+      {% with stats=branch.stats %}
+        <td>{{ stats.number_of_translated_messages }}</td>
+        <td>{{ stats.number_of_total_messages }}</td>
+        <td>
+        {% if stats.number_of_total_messages %}
+          {{ stats.percent_messages_translated }}
+        {% else %}
+          -
+        {% endif %}
+        </td>
+      {% endwith %}
+      <td><a href="#">This will be a link to a preview site.</a></td>
+    </tr>
+  {% empty %}
+    <tr>
+      <td colspan="9" style="color:red;">
+        <em>There are no active translation branches.</em>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+{% endcomment %}
+
+</body>
+</html>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
