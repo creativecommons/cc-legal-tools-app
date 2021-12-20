@@ -154,7 +154,7 @@ class Command(BaseCommand):
                     relpath=relpath,
                 )
             relpath = f"{category}/list.{settings.LANGUAGE_CODE}.html"
-            symlink = f"list.html"
+            symlink = "list.html"
             relative_symlink(output_dir, relpath, symlink)
 
     def write_legal_tools(self):
