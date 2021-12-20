@@ -5,28 +5,13 @@
 >
   <ul class="menu-list" >
     <li>
-      {# replace with license long title #}
-      {% if show_sampling_deed %}
-        <h4 class="has-text-black">{% trans "Related Links" %}</h4>
-      {% endif %}
-      {% if show_standard_deed %}
         <p class="body-big has-text-black">
           {% blocktrans trimmed %}
-            Creative Commons is the nonprofit behind the
-            open licenses that allow creators to share their
-            work. Our licenses and legal tools are free to use.
+            Creative Commons is the nonprofit behind the open licenses and
+            other legal tools that allow creators to share their work. Our
+            legal tools are free to use.
           {% endblocktrans %}
         </p>
-      {% endif %}
-      {% if show_legal_code %}
-        <p class="body-big has-text-black">
-          {% blocktrans trimmed %}
-            We're glad you're here! Creative Commons is the nonprofit
-            behind the open licenses that allow creators to share their
-            work. Our licenses are free to use.
-          {% endblocktrans %}
-        </p>
-      {% endif %}
       <ul>
         {% if not show_sampling_deed %}
           <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="https://creativecommons.org/about/" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about our work" %}</a></li>

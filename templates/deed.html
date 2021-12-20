@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n static %}
+{% load i18n license_tags static %}
 
 {% block head_about %}{{ tool.canonical_url }}{% endblock %}
 {% block title %}{{ legal_code.title }} Deed &mdash; Creative Commons{% endblock %}
@@ -7,6 +7,25 @@
 {% block head_meta %}
   <link rel="canonical" href="{{ tool.canonical_url }}"/>
 {% endblock %}
+{% block head_extra %}
+<style>
+  #deed-body {
+    background-color: rgb(255, 255, 255);
+    border-top: 10px solid rgb(60, 92, 153);
+    border-bottom: 5px solid rgb(176, 176, 176);
+    border-left: 5px solid rgb(176, 176, 176);
+    border-right: 5px solid rgb(176, 176, 176);
+  }
+  #disclaimer-info-section {
+    color: #000 !important;
+  }
+  #disclaimer-info-section p:nth-child(n+1) {
+    /* padding for all but first paragraph */
+    padding-top: 1rem !important;
+  }
+</style>
+{% endblock %}
+
 {% block body_about %}{{ tool.canonical_url }}{% endblock %}
 {% block body_typeof %}cc:License{% endblock %}
 
@@ -40,20 +59,13 @@
       {% include 'includes/disclaimer_certification.html' %}
     {% endif %}
     <div class="columns margin-top-normal is-vcentered" >
-      {% include 'includes/related_links.html' with show_standard_deed=True %}
+      {% if legal_code|is_one_of:"nc-sampling+,sampling,sampling+" %}
+        {% include 'includes/related_links.html' with show_sampling_deed=True %}
+      {% else %}
+        {% include 'includes/related_links.html' %}
+      {% endif %}
       {% include 'includes/newsletter.html' %}
     </div>
   </div>
-
-
-<style>
-  #deed-body {
-    background-color: rgb(255, 255, 255);
-    border-top: 10px solid rgb(60, 92, 153);
-    border-bottom: 5px solid rgb(176, 176, 176);
-    border-left: 5px solid rgb(176, 176, 176);
-    border-right: 5px solid rgb(176, 176, 176);
-  }
-</style>
 {% endblock %}
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
