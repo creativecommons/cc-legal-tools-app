@@ -920,22 +920,24 @@ class ViewBranchStatusTest(TestCase):
         )
 
 
-class ViewTranslationStatusTest(TestCase):
-    def test_view_translation_status(self):
-        TranslationBranchFactory()
-        TranslationBranchFactory()
-        TranslationBranchFactory()
-
-        # Ensure there is at least one language information dictionary without
-        # a bidi key
-        del settings.LANG_INFO["en"]["bidi"]
-
-        url = reverse("translation_status")
-        with mock.patch.object(LegalCode, "get_pofile"):
-            rsp = self.client.get(url)
-        self.assertTemplateUsed(rsp, "dev/translation_status.html")
-        context = rsp.context
-        self.assertEqual(3, len(context["branches"]))
+# Translation Branch Status is not yet supported
+#
+# class ViewTranslationStatusTest(TestCase):
+#    def test_view_dev_index_translation_status(self):
+#        TranslationBranchFactory()
+#        TranslationBranchFactory()
+#        TranslationBranchFactory()
+#
+#        # Ensure there is at least one language information dictionary without
+#        # a bidi key
+#        del settings.LANG_INFO["en"]["bidi"]
+#
+#        url = reverse("dev_index")
+#        with mock.patch.object(LegalCode, "get_pofile"):
+#            rsp = self.client.get(url)
+#        self.assertTemplateUsed(rsp, "dev/index.html")
+#        context = rsp.context
+#        self.assertEqual(3, len(context["branches"]))
 
 
 class ViewMetadataTest(TestCase):
