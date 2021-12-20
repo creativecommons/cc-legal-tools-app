@@ -742,34 +742,6 @@ class TranslationBranch(models.Model):
             f" {'Complete' if self.complete else 'In progress'}."
         )
 
-    @property
-    def stats(self):
-        number_of_untranslated_messages = 0
-        number_of_translated_messages = 0
-        for code in self.legal_codes.all():
-            pofile = code.get_pofile()
-            number_of_untranslated_messages += len(
-                pofile.untranslated_entries()
-            )
-            number_of_translated_messages += len(pofile.translated_entries())
-        number_of_total_messages = (
-            number_of_untranslated_messages + number_of_translated_messages
-        )
-        if number_of_total_messages:
-            percent_messages_translated = int(
-                number_of_translated_messages
-                * 100
-                / float(number_of_total_messages)
-            )
-        else:
-            percent_messages_translated = 100
-        return {
-            "number_of_untranslated_messages": number_of_untranslated_messages,
-            "number_of_translated_messages": number_of_translated_messages,
-            "number_of_total_messages": number_of_total_messages,
-            "percent_messages_translated": percent_messages_translated,
-        }
-
 
 def build_path(canonical_url, document, language_code):
     path = canonical_url.replace("https://creativecommons.org", "")

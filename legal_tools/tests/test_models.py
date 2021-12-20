@@ -1192,31 +1192,3 @@ class TranslationBranchModelTest(TestCase):
         tc = TranslationBranchFactory(complete=False)
         expected = f"Translation branch {tc.branch_name}. In progress."
         self.assertEqual(expected, str(tc))
-
-    def test_stats(self):
-        language_code = "es"
-        lc1 = LegalCodeFactory(language_code=language_code)
-        tb = TranslationBranchFactory(
-            language_code=language_code, legal_codes=[lc1]
-        )
-
-        class MockPofile(list):
-            def untranslated_entries(self):
-                return [1, 2, 3, 4, 5]
-
-            def translated_entries(self):
-                return [1, 2, 3]
-
-        mock_pofile = MockPofile()
-        with mock.patch.object(LegalCode, "get_pofile") as mock_get_pofile:
-            mock_get_pofile.return_value = mock_pofile
-            stats = tb.stats
-        self.assertEqual(
-            {
-                "percent_messages_translated": 37,
-                "number_of_total_messages": 8,
-                "number_of_translated_messages": 3,
-                "number_of_untranslated_messages": 5,
-            },
-            stats,
-        )
