@@ -39,6 +39,7 @@ def save_bytes_to_file(filebytes, output_filename):
 class MockRequest:
     method = "GET"
     META = {}
+    GET = {"distilling": 1}
 
     def __init__(self, path):
         self.path = path
