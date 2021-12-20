@@ -184,14 +184,14 @@ urlpatterns = [
         "licenses/list",
         view_list,
         kwargs=dict(category="licenses"),
-        name="licenses_list",
+        name="view_list_licenses",
     ),
     # List: Public Domain list, no language
     path(
         "publicdomain/list",
         view_list,
         kwargs=dict(category="publicdomain"),
-        name="publicdomain_list",
+        name="view_list_publicdomain",
     ),
     # DEED PAGES ##############################################################
     # Deed: with Jurisdiction (ported), with language_code
