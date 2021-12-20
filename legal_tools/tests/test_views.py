@@ -313,6 +313,50 @@ class ViewDevHomeTest(ToolsTestsMixin, TestCase):
         self.assertTemplateUsed("dev/home.html")
 
 
+class ViewListTest(ToolsTestsMixin, TestCase):
+    def test_view_list_language_specified(self):
+        url = reverse(
+            "view_list_language_specified",
+            kwargs={
+                "category": "licenses",
+                "language_code": "nl",
+            },
+        )
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("list.html")
+
+    def test_view_list_language_specified_invalid(self):
+        url = reverse(
+            "view_list_language_specified",
+            kwargs={
+                "category": "licenses",
+                "language_code": "xyz",
+            },
+        )
+        rsp = self.client.get(url)
+        self.assertEqual(404, rsp.status_code)
+        self.assertTemplateUsed("list.html")
+
+    def test_view_list(self):
+        url = reverse("view_list", kwargs={"category": "publicdomain"})
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("list.html")
+
+    def test_view_list_licenses(self):
+        url = reverse("view_list_licenses")
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("list.html")
+
+    def test_view_list_publicdomain(self):
+        url = reverse("view_list_publicdomain")
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("list.html")
+
+
 class DeedViewViewTest(ToolsTestsMixin, TestCase):
     def validate_deed_text(self, rsp, tool):
         self.assertEqual(200, rsp.status_code)
