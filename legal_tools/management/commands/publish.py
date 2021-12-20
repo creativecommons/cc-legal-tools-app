@@ -95,11 +95,9 @@ class Command(BaseCommand):
             help="Update the local branches, but don't push upstream.",
         )
 
-    def _quiet(self, *args, **kwargs):
-        pass
-
-    def run_clean_output_dir(self):
+    def purge_output_dir(self):
         output_dir = self.output_dir
+        LOG.info(f"Writing purching output_dir: {output_dir}")
         output_dir_items = [
             os.path.join(output_dir, item)
             for item in os.listdir(output_dir)
@@ -111,40 +109,63 @@ class Command(BaseCommand):
             else:
                 os.remove(item)
 
-    def run_create_robots_txt(self):
-        """Create robots.txt to discourage indexing."""
-        robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
-        save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
-
-    def run_django_distill(self):
-        """Outputs static files into the output dir."""
+    def check_static_files(self):
         if not os.path.isdir(settings.STATIC_ROOT):
             e = "Static source directory does not exist, run collectstatic"
             raise CommandError(e)
+
+    def write_robots_txt(self):
+        """Create robots.txt to discourage indexing."""
+        LOG.info("Writing robots.txt")
+        robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
+        save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
+
+    def write_dev_index(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
         LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Writing dev index")
         save_url_as_static_file(
             output_dir,
-            url="/dev/status/",
-            relpath="status/index.html",
+            url=reverse("dev_index"),
+            relpath="index.html",
         )
-        tbranches = TranslationBranch.objects.filter(complete=False)
-        for tbranch_id in tbranches.values_list("id", flat=True):
-            relpath = f"status/{tbranch_id}.html"
-            LOG.debug(f"    {relpath}")
-            save_url_as_static_file(
-                output_dir,
-                url=f"/status/{tbranch_id}/",
-                relpath=relpath,
-            )
+
+    def write_lists(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+
+        LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Writing lists")
+
+        for category in ["licenses", "publicdomain"]:
+            for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+                relpath = f"{category}/list.{language_code}.html"
+                save_url_as_static_file(
+                    output_dir,
+                    url=reverse(
+                        "view_list_language_specified",
+                        kwargs={
+                            "category": category,
+                            "language_code": language_code,
+                        },
+                    ),
+                    relpath=relpath,
+                )
+            relpath = f"{category}/list.{settings.LANGUAGE_CODE}.html"
+            symlink = f"list.html"
+            relative_symlink(output_dir, relpath, symlink)
+
+    def write_legal_tools(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
 
         legal_codes = LegalCode.objects.validgroups()
         redirect_pairs = []
         for group in legal_codes.keys():
-            LOG.info(f"Publishing {group}")
             LOG.debug(f"{hostname}:{output_dir}")
+            LOG.info(f"Writing {group}")
             for legal_code in legal_codes[group]:
                 # deed
                 try:
@@ -208,14 +229,24 @@ class Command(BaseCommand):
         )
         save_bytes_to_file(redirects_include, redirects_filename)
 
-        LOG.debug(f"{hostname}:{output_dir}")
-        save_url_as_static_file(
-            output_dir,
-            url=reverse("metadata"),
-            relpath="licenses/metadata.yaml",
-        )
+    def write_translation_branch_statuses(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
 
-    def run_copy_tools_rdfs(self):
+        LOG.debug(f"{hostname}:{output_dir}")
+
+        tbranches = TranslationBranch.objects.filter(complete=False)
+        for tbranch_id in tbranches.values_list("id", flat=True):
+            LOG.info(f"Writing Translation branch status: {tbranch_id}")
+            relpath = f"dev/{tbranch_id}.html"
+            LOG.debug(f"    {relpath}")
+            save_url_as_static_file(
+                output_dir,
+                url=f"/dev/{tbranch_id}/",
+                relpath=relpath,
+            )
+
+    def copy_tools_rdfs(self):
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
         output_dir = self.output_dir
@@ -226,8 +257,8 @@ class Command(BaseCommand):
             if os.path.isfile(os.path.join(tools_rdf_dir, rdf_file))
         ]
         tools_rdfs.sort()
-        LOG.info("Copying legal code RDFs")
         LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Copying legal code RDFs")
         for rdf in tools_rdfs:
             if rdf.endswith(".rdf"):
                 name = rdf[:-4]
@@ -239,7 +270,7 @@ class Command(BaseCommand):
             copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
             LOG.debug(f"    {relative_name}")
 
-    def run_copy_meta_rdfs(self):
+    def copy_meta_rdfs(self):
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
         output_dir = self.output_dir
@@ -252,8 +283,8 @@ class Command(BaseCommand):
         meta_files.sort()
         dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
-        LOG.info("Copying RDF information and metadata")
         LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Copying RDF information and metadata")
         for meta_file in meta_files:
             dest_relative = os.path.join("rdf", meta_file)
             dest_full = os.path.join(output_dir, dest_relative)
@@ -287,7 +318,7 @@ class Command(BaseCommand):
                 finally:
                     os.close(dir_fd)
 
-    def run_copy_legal_code_plaintext(self):
+    def copy_legal_code_plaintext(self):
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
         output_dir = self.output_dir
@@ -322,14 +353,32 @@ class Command(BaseCommand):
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
 
+    def write_metadata_yaml(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+
+        LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Writing metadata.yaml")
+
+        save_url_as_static_file(
+            output_dir,
+            url=reverse("metadata"),
+            relpath="licenses/metadata.yaml",
+        )
+
     def distill_and_copy(self):
-        self.run_clean_output_dir()
-        self.run_create_robots_txt()
-        self.run_django_distill()
-        self.run_copy_tools_rdfs()
-        self.run_copy_meta_rdfs()
-        self.run_copy_legal_code_plaintext()
-        self.run_write_transstats_csv()
+        self.purge_output_dir()
+        self.check_static_files()
+        self.write_robots_txt()
+        self.write_dev_index()
+        self.write_lists()
+        self.write_legal_tools()
+        self.copy_tools_rdfs()
+        self.copy_meta_rdfs()
+        self.copy_legal_code_plaintext()
+        # TODO: write lists
+        # self.run_write_transstats_csv()
+        # self.write_metadata_yaml()
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
