@@ -40,6 +40,34 @@
       padding-right: 0;
       padding-left: .5rem;
     }
+    a.skip-link {
+      left:-999px;
+      position:absolute;
+      top:auto;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+      z-index:-999;
+    }
+    a.skip-link:focus, a.skip-link:active {
+      color: black;
+      font-weight: bolder;
+      left: auto;
+      top: auto;
+      width: 30%;
+      height: auto;
+      overflow:auto;
+      margin: 10px 35%;
+      padding:5px;
+      background-color: rgb(255, 255, 255);
+      border-top: 10px solid rgb(60, 92, 153);
+      border-bottom: 5px solid rgb(176, 176, 176);
+      border-left: 5px solid rgb(176, 176, 176);
+      border-right: 5px solid rgb(176, 176, 176);
+      text-align:center;
+      font-size:1.2em;
+      z-index:999;
+    }
   {% block head_extra %}
   {% endblock %}
   </style>
@@ -48,7 +76,8 @@
   {% include 'includes/header.html' %}
   <main>
     <div class="level padding-{% bidi_start %}-big padding-{% bidi_end %}-large padding-vertical-normal">
-      {% include 'includes/skiplink.html' %}
+      {# the skip link is not normally visible--it is an accessability aide #}
+      <a class="skip-link" href="#content" >{% trans "Skip to content" %}</a>
       <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
         <ul>
           <li><a href="/">{% trans "Home" %}</a></li>
