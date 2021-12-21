@@ -1049,7 +1049,7 @@ class TransifexHelper:
         diff = "\n".join(diff)
         self.log.warn(f"\n{diff}")
 
-    def diff_translations(
+    def compare_entries(
         self,
         resource_name,
         resource_slug,
@@ -1058,6 +1058,7 @@ class TransifexHelper:
         pofile_path,
         pofile_obj,
         colordiff,
+        resource=False,
     ):
         transifex_pofile_content = self.transifex_get_pofile_content(
             resource_slug, transifex_code
@@ -1068,6 +1069,9 @@ class TransifexHelper:
         for index, entry in enumerate(pofile_obj):
             pofile_entry = entry
             transifex_entry = transifex_pofile_obj[index]
+            if resource:
+                pofile_entry.msgstr = ""
+                transifex_entry.msgstr = ""
             if pofile_entry != transifex_entry:
                 self.diff_entry(
                     resource_name,
@@ -1472,7 +1476,16 @@ class TransifexHelper:
                 transifex_string_count,
             )
             if force or not metadata_identical:
-                self.log.critical("resource diff not yet implimented")
+                self.compare_entries(
+                    resource_name,
+                    resource_slug,
+                    language_code,
+                    transifex_code,
+                    pofile_path,
+                    pofile_obj,
+                    colordiff,
+                    resource=True,
+                )
 
             # Translations
             for language_code, translation in resource["translations"].items():
@@ -1510,7 +1523,7 @@ class TransifexHelper:
                     transifex_translated,
                 )
                 if force or not metadata_identical:
-                    self.diff_translations(
+                    self.compare_entries(
                         resource_name,
                         resource_slug,
                         language_code,
