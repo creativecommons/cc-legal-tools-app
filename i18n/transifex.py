@@ -887,15 +887,24 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources Translations
         https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f"   PO File entries: {len(pofile_obj)}"
+        )
         language = self.api.Language.get(code=transifex_code)
         resource = self.api.Resource.get(
             project=self.api_project, slug=resource_slug
         )
         # Catch 500 error
         try:
-            translations = self.api.ResourceTranslation.filter(
-                language=language, resource=resource
-            ).include("resource_string")
+            translations = (
+                self.api.ResourceTranslation.filter(
+                    language=language, resource=resource
+                )
+                .include("resource_string")
+                .all()
+            )
+            translations = list(translations)
             _ = translations[0]  # reference data to expose exception
         except JsonApiException as e:  # pragma: no cover
             self.log.critical(
@@ -904,6 +913,11 @@ class TransifexHelper:
                 f" (HTTP Status {e.status_code})"
             )
             return pofile_obj
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f"   Transifex entries: {len(translations)}"
+        )
+
         changes_pofile = []
         changes_transifex = []
         transifex_strings_updated = []
@@ -1060,11 +1074,19 @@ class TransifexHelper:
         colordiff,
         resource=False,
     ):
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f"   PO File entries: {len(pofile_obj)}"
+        )
         transifex_pofile_content = self.transifex_get_pofile_content(
             resource_slug, transifex_code
         )
         transifex_pofile_obj = polib.pofile(
             pofile=transifex_pofile_content.decode(), encoding="utf-8"
+        )
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f" Transifex entries: {len(transifex_pofile_obj)}"
         )
         for index, entry in enumerate(pofile_obj):
             pofile_entry = entry
