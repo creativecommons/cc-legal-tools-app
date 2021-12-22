@@ -97,7 +97,7 @@ class Command(BaseCommand):
 
     def purge_output_dir(self):
         output_dir = self.output_dir
-        LOG.info(f"Writing purching output_dir: {output_dir}")
+        LOG.info(f"Purging output_dir: {output_dir}")
         output_dir_items = [
             os.path.join(output_dir, item)
             for item in os.listdir(output_dir)
