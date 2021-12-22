@@ -1160,7 +1160,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1225,7 +1229,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1296,7 +1304,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1366,7 +1378,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1446,7 +1462,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
