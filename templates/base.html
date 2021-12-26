@@ -13,7 +13,7 @@
   {% endblock %}
   <link
     rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css"
+    href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"
   />
   <link
     rel="stylesheet"
@@ -29,12 +29,55 @@
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <!-- Import the Component Library via CDN -->
   <script src="https://unpkg.com/@creativecommons/cc-global-components@0.x.x/dist/cc-globals.min.js"></script>
+  <style>
+    body {
+      background-color: rgb(245, 245, 245);
+    }
+    html[dir="rtl"] nav.breadcrumb>ul li+li:before {
+      transform: scaleX(-1);
+    }
+    html[dir="rtl"] .breadcrumb li:first-child a {
+      padding-right: 0;
+      padding-left: .5rem;
+    }
+    a.skip-link {
+      left:-999px;
+      position:absolute;
+      top:auto;
+      width:1px;
+      height:1px;
+      overflow:hidden;
+      z-index:-999;
+    }
+    a.skip-link:focus, a.skip-link:active {
+      color: black;
+      font-weight: bolder;
+      left: auto;
+      top: auto;
+      width: 30%;
+      height: auto;
+      overflow:auto;
+      margin: 10px 35%;
+      padding:5px;
+      background-color: rgb(255, 255, 255);
+      border-top: 10px solid rgb(60, 92, 153);
+      border-bottom: 5px solid rgb(176, 176, 176);
+      border-left: 5px solid rgb(176, 176, 176);
+      border-right: 5px solid rgb(176, 176, 176);
+      text-align:center;
+      font-size:1.2em;
+      z-index:999;
+    }
+  </style>
+  {% block head_extra %}
+  {% endblock %}
 </head>
 <body typeof="{% block body_typeof %}{% endblock %}" about="{% block body_about %}{% endblock %}">
   {% include 'includes/header.html' %}
   <main>
     <div class="level padding-{% bidi_start %}-big padding-{% bidi_end %}-large padding-vertical-normal">
-      {% include 'includes/skiplink.html' %}
+      {# the skip link is not normally visible--it is an accessability aide #}
+      <a class="skip-link" href="#content" >{% trans "Skip to content" %}</a>
       <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
         <ul>
           <li><a href="/">{% trans "Home" %}</a></li>
@@ -53,56 +96,6 @@
   </main>
   {% include 'includes/footer.html' %}
 
-  <script src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@v2020.11.1/js/vocabulary.js"></script>
-
-  <script>
-    /**
-    * Get the fully-qualified URL of a Vocabulary asset.
-    *
-    * @param {string} version - the Vocabulary version in which to locate the asset
-    * @param {string} path - the path of the asset being patched
-    * @return {string} the fully qualified URL of the asset
-    */
-    const getFullyQualifiedUrl = (version, path) => {
-    //   let baseUrl = 'https://unpkg.com/@creativecommons/vocabulary'
-      // If you prefer jsDelivr instead, use
-      let baseUrl = 'https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary'
-      return `${baseUrl}@${version}/${path}`
-    }
-
-    /**
-    * Create an invisible container and place the asset into the DOM.
-    *
-    * This function is intended to be used to patch SVG assets that are later
-    * referenced inside `<use>` tags in `<svg>` tags. It can also be used to force
-    * an image to be downloaded to speed up its loading when referenced again.
-    *
-    * @param {string} path - the path of the asset being patched
-    * @param {string} version - the Vocabulary version in which to locate the asset
-    */
-    const patchAssetIntoDom = (path, version = 'latest') => {
-      fetch(getFullyQualifiedUrl(version, path)).then(response => {
-        return response.text()
-      }).then(data => {
-        // Render SVG in the page
-        const logo = document.querySelector('#cc-logo')
-        const footerLogo = document.querySelector('#cc-footer-logo')
-        logo.innerHTML = data;
-        footerLogo.innerHTML = data;
-      })
-    }
-
-    patchAssetIntoDom('assets/logos/cc/logomark.svg');
-
-    /** Next Button On Click Event Listener **/
-    document.getElementById("next-btn").addEventListener("click", function (e) {
-      /**
-      * On click redirect the user to page they are trying to visit
-      * which is stored in the data-href.
-      **/
-      return window.location.href = this.dataset.href
-    })
-  </script>
   <script>
     /* Import and use the Explore CC component */
     const cc_explore = Vue.createApp({});
@@ -121,18 +114,6 @@
   </script>
   {% block extra-js %}
   {% endblock %}
-  </body>
-  <style>
-    body {
-      background-color: rgb(245, 245, 245);
-    }
-    html[dir="rtl"] nav.breadcrumb>ul li+li:before {
-      transform: scaleX(-1);
-    }
-    html[dir="rtl"] .breadcrumb li:first-child a {
-      padding-right: 0;
-      padding-left: .5rem;
-    }
-  </style>
+</body>
 </html>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

@@ -887,15 +887,24 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources Translations
         https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f"   PO File entries: {len(pofile_obj)}"
+        )
         language = self.api.Language.get(code=transifex_code)
         resource = self.api.Resource.get(
             project=self.api_project, slug=resource_slug
         )
         # Catch 500 error
         try:
-            translations = self.api.ResourceTranslation.filter(
-                language=language, resource=resource
-            ).include("resource_string")
+            translations = (
+                self.api.ResourceTranslation.filter(
+                    language=language, resource=resource
+                )
+                .include("resource_string")
+                .all()
+            )
+            translations = list(translations)
             _ = translations[0]  # reference data to expose exception
         except JsonApiException as e:  # pragma: no cover
             self.log.critical(
@@ -904,6 +913,11 @@ class TransifexHelper:
                 f" (HTTP Status {e.status_code})"
             )
             return pofile_obj
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f"   Transifex entries: {len(translations)}"
+        )
+
         changes_pofile = []
         changes_transifex = []
         transifex_strings_updated = []
@@ -1049,7 +1063,7 @@ class TransifexHelper:
         diff = "\n".join(diff)
         self.log.warn(f"\n{diff}")
 
-    def diff_translations(
+    def compare_entries(
         self,
         resource_name,
         resource_slug,
@@ -1058,16 +1072,28 @@ class TransifexHelper:
         pofile_path,
         pofile_obj,
         colordiff,
+        resource=False,
     ):
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f"   PO File entries: {len(pofile_obj)}"
+        )
         transifex_pofile_content = self.transifex_get_pofile_content(
             resource_slug, transifex_code
         )
         transifex_pofile_obj = polib.pofile(
             pofile=transifex_pofile_content.decode(), encoding="utf-8"
         )
+        self.log.debug(
+            f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
+            f" Transifex entries: {len(transifex_pofile_obj)}"
+        )
         for index, entry in enumerate(pofile_obj):
             pofile_entry = entry
             transifex_entry = transifex_pofile_obj[index]
+            if resource:
+                pofile_entry.msgstr = ""
+                transifex_entry.msgstr = ""
             if pofile_entry != transifex_entry:
                 self.diff_entry(
                     resource_name,
@@ -1472,7 +1498,16 @@ class TransifexHelper:
                 transifex_string_count,
             )
             if force or not metadata_identical:
-                self.log.critical("resource diff not yet implimented")
+                self.compare_entries(
+                    resource_name,
+                    resource_slug,
+                    language_code,
+                    transifex_code,
+                    pofile_path,
+                    pofile_obj,
+                    colordiff,
+                    resource=True,
+                )
 
             # Translations
             for language_code, translation in resource["translations"].items():
@@ -1510,7 +1545,7 @@ class TransifexHelper:
                     transifex_translated,
                 )
                 if force or not metadata_identical:
-                    self.diff_translations(
+                    self.compare_entries(
                         resource_name,
                         resource_slug,
                         language_code,

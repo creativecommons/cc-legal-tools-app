@@ -46,9 +46,9 @@ def get_category_and_category_title(category=None, tool=None):
             category = "licenses"
     # category_title
     if category == "publicdomain":
-        category_title = "Public Domain"
+        category_title = translation.gettext("Public Domain")
     else:
-        category_title = category.title()
+        category_title = translation.gettext("Licenses")
     return category, category_title
 
 
@@ -162,16 +162,103 @@ def normalize_path_and_lang(request_path, jurisdiction, language_code):
     return request_path, language_code
 
 
-def view_dev_home(request, category=None):
+def view_dev_index(request):
+    # with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
+    # # Make sure we know about all the upstream branches
+    # repo.remotes.origin.fetch()
+    # heads = repo.remotes.origin.refs
+    # branches = [head.name[len("origin/") :] for head in heads]
+
+    distilling = request.GET.get("distilling", False)
+
+    # ensure translation status is current
+    load_deeds_ux_translations()
+
+    branches = TranslationBranch.objects.exclude(complete=True)
+
+    legal_code_objects = (
+        LegalCode.objects.valid()
+        .select_related("tool")
+        .order_by(
+            "language_code",
+        )
+    )
+    legal_code_langauge_codes = [lc.language_code for lc in legal_code_objects]
+    legal_code_langauge_codes = sorted(list(set(legal_code_langauge_codes)))
+
+    deed_ux_translation_info = {}
+    locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
+    locale_dir = os.path.abspath(os.path.realpath(locale_dir))
+
+    for language_code, language_data in settings.DEEDS_UX_PO_FILE_INFO.items():
+        if language_code == settings.LANGUAGE_CODE:
+            continue
+        try:
+            language_info = translation.get_language_info(language_code)
+            bidi = language_info["bidi"]
+            name = language_info["name"]
+            name_local = language_info["name_local"]
+        except KeyError:  # pragma: no cover
+            name = '<em style="color:red;">Unknown</em>'
+        legal_code = False
+        if language_code in legal_code_langauge_codes:
+            legal_code = True
+        transifex_code = map_django_to_transifex_language_code(language_code)
+        date_format = "%Y-%m-%d %H:%M"
+        created = ""
+        if language_data["creation_date"] is not None:  # pragma: no cover
+            created = language_data["creation_date"].strftime(date_format)
+        updated = ""
+        if language_data["revision_date"] is not None:  # pragma: no cover
+            updated = language_data["creation_date"].strftime(date_format)
+
+        deed_ux_translation_info[language_code] = {
+            "locale_name": translation.to_locale(language_code),
+            "name": name,
+            "name_local": name_local,
+            "bidi": bidi,
+            "percent_translated": language_data["percent_translated"],
+            "created": created,
+            "updated": updated,
+            "legal_code": legal_code,
+            "transifex_code": transifex_code,
+        }
+
+    translation.activate(settings.LANGUAGE_CODE)
+    html_response = render(
+        request,
+        template_name="dev/index.html",
+        context={
+            "branches": branches,
+            "category": "dev",
+            "category_title": "Dev",
+            "distilling": distilling,
+            "deed_ux": deed_ux_translation_info,
+            "threshold": settings.TRANSLATION_THRESHOLD,
+        },
+    )
+
+    html_response.content = bytes(
+        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        "utf-8",
+    )
+    return html_response
+
+
+def view_list(request, category, language_code=None):
     """
-    For test purposes, this displays all the available deeds and legal code in
-    tables. This is not intended for public use and should not be included in
-    the generation of static files.
+    Display all the available deeds and legal code for the given category.
     """
+    request.path, language_code = normalize_path_and_lang(
+        request.path, None, language_code
+    )
+    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        raise Http404(f"invalid language: {language_code}")
     # Get the list of units and languages that occur among the tools
     # to let the template iterate over them as it likes.
     legal_code_objects = (
         LegalCode.objects.valid()
+        .filter(tool__category=category)
         .select_related("tool")
         .order_by(
             "-tool__version",
@@ -180,8 +267,7 @@ def view_dev_home(request, category=None):
             "tool__unit",
         )
     )
-    licenses = []
-    publicdomain = []
+    tools = []
     path_start = os.path.dirname(request.path)
     for lc in legal_code_objects:
         lc_category = lc.tool.category
@@ -204,6 +290,7 @@ def view_dev_home(request, category=None):
         )
         deed_translated = deed_rel_path.endswith(f".{lc.language_code}")
         data = dict(
+            canonical_url=lc.tool.canonical_url,
             version=lc_version,
             jurisdiction_name=jurisdiction_name,
             unit=lc_unit,
@@ -216,22 +303,37 @@ def view_dev_home(request, category=None):
             ),
             identifier=lc.tool.identifier(),
         )
-        if lc_category == "licenses":
-            licenses.append(data)
-        else:
-            publicdomain.append(data)
-    licenses = sorted(licenses, reverse=True, key=itemgetter("version"))
-    publicdomain = sorted(publicdomain, key=itemgetter("identifier"))
+        tools.append(data)
+    category, category_title = get_category_and_category_title(
+        category,
+        None,
+    )
+    if category == "licenses":
+        # licenses
+        tools = sorted(tools, reverse=True, key=itemgetter("version"))
+        units = sorted(UNITS_LICENSES)
+        category_list = translation.gettext("Licenses List")
+    else:
+        # publicdomain
+        tools = sorted(tools, key=itemgetter("identifier"))
+        units = sorted(UNITS_PUBLIC_DOMAIN)
+        category_list = translation.gettext("Public Domain List")
 
+    languages_and_links = get_languages_and_links_for_deeds_ux(
+        request_path=request.path,
+        selected_language_code=language_code,
+    )
+    translation.activate(language_code)
     html_response = render(
         request,
-        template_name="dev/home.html",
+        template_name="list.html",
         context={
-            "category": "dev",
-            "category_title": "Dev",
-            "licenses": licenses,
-            "publicdomain": publicdomain,
-            "units": sorted(UNITS_PUBLIC_DOMAIN + UNITS_LICENSES),
+            "category": category,
+            "category_title": category_title,
+            "category_list": category_list,
+            "languages_and_links": languages_and_links,
+            "tools": tools,
+            "units": units,
         },
     )
     html_response.content = bytes(
@@ -442,84 +544,6 @@ def view_legal_code(
         return html_response
 
 
-def view_translation_status(request):
-    # with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
-    # # Make sure we know about all the upstream branches
-    # repo.remotes.origin.fetch()
-    # heads = repo.remotes.origin.refs
-    # branches = [head.name[len("origin/") :] for head in heads]
-
-    # ensure translation status is current
-    load_deeds_ux_translations()
-
-    branches = TranslationBranch.objects.exclude(complete=True)
-
-    legal_code_objects = (
-        LegalCode.objects.valid()
-        .select_related("tool")
-        .order_by(
-            "language_code",
-        )
-    )
-    legal_code_langauge_codes = [lc.language_code for lc in legal_code_objects]
-    legal_code_langauge_codes = sorted(list(set(legal_code_langauge_codes)))
-
-    deed_ux_translation_info = {}
-    locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
-    locale_dir = os.path.abspath(os.path.realpath(locale_dir))
-
-    for language_code, language_data in settings.DEEDS_UX_PO_FILE_INFO.items():
-        if language_code == settings.LANGUAGE_CODE:
-            continue
-        try:
-            language_info = translation.get_language_info(language_code)
-            bidi = language_info["bidi"]
-            name = language_info["name"]
-            name_local = language_info["name_local"]
-        except KeyError:  # pragma: no cover
-            name = '<em style="color:red;">Unknown</em>'
-        legal_code = False
-        if language_code in legal_code_langauge_codes:
-            legal_code = True
-        transifex_code = map_django_to_transifex_language_code(language_code)
-        date_format = "%Y-%m-%d %H:%M"
-        created = ""
-        if language_data["creation_date"] is not None:  # pragma: no cover
-            created = language_data["creation_date"].strftime(date_format)
-        updated = ""
-        if language_data["revision_date"] is not None:  # pragma: no cover
-            updated = language_data["creation_date"].strftime(date_format)
-
-        deed_ux_translation_info[language_code] = {
-            "locale_name": translation.to_locale(language_code),
-            "name": name,
-            "name_local": name_local,
-            "bidi": bidi,
-            "percent_translated": language_data["percent_translated"],
-            "created": created,
-            "updated": updated,
-            "legal_code": legal_code,
-            "transifex_code": transifex_code,
-        }
-
-    html_response = render(
-        request,
-        template_name="dev/translation_status.html",
-        context={
-            "branches": branches,
-            "category": "dev",
-            "category_title": "Dev",
-            "deed_ux": deed_ux_translation_info,
-            "threshold": settings.TRANSLATION_THRESHOLD,
-        },
-    )
-    html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(),
-        "utf-8",
-    )
-    return html_response
-
-
 def branch_status_helper(repo, translation_branch):
     """
     Returns some of the context for the branch_status view. Mostly separated
@@ -602,13 +626,13 @@ def view_metadata(request):
     )
 
 
-def view_page_not_found(request, exception, template_name="404.html"):
+def view_page_not_found(request, exception, template_name="dev/404.html"):
     return render(
         request,
         template_name=template_name,
         context={
-            "category": "dev",
-            "category_title": "Dev",
+            "category": "error_404",
+            "category_title": "Error",
         },
         status=404,
     )

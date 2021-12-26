@@ -349,9 +349,9 @@ This process will read the HTML files from the specified directory, populate
 
 ### Import Dependency Documentation
 
-- [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
+- [Beautiful Soup Documentation — Beautiful Soup 4 documentation][bs4docs]
   - [lxml - Processing XML and HTML with Python][lxml]
-- [Quick start guide — polib 1.1.1 documentation][polibdocs]
+- [Quick start guide — polib documentation][polibdocs]
 
 [bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 [lxml]: https://lxml.de/
@@ -381,7 +381,7 @@ below.
 [Babel][babel] is used for localization information.
 
 Documentation:
-- [Babel — Babel 2.7.0 documentation][babel]
+- [Babel — Babel documentation][babel]
 - [Translation | Django documentation | Django][djangotranslation]
 
 [babel]: http://babel.pocoo.org/en/latest/index.html
@@ -439,8 +439,8 @@ about. It performs the following process (which can also be done manually:
 
 ### Check for Translation Updates Dependency Documentation
 
-- [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
-- [Requests: HTTP for Humans™ — Requests 2.26.0 documentation][requestsdocs]
+- [GitPython Documentation — GitPython documentation][gitpythondocs]
+- [Requests: HTTP for Humans™ — Requests documentation][requestsdocs]
 
 [gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
 [requestsdocs]: https://docs.python-requests.org/en/master/
@@ -492,9 +492,9 @@ the full path to that deploy key file.
 
 ### Publishing Dependency Documentation
 
-- [Beautiful Soup Documentation — Beautiful Soup 4.9.0 documentation][bs4docs]
+- [Beautiful Soup Documentation — Beautiful Soup 4 documentation][bs4docs]
   - [lxml - Processing XML and HTML with Python][lxml]
-- [GitPython Documentation — GitPython 3.1.18 documentation][gitpythondocs]
+- [GitPython Documentation — GitPython documentation][gitpythondocs]
 
 [bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 [gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html

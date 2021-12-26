@@ -1160,7 +1160,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1225,7 +1229,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1296,7 +1304,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1366,7 +1378,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1446,7 +1462,11 @@ class TestTransifex(TestCase):
         ]
         api.ResourceTranslation.filter = mock.Mock(
             return_value=mock.Mock(
-                include=mock.Mock(return_value=translations)
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
             ),
         )
         self.helper.clear_transifex_stats = mock.Mock()
@@ -1524,9 +1544,9 @@ class TestTransifex(TestCase):
             log_context.output[0],
         )
 
-    # Test: diff_translations ###############################################
+    # Test: compare_entries ##################################################
 
-    def test_diff_translations_differences(self):
+    def test_compare_entries_translation_differences(self):
         resource_name = "x_name_x"
         resource_slug = "x_slug_x"
         language_code = "x_lang_code_x"
@@ -1534,6 +1554,7 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         colordiff = False
+        resource = False
         pofile_entry = pofile_obj[0]
         transifex_entry = deepcopy(pofile_obj[0])
         transifex_entry.msgstr = transifex_entry.msgstr.replace(
@@ -1546,7 +1567,7 @@ class TestTransifex(TestCase):
         )
         self.helper.diff_entry = mock.Mock()
 
-        self.helper.diff_translations(
+        self.helper.compare_entries(
             resource_name,
             resource_slug,
             language_code,
@@ -1554,6 +1575,7 @@ class TestTransifex(TestCase):
             pofile_path,
             pofile_obj,
             colordiff,
+            resource,
         )
 
         self.helper.transifex_get_pofile_content.assert_called_once()
@@ -1572,7 +1594,7 @@ class TestTransifex(TestCase):
             colordiff,
         )
 
-    def test_diff_translations_same(self):
+    def test_compare_entries_translation_same(self):
         resource_name = "x_name_x"
         resource_slug = "x_slug_x"
         language_code = "x_lang_code_x"
@@ -1580,12 +1602,13 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         colordiff = False
+        resource = False
         self.helper.transifex_get_pofile_content = mock.Mock(
             return_value=POFILE_CONTENT.encode("utf-8")
         )
         self.helper.diff_entry = mock.Mock()
 
-        self.helper.diff_translations(
+        self.helper.compare_entries(
             resource_name,
             resource_slug,
             language_code,
@@ -1593,6 +1616,93 @@ class TestTransifex(TestCase):
             pofile_path,
             pofile_obj,
             colordiff,
+            resource,
+        )
+
+        self.helper.transifex_get_pofile_content.assert_called_once()
+        self.helper.transifex_get_pofile_content.assert_called_with(
+            resource_slug, transifex_code
+        )
+        self.helper.diff_entry.assert_not_called()
+
+    def test_compare_entries_resource_differences(self):
+        resource_name = "x_name_x"
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        colordiff = False
+        resource = True
+        pofile_entry = pofile_obj[0]
+        pofile_entry.msgstr = ""
+        transifex_entry = deepcopy(pofile_obj[0])
+        transifex_entry.msgid = transifex_entry.msgid.replace(
+            "license_medium", "YYYYYYYYYYY"
+        )
+        transifex_entry.msgstr = ""
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "license_medium", "YYYYYYYYYYY"
+            ).encode("utf-8"),
+        )
+        self.helper.diff_entry = mock.Mock()
+
+        self.helper.compare_entries(
+            resource_name,
+            resource_slug,
+            language_code,
+            transifex_code,
+            pofile_path,
+            pofile_obj,
+            colordiff,
+            resource,
+        )
+
+        self.helper.transifex_get_pofile_content.assert_called_once()
+        self.helper.transifex_get_pofile_content.assert_called_with(
+            resource_slug, transifex_code
+        )
+        self.helper.diff_entry.assert_called_once()
+        self.helper.diff_entry.assert_called_with(
+            resource_name,
+            resource_slug,
+            language_code,
+            transifex_code,
+            pofile_path,
+            pofile_entry,
+            transifex_entry,
+            colordiff,
+        )
+
+    def test_compare_entries_resource_same(self):
+        resource_name = "x_name_x"
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        colordiff = False
+        resource = True
+        # The resources should be the same as resource comparison only looks
+        # at msgid values (not msgstr values)
+        self.helper.transifex_get_pofile_content = mock.Mock(
+            return_value=POFILE_CONTENT.replace(
+                "Attribution", "XXXXXXXXXXX"
+            ).encode("utf-8"),
+        )
+
+        self.helper.diff_entry = mock.Mock()
+
+        self.helper.compare_entries(
+            resource_name,
+            resource_slug,
+            language_code,
+            transifex_code,
+            pofile_path,
+            pofile_obj,
+            colordiff,
+            resource,
         )
 
         self.helper.transifex_get_pofile_content.assert_called_once()

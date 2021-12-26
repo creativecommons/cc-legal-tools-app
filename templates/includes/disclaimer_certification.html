@@ -1,24 +1,10 @@
 {% load bidi i18n %}
-
-
-{# disclaimer_40.html is an identical component to about_cc_and_license and about_cc #}
-{# refactor this code and use "with" template tag in licenses_detail.html to pass header and text to these templates #}
-{# if this content will be modified through the django admin in the future #}
-
 <div id="disclaimer-info-section" class="padding-bigger has-background-info-light" >
   <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% bidi_end %}-normal"></i>{% trans "Disclaimer" %}</h4>
     {% blocktrans trimmed %}
-      This tool is based on United States law and may not be applicable outside the US. For dedicating new works to the public domain, we recommend <a href="/choose/zero/">CC0</a>.
+      This tool is based on United States law and may not be applicable outside
+      the US. For dedicating new works to the public domain, we recommend <a
+      href="/choose/zero/">CC0</a>.
     {% endblocktrans %}
 </div>
-
-<style>
-  #disclaimer-info-section {
-    color: #000 !important;
-  }
-  #disclaimer-info-section p:nth-child(n+1) {
-    /* padding for all but first paragraph */
-    padding-top: 1rem !important;
-  }
-</style>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

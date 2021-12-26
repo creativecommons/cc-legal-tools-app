@@ -3,6 +3,44 @@
 
 {% block title %}{{ legal_code.title }} Legal Code &mdash; Creative Commons{% endblock %}
 {% block tool_canonical_url %}{{ tool.canonical_url }}{% endblock %}
+{% block head_extra %}
+<style>
+  #legal-code-body {
+    background-color: rgb(255, 255, 255);
+    border-top: 10px solid rgb(60, 92, 153);
+    border-bottom: 5px solid rgb(176, 176, 176);
+    border-left: 5px solid rgb(176, 176, 176);
+    border-right: 5px solid rgb(176, 176, 176);
+  }
+
+  /* includes/licenses_header.html */
+  #licenses-header {
+    background-color: rgb(255, 255, 255);
+    border-top: 10px solid rgb(60, 92, 153);
+    border-bottom: 5px solid rgb(176, 176, 176);
+    border-left: 5px solid rgb(176, 176, 176);
+    border-right: 5px solid rgb(176, 176, 176);
+  }
+
+  /* includes/use_of_licenses.html */
+  [dir="rtl"] .has-background-info-light .divider {
+      margin-right: -2rem;
+  }
+  [dir="ltr"] .has-background-info-light .divider {
+      margin-left: -2rem;
+  }
+  .has-background-info-light .divider {
+      width: calc(100% + 4rem);
+      background-color: #b0b0b0;
+  }
+
+  /* includes/legalcode_licenses_4.0.html */
+  #legal-code-body {
+    background-color: rgb(255, 255, 255);
+    border: 5px solid rgb(176, 176, 176);
+  }
+</style>
+{% endblock %}
 
 {% block active-breadcrumb-li %}
   <li class="is-active"><a href="{{ legal_code.legal_code_url }}" aria-current="page displayed">{{ legal_code.identifier }} {% trans "Legal Code" %}</a></li>
@@ -20,7 +58,7 @@
       {% endif %}
     </div>
     <div class="column">
-      <button id="next-btn" class="button tiny is-pulled-{% bidi_end %}" data-href="{{ deed_rel_path }}">{% trans "See the deed" %}</button>
+      <a id="next-btn" class="button tiny is-pulled-{% bidi_end %}" href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
     </div>
   </div>
 </div>
@@ -28,23 +66,23 @@
 
 {% block content %}
   <div class="columns">
-    {% if not legal_code.html %}
+    {% if not legal_code.html %} {# if not raw html #}
       {% include 'includes/legalcode_menu_sidebar.html' %}
     {% endif %}
     <div class="column">
-      {% include 'includes/licenses_header.html' %}  {#  Title and icons #}
+      {% include 'includes/licenses_header.html' %} {# Title and icons #}
       {% if tool.deprecated_on %}
         {% include 'includes/deprecated.html' %} {# Retired legal tool notice #}
       {% endif %}
       {% if not legal_code.html %}
-        {% include 'includes/about_cc_and_license.html' %}  {#  CC IS NOT A LAW FIRM #}
-        {% include 'includes/use_of_licenses.html' %}  {# Considerations... #}
+        {% include 'includes/about_cc_and_license.html' %} {# CC IS NOT A LAW FIRM #}
+        {% include 'includes/use_of_licenses.html' %} {# Considerations... #}
         {% if tool.category == "publicdomain" and tool.unit == "zero" %}
-          {% include 'includes/legalcode_zero.html' %}  {# <<< THE ACTUAL CC0 LICENSE TEXT #}
+          {% include 'includes/legalcode_zero.html' %} {# <<< THE ACTUAL CC0 LICENSE TEXT #}
         {% elif tool.category == "licenses" and tool.version == "4.0" %}
-          {% include 'includes/legalcode_licenses_4.0.html' %}  {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
+          {% include 'includes/legalcode_licenses_4.0.html' %} {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
         {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
-          {% include 'includes/legalcode_licenses_3.0_unported.html' %}  {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
+          {% include 'includes/legalcode_licenses_3.0_unported.html' %} {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
         {% else %}
           <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black    ">
             <p class="has-text-black body-big padding-bottom-normal"><strong>{% trans "Unimplemented" %}</strong> &mdash; {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %} <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues · creativecommons/cc-legal-tools-app</a>.</p>
@@ -56,19 +94,9 @@
       {% else %}
         {% include "includes/legalcode_crude_html.html" %}
       {% endif %}
-      {% include 'includes/related_links.html' with show_legal_code=True %}
+      {% include 'includes/related_links.html' %}
     </div>
   </div>
-
-<style>
-  #legal-code-body {
-    background-color: rgb(255, 255, 255);
-    border-top: 10px solid rgb(60, 92, 153);
-    border-bottom: 5px solid rgb(176, 176, 176);
-    border-left: 5px solid rgb(176, 176, 176);
-    border-right: 5px solid rgb(176, 176, 176);
-  }
-</style>
 {% endblock %}
 
 {% block extra-js%}
