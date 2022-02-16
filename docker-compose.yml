@@ -13,7 +13,7 @@ services:
     # see Dockerfile
     image: cc_legal_tools
     ports:
-      - "8000:8000"
+      - "8005:8000"
     restart: always
     volumes:
       - .:/home/cc
@@ -23,7 +23,7 @@ services:
     # https://hub.docker.com/_/nginx
     image: nginx:alpine
     ports:
-      - "8080:80"
+      - "8006:80"
     restart: always
     volumes:
       - ../cc-legal-tools-data/config/:/etc/nginx/conf.d:ro
