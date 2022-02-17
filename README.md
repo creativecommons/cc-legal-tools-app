@@ -94,10 +94,10 @@ Use the following instructions to start the project with Docker compose.
     ```
 
 The commands above will create two docker containers:
-1. **app** ([127.0.0.1:8000](http://127.0.0.1:8000/)): this Djano application
+1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Djano application
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
-2. **static** ([127.0.0.1:8080](http://127.0.0.1:8080/)): a static web server
+2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web server
    serving [creativecommons/cc-legal-tools-data][repodata]/docs.
 
 [installdocker]: https://docs.docker.com/engine/install/
@@ -153,7 +153,7 @@ The commands above will create two docker containers:
     ```
     pipenv run ./manage.py migrate
     ```
-3. Run development server ([127.0.0.1:8000](http://127.0.0.1:8000/))
+3. Run development server ([127.0.0.1:8005](http://127.0.0.1:8005/))
     ```
     pipenv run ./manage.py runserver
     ```
@@ -240,9 +240,9 @@ tools exist, their translations, their ports, and their characteristics like
 what they permit, require, and prohibit.
 
 The metadata can be downloaded by visiting URL path:
-`127.0.0.1:8000`[`/licenses/metadata.yaml`][metadata]
+`127.0.0.1:8005`[`/licenses/metadata.yaml`][metadata]
 
-[metadata]: http://127.0.0.1:8000/licenses/metadata.yaml
+[metadata]: http://127.0.0.1:8005/licenses/metadata.yaml
 
 There are two main models (Django terminology for tables) in
 [`legal_tools/models.py`](legal_tools/models.py):
