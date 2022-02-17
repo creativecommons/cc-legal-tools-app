@@ -20,11 +20,12 @@ services:
       - ../cc-legal-tools-data:/home/cc-legal-tools-data
 
   static:
-    # https://hub.docker.com/_/nginx
-    image: nginx:alpine
+    # https://hub.docker.com/_/httpd
+    image: httpd:2.4-alpine
+    command: /usr/local/apache2/conf/config/httpd-command.sh
     ports:
       - "8006:80"
     restart: always
     volumes:
-      - ../cc-legal-tools-data/config/:/etc/nginx/conf.d:ro
-      - ../cc-legal-tools-data/docs/:/usr/share/nginx/html:ro
+      - ../cc-legal-tools-data/config:/usr/local/apache2/conf/config:ro
+      - ../cc-legal-tools-data/docs/:/usr/local/apache2/htdocs:ro
