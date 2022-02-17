@@ -30,7 +30,7 @@ TEST_TRANSIFEX_SETTINGS = {
     "API_TOKEN": TEST_TOKEN,
     "TEAM_ID": TEST_TEAM_ID,
 }
-POFILE_CONTENT = fr"""
+POFILE_CONTENT = rf"""
 msgid ""
 msgstr ""
 "Project-Id-Version: by-nd_40\n"
