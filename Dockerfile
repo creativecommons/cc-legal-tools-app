@@ -1,9 +1,10 @@
 # syntax=docker/dockerfile:1
+# https://hub.docker.com/_/python/
 FROM python:3.9
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONFAULTHANDLER 1
 
-# Install pipenv and compilation dependencies
+# Install compilation dependencies and pipenv
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc gettext
 RUN pip install --upgrade pip \
