@@ -350,6 +350,26 @@ class Command(BaseCommand):
             copyfile(os.path.join(plaintext_dir, text), dest_file)
             LOG.debug(f"    {relative_name}")
 
+    def copy_wp_content_files(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+        LOG.info("Copying WordPress content files")
+        LOG.debug(f"{hostname}:{output_dir}")
+        path = "wp-content/themes/creativecommons-base/assets/img"
+        source = os.path.join(
+            settings.PROJECT_ROOT,
+            "cc_legal_tools",
+            "static",
+            path,
+        )
+        destination = os.path.join(output_dir, path)
+        os.makedirs(destination, exist_ok=True)
+        for file_name in os.listdir(source):
+            copyfile(
+                os.path.join(source, file_name),
+                os.path.join(destination, file_name),
+            )
+
     def run_write_transstats_csv(self):
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
@@ -371,13 +391,13 @@ class Command(BaseCommand):
         self.purge_output_dir()
         self.check_static_files()
         self.write_robots_txt()
+        self.copy_wp_content_files()
         self.write_dev_index()
         self.write_lists()
         self.write_legal_tools()
         self.copy_tools_rdfs()
         self.copy_meta_rdfs()
         self.copy_legal_code_plaintext()
-        # TODO: write lists
         # self.run_write_transstats_csv()
         # self.write_metadata_yaml()
 
