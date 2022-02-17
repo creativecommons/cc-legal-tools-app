@@ -169,6 +169,7 @@ def view_dev_index(request):
     # heads = repo.remotes.origin.refs
     # branches = [head.name[len("origin/") :] for head in heads]
 
+    translation.activate(settings.LANGUAGE_CODE)
     distilling = request.GET.get("distilling", False)
 
     # ensure translation status is current
@@ -224,7 +225,6 @@ def view_dev_index(request):
             "transifex_code": transifex_code,
         }
 
-    translation.activate(settings.LANGUAGE_CODE)
     html_response = render(
         request,
         template_name="dev/index.html",
@@ -254,6 +254,7 @@ def view_list(request, category, language_code=None):
     )
     if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
         raise Http404(f"invalid language: {language_code}")
+    translation.activate(language_code)
     # Get the list of units and languages that occur among the tools
     # to let the template iterate over them as it likes.
     legal_code_objects = (
@@ -323,7 +324,6 @@ def view_list(request, category, language_code=None):
         request_path=request.path,
         selected_language_code=language_code,
     )
-    translation.activate(language_code)
     html_response = render(
         request,
         template_name="list.html",
@@ -356,6 +356,7 @@ def view_deed(
     )
     if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
         raise Http404(f"invalid language: {language_code}")
+    translation.activate(language_code)
 
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
@@ -422,7 +423,6 @@ def view_deed(
     else:
         body_template = "includes/deed_body_unimplemented.html"
 
-    translation.activate(language_code)
     html_response = render(
         request,
         template_name="deed.html",
