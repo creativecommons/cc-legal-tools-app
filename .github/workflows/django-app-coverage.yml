@@ -35,10 +35,6 @@ jobs:
         pip install --upgrade pip
         pip install pipenv
 
-    - name: Install Python dependencies
-      run: |
-        pipenv sync --dev --system
-
     # https://github.com/actions/checkout
     - name: Checkout cc-legal-tools-app
       uses: actions/checkout@v2
@@ -51,6 +47,11 @@ jobs:
       with:
         repository: creativecommons/cc-legal-tools-data
         path: cc-legal-tools-data
+
+    - name: Install Python dependencies
+      run: |
+        pipenv sync --dev --system
+      working-directory: ./cc-legal-tools-app
 
     - name: Check for missing Django migrations
       run: |
