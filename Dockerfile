@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# https://docs.docker.com/engine/reference/builder/
 # https://hub.docker.com/_/python/
 FROM python:3.9
 ENV PYTHONUNBUFFERED=1
