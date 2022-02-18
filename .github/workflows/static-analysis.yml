@@ -11,10 +11,6 @@ jobs:
 
     steps:
 
-    # https://github.com/actions/checkout
-    - name: Checkout cc-legal-tools-app
-      uses: actions/checkout@v2
-
     # https://github.com/actions/setup-python
     - name: Install Python 3.9
       uses: actions/setup-python@v2
@@ -29,5 +25,12 @@ jobs:
         pip install isort
         pip install pre-commit
 
+    # https://github.com/actions/checkout
+    - name: Checkout cc-legal-tools-app
+      uses: actions/checkout@v2
+      with:
+        path: cc-legal-tools-app
+
     - name: pre-commit
       run: pre-commit run --show-diff-on-failure --color=always --all-files
+      working-directory: ./cc-legal-tools-app
