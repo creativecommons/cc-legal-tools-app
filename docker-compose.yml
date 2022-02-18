@@ -4,6 +4,8 @@
 # Also see:
 #   .env
 #   Dockerfile
+#
+# https://docs.docker.com/compose/compose-file/compose-file-v3/
 
 version: "3.6"
 
@@ -18,5 +20,5 @@ services:
       - "${PORT_APP}:${PORT_APP}"
     restart: always
     volumes:
-      - .:/home/cc
-      - ${RELPATH_DATA}:/home/cc-legal-tools-data
+      - .:/home/cc/cc-legal-tools-app
+      - ${RELPATH_DATA}:/home/cc/cc-legal-tools-data
