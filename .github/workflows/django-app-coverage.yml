@@ -1,7 +1,7 @@
 # Remember to also update the Docker Compose configuration, as appropriate:
 #   cc-legal-tools-app/docker-compose.yml
 
-name: pre-commit
+name: Django App Coverage
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
     branches: [main]
 
 jobs:
-  pre-commit:
+  django-app-coverage:
     runs-on: ubuntu-latest
 
     env:
@@ -35,27 +35,36 @@ jobs:
         git config --global user.name "Testing User"
 
     # https://github.com/actions/setup-python
-    - name: actions/setup-python@v2 Python 3.9
+    - name: Install Python 3.9
       uses: actions/setup-python@v2
       with:
         python-version: "3.9"
 
     - name: Install pipenv
       run: |
-        python -m pip install --upgrade pip
-        python -m pip install pipenv
+        pip install --upgrade pip
+        pip install pipenv
 
     - name: Install Python dependencies
       run: |
-        pipenv sync --dev
+        pipenv sync --dev --system
+
+    - name: Check for missing Django migrations
+      run: |
+        ./manage.py makemigrations --check
 
     - name: Update Django database schema
       run: |
-        pipenv run ./manage.py migrate
+        ./manage.py migrate
 
-    - name: Start Django development web server
+    - name: Coverage Tests
       run: |
-        pipenv run ./manage.py runserver &>/dev/null &
+        ./manage.py test --noinput --parallel 4
 
-    # https://github.com/pre-commit/action
-    - uses: pre-commit/action@v2.0.3
+    - name: Coverage Combine
+      run: |
+        coverage combine
+
+    - name: Coverage Report
+      run: |
+        coverage report
