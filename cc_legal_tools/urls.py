@@ -3,6 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 
 # First-party/Local
 from legal_tools.views import view_page_not_found
@@ -13,6 +14,12 @@ def custom_page_not_found(request):
 
 
 urlpatterns = [
+    # Redirect wp-content/ to static/wp-content/
+    re_path(
+        r"^(?P<wp_content>wp-content/.*)",
+        RedirectView.as_view(url="/static/%(wp_content)s", permanent=False),
+        name="static_wp_content_redirect",
+    ),
     path(
         "admin/",
         admin.site.urls,
