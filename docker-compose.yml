@@ -15,7 +15,7 @@ services:
     build: .
     command: ./manage.py runserver 0.0.0.0:${PORT_APP}
     environment:
-      - DJANGO_SETTINGS_MODULE
+      - DJANGO_SETTINGS_MODULE=${DOCKER_DJANGO_SETTINGS_MODULE}
     ports:
       - "${PORT_APP}:${PORT_APP}"
     restart: always
