@@ -9,7 +9,7 @@ on:
     branches: [main]
 
 jobs:
-  django-app-coverage:
+  job:
     runs-on: ubuntu-latest
 
     env:
