@@ -64,33 +64,32 @@ location.
 Use the following instructions to start the project with Docker compose.
 
 1. Initial Setup
-   1. Ensure the [Data Repository](#data-repository), above,  is in place
+   1. Ensure the [Data Repository](#data-repository), above, is in place
    2. Install Docker ([Install Docker Engine | Docker
-      Documentation][installdocker]) and Docker Compose ([Install Docker
-      Compose | Docker Documentation][installcompose])
+      Documentation][installdocker])
    3. Create Django local settings file
         ```
         cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
         ```
    4. Build the containers
         ```
-        docker-compose build
+        docker compose build
         ```
    5. Run database migrations
         ```
-        docker-compose exec app ./manage.py migrate
+        docker compose exec app ./manage.py migrate
         ```
    6. Clear data in the database
         ```
-        docker-compose exec app ./manage.py clear_license_data
+        docker compose exec app ./manage.py clear_license_data
         ```
    7. Load legacy HTML in the database
         ```
-        docker-compose exec app ./manage.py load_html_files
+        docker compose exec app ./manage.py load_html_files
         ```
 2. Run the containers
     ```
-    docker-compose up
+    docker compose up
     ```
 
 The commands above will create two docker containers:
@@ -101,14 +100,13 @@ The commands above will create two docker containers:
    serving [creativecommons/cc-legal-tools-data][repodata]/docs.
 
 [installdocker]: https://docs.docker.com/engine/install/
-[installcompose]: https://docs.docker.com/compose/install/
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Manual Setup
 
 1. Development Environment
-   1. Ensure the [Data Repository](#data-repository), above,  is in place
+   1. Ensure the [Data Repository](#data-repository), above, is in place
    2. Install dependencies
       - Linux:
         ```
@@ -164,7 +162,7 @@ The commands above will create two docker containers:
 ### Manual Commands
 
 **NOTE:** The rest of the documentation assumes Docker. If you are using a
-manual setup, use `pipenv run` instead of `docker-compose exec app` for the
+manual setup, use `pipenv run` instead of `docker compose exec app` for the
 commands below.
 
 
@@ -212,15 +210,15 @@ Esoteric and dangerous:
 
 The coverage tests and report are run as part of pre-commit and as a GitHub
 Action. To run it manually:
-1. Ensure the [Data Repository](#data-repository), above,  is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
 2. Coverage test
     ```
-    docker-compose exec app coverage run manage.py test --noinput --keepdb
+    docker compose exec app coverage run manage.py test --noinput --keepdb
     ```
 3. Coverage report
     ```
-    docker-compose exec app coverage report
+    docker compose exec app coverage report
     ```
 
 
@@ -329,14 +327,14 @@ This process will read the HTML files from the specified directory, populate
 [creativecommons/cc-legal-tools-data][repodata].
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
 3. Clear data in the database
     ```
-    docker-compose exec app ./manage.py clear_license_data
+    docker compose exec app ./manage.py clear_license_data
     ```
 4. Load legacy HTML in the database
     ```
-    docker-compose exec app ./manage.py load_html_files
+    docker compose exec app ./manage.py load_html_files
     ```
 5. Optionally (and only as appropriate):
    1. commit `.po` file changes in
@@ -451,11 +449,11 @@ about. It performs the following process (which can also be done manually:
 This Django Admin command must be run any time the `.po` files are created or
 changed.
 
-1. Ensure the [Data Repository](#data-repository), above,  is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
 3. Compile translation messages (update `.mo` files)
     ```
-    docker-compose exec app ./manage.py compilemessages
+    docker compose exec app ./manage.py compilemessages
     ```
 
 
@@ -472,11 +470,11 @@ This process will write the HTML files in the cc-legal-tools-data clone
 directory under `docs/`. It will not commit the changes (`--nogit`) and will
 not push any commits (`--nopush` is implied by `--nogit`).
 
-1. Ensure the [Data Repository](#data-repository), above,  is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above,  is complete
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
 3. Compile translation messages (update `.mo` files)
     ```
-    docker-compose exec app ./manage.py publish --nogit --branch=main
+    docker compose exec app ./manage.py publish --nogit --branch=main
     ```
 
 

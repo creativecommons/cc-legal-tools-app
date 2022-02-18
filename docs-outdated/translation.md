@@ -56,7 +56,7 @@ developer should update the messages on Transifex as follows:
 
 2. Regenerate the English (only) .po files:
 
-        docker-compose run app ./manage.py makemessages
+        docker compose run app ./manage.py makemessages
 
 3. Run `git diff` and make sure the changes look reasonable.
 
@@ -67,7 +67,7 @@ developer should update the messages on Transifex as follows:
 
 5. [Push][transifex-push] the updated source file to Transifex:
 
-        docker-compose run app ./manage.py pushmessages
+        docker compose run app ./manage.py pushmessages
 
 [transifex-push]: http://support.transifex.com/customer/portal/articles/996211-pushing-new-translations
 
@@ -83,7 +83,7 @@ translation files on the main branch as follows:
 
 2. [Pull][transifex-pull] the updated .po files from Transifex:
 
-        docker-compose run app ./manage.py pullmessages
+        docker compose run app ./manage.py pullmessages
 
 3. Use `git diff` to see if any translations have actually changed. If not, you
    can stop here.
@@ -93,7 +93,7 @@ translation files on the main branch as follows:
 
 5. Compile the messages to .mo files:
 
-        docker-compose run app ./manage.py compilemessages
+        docker compose run app ./manage.py compilemessages
 
    If you get any errors due to badly formatted translations, open issues on
    Transifex and work with the translators to get them fixed, then start this
@@ -101,7 +101,7 @@ translation files on the main branch as follows:
 
 6. Run your test suite one more time:
 
-        docker-compose run app ./manage.py test
+        docker compose run app ./manage.py test
 
 7. Commit and push the changes:
 
