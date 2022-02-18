@@ -42,6 +42,7 @@ jobs:
     # https://github.com/actions/checkout
     - name: Checkout cc-legal-tools-app
       uses: actions/checkout@v2
+      with:
         path: cc-legal-tools-app
 
     # https://github.com/actions/checkout
