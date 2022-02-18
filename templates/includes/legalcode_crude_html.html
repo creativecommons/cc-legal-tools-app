@@ -1,6 +1,6 @@
 {# For tools that are only partially supported, we've just stored their HTML in the database. #}
 <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
-  <div id="plain-text-marker">
+  <div id="plain-text-marker" class="content">
     <h3 class="padding-bottom-normal b-header">{{ legal_code.title }}</h3>
     {{ legal_code.html|safe }}
   </div>{# end plain-text-marker #}
