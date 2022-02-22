@@ -16,9 +16,9 @@ else
     echo 'GNU sed is required. If on macOS install via `gnu-sed`' 1>&2
     exit 1
 fi
-if ! docker-compose exec app true 2>/dev/null; then
+if ! docker compose exec app true 2>/dev/null; then
     echo 'The app container/services is not available.'
-    echo 'First run `docker-compose up`.'
+    echo 'First run `docker compose up`.'
     exit 1
 fi 1>&2
 if [[ ! -d ../cc.i18n ]]; then
@@ -35,7 +35,7 @@ if ! command -v msgcat &>/dev/null; then
 fi 1>&2
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management nofuzzy_makemessages'
-docker-compose exec app ./manage.py \
+docker compose exec app ./manage.py \
     nofuzzy_makemessages \
         --all \
         --symlinks \
@@ -138,7 +138,7 @@ done
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management nofuzzy_makemessages'
-docker-compose exec app ./manage.py \
+docker compose exec app ./manage.py \
     nofuzzy_makemessages \
         --all \
         --symlinks \
@@ -184,7 +184,7 @@ popd >/dev/null
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management format_pofile'
-docker-compose exec app ./manage.py format_pofile locale
+docker compose exec app ./manage.py format_pofile locale
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Reminders'
