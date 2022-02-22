@@ -1,0 +1,79 @@
+# Remember to also update the Docker Compose configuration, as appropriate:
+#   cc-legal-tools-app/docker-compose.yml
+
+name: Django App Coverage
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+
+    env:
+      DJANGO_SETTINGS_MODULE: cc_legal_tools.settings.ephemeral
+      PYTHONDONTWRITEBYTECODE: 1
+      PYTHONFAULTHANDLER: 1
+
+    steps:
+
+    - name: Configure testing git identity
+      run: |
+        git config --global user.email "testing_user@localhost"
+        git config --global user.name "Testing User"
+
+    # https://github.com/actions/setup-python
+    - name: Install Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+
+    - name: Install pipenv
+      run: |
+        pip install --upgrade pip
+        pip install pipenv
+
+    # https://github.com/actions/checkout
+    - name: Checkout cc-legal-tools-app
+      uses: actions/checkout@v2
+      with:
+        path: cc-legal-tools-app
+
+    # https://github.com/actions/checkout
+    - name: Checkout cc-legal-tools-data
+      uses: actions/checkout@v2
+      with:
+        repository: creativecommons/cc-legal-tools-data
+        path: cc-legal-tools-data
+
+    - name: Install Python dependencies
+      run: |
+        pipenv sync --dev --system
+      working-directory: ./cc-legal-tools-app
+
+    - name: Check for missing Django migrations
+      run: |
+        ./manage.py makemigrations --check
+      working-directory: ./cc-legal-tools-app
+
+    - name: Update Django database schema
+      run: |
+        ./manage.py migrate
+      working-directory: ./cc-legal-tools-app
+
+    - name: Coverage Test
+      run: |
+        coverage run manage.py test --noinput --parallel 4
+      working-directory: ./cc-legal-tools-app
+
+    - name: Coverage Combine
+      run: |
+        coverage combine
+      working-directory: ./cc-legal-tools-app
+
+    - name: Coverage Report
+      run: |
+        coverage report
+      working-directory: ./cc-legal-tools-app
