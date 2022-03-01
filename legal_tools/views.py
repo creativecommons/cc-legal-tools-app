@@ -169,6 +169,40 @@ def view_dev_index(request):
     # heads = repo.remotes.origin.refs
     # branches = [head.name[len("origin/") :] for head in heads]
 
+    # Serve ccnavigation_header_menu
+    if request.GET.get("rest_route"):
+        # Standard library
+        import json
+
+        ccnavigation_header_menu = [
+            {
+                "ID": 1,
+                "url": "#",
+                "title": "Menu 1",
+                "child_items": [
+                    {"ID": 1, "url": "#", "title": "Item 1"},
+                    {"ID": 2, "url": "#", "title": "Item 2"},
+                    {"ID": 3, "url": "#", "title": "Item 3"},
+                ],
+            },
+            {"ID": 2, "url": "#", "title": "Menu 2"},
+            {
+                "ID": 3,
+                "url": "#",
+                "title": "Menu 3",
+                "child_items": [
+                    {"ID": 1, "url": "#", "title": "Item 1"},
+                    {"ID": 2, "url": "#", "title": "Item 2"},
+                ],
+            },
+            {"ID": 4, "url": "#", "title": "Menu 4"},
+        ]
+
+        return HttpResponse(
+            json.dumps(ccnavigation_header_menu),
+            content_type="application/json",
+        )
+
     translation.activate(settings.LANGUAGE_CODE)
     distilling = request.GET.get("distilling", False)
 
