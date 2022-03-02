@@ -10,7 +10,6 @@
 {% block content %}
   {% trans "Deed" as deed_label_translated %}
   {% trans "Legal Code" as legal_code_label_translated %}
-  {% trans "Canonical URL" as canonical_url_label_translated %}
 
   <div class="columns">
 
@@ -46,9 +45,6 @@
           {% for jurisdiction_name_group in jurisdiction_name_list %}
             <h4 id="{{ jurisdiction_name_group.grouper|slugify }}-{{ version }}" class="b-header">{{ version }} {% trans jurisdiction_name_group.grouper %}</h4>
             <div class="padding-bottom-big">
-              <p class="padding-bottom-small">
-                {{ canonical_url_label_translated }}: <a href="{{ jurisdiction_name_group.list.0.canonical_url }}"><code>{{ jurisdiction_name_group.list.0.canonical_url }}</code></a>
-              </p>
               <div class="is-responsive">
                 <table class="table is-bordered is-striped">
                   <thead>

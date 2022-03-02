@@ -62,7 +62,7 @@ class LegalCodeInline(admin.TabularInline):
 @admin.register(Tool)
 class ToolAdmin(admin.ModelAdmin):
     fields = [
-        "canonical_url",
+        "base_url",
         "unit",
         "version",
         "creator_url",
@@ -104,5 +104,5 @@ class ToolAdmin(admin.ModelAdmin):
     search_fields = [
         "unit",
         "version",
-        "canonical_url",
+        "base_url",
     ]

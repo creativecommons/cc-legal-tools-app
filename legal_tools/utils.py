@@ -159,9 +159,7 @@ def parse_legal_code_filename(filename):
         # https://github.com/django/django/blob/main/django/conf/global_settings.py
         raise ValueError(f"{filename}: Invalid language_code={language_code}")
 
-    canonical_url = compute_canonical_url(
-        category, unit, version, jurisdiction
-    )
+    base_url = compute_base_url(category, unit, version, jurisdiction)
 
     data = dict(
         category=category,
@@ -169,7 +167,7 @@ def parse_legal_code_filename(filename):
         version=version,
         jurisdiction_code=jurisdiction or "",
         language_code=language_code,
-        canonical_url=canonical_url,
+        base_url=base_url,
         deprecated_on=deprecated_on,
         deed_only=deed_only,
     )
@@ -177,48 +175,35 @@ def parse_legal_code_filename(filename):
     return data
 
 
-def compute_canonical_url(category, unit, version, jurisdiction_code):
+def compute_base_url(category, unit, version, jurisdiction_code):
     """
-    Compute the unique canonical URL for a license with the given attributes.
+    Compute the unique base URL for a legal tool with the given attributes.
     Note that a "Tool" can have a jurisdiction, but is language-independent
     (unlike a "LegalCode", which is associated with a language).
 
-    E.g.
+    Examples:
 
-    https://creativecommons.org/licenses/BSD/
-    https://creativecommons.org/licenses/GPL/2.0/
-    https://creativecommons.org/licenses/LGPL/2.1/
-    https://creativecommons.org/licenses/MIT/
-    https://creativecommons.org/licenses/by/2.0/
-    https://creativecommons.org/licenses/publicdomain/
-    https://creativecommons.org/publicdomain/zero/1.0/
-    https://creativecommons.org/publicdomain/mark/1.0/
-    https://creativecommons.org/licenses/nc-sampling+/1.0/
-    https://creativecommons.org/licenses/devnations/2.0/
-    https://creativecommons.org/licenses/by/3.0/nl/
     https://creativecommons.org/licenses/by-nc-nd/3.0/br/
-    https://creativecommons.org/licenses/by/4.0/
     https://creativecommons.org/licenses/by-nc-nd/4.0/
+    https://creativecommons.org/licenses/by/2.0/
+    https://creativecommons.org/licenses/by/3.0/nl/
+    https://creativecommons.org/licenses/by/4.0/
+    https://creativecommons.org/licenses/devnations/2.0/
+    https://creativecommons.org/licenses/nc-sampling+/1.0/
+    https://creativecommons.org/licenses/publicdomain/
+    https://creativecommons.org/publicdomain/mark/1.0/
+    https://creativecommons.org/publicdomain/zero/1.0/
     """
-    base = "https://creativecommons.org"
-
-    if unit in ["BSD", "MIT"]:
-        canonical_url = posixpath.join(
-            base,
-            category,
-            unit,
-        )
-    else:
-        canonical_url = posixpath.join(
-            base,
-            category,
-            unit,
-            version,
-        )
+    base_url = posixpath.join(
+        settings.CANONICAL_SITE,
+        category,
+        unit,
+        version,
+    )
     if jurisdiction_code:
-        canonical_url = posixpath.join(canonical_url, jurisdiction_code)
-    canonical_url = posixpath.join(canonical_url, "")
-    return canonical_url
+        base_url = posixpath.join(base_url, jurisdiction_code)
+    base_url = posixpath.join(base_url, "")
+    return base_url
 
 
 def validate_list_is_all_text(list_):

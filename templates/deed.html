@@ -1,12 +1,8 @@
 {% extends "base.html" %}
 {% load i18n license_tags static %}
 
-{% block head_about %}{{ tool.canonical_url }}{% endblock %}
+{% block head_about %}{{ tool.base_url }}{% endblock %}
 {% block title %}{{ legal_code.title }} Deed &mdash; Creative Commons{% endblock %}
-{% block tool_canonical_url %}{{ tool.canonical_url }}{% endblock %}
-{% block head_meta %}
-  <link rel="canonical" href="{{ tool.canonical_url }}"/>
-{% endblock %}
 {% block head_extra %}
 <style>
   #deed-body {
@@ -27,7 +23,7 @@
 </style>
 {% endblock %}
 
-{% block body_about %}{{ tool.canonical_url }}{% endblock %}
+{% block body_about %}{{ tool.base_url }}{% endblock %}
 {% block body_typeof %}cc:License{% endblock %}
 
 {% block active-breadcrumb-li %}

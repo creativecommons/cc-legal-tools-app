@@ -6,9 +6,9 @@
 <html lang="{{ lang.code }}" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
 <head about="{% block head_about %}{% endblock %}">
   <meta charset="utf-8"/>
-  <title>{% block title %}{% endblock %}</title>
-  <meta name="CC-Canonical-URL" content="{% block tool_canonical_url %}{% endblock %}"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}{% endblock %}</title>
+  <link href="{{ canonical_url }}" rel="canonical"/>
   {% block head_meta %}
   {% endblock %}
   <link

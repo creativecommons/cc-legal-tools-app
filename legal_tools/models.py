@@ -204,7 +204,7 @@ class LegalCode(models.Model):
     )
     title = models.CharField(
         max_length=112,
-        help_text="Tool title in this language, e.g."
+        help_text="Tool title in this language, ex."
         " 'Atribución/Reconocimiento 4.0 Internacional'",
         blank=True,
         default="",
@@ -228,12 +228,12 @@ class LegalCode(models.Model):
 
     def save(self, *args, **kwargs):
         self.deed_url = build_path(
-            self.tool.canonical_url,
+            self.tool.base_url,
             "deed",
             self.language_code,
         )
         self.legal_code_url = build_path(
-            self.tool.canonical_url,
+            self.tool.base_url,
             "legalcode",
             self.language_code,
         )
@@ -244,7 +244,7 @@ class LegalCode(models.Model):
         #     or unit == "zero"
         # ) and self.language_code == "en":
         #     self.plain_text_url = build_path(
-        #         self.tool.canonical_url,
+        #         self.tool.base_url,
         #         "legalcode.txt",
         #         self.language_code,
         #     )
@@ -422,7 +422,7 @@ class LegalCode(models.Model):
 
     def identifier(self):
         """
-        Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
+        Returns ex. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
         return self.tool.identifier()
 
@@ -464,22 +464,23 @@ class LegalCode(models.Model):
 
 
 class Tool(models.Model):
-    canonical_url = models.URLField(
-        "Canonical URL",
+    base_url = models.URLField(
+        "Base URL",
         max_length=200,
-        help_text="The tool's unique identifier, e.g."
+        help_text="The tool's unique identifier, ex."
         " 'https://creativecommons.org/licenses/by-nd/2.0/br/'",
         unique=True,
+        default="",
     )
     unit = models.CharField(
         max_length=20,
         help_text="shorthand representation for which class of tools this"
-        " falls into. E.g. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
+        " falls into. Ex. 'by-nc-sa', or 'MIT', 'nc-sampling+',"
         " 'devnations', ...",
     )
     version = models.CharField(
         max_length=3,
-        help_text="E.g. '4.0'. Not required.",
+        help_text="Ex. '4.0'. Not required.",
         blank=True,
         default="",
     )
@@ -493,7 +494,7 @@ class Tool(models.Model):
         max_length=200,
         blank=True,
         default="",
-        help_text="E.g. https://creativecommons.org",
+        help_text="Ex. https://creativecommons.org",
     )
     category = models.CharField(
         max_length=13,
@@ -565,7 +566,7 @@ class Tool(models.Model):
         )
         data = {}
         default_lc = self.legal_codes.filter(language_code=language_default)[0]
-        data["canonical_url"] = self.canonical_url
+        data["base_url"] = self.base_url
         data["deed_only"] = self.deed_only
         if self.deprecated_on:
             data["deprecated_on"] = self.deprecated_on
@@ -604,7 +605,7 @@ class Tool(models.Model):
     def logos(self):
         """
         Return an iterable of the codes for the logos that should be
-        displayed with this tool. E.g.:
+        displayed with this tool. Ex.:
         ["cc-logo", "cc-zero", "cc-by"]
         """
         result = ["cc-logo"]  # Everybody gets this
@@ -657,7 +658,7 @@ class Tool(models.Model):
 
     def identifier(self):
         """
-        Returns e.g. 'CC BY-SA 4.0' - all upper case etc. No language.
+        Returns ex. 'CC BY-SA 4.0' - all upper case etc. No language.
         """
         tool = self
         identifier = f"{tool.unit} {tool.version}"
@@ -717,7 +718,7 @@ class TranslationBranch(models.Model):
     legal_codes = models.ManyToManyField("LegalCode")
     version = models.CharField(
         max_length=3,
-        help_text="E.g. '4.0'. Not required.",
+        help_text="Ex. '4.0'. Not required.",
         blank=True,
         default="",
     )
@@ -743,8 +744,8 @@ class TranslationBranch(models.Model):
         )
 
 
-def build_path(canonical_url, document, language_code):
-    path = canonical_url.replace("https://creativecommons.org", "")
+def build_path(base_url, document, language_code):
+    path = base_url.replace(settings.CANONICAL_SITE, "")
     if document == "legalcode.txt" or not language_code:
         path = posixpath.join(path, document)
     else:

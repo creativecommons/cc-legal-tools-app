@@ -170,7 +170,7 @@ def view_dev_index(request):
     # branches = [head.name[len("origin/") :] for head in heads]
 
     # Serve ccnavigation_header_menu
-    if request.GET.get("rest_route"):
+    if request.GET.get("rest_route"):  # pragma: no cover
         # Standard library
         import json
 
@@ -325,7 +325,6 @@ def view_list(request, category, language_code=None):
         )
         deed_translated = deed_rel_path.endswith(f".{lc.language_code}")
         data = dict(
-            canonical_url=lc.tool.canonical_url,
             version=lc_version,
             jurisdiction_name=jurisdiction_name,
             unit=lc_unit,
@@ -362,6 +361,7 @@ def view_list(request, category, language_code=None):
         request,
         template_name="list.html",
         context={
+            "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
             "category": category,
             "category_title": category_title,
             "category_list": category_list,
@@ -463,6 +463,7 @@ def view_deed(
         context={
             "additional_classes": "",
             "body_template": body_template,
+            "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
             "category": category,
             "category_title": category_title,
             "identifier": tool.identifier(),
@@ -532,6 +533,7 @@ def view_legal_code(
     kwargs = dict(
         template_name="legalcode.html",
         context={
+            "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
             "category": category,
             "category_title": category_title,
             "deed_rel_path": deed_rel_path,
