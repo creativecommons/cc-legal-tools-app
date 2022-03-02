@@ -29,11 +29,11 @@ RUN apt-config dump \
 # Resynchronize the package index
 RUN apt-get update
 
-# Install packages missing from slim docker image
+# Install apt packages missing from slim docker image
 RUN apt-get install -y git ssh
 
 # Install apt package dependencies
-RUN apt-get install -y gcc gettext
+RUN apt-get install -y gcc gettext sqlite3
 
 ## Install pipenv
 RUN pip install --upgrade pip
