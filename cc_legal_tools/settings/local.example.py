@@ -14,4 +14,6 @@ DEBUG = True
 # )
 
 # Enable tools like Firefox Web Developer: View Responsive Layouts
-MIDDLEWARE.remove("django.middleware.clickjacking.XFrameOptionsMiddleware")
+MIDDLEWARE.remove(  # noqa: F405
+    "django.middleware.clickjacking.XFrameOptionsMiddleware"
+)
