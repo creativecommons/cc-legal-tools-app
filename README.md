@@ -234,7 +234,7 @@ you commit, try adding your files (`git add <FILES>`) prior to committing them.
 ## Frontend Dependencies
 
 The following CC projects are used to achieve a consistent look and feel:
-- [creativecommons/cc-global-components][[cc-global-components]]: Vue.js
+- [creativecommons/cc-global-components][cc-global-components]: Vue.js
   components for consistent navigation and branding across Creative Commons web
   properties
 - [creativecommons/vocabulary-fonts][vocabulary-fonts]: Typefaces that lend
