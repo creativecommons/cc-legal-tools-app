@@ -14,8 +14,13 @@ if ! docker compose exec app true 2>/dev/null; then
     exit 1
 fi
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Flush Database'
-docker compose exec app ./manage.py flush
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Delete Database'
+docker compose exec app rm -fv db.sqlite3
+echo
+
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Initialize Database'
+docker compose exec app sqlite3 db.sqlite3 -version
+docker compose exec app sqlite3 db.sqlite3 -echo 'VACUUM;'
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Perform migrations'

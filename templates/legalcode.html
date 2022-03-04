@@ -2,7 +2,6 @@
 {% load bidi i18n static %}
 
 {% block title %}{{ legal_code.title }} Legal Code &mdash; Creative Commons{% endblock %}
-{% block tool_canonical_url %}{{ tool.canonical_url }}{% endblock %}
 {% block head_extra %}
 <style>
   #legal-code-body {
@@ -52,7 +51,7 @@
   <div class="column columns padding-vertical-normal">
     <div class="column is-three-quarters padding-top-normal">
       Version {{ legal_code.tool.version }} &#8226;
-      See the <a href="https://creativecommons.org/legal-code-errata/">errata page</a> for any corrections and the date of change
+      See the <a href="/legal-code-errata/">errata page</a> for any corrections and the date of change
       {% if legal_code.translation_last_update %}
         &#8226; Translation published {{ legal_code.translation_last_update|date:'Y/m/d' }}
       {% endif %}

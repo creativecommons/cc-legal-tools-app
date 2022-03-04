@@ -111,7 +111,7 @@ class ToolsTestsMixin:
     # Create some tools to test in setUp
     def setUp(self):
         self.by = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by/4.0/",
+            base_url="https://creativecommons.org/licenses/by/4.0/",
             category="licenses",
             unit="by",
             version="4.0",
@@ -127,7 +127,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by-nc/4.0/",
+            base_url="https://creativecommons.org/licenses/by-nc/4.0/",
             category="licenses",
             unit="by-nc",
             version="4.0",
@@ -143,7 +143,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc_nd = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by-nc-nd/4.0/",
+            base_url="https://creativecommons.org/licenses/by-nc-nd/4.0/",
             category="licenses",
             unit="by-nc-nd",
             version="4.0",
@@ -159,7 +159,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nc_sa = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by-nc-sa/4.0/",
+            base_url="https://creativecommons.org/licenses/by-nc-sa/4.0/",
             category="licenses",
             unit="by-nc-sa",
             version="4.0",
@@ -175,7 +175,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_nd = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by-nd/4.0/",
+            base_url="https://creativecommons.org/licenses/by-nd/4.0/",
             category="licenses",
             unit="by-nd",
             version="4.0",
@@ -191,7 +191,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by_sa = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by-sa/4.0/",
+            base_url="https://creativecommons.org/licenses/by-sa/4.0/",
             category="licenses",
             unit="by-sa",
             version="4.0",
@@ -207,7 +207,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by/3.0/",
+            base_url="https://creativecommons.org/licenses/by/3.0/",
             category="licenses",
             unit="by",
             version="3.0",
@@ -223,7 +223,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.by = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by/2.0/",
+            base_url="https://creativecommons.org/licenses/by/2.0/",
             category="licenses",
             unit="by",
             version="2.0",
@@ -239,7 +239,7 @@ class ToolsTestsMixin:
             prohibits_high_income_nation_use=False,
         )
         self.zero = ToolFactory(
-            canonical_url="https://creativecommons.org/publicdomain/zero/1.0/",
+            base_url="https://creativecommons.org/publicdomain/zero/1.0/",
             category="publicdomain",
             unit="zero",
             version="1.0",
@@ -261,7 +261,7 @@ class ToolsTestsMixin:
             LegalCodeFactory(tool=tool, language_code="fr")
 
         self.by_sa_30_es = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by-sa/3.0/es/",
+            base_url="https://creativecommons.org/licenses/by-sa/3.0/es/",
             category="licenses",
             unit="by-sa",
             version="3.0",
@@ -282,7 +282,7 @@ class ToolsTestsMixin:
         )  # Default lang
 
         self.by_sa_20_es = ToolFactory(
-            canonical_url="https://creativecommons.org/licenses/by-sa/2.0/es/",
+            base_url="https://creativecommons.org/licenses/by-sa/2.0/es/",
             category="licenses",
             unit="by-sa",
             version="2.0",
@@ -386,7 +386,7 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
                 # Test in English and for 4.0 since that's how we've set up the
                 # strings to test for
                 url = build_path(
-                    canonical_url=tool.canonical_url,
+                    base_url=tool.base_url,
                     document="deed",
                     language_code="en",
                 )
@@ -433,7 +433,7 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
 
     def test_view_deed_template_body_mark(self):
         lc = LegalCodeFactory(
-            tool__canonical_url="https://creativecommons.org/publicdomain/"
+            tool__base_url="https://creativecommons.org/publicdomain/"
             "mark/1.0/",
             tool__unit="mark",
             tool__version="1.0",
@@ -446,7 +446,7 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
 
     def test_view_deed_template_body_certification(self):
         lc = LegalCodeFactory(
-            tool__canonical_url="https://creativecommons.org/publicdomain/"
+            tool__base_url="https://creativecommons.org/publicdomain/"
             "certification/1.0/us/",
             tool__unit="certification",
             tool__version="1.0",
@@ -460,7 +460,7 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
 
     def test_view_deed_template_body_unimplemented(self):
         lc = LegalCodeFactory(
-            tool__canonical_url="https://creativecommons.org/licenses/x/0.0",
+            tool__base_url="https://creativecommons.org/licenses/x/0.0",
             tool__unit="x",
             tool__version="0.0",
             language_code="en",
@@ -636,7 +636,7 @@ class ViewLegalCodeTest(TestCase):
 
         tool = ToolFactory(
             category="licenses",
-            canonical_url="https://creativecommons.org/licenses/by/4.0/",
+            base_url="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
         category, category_title = get_category_and_category_title(
@@ -707,7 +707,7 @@ class ViewLegalCodeTest(TestCase):
             html="crude",
             language_code=language_code,
             tool__category="licenses",
-            tool__canonical_url="https://creativecommons.org"
+            tool__base_url="https://creativecommons.org"
             "/licenses/by/3.0/de/",
             tool__version="3.0",
             tool__jurisdiction_code="de",
@@ -724,7 +724,7 @@ class ViewLegalCodeTest(TestCase):
     def test_view_legal_code(self):
         tool = ToolFactory(
             category="licenses",
-            canonical_url="https://creativecommons.org/licenses/by/4.0/",
+            base_url="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
         for language_code in ["es", "ar", settings.LANGUAGE_CODE]:
@@ -750,7 +750,7 @@ class ViewLegalCodeTest(TestCase):
     # NOTE: plaintext functionality disabled
     # def test_view_legal_code_plain_text(self):
     #     tool = ToolFactory(
-    #         canonical_url="https://creativecommons.org/licenses/by/4.0/",
+    #         base_url="https://creativecommons.org/licenses/by/4.0/",
     #         version="4.0",
     #     )
     #     for language_code in [settings.LANGUAGE_CODE]:
@@ -783,7 +783,7 @@ class ViewLegalCodeTest(TestCase):
     def test_legal_code_translation_by_40_es(self):
         tool = ToolFactory(
             category="licenses",
-            canonical_url="https://creativecommons.org/licenses/by/4.0/",
+            base_url="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
         legal_code = LegalCodeFactory(

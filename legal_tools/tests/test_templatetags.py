@@ -10,7 +10,7 @@ from legal_tools.templatetags.license_tags import (
     reset_letters,
     units,
 )
-from legal_tools.utils import compute_canonical_url
+from legal_tools.utils import compute_base_url
 
 
 class ToolTagsTest(TestCase):
@@ -161,10 +161,10 @@ class ToolTagsTest(TestCase):
             with self.subTest(
                 (unit, version, jurisdiction, language),
             ):
-                canonical_url = compute_canonical_url(
+                base_url = compute_base_url(
                     category, unit, version, jurisdiction
                 )
-                result = build_path(canonical_url, "legalcode", language)
+                result = build_path(base_url, "legalcode", language)
                 self.assertEqual(expected_legal_code_url, result)
                 self.assertTrue(resolver.resolve(result))
 
@@ -231,8 +231,8 @@ class ToolTagsTest(TestCase):
             with self.subTest(
                 (unit, version, jurisdiction, language),
             ):
-                canonical_url = compute_canonical_url(
+                base_url = compute_base_url(
                     category, unit, version, jurisdiction
                 )
-                result = build_path(canonical_url, "deed", language)
+                result = build_path(base_url, "deed", language)
                 self.assertEqual(expected_result, result)

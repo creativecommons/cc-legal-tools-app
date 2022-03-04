@@ -179,7 +179,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_1.0.html",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/licenses/by/1.0/"
                     ),
                     "unit": "by",
@@ -194,7 +194,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_3.0_es_ast",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/licenses/by/3.0/es/"
                     ),
                     "unit": "by",
@@ -209,7 +209,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "by_3.0_rs_sr-Cyrl.html",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/licenses/by/3.0/rs/"
                     ),
                     "unit": "by",
@@ -224,7 +224,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "devnations_2.0.html",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/licenses/devnations/2.0/"
                     ),
                     "unit": "devnations",
@@ -243,7 +243,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "samplingplus_1.0",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/licenses/sampling+/1.0/"
                     ),
                     "unit": "sampling+",
@@ -258,7 +258,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "zero_1.0_fi.html",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/publicdomain/zero/1.0/"
                     ),
                     "unit": "zero",
@@ -273,7 +273,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "nc-samplingplus_1.0.html",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/licenses/nc-sampling+/"
                         "1.0/"
                     ),
@@ -289,7 +289,7 @@ class ParseLegalcodeFilenameTest(TestCase):
             (
                 "certification_1.0.html",
                 {
-                    "canonical_url": (
+                    "base_url": (
                         "https://creativecommons.org/publicdomain/"
                         "certification/1.0/us/"
                     ),
@@ -345,7 +345,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_by_nc_40(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/by-nc/4.0/",
-            utils.compute_canonical_url(
+            utils.compute_base_url(
                 category="licenses",
                 unit="by-nc",
                 version="4.0",
@@ -356,7 +356,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_bsd(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/BSD/",
-            utils.compute_canonical_url(
+            utils.compute_base_url(
                 category="licenses",
                 unit="BSD",
                 version="",
@@ -367,7 +367,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_mit(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/MIT/",
-            utils.compute_canonical_url(
+            utils.compute_base_url(
                 category="licenses",
                 unit="MIT",
                 version="",
@@ -378,7 +378,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_gpl20(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/GPL/2.0/",
-            utils.compute_canonical_url(
+            utils.compute_base_url(
                 category="licenses",
                 unit="GPL",
                 version="2.0",
@@ -389,7 +389,7 @@ class TestComputeCanonicalURL(TestCase):
     def test_30_nl(self):
         self.assertEqual(
             "https://creativecommons.org/licenses/by/3.0/nl/",
-            utils.compute_canonical_url(
+            utils.compute_base_url(
                 category="licenses",
                 unit="by",
                 version="3.0",

@@ -177,7 +177,7 @@ class Command(BaseCommand):
                 LOG.info(f"{filename} skipped.")
                 continue
 
-            canonical_url = metadata["canonical_url"]
+            base_url = metadata["base_url"]
 
             unit_parts = unit.split("-")
             if category == "licenses":
@@ -212,7 +212,7 @@ class Command(BaseCommand):
 
             # Find or create a Tool object
             tool, created = Tool.objects.get_or_create(
-                canonical_url=canonical_url,
+                base_url=base_url,
                 category=category,
                 defaults=dict(
                     unit=unit,

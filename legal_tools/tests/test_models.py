@@ -812,7 +812,7 @@ class ToolModelTest(TestCase):
         # Ported
         tool = ToolFactory(
             **{
-                "canonical_url": (
+                "base_url": (
                     "https://creativecommons.org/licenses/by-nc/3.0/xyz/"
                 ),
                 "category": "licenses",
@@ -862,7 +862,7 @@ class ToolModelTest(TestCase):
         # Unported
         tool = ToolFactory(
             **{
-                "canonical_url": (
+                "base_url": (
                     "https://creativecommons.org/licenses/by-nc/3.0/"
                 ),
                 "category": "licenses",
@@ -909,7 +909,7 @@ class ToolModelTest(TestCase):
         # Deprecated
         tool = ToolFactory(
             **{
-                "canonical_url": (
+                "base_url": (
                     "https://creativecommons.org/licenses/sampling/1.0/"
                 ),
                 "category": "licenses",
@@ -958,7 +958,7 @@ class ToolModelTest(TestCase):
         # Deed-only
         tool = ToolFactory(
             **{
-                "canonical_url": (
+                "base_url": (
                     "https://creativecommons.org/publicdomain/mark/1.0/"
                 ),
                 "category": "publicdomain",
