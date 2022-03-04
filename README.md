@@ -231,6 +231,31 @@ If you encounter an `error: Error building trees` error from pre-commit when
 you commit, try adding your files (`git add <FILES>`) prior to committing them.
 
 
+## Frontend Dependencies
+
+The following CC projects are used to achieve a consistent look and feel:
+- [creativecommons/cc-global-components][cc-global-components]: Vue.js
+  components for consistent navigation and branding across Creative Commons web
+  properties
+- [creativecommons/vocabulary-fonts][vocabulary-fonts]: Typefaces that lend
+  personality to the web facing Creative Commons
+- [creativecommons/vocabulary-styles][vocabulary-styles]: A cohesive design
+  system to unite the web facing Creative Commons
+
+Dependencies:
+- [axios/axios][axios]: Promise based HTTP client for the browser and node.js
+- [jgthms/bulma][bulma]: Modern CSS framework based on Flexbox
+- [vuejs/core][vuejs]: 🖖 Vue.js is a progressive, incrementally-adoptable
+  JavaScript framework for building UI on the web.
+
+[cc-global-components]: https://github.com/creativecommons/cc-global-components/
+[vocabulary-fonts]: https://github.com/creativecommons/vocabulary-fonts/
+[vocabulary-styles]: https://github.com/creativecommons/vocabulary-styles/
+[axios]: https://github.com/axios/axios
+[bulma]: https://github.com/jgthms/bulma
+[vuejs]: https://github.com/vuejs/core
+
+
 ## Data
 
 The legal tools metadata is in a database. The metadata tracks which legal
