@@ -250,105 +250,47 @@ class LegalCode(models.Model):
         #     )
         super().save(*args, **kwargs)
 
-    def _get_save_path(self):
+    def get_publish_files(self):
         """
-        If saving the deed or legal code as a static file, this returns the
-        relative path where the saved file should be, not including the actual
-        filename.
-
-        ported Licenses 3.0 and earlier
-            Formula
-                CATEGORY/UNIT/VERSION/JURISDICTION
-            Examples
-                licenses/by/3.0/am
-                licenses/by-nc/3.0/pl
-                licenses/by-nc-nd/2.5/au
-                licenses/by-nc-sa/2.5/ch
-                licenses/by/2.1/es
-                licenses/by-nc/2.1/jp
-                licenses/by/2.0/kr
-                licenses/nd-nc/1.0/fi
-
-        unported Licenses 3.0, Licenses 4.0, and Public Domain:
-            Formula
-                CATEGORY/UNIT/VERSION
-            Examples
-                publicdomain/zero/1.0
-                licenses/by-nc-nd/4.0/
-                licenses/by-nc-sa/4.0/
-                licenses/by-nc/4.0/
-                licenses/by-nd/4.0/
-                licenses/by-sa/4.0/
-                licenses/by/4.0/
-        """
-
-        tool = self.tool
-        unit = tool.unit.lower()
-        if tool.jurisdiction_code:
-            # ported Licenses 3.0 and earlier
-            return os.path.join(
-                tool.category,  # licenses or publicdomain
-                unit,  # ex. by, by-nc-nd
-                tool.version,  # ex. 1.0, 2.0
-                tool.jurisdiction_code,  # ex. ca, tw
-            )
-        else:
-            # unported Licenses 3.0, Licenses 4.0, and Public Domain:
-            return os.path.join(
-                tool.category,  # licenses or publicdomain
-                unit,  # ex. by, by-nc-nd, zero
-                tool.version,  # ex. 1.0, 4.0
-            )
-
-    def get_publish_files(self, document):
-        """
-        1. Add document type ("deed" or "legalcode"), language, and HTML file
-           extension to filename to get output/save-destination filename.
-        2. Generate list of symlinks to ensure expected URLs function
+        1. Generate list of symlinks to ensure expected URLs function
            correctly.
-        3. Generate list of redirects to ensure languages are reachable given
+        2. Generate list of redirects to ensure languages are reachable given
            different language code formats and character case.
         """
         language_code = self.language_code
         tool = self.tool
         juris_code = tool.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
-        filename = f"{document}.{self.language_code}.html"
-        if self.tool.deed_only and document == "legalcode":
-            deed_only_legalcode = True
-        else:
-            deed_only_legalcode = False
+        filename = f"legalcode.{self.language_code}.html"
 
         # Relative path
-        if deed_only_legalcode:
+        if self.tool.deed_only:
             relpath = None
         else:
-            relpath = os.path.join(self._get_save_path(), filename)
+            relpath = os.path.join(tool._get_save_path(), filename)
 
         # Symlinks
         symlinks = []
         if language_code == language_default:
-            if not deed_only_legalcode:
+            if not self.tool.deed_only:
                 # Symlink default languages
-                symlinks.append(f"{document}.html")
-            if document == "deed":
-                symlinks.append("index.html")
+                symlinks.append("legalcode.html")
 
         # Redirects
         redirect_codes = map_django_to_redirects_language_codes_lowercase(
             language_code
         )
-        if deed_only_legalcode:
+        if self.tool.deed_only:
             redirect_codes.append(language_default)
         redirects_data = []
         for redirect_code in redirect_codes:
             redirect_file = os.path.join(
-                self._get_save_path(), f"{document}.{redirect_code}.html"
+                tool._get_save_path(), f"legalcode.{redirect_code}.html"
             )
-            if deed_only_legalcode:
-                destination = f"deed.{self.language_code}"
+            if self.tool.deed_only:
+                destination = f"deed.{language_code}"
             else:
-                destination = f"{document}.{self.language_code}"
+                destination = f"legalcode.{language_code}"
             redirects_data.append(
                 {
                     "redirect_file": redirect_file,
@@ -357,36 +299,37 @@ class LegalCode(models.Model):
                     "language_code": language_code,
                 }
             )
-        if deed_only_legalcode:
+        if self.tool.deed_only:
             redirects_data.append(
                 {
                     "redirect_file": os.path.join(
-                        self._get_save_path(), f"{document}.html"
+                        tool._get_save_path(), "legalcode.html"
                     ),
                     "title": self.title,
-                    "destination": f"deed.{self.language_code}",
+                    "destination": f"deed.{language_code}",
                     "language_code": language_code,
                 }
             )
 
         return [relpath, symlinks, redirects_data]
 
-    def get_redirect_pairs(self, document):
+    def get_redirect_pairs(self):
         """
         Get a list of pairs (list with two items):
         1. document path with redirect language code
         2. document path with correct Django language code
         """
         language_code = self.language_code
-        filename = f"{document}.{self.language_code}"
-        relpath = os.path.join(self._get_save_path(), filename)
+        tool = self.tool
+        filename = f"legalcode.{language_code}"
+        relpath = os.path.join(tool._get_save_path(), filename)
         redirect_pairs = []
         for redirect_code in map_django_to_redirects_language_codes(
             language_code
         ):
-            redirect_name = f"{document}.{redirect_code}"
+            redirect_name = f"legalcode.{redirect_code}"
             redirect_relpath = os.path.join(
-                self._get_save_path(), redirect_name
+                tool._get_save_path(), redirect_name
             )
             redirect_pairs.append([redirect_relpath, relpath])
         redirect_pairs.sort(key=lambda x: x[0], reverse=True)
@@ -551,11 +494,86 @@ class Tool(models.Model):
     prohibits_commercial_use = models.BooleanField(default=None)
     prohibits_high_income_nation_use = models.BooleanField(default=None)
 
+    def _get_save_path(self):
+        """
+        If saving the deed or legal code as a static file, this returns the
+        relative path where the saved file should be, not including the actual
+        filename.
+
+        ported Licenses 3.0 and earlier
+            Formula
+                CATEGORY/UNIT/VERSION/JURISDICTION
+            Examples
+                licenses/by/3.0/am
+                licenses/by-nc/3.0/pl
+                licenses/by-nc-nd/2.5/au
+                licenses/by-nc-sa/2.5/ch
+                licenses/by/2.1/es
+                licenses/by-nc/2.1/jp
+                licenses/by/2.0/kr
+                licenses/nd-nc/1.0/fi
+
+        unported Licenses 3.0, Licenses 4.0, and Public Domain:
+            Formula
+                CATEGORY/UNIT/VERSION
+            Examples
+                publicdomain/zero/1.0
+                licenses/by-nc-nd/4.0/
+                licenses/by-nc-sa/4.0/
+                licenses/by-nc/4.0/
+                licenses/by-nd/4.0/
+                licenses/by-sa/4.0/
+                licenses/by/4.0/
+        """
+
+        unit = self.unit.lower()
+        if self.jurisdiction_code:
+            # ported Licenses 3.0 and earlier
+            return os.path.join(
+                self.category,  # licenses or publicdomain
+                unit,  # ex. by, by-nc-nd
+                self.version,  # ex. 1.0, 2.0
+                self.jurisdiction_code,  # ex. ca, tw
+            )
+        else:
+            # unported Licenses 3.0, Licenses 4.0, and Public Domain:
+            return os.path.join(
+                self.category,  # licenses or publicdomain
+                unit,  # ex. by, by-nc-nd, zero
+                self.version,  # ex. 1.0, 4.0
+            )
+
     class Meta:
         ordering = ["-version", "unit", "jurisdiction_code"]
 
     def __str__(self):
         return f"Tool<{self.unit},{self.version}," f"{self.jurisdiction_code}>"
+
+    def __lt__(self, other):
+        """Magic method to support sorting"""
+        return (
+            self.category,
+            self.unit,
+            self.version,
+            self.jurisdiction_code,
+        ) < (
+            other.category,
+            other.unit,
+            other.version,
+            other.jurisdiction_code,
+        )
+
+    def get_legal_code_for_language_code(self, language_code):
+        """
+        Return the LegalCode object for this tool and language.
+        """
+        if not language_code:
+            language_code = translation.get_language()
+        try:
+            return self.legal_codes.get(language_code=language_code)
+        except LegalCode.DoesNotExist as e:
+            e.args = (f"{e.args[0]} language_code={language_code}",)
+            raise
 
     def get_metadata(self):
         """
@@ -602,6 +620,71 @@ class Tool(models.Model):
         data["version"] = self.version
         return data
 
+    def get_publish_files(self, language_code):
+        """
+        1. Generate list of symlinks to ensure expected URLs function
+           correctly.
+        2. Generate list of redirects to ensure languages are reachable given
+           different language code formats and character case.
+        """
+        juris_code = self.jurisdiction_code
+        language_default = get_default_language_for_jurisdiction(juris_code)
+        filename = f"deed.{language_code}.html"
+        title = "DEED TITLE (#FIXME)"
+
+        # Relative path
+        relpath = os.path.join(self._get_save_path(), filename)
+
+        # Symlinks
+        symlinks = []
+        if language_code == language_default:
+            # Symlink default languages
+            symlinks.append("deed.html")
+            symlinks.append("index.html")
+
+        # Redirects
+        redirect_codes = map_django_to_redirects_language_codes_lowercase(
+            language_code
+        )
+        if self.deed_only:
+            redirect_codes.append(language_default)
+        redirects_data = []
+        for redirect_code in redirect_codes:
+            redirect_file = os.path.join(
+                self._get_save_path(), f"deed.{redirect_code}.html"
+            )
+            destination = f"deed.{language_code}"
+            redirects_data.append(
+                {
+                    "redirect_file": redirect_file,
+                    "title": title,
+                    "destination": destination,
+                    "language_code": language_code,
+                }
+            )
+
+        return [relpath, symlinks, redirects_data]
+
+    def get_redirect_pairs(self, language_code):
+        """
+        Get a list of pairs (list with two items):
+        1. document path with redirect language code
+        2. document path with correct Django language code
+        """
+        filename = f"deed.{language_code}"
+        relpath = os.path.join(self._get_save_path(), filename)
+        redirect_pairs = []
+        for redirect_code in map_django_to_redirects_language_codes(
+            language_code
+        ):
+            redirect_name = f"deed.{redirect_code}"
+            redirect_relpath = os.path.join(
+                self._get_save_path(), redirect_name
+            )
+            redirect_pairs.append([redirect_relpath, relpath])
+        redirect_pairs.sort(key=lambda x: x[0], reverse=True)
+        return redirect_pairs
+
     def logos(self):
         """
         Return an iterable of the codes for the logos that should be
@@ -620,18 +703,6 @@ class Tool(models.Model):
             if not self.permits_derivative_works:
                 result.append("cc-nd")
         return result
-
-    def get_legal_code_for_language_code(self, language_code):
-        """
-        Return the LegalCode object for this tool and language.
-        """
-        if not language_code:
-            language_code = translation.get_language()
-        try:
-            return self.legal_codes.get(language_code=language_code)
-        except LegalCode.DoesNotExist as e:
-            e.args = (f"{e.args[0]} language_code={language_code}",)
-            raise
 
     @property
     def resource_name(self):

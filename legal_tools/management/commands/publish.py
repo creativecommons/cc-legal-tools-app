@@ -8,15 +8,14 @@ from shutil import copyfile, rmtree
 # Third-party
 import git
 from django.conf import settings
-from django.core.management import BaseCommand, CommandError
-from django.http.response import Http404
+from django.core.management import BaseCommand, CommandError, call_command
 from django.urls import reverse
 
 # First-party/Local
 from i18n import DEFAULT_CSV_FILE
 from i18n.utils import write_transstats_csv
 from legal_tools.git_utils import commit_and_push_changes, setup_local_branch
-from legal_tools.models import LegalCode, TranslationBranch
+from legal_tools.models import LegalCode, TranslationBranch, build_path
 from legal_tools.utils import (
     init_utils_logger,
     relative_symlink,
@@ -32,9 +31,9 @@ LOG_LEVELS = {
     2: logging.INFO,
     3: logging.DEBUG,
 }
-# RE: .nojekyll:
+# .nojekyll:
 # https://github.blog/2009-12-29-bypassing-jekyll-on-github-pages/
-# RE: CNAME
+# CNAME
 # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
 DOCS_IGNORE = [".nojekyll", "CNAME"]
 
@@ -108,10 +107,15 @@ class Command(BaseCommand):
             else:
                 os.remove(item)
 
-    def check_static_files(self):
-        if not os.path.isdir(settings.STATIC_ROOT):
-            e = "Static source directory does not exist, run collectstatic"
-            raise CommandError(e)
+    def call_collectstatic(self):
+        LOG.info("Collecting static files")
+        call_command("collectstatic", interactive=False)
+
+    def wrap_relative_symlink(self, output_dir, relpath, symlink):
+        try:
+            relative_symlink(output_dir, relpath, symlink)
+        except FileExistsError as e:
+            raise CommandError(f"[Errno {e.errno}] {e.strerror}: {relpath}")
 
     def write_robots_txt(self):
         """Create robots.txt to discourage indexing."""
@@ -154,7 +158,7 @@ class Command(BaseCommand):
                 )
             relpath = f"{category}/list.{settings.LANGUAGE_CODE}.html"
             symlink = "list.html"
-            relative_symlink(output_dir, relpath, symlink)
+            self.wrap_relative_symlink(output_dir, relpath, symlink)
 
     def write_legal_tools(self):
         hostname = socket.gethostname()
@@ -163,35 +167,19 @@ class Command(BaseCommand):
         legal_codes = LegalCode.objects.validgroups()
         redirect_pairs = []
         for group in legal_codes.keys():
+            tools = set()
             LOG.debug(f"{hostname}:{output_dir}")
             LOG.info(f"Writing {group}")
+            # Legal Code
             for legal_code in legal_codes[group]:
-                # deed
-                try:
-                    (
-                        relpath,
-                        symlinks,
-                        redirects_data,
-                    ) = legal_code.get_publish_files("deed")
-                    save_url_as_static_file(
-                        output_dir,
-                        url=legal_code.deed_url,
-                        relpath=relpath,
-                    )
-                    for symlink in symlinks:
-                        relative_symlink(output_dir, relpath, symlink)
-                    for redirect_data in redirects_data:
-                        save_redirect(output_dir, redirect_data)
-                    redirect_pairs += legal_code.get_redirect_pairs("deed")
-                except Http404 as e:
-                    if "invalid language" not in str(e):
-                        raise
+                # Deed prep
+                tools.add(legal_code.tool)
                 # legalcode
                 (
                     relpath,
                     symlinks,
                     redirects_data,
-                ) = legal_code.get_publish_files("legalcode")
+                ) = legal_code.get_publish_files()
                 if relpath:
                     # Deed-only tools will not return a legal code relpath
                     save_url_as_static_file(
@@ -200,10 +188,31 @@ class Command(BaseCommand):
                         relpath=relpath,
                     )
                 for symlink in symlinks:
-                    relative_symlink(output_dir, relpath, symlink)
+                    self.wrap_relative_symlink(output_dir, relpath, symlink)
                 for redirect_data in redirects_data:
                     save_redirect(output_dir, redirect_data)
-                redirect_pairs += legal_code.get_redirect_pairs("legalcode")
+                redirect_pairs += legal_code.get_redirect_pairs()
+
+            # Deed
+            for tool in tools:
+                for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+                    (
+                        relpath,
+                        symlinks,
+                        redirects_data,
+                    ) = tool.get_publish_files(language_code)
+                    save_url_as_static_file(
+                        output_dir,
+                        url=build_path(tool.base_url, "deed", language_code),
+                        relpath=relpath,
+                    )
+                    for symlink in symlinks:
+                        self.wrap_relative_symlink(
+                            output_dir, relpath, symlink
+                        )
+                    for redirect_data in redirects_data:
+                        save_redirect(output_dir, redirect_data)
+                    redirect_pairs += tool.get_redirect_pairs(language_code)
 
         redirect_pairs.sort(key=lambda x: x[0], reverse=True)
         widths = [max(map(len, map(str, col))) for col in zip(*redirect_pairs)]
@@ -389,7 +398,7 @@ class Command(BaseCommand):
 
     def distill_and_copy(self):
         self.purge_output_dir()
-        self.check_static_files()
+        self.call_collectstatic()
         self.write_robots_txt()
         self.copy_wp_content_files()
         self.write_dev_index()
