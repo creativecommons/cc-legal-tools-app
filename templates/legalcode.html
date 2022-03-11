@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load bidi i18n static %}
 
-{% block title %}{{ legal_code.title }} Legal Code &mdash; Creative Commons{% endblock %}
+{% block title %}{{ tool.identifier }} {% trans "Legal Code" %} &mdash; {{ tool_title }} &mdash; Creative Commons{% endblock %}
 {% block head_extra %}
 <style>
   #legal-code-body {

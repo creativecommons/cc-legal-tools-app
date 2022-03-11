@@ -2,7 +2,7 @@
 {% load i18n license_tags static %}
 
 {% block head_about %}{{ tool.base_url }}{% endblock %}
-{% block title %}{{ tool_name }} {{ tool.version }} {% trans "Deed" %} &mdash; Creative Commons{% endblock %}
+{% block title %}{{ tool.identifier }} {% trans "Deed" %} &mdash; {{ tool_title }} &mdash; Creative Commons{% endblock %}
 {% block head_extra %}
 <style>
   #deed-body {
@@ -27,7 +27,7 @@
 {% block body_typeof %}cc:License{% endblock %}
 
 {% block active-breadcrumb-li %}
-<li class="is-active"><a href="{{ request.path }}" aria-current="page displayed">{{ tool_name }} {{ tool.version }} {% trans "Deed" %}</a></li>
+<li class="is-active"><a href="{{ request.path }}" aria-current="page displayed">{{ tool.identifier }} {% trans "Deed" %}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}

@@ -53,6 +53,13 @@ def get_category_and_category_title(category=None, tool=None):
     return category, category_title
 
 
+def get_tool_title(tool):
+    tool_name = UNIT_NAMES.get(tool.unit, "UNIMPLEMENTED")
+    jurisdiction_name = get_jurisdiction_name(tool.category, tool.unit, tool.version, tool.jurisdiction_code)
+    tool_title = f"{tool_name} {tool.version} {jurisdiction_name}"
+    return tool_title
+
+
 def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
     languages_and_links = []
 
@@ -415,8 +422,9 @@ def view_deed(
         legal_code.legal_code_url, path_start
     )
 
+
     tool = legal_code.tool
-    tool_name = UNIT_NAMES[tool.unit]
+    tool_title = get_tool_title(tool)
 
     category, category_title = get_category_and_category_title(
         category,
@@ -451,7 +459,7 @@ def view_deed(
             "languages_and_links": languages_and_links,
             "legal_code_rel_path": legal_code_rel_path,
             "tool": tool,
-            "tool_name": tool_name,
+            "tool_title": tool_title,
         },
     )
     html_response.content = bytes(
@@ -473,8 +481,12 @@ def view_legal_code(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
+    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        translation.activate(language_code)
+
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
+
     # NOTE: plaintext functionality disabled
     # if is_plain_text:
     #     legal_code = get_object_or_404(
@@ -486,12 +498,15 @@ def view_legal_code(
     #         LegalCode,
     #         legal_code_url=request.path,
     #     )
+
     legal_code = get_object_or_404(
         LegalCode,
         legal_code_url=request.path,
     )
 
     tool = legal_code.tool
+    tool_title = get_tool_title(tool)
+
     category, category_title = get_category_and_category_title(
         category,
         tool,
@@ -522,6 +537,7 @@ def view_legal_code(
             "languages_and_links": languages_and_links,
             "legal_code": legal_code,
             "tool": tool,
+            "tool_title": tool_title,
         },
     )
 
