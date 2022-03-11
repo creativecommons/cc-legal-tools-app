@@ -332,7 +332,9 @@ def get_jurisdiction_name(category, unit, version, jurisdiction_code):
             jurisdiction_code = "=l30"
 
     jurisdiction_default = JURISDICTION_NAMES.get("")
-    jurisdiction_name = JURISDICTION_NAMES.get(jurisdiction_code, jurisdiction_default)
+    jurisdiction_name = JURISDICTION_NAMES.get(
+        jurisdiction_code, jurisdiction_default
+    )
 
     return jurisdiction_name
 
