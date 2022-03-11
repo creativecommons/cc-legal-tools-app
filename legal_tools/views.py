@@ -55,7 +55,9 @@ def get_category_and_category_title(category=None, tool=None):
 
 def get_tool_title(tool):
     tool_name = UNIT_NAMES.get(tool.unit, "UNIMPLEMENTED")
-    jurisdiction_name = get_jurisdiction_name(tool.category, tool.unit, tool.version, tool.jurisdiction_code)
+    jurisdiction_name = get_jurisdiction_name(
+        tool.category, tool.unit, tool.version, tool.jurisdiction_code
+    )
     tool_title = f"{tool_name} {tool.version} {jurisdiction_name}"
     return tool_title
 
@@ -421,7 +423,6 @@ def view_deed(
     legal_code_rel_path = os.path.relpath(
         legal_code.legal_code_url, path_start
     )
-
 
     tool = legal_code.tool
     tool_title = get_tool_title(tool)
