@@ -588,6 +588,19 @@ class ToolModelTest(TestCase):
         self.assertFalse(ToolFactory(unit="xyz").sa)
         self.assertTrue(ToolFactory(unit="xyz-sa").sa)
 
+    def test__lt__sort(self):
+        TF = ToolFactory
+        tools = [
+            TF(category="a", unit="a", version="1", jurisdiction_code="a"),
+            TF(category="a", unit="c", version="1", jurisdiction_code="b"),
+            TF(category="b", unit="a", version="1", jurisdiction_code="a"),
+            TF(category="b", unit="b", version="1", jurisdiction_code="b"),
+            TF(category="c", unit="a", version="1", jurisdiction_code="a"),
+            TF(category="c", unit="a", version="1", jurisdiction_code="b"),
+        ]
+        self.assertNotEqual(tools, sorted(tools, reverse=True))
+        self.assertEqual(tools, sorted(sorted(tools, reverse=True)))
+
     def test_get_metadata(self):
         # Ported
         tool = ToolFactory(
