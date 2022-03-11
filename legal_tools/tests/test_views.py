@@ -738,13 +738,16 @@ class ViewLegalCodeTest(TestCase):
         self.assertContains(rsp, f'lang="{language_code}"')
         self.assertEqual(lc, context["legal_code"])
 
+    @override_settings(
+        LANGUAGES_MOSTLY_TRANSLATED=["ar", settings.LANGUAGE_CODE],
+    )
     def test_view_legal_code(self):
         tool = ToolFactory(
             category="licenses",
             base_url="https://creativecommons.org/licenses/by/4.0/",
             version="4.0",
         )
-        for language_code in ["es", "ar", settings.LANGUAGE_CODE]:
+        for language_code in ["ar", "es", settings.LANGUAGE_CODE]:
             lc = LegalCodeFactory(
                 tool=tool,
                 language_code=language_code,
