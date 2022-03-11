@@ -191,6 +191,30 @@ JURISDICTION_NAMES = {
     "vn": gettext_lazy("Vietnam"),
     "za": gettext_lazy("South Africa"),
 }
+UNIT_NAMES = {
+    "by": gettext_lazy("Attribution"),
+    "by-nc": gettext_lazy("Attribution-NonCommercial"),
+    "by-nc-nd": gettext_lazy("Attribution-NonCommercial-NoDerivs"),
+    "by-nc-sa": gettext_lazy("Attribution-NonCommercial-ShareAlike"),
+    "by-nd": gettext_lazy("Attribution-NoDerivs"),
+    "by-nd-nc": gettext_lazy("Attribution-NoDerivs-NonCommercial"),
+    "by-sa": gettext_lazy("Attribution-ShareAlike"),
+    "certification": gettext_lazy(
+        "Copyright-Only Dedication (based on United States law) or Public"
+        " Domain Certification"
+    ),
+    "devnations": gettext_lazy("Developing Nations"),
+    "mark": gettext_lazy("Public Domain Mark"),
+    "nc": gettext_lazy("NonCommercial"),
+    "nc-sa": gettext_lazy("NonCommercial-ShareAlike"),
+    "nc-sampling+": gettext_lazy("NonCommercial Sampling Plus"),
+    "nd": gettext_lazy("NoDerivs"),
+    "nd-nc": gettext_lazy("NoDerivs-NonCommercial"),
+    "sa": gettext_lazy("ShareAlike"),
+    "sampling": gettext_lazy("Sampling"),
+    "sampling+": gettext_lazy("Sampling Plus"),
+    "zero": "CC0",  # Historically this hass not been translated
+}
 LANGUAGE_CODE_REGEX_STRING = r"[a-z-]*"
 LANGMAP_DJANGO_TO_REDIRECTS = {
     # Django language code: List of language codes that should redirect to it
