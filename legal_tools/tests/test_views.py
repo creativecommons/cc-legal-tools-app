@@ -1,4 +1,5 @@
 # Standard library
+import os.path
 from unittest import mock
 
 # Third-party
@@ -381,8 +382,8 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         ToolFactory()
         for tool in Tool.objects.filter(version="4.0"):
             with self.subTest(tool.identifier):
-                # Test in English and for 4.0 since that's how we've set up the
-                # strings to test for
+                # Test in English and for 4.0 since that's how we've set up
+                # the strings to test for
                 url = build_path(
                     base_url=tool.base_url,
                     document="deed",
@@ -393,6 +394,7 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
                 self.validate_deed_text(rsp, tool)
 
     def test_deed_translation_by_40_es(self):
+        # Test with valid Deed & UX and valid Legal Code translations
         legal_code = LegalCode.objects.filter(
             tool__unit="by",
             tool__version="4.0",
@@ -413,6 +415,35 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         self.assertContains(rsp, "Atribución")
         self.assertContains(rsp, "No hay restricciones adicionales")
         self.assertContains(rsp, "Avisos")
+
+    def test_deed_translation_by_40_gl(self):
+        # Test with valid Deed & UX and *invalid* Legal Code translations
+        language_code = "gl"
+        tool = Tool.objects.filter(
+            unit="by",
+            version="4.0",
+        )[0]
+        url = os.path.join(
+            "/",
+            tool.category,
+            tool.unit,
+            tool.version,
+            f"deed.{language_code}",
+        )
+        rsp = self.client.get(url)
+        text = rsp.content.decode("utf-8")
+        self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
+        if (
+            "INVALID_VARIABLE" in text
+        ):  # Some unresolved variable in the template
+            msgs = ["INVALID_VARIABLE in output"]
+            for line in text.splitlines():
+                if "INVALID_VARIABLE" in line:
+                    msgs.append(line)
+            self.fail("\n".join(msgs))
+        self.assertContains(rsp, "Atribución")
+        self.assertContains(rsp, "Sen restricións adicionais")
+        self.assertContains(rsp, "Notas")
 
     def test_view_deed_template_body_tools(self):
         lc = LegalCode.objects.filter(tool__unit="by")[0]
