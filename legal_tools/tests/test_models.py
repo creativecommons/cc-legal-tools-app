@@ -293,45 +293,6 @@ class LegalCodeModelTest(TestCase):
     # get_publish_files BY-NC-ND 4.0 #########################################
     # BY-NC-ND 4.0 is an international license with multiple languages
 
-    def test_get_publish_files_by_nc_nd4_deed_en(self):
-        legal_code = LegalCodeFactory(
-            tool__category="licenses",
-            tool__unit="by-nc-nd",
-            tool__version="4.0",
-            language_code="en",
-        )
-
-        returned_list = legal_code.get_publish_files("deed")
-
-        self.assertEqual(
-            [
-                # relpath
-                "licenses/by-nc-nd/4.0/deed.en.html",
-                # symlinks
-                ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.en_us.html"
-                        ),
-                        "title": "",
-                    },
-                ],
-            ],
-            returned_list,
-        )
-
     def test_get_publish_files_by_nc_nd4_legal_code_en(self):
         legal_code = LegalCodeFactory(
             tool__category="licenses",
@@ -340,7 +301,7 @@ class LegalCodeModelTest(TestCase):
             language_code="en",
         )
 
-        returned_list = legal_code.get_publish_files("legalcode")
+        returned_list = legal_code.get_publish_files()
 
         self.assertEqual(
             [
@@ -371,45 +332,6 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
-    def test_get_publish_files_by_nc_nd_4_deed_zh_hant(self):
-        legal_code = LegalCodeFactory(
-            tool__category="licenses",
-            tool__unit="by-nc-nd",
-            tool__version="4.0",
-            language_code="zh-hant",
-        )
-
-        returned_list = legal_code.get_publish_files("deed")
-
-        self.assertEqual(
-            [
-                # relpath
-                "licenses/by-nc-nd/4.0/deed.zh-hant.html",
-                # symlinks
-                [],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.zh-hant",
-                        "language_code": "zh-hant",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.zh-tw.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "deed.zh-hant",
-                        "language_code": "zh-hant",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.zh_tw.html"
-                        ),
-                        "title": "",
-                    },
-                ],
-            ],
-            returned_list,
-        )
-
     def test_get_publish_files_by_nc_nd_4_legal_code_zh_hant(self):
         legal_code = LegalCodeFactory(
             tool__category="licenses",
@@ -418,7 +340,7 @@ class LegalCodeModelTest(TestCase):
             language_code="zh-hant",
         )
 
-        returned_list = legal_code.get_publish_files("legalcode")
+        returned_list = legal_code.get_publish_files()
 
         self.assertEqual(
             [
@@ -452,46 +374,6 @@ class LegalCodeModelTest(TestCase):
     # get_publish_files BY-NC 3.0 CA #########################################
     # BY-NC 3.0 CA is a ported license with multiple languages
 
-    def test_get_publish_files_by_nc3_deed_ca_en(self):
-        legal_code = LegalCodeFactory(
-            tool__category="licenses",
-            tool__jurisdiction_code="ca",
-            tool__unit="by-nc",
-            tool__version="3.0",
-            language_code="en",
-        )
-
-        returned_list = legal_code.get_publish_files("deed")
-
-        self.assertEqual(
-            [
-                # relpath
-                "licenses/by-nc/3.0/ca/deed.en.html",
-                # symlinks
-                ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc/3.0/ca/deed.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc/3.0/ca/deed.en_us.html"
-                        ),
-                        "title": "",
-                    },
-                ],
-            ],
-            returned_list,
-        )
-
     def test_get_publish_files_by_nc3_legal_code_ca_en(self):
         legal_code = LegalCodeFactory(
             tool__category="licenses",
@@ -501,7 +383,7 @@ class LegalCodeModelTest(TestCase):
             language_code="en",
         )
 
-        returned_list = legal_code.get_publish_files("legalcode")
+        returned_list = legal_code.get_publish_files()
 
         self.assertEqual(
             [
@@ -535,29 +417,6 @@ class LegalCodeModelTest(TestCase):
     # get_publish_files BY-SA 3.0 AM #########################################
     # BY-SA 3.0 AM is a ported license with a single language
 
-    def test_get_publish_files_by_sa3_deed_am_hy(self):
-        legal_code = LegalCodeFactory(
-            tool__category="licenses",
-            tool__jurisdiction_code="am",
-            tool__unit="by-sa",
-            tool__version="3.0",
-            language_code="hy",
-        )
-
-        returned_list = legal_code.get_publish_files("deed")
-
-        self.assertEqual(
-            [
-                # relpath
-                "licenses/by-sa/3.0/am/deed.hy.html",
-                # symlinks
-                ["deed.html", "index.html"],
-                # redirects_data
-                [],
-            ],
-            returned_list,
-        )
-
     def test_get_publish_files_by_sa3_legal_code_am_hy(self):
         legal_code = LegalCodeFactory(
             tool__category="licenses",
@@ -567,7 +426,7 @@ class LegalCodeModelTest(TestCase):
             language_code="hy",
         )
 
-        returned_list = legal_code.get_publish_files("legalcode")
+        returned_list = legal_code.get_publish_files()
 
         self.assertEqual(
             [
@@ -581,47 +440,8 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
-    # get_publish_files CC0 1.0 ##############################################
+    # LegalCode.get_publish_files CC0 1.0 ####################################
     # CC0 1.0 is an unported declaration with multiple languages
-
-    def test_get_publish_files_zero_deed_en(self):
-        legal_code = LegalCodeFactory(
-            tool__category="publicdomain",
-            tool__unit="zero",
-            tool__version="1.0",
-            language_code="en",
-        )
-
-        returned_list = legal_code.get_publish_files("deed")
-
-        self.assertEqual(
-            [
-                # relpath
-                "publicdomain/zero/1.0/deed.en.html",
-                # symlinks
-                ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/zero/1.0/deed.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/zero/1.0/deed.en_us.html"
-                        ),
-                        "title": "",
-                    },
-                ],
-            ],
-            returned_list,
-        )
 
     def test_get_publish_files_zero_legal_code_en(self):
         legal_code = LegalCodeFactory(
@@ -631,7 +451,7 @@ class LegalCodeModelTest(TestCase):
             language_code="en",
         )
 
-        returned_list = legal_code.get_publish_files("legalcode")
+        returned_list = legal_code.get_publish_files()
 
         self.assertEqual(
             [
@@ -662,7 +482,7 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
-    def test_get_publish_files_zero_deed_nl(self):
+    def test_get_publish_files_zero_legal_code_nl(self):
         legal_code = LegalCodeFactory(
             tool__category="publicdomain",
             tool__unit="zero",
@@ -670,12 +490,12 @@ class LegalCodeModelTest(TestCase):
             language_code="nl",
         )
 
-        returned_list = legal_code.get_publish_files("deed")
+        returned_list = legal_code.get_publish_files()
 
         self.assertEqual(
             [
                 # relpath
-                "publicdomain/zero/1.0/deed.nl.html",
+                "publicdomain/zero/1.0/legalcode.nl.html",
                 # symlinks
                 [],
                 # redirects_data
@@ -687,7 +507,7 @@ class LegalCodeModelTest(TestCase):
     # get_publish_files Mark 1.0 #############################################
     # Mark 1.0 is an unported deed-only declaration
 
-    def test_get_publish_files_mark_deed(self):
+    def test_get_publish_files_mark_legal_code_en(self):
         legal_code = LegalCodeFactory(
             tool__category="publicdomain",
             tool__deed_only=True,
@@ -696,47 +516,7 @@ class LegalCodeModelTest(TestCase):
             language_code="en",
         )
 
-        returned_list = legal_code.get_publish_files("deed")
-
-        self.assertEqual(
-            [
-                # relpath
-                "publicdomain/mark/1.0/deed.en.html",
-                # symlinks
-                ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/mark/1.0/deed.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/mark/1.0/deed.en_us.html"
-                        ),
-                        "title": "",
-                    },
-                ],
-            ],
-            returned_list,
-        )
-
-    def test_get_publish_files_mark_legal_code(self):
-        legal_code = LegalCodeFactory(
-            tool__category="publicdomain",
-            tool__deed_only=True,
-            tool__unit="mark",
-            tool__version="1.0",
-            language_code="en",
-        )
-
-        returned_list = legal_code.get_publish_files("legalcode")
+        returned_list = legal_code.get_publish_files()
 
         self.assertEqual(
             [
@@ -788,9 +568,9 @@ class LegalCodeModelTest(TestCase):
     def test_get_redirect_pairs_4(self):
         tool = ToolFactory(category="license", unit="by", version="4.0")
         legal_code = LegalCodeFactory(tool=tool, language_code="nl")
-        redirect_pairs = legal_code.get_redirect_pairs("deed")
+        redirect_pairs = legal_code.get_redirect_pairs()
         self.assertEqual(
-            [["license/by/4.0/deed.NL", "license/by/4.0/deed.nl"]],
+            [["license/by/4.0/legalcode.NL", "license/by/4.0/legalcode.nl"]],
             redirect_pairs,
         )
 
@@ -837,7 +617,7 @@ class ToolModelTest(TestCase):
 
         data = tool.get_metadata()
         expected_data = {
-            "jurisdiction_name": "UNDEFINED",
+            "jurisdiction_name": "Generic",
             "unit": "by-nc",
             "permits_derivative_works": False,
             "permits_distribution": True,
@@ -1001,6 +781,282 @@ class ToolModelTest(TestCase):
 
         for key in expected_data.keys():
             self.assertEqual(expected_data[key], data[key])
+
+    # get_publish_files BY-NC-ND 4.0 #########################################
+    # BY-NC-ND 4.0 is an international license with multiple languages
+
+    def test_get_publish_files_by_nc_nd4_deed_en(self):
+        language_code = "en"
+        tool = ToolFactory(
+            category="licenses",
+            unit="by-nc-nd",
+            version="4.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-nc-nd/4.0/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.en-us.html"
+                        ),
+                        "title": "Attribution-NonCommercial-NoDerivs",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.en_us.html"
+                        ),
+                        "title": "Attribution-NonCommercial-NoDerivs",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files BY-NC 3.0 CA #########################################
+    # BY-NC 3.0 CA is a ported license with multiple languages
+
+    def test_get_publish_files_by_nc3_deed_ca_en(self):
+        language_code = "en"
+        tool = ToolFactory(
+            category="licenses",
+            jurisdiction_code="ca",
+            unit="by-nc",
+            version="3.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-nc/3.0/ca/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc/3.0/ca/deed.en-us.html"
+                        ),
+                        "title": "Attribution-NonCommercial",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "licenses/by-nc/3.0/ca/deed.en_us.html"
+                        ),
+                        "title": "Attribution-NonCommercial",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files BY-NC-ND 4.0 #########################################
+    # BY-NC-ND 4.0 is an international license with multiple languages
+
+    def test_get_publish_files_by_nc_nd_4_deed_zh_hant(self):
+        # English content is returned as translation.activate() is not used
+        language_code = "zh-hant"
+        tool = ToolFactory(
+            category="licenses",
+            unit="by-nc-nd",
+            version="4.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-nc-nd/4.0/deed.zh-hant.html",
+                # symlinks
+                [],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.zh-hant",
+                        "language_code": "zh-hant",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.zh-tw.html"
+                        ),
+                        "title": "Attribution-NonCommercial-NoDerivs",
+                    },
+                    {
+                        "destination": "deed.zh-hant",
+                        "language_code": "zh-hant",
+                        "redirect_file": (
+                            "licenses/by-nc-nd/4.0/deed.zh_tw.html"
+                        ),
+                        "title": "Attribution-NonCommercial-NoDerivs",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files BY-SA 3.0 AM #########################################
+    # BY-SA 3.0 AM is a ported license with a single language
+
+    def test_get_publish_files_by_sa3_deed_am_hy(self):
+        # English content is returned as translation.activate() is not used
+        language_code = "hy"
+        tool = ToolFactory(
+            category="licenses",
+            jurisdiction_code="am",
+            unit="by-sa",
+            version="3.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-sa/3.0/am/deed.hy.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files CC0 1.0 ##############################################
+    # CC0 1.0 is an unported declaration with multiple languages
+
+    def test_get_publish_files_zero_deed_en(self):
+        language_code = "en"
+        tool = ToolFactory(
+            category="publicdomain",
+            unit="zero",
+            version="1.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        self.assertEqual(
+            [
+                # relpath
+                "publicdomain/zero/1.0/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/zero/1.0/deed.en-us.html"
+                        ),
+                        "title": "CC0",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/zero/1.0/deed.en_us.html"
+                        ),
+                        "title": "CC0",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    # get_publish_files Mark 1.0 #############################################
+    # Mark 1.0 is an unported deed-only declaration
+
+    def test_get_publish_files_mark_deed_en(self):
+        language_code = "en"
+        tool = ToolFactory(
+            category="publicdomain",
+            deed_only=True,
+            unit="mark",
+            version="1.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        self.assertEqual(
+            [
+                # relpath
+                "publicdomain/mark/1.0/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+                # redirects_data
+                [
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/deed.en-us.html"
+                        ),
+                        "title": "Public Domain Mark",
+                    },
+                    {
+                        "destination": "deed.en",
+                        "language_code": "en",
+                        "redirect_file": (
+                            "publicdomain/mark/1.0/deed.en_us.html"
+                        ),
+                        "title": "Public Domain Mark",
+                    },
+                ],
+            ],
+            returned_list,
+        )
+
+    def test_get_publish_files_zero_deed_nl(self):
+        # English content is returned as translation.activate() is not used
+        language_code = "nl"
+        tool = ToolFactory(
+            category="publicdomain",
+            unit="zero",
+            version="1.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        self.assertEqual(
+            [
+                # relpath
+                "publicdomain/zero/1.0/deed.nl.html",
+                # symlinks
+                [],
+                # redirects_data
+                [],
+            ],
+            returned_list,
+        )
+
+    # get_redirect_pairs #####################################################
+
+    def test_get_redirect_pairs_4(self):
+        language_code = "nl"
+        tool = ToolFactory(category="license", unit="by", version="4.0")
+        redirect_pairs = tool.get_redirect_pairs(language_code)
+        self.assertEqual(
+            [["license/by/4.0/deed.NL", "license/by/4.0/deed.nl"]],
+            redirect_pairs,
+        )
+
+    # logos ##################################################################
 
     def test_logos(self):
         # Every tool includes "cc-logo"

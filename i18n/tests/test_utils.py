@@ -82,7 +82,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "International (unported)",
+            "Unported",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -99,7 +99,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -116,7 +116,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -133,7 +133,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -150,7 +150,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 

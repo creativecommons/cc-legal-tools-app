@@ -20,7 +20,6 @@ from legal_tools.views import (
     branch_status_helper,
     get_category_and_category_title,
     get_deed_rel_path,
-    get_legal_code_rel_path,
     normalize_path_and_lang,
     render_redirect,
 )
@@ -360,7 +359,6 @@ class ViewListTest(ToolsTestsMixin, TestCase):
 class DeedViewViewTest(ToolsTestsMixin, TestCase):
     def validate_deed_text(self, rsp, tool):
         self.assertEqual(200, rsp.status_code)
-        self.assertEqual("en", rsp.context["legal_code"].language_code)
         text = rsp.content.decode("utf-8")
         if (
             "INVALID_VARIABLE" in text
@@ -404,7 +402,6 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         rsp = self.client.get(url)
         text = rsp.content.decode("utf-8")
         self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
-        self.assertEqual("es", rsp.context["legal_code"].language_code)
         if (
             "INVALID_VARIABLE" in text
         ):  # Some unresolved variable in the template
@@ -469,17 +466,6 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed("includes/deed_body_unimplemented.html")
-
-    def test_get_legal_code_rel_path(self):
-        expected_legal_code_rel_path = "legalcode.en"
-        legal_code_rel_path = get_legal_code_rel_path(
-            legal_code_url="/legalcode.xx",
-            path_start="/",
-            language_code="xx",
-            language_default="en",
-            legal_code_languages=["en", "es"],
-        )
-        self.assertEqual(expected_legal_code_rel_path, legal_code_rel_path)
 
     def test_view_deed_invalid_language(self):
         lc = LegalCode.objects.filter(

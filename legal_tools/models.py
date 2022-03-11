@@ -647,8 +647,6 @@ class Tool(models.Model):
         redirect_codes = map_django_to_redirects_language_codes_lowercase(
             language_code
         )
-        if self.deed_only:
-            redirect_codes.append(language_default)
         redirects_data = []
         for redirect_code in redirect_codes:
             redirect_file = os.path.join(
