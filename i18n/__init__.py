@@ -119,9 +119,8 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "za": "en-gb",
 }
 JURISDICTION_NAMES = {
-    "": gettext_lazy("Unported"),
-    "<=l25": gettext_lazy("Generic (unported)"),
-    "=l30": gettext_lazy("International (unported)"),
+    "": gettext_lazy("Generic"),
+    "=l30": gettext_lazy("Unported"),
     "=l40": gettext_lazy("International"),
     "=p10": gettext_lazy("Universal"),
     "am": gettext_lazy("Armenia"),

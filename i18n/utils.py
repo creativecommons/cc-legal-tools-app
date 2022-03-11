@@ -330,10 +330,9 @@ def get_jurisdiction_name(category, unit, version, jurisdiction_code):
             jurisdiction_code = "=l40"
         elif version == "3.0":
             jurisdiction_code = "=l30"
-        else:
-            jurisdiction_code = "<=l25"
 
-    jurisdiction_name = JURISDICTION_NAMES.get(jurisdiction_code, "UNDEFINED")
+    jurisdiction_default = JURISDICTION_NAMES.get("")
+    jurisdiction_name = JURISDICTION_NAMES.get(jurisdiction_code, jurisdiction_default)
 
     return jurisdiction_name
 
