@@ -23,6 +23,7 @@ from django.db.models import Q
 from django.utils import translation
 
 # First-party/Local
+from i18n import UNIT_NAMES
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
@@ -630,7 +631,7 @@ class Tool(models.Model):
         juris_code = self.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
         filename = f"deed.{language_code}.html"
-        title = "DEED TITLE (#FIXME)"
+        title = UNIT_NAMES[self.unit]
 
         # Relative path
         relpath = os.path.join(self._get_save_path(), filename)

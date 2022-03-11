@@ -2,7 +2,7 @@
 {% load i18n license_tags static %}
 
 {% block head_about %}{{ tool.base_url }}{% endblock %}
-{% block title %}{{ legal_code.title }} Deed &mdash; Creative Commons{% endblock %}
+{% block title %}{{ tool_name }} {{ tool.version }} {% trans "Deed" %} &mdash; Creative Commons{% endblock %}
 {% block head_extra %}
 <style>
   #deed-body {
@@ -27,7 +27,7 @@
 {% block body_typeof %}cc:License{% endblock %}
 
 {% block active-breadcrumb-li %}
-<li class="is-active"><a href="{{ legal_code.deed_url }}" aria-current="page displayed">{{ legal_code.identifier }} {% trans "Deed" %}</a></li>
+<li class="is-active"><a href="{{ request.path }}" aria-current="page displayed">{{ tool_name }} {{ tool.version }} {% trans "Deed" %}</a></li>
 {% endblock %}
 
 {% block next_btn_section %}
@@ -56,7 +56,7 @@
       {% include 'includes/disclaimer_certification.html' %}
     {% endif %}
     <div class="columns margin-top-normal is-vcentered" >
-      {% if legal_code|is_one_of:"nc-sampling+,sampling,sampling+" %}
+      {% if "sampling" in tool.unit %}
         {% include 'includes/related_links.html' with show_sampling_deed=True %}
       {% else %}
         {% include 'includes/related_links.html' %}

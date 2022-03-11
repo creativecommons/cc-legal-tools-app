@@ -6,12 +6,12 @@
 
   <h3 class="b-header has-text-black padding-bottom-big padding-top-normal" style="font-weight: bold;">{% trans "You are free to:" %}</h3>
 
-  {% if legal_code|is_one_of:"devnations" %}
+  {% if tool.unit == "devnations" %}
 
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>to Share</strong> &mdash; to copy, distribute and transmit the work{% endblocktrans %}</p>
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>to Remix</strong> &mdash; to adapt the work{% endblocktrans %}</p>
 
-  {% elif legal_code|is_one_of:"nc-sampling+,sampling,sampling+" %}
+  {% elif "sampling" in tool.unit %}
 
     {% if tool.prohibits_commercial_use %}
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for noncommercial purposes.{% endblocktrans %}</p>
@@ -19,7 +19,7 @@
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for commercial or noncommercial purposes.{% endblocktrans %}</p>
     {% endif %}
 
-    {% if legal_code|is_one_of:"nc-sampling+,sampling+" %}
+    {% if "sampling+" in tool.unit %}
       <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To perform, display, and distribute copies of this whole work for noncommercial purposes (e.g., file-sharing or noncommercial webcasting).{% endblocktrans %}</p>
     {% endif %}
 
@@ -109,7 +109,7 @@
     </div>
   {% endif %}
 
-  {% if legal_code|is_one_of:"sampling,sampling+" %}
+  {% if tool.unit == "sampling" or tool.unit == "sampling+" %}
     <div class="column is-1">
       {# empty div because there is no icon, but we need spacing #}
     </div>
@@ -120,7 +120,7 @@
     </div>
   {% endif %}
 
-  {% if legal_code|is_one_of:"nc-sampling+,sampling,sampling+" %}
+  {% if "sampling" in tool.unit %}
     <div class="column is-1">
       {# empty div because there is no icon, but we need spacing #}
     </div>
@@ -131,7 +131,7 @@
     </div>
   {% endif %}
 
-  {% if legal_code|is_one_of:"sampling" %}
+  {% if tool.unit == "sampling" %}
     <div class="column is-1">
       {# empty div because there is no icon, but we need spacing #}
     </div>
