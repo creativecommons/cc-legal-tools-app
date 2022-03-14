@@ -14,6 +14,14 @@ def custom_page_not_found(request):
 
 
 urlpatterns = [
+    # Redirect cc-legal-tools/ to static/cc-legal-tools/
+    re_path(
+        r"^(?P<cc_legal_tools>cc-legal-tools/.*)",
+        RedirectView.as_view(
+            url="/static/%(cc_legal_tools)s", permanent=False
+        ),
+        name="static_cc_legal_tools_redirect",
+    ),
     # Redirect wp-content/ to static/wp-content/
     re_path(
         r"^(?P<wp_content>wp-content/.*)",

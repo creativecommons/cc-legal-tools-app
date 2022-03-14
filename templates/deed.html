@@ -4,23 +4,7 @@
 {% block head_about %}{{ tool.base_url }}{% endblock %}
 {% block title %}{{ tool.identifier }} {% trans "Deed" %} &mdash; {{ tool_title }} &mdash; Creative Commons{% endblock %}
 {% block head_extra %}
-<style>
-  #deed-body {
-    background-color: rgb(255, 255, 255);
-    border-top: 10px solid rgb(60, 92, 153);
-    border-bottom: 5px solid rgb(176, 176, 176);
-    border-left: 5px solid rgb(176, 176, 176);
-    border-right: 5px solid rgb(176, 176, 176);
-  }
-  /* Used by multiple includes */
-  #disclaimer-info-section {
-    color: #000 !important;
-  }
-  #disclaimer-info-section p:nth-child(n+1) {
-    /* padding for all but first paragraph */
-    padding-top: 1rem !important;
-  }
-</style>
+<link href="/cc-legal-tools/deed.css" rel="stylesheet"/>
 {% endblock %}
 
 {% block body_about %}{{ tool.base_url }}{% endblock %}

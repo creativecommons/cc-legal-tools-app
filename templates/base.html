@@ -23,52 +23,13 @@
     href="https://unpkg.com/@creativecommons/vocabulary-styles@0.3.0/dist/css/vocabulary-styles.css"
     rel="stylesheet"
   />
+  <link href="/cc-legal-tools/base.css" rel="stylesheet"/>
   <!-- Import Vue JS via CDN -->
   <script src="https://unpkg.com/vue@3.2.31/dist/vue.global.js"></script>
   <!-- Import Axios via CDN. Needed for the Global Header Component -->
   <script src="https://unpkg.com/axios@0.26.0/dist/axios.min.js"></script>
   <!-- Import the Component Library via CDN -->
   <script src="https://unpkg.com/@creativecommons/cc-global-components@0.5.0/dist/cc-globals.min.js"></script>
-  <style>
-    body {
-      background-color: rgb(245, 245, 245);
-    }
-    html[dir="rtl"] nav.breadcrumb>ul li+li:before {
-      transform: scaleX(-1);
-    }
-    html[dir="rtl"] .breadcrumb li:first-child a {
-      padding-right: 0;
-      padding-left: .5rem;
-    }
-    a.skip-link {
-      left:-999px;
-      position:absolute;
-      top:auto;
-      width:1px;
-      height:1px;
-      overflow:hidden;
-      z-index:-999;
-    }
-    a.skip-link:focus, a.skip-link:active {
-      color: black;
-      font-weight: bolder;
-      left: auto;
-      top: auto;
-      width: 30%;
-      height: auto;
-      overflow:auto;
-      margin: 10px 35%;
-      padding:5px;
-      background-color: rgb(255, 255, 255);
-      border-top: 10px solid rgb(60, 92, 153);
-      border-bottom: 5px solid rgb(176, 176, 176);
-      border-left: 5px solid rgb(176, 176, 176);
-      border-right: 5px solid rgb(176, 176, 176);
-      text-align:center;
-      font-size:1.2em;
-      z-index:999;
-    }
-  </style>
   {% block head_extra %}
   {% endblock %}
 </head>
@@ -95,23 +56,7 @@
     </section>
   </main>
   {% include 'includes/footer.html' %}
-
-  <script>
-    /* Import and use the Explore CC component */
-    const cc_explore = Vue.createApp({});
-    cc_explore.use(CcGlobals);
-    cc_explore.mount("#explore-cc");
-
-    /* Import and use the CC Global Header component */
-    const cc_header = Vue.createApp({});
-    cc_header.use(CcGlobals);
-    cc_header.mount("#header-cc");
-
-    /* Import and use the CC Global Footer component */
-    const cc_footer = Vue.createApp({});
-    cc_footer.use(CcGlobals);
-    cc_footer.mount("#footer-cc");
-  </script>
+  <script src="/cc-legal-tools/load_components.js"></script>
   {% block extra-js %}
   {% endblock %}
 </body>

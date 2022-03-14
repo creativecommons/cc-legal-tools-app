@@ -123,12 +123,32 @@ class Command(BaseCommand):
         robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
         save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
 
-    def copy_wp_content_files(self):
+    def copy_static_wp_content_files(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
         LOG.info("Copying WordPress content files")
         LOG.debug(f"{hostname}:{output_dir}")
         path = "wp-content/themes/creativecommons-base/assets/img"
+        source = os.path.join(
+            settings.PROJECT_ROOT,
+            "cc_legal_tools",
+            "static",
+            path,
+        )
+        destination = os.path.join(output_dir, path)
+        os.makedirs(destination, exist_ok=True)
+        for file_name in os.listdir(source):
+            copyfile(
+                os.path.join(source, file_name),
+                os.path.join(destination, file_name),
+            )
+
+    def copy_static_cc_legal_tools_files(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+        LOG.info("Copying static cc-legal-tools files")
+        LOG.debug(f"{hostname}:{output_dir}")
+        path = "cc-legal-tools"
         source = os.path.join(
             settings.PROJECT_ROOT,
             "cc_legal_tools",
@@ -400,7 +420,8 @@ class Command(BaseCommand):
         self.purge_output_dir()
         self.call_collectstatic()
         self.write_robots_txt()
-        self.copy_wp_content_files()
+        self.copy_static_wp_content_files()
+        self.copy_static_cc_legal_tools_files()
         self.copy_tools_rdfs()
         self.copy_meta_rdfs()
         self.copy_legal_code_plaintext()
