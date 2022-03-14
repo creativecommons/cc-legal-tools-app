@@ -123,6 +123,129 @@ class Command(BaseCommand):
         robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
         save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
 
+    def copy_wp_content_files(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+        LOG.info("Copying WordPress content files")
+        LOG.debug(f"{hostname}:{output_dir}")
+        path = "wp-content/themes/creativecommons-base/assets/img"
+        source = os.path.join(
+            settings.PROJECT_ROOT,
+            "cc_legal_tools",
+            "static",
+            path,
+        )
+        destination = os.path.join(output_dir, path)
+        os.makedirs(destination, exist_ok=True)
+        for file_name in os.listdir(source):
+            copyfile(
+                os.path.join(source, file_name),
+                os.path.join(destination, file_name),
+            )
+
+    def copy_tools_rdfs(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
+        tools_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
+        tools_rdfs = [
+            rdf_file
+            for rdf_file in os.listdir(tools_rdf_dir)
+            if os.path.isfile(os.path.join(tools_rdf_dir, rdf_file))
+        ]
+        tools_rdfs.sort()
+        LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Copying legal code RDFs")
+        for rdf in tools_rdfs:
+            if rdf.endswith(".rdf"):
+                name = rdf[:-4]
+            else:
+                continue
+            relative_name = os.path.join(*name.split("_"), "rdf")
+            dest_file = os.path.join(output_dir, relative_name)
+            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
+            copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
+            LOG.debug(f"    {relative_name}")
+
+    def copy_meta_rdfs(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
+        meta_rdf_dir = os.path.join(legacy_dir, "rdf-meta")
+        meta_files = [
+            meta_file
+            for meta_file in os.listdir(meta_rdf_dir)
+            if os.path.isfile(os.path.join(meta_rdf_dir, meta_file))
+        ]
+        meta_files.sort()
+        dest_dir = os.path.join(output_dir, "rdf")
+        os.makedirs(dest_dir, exist_ok=True)
+        LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Copying RDF information and metadata")
+        for meta_file in meta_files:
+            dest_relative = os.path.join("rdf", meta_file)
+            dest_full = os.path.join(output_dir, dest_relative)
+            LOG.debug(f"    {dest_relative}")
+            copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
+            if meta_file == "index.rdf":
+                os.makedirs(
+                    os.path.join(output_dir, "licenses"), exist_ok=True
+                )
+                dir_fd = os.open(output_dir, os.O_RDONLY)
+                symlink = os.path.join("licenses", meta_file)
+                try:
+                    os.symlink(f"../{dest_relative}", symlink, dir_fd=dir_fd)
+                    LOG.debug(f"   ^{symlink}")
+                finally:
+                    os.close(dir_fd)
+            elif meta_file == "ns.html":
+                dir_fd = os.open(output_dir, os.O_RDONLY)
+                symlink = meta_file
+                try:
+                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
+                    LOG.debug(f"   ^{symlink}")
+                finally:
+                    os.close(dir_fd)
+            elif meta_file == "schema.rdf":
+                dir_fd = os.open(output_dir, os.O_RDONLY)
+                symlink = meta_file
+                try:
+                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
+                    LOG.debug(f"   ^{symlink}")
+                finally:
+                    os.close(dir_fd)
+
+    def copy_legal_code_plaintext(self):
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
+        output_dir = self.output_dir
+        plaintext_dir = os.path.join(legacy_dir, "legalcode")
+        plaintext_files = [
+            text_file
+            for text_file in os.listdir(plaintext_dir)
+            if (
+                os.path.isfile(os.path.join(plaintext_dir, text_file))
+                and text_file.endswith(".txt")
+            )
+        ]
+        LOG.info("Copying plaintext legal code")
+        LOG.debug(f"{hostname}:{output_dir}")
+        for text in plaintext_files:
+            if text.startswith("by"):
+                context = "licenses"
+            else:
+                context = "publicdomain"
+            name = text[:-4]
+            relative_name = os.path.join(
+                context,
+                *name.split("_"),
+                "legalcode.txt",
+            )
+            dest_file = os.path.join(output_dir, relative_name)
+            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
+            copyfile(os.path.join(plaintext_dir, text), dest_file)
+            LOG.debug(f"    {relative_name}")
+
     def write_dev_index(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -256,129 +379,6 @@ class Command(BaseCommand):
                 relpath=relpath,
             )
 
-    def copy_tools_rdfs(self):
-        hostname = socket.gethostname()
-        legacy_dir = self.legacy_dir
-        output_dir = self.output_dir
-        tools_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
-        tools_rdfs = [
-            rdf_file
-            for rdf_file in os.listdir(tools_rdf_dir)
-            if os.path.isfile(os.path.join(tools_rdf_dir, rdf_file))
-        ]
-        tools_rdfs.sort()
-        LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Copying legal code RDFs")
-        for rdf in tools_rdfs:
-            if rdf.endswith(".rdf"):
-                name = rdf[:-4]
-            else:
-                continue
-            relative_name = os.path.join(*name.split("_"), "rdf")
-            dest_file = os.path.join(output_dir, relative_name)
-            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-            copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
-            LOG.debug(f"    {relative_name}")
-
-    def copy_meta_rdfs(self):
-        hostname = socket.gethostname()
-        legacy_dir = self.legacy_dir
-        output_dir = self.output_dir
-        meta_rdf_dir = os.path.join(legacy_dir, "rdf-meta")
-        meta_files = [
-            meta_file
-            for meta_file in os.listdir(meta_rdf_dir)
-            if os.path.isfile(os.path.join(meta_rdf_dir, meta_file))
-        ]
-        meta_files.sort()
-        dest_dir = os.path.join(output_dir, "rdf")
-        os.makedirs(dest_dir, exist_ok=True)
-        LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Copying RDF information and metadata")
-        for meta_file in meta_files:
-            dest_relative = os.path.join("rdf", meta_file)
-            dest_full = os.path.join(output_dir, dest_relative)
-            LOG.debug(f"    {dest_relative}")
-            copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
-            if meta_file == "index.rdf":
-                os.makedirs(
-                    os.path.join(output_dir, "licenses"), exist_ok=True
-                )
-                dir_fd = os.open(output_dir, os.O_RDONLY)
-                symlink = os.path.join("licenses", meta_file)
-                try:
-                    os.symlink(f"../{dest_relative}", symlink, dir_fd=dir_fd)
-                    LOG.debug(f"   ^{symlink}")
-                finally:
-                    os.close(dir_fd)
-            elif meta_file == "ns.html":
-                dir_fd = os.open(output_dir, os.O_RDONLY)
-                symlink = meta_file
-                try:
-                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-                    LOG.debug(f"   ^{symlink}")
-                finally:
-                    os.close(dir_fd)
-            elif meta_file == "schema.rdf":
-                dir_fd = os.open(output_dir, os.O_RDONLY)
-                symlink = meta_file
-                try:
-                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-                    LOG.debug(f"   ^{symlink}")
-                finally:
-                    os.close(dir_fd)
-
-    def copy_legal_code_plaintext(self):
-        hostname = socket.gethostname()
-        legacy_dir = self.legacy_dir
-        output_dir = self.output_dir
-        plaintext_dir = os.path.join(legacy_dir, "legalcode")
-        plaintext_files = [
-            text_file
-            for text_file in os.listdir(plaintext_dir)
-            if (
-                os.path.isfile(os.path.join(plaintext_dir, text_file))
-                and text_file.endswith(".txt")
-            )
-        ]
-        LOG.info("Copying plaintext legal code")
-        LOG.debug(f"{hostname}:{output_dir}")
-        for text in plaintext_files:
-            if text.startswith("by"):
-                context = "licenses"
-            else:
-                context = "publicdomain"
-            name = text[:-4]
-            relative_name = os.path.join(
-                context,
-                *name.split("_"),
-                "legalcode.txt",
-            )
-            dest_file = os.path.join(output_dir, relative_name)
-            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-            copyfile(os.path.join(plaintext_dir, text), dest_file)
-            LOG.debug(f"    {relative_name}")
-
-    def copy_wp_content_files(self):
-        hostname = socket.gethostname()
-        output_dir = self.output_dir
-        LOG.info("Copying WordPress content files")
-        LOG.debug(f"{hostname}:{output_dir}")
-        path = "wp-content/themes/creativecommons-base/assets/img"
-        source = os.path.join(
-            settings.PROJECT_ROOT,
-            "cc_legal_tools",
-            "static",
-            path,
-        )
-        destination = os.path.join(output_dir, path)
-        os.makedirs(destination, exist_ok=True)
-        for file_name in os.listdir(source):
-            copyfile(
-                os.path.join(source, file_name),
-                os.path.join(destination, file_name),
-            )
-
     def run_write_transstats_csv(self):
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
@@ -401,12 +401,12 @@ class Command(BaseCommand):
         self.call_collectstatic()
         self.write_robots_txt()
         self.copy_wp_content_files()
-        self.write_dev_index()
-        self.write_lists()
-        self.write_legal_tools()
         self.copy_tools_rdfs()
         self.copy_meta_rdfs()
         self.copy_legal_code_plaintext()
+        self.write_dev_index()
+        self.write_lists()
+        self.write_legal_tools()
         # self.run_write_transstats_csv()
         # self.write_metadata_yaml()
 
