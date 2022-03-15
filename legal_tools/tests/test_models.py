@@ -481,12 +481,21 @@ class LegalCodeModelTest(TestCase):
 
     # get_redirect_pairs #####################################################
 
-    def test_get_redirect_pairs_4(self):
-        tool = ToolFactory(category="license", unit="by", version="4.0")
-        legal_code = LegalCodeFactory(tool=tool, language_code="nl")
+    def test_get_redirect_pairs(self):
+        legal_code = LegalCodeFactory(
+            tool__category="license",
+            tool__unit="by",
+            tool__version="4.0",
+            language_code="en",
+        )
         redirect_pairs = legal_code.get_redirect_pairs()
         self.assertEqual(
-            [["license/by/4.0/legalcode.NL", "license/by/4.0/legalcode.nl"]],
+            [
+                [
+                    "/license/by/4[.]0/legalcode[.]en[@_-]us(?:[.]html)?",
+                    "/license/by/4.0/legalcode.en",
+                ],
+            ],
             redirect_pairs,
         )
 
@@ -877,12 +886,17 @@ class ToolModelTest(TestCase):
 
     # get_redirect_pairs #####################################################
 
-    def test_get_redirect_pairs_4(self):
-        language_code = "nl"
+    def test_get_redirect_pairs(self):
+        language_code = "zh-hant"
         tool = ToolFactory(category="license", unit="by", version="4.0")
         redirect_pairs = tool.get_redirect_pairs(language_code)
         self.assertEqual(
-            [["license/by/4.0/deed.NL", "license/by/4.0/deed.nl"]],
+            [
+                [
+                    "/license/by/4[.]0/deed[.]zh[@_-]tw(?:[.]html)?",
+                    "/license/by/4.0/deed.zh-hant",
+                ],
+            ],
             redirect_pairs,
         )
 

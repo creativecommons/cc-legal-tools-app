@@ -23,12 +23,12 @@ from django.db.models import Q
 from django.utils import translation
 
 # First-party/Local
+from i18n import LANGMAP_DJANGO_TO_PCRE
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
     get_pofile_path,
     get_translation_object,
-    map_django_to_redirects_language_codes,
 )
 from legal_tools.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 
@@ -304,26 +304,19 @@ class LegalCode(models.Model):
         return [relpath, symlinks, redirects_data]
 
     def get_redirect_pairs(self):
-        """
-        Get a list of pairs (list with two items):
-        1. document path with redirect language code
-        2. document path with correct Django language code
-        """
         language_code = self.language_code
         tool = self.tool
         filename = f"legalcode.{language_code}"
-        relpath = os.path.join(tool._get_save_path(), filename)
-        redirect_pairs = []
-        for redirect_code in map_django_to_redirects_language_codes(
-            language_code
-        ):
-            redirect_name = f"legalcode.{redirect_code}"
-            redirect_relpath = os.path.join(
-                tool._get_save_path(), redirect_name
+        dest_path = os.path.join("/", tool._get_save_path(), filename)
+        pairs = []
+        for pcre in LANGMAP_DJANGO_TO_PCRE.get(language_code, []):
+            pcre_match = os.path.join(
+                "/",
+                tool._get_save_path().replace(".", "[.]"),
+                f"legalcode[.]{pcre}(?:[.]html)?",
             )
-            redirect_pairs.append([redirect_relpath, relpath])
-        redirect_pairs.sort(key=lambda x: x[0], reverse=True)
-        return redirect_pairs
+            pairs.append([pcre_match, dest_path])
+        return pairs
 
     def has_english(self):
         """
@@ -633,24 +626,17 @@ class Tool(models.Model):
         return [relpath, symlinks]
 
     def get_redirect_pairs(self, language_code):
-        """
-        Get a list of pairs (list with two items):
-        1. document path with redirect language code
-        2. document path with correct Django language code
-        """
         filename = f"deed.{language_code}"
-        relpath = os.path.join(self._get_save_path(), filename)
-        redirect_pairs = []
-        for redirect_code in map_django_to_redirects_language_codes(
-            language_code
-        ):
-            redirect_name = f"deed.{redirect_code}"
-            redirect_relpath = os.path.join(
-                self._get_save_path(), redirect_name
+        dest_path = os.path.join("/", self._get_save_path(), filename)
+        pairs = []
+        for pcre in LANGMAP_DJANGO_TO_PCRE.get(language_code, []):
+            pcre_match = os.path.join(
+                "/",
+                self._get_save_path().replace(".", "[.]"),
+                f"deed[.]{pcre}(?:[.]html)?",
             )
-            redirect_pairs.append([redirect_relpath, relpath])
-        redirect_pairs.sort(key=lambda x: x[0], reverse=True)
-        return redirect_pairs
+            pairs.append([pcre_match, dest_path])
+        return pairs
 
     def logos(self):
         """
