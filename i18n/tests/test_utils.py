@@ -20,7 +20,6 @@ from i18n.utils import (
     get_pofile_revision_date,
     get_translation_object,
     map_django_to_redirects_language_codes,
-    map_django_to_redirects_language_codes_lowercase,
     map_django_to_transifex_language_code,
     map_legacy_to_django_language_code,
     parse_date,
@@ -432,37 +431,6 @@ class MappingTest(TestCase):
                 "zh_cn",
             ],
             map_django_to_redirects_language_codes("zh-hans"),
-        )
-
-    def test_map_django_to_redirects_language_codes_lowercase(self):
-        self.assertEqual(
-            ["de_at"],
-            map_django_to_redirects_language_codes_lowercase("de-at"),
-        )
-
-        self.assertEqual(
-            ["en-us", "en_us"],
-            map_django_to_redirects_language_codes_lowercase("en"),
-        )
-
-        self.assertEqual(
-            [],
-            map_django_to_redirects_language_codes_lowercase("nl"),
-        )
-
-        self.assertEqual(
-            ["oci"],
-            map_django_to_redirects_language_codes_lowercase("oc-aranes"),
-        )
-
-        self.assertEqual(
-            ["sr-latin", "sr@latin"],
-            map_django_to_redirects_language_codes_lowercase("sr-latn"),
-        )
-
-        self.assertEqual(
-            ["zh", "zh-cn", "zh_cn"],
-            map_django_to_redirects_language_codes_lowercase("zh-hans"),
         )
 
     def test_map_django_to_transifex_language_code(self):

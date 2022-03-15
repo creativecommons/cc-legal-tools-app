@@ -77,11 +77,7 @@ def save_list(output_dir, category, language_code):
 def save_deed(output_dir, tool, language_code):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
-    (
-        relpath,
-        symlinks,
-        redirects_data,
-    ) = tool.get_publish_files(language_code)
+    relpath, symlinks = tool.get_publish_files(language_code)
     save_url_as_static_file(
         output_dir,
         url=build_path(tool.base_url, "deed", language_code),
@@ -89,8 +85,6 @@ def save_deed(output_dir, tool, language_code):
     )
     for symlink in symlinks:
         wrap_relative_symlink(output_dir, relpath, symlink)
-    for redirect_data in redirects_data:
-        save_redirect(output_dir, redirect_data)
     return tool.get_redirect_pairs(language_code)
 
 

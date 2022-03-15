@@ -310,24 +310,7 @@ class LegalCodeModelTest(TestCase):
                 # symlinks
                 ["legalcode.html"],
                 # redirects_data
-                [
-                    {
-                        "destination": "legalcode.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/legalcode.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "legalcode.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/legalcode.en_us.html"
-                        ),
-                        "title": "",
-                    },
-                ],
+                [],
             ],
             returned_list,
         )
@@ -349,24 +332,7 @@ class LegalCodeModelTest(TestCase):
                 # symlinks
                 [],
                 # redirects_data
-                [
-                    {
-                        "destination": "legalcode.zh-hant",
-                        "language_code": "zh-hant",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/legalcode.zh-tw.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "legalcode.zh-hant",
-                        "language_code": "zh-hant",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/legalcode.zh_tw.html"
-                        ),
-                        "title": "",
-                    },
-                ],
+                [],
             ],
             returned_list,
         )
@@ -392,24 +358,7 @@ class LegalCodeModelTest(TestCase):
                 # symlinks
                 ["legalcode.html"],
                 # redirects_data
-                [
-                    {
-                        "destination": "legalcode.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc/3.0/ca/legalcode.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "legalcode.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc/3.0/ca/legalcode.en_us.html"
-                        ),
-                        "title": "",
-                    },
-                ],
+                [],
             ],
             returned_list,
         )
@@ -460,24 +409,7 @@ class LegalCodeModelTest(TestCase):
                 # symlinks
                 ["legalcode.html"],
                 # redirects_data
-                [
-                    {
-                        "destination": "legalcode.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/zero/1.0/legalcode.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "legalcode.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/zero/1.0/legalcode.en_us.html"
-                        ),
-                        "title": "",
-                    },
-                ],
+                [],
             ],
             returned_list,
         )
@@ -526,22 +458,6 @@ class LegalCodeModelTest(TestCase):
                 [],
                 # redirects_data
                 [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/mark/1.0/legalcode.en-us.html"
-                        ),
-                        "title": "",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/mark/1.0/legalcode.en_us.html"
-                        ),
-                        "title": "",
-                    },
                     {
                         "destination": "deed.en",
                         "language_code": "en",
@@ -814,25 +730,6 @@ class ToolModelTest(TestCase):
                 "licenses/by-nc-nd/4.0/deed.en.html",
                 # symlinks
                 ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.en-us.html"
-                        ),
-                        "title": "Attribution-NonCommercial-NoDerivs",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.en_us.html"
-                        ),
-                        "title": "Attribution-NonCommercial-NoDerivs",
-                    },
-                ],
             ],
             returned_list,
         )
@@ -857,25 +754,6 @@ class ToolModelTest(TestCase):
                 "licenses/by-nc/3.0/ca/deed.en.html",
                 # symlinks
                 ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc/3.0/ca/deed.en-us.html"
-                        ),
-                        "title": "Attribution-NonCommercial",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "licenses/by-nc/3.0/ca/deed.en_us.html"
-                        ),
-                        "title": "Attribution-NonCommercial",
-                    },
-                ],
             ],
             returned_list,
         )
@@ -900,25 +778,6 @@ class ToolModelTest(TestCase):
                 "licenses/by-nc-nd/4.0/deed.zh-hant.html",
                 # symlinks
                 [],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.zh-hant",
-                        "language_code": "zh-hant",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.zh-tw.html"
-                        ),
-                        "title": "Attribution-NonCommercial-NoDerivs",
-                    },
-                    {
-                        "destination": "deed.zh-hant",
-                        "language_code": "zh-hant",
-                        "redirect_file": (
-                            "licenses/by-nc-nd/4.0/deed.zh_tw.html"
-                        ),
-                        "title": "Attribution-NonCommercial-NoDerivs",
-                    },
-                ],
             ],
             returned_list,
         )
@@ -944,8 +803,6 @@ class ToolModelTest(TestCase):
                 "licenses/by-sa/3.0/am/deed.hy.html",
                 # symlinks
                 ["deed.html", "index.html"],
-                # redirects_data
-                [],
             ],
             returned_list,
         )
@@ -969,25 +826,6 @@ class ToolModelTest(TestCase):
                 "publicdomain/zero/1.0/deed.en.html",
                 # symlinks
                 ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/zero/1.0/deed.en-us.html"
-                        ),
-                        "title": "CC0",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/zero/1.0/deed.en_us.html"
-                        ),
-                        "title": "CC0",
-                    },
-                ],
             ],
             returned_list,
         )
@@ -1012,25 +850,6 @@ class ToolModelTest(TestCase):
                 "publicdomain/mark/1.0/deed.en.html",
                 # symlinks
                 ["deed.html", "index.html"],
-                # redirects_data
-                [
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/mark/1.0/deed.en-us.html"
-                        ),
-                        "title": "Public Domain Mark",
-                    },
-                    {
-                        "destination": "deed.en",
-                        "language_code": "en",
-                        "redirect_file": (
-                            "publicdomain/mark/1.0/deed.en_us.html"
-                        ),
-                        "title": "Public Domain Mark",
-                    },
-                ],
             ],
             returned_list,
         )
@@ -1051,8 +870,6 @@ class ToolModelTest(TestCase):
                 # relpath
                 "publicdomain/zero/1.0/deed.nl.html",
                 # symlinks
-                [],
-                # redirects_data
                 [],
             ],
             returned_list,

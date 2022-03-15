@@ -23,14 +23,12 @@ from django.db.models import Q
 from django.utils import translation
 
 # First-party/Local
-from i18n import UNIT_NAMES
 from i18n.utils import (
     get_default_language_for_jurisdiction,
     get_jurisdiction_name,
     get_pofile_path,
     get_translation_object,
     map_django_to_redirects_language_codes,
-    map_django_to_redirects_language_codes_lowercase,
 )
 from legal_tools.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
 
@@ -253,10 +251,11 @@ class LegalCode(models.Model):
 
     def get_publish_files(self):
         """
-        1. Generate list of symlinks to ensure expected URLs function
-           correctly.
-        2. Generate list of redirects to ensure languages are reachable given
-           different language code formats and character case.
+        1. Generate relative path for legal code
+        2. Generate list of symlinks to ensure expected legal code paths
+           function correctly
+        2. Generate list of redirects to ensure deed-only legal code leads to
+           deed
         """
         language_code = self.language_code
         tool = self.tool
@@ -278,29 +277,19 @@ class LegalCode(models.Model):
                 symlinks.append("legalcode.html")
 
         # Redirects
-        redirect_codes = map_django_to_redirects_language_codes_lowercase(
-            language_code
-        )
-        if self.tool.deed_only:
-            redirect_codes.append(language_default)
         redirects_data = []
-        for redirect_code in redirect_codes:
-            redirect_file = os.path.join(
-                tool._get_save_path(), f"legalcode.{redirect_code}.html"
-            )
-            if self.tool.deed_only:
-                destination = f"deed.{language_code}"
-            else:
-                destination = f"legalcode.{language_code}"
+        if self.tool.deed_only:
             redirects_data.append(
                 {
-                    "redirect_file": redirect_file,
+                    "redirect_file": os.path.join(
+                        tool._get_save_path(),
+                        f"legalcode.{language_code}.html",
+                    ),
                     "title": self.title,
-                    "destination": destination,
+                    "destination": f"deed.{language_code}",
                     "language_code": language_code,
                 }
             )
-        if self.tool.deed_only:
             redirects_data.append(
                 {
                     "redirect_file": os.path.join(
@@ -623,15 +612,13 @@ class Tool(models.Model):
 
     def get_publish_files(self, language_code):
         """
-        1. Generate list of symlinks to ensure expected URLs function
-           correctly.
-        2. Generate list of redirects to ensure languages are reachable given
-           different language code formats and character case.
+        1. Generate relative path for deed
+        2. Generate list of symlinks to ensure expected deed paths function
+           correctly
         """
         juris_code = self.jurisdiction_code
         language_default = get_default_language_for_jurisdiction(juris_code)
         filename = f"deed.{language_code}.html"
-        title = UNIT_NAMES[self.unit]
 
         # Relative path
         relpath = os.path.join(self._get_save_path(), filename)
@@ -643,26 +630,7 @@ class Tool(models.Model):
             symlinks.append("deed.html")
             symlinks.append("index.html")
 
-        # Redirects
-        redirect_codes = map_django_to_redirects_language_codes_lowercase(
-            language_code
-        )
-        redirects_data = []
-        for redirect_code in redirect_codes:
-            redirect_file = os.path.join(
-                self._get_save_path(), f"deed.{redirect_code}.html"
-            )
-            destination = f"deed.{language_code}"
-            redirects_data.append(
-                {
-                    "redirect_file": redirect_file,
-                    "title": title,
-                    "destination": destination,
-                    "language_code": language_code,
-                }
-            )
-
-        return [relpath, symlinks, redirects_data]
+        return [relpath, symlinks]
 
     def get_redirect_pairs(self, language_code):
         """

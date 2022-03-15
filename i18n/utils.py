@@ -248,27 +248,6 @@ def map_django_to_redirects_language_codes(django_language_code: str) -> list:
     return redirect_codes
 
 
-def map_django_to_redirects_language_codes_lowercase(
-    django_language_code: str,
-) -> list:
-    """
-    Given a Django language code, return a list of lowercase languages codes
-    that should redirect to it. The list may be empty.
-
-    Django language codes are lowercase IETF language tags
-    """
-    redirect_codes = map_django_to_redirects_language_codes(
-        django_language_code
-    )
-    redirect_codes = [
-        redirect_code.lower()
-        for redirect_code in redirect_codes
-        if redirect_code.lower() != django_language_code
-    ]
-    redirect_codes = sorted(list(set(redirect_codes)))
-    return redirect_codes
-
-
 def map_django_to_transifex_language_code(django_language_code: str) -> str:
     """
     Given a Django language code, return a Transifex language code.
