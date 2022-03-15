@@ -381,8 +381,10 @@ class Command(BaseCommand):
         widths = [max(map(len, map(str, col))) for col in zip(*redirect_pairs)]
         redirect_lines = []
         for pair in redirect_pairs:
+            pcre_match = f'"{pair[0]}"'
+            pad = widths[0] + 2
             redirect_lines.append(
-                f"RedirectMatch  301  {pair[0].ljust(widths[0])}  {pair[1]}"
+                f'RedirectMatch  301  {pcre_match.ljust(pad)}  "{pair[1]}"'
             )
         del redirect_pairs
         redirect_lines.sort(reverse=True)
