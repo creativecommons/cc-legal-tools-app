@@ -357,10 +357,9 @@ class LegalCode(models.Model):
         return self.tool.resource_slug
 
     def get_translation_object(self):
-        domain = self.tool.resource_slug
         return get_translation_object(
             django_language_code=self.language_code,
-            domain=domain,
+            domain=self.tool.resource_slug,
         )
 
     def get_pofile(self) -> polib.POFile:
