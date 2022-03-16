@@ -90,23 +90,6 @@ def expected_and_unexpected_strings_for_tool(tool):
     return expected, unexpected
 
 
-# All the valid units. They all start with "by", and have various
-# combinations of "nc", "nd", and "sa", in that order. But not all combinations
-# are valid, e.g. "nd" and "sa" are not compatible.
-units = []
-for bits in range(8):  # We'll enumerate the variations
-    parts = ["by"]
-    if bits & 1:
-        parts.append("nc")
-    if bits & 2:
-        parts.append("nd")
-    if bits & 4:
-        parts.append("sa")
-    if "nd" in parts and "sa" in parts:
-        continue  # Not compatible
-    units.append("-".join(parts))
-
-
 class ToolsTestsMixin:
     # Create some tools to test in setUp
     def setUp(self):
