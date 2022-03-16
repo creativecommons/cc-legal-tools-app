@@ -29,8 +29,10 @@
       top: 0px;
     }
     .ballot {
-      font-size: 150%;
-      padding-left: 0.5em;
+      font-size: 25px;
+    }
+    .count-list > code {
+      font-size: 110%;
     }
     .font-smaller {
       font-size: smaller;
@@ -60,7 +62,7 @@
     }
     .percent {
       font-family: monospace;
-      font-size: 105%;
+      font-size: 110%;
       text-align: right;
     }
     .status-empty {
@@ -70,10 +72,8 @@
       color: chocolate;
     }
     .status-displayed {
-      color: darkgreen;
-    }
-    .status-displayed {
       background-color: white;
+      color: darkgreen;
     }
   </style>
 </head>
@@ -168,7 +168,7 @@
 {% endcomment %}
   </ul>
 
-  <h2 id="translation-deed-ux">Deed & UX Translation Status</h1>
+  <h2 id="translation-deeds-ux">Deeds & UX Translation Status</h1>
   <table>
   <thead>
   <tr>
@@ -277,15 +277,29 @@
     <li>
       The translation inclusion threshold (<code>TRANSLATION_THRESHOLD</code>)
       is <strong class="monospace">{{ threshold }}%</strong>
-      (<span class="status-empty" style="padding-left: 0.25em;">
-        <code>= 0%</code> &#x2610;
-      </span>,
-      <span class="status-hidden" style="padding-left: 0.25em;">
-        <code>&lt; {{ threshold }}%</code> &#x2610;
-      </span>,
-      <span class="status-displayed" style="padding-left: 0.25em;">
-        <code>&ge; {{ threshold }}%</code> &#x2611;
-      </span>)
+      <ul>
+        <li>
+          <span class="status-displayed count-list">
+            <code>{{ count_exceed|stringformat:"02d" }}</code> languages
+            <code>&ge; {{ threshold }}%</code>
+            <span class="ballot">&#x2611;</span> {# Ballot Box With Check #}
+          </span>
+        </li>
+        <li>
+          <span class="status-hidden count-list">
+            <code>{{ count_under|stringformat:"02d" }}</code> languages
+            <code>&lt; {{ threshold }}%</code>
+            <span class="ballot">&#x2610;</span> {# Ballot Box (empty) #}
+          </span>
+        </li>
+        <li>
+          <span class="status-empty count-list">
+            <code>{{ count_zero|stringformat:"02d" }}</code> languages
+            <code>= 00%</code>
+            <span class="ballot">&#x2610;</span> {# Ballot Box (empty) #}
+          </span>
+        </li>
+      </ul>
     </li>
   </ul>
 

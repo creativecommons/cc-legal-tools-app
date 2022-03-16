@@ -234,6 +234,9 @@ def view_dev_index(request):
     locale_dir = os.path.join(settings.DATA_REPOSITORY_DIR, "locale")
     locale_dir = os.path.abspath(os.path.realpath(locale_dir))
 
+    count_exceed = 0
+    count_under = 0
+    count_zero = 0
     for language_code, language_data in settings.DEEDS_UX_PO_FILE_INFO.items():
         if language_code == settings.LANGUAGE_CODE:
             continue
@@ -255,6 +258,15 @@ def view_dev_index(request):
         updated = ""
         if language_data["revision_date"] is not None:  # pragma: no cover
             updated = language_data["creation_date"].strftime(date_format)
+        if language_data["percent_translated"] == 0:  # pragma: no cover
+            count_zero += 1
+        elif (
+            language_data["percent_translated"]
+            < settings.TRANSLATION_THRESHOLD
+        ):
+            count_under += 1
+        else:
+            count_exceed += 1
 
         deed_ux_translation_info[language_code] = {
             "locale_name": translation.to_locale(language_code),
@@ -278,6 +290,9 @@ def view_dev_index(request):
             "distilling": distilling,
             "deed_ux": deed_ux_translation_info,
             "threshold": settings.TRANSLATION_THRESHOLD,
+            "count_exceed": count_exceed,
+            "count_under": count_under,
+            "count_zero": count_zero,
         },
     )
 
