@@ -361,8 +361,8 @@ class LegalCode(models.Model):
             self.tool.jurisdiction_code
         )
         return get_translation_object(
-            django_language_code=self.language_code,
             domain=self.tool.resource_slug,
+            language_code=self.language_code,
             language_default=language_default,
         )
 

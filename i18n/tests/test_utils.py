@@ -187,8 +187,8 @@ class TranslationTest(TestCase):
                 "i18n.utils.translation.trans_real.translation"
             ) as mock_trans:
                 result = get_translation_object(
-                    django_language_code="LANGUAGE_CODE",
                     domain="GETTEXT_DOMAIN",
+                    language_code="LANGUAGE_CODE",
                     language_default="LANGUAGE_DEFAULT",
                 )
         mock_djt.assert_called_with(
@@ -214,8 +214,8 @@ class TranslationTest(TestCase):
                 "i18n.utils.translation.trans_real.translation"
             ) as mock_trans:
                 result = get_translation_object(
-                    django_language_code="LANGUAGE_CODE",
                     domain="GETTEXT_DOMAIN",
+                    language_code="LANGUAGE_CODE",
                     language_default="LANGUAGE_DEFAULT",
                 )
         mock_djt.assert_called_with(
@@ -241,8 +241,8 @@ class TranslationTest(TestCase):
                 "i18n.utils.translation.trans_real.translation"
             ) as mock_trans:
                 result = get_translation_object(
-                    django_language_code="LANGUAGE_CODE",
                     domain="GETTEXT_DOMAIN",
+                    language_code="LANGUAGE_CODE",
                     language_default="LANGUAGE_DEFAULT",
                 )
         mock_djt.assert_called_with(
