@@ -69,7 +69,7 @@ JURISDICTION_CURRENCY_LOOKUP = {
 # read and use the one that's there right now. Anyway, this site doesn't
 # need to perform all that well, since it just generates static files.
 def get_translation_object(
-    *, django_language_code: str, domain: str
+    *, django_language_code: str, domain: str, language_default: str
 ) -> translation.trans_real.DjangoTranslation:
     """
     Return a DjangoTranslation object suitable to activate when we're wanting
@@ -84,12 +84,23 @@ def get_translation_object(
     tool_translation_object = translation.trans_real.DjangoTranslation(
         language=django_language_code,
         domain=domain,
+        localedirs=settings.LEGAL_CODE_LOCALE_PATH,
     )
+
     # Add a fallback to the standard Django translation for this language. This
     # gets us the non-legal-code parts of the pages.
-    tool_translation_object.add_fallback(
-        translation.trans_real.translation(django_language_code)
-    )
+    if django_language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        tool_translation_object.add_fallback(
+            translation.trans_real.translation(django_language_code)
+        )
+    elif language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        tool_translation_object.add_fallback(
+            translation.trans_real.translation(language_default)
+        )
+    else:
+        tool_translation_object.add_fallback(
+            translation.trans_real.translation(settings.LANGUAGE_CODE)
+        )
 
     return tool_translation_object
 
@@ -123,9 +134,9 @@ def active_translation(
     yield
 
     if previous_translation is None:
-        del _active.value
+        translation.deactivate()
     else:
-        _active.value = previous_translation
+        translation.activate(previous_translation.language())
 
 
 def save_pofile_as_pofile_and_mofile(pofile: polib.POFile, pofile_path: str):

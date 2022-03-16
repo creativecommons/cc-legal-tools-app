@@ -497,11 +497,15 @@ def view_legal_code(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
+    language_default = get_default_language_for_jurisdiction(jurisdiction)
     if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
         translation.activate(language_code)
+    elif language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        translation.activate(language_default)
+    else:
+        translation.activate(settings.LANGUAGE_CODE)
 
     path_start = os.path.dirname(request.path)
-    language_default = get_default_language_for_jurisdiction(jurisdiction)
 
     # NOTE: plaintext functionality disabled
     # if is_plain_text:
@@ -528,7 +532,6 @@ def view_legal_code(
         tool,
     )
 
-    language_code = legal_code.language_code  # CC language code
     languages_and_links = get_languages_and_links_for_legal_codes(
         path_start=path_start,
         legal_codes=tool.legal_codes.all(),
