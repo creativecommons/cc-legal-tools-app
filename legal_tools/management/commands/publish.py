@@ -3,20 +3,20 @@ import logging
 import os
 import socket
 from argparse import ArgumentParser
+from multiprocessing import Pool
 from shutil import copyfile, rmtree
 
 # Third-party
 import git
 from django.conf import settings
-from django.core.management import BaseCommand, CommandError
-from django.http.response import Http404
+from django.core.management import BaseCommand, CommandError, call_command
 from django.urls import reverse
 
 # First-party/Local
 from i18n import DEFAULT_CSV_FILE
 from i18n.utils import write_transstats_csv
 from legal_tools.git_utils import commit_and_push_changes, setup_local_branch
-from legal_tools.models import LegalCode, TranslationBranch
+from legal_tools.models import LegalCode, TranslationBranch, build_path
 from legal_tools.utils import (
     init_utils_logger,
     relative_symlink,
@@ -32,9 +32,9 @@ LOG_LEVELS = {
     2: logging.INFO,
     3: logging.DEBUG,
 }
-# RE: .nojekyll:
+# .nojekyll:
 # https://github.blog/2009-12-29-bypassing-jekyll-on-github-pages/
-# RE: CNAME
+# CNAME
 # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
 DOCS_IGNORE = [".nojekyll", "CNAME"]
 
@@ -48,6 +48,66 @@ def list_open_translation_branches():
             "branch_name", flat=True
         )
     )
+
+
+def wrap_relative_symlink(output_dir, relpath, symlink):
+    try:
+        relative_symlink(output_dir, relpath, symlink)
+    except FileExistsError as e:
+        raise CommandError(f"[Errno {e.errno}] {e.strerror}: {relpath}")
+
+
+def save_list(output_dir, category, language_code):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    relpath = f"{category}/list.{language_code}.html"
+    save_url_as_static_file(
+        output_dir,
+        url=reverse(
+            "view_list_language_specified",
+            kwargs={
+                "category": category,
+                "language_code": language_code,
+            },
+        ),
+        relpath=relpath,
+    )
+
+
+def save_deed(output_dir, tool, language_code):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    relpath, symlinks = tool.get_publish_files(language_code)
+    save_url_as_static_file(
+        output_dir,
+        url=build_path(tool.base_url, "deed", language_code),
+        relpath=relpath,
+    )
+    for symlink in symlinks:
+        wrap_relative_symlink(output_dir, relpath, symlink)
+    return tool.get_redirect_pairs(language_code)
+
+
+def save_legal_code(output_dir, legal_code):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    (
+        relpath,
+        symlinks,
+        redirects_data,
+    ) = legal_code.get_publish_files()
+    if relpath:
+        # Deed-only tools will not return a legal code relpath
+        save_url_as_static_file(
+            output_dir,
+            url=legal_code.legal_code_url,
+            relpath=relpath,
+        )
+    for symlink in symlinks:
+        wrap_relative_symlink(output_dir, relpath, symlink)
+    for redirect_data in redirects_data:
+        save_redirect(output_dir, redirect_data)
+    return legal_code.get_redirect_pairs()
 
 
 class Command(BaseCommand):
@@ -108,10 +168,9 @@ class Command(BaseCommand):
             else:
                 os.remove(item)
 
-    def check_static_files(self):
-        if not os.path.isdir(settings.STATIC_ROOT):
-            e = "Static source directory does not exist, run collectstatic"
-            raise CommandError(e)
+    def call_collectstatic(self):
+        LOG.info("Collecting static files")
+        call_command("collectstatic", interactive=False)
 
     def write_robots_txt(self):
         """Create robots.txt to discourage indexing."""
@@ -119,132 +178,44 @@ class Command(BaseCommand):
         robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
         save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
 
-    def write_dev_index(self):
+    def copy_static_wp_content_files(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
-
+        LOG.info("Copying WordPress content files")
         LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Writing dev index")
-        save_url_as_static_file(
-            output_dir,
-            url=reverse("dev_index"),
-            relpath="index.html",
+        path = "wp-content/themes/creativecommons-base/assets/img"
+        source = os.path.join(
+            settings.PROJECT_ROOT,
+            "cc_legal_tools",
+            "static",
+            path,
         )
-
-    def write_lists(self):
-        hostname = socket.gethostname()
-        output_dir = self.output_dir
-
-        LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Writing lists")
-
-        for category in ["licenses", "publicdomain"]:
-            for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
-                relpath = f"{category}/list.{language_code}.html"
-                save_url_as_static_file(
-                    output_dir,
-                    url=reverse(
-                        "view_list_language_specified",
-                        kwargs={
-                            "category": category,
-                            "language_code": language_code,
-                        },
-                    ),
-                    relpath=relpath,
-                )
-            relpath = f"{category}/list.{settings.LANGUAGE_CODE}.html"
-            symlink = "list.html"
-            relative_symlink(output_dir, relpath, symlink)
-
-    def write_legal_tools(self):
-        hostname = socket.gethostname()
-        output_dir = self.output_dir
-
-        legal_codes = LegalCode.objects.validgroups()
-        redirect_pairs = []
-        for group in legal_codes.keys():
-            LOG.debug(f"{hostname}:{output_dir}")
-            LOG.info(f"Writing {group}")
-            for legal_code in legal_codes[group]:
-                # deed
-                try:
-                    (
-                        relpath,
-                        symlinks,
-                        redirects_data,
-                    ) = legal_code.get_publish_files("deed")
-                    save_url_as_static_file(
-                        output_dir,
-                        url=legal_code.deed_url,
-                        relpath=relpath,
-                    )
-                    for symlink in symlinks:
-                        relative_symlink(output_dir, relpath, symlink)
-                    for redirect_data in redirects_data:
-                        save_redirect(output_dir, redirect_data)
-                    redirect_pairs += legal_code.get_redirect_pairs("deed")
-                except Http404 as e:
-                    if "invalid language" not in str(e):
-                        raise
-                # legalcode
-                (
-                    relpath,
-                    symlinks,
-                    redirects_data,
-                ) = legal_code.get_publish_files("legalcode")
-                if relpath:
-                    # Deed-only tools will not return a legal code relpath
-                    save_url_as_static_file(
-                        output_dir,
-                        url=legal_code.legal_code_url,
-                        relpath=relpath,
-                    )
-                for symlink in symlinks:
-                    relative_symlink(output_dir, relpath, symlink)
-                for redirect_data in redirects_data:
-                    save_redirect(output_dir, redirect_data)
-                redirect_pairs += legal_code.get_redirect_pairs("legalcode")
-
-        redirect_pairs.sort(key=lambda x: x[0], reverse=True)
-        widths = [max(map(len, map(str, col))) for col in zip(*redirect_pairs)]
-        redirects_include = [
-            "# DO NOT EDIT MANUALLY",
-            "#",
-            "# This file was generated by the publish command.",
-            "# https://github.com/creativecommons/cc-legal-tools-app",
-            "#",
-            "# It should be included from within an Apache2 httpd site config",
-        ]
-        for regex, replacement in redirect_pairs:
-            regex = f'"/{regex}"'
-            replacement = f'"/{replacement}"'
-            pad = widths[0] + 3
-            redirects_include.append(
-                f"RedirectPermanent {regex.ljust(pad)} {replacement}"
+        destination = os.path.join(output_dir, path)
+        os.makedirs(destination, exist_ok=True)
+        for file_name in os.listdir(source):
+            copyfile(
+                os.path.join(source, file_name),
+                os.path.join(destination, file_name),
             )
-        redirects_include.append("# vim: ft=apache ts=4 sw=4 sts=4 sr noet")
-        redirects_include.append("")
-        redirects_include = "\n".join(redirects_include).encode("utf-8")
-        redirects_filename = os.path.join(
-            self.config_dir, "language-redirects"
-        )
-        save_bytes_to_file(redirects_include, redirects_filename)
 
-    def write_translation_branch_statuses(self):
+    def copy_static_cc_legal_tools_files(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
-
+        LOG.info("Copying static cc-legal-tools files")
         LOG.debug(f"{hostname}:{output_dir}")
-
-        tbranches = TranslationBranch.objects.filter(complete=False)
-        for tbranch_id in tbranches.values_list("id", flat=True):
-            LOG.info(f"Writing Translation branch status: {tbranch_id}")
-            relpath = f"dev/{tbranch_id}.html"
-            LOG.debug(f"    {relpath}")
-            save_url_as_static_file(
-                output_dir,
-                url=f"/dev/{tbranch_id}/",
-                relpath=relpath,
+        path = "cc-legal-tools"
+        source = os.path.join(
+            settings.PROJECT_ROOT,
+            "cc_legal_tools",
+            "static",
+            path,
+        )
+        destination = os.path.join(output_dir, path)
+        os.makedirs(destination, exist_ok=True)
+        for file_name in os.listdir(source):
+            copyfile(
+                os.path.join(source, file_name),
+                os.path.join(destination, file_name),
             )
 
     def copy_tools_rdfs(self):
@@ -350,24 +321,121 @@ class Command(BaseCommand):
             copyfile(os.path.join(plaintext_dir, text), dest_file)
             LOG.debug(f"    {relative_name}")
 
-    def copy_wp_content_files(self):
+    def write_dev_index(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
-        LOG.info("Copying WordPress content files")
+
         LOG.debug(f"{hostname}:{output_dir}")
-        path = "wp-content/themes/creativecommons-base/assets/img"
-        source = os.path.join(
-            settings.PROJECT_ROOT,
-            "cc_legal_tools",
-            "static",
-            path,
+        LOG.info("Writing dev index")
+        save_url_as_static_file(
+            output_dir,
+            url=reverse("dev_index"),
+            relpath="index.html",
         )
-        destination = os.path.join(output_dir, path)
-        os.makedirs(destination, exist_ok=True)
-        for file_name in os.listdir(source):
-            copyfile(
-                os.path.join(source, file_name),
-                os.path.join(destination, file_name),
+
+    def write_lists(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+
+        LOG.debug(f"{hostname}:{output_dir}")
+        LOG.info("Writing lists")
+
+        arguments = []
+        for category in ["licenses", "publicdomain"]:
+            for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+                arguments.append((output_dir, category, language_code))
+        self.pool.starmap(save_list, arguments)
+
+        for category in ["licenses", "publicdomain"]:
+            relpath = f"{category}/list.{settings.LANGUAGE_CODE}.html"
+            symlink = "list.html"
+            wrap_relative_symlink(output_dir, relpath, symlink)
+
+    def write_legal_tools(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+        legal_codes = LegalCode.objects.validgroups()
+        redirect_pairs_data = []
+        for group in legal_codes.keys():
+            tools = set()
+            LOG.debug(f"{hostname}:{output_dir}")
+            LOG.info(f"Writing {group}")
+            legal_code_arguments = []
+            deed_arguments = []
+            for legal_code in legal_codes[group]:
+                tools.add(legal_code.tool)
+                legal_code_arguments.append((output_dir, legal_code))
+            for tool in tools:
+                for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+                    deed_arguments.append((output_dir, tool, language_code))
+
+            redirect_pairs_data += self.pool.starmap(save_deed, deed_arguments)
+            redirect_pairs_data += self.pool.starmap(
+                save_legal_code, legal_code_arguments
+            )
+
+        redirect_pairs = []
+        for pair_list in redirect_pairs_data:
+            redirect_pairs += pair_list
+        del redirect_pairs_data
+        widths = [max(map(len, map(str, col))) for col in zip(*redirect_pairs)]
+        redirect_lines = []
+        for pair in redirect_pairs:
+            pcre_match = f'"{pair[0]}"'
+            pad = widths[0] + 2
+            redirect_lines.append(
+                f'RedirectMatch  301  {pcre_match.ljust(pad)}  "{pair[1]}"'
+            )
+        del redirect_pairs
+        redirect_lines.sort(reverse=True)
+        redirect_lines.sort(reverse=True)
+        include_lines = [
+            "# DO NOT EDIT MANUALLY",
+            "#",
+            "# This file was generated by the publish command.",
+            "# https://github.com/creativecommons/cc-legal-tools-app",
+            "#",
+            "# It should be included from within an Apache2 httpd site config",
+            "#",
+            "# https://httpd.apache.org/docs/2.4/mod/mod_alias.html",
+            "# https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html",
+            "",
+            "########################################",
+            "# Step 1: Redirect mixed/uppercase to lowercase",
+            "#",
+            "# Must be set within virtual host context:",
+            "#     RewriteMap lowercase int:tolower",
+            "RewriteCond $1 [A-Z]",
+            "RewriteRule ^/?(.*)$ /${lowercase:$1} [R=301,L]",
+            "",
+            "########################################",
+            "#Step 2: Redirect alternate language codes to supported Django"
+            " language codes",
+            "",
+        ]
+        include_lines += redirect_lines
+        del redirect_lines
+        include_lines.append("# vim: ft=apache ts=4 sw=4 sts=4 sr noet")
+        include_lines.append("")
+        include_lines = "\n".join(include_lines).encode("utf-8")
+        include_filename = os.path.join(self.config_dir, "language-redirects")
+        save_bytes_to_file(include_lines, include_filename)
+
+    def write_translation_branch_statuses(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+
+        LOG.debug(f"{hostname}:{output_dir}")
+
+        tbranches = TranslationBranch.objects.filter(complete=False)
+        for tbranch_id in tbranches.values_list("id", flat=True):
+            LOG.info(f"Writing Translation branch status: {tbranch_id}")
+            relpath = f"dev/{tbranch_id}.html"
+            LOG.debug(f"    {relpath}")
+            save_url_as_static_file(
+                output_dir,
+                url=f"/dev/{tbranch_id}/",
+                relpath=relpath,
             )
 
     def run_write_transstats_csv(self):
@@ -389,15 +457,16 @@ class Command(BaseCommand):
 
     def distill_and_copy(self):
         self.purge_output_dir()
-        self.check_static_files()
+        self.call_collectstatic()
         self.write_robots_txt()
-        self.copy_wp_content_files()
-        self.write_dev_index()
-        self.write_lists()
-        self.write_legal_tools()
+        self.copy_static_wp_content_files()
+        self.copy_static_cc_legal_tools_files()
         self.copy_tools_rdfs()
         self.copy_meta_rdfs()
         self.copy_legal_code_plaintext()
+        self.write_dev_index()
+        self.write_lists()
+        self.write_legal_tools()
         # self.run_write_transstats_csv()
         # self.write_metadata_yaml()
 
@@ -438,6 +507,7 @@ class Command(BaseCommand):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         init_utils_logger(LOG)
         self.options = options
+        self.pool = Pool()
 
         if options.get("branch_name", None) == "main":
             raise CommandError(

@@ -16,6 +16,7 @@ from django.template.loader import render_to_string
 from django.utils import translation
 
 # First-party/Local
+from i18n import UNIT_NAMES
 from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction,
@@ -52,6 +53,15 @@ def get_category_and_category_title(category=None, tool=None):
     return category, category_title
 
 
+def get_tool_title(tool):
+    tool_name = UNIT_NAMES.get(tool.unit, "UNIMPLEMENTED")
+    jurisdiction_name = get_jurisdiction_name(
+        tool.category, tool.unit, tool.version, tool.jurisdiction_code
+    )
+    tool_title = f"{tool_name} {tool.version} {jurisdiction_name}"
+    return tool_title
+
+
 def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
     languages_and_links = []
 
@@ -72,23 +82,6 @@ def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
         )
     languages_and_links.sort(key=itemgetter("name_for_sorting"))
     return languages_and_links
-
-
-def get_legal_code_rel_path(
-    legal_code_url,
-    path_start,
-    language_code,
-    language_default,
-    legal_code_languages,
-):
-    legal_code_rel_path = os.path.relpath(legal_code_url, path_start)
-    if language_code not in legal_code_languages:
-        legal_code_rel_path = legal_code_rel_path.replace(
-            f"legalcode.{language_code}",
-            f"legalcode.{language_default}",
-        )
-
-    return legal_code_rel_path
 
 
 def get_languages_and_links_for_legal_codes(
@@ -411,40 +404,29 @@ def view_deed(
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
 
-    # The Legal Code translations are specific.
-    #
-    # The Deed translations are generic: all of the Deeds of a given unit share
-    # the same text. Therefore, for the purpose of displaying the Deed, we do
-    # not care about the language of the associated Legal Code. Instead we care
-    # only about the languages that have been mostly (>TRANSLATION_THRESHOLD)
-    # translated.
-    #
-    # Initially set legal_code based on language_default.
-    legal_code = LegalCode.objects.filter(
-        tool__unit=unit,
-        tool__version=version,
-        tool__jurisdiction_code=jurisdiction,
-        language_code=language_default,
-    )[0]
-    legal_code_languages = []
-    for possible_legal_code in LegalCode.objects.filter(
-        tool__unit=unit,
-        tool__version=version,
-        tool__jurisdiction_code=jurisdiction,
-    ):
-        legal_code_languages.append(possible_legal_code.language_code)
-    if (
-        language_code != language_default
-        and language_code in legal_code_languages
-    ):
+    try:
+        # Try to load legal code with specified language
         legal_code = LegalCode.objects.filter(
             tool__unit=unit,
             tool__version=version,
             tool__jurisdiction_code=jurisdiction,
             language_code=language_code,
         )[0]
+    except IndexError:
+        # Else load legal code with default language
+        legal_code = LegalCode.objects.filter(
+            tool__unit=unit,
+            tool__version=version,
+            tool__jurisdiction_code=jurisdiction,
+            language_code=language_default,
+        )[0]
+    legal_code_rel_path = os.path.relpath(
+        legal_code.legal_code_url, path_start
+    )
 
     tool = legal_code.tool
+    tool_title = get_tool_title(tool)
+
     category, category_title = get_category_and_category_title(
         category,
         tool,
@@ -452,14 +434,6 @@ def view_deed(
     languages_and_links = get_languages_and_links_for_deeds_ux(
         request_path=request.path,
         selected_language_code=language_code,
-    )
-
-    legal_code_rel_path = get_legal_code_rel_path(
-        legal_code.legal_code_url,
-        path_start,
-        language_code,
-        language_default,
-        legal_code_languages,
     )
 
     if tool.unit in UNITS_LICENSES:
@@ -484,9 +458,9 @@ def view_deed(
             "category_title": category_title,
             "identifier": tool.identifier(),
             "languages_and_links": languages_and_links,
-            "legal_code": legal_code,
             "legal_code_rel_path": legal_code_rel_path,
             "tool": tool,
+            "tool_title": tool_title,
         },
     )
     html_response.content = bytes(
@@ -508,8 +482,12 @@ def view_legal_code(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
+    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        translation.activate(language_code)
+
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
+
     # NOTE: plaintext functionality disabled
     # if is_plain_text:
     #     legal_code = get_object_or_404(
@@ -521,12 +499,15 @@ def view_legal_code(
     #         LegalCode,
     #         legal_code_url=request.path,
     #     )
+
     legal_code = get_object_or_404(
         LegalCode,
         legal_code_url=request.path,
     )
 
     tool = legal_code.tool
+    tool_title = get_tool_title(tool)
+
     category, category_title = get_category_and_category_title(
         category,
         tool,
@@ -557,6 +538,7 @@ def view_legal_code(
             "languages_and_links": languages_and_links,
             "legal_code": legal_code,
             "tool": tool,
+            "tool_title": tool_title,
         },
     )
 

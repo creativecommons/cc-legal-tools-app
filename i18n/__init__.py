@@ -119,9 +119,8 @@ DEFAULT_JURISDICTION_LANGUAGES = {
     "za": "en-gb",
 }
 JURISDICTION_NAMES = {
-    "": gettext_lazy("Unported"),
-    "<=l25": gettext_lazy("Generic (unported)"),
-    "=l30": gettext_lazy("International (unported)"),
+    "": gettext_lazy("Generic"),
+    "=l30": gettext_lazy("Unported"),
     "=l40": gettext_lazy("International"),
     "=p10": gettext_lazy("Universal"),
     "am": gettext_lazy("Armenia"),
@@ -191,34 +190,58 @@ JURISDICTION_NAMES = {
     "vn": gettext_lazy("Vietnam"),
     "za": gettext_lazy("South Africa"),
 }
+UNIT_NAMES = {
+    "by": gettext_lazy("Attribution"),
+    "by-nc": gettext_lazy("Attribution-NonCommercial"),
+    "by-nc-nd": gettext_lazy("Attribution-NonCommercial-NoDerivs"),
+    "by-nc-sa": gettext_lazy("Attribution-NonCommercial-ShareAlike"),
+    "by-nd": gettext_lazy("Attribution-NoDerivs"),
+    "by-nd-nc": gettext_lazy("Attribution-NoDerivs-NonCommercial"),
+    "by-sa": gettext_lazy("Attribution-ShareAlike"),
+    "certification": gettext_lazy(
+        "Copyright-Only Dedication (based on United States law) or Public"
+        " Domain Certification"
+    ),
+    "devnations": gettext_lazy("Developing Nations"),
+    "mark": gettext_lazy("Public Domain Mark"),
+    "nc": gettext_lazy("NonCommercial"),
+    "nc-sa": gettext_lazy("NonCommercial-ShareAlike"),
+    "nc-sampling+": gettext_lazy("NonCommercial Sampling Plus"),
+    "nd": gettext_lazy("NoDerivs"),
+    "nd-nc": gettext_lazy("NoDerivs-NonCommercial"),
+    "sa": gettext_lazy("ShareAlike"),
+    "sampling": gettext_lazy("Sampling"),
+    "sampling+": gettext_lazy("Sampling Plus"),
+    "zero": "CC0",  # Historically this hass not been translated
+}
 LANGUAGE_CODE_REGEX_STRING = r"[a-z-]*"
-LANGMAP_DJANGO_TO_REDIRECTS = {
+LANGMAP_DJANGO_TO_PCRE = {
     # Django language code: List of language codes that should redirect to it
     #
     # Django language codes are lowercase IETF language tags
     #
-    # The map_django_to_redirects_language_codes function adds uppercase and
-    # titlecase variants automatically (only lowercase language codes should be
-    # added here).
-    "de-at": ["de_at"],
-    "en": ["en-us", "en_us"],
-    "en-ca": ["en_ca"],
-    "en-gb": ["en_gb"],
-    "es": ["es-es", "es_es"],
-    "es-ar": ["es_ar"],
-    "es-pe": ["es_pe"],
-    "fa-ir": ["fa_ir"],
-    "fr-ca": ["fr_ca"],
-    "fr-ch": ["fr_ch"],
-    "oc-aranes": ["oci"],
-    "pt-br": ["pt_br"],
-    "si-lk": ["si_lk"],
-    "sr": ["sr-cyrl", "sr@cyrl"],
-    "sr-latn": ["sr-latin", "sr@latin"],
-    "zh-hans": ["zh", "zh-cn", "zh_cn"],
-    "zh-hant": ["zh-tw", "zh_tw"],
-    "zh-hk": ["zh_hk"],
+    # The following PCREs handle altnate codes and characters. Alternate case
+    # should be handled by an Apache RewriteMap.
+    "de-at": ["de[@_]at"],
+    "en": ["en[@_-]us"],
+    "en-ca": ["en[@_]ca"],
+    "en-gb": ["en[@_]gb"],
+    "es": ["es[@_-]es"],
+    "es-ar": ["es[@_]ar"],
+    "es-pe": ["es[@_]pe"],
+    "fa-ir": ["fa[@_]ir"],
+    "fr-ca": ["fr[@_]ca"],
+    "fr-ch": ["fr[@_]ch"],
+    "oc-aranes": ["oc[@_]aranes", "oci"],
+    "pt-br": ["pt[@_]br"],
+    "si-lk": ["si[@_]lk"],
+    "sr": ["sr[@_-]cyrl"],
+    "sr-latn": ["sr[@_latn]", "sr[@_-]latin"],
+    "zh-hans": ["zh", "zh[@_-]cn"],
+    "zh-hant": ["zh[@_-]tw"],
+    "zh-hk": ["zh[@_]hk"],
 }
+
 LANGMAP_DJANGO_TO_TRANSIFEX = {
     # Django language code: Transifex language code
     #

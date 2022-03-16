@@ -19,8 +19,6 @@ from i18n.utils import (
     get_pofile_path,
     get_pofile_revision_date,
     get_translation_object,
-    map_django_to_redirects_language_codes,
-    map_django_to_redirects_language_codes_lowercase,
     map_django_to_transifex_language_code,
     map_legacy_to_django_language_code,
     parse_date,
@@ -82,7 +80,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "International (unported)",
+            "Unported",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -99,7 +97,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -116,7 +114,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -133,7 +131,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -150,7 +148,7 @@ class UtilTest(TestCase):
 
         jurisdiction_code = ""
         self.assertEqual(
-            "Generic (unported)",
+            "Generic",
             get_jurisdiction_name(category, unit, version, jurisdiction_code),
         )
 
@@ -367,104 +365,6 @@ class PofileTestWithData(TestCase):
 
 
 class MappingTest(TestCase):
-    def test_map_django_to_redirects_language_codes(self):
-        self.assertEqual(
-            ["DE-AT", "DE_AT", "de-AT", "de-At", "de_AT", "de_At", "de_at"],
-            map_django_to_redirects_language_codes("de-at"),
-        )
-
-        self.assertEqual(
-            [
-                "EN",
-                "EN-US",
-                "EN_US",
-                "en-US",
-                "en-Us",
-                "en-us",
-                "en_US",
-                "en_Us",
-                "en_us",
-            ],
-            map_django_to_redirects_language_codes("en"),
-        )
-
-        self.assertEqual(
-            ["NL"],
-            map_django_to_redirects_language_codes("nl"),
-        )
-
-        self.assertEqual(
-            ["OC-ARANES", "OCI", "oc-ARANES", "oc-Aranes", "oci"],
-            map_django_to_redirects_language_codes("oc-aranes"),
-        )
-
-        self.assertEqual(
-            [
-                "SR-LATIN",
-                "SR-LATN",
-                "SR@LATIN",
-                "sr-LATIN",
-                "sr-LATN",
-                "sr-Latin",
-                "sr-Latn",
-                "sr-latin",
-                "sr@LATIN",
-                "sr@Latin",
-                "sr@latin",
-            ],
-            map_django_to_redirects_language_codes("sr-latn"),
-        )
-
-        self.assertEqual(
-            [
-                "ZH",
-                "ZH-CN",
-                "ZH-HANS",
-                "ZH_CN",
-                "zh",
-                "zh-CN",
-                "zh-Cn",
-                "zh-HANS",
-                "zh-Hans",
-                "zh-cn",
-                "zh_CN",
-                "zh_Cn",
-                "zh_cn",
-            ],
-            map_django_to_redirects_language_codes("zh-hans"),
-        )
-
-    def test_map_django_to_redirects_language_codes_lowercase(self):
-        self.assertEqual(
-            ["de_at"],
-            map_django_to_redirects_language_codes_lowercase("de-at"),
-        )
-
-        self.assertEqual(
-            ["en-us", "en_us"],
-            map_django_to_redirects_language_codes_lowercase("en"),
-        )
-
-        self.assertEqual(
-            [],
-            map_django_to_redirects_language_codes_lowercase("nl"),
-        )
-
-        self.assertEqual(
-            ["oci"],
-            map_django_to_redirects_language_codes_lowercase("oc-aranes"),
-        )
-
-        self.assertEqual(
-            ["sr-latin", "sr@latin"],
-            map_django_to_redirects_language_codes_lowercase("sr-latn"),
-        )
-
-        self.assertEqual(
-            ["zh", "zh-cn", "zh_cn"],
-            map_django_to_redirects_language_codes_lowercase("zh-hans"),
-        )
-
     def test_map_django_to_transifex_language_code(self):
         transifex_code = map_django_to_transifex_language_code("de-at")
         self.assertEqual("de_AT", transifex_code)

@@ -27,14 +27,5 @@
     </div>
   </div>
 </div>
-
-<script>
-  const select = document.getElementById("languages-dropdown")
-
-  select.addEventListener("input", function () {
-    const language_code = select.value
-    const option = document.getElementById("option-" + language_code)
-    window.location.href = option.dataset.link
-  })
-</script>
+<script src="/cc-legal-tools/language-dropdown.js"></script>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
