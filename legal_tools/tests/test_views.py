@@ -709,6 +709,7 @@ class ViewLegalCodeTest(TestCase):
             tool__category="licenses",
             tool__base_url="https://creativecommons.org"
             "/licenses/by/3.0/de/",
+            tool__unit="by",
             tool__version="3.0",
             tool__jurisdiction_code="de",
         )
@@ -728,6 +729,7 @@ class ViewLegalCodeTest(TestCase):
         tool = ToolFactory(
             category="licenses",
             base_url="https://creativecommons.org/licenses/by/4.0/",
+            unit="by",
             version="4.0",
         )
         for language_code in ["ar", "es", settings.LANGUAGE_CODE]:
@@ -775,23 +777,21 @@ class ViewLegalCodeTest(TestCase):
         LANGUAGES_MOSTLY_TRANSLATED=["es", settings.LANGUAGE_CODE],
     )
     def test_view_legal_code_30_default_translated(self):
-        tool = ToolFactory(
-            category="licenses",
-            base_url="https://creativecommons.org/licenses/by/3.0/es/",
-            version="3.0",
-        )
         language_code = "ast"
         lc = LegalCodeFactory(
-            tool=tool,
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/3.0/es/",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__jurisdiction_code="es",
             language_code=language_code,
+            html="<html></html>",
         )
         url = lc.legal_code_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed(rsp, "legalcode.html")
-        self.assertTemplateUsed(
-            rsp, "includes/legalcode_licenses_3.0_unported.html"
-        )
+        self.assertTemplateUsed(rsp, "includes/legalcode_crude_html.html")
         context = rsp.context
         self.assertEqual(lc, context["legal_code"])
         self.assertContains(rsp, f'lang="{language_code}"')
@@ -801,23 +801,21 @@ class ViewLegalCodeTest(TestCase):
         LANGUAGES_MOSTLY_TRANSLATED=[settings.LANGUAGE_CODE],
     )
     def test_view_legal_code_30_default_untranslated(self):
-        tool = ToolFactory(
-            category="licenses",
-            base_url="https://creativecommons.org/licenses/by/3.0/es/",
-            version="3.0",
-        )
         language_code = "ast"
         lc = LegalCodeFactory(
-            tool=tool,
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/3.0/es/",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__jurisdiction_code="es",
             language_code=language_code,
+            html="<html></html>",
         )
         url = lc.legal_code_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed(rsp, "legalcode.html")
-        self.assertTemplateUsed(
-            rsp, "includes/legalcode_licenses_3.0_unported.html"
-        )
+        self.assertTemplateUsed(rsp, "includes/legalcode_crude_html.html")
         context = rsp.context
         self.assertEqual(lc, context["legal_code"])
         self.assertContains(rsp, f'lang="{language_code}"')
@@ -857,14 +855,13 @@ class ViewLegalCodeTest(TestCase):
     #     self.assertGreater(len(rsp.content.decode()), 0)
 
     def test_legal_code_translation_by_40_es(self):
-        tool = ToolFactory(
-            category="licenses",
-            base_url="https://creativecommons.org/licenses/by/4.0/",
-            version="4.0",
-        )
+        language_code = "es"
         legal_code = LegalCodeFactory(
-            tool=tool,
-            language_code="es",
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/4.0/",
+            tool__unit="by",
+            tool__version="4.0",
+            language_code=language_code,
         )
         url = legal_code.legal_code_url
         rsp = self.client.get(url)
