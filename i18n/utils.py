@@ -64,12 +64,8 @@ JURISDICTION_CURRENCY_LOOKUP = {
 }
 
 
-# This function looks like a good candidate for caching, but we might be
-# changing the translated files while running and need to be sure we always
-# read and use the one that's there right now. Anyway, this site doesn't
-# need to perform all that well, since it just generates static files.
 def get_translation_object(
-    *, django_language_code: str, domain: str
+    domain: str, language_code: str, language_default: str
 ) -> translation.trans_real.DjangoTranslation:
     """
     Return a DjangoTranslation object suitable to activate when we're wanting
@@ -78,30 +74,46 @@ def get_translation_object(
 
     This fuction requires the legal code locales path to have been added to
     Django settings.LOCALE_PATHS
+
+    WARNING: this *does* make assumptions about the internals of Django's
+    translation system that could change on us.  It doesn't seem likely,
+    though.
     """
 
     # Start with a translation object for the domain for this tool.
     tool_translation_object = translation.trans_real.DjangoTranslation(
-        language=django_language_code,
+        language=language_code,
         domain=domain,
+        localedirs=settings.LEGAL_CODE_LOCALE_PATH,
     )
+
     # Add a fallback to the standard Django translation for this language. This
     # gets us the non-legal-code parts of the pages.
-    tool_translation_object.add_fallback(
-        translation.trans_real.translation(django_language_code)
-    )
+    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        tool_translation_object.add_fallback(
+            translation.trans_real.translation(language_code)
+        )
+    elif language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        tool_translation_object.add_fallback(
+            translation.trans_real.translation(language_default)
+        )
+    else:
+        tool_translation_object.add_fallback(
+            translation.trans_real.translation(settings.LANGUAGE_CODE)
+        )
 
     return tool_translation_object
 
 
 @contextmanager
 def active_translation(
-    translation_obj: translation.trans_real.DjangoTranslation,
+    translation_object: translation.trans_real.DjangoTranslation,
 ):
     """
     Context manager to do stuff within its context with a particular
     translation object set as the active translation.  (Use
-    ``get_translation_object`` to get a translation object to use with this.)
+    ``legal_code.get_translation_object()`` to get a translation object to use
+    with this.)
 
     Bypasses all the language code stuff that Django does when you use its
     ``activate(language_code)`` function.
@@ -113,19 +125,17 @@ def active_translation(
     translation system that could change on us.  It doesn't seem likely,
     though.
     """
-    _active = translation.trans_real._active
 
-    # Either _active.value points at a DjangoTranslation
-    # object, or _active has no 'value' attribute.
-    previous_translation = getattr(_active, "value", None)
-    _active.value = translation_obj
+    previous_language = translation.trans_real.get_language()
+    translation.trans_real._active.value = translation_object
 
     yield
 
-    if previous_translation is None:
-        del _active.value
-    else:
-        _active.value = previous_translation
+    # The following logic is based on django.utils.translations.override()
+    if previous_language is not None:
+        translation.activate(previous_language)
+    else:  # pragma: no cover
+        translation.deactivate_all()
 
 
 def save_pofile_as_pofile_and_mofile(pofile: polib.POFile, pofile_path: str):

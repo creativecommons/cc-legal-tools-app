@@ -497,11 +497,9 @@ def view_legal_code(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
-        translation.activate(language_code)
+    language_default = get_default_language_for_jurisdiction(jurisdiction)
 
     path_start = os.path.dirname(request.path)
-    language_default = get_default_language_for_jurisdiction(jurisdiction)
 
     # NOTE: plaintext functionality disabled
     # if is_plain_text:
@@ -520,45 +518,53 @@ def view_legal_code(
         legal_code_url=request.path,
     )
 
+    # Use Deeds & UX translations for title instead of Legal Code
+    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        translation.activate(language_code)
+    elif language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        translation.activate(language_default)
+    else:
+        translation.activate(settings.LANGUAGE_CODE)
     tool = legal_code.tool
     tool_title = get_tool_title(tool)
 
-    category, category_title = get_category_and_category_title(
-        category,
-        tool,
-    )
-
-    language_code = legal_code.language_code  # CC language code
-    languages_and_links = get_languages_and_links_for_legal_codes(
-        path_start=path_start,
-        legal_codes=tool.legal_codes.all(),
-        selected_language_code=language_code,
-    )
-
-    deed_rel_path = get_deed_rel_path(
-        legal_code.deed_url,
-        path_start,
-        language_code,
-        language_default,
-    )
-
-    kwargs = dict(
-        template_name="legalcode.html",
-        context={
-            "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
-            "category": category,
-            "category_title": category_title,
-            "deed_rel_path": deed_rel_path,
-            "identifier": tool.identifier(),
-            "languages_and_links": languages_and_links,
-            "legal_code": legal_code,
-            "tool": tool,
-            "tool_title": tool_title,
-        },
-    )
-
+    # Activate Legal Code translation
     current_translation = legal_code.get_translation_object()
     with active_translation(current_translation):
+
+        category, category_title = get_category_and_category_title(
+            category,
+            tool,
+        )
+
+        languages_and_links = get_languages_and_links_for_legal_codes(
+            path_start=path_start,
+            legal_codes=tool.legal_codes.all(),
+            selected_language_code=language_code,
+        )
+
+        deed_rel_path = get_deed_rel_path(
+            legal_code.deed_url,
+            path_start,
+            language_code,
+            language_default,
+        )
+
+        kwargs = dict(
+            template_name="legalcode.html",
+            context={
+                "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
+                "category": category,
+                "category_title": category_title,
+                "deed_rel_path": deed_rel_path,
+                "identifier": tool.identifier(),
+                "languages_and_links": languages_and_links,
+                "legal_code": legal_code,
+                "tool": tool,
+                "tool_title": tool_title,
+            },
+        )
+
         # NOTE: plaintext functionality disabled
         # if is_plain_text:
         #     response = HttpResponse(

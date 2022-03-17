@@ -172,7 +172,11 @@ class I18NTest(TestCase):
 
 
 class TranslationTest(TestCase):
-    def test_get_translation_object(self):
+    @override_settings(
+        LANGUAGES_MOSTLY_TRANSLATED=["LANGUAGE_CODE"],
+        LEGAL_CODE_LOCALE_PATH="LOCALE_DIRS",
+    )
+    def test_get_translation_object_specified_translated(self):
         translation_object = MagicMock()
 
         with mock.patch(
@@ -183,14 +187,70 @@ class TranslationTest(TestCase):
                 "i18n.utils.translation.trans_real.translation"
             ) as mock_trans:
                 result = get_translation_object(
-                    django_language_code="LANGUAGE_CODE",
                     domain="GETTEXT_DOMAIN",
+                    language_code="LANGUAGE_CODE",
+                    language_default="LANGUAGE_DEFAULT",
                 )
         mock_djt.assert_called_with(
             domain="GETTEXT_DOMAIN",
             language="LANGUAGE_CODE",
+            localedirs="LOCALE_DIRS",
         )
         mock_trans.assert_called_with("LANGUAGE_CODE")
+        self.assertEqual(translation_object, result)
+
+    @override_settings(
+        LANGUAGES_MOSTLY_TRANSLATED=["LANGUAGE_DEFAULT"],
+        LEGAL_CODE_LOCALE_PATH="LOCALE_DIRS",
+    )
+    def test_get_translation_object_default_translated(self):
+        translation_object = MagicMock()
+
+        with mock.patch(
+            "i18n.utils.translation.trans_real.DjangoTranslation"
+        ) as mock_djt:
+            mock_djt.return_value = translation_object
+            with mock.patch(
+                "i18n.utils.translation.trans_real.translation"
+            ) as mock_trans:
+                result = get_translation_object(
+                    domain="GETTEXT_DOMAIN",
+                    language_code="LANGUAGE_CODE",
+                    language_default="LANGUAGE_DEFAULT",
+                )
+        mock_djt.assert_called_with(
+            domain="GETTEXT_DOMAIN",
+            language="LANGUAGE_CODE",
+            localedirs="LOCALE_DIRS",
+        )
+        mock_trans.assert_called_with("LANGUAGE_DEFAULT")
+        self.assertEqual(translation_object, result)
+
+    @override_settings(
+        LANGUAGES_MOSTLY_TRANSLATED=[],
+        LEGAL_CODE_LOCALE_PATH="LOCALE_DIRS",
+    )
+    def test_get_translation_object_untranslated(self):
+        translation_object = MagicMock()
+
+        with mock.patch(
+            "i18n.utils.translation.trans_real.DjangoTranslation"
+        ) as mock_djt:
+            mock_djt.return_value = translation_object
+            with mock.patch(
+                "i18n.utils.translation.trans_real.translation"
+            ) as mock_trans:
+                result = get_translation_object(
+                    domain="GETTEXT_DOMAIN",
+                    language_code="LANGUAGE_CODE",
+                    language_default="LANGUAGE_DEFAULT",
+                )
+        mock_djt.assert_called_with(
+            domain="GETTEXT_DOMAIN",
+            language="LANGUAGE_CODE",
+            localedirs="LOCALE_DIRS",
+        )
+        mock_trans.assert_called_with(settings.LANGUAGE_CODE)
         self.assertEqual(translation_object, result)
 
     def test_active_translation(self):

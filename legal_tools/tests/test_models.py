@@ -258,7 +258,7 @@ class LegalCodeModelTest(TestCase):
         ) as mock_djt:
             legal_code.get_translation_object()
         mock_djt.assert_called_with(
-            django_language_code="de", domain="by-sa_40"
+            domain="by-sa_40", language_code="de", language_default="en"
         )
 
     def test_branch_name(self):
