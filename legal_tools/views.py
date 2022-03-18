@@ -26,7 +26,6 @@ from i18n.utils import (
 )
 from legal_tools.models import (
     UNITS_LICENSES,
-    UNITS_PUBLIC_DOMAIN,
     LegalCode,
     Tool,
     TranslationBranch,
@@ -332,14 +331,19 @@ def view_list(request, category, language_code=None):
         lc_category = lc.tool.category
         lc_unit = lc.tool.unit
         lc_version = lc.tool.version
+        lc_identifier = lc.tool.identifier()
         lc_language_default = get_default_language_for_jurisdiction(
             lc.tool.jurisdiction_code,
         )
+        lc_lang_code = lc.language_code
         jurisdiction_name = get_jurisdiction_name(
             lc_category,
             lc_unit,
             lc_version,
             lc.tool.jurisdiction_code,
+        )
+        jurisdiction_sort = (  # ensure unported is first
+            "" if not lc.tool.jurisdiction_code else jurisdiction_name
         )
         deed_rel_path = get_deed_rel_path(
             lc.deed_url,
@@ -347,19 +351,26 @@ def view_list(request, category, language_code=None):
             lc.language_code,
             lc_language_default,
         )
-        deed_translated = deed_rel_path.endswith(f".{lc.language_code}")
+        deed_translated = deed_rel_path.endswith(f".{lc_lang_code}")
+        language_name = translation.get_language_info(lc_lang_code)[
+            "name_local"
+        ]
+
         data = dict(
             version=lc_version,
             jurisdiction_name=jurisdiction_name,
+            jurisdiction_sort=jurisdiction_sort,
             unit=lc_unit,
-            language_code=lc.language_code,
+            language_code=lc_lang_code,
+            language_name=language_name,
+            language_sort=language_name.lower(),
             deed_only=lc.tool.deed_only,
             deed_translated=deed_translated,
             deed_url=deed_rel_path,
             legal_code_url=os.path.relpath(
                 lc.legal_code_url, start=path_start
             ),
-            identifier=lc.tool.identifier(),
+            identifier=lc_identifier,
         )
         tools.append(data)
     category, category_title = get_category_and_category_title(
@@ -367,14 +378,8 @@ def view_list(request, category, language_code=None):
         None,
     )
     if category == "licenses":
-        # licenses
-        tools = sorted(tools, reverse=True, key=itemgetter("version"))
-        units = sorted(UNITS_LICENSES)
         category_list = translation.gettext("Licenses List")
     else:
-        # publicdomain
-        tools = sorted(tools, key=itemgetter("identifier"))
-        units = sorted(UNITS_PUBLIC_DOMAIN)
         category_list = translation.gettext("Public Domain List")
 
     languages_and_links = get_languages_and_links_for_deeds_ux(
@@ -383,7 +388,7 @@ def view_list(request, category, language_code=None):
     )
     html_response = render(
         request,
-        template_name="list.html",
+        template_name=f"list-{category}.html",
         context={
             "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
             "category": category,
@@ -391,7 +396,6 @@ def view_list(request, category, language_code=None):
             "category_list": category_list,
             "languages_and_links": languages_and_links,
             "tools": tools,
-            "units": units,
         },
     )
     html_response.content = bytes(
