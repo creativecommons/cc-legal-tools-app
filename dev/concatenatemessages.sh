@@ -53,19 +53,21 @@ for _file in ../cc.i18n/cc/i18n/po/*/cc_org.po; do
     #    2. Deed to Share & Deed to Remix: clean-up whitespace
     #    3. Deed Share & Deed Adapt: clean-up whitespace
     #    4. Deed Attribution Description: clean-up whitespace
+    #    5. certification unit name: clean-up whitespace
     # Translation Clean-up Patterns:
-    #    5. Arabic Deed to Share and In Particular: fix broken closing tag
-    #    6. Arabic Deed to Remix: clean-up whitespace
-    #    7. Bulgarian to Remix: clean-up whitespace
-    #    8. Esperanto: use correct HTML entity
-    #    9. Korean: remove File Separator control character
-    #   10. Romanian: clean-up whitespace
-    #   11. Spanish: clean-up whitespace
+    #    6. Arabic Deed to Share and In Particular: fix broken closing tag
+    #    7. Arabic Deed to Remix: clean-up whitespace
+    #    8. Bulgarian to Remix: clean-up whitespace
+    #    9. Esperanto: use correct HTML entity
+    #   10. Korean: remove File Separator control character
+    #   11. Romanian: clean-up whitespace
+    #   12. Spanish: clean-up whitespace
     "${_sed}" \
         -e's#strong> \(–\|-\|—\|--\)#strong> \&mdash; #g' \
         -e's#strong> &mdash;  #strong> \&mdash; #g' \
         -e's#strong>  &mdash;#strong> \&mdash;#g' \
         -e's#span>.  You#span>. You#g' \
+        -e's#on United States law) \\n"#on United States law) "#' \
         -e's#msgstr " <strong>#msgstr "<strong>#' \
         -e's#<strong>\([^<]\+\)<strong>#<strong>\1</strong>#' \
         -e's#strong> да#strong>да#' \
