@@ -88,6 +88,7 @@ for _locale_dir in $(find ../cc-legal-tools-data/locale/* -maxdepth 0 -type d); 
     _legacy_locale_2='.INVALID.SHOULD_NOT_EXIST'
     _po_legacy_1=''
     _po_legacy_2=''
+    _po_tmp=''
     case ${_locale} in
         es)
             _legacy_locale_1="${_locale}"
@@ -128,6 +129,11 @@ for _locale_dir in $(find ../cc-legal-tools-data/locale/* -maxdepth 0 -type d); 
         _po_legacy_2="../cc.i18n/cc/i18n/po/${_legacy_locale_2}/cc_org.po"
         echo "    ${_po_legacy_2}"
     fi
+    if [[ -d "tmp/locale/${_locale}" ]]; then
+        _po_tmp="tmp/locale/${_locale}/tmp.po"
+        echo "    ${_po_tmp}"
+    fi
+
 
     msgcat \
         --output-file="${_po_current}" \
@@ -135,7 +141,8 @@ for _locale_dir in $(find ../cc-legal-tools-data/locale/* -maxdepth 0 -type d); 
         --sort-output \
         ${_po_current} \
         ${_po_legacy_1} \
-        ${_po_legacy_2}
+        ${_po_legacy_2} \
+        ${_po_tmp}
 done
 echo
 
