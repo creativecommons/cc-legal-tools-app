@@ -591,6 +591,8 @@ class Command(BaseCommand):
             content = inner_html(soup_obj.p).strip()
             content = content.replace("<i>", "<em>")
             content = content.replace("</i>", "</em>")
+            content = content.replace("“", '"')
+            content = content.replace("”", '"')
             disclaimers.append(content)
 
             # Using Creative Commons Public Licenses
@@ -617,6 +619,10 @@ class Command(BaseCommand):
                     str(soup_obj.contents[2]).strip(),
                 ]
             )
+            content = content.replace('href="//wiki', 'href="https://wiki')
+            content = content.replace(
+                "wiki.creativecommons.org/C", "wiki.creativecommons.org/wiki/C"
+            )
             disclaimers.append(content)
 
             # Considerations for the public
@@ -631,6 +637,10 @@ class Command(BaseCommand):
                     soup_obj.contents[1].string.strip(),
                     str(soup_obj.contents[2]).strip(),
                 ]
+            )
+            content = content.replace('href="//wiki', 'href="https://wiki')
+            content = content.replace(
+                "wiki.creativecommons.org/C", "wiki.creativecommons.org/wiki/C"
             )
             disclaimers.append(content)
 
