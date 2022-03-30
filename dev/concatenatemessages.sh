@@ -88,6 +88,7 @@ for _locale_dir in $(find ../cc-legal-tools-data/locale/* -maxdepth 0 -type d); 
     _legacy_locale_2='.INVALID.SHOULD_NOT_EXIST'
     _po_legacy_1=''
     _po_legacy_2=''
+    _po_tmp=''
     case ${_locale} in
         es)
             _legacy_locale_1="${_locale}"
@@ -116,26 +117,39 @@ for _locale_dir in $(find ../cc-legal-tools-data/locale/* -maxdepth 0 -type d); 
            _legacy_locale_1="${_locale}"
            ;;
     esac
+
     if [[ -d "../cc.i18n/cc/i18n/po/${_legacy_locale_1}" ]]; then
         _po_legacy_1="../cc.i18n/cc/i18n/po/${_legacy_locale_1}/cc_org.po"
         echo "    ${_po_legacy_1}"
-    else
-        echo '    *** NOT FOUND ***'
-        echo 'Invalid legacy location. Aborting.' 1>&2
-        exit 1
+        msgcat \
+            --output-file="${_po_current}" \
+            --use-first \
+            --sort-output \
+            ${_po_current} \
+            ${_po_legacy_1}
     fi
+
     if [[ -d "../cc.i18n/cc/i18n/po/${_legacy_locale_2}" ]]; then
         _po_legacy_2="../cc.i18n/cc/i18n/po/${_legacy_locale_2}/cc_org.po"
         echo "    ${_po_legacy_2}"
+        msgcat \
+            --output-file="${_po_current}" \
+            --use-first \
+            --sort-output \
+            ${_po_current} \
+            ${_po_legacy_2}
     fi
 
-    msgcat \
-        --output-file="${_po_current}" \
-        --use-first \
-        --sort-output \
-        ${_po_current} \
-        ${_po_legacy_1} \
-        ${_po_legacy_2}
+    if [[ -f "tmp/locale/${_locale}/tmp.po" ]]; then
+        _po_tmp="tmp/locale/${_locale}/tmp.po"
+        echo "    ${_po_tmp}"
+        msgcat \
+            --output-file="${_po_current}" \
+            --use-first \
+            --sort-output \
+            ${_po_current} \
+            ${_po_tmp}
+    fi
 done
 echo
 

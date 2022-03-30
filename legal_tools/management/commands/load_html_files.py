@@ -9,6 +9,7 @@ from argparse import ArgumentParser
 from bs4 import BeautifulSoup, Tag
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError
+from django.utils.translation import to_locale
 from polib import POEntry, POFile
 
 # First-party/Local
@@ -259,6 +260,7 @@ class Command(BaseCommand):
         )
 
         english_by_unit_version = {}
+        disclaimers_english = []
 
         # We have to do English first. Django gets confused if you try to load
         # another language and it can't find English, I guess it's looking for
@@ -303,7 +305,10 @@ class Command(BaseCommand):
                 if tool.category == "licenses":
                     if version == "4.0":
                         support_po_files = True
-                        messages_text = self.import_by_40_license_html(
+                        (
+                            messages_text,
+                            disclaimers_text,
+                        ) = self.import_by_40_license_html(
                             content=content,
                             legal_code=legal_code,
                         )
@@ -336,6 +341,17 @@ class Command(BaseCommand):
                     )
 
                 if support_po_files and self.pomofiles:
+                    # Deeds & UX temporary
+                    if disclaimers_text:
+                        if language_code == "en":
+                            disclaimers_english = disclaimers_text
+                        self.write_temp_po_files(
+                            language_code,
+                            disclaimers_english,
+                            disclaimers_text,
+                        )
+
+                    # Legal Code
                     if language_code == "en":
                         key = f"{unit}|{version}"
                         english_by_unit_version[key] = messages_text
@@ -345,6 +361,55 @@ class Command(BaseCommand):
                         english_by_unit_version,
                         messages_text,
                     )
+
+    def write_temp_po_files(
+        self,
+        language_code,
+        english,
+        disclaimers_text,
+    ):
+        po_filename = os.path.join(
+            settings.PROJECT_ROOT,
+            "tmp",
+            "locale",
+            to_locale(language_code),
+            "tmp.po",
+        )
+
+        pofile = POFile()
+        # The syntax used to wrap messages in a .po file is
+        # difficult if you ever want to copy/paste the messages, so
+        # if --unwrapped was passed, set a wrap width that will
+        # essentially disable wrapping.
+        if self.unwrapped:
+            pofile.wrapwidth = 999999
+
+        for index, message in enumerate(disclaimers_text):
+            pofile.append(
+                POEntry(
+                    msgid=clean_string(english[index]),
+                    msgstr=clean_string(disclaimers_text[index])
+                    if language_code != "en"
+                    else "",
+                )
+            )
+        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html  # noqa: E501
+        pofile.metadata = {
+            "Content-Transfer-Encoding": "8bit",
+            "Content-Type": "text/plain; charset=utf-8",
+            "MIME-Version": "1.0",
+        }
+
+        directory = os.path.dirname(po_filename)
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
+        # Save mofile ourself. We could call 'compilemessages' but
+        # it wants to compile everything, which is both overkill
+        # and can fail if the venv or project source is not
+        # writable. We know this dir is writable, so just save this
+        # pofile and mofile ourselves.
+        LOG.debug(f"Writing {po_filename.replace('.po', '')}.(mo|po)")
+        pofile.save(po_filename)
 
     def write_po_files(
         self,
@@ -516,6 +581,68 @@ class Command(BaseCommand):
         # Get the license titles and intro text.
 
         deed_main_content = soup.find(id="deed-main-content")
+
+        # Extract Legal Code disclaimer translations
+        disclaimers = []
+        if unit == "by":
+            # Creative Commons Corporation (“Creative Commons”) is not a law
+            # firm and does not provide legal services or legal advice...
+            soup_obj = deed_main_content.find("div", class_="shaded")
+            content = inner_html(soup_obj.p).strip()
+            content = content.replace("<i>", "<em>")
+            content = content.replace("</i>", "</em>")
+            content = content.replace("“", '"')
+            content = content.replace("”", '"')
+            disclaimers.append(content)
+
+            # Using Creative Commons Public Licenses
+            soup_obj = soup_obj.find_next_sibling("div").p
+            content = soup_obj.string.strip()
+            disclaimers.append(content)
+
+            # Creative Commons public licenses provide a standard set of terms
+            # and conditions that creators and other rights holders may use...
+            soup_obj = soup_obj.find_next_sibling("p")
+            content = soup_obj.string.strip()
+            disclaimers.append(content)
+
+            # Considerations for licensors
+            soup_obj = soup_obj.find_next_sibling("p")
+            content = soup_obj.strong.string.strip().strip(":")
+            disclaimers.append(content)
+
+            # Our public licenses are intended for use by those authorized to
+            # give the public permission to use material in ways otherwise...
+            content = " ".join(
+                [
+                    soup_obj.contents[1].string.strip(),
+                    str(soup_obj.contents[2]).strip(),
+                ]
+            )
+            content = content.replace('href="//wiki', 'href="https://wiki')
+            content = content.replace(
+                "wiki.creativecommons.org/C", "wiki.creativecommons.org/wiki/C"
+            )
+            disclaimers.append(content)
+
+            # Considerations for the public
+            soup_obj = soup_obj.find_next_sibling("p")
+            content = soup_obj.strong.string.strip().strip(":")
+            disclaimers.append(content)
+
+            # By using one of our public licenses, a licensor grants the
+            # public permission to use the licensed material under...
+            content = " ".join(
+                [
+                    soup_obj.contents[1].string.strip(),
+                    str(soup_obj.contents[2]).strip(),
+                ]
+            )
+            content = content.replace('href="//wiki', 'href="https://wiki')
+            content = content.replace(
+                "wiki.creativecommons.org/C", "wiki.creativecommons.org/wiki/C"
+            )
+            disclaimers.append(content)
 
         messages["license_medium"] = inner_html(
             soup.find(id="deed-license").h2
@@ -868,7 +995,7 @@ class Command(BaseCommand):
 
         validate_dictionary_is_all_text(messages)
 
-        return messages
+        return messages, disclaimers
 
     def import_by_30_unported_license_html(self, *, content, legal_code):
         """
