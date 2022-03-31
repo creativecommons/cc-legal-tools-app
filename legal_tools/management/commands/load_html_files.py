@@ -81,9 +81,10 @@ class Command(BaseCommand):
         parser.add_argument(
             "--pomofiles",
             action="store_true",
-            help="Write .po and .mo files. This option may cause"
+            help="Write legal code .po and .mo files. This option may cause"
             " discrepencies between the data repository and Transifex and"
-            " should only be used with great care.",
+            " should only be used with great care. (The temporary .po files"
+            " used by locale concatenatemessages.sh are always written.)",
         )
         parser.add_argument(
             "--unwrapped",
@@ -340,7 +341,7 @@ class Command(BaseCommand):
                         f"NotImplementedError: unit={unit} version={version}"
                     )
 
-                if support_po_files and self.pomofiles:
+                if support_po_files:
                     # Deeds & UX temporary
                     if disclaimers_text:
                         if language_code == "en":
@@ -351,6 +352,7 @@ class Command(BaseCommand):
                             disclaimers_text,
                         )
 
+                if support_po_files and self.pomofiles:
                     # Legal Code
                     if language_code == "en":
                         key = f"{unit}|{version}"
@@ -642,6 +644,32 @@ class Command(BaseCommand):
             content = content.replace(
                 "wiki.creativecommons.org/C", "wiki.creativecommons.org/wiki/C"
             )
+            disclaimers.append(content)
+
+            # Creative Commons is not a party to its public licenses.
+            # Notwithstanding, Creative Commons may elect to apply one of...
+            soup_obj = soup.find("p", class_="shaded")
+            paragraphs = inner_html(soup_obj).split("<br/>")
+            content = paragraphs[0].strip()
+            content = content.replace("“", '"')
+            content = content.replace("”", '"')
+            content = content.replace(  # English
+                '"//creativecommons.org/publicdomain/zero/1.0/legalcode"',
+                '"/publicdomain/zero/1.0/"',
+            )
+            content = content.replace(  # Translations
+                '"//creativecommons.org/publicdomain/zero/1.0/',
+                '"/publicdomain/zero/1.0/',
+            )
+            content = content.replace(
+                '"//creativecommons.org/policies"',
+                '"/policies/"',
+            )
+            disclaimers.append(content)
+
+            # Creative Commons may be contacted at <a
+            # href="//creativecommons.org/">creativecommons.org</a>.
+            content = paragraphs[-1].strip()
             disclaimers.append(content)
 
         messages["license_medium"] = inner_html(
