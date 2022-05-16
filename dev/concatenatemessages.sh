@@ -13,7 +13,7 @@ if command -v gsed >/dev/null; then
 elif sed --version >/dev/null; then
     _sed=sed
 else
-    echo 'GNU sed is required. If on macOS install via `gnu-sed`' 1>&2
+    echo 'GNU sed is required. If on macOS install `gnu-sed` via brew.' 1>&2
     exit 1
 fi
 if ! docker compose exec app true 2>/dev/null; then
