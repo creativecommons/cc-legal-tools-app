@@ -440,11 +440,14 @@ class TestTransifex(TestCase):
             __str__=mock.Mock(return_value="mock_repo"),
             is_dirty=mock.Mock(return_value=True),
         )
-        with mock.patch("git.Repo") as git_repo:
-            git_repo.return_value.__enter__.return_value = mock_repo
-            result = self.helper.check_data_repo_is_clean()
+        with self.assertLogs(self.helper.log) as log_context:
+            with mock.patch("git.Repo") as git_repo:
+                git_repo.return_value.__enter__.return_value = mock_repo
+                result = self.helper.check_data_repo_is_clean()
         git_repo.assert_called_once()
         self.assertFalse(result)
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn("Repository is dirty.", log_context.output[0])
 
     # Test: get_local_data ###################################################
 
@@ -1969,19 +1972,22 @@ class TestTransifex(TestCase):
         push_overwrite = False
         self.helper._resource_stats = {}
 
-        self.helper.upload_resource_to_transifex(
-            resource_slug,
-            language_code,
-            transifex_code,
-            resource_name,
-            pofile_path,
-            pofile_obj,
-            push_overwrite,
-        )
+        with self.assertLogs(self.helper.log) as log_context:
+            self.helper.upload_resource_to_transifex(
+                resource_slug,
+                language_code,
+                transifex_code,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+                push_overwrite,
+            )
 
         self.helper.api.Resource.create.assert_not_called()
         self.helper.api.Resource.get.assert_not_called()
         self.helper.api.ResourceStringsAsyncUpload.upload.assert_not_called()
+        self.assertTrue(log_context.output[0].startswith("WARNING:"))
+        self.assertIn("Uploading resource to Transifex", log_context.output[0])
 
     def test_upload_resource_to_transifex_present_push_overwrite(self):
         api = self.helper.api
