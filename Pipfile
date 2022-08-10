@@ -7,7 +7,7 @@ name = "pypi"
 Babel = "*"
 beautifulsoup4 = "*"
 dealer = "*"
-Django = ">=3.2.12,<3.3"
+Django = ">=3.2.14,<3.3"
 colorlog = "*"
 GitPython = "*"
 lxml = "*"  # For use by beautifulsoup4 (but not a stated dependency)
