@@ -1,7 +1,7 @@
 # cc-legal-tools-app
 
 **Creative Commons (CC) Legal Tools Application.** This repository contains the
-application that manages the licenses and public domain declarations (static
+application that manages the licenses and public domain dedications (static
 HTML, internationalization and localization files, etc.). It consumes and
 generates data in the [creativecommons/cc-legal-tools-data][repodata]
 repository.

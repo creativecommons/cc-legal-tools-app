@@ -35,13 +35,13 @@ class LegalCodeQuerySetTest(TestCase):
             unit="by-nc", version="4.0", jurisdiction_code=""
         )
 
-        zerov1declaration = ToolFactory(
+        zerov1dedication = ToolFactory(
             unit="zero", version="1.0", jurisdiction_code=""
         )
 
         should_be_translated = [
             LegalCodeFactory(tool=bylicense40),
-            LegalCodeFactory(tool=zerov1declaration),
+            LegalCodeFactory(tool=zerov1dedication),
         ]
         should_not_be_translated = [
             LegalCodeFactory(tool=bylicense30ported),
@@ -76,7 +76,7 @@ class LegalCodeQuerySetTest(TestCase):
             unit="xyz", version="4.0", jurisdiction_code=""
         )
 
-        zerov1declaration = ToolFactory(
+        zerov1dedication = ToolFactory(
             unit="zero", version="1.0", jurisdiction_code=""
         )
         nonzerov1declaration = ToolFactory(
@@ -88,7 +88,7 @@ class LegalCodeQuerySetTest(TestCase):
             LegalCodeFactory(tool=bylicense30ported),
             LegalCodeFactory(tool=bylicense30unported),
             LegalCodeFactory(tool=bylicense40),
-            LegalCodeFactory(tool=zerov1declaration),
+            LegalCodeFactory(tool=zerov1dedication),
         ]
         should_not_be_valid = [
             LegalCodeFactory(tool=nonbylicense30ported),
@@ -390,7 +390,7 @@ class LegalCodeModelTest(TestCase):
         )
 
     # LegalCode.get_publish_files CC0 1.0 ####################################
-    # CC0 1.0 is an unported declaration with multiple languages
+    # CC0 1.0 is an unported dedication with multiple languages
 
     def test_get_publish_files_zero_legal_code_en(self):
         legal_code = LegalCodeFactory(
@@ -817,7 +817,7 @@ class ToolModelTest(TestCase):
         )
 
     # get_publish_files CC0 1.0 ##############################################
-    # CC0 1.0 is an unported declaration with multiple languages
+    # CC0 1.0 is an unported dedication with multiple languages
 
     def test_get_publish_files_zero_deed_en(self):
         language_code = "en"
