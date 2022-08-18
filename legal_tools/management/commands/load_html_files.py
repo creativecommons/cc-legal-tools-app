@@ -549,7 +549,7 @@ class Command(BaseCommand):
             for i, part in enumerate(parts):
                 messages[f"s4_part_{i}"] = str(part)
 
-        # And that's it. The CC0 declaration is relatively short.
+        # And that's it. The CC0 dedication is relatively short.
 
         validate_dictionary_is_all_text(messages)
 

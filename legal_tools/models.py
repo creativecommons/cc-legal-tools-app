@@ -119,7 +119,7 @@ class LegalCodeQuerySet(models.QuerySet):
         tool__version="1.0",
     )
 
-    # All of the Public Domain declarations are at version 1.0
+    # All of the Public Domain tools are at version 1.0
     PUBLIC_DOMAIN_ALL_QUERY = Q(tool__unit__in=UNITS_PUBLIC_DOMAIN)
 
     PUBLIC_DOMAIN_ZERO_QUERY = Q(tool__unit="zero")
