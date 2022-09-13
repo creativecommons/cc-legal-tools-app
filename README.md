@@ -63,46 +63,42 @@ location.
 
 Use the following instructions to start the project with Docker compose.
 
-1. Initial Setup
-   1. Ensure the [Data Repository](#data-repository), above, is in place
-   2. Install Docker ([Install Docker Engine | Docker
-      Documentation][installdocker])
-   3. Create Django local settings file
-        ```
-        cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
-        ```
-   4. Build the containers
-        ```
-        docker compose build
-        ```
-   5. Start the containers (if they don't start after building)
-        ```
-        docker compose up
-        ```
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Install Docker ([Install Docker Engine | Docker
+   Documentation][installdocker])
+3. Create Django local settings file
+    ```
+    cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
+    ```
+4. Build the containers
+    ```
+    docker compose build
+    ```
+5. **Run the containers**
+    ```
+    docker compose up
+    ```
+   1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Djano
+      application
+      - Any changes made to Python will be detected and rebuilt
+        transparently as long as the development server is running.
+   2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
+      server serving [creativecommons/cc-legal-tools-data][repodata]/docs.
+6. Run database migrations
+    ```
+    docker compose exec app ./manage.py migrate
+    ```
+7. Clear data in the database
+    ```
+    docker compose exec app ./manage.py clear_license_data
+    ```
+8. Load legacy HTML in the database
+    ```
+    docker compose exec app ./manage.py load_html_files
+    ```
 
-   The commands above will create two docker containers:
-   1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Djano application
-    - Any changes made to Python will be detected and rebuilt transparently as
-     long as the development server is running.
-   2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web server
-   serving [creativecommons/cc-legal-tools-data][repodata]/docs.
-
-   [installdocker]: https://docs.docker.com/engine/install/
-   [repodata]:https://github.com/creativecommons/cc-legal-tools-data
-
-   6. Run database migrations
-        ```
-        docker compose exec app ./manage.py migrate
-        ```
-   7. Clear data in the database
-        ```
-        docker compose exec app ./manage.py clear_license_data
-        ```
-   8. Load legacy HTML in the database
-        ```
-        docker compose exec app ./manage.py load_html_files
-        ```
-
+[installdocker]: https://docs.docker.com/engine/install/
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Manual Setup
