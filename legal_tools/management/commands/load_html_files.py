@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 # Third-party
 from bs4 import BeautifulSoup, Tag
 from django.conf import settings
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand, CommandError, call_command
 from django.utils.translation import to_locale
 from polib import POEntry, POFile
 
@@ -363,6 +363,8 @@ class Command(BaseCommand):
                         english_by_unit_version,
                         messages_text,
                     )
+
+        call_command("update_is_replaced_by", verbosity=options["verbosity"])
 
     def write_temp_po_files(
         self,
