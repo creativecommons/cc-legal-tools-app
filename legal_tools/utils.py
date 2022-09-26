@@ -293,7 +293,7 @@ def clean_string(s):
 
 def update_is_replaced_by():
     """
-    Update the is_replaced_by property of all licenses by  doing simple unit
+    Update the is_replaced_by property of all licenses by doing simple unit
     and version comparisons.
 
     Since version 4.0, the licenses are international, so no jurisdiction
