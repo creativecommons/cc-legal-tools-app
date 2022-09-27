@@ -131,11 +131,51 @@ def get_deed_rel_path(
                 f"deed.{language_code}", f"deed.{language_default}"
             )
         else:
-            # Translation incomplete, use Englishi
+            # Translation incomplete, use English
             deed_rel_path = deed_rel_path.replace(
                 f"deed.{language_code}", f"deed.{settings.LANGUAGE_CODE}"
             )
     return deed_rel_path
+
+
+def get_legal_code_replaced_rel_path(
+    tool,
+    path_start,
+    language_code,
+    language_default,
+):
+    if not tool:
+        return None, None, None
+    try:
+        # Same language
+        legal_code = LegalCode.objects.valid().get(
+            tool=tool,
+            language_code=language_code,
+        )
+    except LegalCode.DoesNotExist:
+        try:
+            # Jurisdiction default language
+            legal_code = LegalCode.objects.valid().get(
+                tool=tool,
+                language_code=language_default,
+            )
+        except LegalCode.DoesNotExist:
+            # Global default language
+            legal_code = LegalCode.objects.valid().get(
+                tool=tool,
+                language_code=settings.LANGUAGE_CODE,
+            )
+    replaced_title = legal_code.title
+    replaced_deed_path = get_deed_rel_path(
+        legal_code.deed_url,
+        path_start,
+        language_code,
+        language_default,
+    )
+    replaced_legal_code_path = os.path.relpath(
+        legal_code.legal_code_url, path_start
+    )
+    return replaced_title, replaced_deed_path, replaced_legal_code_path
 
 
 def name_local(legal_code):
@@ -455,6 +495,13 @@ def view_deed(
         selected_language_code=language_code,
     )
 
+    replaced_title, replaced_path, _ = get_legal_code_replaced_rel_path(
+        tool.is_replaced_by,
+        path_start,
+        language_code,
+        language_default,
+    )
+
     if tool.unit in UNITS_LICENSES:
         body_template = "includes/deed_body_licenses.html"
     elif tool.unit == "zero":
@@ -478,6 +525,8 @@ def view_deed(
             "identifier": tool.identifier(),
             "languages_and_links": languages_and_links,
             "legal_code_rel_path": legal_code_rel_path,
+            "replaced_path": replaced_path,
+            "replaced_title": replaced_title,
             "tool": tool,
             "tool_title": tool_title,
         },
@@ -554,6 +603,13 @@ def view_legal_code(
             language_default,
         )
 
+        replaced_title, _, replaced_path = get_legal_code_replaced_rel_path(
+            tool.is_replaced_by,
+            path_start,
+            language_code,
+            language_default,
+        )
+
         kwargs = dict(
             template_name="legalcode.html",
             context={
@@ -564,6 +620,8 @@ def view_legal_code(
                 "identifier": tool.identifier(),
                 "languages_and_links": languages_and_links,
                 "legal_code": legal_code,
+                "replaced_path": replaced_path,
+                "replaced_title": replaced_title,
                 "tool": tool,
                 "tool_title": tool_title,
             },
