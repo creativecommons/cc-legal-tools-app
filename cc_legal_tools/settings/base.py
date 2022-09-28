@@ -247,10 +247,11 @@ LANG_INFO["zu"] = {"code": "zu"}  # Remaining data from Babel
 TRANSIFEX = {
     "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "[!] MISSING [!]"),
     "ORGANIZATION_SLUG": "creativecommons",
-    "PROJECT_SLUG": "CC",
-    # We currently only have a single team for all of our projects named
-    # "Creative Commons team"
-    "TEAM_ID": 11342,
+    "DEEDS_UX_TEAM_SLUG": "creative-commons-team",
+    "DEEDS_UX_PROJECT_SLUG": "CC",
+    "DEEDS_UX_RESOURCE_SLUG": "deeds_ux",
+    "LEGAL_CODE_PROJECT_SLUG": "cc-legal-code",
+    "LEGAL_CODE_TEAM_SLUG": "team-1",
 }
 
 
