@@ -27,7 +27,12 @@
 {% block content %}
   <div class="container">
     {% if tool.deprecated_on %}
-      {% include 'includes/deprecated.html' %}
+      {# Retired legal tool notice #}
+      {% include 'includes/disclaimer_deprecated.html' %}
+    {% endif %}
+    {% if replaced_path %}
+      {# Newer license notice #}
+      {% include 'includes/disclaimer_newer_license.html' %}
     {% endif %}
 
     {% include body_template %}

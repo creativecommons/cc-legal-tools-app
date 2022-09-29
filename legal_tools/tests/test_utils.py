@@ -463,3 +463,46 @@ class CleanStringTest(TestCase):
         for input, expected in data:
             with self.subTest(input):
                 self.assertEqual(expected, utils.clean_string(input))
+
+
+class UpdatePropertiesTest(TestCase):
+    def test_update_is_replaced_by(self):
+        # Setup
+        license4by = ToolFactory(category="licenses", unit="by", version="4.0")
+        license4bysa = ToolFactory(
+            category="licenses", unit="by-sa", version="4.0"
+        )
+        license3by = ToolFactory(category="licenses", unit="by", version="3.0")
+        license2by = ToolFactory(category="licenses", unit="by", version="2.0")
+        license1by = ToolFactory(category="licenses", unit="by", version="1.0")
+        license1xx = ToolFactory(category="licenses", unit="xx", version="1.0")
+
+        # First run
+        utils.update_is_replaced_by()
+        license4by.refresh_from_db()
+        self.assertIsNone(license4by.is_replaced_by)
+        license4bysa.refresh_from_db()
+        self.assertIsNone(license4bysa.is_replaced_by)
+        license3by.refresh_from_db()
+        self.assertEqual(license3by.is_replaced_by, license4by)
+        license2by.refresh_from_db()
+        self.assertEqual(license2by.is_replaced_by, license4by)
+        license1by.refresh_from_db()
+        self.assertEqual(license1by.is_replaced_by, license4by)
+        license1xx.refresh_from_db()
+        self.assertIsNone(license1xx.is_replaced_by)
+
+        # Subsequent run
+        utils.update_is_replaced_by()
+        license4by.refresh_from_db()
+        self.assertIsNone(license4by.is_replaced_by)
+        license4bysa.refresh_from_db()
+        self.assertIsNone(license4bysa.is_replaced_by)
+        license3by.refresh_from_db()
+        self.assertEqual(license3by.is_replaced_by, license4by)
+        license2by.refresh_from_db()
+        self.assertEqual(license2by.is_replaced_by, license4by)
+        license1by.refresh_from_db()
+        self.assertEqual(license1by.is_replaced_by, license4by)
+        license1xx.refresh_from_db()
+        self.assertIsNone(license1xx.is_replaced_by)

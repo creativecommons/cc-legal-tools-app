@@ -93,7 +93,7 @@ def expected_and_unexpected_strings_for_tool(tool):
 class ToolsTestsMixin:
     # Create some tools to test in setUp
     def setUp(self):
-        self.by = ToolFactory(
+        self.by_40 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by/4.0/",
             category="licenses",
             unit="by",
@@ -109,7 +109,7 @@ class ToolsTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        self.by_nc = ToolFactory(
+        self.by_nc_40 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-nc/4.0/",
             category="licenses",
             unit="by-nc",
@@ -125,7 +125,7 @@ class ToolsTestsMixin:
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
-        self.by_nc_nd = ToolFactory(
+        self.by_nc_nd_40 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-nc-nd/4.0/",
             category="licenses",
             unit="by-nc-nd",
@@ -141,7 +141,7 @@ class ToolsTestsMixin:
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
-        self.by_nc_sa = ToolFactory(
+        self.by_nc_sa_40 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-nc-sa/4.0/",
             category="licenses",
             unit="by-nc-sa",
@@ -157,7 +157,7 @@ class ToolsTestsMixin:
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
-        self.by_nd = ToolFactory(
+        self.by_nd_40 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-nd/4.0/",
             category="licenses",
             unit="by-nd",
@@ -173,7 +173,7 @@ class ToolsTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        self.by_sa = ToolFactory(
+        self.by_sa_40 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-sa/4.0/",
             category="licenses",
             unit="by-sa",
@@ -189,7 +189,7 @@ class ToolsTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        self.by = ToolFactory(
+        self.by_30 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by/3.0/",
             category="licenses",
             unit="by",
@@ -204,8 +204,9 @@ class ToolsTestsMixin:
             requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
+            is_replaced_by=self.by_40,
         )
-        self.by = ToolFactory(
+        self.by_20 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by/2.0/",
             category="licenses",
             unit="by",
@@ -220,8 +221,9 @@ class ToolsTestsMixin:
             requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
+            is_replaced_by=self.by_40,
         )
-        self.zero = ToolFactory(
+        self.zero_10 = ToolFactory(
             base_url="https://creativecommons.org/publicdomain/zero/1.0/",
             category="publicdomain",
             unit="zero",
@@ -259,10 +261,34 @@ class ToolsTestsMixin:
             requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
+            is_replaced_by=self.by_sa_40,
         )
-        LegalCodeFactory(
+        LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_sa_30_es, language_code="es"
-        )  # Default lang
+        )
+        LegalCodeFactory(tool=self.by_sa_30_es, language_code="ca")
+
+        self.by_30_th = ToolFactory(
+            base_url="https://creativecommons.org/licenses/by/3.0/th/",
+            category="licenses",
+            unit="by",
+            version="3.0",
+            jurisdiction_code="th",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            requires_source_code=False,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+            is_replaced_by=self.by_40,
+        )
+        LegalCodeFactory(  # Jurisdiction default language
+            tool=self.by_30_th, language_code="th"
+        )
 
         self.by_sa_20_es = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-sa/2.0/es/",
@@ -280,10 +306,11 @@ class ToolsTestsMixin:
             requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
+            is_replaced_by=self.by_sa_40,
         )
-        LegalCodeFactory(
+        LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_sa_20_es, language_code="es"
-        )  # Default lang
+        )
 
         super().setUp()
 
@@ -402,10 +429,10 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
     def test_deed_translation_by_40_gl(self):
         # Test with valid Deed & UX and *invalid* Legal Code translations
         language_code = "gl"
-        tool = Tool.objects.filter(
+        tool = Tool.objects.get(
             unit="by",
             version="4.0",
-        )[0]
+        )
         url = os.path.join(
             "/",
             tool.category,
@@ -429,14 +456,16 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         self.assertContains(rsp, "Notas")
 
     def test_view_deed_template_body_tools(self):
-        lc = LegalCode.objects.filter(tool__unit="by")[0]
+        lc = LegalCode.objects.get(
+            tool__unit="by", tool__version="4.0", language_code="en"
+        )
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
         self.assertTemplateUsed("includes/deed_body_legal_tools.html")
 
     def test_view_deed_template_body_zero(self):
-        lc = LegalCode.objects.filter(tool__unit="zero")[0]
+        lc = LegalCode.objects.get(tool__unit="zero", language_code="en")
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
@@ -482,20 +511,21 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         self.assertTemplateUsed("includes/deed_body_unimplemented.html")
 
     def test_view_deed_invalid_language(self):
-        lc = LegalCode.objects.filter(
+        lc = LegalCode.objects.get(
             tool__unit="zero",
             language_code="en",
-        )[0]
+        )
         url = lc.deed_url.replace("deed.en", "deed.xx")
         rsp = self.client.get(url)
         self.assertEqual(404, rsp.status_code)
 
     def test_view_deed_jurisdiction_language(self):
-        lc = LegalCode.objects.filter(
+        lc = LegalCode.objects.get(
             tool__unit="by-sa",
             tool__version="3.0",
             tool__jurisdiction_code="es",
-        )[0]
+            language_code="es",
+        )
         tool = lc.tool
 
         language_code = "fr"
@@ -514,24 +544,48 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         self.assertEqual(200, rsp.status_code)
 
     def test_view_deed_jurisdiction(self):
-        lc = LegalCode.objects.filter(
+        lc = LegalCode.objects.get(
             tool__unit="by-sa",
             tool__version="3.0",
             tool__jurisdiction_code="es",
-        )[0]
+            language_code="es",
+        )
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
 
     def test_view_deed_zero(self):
-        lc = LegalCode.objects.filter(
+        lc = LegalCode.objects.get(
             tool__unit="zero",
             tool__version="1.0",
             language_code="en",
-        )[0]
+        )
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
+
+    def test_view_deed_replaced_specified_language(self):
+        lc = LegalCode.objects.get(
+            tool__unit="by",
+            tool__version="2.0",
+            language_code="en",
+        )
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+
+    def test_view_deed_replaced_jurisdiction_language(self):
+        lc = LegalCode.objects.get(
+            tool__unit="by-sa",
+            tool__version="3.0",
+            tool__jurisdiction_code="es",
+            language_code="ca",
+        )
+        url = lc.deed_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
 
     # def test_deed_for_superseded_tool(self):
     #     unit = "by-nc-sa"
@@ -881,6 +935,71 @@ class ViewLegalCodeTest(TestCase):
             rsp, 'Sección 4 – Derechos "Sui Generis" sobre Bases de Datos.'
         )
         self.assertContains(rsp, "Sección 8 – Interpretación")
+
+    def test_view_legal_code_replaced_specified_language(self):
+        by_40 = LegalCodeFactory(
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/4.0/",
+            tool__unit="by",
+            tool__version="4.0",
+            language_code="es",
+        )
+        by_30 = LegalCodeFactory(
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/3.0/",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__is_replaced_by=by_40.tool,
+            language_code="es",
+        )
+        url = by_30.legal_code_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+
+    def test_view_legal_code_replaced_jurisdiction_language(self):
+        by_40 = LegalCodeFactory(
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/4.0/",
+            tool__unit="by",
+            tool__version="4.0",
+            language_code="es",
+        )
+        by_30_es = LegalCodeFactory(
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/3.0/es/",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__jurisdiction_code="es",
+            tool__is_replaced_by=by_40.tool,
+            language_code="ast",
+        )
+        url = by_30_es.legal_code_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+
+    def test_view_legal_code_replaced_default_language(self):
+        by_40 = LegalCodeFactory(
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/4.0/",
+            tool__unit="by",
+            tool__version="4.0",
+            language_code="en",
+        )
+        by_30_es = LegalCodeFactory(
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org/licenses/by/3.0/es/",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__jurisdiction_code="es",
+            tool__is_replaced_by=by_40.tool,
+            language_code="es",
+        )
+        url = by_30_es.legal_code_url
+        rsp = self.client.get(url)
+        self.assertEqual(200, rsp.status_code)
+        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
 
 
 class ViewBranchStatusTest(TestCase):

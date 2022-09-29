@@ -3,12 +3,14 @@ import datetime
 import logging
 import os
 import socket
+import warnings
 from argparse import ArgumentParser
 
 # Third-party
 from bs4 import BeautifulSoup, Tag
+from bs4.builder import XMLParsedAsHTMLWarning
 from django.conf import settings
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand, CommandError, call_command
 from django.utils.translation import to_locale
 from polib import POEntry, POFile
 
@@ -39,6 +41,8 @@ LOG_LEVELS = {
     3: logging.DEBUG,
 }
 NOW = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S+0000")
+
+warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
 
 
 class Command(BaseCommand):
@@ -363,6 +367,8 @@ class Command(BaseCommand):
                         english_by_unit_version,
                         messages_text,
                     )
+
+        call_command("update_is_replaced_by", verbosity=options["verbosity"])
 
     def write_temp_po_files(
         self,

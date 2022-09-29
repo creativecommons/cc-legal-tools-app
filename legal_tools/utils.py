@@ -289,3 +289,52 @@ def clean_string(s):
         # I guess.
         s = s.replace("  ", " ")
     return s
+
+
+def update_is_replaced_by():
+    """
+    Update the is_replaced_by property of all licenses by doing simple unit
+    and version comparisons.
+
+    Since version 4.0, the licenses are international, so no jurisdiction
+    comparison is made.
+    """
+    # Get the list of units and languages that occur among the tools
+    # to let the template iterate over them as it likes.
+    tool_objects = (
+        legal_tools.models.Tool.objects.all()
+        .filter(category="licenses")
+        .order_by(
+            # The code below breaks if not sorted by version decending
+            "-version",
+            "unit",
+            "jurisdiction_code",
+        )
+    )
+    version_latest = None
+    for tool in tool_objects:
+        if not version_latest:
+            version_latest = tool.version
+            continue
+        if tool.version == version_latest:
+            continue
+        try:
+            latest = legal_tools.models.Tool.objects.get(
+                category="licenses",
+                version=version_latest,
+                unit=tool.unit,
+            )
+        except legal_tools.models.Tool.DoesNotExist:
+            latest = False
+        if latest:
+            if tool.is_replaced_by == latest:
+                LOG.debug(
+                    f"{tool.resource_name} is_replaced_by already set to"
+                    " correct value"
+                )
+                continue
+            LOG.info(
+                f"{tool.resource_name} is_replaced_by {latest.resource_name}"
+            )
+            tool.is_replaced_by = latest
+            tool.save()
