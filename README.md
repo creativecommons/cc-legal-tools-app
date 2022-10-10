@@ -67,9 +67,14 @@ Use the following instructions to start the project with Docker compose.
 2. Install Docker ([Install Docker Engine | Docker
    Documentation][installdocker])
 3. Create Django local settings file
-    ```
-    cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
-    ```
+    1. Change directory to the ```cc-legal-tools-app``` directory
+      ```
+      cd cc-legal-tools-app
+      ```
+    2. Copy the example local settings file
+      ```
+      cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
+      ```
 4. Build the containers
     ```
     docker compose build
