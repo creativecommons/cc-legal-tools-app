@@ -37,7 +37,8 @@ a.skip-link:focus, a.skip-link:active {
   z-index:999;
 }
 
-/* Vocabulary modifications */
+
+/* begin Vocabulary modifications for templates/includes/newsletter.html */
 
 .button.is-primary {
   position: relative;
@@ -61,3 +62,5 @@ button.button.is-primary {
   width: 80px;
   transform: translateX(-78px);
 }
+
+/* end Vocabulary modifications for templates/includes/newsletter.html */
