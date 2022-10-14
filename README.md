@@ -1,33 +1,26 @@
-# Understand permission requirements for Windows
-*Estimated reading time: 3 minutes*
+# Using Windows on Docker 
 
+Go to Command Prompt
+To "Docker Desktop Installer.exe" install
+If you’re using PowerShell you should run it as:
 
-This page contains information about the permission requirements for running and installing Docker Desktop on Windows, the functionality of the privileged helper process ``com.docker.service.exe`` and the reasoning behind this approach.
+Start-Process 'Docker Desktop Installer.exe' -Wait install
+If using the Windows Command Prompt:
 
-It also provides clarity on running containers as ``root`` as opposed to having ``Administrator`` access on the host and the privileges of the Windows Docker engine and Windows containers.
+start /w "Docker Desktop Installer.exe" install
+The install command accepts the following flags:
 
-## Permission requirements
-The privileged helper ``com.docker.service.exe`` is a Windows service which runs in the background with ``SYSTEM`` privileges. It listens on the named ``pipe //./pipe/dockerBackendV2``. The developer runs the Docker Desktop application, which connects to the named pipe and sends commands to the service. This named pipe is protected, and only users that are part of the ``docker-users`` group can have access to it.
+* ``--quiet: suppresses information output when running the installer``
+* `` --accept-license: accepts the Docker Subscription Service Agreement now, rather than requiring it to be accepted when the application is first run``
+*`` --no-windows-containers: disables Windows containers integration``
+* ``--allowed-org=<org name>: requires the user to sign in and be part of the specified Docker Hub organization when running the application``
+* ``--backend=<backend name>: selects the default backend to use for Docker Desktop, hyper-v, windows or wsl-2 (default)``
+The Docker menu (whale menu) displays the Docker Subscription Service Agreement window.
 
-The service performs the following functionalities:
+## Here’s a summary of the key points:
 
-* Ensuring that ``kubernetes.docker.internal`` is defined in the Win32 hosts file. Defining the DNS name ``kubernetes.docker.internal`` allows Docker to share Kubernetes contexts with containers.
-* Securely caching the Registry Access Management policy which is read-only for the developer.
-* Creating the Hyper-V VM ```"DockerDesktopVM"``` and managing its lifecycle - starting, stopping and destroying it. The VM name is hard coded in the service code so the service cannot be used for creating or manipulating any other VMs.
-* Getting the VHDX disk size.
-* Moving the VHDX file or folder.
-* Starting and stopping the Windows Docker engine and querying whether it is running.
-* Deleting all Windows containers data files.
-* Checking if Hyper-V is enabled.
-* Checking if the bootloader activates Hyper-V.
-* Checking if required Windows features are both installed and enabled.
-* Conducting healthchecks and retrieving the version of the service itself.
-
-## Containers running as root within the Linux VM
-The Linux Docker daemon and containers run in a minimal, special-purpose Linux VM managed by Docker. It is immutable so users can’t extend it or change the installed software. This means that although containers run by default as ``root``, this does not allow altering the VM and does not grant ``Administrator`` access to the Windows host machine. The Linux VM serves as a security boundary and limits what resources from the host can be accessed. File sharing uses a user-space crafted file server and any directories from the host bind mounted into Docker containers still retain their original permissions. It does not give the user access to any files that it doesn’t already have access to.
-
-## Windows Containers
-Unlike the Linux Docker engine and containers which run in a VM, Windows containers are an operating system feature, and run directly on the Windows host with ``Administrator`` privileges. For organizations which do not want their developers to run Windows containers, a ``–no-windows-containers`` installer flag is available from version 4.11 to disable their use.
-
-## Networking
-For network connectivity, Docker Desktop uses a user-space process (vpnkit), which inherits constraints like firewall rules, VPN, HTTP proxy properties etc. from the user that launched it.
+* Docker Desktop is free for small businesses (fewer than 250 employees AND less than $10 million in annual revenue), personal use, education, and non-commercial open source projects.
+* Otherwise, it requires a paid subscription for professional use.
+* Paid subscriptions are also required for government entities.
+* The Docker Pro, Team, and Business subscriptions include commercial use of Docker Desktop.
+* Select Accept to continue. Docker Desktop starts after you accept the terms.
