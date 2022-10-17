@@ -66,38 +66,34 @@ Use the following instructions to start the project with Docker compose.
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Install Docker ([Install Docker Engine | Docker
    Documentation][installdocker])
-3. Create Django local settings file
-    1. Change directory to the ```cc-legal-tools-app``` directory
-      ```
-      cd cc-legal-tools-app
-      ```
-    2. Copy the example local settings file
-      ```
-      cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
-      ```
-4. Build the containers
+3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
+4. Create Django local settings file
+    ```
+    cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
+    ```
+5. Build the containers
     ```
     docker compose build
     ```
-5. **Run the containers**
+6. **Run the containers**
     ```
     docker compose up
     ```
-   1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Djano
+   1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Django
       application
       - Any changes made to Python will be detected and rebuilt
         transparently as long as the development server is running.
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
       server serving [creativecommons/cc-legal-tools-data][repodata]/docs.
-6. Run database migrations
+7. Run database migrations
     ```
     docker compose exec app ./manage.py migrate
     ```
-7. Clear data in the database
+8. Clear data in the database
     ```
     docker compose exec app ./manage.py clear_license_data
     ```
-8. Load legacy HTML in the database
+9. Load legacy HTML in the database
     ```
     docker compose exec app ./manage.py load_html_files
     ```
