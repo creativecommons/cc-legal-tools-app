@@ -43,6 +43,10 @@ Both versions are specified in the [`Pipfile`](Pipefile).
 
 ### Data Repository
 
+Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository
+
+[gitclone]: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
+
 The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
 ```
@@ -58,14 +62,20 @@ location.
 
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
+[installdockerwindows]: https://docs.docker.com/desktop/install/windows-install/
+
+[installdockermacOS]: https://docs.docker.com/desktop/install/mac-install/ 
 
 ### Docker Compose Setup
 
 Use the following instructions to start the project with Docker compose.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Install Docker ([Install Docker Engine | Docker
-   Documentation][installdocker])
+2. Install Docker 
+  - ([Install Docker Engine | Docker
+   Documentation][installdocker])  for linux distributions 
+  - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for windows distributions
+  - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOs distributions
 3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
 4. Create Django local settings file
     ```
@@ -103,6 +113,7 @@ Use the following instructions to start the project with Docker compose.
 
 
 ### Manual Setup
+[pythonh]: https://www.pythontutorial.net/getting-started/install-python/
 
 1. Development Environment
    1. Ensure the [Data Repository](#data-repository), above, is in place
@@ -118,6 +129,12 @@ Use the following instructions to start the project with Docker compose.
         ```
         brew install pipenv python@3.9
         ```
+      - windows:
+
+      first install [python][pythonh] before pipenv
+        ```
+        pip install pipenv    
+        ```
    3. Install Python environment and modules via pipenv to create a
       virtualenv
       - Linux:
@@ -127,6 +144,10 @@ Use the following instructions to start the project with Docker compose.
       - macOS: via [Homebrew](https://brew.sh/):
         ```
         pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
+        ```
+      - windos:
+        ```
+        pipenv --dev --[python version] [file path]
         ```
    4. Install pre-commit hooks
     ```
@@ -143,6 +164,10 @@ Use the following instructions to start the project with Docker compose.
         sudo createdb -E UTF-8 cc_legal_tools
         ```
       - macOS:
+        ```
+        createdb -E UTF-8 cc_legal_tools
+        ```
+      - windows:
         ```
         createdb -E UTF-8 cc_legal_tools
         ```
