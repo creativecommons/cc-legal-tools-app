@@ -145,9 +145,9 @@ Use the following instructions to start the project with Docker compose.
         ```
         pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
         ```
-      - windos:
+      - windos: usage : pipenv --dev --[python version] [file path]
         ```
-        pipenv --dev --[python version] [file path]
+        pipenv --dev --python
         ```
    4. Install pre-commit hooks
     ```
