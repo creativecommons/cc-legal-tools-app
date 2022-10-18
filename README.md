@@ -64,10 +64,11 @@ location.
 ### Docker Compose Setup
 
 Use the following instructions to start the project with Docker compose.
+**cc staff do not use Windows for development.**
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Install Docker 
-   - ([Install Docker Engine | Docker Documentation][installdocker]) for linux distributions 
+2. Install Docker
+   - ([Install Docker Engine | Docker Documentation][installdocker]) for linux distributions
    - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for windows distributions
    - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOs distributions
 3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
@@ -105,7 +106,7 @@ Use the following instructions to start the project with Docker compose.
 [installdocker]: https://docs.docker.com/engine/install/
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 [installdockerwindows]:https://docs.docker.com/desktop/install/windows-install/
-[installdockermacOS]:https://docs.docker.com/desktop/install/mac-install/ 
+[installdockermacOS]:https://docs.docker.com/desktop/install/mac-install/
 
 
 ### Manual Setup
@@ -126,7 +127,7 @@ Use the following instructions to start the project with Docker compose.
         ```
       - Windows: [install Python][python-windows] and then use `pip` to install `pipenv`:
         ```
-        pip install pipenv    
+        pip install pipenv
         ```
    3. Install Python environment and modules via pipenv to create a
       virtualenv
@@ -174,7 +175,7 @@ Use the following instructions to start the project with Docker compose.
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
-     
+
 [python-windows]:https://www.pythontutorial.net/getting-started/install-python/
 
 
