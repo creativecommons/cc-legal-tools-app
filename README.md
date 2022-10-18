@@ -44,9 +44,6 @@ Both versions are specified in the [`Pipfile`](Pipefile).
 ### Data Repository
 
 Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository
-
-[gitclone]: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
-
 The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
 ```
@@ -61,10 +58,8 @@ If it is not cloned into the default location,  the Django
 location.
 
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
+[gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 
-[installdockerwindows]: https://docs.docker.com/desktop/install/windows-install/
-
-[installdockermacOS]: https://docs.docker.com/desktop/install/mac-install/ 
 
 ### Docker Compose Setup
 
@@ -72,10 +67,9 @@ Use the following instructions to start the project with Docker compose.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Install Docker 
-  - ([Install Docker Engine | Docker
-   Documentation][installdocker])  for linux distributions 
-  - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for windows distributions
-  - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOs distributions
+   - ([Install Docker Engine | Docker Documentation][installdocker]) for linux distributions 
+   - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for windows distributions
+   - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOs distributions
 3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
 4. Create Django local settings file
     ```
@@ -110,10 +104,11 @@ Use the following instructions to start the project with Docker compose.
 
 [installdocker]: https://docs.docker.com/engine/install/
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
+[installdockerwindows]:https://docs.docker.com/desktop/install/windows-install/
+[installdockermacOS]:https://docs.docker.com/desktop/install/mac-install/ 
 
 
 ### Manual Setup
-[pythonh]: https://www.pythontutorial.net/getting-started/install-python/
 
 1. Development Environment
    1. Ensure the [Data Repository](#data-repository), above, is in place
@@ -129,9 +124,7 @@ Use the following instructions to start the project with Docker compose.
         ```
         brew install pipenv python@3.9
         ```
-      - windows:
-
-      first install [python][pythonh] before pipenv
+      - Windows: [install Python][python-windows] and then use `pip` to install `pipenv`:
         ```
         pip install pipenv    
         ```
@@ -145,7 +138,10 @@ Use the following instructions to start the project with Docker compose.
         ```
         pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
         ```
-      - windos: usage : **pipenv  --dev   --[python version]  [file path]**
+      - Windows:
+        ```
+        pipenv install --dev --python \User\Appdata\programs\python
+        ```
    4. Install pre-commit hooks
     ```
     pipenv run pre-commit install
@@ -164,11 +160,11 @@ Use the following instructions to start the project with Docker compose.
         ```
         createdb -E UTF-8 cc_legal_tools
         ```
-      - windows:
+      - Windows:
         ```
         createdb -E UTF-8 cc_legal_tools
         ```
-   4. Load database schema
+   3. Load database schema
     ```
     pipenv run ./manage.py migrate
     ```
@@ -178,6 +174,8 @@ Use the following instructions to start the project with Docker compose.
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
+     
+[python-windows]:https://www.pythontutorial.net/getting-started/install-python/
 
 
 ### Manual Commands
