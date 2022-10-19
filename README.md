@@ -43,6 +43,8 @@ Both versions are specified in the [`Pipfile`](Pipefile).
 
 ### Data Repository
 
+Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository.
+
 The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
 ```
@@ -56,16 +58,20 @@ If it is not cloned into the default location,  the Django
 `DATA_REPOSITORY_DIR` environment variable can be used to configure its
 location.
 
+[gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Docker Compose Setup
 
 Use the following instructions to start the project with Docker compose.
+**cc staff do not use Windows for development.**
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Install Docker ([Install Docker Engine | Docker
-   Documentation][installdocker])
+2. Install Docker
+   - ([Install Docker Engine | Docker Documentation][installdockerlinux]) for Linux
+   - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOS
+   - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for Windows
 3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
 4. Create Django local settings file
     ```
@@ -98,7 +104,9 @@ Use the following instructions to start the project with Docker compose.
     docker compose exec app ./manage.py load_html_files
     ```
 
-[installdocker]: https://docs.docker.com/engine/install/
+[installdockerlinux]: https://docs.docker.com/engine/install/
+[installdockermacOS]:https://docs.docker.com/desktop/install/mac-install/
+[installdockerwindows]:https://docs.docker.com/desktop/install/windows-install/
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
@@ -118,6 +126,10 @@ Use the following instructions to start the project with Docker compose.
         ```
         brew install pipenv python@3.9
         ```
+      - Windows: [install Python][python-windows] and then use `pip` to install `pipenv`:
+        ```
+        pip install pipenv
+        ```
    3. Install Python environment and modules via pipenv to create a
       virtualenv
       - Linux:
@@ -127,6 +139,10 @@ Use the following instructions to start the project with Docker compose.
       - macOS: via [Homebrew](https://brew.sh/):
         ```
         pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
+        ```
+      - Windows:
+        ```
+        pipenv install --dev --python \User\Appdata\programs\python
         ```
    4. Install pre-commit hooks
     ```
@@ -146,7 +162,11 @@ Use the following instructions to start the project with Docker compose.
         ```
         createdb -E UTF-8 cc_legal_tools
         ```
-   4. Load database schema
+      - Windows:
+        ```
+        createdb -E UTF-8 cc_legal_tools
+        ```
+   3. Load database schema
     ```
     pipenv run ./manage.py migrate
     ```
@@ -156,6 +176,8 @@ Use the following instructions to start the project with Docker compose.
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
+
+[python-windows]:https://www.pythontutorial.net/getting-started/install-python/
 
 
 ### Manual Commands
