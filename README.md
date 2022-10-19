@@ -43,7 +43,8 @@ Both versions are specified in the [`Pipfile`](Pipefile).
 
 ### Data Repository
 
-Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository
+Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository.
+
 The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
 ```
@@ -57,8 +58,8 @@ If it is not cloned into the default location,  the Django
 `DATA_REPOSITORY_DIR` environment variable can be used to configure its
 location.
 
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 [gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Docker Compose Setup
@@ -68,9 +69,9 @@ Use the following instructions to start the project with Docker compose.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Install Docker
-   - ([Install Docker Engine | Docker Documentation][installdocker]) for linux distributions
-   - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for windows distributions
-   - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOs distributions
+   - ([Install Docker Engine | Docker Documentation][installdockerlinux]) for Linux
+   - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOS
+   - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for Windows
 3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
 4. Create Django local settings file
     ```
@@ -103,10 +104,10 @@ Use the following instructions to start the project with Docker compose.
     docker compose exec app ./manage.py load_html_files
     ```
 
-[installdocker]: https://docs.docker.com/engine/install/
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
-[installdockerwindows]:https://docs.docker.com/desktop/install/windows-install/
+[installdockerlinux]: https://docs.docker.com/engine/install/
 [installdockermacOS]:https://docs.docker.com/desktop/install/mac-install/
+[installdockerwindows]:https://docs.docker.com/desktop/install/windows-install/
+[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Manual Setup
