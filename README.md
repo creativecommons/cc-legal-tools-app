@@ -138,36 +138,27 @@ Use the following instructions to start the project with Docker compose.
    ```
   2. Create project database
      - Linux:
-       ```
-       sudo createdb -E UTF-8 cc_legal_tools
+       ```sudo createdb -E UTF-8 cc_legal_tools
        ```
      - macOS:
-       ```
-       createdb -E UTF-8 cc_legal_tools
+       ```createdb -E UTF-8 cc_legal_tools
        ```
   4. Load database schema
-   ```
-   pipenv run ./manage.py migrate
+   ```pipenv run ./manage.py migrate
    ```
 3. Run development server ([127.0.0.1:8005](http://127.0.0.1:8005/))
-    ```
-    pipenv run ./manage.py runserver
+    ```pipenv run ./manage.py runserver
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
     [Github] (https://github.com/creativecommons/cc-legal-tools-app/issues/303)
-     
-    ``Additional context``
+     ``Additional context``
        **CC Staff do not use Windows for development.**
 ### Manual Commands
-
 **NOTE:** The rest of the documentation assumes Docker. If you are using a
 manual setup, use `pipenv run` instead of `docker compose exec app` for the
 commands below.
-
-
 ### Tooling
-
 - **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
 - [Black][black]: the uncompromising Python code formatter
 - [Coverage.py][coveragepy]: Code coverage measurement for Python
@@ -189,7 +180,6 @@ commands below.
 [isort]: https://pycqa.github.io/isort/
 [precommit]: https://pre-commit.com/
 
-
 #### Helper Scripts
 
 Best run before every commit:
@@ -205,7 +195,6 @@ Esoteric and dangerous:
 - `./dev/updatemessages.sh` - Run Django Management nofuzzy_makemessages with
   helpful options (including excluding legalcode) and compilemessages
 
-
 #### Coverage Tests and Report
 
 The coverage tests and report are run as part of pre-commit and as a GitHub
@@ -213,23 +202,19 @@ Action. To run it manually:
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
 2. Coverage test
-    ```
-    docker compose exec app coverage run manage.py test --noinput --keepdb
+    ```docker compose exec app coverage run manage.py test --noinput --keepdb
     ```
 3. Coverage report
-    ```
-    docker compose exec app coverage report
+    ``` docker compose exec app coverage report
     ```
 
 
 ### Commit Errors
 
-
 #### Error building trees
 
 If you encounter an `error: Error building trees` error from pre-commit when
 you commit, try adding your files (`git add <FILES>`) prior to committing them.
-
 
 ## Frontend Dependencies
 
