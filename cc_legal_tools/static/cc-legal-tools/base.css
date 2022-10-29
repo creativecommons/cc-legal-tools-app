@@ -46,9 +46,7 @@ a.skip-link:focus, a.skip-link:active {
 
 input[type='email'] {
   margin: 0;
-  padding: 0;
   width: 100%;
-  outline: none;
   border-radius: 5px;
 }
 
