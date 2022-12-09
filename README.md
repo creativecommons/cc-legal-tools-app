@@ -232,7 +232,7 @@ Esoteric and dangerous:
 The coverage tests and report are run as part of pre-commit and as a GitHub
 Action. To run it manually:
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 2. Coverage test
     ```
     docker compose exec app coverage run manage.py test --noinput --keepdb
@@ -373,7 +373,7 @@ This process will read the HTML files from the specified directory, populate
 [creativecommons/cc-legal-tools-data][repodata].
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Clear data in the database
     ```
     docker compose exec app ./manage.py clear_license_data
@@ -496,7 +496,7 @@ This Django Admin command must be run any time the `.po` files are created or
 changed.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Compile translation messages (update `.mo` files)
     ```
     docker compose exec app ./manage.py compilemessages
@@ -517,7 +517,7 @@ directory under `docs/`. It will not commit the changes (`--nogit`) and will
 not push any commits (`--nopush` is implied by `--nogit`).
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Compile translation messages (update `.mo` files)
     ```
     docker compose exec app ./manage.py publish --nogit --branch=main
