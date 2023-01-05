@@ -38,28 +38,44 @@ a.skip-link:focus, a.skip-link:active {
 }
 
 
-/* begin donate button CSS for templates/includes/header.html */
+/* begin donate button for templates/includes/header.html */
 
-a.donate {
-  font-family: "Source Sans Pro", sans-serif;
-  text-transform: none;
-  color: #d14500;
-  background-color: #feede9;
-  border-color: #feede9;
-  line-height: 19px;
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
-  height: unset;
-  margin-right: 8em;
+.button.donate.is-header {
+ --icon-size: 10px;
+ background-color: #feede9;
+ color: #c74200;
+ font-family: "Source Sans Pro", sans-serif;
+ font-size: 0.75rem;
+ font-weight: bold;
+ max-height: 1.6875rem;
+ padding: calc(0.25rem - 0.7px) 0.5rem calc(0.25rem - 0.7px) 0.25rem;
+ text-transform: none;
 }
 
-i.icon,
-.button.icon {
-  height: unset;
+[dir="ltr"] .button.donate.is-header {
+ margin-right: 6rem;
 }
 
-.button .icon:first-child:last-child {
-  margin-right: 1px;
+[dir="rtl"] .button.donate.is-header {
+ margin-left: 6rem;
 }
 
-/* end donate button CSS for templates/includes/header.html */
+[dir="ltr"] .button.donate.is-header > i {
+  margin-right: 0.25rem;
+}
+
+[dir="rtl"] .button.donate.is-header > i {
+  margin-left: 0.25rem;
+}
+/* end donate button for templates/includes/header.html */
+
+
+
+/* begin Explore CC for templates/includes/header.html */
+
+[dir="rtl"] .cc-global-header .open-tab {
+  right: auto;
+  left: 0;
+}
+
+/* end Explore CC for templates/includes/header.html */
