@@ -79,3 +79,14 @@ a.skip-link:focus, a.skip-link:active {
 }
 
 /* end Explore CC for templates/includes/header.html */
+
+
+/* begin donate button for templates/includes/footer.html */
+
+[dir="rtl"] a.button.small.donate > i {
+  margin-left: 8px;
+  margin-right: -6px !important;
+}
+
+
+/* end donate button for templates/includes/footer.html */
