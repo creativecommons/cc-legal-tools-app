@@ -63,29 +63,3 @@ i.icon,
 }
 
 /* end donate button CSS for templates/includes/header.html */
-
-
-/* begin Vocabulary modifications for templates/includes/newsletter.html */
-
-.button.is-primary {
-  position: relative;
-}
-
-input[type='email'] {
-  margin: 0;
-  width: 100%;
-  border-radius: 5px;
-}
-
-button.button.is-primary {
- border-radius: 5px;
-  text-align: center !important;
-  border: none;
-  height: 50px;
-  top: 8px;
-  cursor: pointer;
-  width: 80px;
-  transform: translateX(-78px);
-}
-
-/* end Vocabulary modifications for templates/includes/newsletter.html */
