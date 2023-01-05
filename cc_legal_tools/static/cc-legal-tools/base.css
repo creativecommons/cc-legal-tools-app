@@ -38,6 +38,33 @@ a.skip-link:focus, a.skip-link:active {
 }
 
 
+/* begin donate button CSS for templates/includes/header.html */
+
+a.donate {
+  font-family: "Source Sans Pro", sans-serif;
+  text-transform: none;
+  color: #d14500;
+  background-color: #feede9;
+  border-color: #feede9;
+  line-height: 19px;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+  height: unset;
+  margin-right: 8em;
+}
+
+i.icon,
+.button.icon {
+  height: unset;
+}
+
+.button .icon:first-child:last-child {
+  margin-right: 1px;
+}
+
+/* end donate button CSS for templates/includes/header.html */
+
+
 /* begin Vocabulary modifications for templates/includes/newsletter.html */
 
 .button.is-primary {
