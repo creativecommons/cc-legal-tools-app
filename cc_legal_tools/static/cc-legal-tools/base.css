@@ -48,7 +48,7 @@ a.skip-link:focus, a.skip-link:active {
  font-size: 0.75rem;
  font-weight: bold;
  max-height: 1.6875rem;
- padding: calc(0.25rem - 0.7px) 0.5rem calc(0.25rem - 0.7px) 0.25rem;
+ padding: calc(0.25rem - 0.7px) 0.5rem calc(0.25rem - 0.7px) 0.5rem;
  text-transform: none;
 }
 
