@@ -38,27 +38,54 @@ a.skip-link:focus, a.skip-link:active {
 }
 
 
-/* begin Vocabulary modifications for templates/includes/newsletter.html */
+/* begin donate button for templates/includes/header.html */
 
-.button.is-primary {
-  position: relative;
+.button.donate.is-header {
+ --icon-size: 10px;
+ background-color: #feede9;
+ color: #c74200;
+ font-family: "Source Sans Pro", sans-serif;
+ font-size: 0.75rem;
+ font-weight: bold;
+ max-height: 1.6875rem;
+ padding: calc(0.25rem - 0.7px) 0.5rem calc(0.25rem - 0.7px) 0.5rem;
+ text-transform: none;
 }
 
-input[type='email'] {
-  margin: 0;
-  width: 100%;
-  border-radius: 5px;
+[dir="ltr"] .button.donate.is-header {
+ margin-right: 6rem;
 }
 
-button.button.is-primary {
- border-radius: 5px;
-  text-align: center !important;
-  border: none;
-  height: 50px;
-  top: 8px;
-  cursor: pointer;
-  width: 80px;
-  transform: translateX(-78px);
+[dir="rtl"] .button.donate.is-header {
+ margin-left: 6rem;
 }
 
-/* end Vocabulary modifications for templates/includes/newsletter.html */
+[dir="ltr"] .button.donate.is-header > i {
+  margin-right: 0.25rem;
+}
+
+[dir="rtl"] .button.donate.is-header > i {
+  margin-left: 0.25rem;
+}
+/* end donate button for templates/includes/header.html */
+
+
+
+/* begin Explore CC for templates/includes/header.html */
+
+[dir="rtl"] .cc-global-header .open-tab {
+  right: auto;
+  left: 0;
+}
+
+/* end Explore CC for templates/includes/header.html */
+
+
+/* begin donate button for templates/includes/footer.html */
+
+[dir="rtl"] a.button.small.donate > i {
+  margin-left: 8px;
+  margin-right: -6px !important;
+}
+
+/* end donate button for templates/includes/footer.html */
