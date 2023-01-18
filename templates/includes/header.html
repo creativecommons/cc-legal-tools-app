@@ -7,10 +7,25 @@
 </div>
 <!-- Div element used to mount the Global Header component-->
 <div id="header-cc">
-  <cc-global-header
-    base-url=""
-    donation-url="https://www.classy.org/give/313412/#!/donation/checkout?c_src=website&amp;c_src2=NavBar"
-    logo-url="/wp-content/themes/creativecommons-base/assets/img/cc.logo.dark.gray.svg"
-  />
+  <header class="vocab header">
+    <div class="is-flex is-justify-content-flex-end">
+      <a type="button" href="https://www.classy.org/give/313412/#!/donation/checkout?c_src=website&amp;c_src2=NavBar" class="button normal donate is-header">
+        <i class="icon heart"></i>
+        Donate
+      </a>
+    </div>
+    <nav class="navbar" aria-label="Main">
+      <div class="navbar-brand">
+        <a class="main-logo navbar-item" href="/" target="_blank">
+          <div class="has-text-black">
+            <img src="/wp-content/themes/creativecommons-base/assets/img/cc.logo.dark.gray.svg" alt="Logo" />
+          </div>
+        </a>
+      </div>
+      <div>
+        <p>(development instance: no site menu)</p>
+      </div>
+    </nav>
+  </header>
 </div>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

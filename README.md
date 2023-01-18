@@ -43,6 +43,8 @@ Both versions are specified in the [`Pipfile`](Pipefile).
 
 ### Data Repository
 
+Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository.
+
 The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
 ```
@@ -56,48 +58,55 @@ If it is not cloned into the default location,  the Django
 `DATA_REPOSITORY_DIR` environment variable can be used to configure its
 location.
 
+[gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Docker Compose Setup
 
 Use the following instructions to start the project with Docker compose.
+**cc staff do not use Windows for development.**
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Install Docker ([Install Docker Engine | Docker
-   Documentation][installdocker])
-3. Create Django local settings file
+2. Install Docker
+   - ([Install Docker Engine | Docker Documentation][installdockerlinux]) for Linux
+   - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOS
+   - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for Windows
+3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
+4. Create Django local settings file
     ```
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
-4. Build the containers
+5. Build the containers
     ```
     docker compose build
     ```
-5. **Run the containers**
+6. **Run the containers**
     ```
     docker compose up
     ```
-   1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Djano
+   1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Django
       application
       - Any changes made to Python will be detected and rebuilt
         transparently as long as the development server is running.
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
       server serving [creativecommons/cc-legal-tools-data][repodata]/docs.
-6. Run database migrations
+7. Run database migrations
     ```
     docker compose exec app ./manage.py migrate
     ```
-7. Clear data in the database
+8. Clear data in the database
     ```
     docker compose exec app ./manage.py clear_license_data
     ```
-8. Load legacy HTML in the database
+9. Load legacy HTML in the database
     ```
     docker compose exec app ./manage.py load_html_files
     ```
 
-[installdocker]: https://docs.docker.com/engine/install/
+[installdockerlinux]: https://docs.docker.com/engine/install/
+[installdockermacOS]:https://docs.docker.com/desktop/install/mac-install/
+[installdockerwindows]:https://docs.docker.com/desktop/install/windows-install/
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
@@ -117,6 +126,10 @@ Use the following instructions to start the project with Docker compose.
         ```
         brew install pipenv python@3.9
         ```
+      - Windows: [install Python][python-windows] and then use `pip` to install `pipenv`:
+        ```
+        pip install pipenv
+        ```
    3. Install Python environment and modules via pipenv to create a
       virtualenv
       - Linux:
@@ -126,6 +139,10 @@ Use the following instructions to start the project with Docker compose.
       - macOS: via [Homebrew](https://brew.sh/):
         ```
         pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
+        ```
+      - Windows:
+        ```
+        pipenv install --dev --python \User\Appdata\programs\python
         ```
    4. Install pre-commit hooks
     ```
@@ -145,7 +162,11 @@ Use the following instructions to start the project with Docker compose.
         ```
         createdb -E UTF-8 cc_legal_tools
         ```
-   4. Load database schema
+      - Windows:
+        ```
+        createdb -E UTF-8 cc_legal_tools
+        ```
+   3. Load database schema
     ```
     pipenv run ./manage.py migrate
     ```
@@ -155,6 +176,8 @@ Use the following instructions to start the project with Docker compose.
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
+
+[python-windows]:https://www.pythontutorial.net/getting-started/install-python/
 
 
 ### Manual Commands
@@ -209,7 +232,7 @@ Esoteric and dangerous:
 The coverage tests and report are run as part of pre-commit and as a GitHub
 Action. To run it manually:
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 2. Coverage test
     ```
     docker compose exec app coverage run manage.py test --noinput --keepdb
@@ -350,7 +373,7 @@ This process will read the HTML files from the specified directory, populate
 [creativecommons/cc-legal-tools-data][repodata].
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Clear data in the database
     ```
     docker compose exec app ./manage.py clear_license_data
@@ -473,7 +496,7 @@ This Django Admin command must be run any time the `.po` files are created or
 changed.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Compile translation messages (update `.mo` files)
     ```
     docker compose exec app ./manage.py compilemessages
@@ -494,7 +517,7 @@ directory under `docs/`. It will not commit the changes (`--nogit`) and will
 not push any commits (`--nopush` is implied by `--nogit`).
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker compose-setup), above, is complete
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Compile translation messages (update `.mo` files)
     ```
     docker compose exec app ./manage.py publish --nogit --branch=main
