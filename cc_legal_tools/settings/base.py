@@ -249,9 +249,17 @@ TRANSIFEX = {
     "ORGANIZATION_SLUG": "creativecommons",
     "DEEDS_UX_TEAM_SLUG": "creative-commons-team",
     "DEEDS_UX_PROJECT_SLUG": "CC",
-    "DEEDS_UX_RESOURCE_SLUG": "deeds_ux",
+    "DEEDS_UX_RESOURCE_SLUGS": ["deeds_ux"],
     "LEGAL_CODE_PROJECT_SLUG": "cc-legal-code",
     "LEGAL_CODE_TEAM_SLUG": "team-1",
+    "LEGAL_CODE_RESOURCE_SLUGS": [
+        "by-nc-nd_40",
+        "by-nc-sa_40",
+        "by-nc_40",
+        "by-nd_40",
+        "by-sa_40",
+        "by_40",
+    ],
 }
 
 

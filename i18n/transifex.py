@@ -42,14 +42,6 @@ class TransifexHelper:
         self.log = logger if logger else logging.getLogger()
 
         self.organization_slug = transifex["ORGANIZATION_SLUG"]
-
-        self.deeds_ux_project_slug = transifex["DEEDS_UX_PROJECT_SLUG"]
-        self.deeds_ux_team_slug = transifex["DEEDS_UX_TEAM_SLUG"]
-        self.deeds_ux_resource_slug = transifex["DEEDS_UX_RESOURCE_SLUG"]
-
-        self.legal_code_project_slug = transifex["LEGAL_CODE_PROJECT_SLUG"]
-        self.legal_code_team_slug = transifex["LEGAL_CODE_TEAM_SLUG"]
-
         self.api = transifex_api
         self.api.setup(auth=transifex["API_TOKEN"])
         self.api_organization = self.api.Organization.get(
@@ -65,9 +57,15 @@ class TransifexHelper:
         ):  # pragma: no cover
             # TODO: remove coveragepy exclusion after upgrade to Python 3.10
             # https://github.com/nedbat/coveragepy/issues/198
-            if project.attributes["slug"] == self.deeds_ux_project_slug:
+            if (
+                project.attributes["slug"]
+                == transifex["DEEDS_UX_PROJECT_SLUG"]
+            ):
                 self.api_deeds_ux_project = project
-            elif project.attributes["slug"] == self.legal_code_project_slug:
+            elif (
+                project.attributes["slug"]
+                == transifex["LEGAL_CODE_PROJECT_SLUG"]
+            ):
                 self.api_legal_code_project = project
 
         for i18n_format in self.api.I18nFormat.filter(
@@ -78,6 +76,21 @@ class TransifexHelper:
             if i18n_format.id == "PO":
                 self.api_i18n_format = i18n_format
                 break
+
+        self.projects = {
+            "deeds_ux": {
+                "api": self.api_deeds_ux_project,
+                "project_slug": transifex["DEEDS_UX_PROJECT_SLUG"],
+                "team_slug": transifex["DEEDS_UX_TEAM_SLUG"],
+                "resource_slugs": transifex["DEEDS_UX_RESOURCE_SLUGS"],
+            },
+            "legal_code": {
+                "api": self.api_legal_code_project,
+                "project_slug": transifex["LEGAL_CODE_PROJECT_SLUG"],
+                "team_slug": transifex["LEGAL_CODE_TEAM_SLUG"],
+                "resource_slugs": transifex["LEGAL_CODE_RESOURCE_SLUGS"],
+            },
+        }
 
     def get_transifex_resource_stats(self):
         """
@@ -90,25 +103,18 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources
         https://transifex.github.io/openapi/#tag/Resources
         """
-        self.api_deeds_ux_project.reload()
-        self.api_legal_code_project.reload()
         stats = {}
 
-        # Deeds & UX
-        print(self.deeds_ux_resource_slug)
-        resource = self.api_deeds_ux_project.fetch("resources").get(
-                slug=self.deeds_ux_resource_slug
-        )
-        stats[self.deeds_ux_resource_slug] = resource.attributes
-
-        # Legal Code
-        resources = sorted(
-            self.api_legal_code_project.fetch("resources").all(),
-            key=lambda x: x.id
-        )
-        for resource in resources:
-            resource_slug = resource.attributes["slug"]
-            stats[resource_slug] = resource.attributes
+        for project in self.projects.values():
+            project["api"].reload()
+            resources = sorted(
+                project["api"].fetch("resources").all(), key=lambda x: x.id
+            )
+            for resource in resources:
+                resource_slug = resource.attributes["slug"]
+                if resource_slug not in project["resource_slugs"]:
+                    continue
+                stats[resource_slug] = resource.attributes
 
         return stats
 
@@ -123,42 +129,25 @@ class TransifexHelper:
         Uses Transifex API 3.0: Statistics
         https://transifex.github.io/openapi/#tag/Statistics
         """
-        self.api_deeds_ux_project.reload()
-        self.api_legal_code_project.reload()
         stats = {}
 
-        # Deeds & UX
-        languages_stats = sorted(
-            self.api.ResourceLanguageStats.filter(
-                project=self.api_deeds_ux_project,
-                resource=(
-                    f"o:{self.organization_slug}:"
-                    f"p:{self.deeds_ux_project_slug}:"
-                    f"r:{self.deeds_ux_resource_slug}"
-                )
-            ).all(),
-            key=lambda x: x.id,
-        )
-        for l_stats in languages_stats:
-            resource_slug = l_stats.related["resource"].id.split(":")[-1]
-            transifex_code = l_stats.related["language"].id.split(":")[-1]
-            if resource_slug not in stats:
-                stats[resource_slug] = {}
-            stats[resource_slug][transifex_code] = l_stats.attributes
+        for project in self.projects.values():
+            project["api"].reload()
 
-        # Legal Code
-        languages_stats = sorted(
-            self.api.ResourceLanguageStats.filter(
-                project=self.api_legal_code_project,
-            ).all(),
-            key=lambda x: x.id,
-        )
-        for l_stats in languages_stats:
-            resource_slug = l_stats.related["resource"].id.split(":")[-1]
-            transifex_code = l_stats.related["language"].id.split(":")[-1]
-            if resource_slug not in stats:
-                stats[resource_slug] = {}
-            stats[resource_slug][transifex_code] = l_stats.attributes
+            languages_stats = sorted(
+                self.api.ResourceLanguageStats.filter(
+                    project=project["api"],
+                ).all(),
+                key=lambda x: x.id,
+            )
+            for l_stats in languages_stats:
+                resource_slug = l_stats.related["resource"].id.split(":")[-1]
+                if resource_slug not in project["resource_slugs"]:
+                    continue
+                transifex_code = l_stats.related["language"].id.split(":")[-1]
+                if resource_slug not in stats:
+                    stats[resource_slug] = {}
+                stats[resource_slug][transifex_code] = l_stats.attributes
 
         return stats
 
