@@ -81,16 +81,26 @@ class TransifexHelper:
             "deeds_ux": {
                 "api": self.api_deeds_ux_project,
                 "project_slug": transifex["DEEDS_UX_PROJECT_SLUG"],
-                "team_slug": transifex["DEEDS_UX_TEAM_SLUG"],
+                "team_id": transifex["DEEDS_UX_TEAM_ID"],
                 "resource_slugs": transifex["DEEDS_UX_RESOURCE_SLUGS"],
             },
             "legal_code": {
                 "api": self.api_legal_code_project,
                 "project_slug": transifex["LEGAL_CODE_PROJECT_SLUG"],
-                "team_slug": transifex["LEGAL_CODE_TEAM_SLUG"],
+                "team_id": transifex["LEGAL_CODE_TEAM_ID"],
                 "resource_slugs": transifex["LEGAL_CODE_RESOURCE_SLUGS"],
             },
         }
+        self.resource_to_api = {}
+        self.resource_to_project = {}
+        self.resource_to_team = {}
+        for project in self.projects.values():
+            for resource_slug in project["resource_slugs"]:
+                self.resource_to_api[resource_slug] = project["api"]
+                self.resource_to_project[resource_slug] = project[
+                    "project_slug"
+                ]
+                self.resource_to_team[resource_slug] = project["team_id"]
 
     def get_transifex_resource_stats(self):
         """
@@ -188,8 +198,9 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resource Translations
         https://transifex.github.io/openapi/#tag/Resource-Translations
         """
+        project_api = self.resource_to_api[resource_slug]
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         i18n_type = resource.attributes["i18n_type"]
         if i18n_type != "PO":
@@ -238,6 +249,8 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resource Strings
         https://transifex.github.io/openapi/index.html#tag/Resource-Strings
         """
+        project_api = self.resource_to_api[resource_slug]
+
         if not push_overwrite:
             if resource_slug in self.resource_stats.keys():
                 self.log.debug(
@@ -261,13 +274,13 @@ class TransifexHelper:
                 slug=resource_slug,
                 relationships={
                     "i18n_format": self.api_i18n_format,
-                    "project": self.api_project,
+                    "project": project_api,
                 },
             )
 
         # Upload Source Strings to Resource
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         for entry in pofile_obj:
             # Remove message strings (only upload message ids for resources)
@@ -308,6 +321,8 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources Translations
         https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
+        project_api = self.resource_to_api[resource_slug]
+
         if not push_overwrite:
             if language_code == settings.LANGUAGE_CODE:
                 raise ValueError(
@@ -342,7 +357,7 @@ class TransifexHelper:
         pofile_content = get_pofile_content(pofile_obj)
         language = self.api.Language.get(code=transifex_code)
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         self.log.info(
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
@@ -537,15 +552,17 @@ class TransifexHelper:
         pofile_obj,
     ):
         key = "Language-Team"
+        project_slug = self.resource_to_project[resource_slug]
+        team_id = self.resource_to_team[resource_slug]
         if transifex_code == settings.LANGUAGE_CODE:
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/"
-                f"{self.project_slug}/"
+                f"{project_slug}/"
             )
         else:
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/teams/"
-                f"{self.team_id}/{transifex_code}/"
+                f"{team_id}/{transifex_code}/"
             )
         if (
             key in pofile_obj.metadata
@@ -919,9 +936,10 @@ class TransifexHelper:
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
             f"   PO File entries: {len(pofile_obj)}"
         )
+        project_api = self.resource_to_api[resource_slug]
         language = self.api.Language.get(code=transifex_code)
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         # Catch 500 error
         try:
