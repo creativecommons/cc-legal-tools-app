@@ -1218,7 +1218,7 @@ class TransifexHelper:
             or limit_domain == "legal_code"
             or limit_domain in valid_domains
         ):
-            if limit_language:
+            if limit_language and limit_language != settings.LANGUAGE_CODE:
                 legal_codes = list(
                     legal_tools.models.LegalCode.objects.valid()
                     .translated()
