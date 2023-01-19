@@ -259,6 +259,7 @@ TRANSIFEX = {
         "by-nd_40",
         "by-sa_40",
         "by_40",
+        "zero_10",
     ],
 }
 
