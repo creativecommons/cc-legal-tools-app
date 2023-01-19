@@ -36,32 +36,38 @@ def _empty_branch_object():
 
 class TransifexHelper:
     def __init__(self, dryrun: bool = True, logger: logging.Logger = None):
+        transifex = settings.TRANSIFEX
         self.dryrun = dryrun
         self.nop = "<NOP> " if dryrun else ""
         self.log = logger if logger else logging.getLogger()
 
-        self.organization_slug = settings.TRANSIFEX["ORGANIZATION_SLUG"]
-        self.project_slug = settings.TRANSIFEX["PROJECT_SLUG"]
-        self.team_id = settings.TRANSIFEX["TEAM_ID"]
-        self.project_id = f"o:{self.organization_slug}:p:{self.project_slug}"
-
+        self.organization_slug = transifex["ORGANIZATION_SLUG"]
         self.api = transifex_api
-        self.api.setup(auth=settings.TRANSIFEX["API_TOKEN"])
+        self.api.setup(auth=transifex["API_TOKEN"])
         self.api_organization = self.api.Organization.get(
             slug=self.organization_slug
         )
+
         # The Transifex API requires project slugs to be lowercase
         # (^[a-z0-9._-]+$'), but the web interfaces does not (did not?). Our
-        # project slug is uppercase.
+        # Deeds & UX project slug is uppercase.
         # https://transifex.github.io/openapi/#tag/Projects
         for project in self.api_organization.fetch(
             "projects"
         ):  # pragma: no cover
             # TODO: remove coveragepy exclusion after upgrade to Python 3.10
             # https://github.com/nedbat/coveragepy/issues/198
-            if project.attributes["slug"] == self.project_slug:
-                self.api_project = project
-                break
+            if (
+                project.attributes["slug"]
+                == transifex["DEEDS_UX_PROJECT_SLUG"]
+            ):
+                self.api_deeds_ux_project = project
+            elif (
+                project.attributes["slug"]
+                == transifex["LEGAL_CODE_PROJECT_SLUG"]
+            ):
+                self.api_legal_code_project = project
+
         for i18n_format in self.api.I18nFormat.filter(
             organization=self.api_organization
         ):  # pragma: no cover
@@ -70,6 +76,31 @@ class TransifexHelper:
             if i18n_format.id == "PO":
                 self.api_i18n_format = i18n_format
                 break
+
+        self.projects = {
+            "deeds_ux": {
+                "api": self.api_deeds_ux_project,
+                "project_slug": transifex["DEEDS_UX_PROJECT_SLUG"],
+                "team_id": transifex["DEEDS_UX_TEAM_ID"],
+                "resource_slugs": transifex["DEEDS_UX_RESOURCE_SLUGS"],
+            },
+            "legal_code": {
+                "api": self.api_legal_code_project,
+                "project_slug": transifex["LEGAL_CODE_PROJECT_SLUG"],
+                "team_id": transifex["LEGAL_CODE_TEAM_ID"],
+                "resource_slugs": transifex["LEGAL_CODE_RESOURCE_SLUGS"],
+            },
+        }
+        self.resource_to_api = {}
+        self.resource_to_project = {}
+        self.resource_to_team = {}
+        for project in self.projects.values():
+            for resource_slug in project["resource_slugs"]:
+                self.resource_to_api[resource_slug] = project["api"]
+                self.resource_to_project[resource_slug] = project[
+                    "project_slug"
+                ]
+                self.resource_to_team[resource_slug] = project["team_id"]
 
     def get_transifex_resource_stats(self):
         """
@@ -82,16 +113,19 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources
         https://transifex.github.io/openapi/#tag/Resources
         """
-        self.api_project.reload()
         stats = {}
-        resources = sorted(
-            self.api_project.fetch("resources").all(), key=lambda x: x.id
-        )
-        for resource in resources:
-            resource_slug = resource.attributes["slug"]
-            if resource_slug in ["cc-search", "deeds-choosers"]:
-                continue
-            stats[resource_slug] = resource.attributes
+
+        for project in self.projects.values():
+            project["api"].reload()
+            resources = sorted(
+                project["api"].fetch("resources").all(), key=lambda x: x.id
+            )
+            for resource in resources:
+                resource_slug = resource.attributes["slug"]
+                if resource_slug not in project["resource_slugs"]:
+                    continue
+                stats[resource_slug] = resource.attributes
+
         return stats
 
     def get_transifex_translation_stats(self):
@@ -105,22 +139,26 @@ class TransifexHelper:
         Uses Transifex API 3.0: Statistics
         https://transifex.github.io/openapi/#tag/Statistics
         """
-        self.api_project.reload()
         stats = {}
-        languages_stats = sorted(
-            self.api.ResourceLanguageStats.filter(
-                project=self.api_project
-            ).all(),
-            key=lambda x: x.id,
-        )
-        for l_stats in languages_stats:
-            resource_slug = l_stats.related["resource"].id.split(":")[-1]
-            transifex_code = l_stats.related["language"].id.split(":")[-1]
-            if resource_slug in ["cc-search", "deeds-choosers"]:
-                continue
-            if resource_slug not in stats:
-                stats[resource_slug] = {}
-            stats[resource_slug][transifex_code] = l_stats.attributes
+
+        for project in self.projects.values():
+            project["api"].reload()
+
+            languages_stats = sorted(
+                self.api.ResourceLanguageStats.filter(
+                    project=project["api"],
+                ).all(),
+                key=lambda x: x.id,
+            )
+            for l_stats in languages_stats:
+                resource_slug = l_stats.related["resource"].id.split(":")[-1]
+                if resource_slug not in project["resource_slugs"]:
+                    continue
+                transifex_code = l_stats.related["language"].id.split(":")[-1]
+                if resource_slug not in stats:
+                    stats[resource_slug] = {}
+                stats[resource_slug][transifex_code] = l_stats.attributes
+
         return stats
 
     @property
@@ -160,8 +198,9 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resource Translations
         https://transifex.github.io/openapi/#tag/Resource-Translations
         """
+        project_api = self.resource_to_api[resource_slug]
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         i18n_type = resource.attributes["i18n_type"]
         if i18n_type != "PO":
@@ -210,6 +249,8 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resource Strings
         https://transifex.github.io/openapi/index.html#tag/Resource-Strings
         """
+        project_api = self.resource_to_api[resource_slug]
+
         if not push_overwrite:
             if resource_slug in self.resource_stats.keys():
                 self.log.debug(
@@ -233,13 +274,13 @@ class TransifexHelper:
                 slug=resource_slug,
                 relationships={
                     "i18n_format": self.api_i18n_format,
-                    "project": self.api_project,
+                    "project": project_api,
                 },
             )
 
         # Upload Source Strings to Resource
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         for entry in pofile_obj:
             # Remove message strings (only upload message ids for resources)
@@ -280,6 +321,8 @@ class TransifexHelper:
         Uses Transifex API 3.0: Resources Translations
         https://transifex.github.io/openapi/index.html#tag/Resource-Translations
         """
+        project_api = self.resource_to_api[resource_slug]
+
         if not push_overwrite:
             if language_code == settings.LANGUAGE_CODE:
                 raise ValueError(
@@ -314,7 +357,7 @@ class TransifexHelper:
         pofile_content = get_pofile_content(pofile_obj)
         language = self.api.Language.get(code=transifex_code)
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         self.log.info(
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
@@ -509,15 +552,17 @@ class TransifexHelper:
         pofile_obj,
     ):
         key = "Language-Team"
+        project_slug = self.resource_to_project[resource_slug]
+        team_id = self.resource_to_team[resource_slug]
         if transifex_code == settings.LANGUAGE_CODE:
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/"
-                f"{self.project_slug}/"
+                f"{project_slug}/"
             )
         else:
             translation_team = (
                 f"https://www.transifex.com/{self.organization_slug}/teams/"
-                f"{self.team_id}/{transifex_code}/"
+                f"{team_id}/{transifex_code}/"
             )
         if (
             key in pofile_obj.metadata
@@ -891,9 +936,10 @@ class TransifexHelper:
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
             f"   PO File entries: {len(pofile_obj)}"
         )
+        project_api = self.resource_to_api[resource_slug]
         language = self.api.Language.get(code=transifex_code)
         resource = self.api.Resource.get(
-            project=self.api_project, slug=resource_slug
+            project=project_api, slug=resource_slug
         )
         # Catch 500 error
         try:
@@ -1172,7 +1218,7 @@ class TransifexHelper:
             or limit_domain == "legal_code"
             or limit_domain in valid_domains
         ):
-            if limit_language:
+            if limit_language and limit_language != settings.LANGUAGE_CODE:
                 legal_codes = list(
                     legal_tools.models.LegalCode.objects.valid()
                     .translated()

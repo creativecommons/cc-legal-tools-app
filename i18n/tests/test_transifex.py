@@ -20,17 +20,29 @@ from i18n.utils import get_pofile_content
 from legal_tools.models import LegalCode
 from legal_tools.tests.factories import LegalCodeFactory, ToolFactory
 
-TEST_PROJ_SLUG = "x_proj_x"
+TEST_API_TOKEN = "x_token_x"
 TEST_ORG_SLUG = "x_org_x"
-TEST_TOKEN = "x_token_x"
-TEST_TEAM_ID = "x_team_id_x"
+TEST_PROJ_SLUG = "x_proj_x"
+TEST_DEEDS_UX_TEAM_ID = "x_team_slug_deeds_ux_x"
+TEST_DEEDS_UX_PROJ_SLUG = "x_proj_deeds_ux_x"
+TEST_LEGAL_CODE_PROJ_SLUG = "x_proj_legal_code_x"
+TEST_LEGAL_CODE_TEAM_ID = "x_team_slug_legal_code_x"
 TEST_TRANSIFEX_SETTINGS = {
+    "API_TOKEN": TEST_API_TOKEN,
     "ORGANIZATION_SLUG": TEST_ORG_SLUG,
-    "PROJECT_SLUG": TEST_PROJ_SLUG,
-    "API_TOKEN": TEST_TOKEN,
-    "TEAM_ID": TEST_TEAM_ID,
+    "DEEDS_UX_TEAM_ID": TEST_DEEDS_UX_TEAM_ID,
+    "DEEDS_UX_PROJECT_SLUG": TEST_DEEDS_UX_PROJ_SLUG,
+    "DEEDS_UX_RESOURCE_SLUGS": settings.TRANSIFEX["DEEDS_UX_RESOURCE_SLUGS"]
+    + ["x_slug_x"],
+    "LEGAL_CODE_PROJECT_SLUG": TEST_LEGAL_CODE_PROJ_SLUG,
+    "LEGAL_CODE_TEAM_ID": TEST_LEGAL_CODE_TEAM_ID,
+    "LEGAL_CODE_RESOURCE_SLUGS": settings.TRANSIFEX[
+        "LEGAL_CODE_RESOURCE_SLUGS"
+    ],
+    ###
+    "TEST_PROJ_SLUG": TEST_PROJ_SLUG,
 }
-POFILE_CONTENT = rf"""
+POFILE_CONTENT_DEEDS_UX = rf"""
 msgid ""
 msgstr ""
 "Project-Id-Version: by-nd_40\n"
@@ -48,6 +60,7 @@ msgstr "Attribution-NoDerivatives 4.0 International"
 msgid "english text"
 msgstr "english text"
 """
+POFILE_CONTENT = POFILE_CONTENT_DEEDS_UX
 
 
 class DummyRepo:
@@ -78,41 +91,58 @@ class DummyRepo:
 )
 class TestTransifex(TestCase):
     def setUp(self):
+        project_deeds_ux = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_DEEDS_UX_PROJ_SLUG}",
+            attributes={"slug": TEST_DEEDS_UX_PROJ_SLUG},
+        )
+        project_deeds_ux.__str__ = mock.Mock(return_value=project_deeds_ux.id)
+
+        project_legal_code = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_LEGAL_CODE_PROJ_SLUG}",
+            attributes={"slug": TEST_LEGAL_CODE_PROJ_SLUG},
+        )
+        project_legal_code.__str__ = mock.Mock(
+            return_value=project_legal_code.id
+        )
+
         project_xa = mock.Mock(id="o:XA:p:XA", attributes={"slug": "XA"})
         project_xa.__str__ = mock.Mock(return_value=project_xa.id)
         project_xb = mock.Mock(id="o:XB:p:XB", attributes={"slug": "XB"})
         project_xb.__str__ = mock.Mock(return_value=project_xb.id)
-        project_cc = mock.Mock(
-            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}",
-            attributes={"slug": TEST_PROJ_SLUG},
-        )
-        project_cc.__str__ = mock.Mock(return_value=project_cc.id)
-        project_xd = mock.Mock(id="o:XD:p:XD", attributes={"slug": "XD"})
-        project_xd.__str__ = mock.Mock(return_value=project_xd.id)
+        project_xc = mock.Mock(id="o:XC:p:XC", attributes={"slug": "XC"})
+        project_xc.__str__ = mock.Mock(return_value=project_xc.id)
+
         organization = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}",
             attributes={"slug": TEST_ORG_SLUG},
         )
         organization.__str__ = mock.Mock(return_value=organization.id)
         organization.fetch = mock.Mock(
-            return_value=[project_xa, project_xb, project_cc, project_xd]
+            return_value=[
+                project_deeds_ux,
+                project_legal_code,
+                project_xa,
+                project_xb,
+                project_xc,
+            ]
         )
+
         i18n_format_xa = mock.Mock(id="XA")
         i18n_format_xa.__str__ = mock.Mock(return_value=i18n_format_xa.id)
         i18n_format_xb = mock.Mock(id="XB")
         i18n_format_xb.__str__ = mock.Mock(return_value=i18n_format_xb.id)
         i18n_format_po = mock.Mock(id="PO")
         i18n_format_po.__str__ = mock.Mock(return_value=i18n_format_po.id)
-        i18n_format_xd = mock.Mock(id="XD")
-        i18n_format_xd.__str__ = mock.Mock(return_value=i18n_format_xd.id)
+        i18n_format_xc = mock.Mock(id="XC")
+        i18n_format_xc.__str__ = mock.Mock(return_value=i18n_format_xc.id)
         with mock.patch("i18n.transifex.transifex_api") as api:
             api.Organization.get = mock.Mock(return_value=organization)
             api.I18nFormat.filter = mock.Mock(
                 return_value=[
+                    i18n_format_po,
                     i18n_format_xa,
                     i18n_format_xb,
-                    i18n_format_po,
-                    i18n_format_xd,
+                    i18n_format_xc,
                 ]
             )
             self.helper = TransifexHelper(dryrun=False)
@@ -170,9 +200,13 @@ class TestTransifex(TestCase):
                 },
             ),
         ]
-        all_resources = mock.Mock(return_value=resources)
-        self.helper.api_project.fetch = mock.Mock(
-            return_value=mock.Mock(all=all_resources)
+        all_deeds_ux_resources = mock.Mock(return_value=resources)
+        self.helper.api_deeds_ux_project.fetch = mock.Mock(
+            return_value=mock.Mock(all=all_deeds_ux_resources)
+        )
+        all_legal_code_resources = mock.Mock(return_value=resources)
+        self.helper.api_legal_code_project.fetch = mock.Mock(
+            return_value=mock.Mock(all=all_legal_code_resources)
         )
 
         # With _resource_stats empty
@@ -180,7 +214,8 @@ class TestTransifex(TestCase):
         # With _resource_stats populated
         stats = self.helper.resource_stats
 
-        all_resources.assert_called_once()
+        all_deeds_ux_resources.assert_called_once()
+        all_legal_code_resources.assert_called_once()
         self.assertNotIn("cc-search", stats)
         self.assertNotIn("deeds-choosers", stats)
         self.assertIn("by-nc-nd_40", stats)
@@ -330,7 +365,7 @@ class TestTransifex(TestCase):
         # With _resource_stats populated
         stats = self.helper.translation_stats
 
-        all_lang_stats.assert_called_once()
+        all_lang_stats.assert_called()
         self.assertNotIn("cc-search", stats)
         self.assertNotIn("deeds-choosers", stats)
         self.assertIn("deeds_ux", stats)
@@ -349,7 +384,7 @@ class TestTransifex(TestCase):
 
     def test_transifex_get_pofile_content_bad_i18n_type(self):
         api = self.helper.api
-        resource_slug = "x_resource_x"
+        resource_slug = "x_slug_x"
         transifex_code = "en"
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
@@ -372,7 +407,7 @@ class TestTransifex(TestCase):
 
     def test_transifex_get_pofile_content_source(self):
         api = self.helper.api
-        resource_slug = "x_resource_x"
+        resource_slug = "x_slug_x"
         transifex_code = "en"
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
@@ -391,7 +426,7 @@ class TestTransifex(TestCase):
 
     def test_transifex_get_pofile_content_translation(self):
         api = self.helper.api
-        resource_slug = "x_resource_x"
+        resource_slug = "x_slug_x"
         transifex_code = "nl"
         resource = mock.Mock(
             id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
@@ -1175,9 +1210,9 @@ class TestTransifex(TestCase):
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 pofile_obj_new = self.helper.safesync_translation(
+                    resource_slug,
                     language_code,
                     transifex_code,
-                    resource_slug,
                     pofile_path,
                     pofile_obj,
                 )
@@ -1244,9 +1279,9 @@ class TestTransifex(TestCase):
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 pofile_obj_new = self.helper.safesync_translation(
+                    resource_slug,
                     language_code,
                     transifex_code,
-                    resource_slug,
                     pofile_path,
                     pofile_obj,
                 )
@@ -1320,9 +1355,9 @@ class TestTransifex(TestCase):
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 pofile_obj_new = self.helper.safesync_translation(
+                    resource_slug,
                     language_code,
                     transifex_code,
-                    resource_slug,
                     pofile_path,
                     pofile_obj,
                 )
@@ -1394,9 +1429,9 @@ class TestTransifex(TestCase):
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 pofile_obj_new = self.helper.safesync_translation(
-                    language_code,
-                    transifex_code,
                     resource_slug,
+                    transifex_code,
+                    language_code,
                     pofile_path,
                     pofile_obj,
                 )
@@ -1478,9 +1513,9 @@ class TestTransifex(TestCase):
         with self.assertLogs(self.helper.log) as log_context:
             with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
                 pofile_obj_new = self.helper.safesync_translation(
+                    resource_slug,
                     language_code,
                     transifex_code,
-                    resource_slug,
                     pofile_path,
                     pofile_obj,
                 )
@@ -1827,7 +1862,7 @@ class TestTransifex(TestCase):
             slug=resource_slug,
             relationships={
                 "i18n_format": self.helper.api_i18n_format,
-                "project": self.helper.api_project,
+                "project": self.helper.api_deeds_ux_project,
             },
         )
         api.Resource.get.assert_called_once()
@@ -1883,7 +1918,7 @@ class TestTransifex(TestCase):
             slug=resource_slug,
             relationships={
                 "i18n_format": self.helper.api_i18n_format,
-                "project": self.helper.api_project,
+                "project": self.helper.api_deeds_ux_project,
             },
         )
         api.Resource.get.assert_called_once()
@@ -1941,7 +1976,7 @@ class TestTransifex(TestCase):
             slug=resource_slug,
             relationships={
                 "i18n_format": self.helper.api_i18n_format,
-                "project": self.helper.api_project,
+                "project": self.helper.api_deeds_ux_project,
             },
         )
         api.Resource.get.assert_called_once()
@@ -2392,6 +2427,10 @@ class TestTransifex(TestCase):
         resource_name = "x_name_x"
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Language-Team"] = (
+            f"https://www.transifex.com/{TEST_ORG_SLUG}"
+            f"/{TEST_DEEDS_UX_PROJ_SLUG}/"
+        )
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             self.helper.normalize_pofile_language_team(
@@ -2411,8 +2450,8 @@ class TestTransifex(TestCase):
         pofile_path = "x_path_x"
         pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
         pofile_obj.metadata["Language-Team"] = (
-            f"https://www.transifex.com/{TEST_ORG_SLUG}/teams/{TEST_TEAM_ID}"
-            f"/{transifex_code}/"
+            f"https://www.transifex.com/{TEST_ORG_SLUG}/teams"
+            f"/{TEST_DEEDS_UX_TEAM_ID}/{transifex_code}/"
         )
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
