@@ -584,7 +584,6 @@ def view_legal_code(
     # Activate Legal Code translation
     current_translation = legal_code.get_translation_object()
     with active_translation(current_translation):
-
         category, category_title = get_category_and_category_title(
             category,
             tool,

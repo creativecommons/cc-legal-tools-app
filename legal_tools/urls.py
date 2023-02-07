@@ -78,7 +78,6 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 
 class VersionConverter:
-
     regex = r"[0-9]+[.][0-9]+"  # X.Y
 
     def to_python(self, value):
