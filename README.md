@@ -72,7 +72,7 @@ Use the following instructions to start the project with Docker compose.
    - ([Install Docker Engine | Docker Documentation][installdockerlinux]) for Linux
    - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOS
    - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for Windows
-3. Ensure you are the top level of directory where you cloned this repository (where `manage.py` is)
+3. Ensure you are at the top level of the directory where you cloned this repository (where `manage.py` is)
 4. Create Django local settings file
     ```
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
@@ -249,7 +249,7 @@ Action. To run it manually:
 #### Error building trees
 
 If you encounter an `error: Error building trees` error from pre-commit when
-you commit, try adding your files (`git add <FILES>`) prior to committing them.
+you commit, try adding your files (`git add <FILES>`) before committing them.
 
 
 ## Frontend Dependencies
@@ -283,7 +283,7 @@ The legal tools metadata is in a database. The metadata tracks which legal
 tools exist, their translations, their ports, and their characteristics like
 what they permit, require, and prohibit.
 
-The metadata can be downloaded by visiting URL path:
+The metadata can be downloaded by visiting the URL path:
 `127.0.0.1:8005`[`/licenses/metadata.yaml`][metadata]
 
 [metadata]: http://127.0.0.1:8005/licenses/metadata.yaml
@@ -296,7 +296,7 @@ There are two main models (Django terminology for tables) in
 A Tool can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`) which
 is a proxy for the complete set of permissions, requirements, and prohibitions;
 a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction` for ports. So we
-might refer to the tool by it's **identifier** "BY 3.0 AM" which would be the
+might refer to the tool by its **identifier** "BY 3.0 AM" which would be the
 3.0 version of the BY license terms as ported to the Armenia jurisdiction. For
 additional information see: [**Legal Tools Namespace** -
 creativecommons/cc-legal-tools-data: CC Legal Tools Data (static HTML, language
@@ -315,7 +315,7 @@ There are three places legal code text could be:
    - Everything else
 
 The text that's in gettext files can be translated via Transifex at [Creative
-Commons localization][cctransifex]. For additional information the Django
+Commons localization][cctransifex]. For additional information on the Django
 translation domains / Transifex resources, see [How the license translation is
 implemented](#how-the-tool-translation-is-implemented), below.
 
@@ -346,16 +346,16 @@ database records and translation files.
 `load_html_files` uses [BeautifulSoup4][bs4docs] to parse the legacy HTML legal
 code:
 1. `import_zero_license_html` for CC0 Public Domain tool
-   - HTML is handled specificially (using tag ids and classes) to populate
+   - HTML is handled specifically (using tag ids and classes) to populate
      translation strings and to be used with specific HTML formatting when
      displayed via template
 2. `import_by_40_license_html` for 4.0 License tools
-   - HTML is handled specificially (using tag ids and classes) to populate
+   - HTML is handled specifically (using tag ids and classes) to populate
      translation strings and to be used with specific HTML formatting when
      displayed via a template
 3. `import_by_30_unported_license_html` for unported 3.0 License tools
    (English-only)
-   - HTML is handled specificially to be used with specific HTML formatting
+   - HTML is handled specifically to be used with specific HTML formatting
      when displayed via a template
 4. `simple_import_license_html` for everything else
    - HTML is handled generically; only the title and license body are
