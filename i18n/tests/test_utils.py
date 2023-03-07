@@ -380,8 +380,9 @@ class PofileTestWithData(TestCase):
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().__enter__(),
                 call().readlines(),
-                call().close(),
+                call().__exit__(None, None, None),
             ]
         )
         # Open Dutch PO FILE, read lines, and close it
@@ -389,8 +390,9 @@ class PofileTestWithData(TestCase):
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().__enter__(),
                 call().readlines(),
-                call().close(),
+                call().__exit__(None, None, None),
             ]
         )
         # Open Aranese PO FILE, read lines, and close it
@@ -398,8 +400,9 @@ class PofileTestWithData(TestCase):
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().__enter__(),
                 call().readlines(),
-                call().close(),
+                call().__exit__(None, None, None),
             ]
         )
         # Open Serbian (Latin) PO FILE, read lines, and close it
@@ -407,8 +410,9 @@ class PofileTestWithData(TestCase):
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().__enter__(),
                 call().readlines(),
-                call().close(),
+                call().__exit__(None, None, None),
             ]
         )
         # Open Chinese (Traditional) PO FILE, read lines, and close it
@@ -416,12 +420,11 @@ class PofileTestWithData(TestCase):
         mo.assert_has_calls(
             [
                 call(f"{location}/LC_MESSAGES/django.po", "rb"),
+                call().__enter__(),
                 call().readlines(),
-                call().close(),
+                call().__exit__(None, None, None),
             ]
         )
-        # Exit without failures
-        mo.assert_has_calls([call().__exit__(None, None, None)])
 
 
 class MappingTest(TestCase):
