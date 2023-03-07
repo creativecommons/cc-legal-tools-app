@@ -81,6 +81,8 @@ DATABASES = {
     }
 }
 
+DEALER_TYPE = "git"
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "tmp", "public", "media")
