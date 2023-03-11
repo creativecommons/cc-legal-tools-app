@@ -38,7 +38,7 @@
           <h4 id="{{ jurisdiction_name_group.grouper|slugify }}-{{ identifier|slugify }}" class="b-header">{% trans jurisdiction_name_group.grouper %}</h4>
           <div class="padding-bottom-big">
             <div class="is-responsive">
-              <table class="table is-bordered is-striped">
+              <table class="table is-bordered is-striped" width="30%", style="text-align: center;">
                 <thead>
                 <tr>
                   <th rowspan="2">{% trans "Language" %}</th>
@@ -57,10 +57,10 @@
                   {% for legal_code_group in language_list %}
                   {% with language_name=legal_code_group.grouper %}
                     <tr>
-                      <td data-label="{% trans "Language" %}">{{ language_name }}</td>
+                      <td data-label="{% trans "Language" %}" width="50%">{{ language_name }}</td>
                       {% for legal_code in legal_code_group.list  %}
                         <td data-label="{{ legal_code.unit }}">
-                          <a href="{{ legal_code.deed_url }}"{% if not legal_code.deed_translated %} style="color: black; font-style: italic;"{% endif %}>{{ deed_label_translated }}</a>{% if not legal_code.deed_only %}<br>
+                          <a href="{{ legal_code.deed_url }}"{% if not legal_code.deed_translated %} style="color: rgb(0, 0, 0); font-style: italic;"{% endif %}>{{ deed_label_translated }}</a>{% if not legal_code.deed_only %}<br>
                         <a href="{{ legal_code.legal_code_url }}">{{ legal_code_label_translated }}</a>{% endif %}
                         </td>
                       {% endfor %}
