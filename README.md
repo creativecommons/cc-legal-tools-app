@@ -81,7 +81,7 @@ documenting other operating systems if you encounter issues.
       - Any changes made to Python will be detected and rebuilt
         transparently as long as the development server is running.
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
-      server serving [creativecommons/cc-legal-tools-data][repodata]/docs.
+      server serving [creativecommons/cc-legal-tools-data][repodata]:`docs/`
 7. Run database migrations
     ```shell
     docker compose exec app ./manage.py migrate
