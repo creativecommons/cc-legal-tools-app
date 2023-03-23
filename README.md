@@ -100,8 +100,9 @@ documenting other operating systems if you encounter issues.
 
 ### Manual Setup
 
-**NOTE: this section is helpful for maintaining the project, but should NOT be
-used for development. Please use the Docker Compose Setup, above.**
+> :warning: **This section may be helpful for maintaining the project, but
+> should NOT be used for development. Please use the Docker Compose Setup,
+> above.**
 
 1. Development Environment
    1. Ensure the [Data Repository](#data-repository), above, is in place
@@ -174,9 +175,9 @@ used for development. Please use the Docker Compose Setup, above.**
 
 #### Manual Commands
 
-**NOTE:** The rest of the documentation assumes Docker. If you are using a
-manual setup, use `pipenv run` instead of `docker compose exec app` for the
-commands below.
+> :information_source: The rest of the documentation assumes Docker. If you are
+> using a manual setup, use `pipenv run` instead of `docker compose exec app`
+> for the commands below.
 
 
 ### Tooling
