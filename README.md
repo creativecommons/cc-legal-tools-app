@@ -11,20 +11,10 @@ repository.
 
 ## Not the live site
 
-This project is not intended to serve the license and deed pages directly.
-Though if it's deployed on a public server it could do that, performance would
-probably not be acceptable.
-
-Instead, a command line tool can be used to save all the rendered HTML pages
-for deeds and legal code as files. Then those files are used as part of the
-real creativecommons.org site, just served as static files. See details farther
-down.
-
-For the parent project for the entire creativecommons.org site (of which this
-project is a component, see
-[creativecommons/project_creativecommons.org][project_cc].
-
-[project_cc]: https://github.com/creativecommons/project_creativecommons.org
+This project is not intended to serve the legal tools directly. Instead, a
+command line tool can be used to save all the rendered HTML pages as files.
+Then those files are used as part of the real creativecommons.org site, just
+served as static files.
 
 
 ## Software Versions
@@ -49,12 +39,12 @@ The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
 ```
 PARENT_DIR
-├── cc-legal-tools-app
-└── cc-legal-tools-data
+├── cc-legal-tools-app     (git clone of this repository)
+└── cc-legal-tools-data    (git clone of the cc-legal-tools-data repository)
 ```
 
-If it is not cloned into the default location,  the Django
-`DATA_REPOSITORY_DIR` django configuration setting, or the
+If it is not cloned into the default location, the Django
+`DATA_REPOSITORY_DIR` Django configuration setting, or the
 `DATA_REPOSITORY_DIR` environment variable can be used to configure its
 location.
 
@@ -65,24 +55,22 @@ location.
 ### Docker Compose Setup
 
 Use the following instructions to start the project with Docker compose.
-**cc staff do not use Windows for development.**
+Pleaes note that CC staff use macOS for development--please help us with
+documenting other operating systems if you encounter issues.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Install Docker
-   - ([Install Docker Engine | Docker Documentation][installdockerlinux]) for Linux
-   - ([Install Docker Engine | Docker Documentation][installdockermacOS]) for macOS
-   - ([Install Docker Engine | Docker Documentation][installdockerwindows]) for Windows
+2. [Install Docker Engine](https://docs.docker.com/engine/install/)
 3. Ensure you are at the top level of the directory where you cloned this repository (where `manage.py` is)
 4. Create Django local settings file
-    ```
+    ```shell
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
 5. Build the containers
-    ```
+    ```shell
     docker compose build
     ```
 6. **Run the containers**
-    ```
+    ```shell
     docker compose up
     ```
    1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Django
@@ -90,88 +78,90 @@ Use the following instructions to start the project with Docker compose.
       - Any changes made to Python will be detected and rebuilt
         transparently as long as the development server is running.
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
-      server serving [creativecommons/cc-legal-tools-data][repodata]/docs.
+      server serving [creativecommons/cc-legal-tools-data][repodata]:`docs/`
 7. Run database migrations
-    ```
+    ```shell
     docker compose exec app ./manage.py migrate
     ```
 8. Clear data in the database
-    ```
+    ```shell
     docker compose exec app ./manage.py clear_license_data
     ```
 9. Load legacy HTML in the database
-    ```
+    ```shell
     docker compose exec app ./manage.py load_html_files
     ```
 
-[installdockerlinux]: https://docs.docker.com/engine/install/
-[installdockermacOS]:https://docs.docker.com/desktop/install/mac-install/
-[installdockerwindows]:https://docs.docker.com/desktop/install/windows-install/
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
 ### Manual Setup
 
+> :warning: **This section may be helpful for maintaining the project, but
+> should NOT be used for development. Please use the Docker Compose Setup,
+> above.**
+
 1. Development Environment
    1. Ensure the [Data Repository](#data-repository), above, is in place
    2. Install dependencies
       - Linux:
-        ```
+        ```shell
         sudo apt-get install python3.9 python3.9-dev python3-pip
         ```
-        ```
+        ```shell
         pip3 install pipenv
         ```
       - macOS: via [Homebrew](https://brew.sh/):
-        ```
+        ```shell
         brew install pipenv python@3.9
         ```
-      - Windows: [install Python][python-windows] and then use `pip` to install `pipenv`:
-        ```
+      - Windows: [install Python][python-windows] and then use `pip` to install
+        `pipenv`:
+        ```shell
         pip install pipenv
         ```
    3. Install Python environment and modules via pipenv to create a
       virtualenv
       - Linux:
-        ```
+        ```shell
         pipenv install --dev --python /usr/bin/python3.9
         ```
       - macOS: via [Homebrew](https://brew.sh/):
-        ```
+        ```shell
         pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
         ```
       - Windows:
-        ```
+        ```shell
         pipenv install --dev --python \User\Appdata\programs\python
         ```
    4. Install pre-commit hooks
-    ```
+    ```shell
     pipenv run pre-commit install
     ```
 2. Configure Django
    1. Create Django local settings file
-    ```
+    ```shell
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
    2. Create project database
       - Linux:
-        ```
+        ```shell
         sudo createdb -E UTF-8 cc_legal_tools
         ```
       - macOS:
-        ```
+        ```shell
         createdb -E UTF-8 cc_legal_tools
         ```
       - Windows:
-        ```
+        ```shell
         createdb -E UTF-8 cc_legal_tools
         ```
    3. Load database schema
-    ```
+    ```shell
     pipenv run ./manage.py migrate
     ```
 3. Run development server ([127.0.0.1:8005](http://127.0.0.1:8005/))
-    ```
+    ```shell
     pipenv run ./manage.py runserver
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
@@ -180,11 +170,11 @@ Use the following instructions to start the project with Docker compose.
 [python-windows]:https://www.pythontutorial.net/getting-started/install-python/
 
 
-### Manual Commands
+#### Manual Commands
 
-**NOTE:** The rest of the documentation assumes Docker. If you are using a
-manual setup, use `pipenv run` instead of `docker compose exec app` for the
-commands below.
+> :information_source: The rest of the documentation assumes Docker. If you are
+> using a manual setup, use `pipenv run` instead of `docker compose exec app`
+> for the commands below.
 
 
 ### Tooling
@@ -234,11 +224,11 @@ Action. To run it manually:
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 2. Coverage test
-    ```
+    ```shell
     docker compose exec app coverage run manage.py test --noinput --keepdb
     ```
 3. Coverage report
-    ```
+    ```shell
     docker compose exec app coverage report
     ```
 
@@ -283,8 +273,8 @@ The legal tools metadata is in a database. The metadata tracks which legal
 tools exist, their translations, their ports, and their characteristics like
 what they permit, require, and prohibit.
 
-The metadata can be downloaded by visiting the URL path:
-`127.0.0.1:8005`[`/licenses/metadata.yaml`][metadata]
+~~The metadata can be downloaded by visiting the URL path:
+`127.0.0.1:8005`[`/licenses/metadata.yaml`][metadata]~~ (currently disabled)
 
 [metadata]: http://127.0.0.1:8005/licenses/metadata.yaml
 
@@ -303,12 +293,12 @@ creativecommons/cc-legal-tools-data: CC Legal Tools Data (static HTML, language
 files, etc.)][namespace].
 
 There are three places legal code text could be:
-1. **gettext files** (`.po` and `.mo`) in the
+1. **Gettext files** (`.po` and `.mo`) in the
    [creativecommons/cc-legal-tools-data][repodata] repository (legal tools with
    full translation support):
    - 4.0 Licenses
    - CC0
-2. **django template**
+2. **Django template**
    ([`legalcode_licenses_3.0_unported.html`][unportedtemplate]):
    - Unported 3.0 Licenses (English-only)
 3. **`html` field** (in the `LegalCode` model):
@@ -345,19 +335,19 @@ database records and translation files.
 
 `load_html_files` uses [BeautifulSoup4][bs4docs] to parse the legacy HTML legal
 code:
-1. `import_zero_license_html` for CC0 Public Domain tool
+1. `import_zero_license_html()` for CC0 Public Domain tool
    - HTML is handled specifically (using tag ids and classes) to populate
      translation strings and to be used with specific HTML formatting when
      displayed via template
-2. `import_by_40_license_html` for 4.0 License tools
+2. `import_by_40_license_html()` for 4.0 License tools
    - HTML is handled specifically (using tag ids and classes) to populate
      translation strings and to be used with specific HTML formatting when
      displayed via a template
-3. `import_by_30_unported_license_html` for unported 3.0 License tools
+3. `import_by_30_unported_license_html()` for unported 3.0 License tools
    (English-only)
    - HTML is handled specifically to be used with specific HTML formatting
      when displayed via a template
-4. `simple_import_license_html` for everything else
+4. `simple_import_license_html()` for everything else
    - HTML is handled generically; only the title and license body are
      identified. The body is stored in the `html` field of the
      `LegalCode` model
@@ -369,21 +359,21 @@ code:
 ### Import Process
 
 This process will read the HTML files from the specified directory, populate
-`LegalCode` and `Tool` models, and create `.po` files in
-[creativecommons/cc-legal-tools-data][repodata].
+`LegalCode` and `Tool` models, and create the `.po` portable object Gettext
+files in [creativecommons/cc-legal-tools-data][repodata].
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Clear data in the database
-    ```
+    ```shell
     docker compose exec app ./manage.py clear_license_data
     ```
 4. Load legacy HTML in the database
-    ```
+    ```shell
     docker compose exec app ./manage.py load_html_files
     ```
 5. Optionally (and only as appropriate):
-   1. commit `.po` file changes in
+   1. Commit the `.po` portable object Gettext file changes in
       [creativecommons/cc-legal-tools-data][repodata]
    2. [Translation Update Process](#translation-update-process), below
    3. [Generate Static Files](#generate-static-files), below
@@ -410,10 +400,10 @@ Transifex API v3][transauth]: to get an API token, and set
 `TRANSIFEX["API_TOKEN"]` in your environment with its value.
 
 The [creativecommons/cc-legal-tools-data][repodata] repository must be cloned
-next to this `cc-legal-tools-app` repository. (It can be elsewhere, then you need
-to set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a URL
-that starts with `git@github...` and not `https://github...`, or you won't be
-able to push to it. Also see [Data Repository](#data-repository), above.
+next to this `cc-legal-tools-app` repository. (It can be elsewhere, then you
+need to set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a
+URL that starts with `git@github...` and not `https://github...`, or you won't
+be able to push to it. Also see [Data Repository](#data-repository), above.
 
 In production, the `check_for_translation_updates` management command should be
 run hourly. See [Check for Translation
@@ -468,9 +458,9 @@ about. It performs the following process (which can also be done manually:
    1. Checkout or create the appropriate branch.
       - For example, if a French translation file for BY 4.0 has changed, the
         branch name will be `cc4-fr`.
-   2. Download the updated `.po` file from Transifex
+   2. Download the updated `.po` portable object Gettext file from Transifex
    3. Do the [Translation Update Process](#translation-update-process) (below)
-      - *This is important and easy to forget,* but without it, Django will
+      - _This is important and easy to forget,_ but without it, Django will
         keep using the old translations
    4. Commit that change and push it upstream.
 3. Within this `cc-legal-tools-app` repository:
@@ -492,21 +482,21 @@ about. It performs the following process (which can also be done manually:
 
 ### Translation Update Process
 
-This Django Admin command must be run any time the `.po` files are created or
-changed.
+This Django Admin command must be run any time the `.po` portable object
+Gettext files are created or changed.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
 3. Compile translation messages (update `.mo` files)
-    ```
+    ```shell
     docker compose exec app ./manage.py compilemessages
     ```
 
 
 ## Generate Static Files
 
-Generating static files updates the static files in the `doc` directory of the
-[creativecommons/cc-legal-tools-data][repodata] repository (the [Data
+Generating static files updates the static files in the `docs/` directory of
+the [creativecommons/cc-legal-tools-data][repodata] repository (the [Data
 Repository](#data-repository), above).
 
 
@@ -518,8 +508,8 @@ not push any commits (`--nopush` is implied by `--nogit`).
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Compile translation messages (update `.mo` files)
-    ```
+3. Compile translation messages (update the `.mo` machine object Gettext files)
+    ```shell
     docker compose exec app ./manage.py publish --nogit --branch=main
     ```
 
@@ -527,7 +517,7 @@ not push any commits (`--nopush` is implied by `--nogit`).
 ### Publishing changes to git repo
 
 When the site is deployed, to enable pushing and pulling the licenses data repo
-with GitHub, create an ssh deploy key for the cc-legal-tools-data repo with
+with GitHub, create an SSH deploy key for the cc-legal-tools-data repo with
 write permissions, and put the private key file (not password protected)
 somewhere safe (owned by `www-data` if on a server), and readable only by its
 owner (0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be
@@ -547,6 +537,23 @@ the full path to that deploy key file.
 
 ## License
 
-- [`LICENSE`](LICENSE) (Expat/[MIT][mit] License)
+
+### Code
+
+[`LICENSE`](LICENSE): the code within this repository is licensed under the
+Expat/[MIT][mit] license.
 
 [mit]: http://www.opensource.org/licenses/MIT "The MIT License | Open Source Initiative"
+
+
+### Legal Code text
+
+[![CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+button][cc-zero-png]][cc-zero]
+
+The text of the Creative Commons public licenses (legal code) is dedicated to
+the public domain under the [CC0 1.0 Universal (CC0 1.0) Public Domain
+Dedication][cc-zero].
+
+[cc-zero-png]: https://licensebuttons.net/l/zero/1.0/88x31.png "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication button"
+[cc-zero]: https://creativecommons.org/publicdomain/zero/1.0/
