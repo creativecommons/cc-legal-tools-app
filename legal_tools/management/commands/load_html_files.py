@@ -285,6 +285,7 @@ class Command(BaseCommand):
                 unit = tool.unit
                 version = tool.version
                 support_po_files = False
+                disclaimers_text = False
 
                 # Deed-only
                 if tool.deed_only:
