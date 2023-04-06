@@ -17,7 +17,7 @@ services:
     environment:
       - DJANGO_SETTINGS_MODULE=${DOCKER_DJANGO_SETTINGS_MODULE}
     ports:
-      - "${PORT_APP}:${PORT_APP}"
+      - "127.0.0.1:${PORT_APP}:${PORT_APP}"
     restart: always
     volumes:
       - .:/home/cc/cc-legal-tools-app
