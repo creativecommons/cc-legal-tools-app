@@ -2,4 +2,4 @@
 # If you want to match two or more code owners with the same pattern, all the
 # code owners must be on the same line. If the code owners are not on the same
 # line, the pattern matches only the last mentioned code owner.
-* @creativecommons/technology @creativecommons/ct-cc-legal-tools-maintainers
+* @creativecommons/technology @creativecommons/ct-cc-legal-tools-core-committers @creativecommons/ct-cc-legal-tools-maintainers
