@@ -487,7 +487,7 @@ Gettext files are created or changed.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Compile translation messages (update `.mo` files)
+3. Compile translation messages (update the `.mo` machine object Gettext files)
     ```shell
     docker compose exec app ./manage.py compilemessages
     ```
@@ -508,7 +508,8 @@ not push any commits (`--nopush` is implied by `--nogit`).
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Compile translation messages (update the `.mo` machine object Gettext files)
+3. Delete the contents of the `docs/` directory and then recreate/copy the
+   static files it should contain:
     ```shell
     docker compose exec app ./manage.py publish --nogit --branch=main
     ```
