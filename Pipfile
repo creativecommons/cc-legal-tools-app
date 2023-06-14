@@ -16,6 +16,8 @@ python-dateutil = "*"
 PyYAML = "*"
 transifex-python = "*"
 whitenoise = "*"
+rdflib = "*"
+
 
 [dev-packages]
 black = "*"
