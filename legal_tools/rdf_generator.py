@@ -1,6 +1,10 @@
 from rdflib import Graph, Namespace, Literal, URIRef
+from legal_tools.models import Tool
 
-def generate_rdf_triples(license_name, version):
+def generate_rdf_triples(unit, version):
+
+    # Retrieving license data from the database based on the unit and version arguments.
+    license_data = Tool.objects.filter(unit=unit, version=version).first()
     
     # The relevant namespaces for RDF elements
     RDF=Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
@@ -25,35 +29,50 @@ def generate_rdf_triples(license_name, version):
 
     
     # license URI
-    license_uri = URIRef(f"https://creativecommons.org/licenses/{license_name}/{version}/")
+    license_uri = URIRef(license_data.base_url)
 
-    if license_name == "by":
-        g.add((license_uri, RDF.type, CC.License))
-        g.add((license_uri, DCT.title, Literal(f"CC {license_name.upper()} {version}")))
-        g.add((license_uri, DCT.description, Literal("A Creative Commons Attribution 4.0 International License.")))
-        g.add((license_uri, DCT.type, DCTYPES.Text))
-        g.add((license_uri, FOAF.homepage, URIRef(license_uri)))
-        g.add((license_uri, CC.legalcode, URIRef(license_uri + "legalcode")))
+    g.add((license_uri, RDF.type, CC.License))
+    g.add((license_uri, DCT.title, Literal(f"CC {unit.upper()} {version}")))
+    g.add((license_uri, CC.licenseVersion, Literal(f"{version}")))
+    g.add((license_uri, DCT.description, Literal(" NEED SUGGESTIONS ON WHAT TO PUT HERE.")))
+    g.add((license_uri, CC.legalcode, URIRef(license_uri + "legalcode")))
+    g.add((license_uri, FOAF.homepage, URIRef(license_uri)))
+    g.add((license_uri, FOAF.maker, URIRef("https://creativecommons.org/")))
+
+    
+    # Adding permit properties
+
+    if license_data.permits_derivative_works:
+        g.add((license_uri, CC.permits, CC.DerivativeWorks))
+
+    if license_data.permits_reproduction:
         g.add((license_uri, CC.permits, CC.Reproduction))
-        g.add((license_uri, CC.permits, CC.Distribution))
-        g.add((license_uri, CC.requires, CC.Attribution))
-        g.add((license_uri, CC.requires, CC.Notice))
-        g.add((license_uri, CC.prohibits, CC.CommercialUse))
-        g.add((license_uri, CC.prohibits, CC.DerivativeWorks))
 
-    else:
-        # here we'll add more triples for remaining licenses.
-        pass
+    if license_data.permits_distribution:
+        g.add((license_uri, CC.permits, CC.Distribution))
+
+    if license_data.permits_sharing:
+        g.add((license_uri, CC.permits, CC.Sharing))
+
+    if license_data.requires_share_alike:
+        g.add((license_uri, CC.requires, CC.ShareAlike))
+
+    if license_data.requires_notice:
+        g.add((license_uri, CC.requires, CC.Notice))
+
+    if license_data.requires_attribution:
+        g.add((license_uri, CC.requires, CC.Attribution))
+
+    if license_data.requires_source_code:
+        g.add((license_uri, CC.requires, CC.SourceCode))
+
+    if license_data.prohibits_commercial_use:
+        g.add((license_uri, CC.prohibits, CC.CommercialUse))
+
+    if license_data.prohibits_high_income_nation_use:
+        g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
+
+    
     
     
     return g
-
-# Example usage:
-'''def main():
-    rdf_graph = generate_rdf_triples('by', '4.0')
-    rdf_data=rdf_graph.serialize(format="xml").strip('utf-8')
-    print(rdf_data)
-
-# Execute the main function
-if __name__ == "__main__":
-    main()'''

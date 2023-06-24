@@ -768,12 +768,18 @@ def render_redirect(title, destination, language_code):
     return html_content
 
 
-def generate_rdf(
+def view_generate_rdf(
         request, 
-        license_name, 
+        unit, 
         version
     ):
-    rdf_content = generate_rdf_triples(license_name, version)
+    rdf_content = generate_rdf_triples(unit, version)
     serialized_rdf_content = rdf_content.serialize(format="xml").strip('utf-8')
     response = HttpResponse(serialized_rdf_content, content_type='application/rdf+xml')
+    
+    '''pe = Tool.objects.get(unit='by', version=4.0)
+    properties = {key: value for key, value in pe.__dict__.items() if not key.startswith('_')}
+    html_properties = "<ul>" + "".join(f"<li>{key}: {value}</li>" for key, value in properties.items()) + "</ul>"'''
+
+    # return HttpResponse(response)
     return response

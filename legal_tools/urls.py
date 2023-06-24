@@ -20,9 +20,8 @@ from legal_tools.views import (
     view_legal_code,
     view_list,
     view_metadata,
-    generate_rdf,
+    view_generate_rdf,
 )
-from .views import generate_rdf
 
 class CategoryConverter:
     """
@@ -270,7 +269,7 @@ urlpatterns = [
 
     # RDF generation  #########################################################
     path(
-        "licenses/<str:license_name>/<str:version>/rdf/",
-        generate_rdf,
+        "licenses/<str:unit>/<str:version>/rdf",
+        view_generate_rdf,
         name="generate_rdf"
     )]
