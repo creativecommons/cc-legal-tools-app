@@ -777,9 +777,4 @@ def view_generate_rdf(
     serialized_rdf_content = rdf_content.serialize(format="xml").strip('utf-8')
     response = HttpResponse(serialized_rdf_content, content_type='application/rdf+xml')
     
-    '''pe = Tool.objects.get(unit='by', version=4.0)
-    properties = {key: value for key, value in pe.__dict__.items() if not key.startswith('_')}
-    html_properties = "<ul>" + "".join(f"<li>{key}: {value}</li>" for key, value in properties.items()) + "</ul>"'''
-
-    # return HttpResponse(response)
     return response
