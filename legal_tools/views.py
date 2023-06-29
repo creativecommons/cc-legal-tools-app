@@ -24,14 +24,14 @@ from i18n.utils import (
     load_deeds_ux_translations,
     map_django_to_transifex_language_code,
 )
-from .rdf_generator import generate_rdf_triples
-
 from legal_tools.models import (
     UNITS_LICENSES,
     LegalCode,
     Tool,
     TranslationBranch,
 )
+from .rdf_generator import generate_rdf_triples
+
 NUM_COMMITS = 3
 
 # For removing the deed.foo section of a deed url
@@ -768,13 +768,11 @@ def render_redirect(title, destination, language_code):
     return html_content
 
 
-def view_generate_rdf(
-        request, 
-        unit, 
-        version
-    ):
+def view_generate_rdf(request, unit, version):
     rdf_content = generate_rdf_triples(unit, version)
-    serialized_rdf_content = rdf_content.serialize(format="xml").strip('utf-8')
-    response = HttpResponse(serialized_rdf_content, content_type='application/rdf+xml')
-    
+    serialized_rdf_content = rdf_content.serialize(format="xml").strip("utf-8")
+    response = HttpResponse(
+        serialized_rdf_content, content_type="application/rdf+xml"
+    )
+
     return response

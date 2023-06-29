@@ -17,11 +17,12 @@ from legal_tools.views import (
     view_branch_status,
     view_deed,
     view_dev_index,
+    view_generate_rdf,
     view_legal_code,
     view_list,
     view_metadata,
-    view_generate_rdf,
 )
+
 
 class CategoryConverter:
     """
@@ -266,10 +267,18 @@ urlpatterns = [
         view_branch_status,
         name="branch_status",
     ),
-
     # RDF generation  #########################################################
+    # without Jurisdiction
+    
     path(
         "licenses/<str:unit>/<str:version>/rdf",
         view_generate_rdf,
-        name="generate_rdf"
-    )]
+        name="generate_rdf",
+    ),
+
+    path(
+        "licenses/<str:unit>/<str:version>/<str:jurisdiction_code>/rdf",
+        view_generate_rdf,
+        name="generate_rdf",
+    )
+]
