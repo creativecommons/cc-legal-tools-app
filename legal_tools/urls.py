@@ -269,16 +269,15 @@ urlpatterns = [
     ),
     # RDF generation  #########################################################
     # without Jurisdiction
-    
     path(
         "licenses/<str:unit>/<str:version>/rdf",
         view_generate_rdf,
         name="generate_rdf",
     ),
-
+    # with Jurisdiction
     path(
         "licenses/<str:unit>/<str:version>/<str:jurisdiction_code>/rdf",
         view_generate_rdf,
         name="generate_rdf",
-    )
+    ),
 ]

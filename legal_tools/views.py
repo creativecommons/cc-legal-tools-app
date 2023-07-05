@@ -768,8 +768,8 @@ def render_redirect(title, destination, language_code):
     return html_content
 
 
-def view_generate_rdf(request, unit, version):
-    rdf_content = generate_rdf_triples(unit, version)
+def view_generate_rdf(request, unit, version, jurisdiction_code=None):
+    rdf_content = generate_rdf_triples(unit, version, jurisdiction_code)
     serialized_rdf_content = rdf_content.serialize(format="xml").strip("utf-8")
     response = HttpResponse(
         serialized_rdf_content, content_type="application/rdf+xml"
