@@ -56,7 +56,7 @@ def get_category_and_category_title(category=None, tool=None):
 def get_tool_title(tool):
     tool_name = UNIT_NAMES.get(tool.unit, "UNIMPLEMENTED")
     jurisdiction_name = get_jurisdiction_name(
-        tool.category, tool.unit, tool.version, tool.jurisdiction
+        tool.category, tool.unit, tool.version, tool.jurisdiction_code
     )
     tool_title = f"{tool_name} {tool.version} {jurisdiction_name}"
     return tool_title
@@ -374,17 +374,17 @@ def view_list(request, category, language_code=None):
         lc_version = lc.tool.version
         lc_identifier = lc.tool.identifier()
         lc_language_default = get_default_language_for_jurisdiction(
-            lc.tool.jurisdiction,
+            lc.tool.jurisdiction_code,
         )
         lc_lang_code = lc.language_code
         jurisdiction_name = get_jurisdiction_name(
             lc_category,
             lc_unit,
             lc_version,
-            lc.tool.jurisdiction,
+            lc.tool.jurisdiction_code,
         )
         jurisdiction_sort = (  # ensure unported is first
-            "" if not lc.tool.jurisdiction else jurisdiction_name
+            "" if not lc.tool.jurisdiction_code else jurisdiction_name
         )
         deed_rel_path = get_deed_rel_path(
             lc.deed_url,
