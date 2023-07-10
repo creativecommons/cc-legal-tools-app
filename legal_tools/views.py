@@ -56,7 +56,7 @@ def get_category_and_category_title(category=None, tool=None):
 def get_tool_title(tool):
     tool_name = UNIT_NAMES.get(tool.unit, "UNIMPLEMENTED")
     jurisdiction_name = get_jurisdiction_name(
-        tool.category, tool.unit, tool.version, tool.jurisdiction_code
+        tool.category, tool.unit, tool.version, tool.jurisdiction
     )
     tool_title = f"{tool_name} {tool.version} {jurisdiction_name}"
     return tool_title
@@ -374,17 +374,17 @@ def view_list(request, category, language_code=None):
         lc_version = lc.tool.version
         lc_identifier = lc.tool.identifier()
         lc_language_default = get_default_language_for_jurisdiction(
-            lc.tool.jurisdiction_code,
+            lc.tool.jurisdiction,
         )
         lc_lang_code = lc.language_code
         jurisdiction_name = get_jurisdiction_name(
             lc_category,
             lc_unit,
             lc_version,
-            lc.tool.jurisdiction_code,
+            lc.tool.jurisdiction,
         )
         jurisdiction_sort = (  # ensure unported is first
-            "" if not lc.tool.jurisdiction_code else jurisdiction_name
+            "" if not lc.tool.jurisdiction else jurisdiction_name
         )
         deed_rel_path = get_deed_rel_path(
             lc.deed_url,
@@ -768,11 +768,14 @@ def render_redirect(title, destination, language_code):
     return html_content
 
 
-def view_generate_rdf(request, unit, version, jurisdiction_code=None):
-    rdf_content = generate_rdf_triples(unit, version, jurisdiction_code)
+def view_generate_rdf(request, unit, version, jurisdiction=None):
+    rdf_content = generate_rdf_triples(unit, version, jurisdiction)
     serialized_rdf_content = rdf_content.serialize(format="xml").strip("utf-8")
+
+    serialized_rdf_content = serialized_rdf_content.replace(
+        "<rdf:Description", "<cc:License"
+    ).replace("</rdf:Description>", "</cc:License>")
     response = HttpResponse(
         serialized_rdf_content, content_type="application/rdf+xml"
     )
-
     return response

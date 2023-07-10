@@ -5,11 +5,11 @@ from rdflib import Graph, Literal, Namespace, URIRef
 from legal_tools.models import LegalCode, Tool
 
 
-def generate_rdf_triples(unit, version, jurisdiction_code=None):
+def generate_rdf_triples(unit, version, jurisdiction=None):
     # Retrieving license data from the database based on the arguments.
-    if jurisdiction_code:
+    if jurisdiction:
         license_data = Tool.objects.filter(
-            unit=unit, version=version, jurisdiction_code=jurisdiction_code
+            unit=unit, version=version, jurisdiction_code=jurisdiction
         ).first()
     else:
         license_data = Tool.objects.filter(unit=unit, version=version).first()
@@ -18,7 +18,7 @@ def generate_rdf_triples(unit, version, jurisdiction_code=None):
     RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     CC = Namespace("https://creativecommons.org/ns#")
     DCTYPES = Namespace("http://purl.org/dc/dcmitype/")
-    DCT = Namespace("http://purl.org/dc/terms/")
+    DCQ = Namespace("http://purl.org/dc/terms/")
     FOAF = Namespace("http://xmlns.com/foaf/0.1/")
     XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
     DC = Namespace("http://purl.org/dc/elements/1.1/")
@@ -28,7 +28,7 @@ def generate_rdf_triples(unit, version, jurisdiction_code=None):
     # Bind namespaces
     g.bind("cc", CC)
     g.bind("dc", DC)
-    g.bind("dct", DCT)
+    g.bind("dcq", DCQ)
     g.bind("dctypes", DCTYPES)
     g.bind("foaf", FOAF)
     g.bind("rdf", RDF)
@@ -37,35 +37,50 @@ def generate_rdf_triples(unit, version, jurisdiction_code=None):
     # license URI
     license_uri = URIRef(license_data.base_url)
 
-    g.add((license_uri, CC.License, license_uri))
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
-    g.add((license_uri, CC.licenseVersion, Literal(f"{version}")))
-    g.add((license_uri, FOAF.maker, URIRef("https://creativecommons.org/")))
-
-    """g.add(
+    g.add((license_uri, DCQ.hasVersion, Literal(f"{version}")))
+    g.add((license_uri, DC.creator, URIRef(license_data.creator_url)))
+    g.add(
         (
             license_uri,
-            DCT.description,
-            Literal(" NEED SUGGESTIONS ON WHAT TO PUT HERE."),
+            CC.licenseClass,
+            URIRef(license_data.creator_url + "/license/"),
         )
-    )"""
+    )
 
-    if jurisdiction_code:
-        code = jurisdiction_code
+    # g.add(
+    #     (
+    #         license_uri,
+    #         DCT.description,
+    #         Literal(" NEED SUGGESTIONS ON WHAT TO PUT HERE."),
+    #     )
+    # )
+
+    if jurisdiction:
         g.add(
             (
                 license_uri,
                 CC.jurisdiction,
-                URIRef("https://creativecommons.org/international/" + code),
+                URIRef(
+                    "https://creativecommons.org/international/"
+                    + f"{jurisdiction}"
+                ),
             )
         )
 
     # Extracted the corresponding id of the Tool from LegalCode and then
-    # created CC.legalcode using 'legal_code_url' property of LegalCode.
+    # created according entries (CC.legalcode, DC.title)
+    # using appropriate property of LegalCode.
     legal_code_ids = license_data.legal_codes.values_list("id", flat=True)
     for legal_code_id in legal_code_ids:
-        legal_codes = LegalCode.objects.get(id=legal_code_id)
-        legal_code_url = legal_codes.legal_code_url
+        legal_code_object = LegalCode.objects.get(id=legal_code_id)
+
+        get_tool_title = legal_code_object.title
+        tool_lang = legal_code_object.language_code
+        tool_title_data = Literal(get_tool_title, lang=tool_lang)
+        g.add((license_uri, DC.title, (tool_title_data)))
+
+        legal_code_url = legal_code_object.legal_code_url
         g.add(
             (
                 license_uri,
