@@ -234,7 +234,7 @@ LANG_INFO["nso"] = {
     "name": "Northern Sotho",
     "name_local": "Sesotho sa Leboa",
 }
-# Aranese (an Occitan variant)
+# Aranese (an Occitan variant, CLDR: oc-ES)
 LANG_INFO["oc-aranes"] = {
     "bidi": False,
     "code": "oc-aranes",
