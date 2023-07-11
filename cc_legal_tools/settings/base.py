@@ -214,7 +214,7 @@ LOCALE_PATHS = (
 
 # Teach Django about a few more languages (sorted by language code)
 
-# Aragonese
+# Aragonese (Babel / CLDR 42 does not contain locale information)
 LANG_INFO["an"] = {
     "bidi": False,
     "code": "an",
@@ -227,14 +227,14 @@ LANG_INFO["mi"] = {"code": "mi"}  # Remaining data from Babel
 LANG_INFO["ms"] = {"code": "ms"}  # Remaining data from Babel
 # Maltese
 LANG_INFO["mt"] = {"code": "mt"}  # Remaining data from Babel
-# Northern Sotho
+# Northern Sotho (Babel / CLDR 42 does not contain locale information)
 LANG_INFO["nso"] = {
     "bidi": False,
     "code": "nso",
     "name": "Northern Sotho",
     "name_local": "Sesotho sa Leboa",
 }
-# Aranese (an Occitan variant, CLDR: oc-ES)
+# Aranese (Babel / CLDR 42 includes oc-ES [Occitan (Spain)] but not oc-Aranes)
 LANG_INFO["oc-aranes"] = {
     "bidi": False,
     "code": "oc-aranes",
