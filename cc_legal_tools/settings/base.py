@@ -2,6 +2,7 @@
 Django settings for cc_legal_tools project.
 """
 # Standard library
+import copy
 import os
 
 # Third-party
@@ -212,7 +213,15 @@ LOCALE_PATHS = (
     LEGAL_CODE_LOCALE_PATH,
 )
 
+# Preserve Django language information
+# - This is used for translation/internationalization troubleshooting
+# - The following line MUST come before any modifications of LANG_INFO
+DJANGO_LANG_INFO = copy.deepcopy(LANG_INFO)
+
 # Teach Django about a few more languages (sorted by language code)
+
+# Azerbaijani (Django defaults to RTL?!?)
+LANG_INFO["az"]["bidi"] = False
 
 # Aragonese (Babel / CLDR 42 does not contain locale information)
 LANG_INFO["an"] = {

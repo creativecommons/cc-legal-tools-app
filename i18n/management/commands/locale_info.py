@@ -4,9 +4,11 @@ from argparse import ArgumentParser
 
 # Third-party
 from babel import Locale
+from babel.core import UnknownLocaleError
 from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils import translation
+#from django.conf.locale import DJANGO_LANG_INFO
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
@@ -19,6 +21,11 @@ ORDER_TO_BIDI = {
     "left-to-right": False,
     "right-to-left": True,
 }
+EMPTY = {
+    "name": 'None',
+    "name_local": 'None',
+    "bidi": 'None',
+}
 
 
 class Command(BaseCommand):
@@ -29,34 +36,67 @@ class Command(BaseCommand):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         language_tag = options["language_tag"]
 
-        locale_name = translation.to_locale(language_tag)
-        lang_info = settings.LANG_INFO[language_tag]
-        print()
         # Django
-        print(
-            f"      LANGUAGE_TAG: {language_tag}",
-            "",
-            "Django (including settings)",
-            f"      locale: {locale_name}",
-            f"        name: {lang_info['name']}",
-            f"  name_local: {lang_info['name_local']}",
-            f"        bidi: {lang_info['bidi']}",
-            sep="\n",
+        if language_tag in settings.DJANGO_LANG_INFO:
+            lang_info = settings.DJANGO_LANG_INFO[language_tag]
+        else:
+            lang_info = EMPTY
+        django_locale = translation.to_locale(language_tag)
+        django_name = lang_info['name']
+        django_name_local = lang_info['name_local']
+        django_bidi = lang_info['bidi']
+        # Babel
+        try:
+            babel_locale = Locale.parse(django_locale)
+            babel_name = babel_locale.get_display_name("en")
+            babel_name_local = babel_locale.get_display_name()
+            babel_bidi = ORDER_TO_BIDI[babel_locale.character_order]
+        except UnknownLocaleError:
+            lang_info = EMPTY
+            babel_locale = django_locale
+            babel_name = lang_info['name']
+            babel_name_local = lang_info['name_local']
+            babel_bidi = lang_info['bidi']
+        # cc-legal-tools-app
+        if language_tag in settings.LANG_INFO:
+            lang_info = settings.LANG_INFO[language_tag]
+        else:
+            lang_info = EMPTY
+        app_locale = django_locale
+        app_name = lang_info['name']
+        app_name_local = lang_info['name_local']
+        app_bidi = lang_info['bidi']
+
+        self.stdout.write()
+        self.stdout.write(
+            f"LANGUAGE_TAG: {language_tag}\n\n"
+        )
+
+        # Django
+        self.stdout.write(
+            f"Django\n"
+            f"      locale: {django_locale}\n"
+            f"        name: {django_name}\n"
+            f"  name_local: {django_name_local}\n"
+            f"        bidi: {django_bidi}\n"
         )
         # Babel
-        locale = Locale.parse(locale_name)
-        name = locale.get_display_name("en")
-        name_local = locale.get_display_name(locale_name)
-        character_order = ORDER_TO_BIDI[locale.character_order]
-        print(
-            "\nBabel / CLDR",
-            f"      locale: {locale}",
-            f"        name: {name}",
-            f"  name_local: {name_local}",
-            f"        bidi: {character_order}",
-            sep="\n",
+        self.stdout.write(
+            "\nBabel / CLDR\n"
+            f"      locale: {babel_locale}\n"
+            f"        name: {babel_name}\n"
+            f"  name_local: {babel_name_local}\n"
+            f"        bidi: {babel_bidi}\n\n"
         )
-        print()
+        # cc-legal-tools-app
+        self.stdout.write(
+            "cc-legal-tools-app\n"
+            f"      locale: {app_locale}\n"
+            f"        name: {app_name}\n"
+            f"  name_local: {app_name_local}\n"
+            f"        bidi: {app_bidi}\n"
+        )
+        self.stdout.write()
 
     def handle(self, **options):
         self.main(**options)
