@@ -8,7 +8,6 @@ from babel.core import UnknownLocaleError
 from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils import translation
-#from django.conf.locale import DJANGO_LANG_INFO
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
@@ -22,9 +21,9 @@ ORDER_TO_BIDI = {
     "right-to-left": True,
 }
 EMPTY = {
-    "name": 'None',
-    "name_local": 'None',
-    "bidi": 'None',
+    "name": "none",
+    "name_local": "none",
+    "bidi": "none",
 }
 
 
@@ -42,9 +41,9 @@ class Command(BaseCommand):
         else:
             lang_info = EMPTY
         django_locale = translation.to_locale(language_tag)
-        django_name = lang_info['name']
-        django_name_local = lang_info['name_local']
-        django_bidi = lang_info['bidi']
+        django_name = lang_info["name"]
+        django_name_local = lang_info["name_local"]
+        django_bidi = lang_info["bidi"]
         # Babel
         try:
             babel_locale = Locale.parse(django_locale)
@@ -54,23 +53,21 @@ class Command(BaseCommand):
         except UnknownLocaleError:
             lang_info = EMPTY
             babel_locale = django_locale
-            babel_name = lang_info['name']
-            babel_name_local = lang_info['name_local']
-            babel_bidi = lang_info['bidi']
+            babel_name = lang_info["name"]
+            babel_name_local = lang_info["name_local"]
+            babel_bidi = lang_info["bidi"]
         # cc-legal-tools-app
         if language_tag in settings.LANG_INFO:
             lang_info = settings.LANG_INFO[language_tag]
         else:
             lang_info = EMPTY
         app_locale = django_locale
-        app_name = lang_info['name']
-        app_name_local = lang_info['name_local']
-        app_bidi = lang_info['bidi']
+        app_name = lang_info["name"]
+        app_name_local = lang_info["name_local"]
+        app_bidi = lang_info["bidi"]
 
         self.stdout.write()
-        self.stdout.write(
-            f"LANGUAGE_TAG: {language_tag}\n\n"
-        )
+        self.stdout.write(f"LANGUAGE_TAG: {language_tag}\n\n")
 
         # Django
         self.stdout.write(
