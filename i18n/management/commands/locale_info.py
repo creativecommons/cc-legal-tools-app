@@ -1,75 +1,62 @@
-#!/usr/bin/env python3
-
-"""
-Display Babel / CLDR locale data for a given language tag
-"""
-
 # Standard library
-import argparse
-import sys
-import traceback
+import logging
+from argparse import ArgumentParser
 
 # Third-party
 from babel import Locale
+from django.conf import settings
+from django.core.management import BaseCommand
 from django.utils import translation
 
-
-class ReportError(Exception):
-    def __init__(self, message, code=None):
-        self.code = code if code else 1
-        message = f"({self.code}) {message}"
-        super(ReportError, self).__init__(message)
-
-
-def setup():
-    """Instantiate and configure argparse and logging.
-
-    Return argsparse namespace.
-    """
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("language_tag", metavar="LANUAGE_TAG")
-    args = ap.parse_args()
-    args.language_tag = args.language_tag.lower()
-    return args
+LOG = logging.getLogger(__name__)
+LOG_LEVELS = {
+    0: logging.ERROR,
+    1: logging.WARNING,
+    2: logging.INFO,
+    3: logging.DEBUG,
+}
+ORDER_TO_BIDI = {
+    "left-to-right": False,
+    "right-to-left": True,
+}
 
 
-def main():
-    args = setup()
-    locale_name = translation.to_locale(args.language_tag)
-    locale = Locale.parse(locale_name)
-    name = locale.get_display_name("en")
-    name_local = locale.get_display_name(locale_name)
-    character_order = locale.character_order
-    print()
-    print(
-        f"      LANUAGE_TAG: {args.language_tag}",
-        "",
-        "Django",
-        f"           locale: {locale_name}",
-        "",
-        "Babel / CLDR",
-        f"           locale: {locale}",
-        f"             name: {name}",
-        f"       name_local: {name_local}",
-        f"  character_order: {character_order}",
-        sep="\n",
-    )
-    print()
+class Command(BaseCommand):
+    def add_arguments(self, parser: ArgumentParser):
+        parser.add_argument("language_tag", metavar="LANGUAGE_TAG")
 
+    def main(self, **options):
+        LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
+        language_tag = options["language_tag"]
 
-if __name__ == "__main__":
-    try:
-        main()
-    except SystemExit as e:
-        sys.exit(e.code)
-    except KeyboardInterrupt:
-        print("INFO (130) Halted via KeyboardInterrupt.", file=sys.stderr)
-        sys.exit(130)
-    except ReportError:
-        error_type, error_value, error_traceback = sys.exc_info()
-        print(f"CRITICAL {error_value}", file=sys.stderr)
-        sys.exit(error_value.code)
-    except Exception:
-        print("ERROR (1) Unhandled exception:", file=sys.stderr)
-        print(traceback.print_exc(), file=sys.stderr)
-        sys.exit(1)
+        locale_name = translation.to_locale(language_tag)
+        lang_info = settings.LANG_INFO[language_tag]
+        print()
+        # Django
+        print(
+            f"      LANGUAGE_TAG: {language_tag}",
+            "",
+            "Django (including settings)",
+            f"      locale: {locale_name}",
+            f"        name: {lang_info['name']}",
+            f"  name_local: {lang_info['name_local']}",
+            f"        bidi: {lang_info['bidi']}",
+            sep="\n",
+        )
+        # Babel
+        locale = Locale.parse(locale_name)
+        name = locale.get_display_name("en")
+        name_local = locale.get_display_name(locale_name)
+        character_order = ORDER_TO_BIDI[locale.character_order]
+        print(
+            "\nBabel / CLDR",
+            f"      locale: {locale}",
+            f"        name: {name}",
+            f"  name_local: {name_local}",
+            f"        bidi: {character_order}",
+            sep="\n",
+        )
+        print()
+
+    def handle(self, **options):
+        self.main(**options)
