@@ -773,8 +773,8 @@ def view_generate_rdf(request, unit, version, jurisdiction=None):
     serialized_rdf_content = rdf_content.serialize(format="xml").strip("utf-8")
 
     serialized_rdf_content = serialized_rdf_content.replace(
-        "<rdf:Description", "<cc:License"
-    ).replace("</rdf:Description>", "</cc:License>")
+        "<rdf:Description", "<cc:License", 1
+    ).replace("</rdf:Description>", "</cc:License>", 1)
     response = HttpResponse(
         serialized_rdf_content, content_type="application/rdf+xml"
     )

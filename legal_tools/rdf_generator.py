@@ -16,7 +16,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
 
     # The relevant namespaces for RDF elements
     RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
-    CC = Namespace("https://creativecommons.org/ns#")
+    CC = Namespace("http://creativecommons.org/ns#")
     DCTYPES = Namespace("http://purl.org/dc/dcmitype/")
     DCQ = Namespace("http://purl.org/dc/terms/")
     FOAF = Namespace("http://xmlns.com/foaf/0.1/")
@@ -40,6 +40,8 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
     g.add((license_uri, DCQ.hasVersion, Literal(f"{version}")))
     g.add((license_uri, DC.creator, URIRef(license_data.creator_url)))
+
+    # This will be changed as other types of license types are added
     g.add(
         (
             license_uri,
@@ -88,6 +90,9 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
                 URIRef(license_data.creator_url + legal_code_url),
             )
         )
+        # added dcq.language for every legal_code_url
+        # currently the output is not sorted as it should be; but it is expected soon.
+        g.add((CC[legal_code_url], DCQ.language, Literal(tool_lang)))
 
     # Adding properties
     # Permits
