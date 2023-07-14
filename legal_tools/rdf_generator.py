@@ -1,5 +1,6 @@
 # Third-party
 from rdflib import Graph, Literal, Namespace, URIRef
+from rdflib.namespace import DC, DCTERMS, FOAF, RDF, XSD
 
 # First-party/Local
 from legal_tools.models import LegalCode, Tool
@@ -15,21 +16,14 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
         license_data = Tool.objects.filter(unit=unit, version=version).first()
 
     # The relevant namespaces for RDF elements
-    RDF = Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
     CC = Namespace("http://creativecommons.org/ns#")
-    DCTYPES = Namespace("http://purl.org/dc/dcmitype/")
-    DCQ = Namespace("http://purl.org/dc/terms/")
-    FOAF = Namespace("http://xmlns.com/foaf/0.1/")
-    XSD = Namespace("http://www.w3.org/2001/XMLSchema#")
-    DC = Namespace("http://purl.org/dc/elements/1.1/")
 
     g = Graph()
 
     # Bind namespaces
     g.bind("cc", CC)
     g.bind("dc", DC)
-    g.bind("dcq", DCQ)
-    g.bind("dctypes", DCTYPES)
+    g.bind("dcq", DCTERMS)
     g.bind("foaf", FOAF)
     g.bind("rdf", RDF)
     g.bind("xsd", XSD)
@@ -38,7 +32,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     license_uri = URIRef(license_data.base_url)
 
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
-    g.add((license_uri, DCQ.hasVersion, Literal(f"{version}")))
+    g.add((license_uri, DCTERMS.hasVersion, Literal(f"{version}")))
     g.add((license_uri, DC.creator, URIRef(license_data.creator_url)))
 
     # This will be changed as other types of license types are added
@@ -90,9 +84,9 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
                 URIRef(license_data.creator_url + legal_code_url),
             )
         )
-        # added dcq.language for every legal_code_url
+        # added DCTERMS.language for every legal_code_url
         # currently the output is not sorted as it should be; but it is expected soon.
-        g.add((CC[legal_code_url], DCQ.language, Literal(tool_lang)))
+        g.add((CC[legal_code_url], DCTERMS.language, Literal(tool_lang)))
 
     # Adding properties
     # Permits
