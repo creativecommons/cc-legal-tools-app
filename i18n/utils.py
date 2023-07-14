@@ -343,9 +343,12 @@ def update_lang_info(language_code):
         if language_code not in LANG_INFO:
             LANG_INFO[language_code] = {}
         lang_info = LANG_INFO[language_code]
-        lang_info["name"] = locale.get_display_name("en")
-        lang_info["name_local"] = locale.get_display_name(locale_name)
-        lang_info["bidi"] = order_to_bidi[locale.character_order]
+        if not lang_info.get("name"):
+            lang_info["name"] = locale.get_display_name("en")
+        if not lang_info.get("name_local"):
+            lang_info["name_local"] = locale.get_display_name(locale_name)
+        if not lang_info.get("bidi"):
+            lang_info["bidi"] = order_to_bidi[locale.character_order]
     except UnknownLocaleError:
         pass
 

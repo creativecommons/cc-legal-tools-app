@@ -55,6 +55,7 @@ RUN chmod 0700 .ssh
 # Configure git for tests
 RUN git config --global user.email 'app@docker-container'
 RUN git config --global user.name 'App DockerContainer'
+RUN git config --global --add safe.directory '*'
 
 ## Prepare for running app
 RUN mkdir cc-legal-tools-app

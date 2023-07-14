@@ -2,6 +2,7 @@
 Django settings for cc_legal_tools project.
 """
 # Standard library
+import copy
 import os
 
 # Third-party
@@ -212,9 +213,17 @@ LOCALE_PATHS = (
     LEGAL_CODE_LOCALE_PATH,
 )
 
+# Preserve Django language information
+# - This is used for translation/internationalization troubleshooting
+# - The following line MUST come before any modifications of LANG_INFO
+DJANGO_LANG_INFO = copy.deepcopy(LANG_INFO)
+
 # Teach Django about a few more languages (sorted by language code)
 
-# Aragonese
+# Azerbaijani (Django defaults to RTL?!?)
+LANG_INFO["az"]["bidi"] = False
+
+# Aragonese (Babel / CLDR 42 does not contain locale information)
 LANG_INFO["an"] = {
     "bidi": False,
     "code": "an",
@@ -227,14 +236,14 @@ LANG_INFO["mi"] = {"code": "mi"}  # Remaining data from Babel
 LANG_INFO["ms"] = {"code": "ms"}  # Remaining data from Babel
 # Maltese
 LANG_INFO["mt"] = {"code": "mt"}  # Remaining data from Babel
-# Northern Sotho
+# Northern Sotho (Babel / CLDR 42 does not contain locale information)
 LANG_INFO["nso"] = {
     "bidi": False,
     "code": "nso",
     "name": "Northern Sotho",
     "name_local": "Sesotho sa Leboa",
 }
-# Aranese (an Occitan variant)
+# Aranese (Babel / CLDR 42 includes oc-ES [Occitan (Spain)] but not oc-Aranes)
 LANG_INFO["oc-aranes"] = {
     "bidi": False,
     "code": "oc-aranes",
