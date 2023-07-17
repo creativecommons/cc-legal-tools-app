@@ -86,7 +86,6 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
             )
         )
         # added DCTERMS.language for every legal_code_url
-        # currently the output is not sorted as it should be; but it is expected soon.
         g.add((CC[legal_code_url], DCTERMS.language, Literal(tool_lang)))
 
     # Adding properties
