@@ -31,7 +31,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     # license URI
     license_uri = URIRef(license_data.base_url)
 
-    g.set((license_uri, RDF.type, CC.license))
+    g.set((license_uri, RDF.type, CC.License))
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
     g.add((license_uri, DCTERMS.hasVersion, Literal(f"{version}")))
     g.add((license_uri, DC.creator, URIRef(license_data.creator_url)))
