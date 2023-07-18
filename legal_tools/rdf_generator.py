@@ -1,9 +1,19 @@
+# Standard library
+from urllib.parse import urlparse, urlunparse
+
 # Third-party
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DC, DCTERMS, FOAF, RDF, XSD
 
 # First-party/Local
 from legal_tools.models import LegalCode, Tool
+
+
+def convert_https_to_http(url):
+    parsed_url = urlparse(url)
+    if parsed_url.scheme == "https":
+        parsed_url = parsed_url._replace(scheme="http")
+    return urlunparse(parsed_url)
 
 
 def generate_rdf_triples(unit, version, jurisdiction=None):
@@ -29,18 +39,26 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     g.bind("xsd", XSD)
 
     # license URI
-    license_uri = URIRef(license_data.base_url)
+    license_uri = URIRef(convert_https_to_http(license_data.base_url))
 
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
     g.add((license_uri, DCTERMS.hasVersion, Literal(f"{version}")))
-    g.add((license_uri, DC.creator, URIRef(license_data.creator_url)))
+    g.add(
+        (
+            license_uri,
+            DC.creator,
+            URIRef(convert_https_to_http(license_data.creator_url)),
+        )
+    )
 
     # This will be changed as other types of license types are added
     g.add(
         (
             license_uri,
             CC.licenseClass,
-            URIRef(license_data.creator_url + "/license/"),
+            URIRef(
+                convert_https_to_http(license_data.creator_url + "/license/")
+            ),
         )
     )
 
@@ -58,7 +76,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
                 license_uri,
                 CC.jurisdiction,
                 URIRef(
-                    "https://creativecommons.org/international/"
+                    "http://creativecommons.org/international/"
                     + f"{jurisdiction}"
                 ),
             )
@@ -81,11 +99,16 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
             (
                 license_uri,
                 CC.legalcode,
-                URIRef(license_data.creator_url + legal_code_url),
+                URIRef(
+                    convert_https_to_http(
+                        license_data.creator_url + legal_code_url
+                    )
+                ),
             )
         )
         # added DCTERMS.language for every legal_code_url
-        # currently the output is not sorted as it should be; but it is expected soon.
+        # currently the output is not sorted as it should be;
+        # but it is expected soon.
         g.add((CC[legal_code_url], DCTERMS.language, Literal(tool_lang)))
 
     # Adding properties
