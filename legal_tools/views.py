@@ -3,6 +3,7 @@ import os.path
 import re
 from operator import itemgetter
 from typing import Iterable
+from xml.etree import ElementTree
 
 # Third-party
 import git
@@ -14,6 +15,7 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils import translation
+from lxml import etree
 
 # First-party/Local
 from i18n import UNIT_NAMES
@@ -768,12 +770,77 @@ def render_redirect(title, destination, language_code):
     return html_content
 
 
-def view_generate_rdf(request, unit, version, jurisdiction=None):
-    rdf_content = generate_rdf_triples(unit, version, jurisdiction)
-    serialized_rdf_content = rdf_content.serialize(format="pretty-xml").strip(
-        "utf-8"
+def order_rdf_xml(serialized_rdf_content):
+    def uri2prefix(name, nsmap):
+        """
+        Convert QNAME URI to prefix
+        """
+        qname = etree.QName(name)
+        for pref, uri in nsmap.items():
+            if qname.namespace == uri:
+                return f"{pref}:{qname.localname}"
+        return name
+
+    def get_node_key(node):
+        """
+        Return the sorting key of an xml node using tag and attributes (using
+        prefixes so they are sorted appropriately when serialized)
+        """
+        tag = uri2prefix(node.tag, node.nsmap)
+        attributes = []
+        for qname, value in sorted(node.attrib.items()):
+            prefix = uri2prefix(qname, node.nsmap)
+            attributes.append(f"{prefix}:{value}")
+        key = f"{tag} {' '.join(attributes)}"
+        return key
+
+    def sort_children(node):
+        """
+        Sort children by tag and attributes
+        """
+        if not isinstance(node.tag, str):
+            # Only sort tags (not comments or data)
+            return
+        # sort this node
+        node[:] = sorted(node, key=lambda child: get_node_key(child))
+        # sort this node's children
+        for child in node:
+            sort_children(child)
+
+    # Step 0: rdflib
+    #   - rdflib's pretty-xml serializer does not support deterministic output.
+    #   - left alone, this would result in unnecessary and obfuscating changes
+    #     in git commits
+
+    # Step 1: lxml
+    #   - order XML elements by tag and attribute (using prefixes so they are
+    #     sorted appropriately when serialized)
+    #   - lxml, however, does not support deterministic output of the namespace
+    root = etree.fromstring(serialized_rdf_content.encode())
+    sort_children(root)
+    serialized_rdf_content = etree.tostring(
+        root, encoding="utf-8", xml_declaration=True, pretty_print=True
     )
 
+    # Step 2: xml.etree.ElementTree
+    #   - order namespace
+    ElementTree.register_namespace("cc", "http://creativecommons.org/ns#")
+    ElementTree.register_namespace("dcq", "http://purl.org/dc/terms/")
+    tree = ElementTree.ElementTree(
+        ElementTree.fromstring(serialized_rdf_content.decode())
+    )
+    root = tree.getroot()
+    serialized_rdf_content = ElementTree.tostring(
+        root, encoding="utf-8", xml_declaration=True
+    )
+
+    return serialized_rdf_content
+
+
+def view_generate_rdf(request, unit, version, jurisdiction=None):
+    rdf_content = generate_rdf_triples(unit, version, jurisdiction)
+    serialized_rdf_content = rdf_content.serialize(format="pretty-xml")
+    serialized_rdf_content = order_rdf_xml(serialized_rdf_content)
     response = HttpResponse(
         serialized_rdf_content, content_type="application/rdf+xml"
     )
