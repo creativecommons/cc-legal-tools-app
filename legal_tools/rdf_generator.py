@@ -19,11 +19,11 @@ def convert_https_to_http(url):
 def generate_rdf_triples(unit, version, jurisdiction=None):
     # Retrieving license data from the database based on the arguments.
     if jurisdiction:
-        license_data = Tool.objects.filter(
+        tool_obj = Tool.objects.filter(
             unit=unit, version=version, jurisdiction_code=jurisdiction
         ).first()
     else:
-        license_data = Tool.objects.filter(unit=unit, version=version).first()
+        tool_obj = Tool.objects.filter(unit=unit, version=version).first()
 
     # The relevant namespaces for RDF elements
     CC = Namespace("http://creativecommons.org/ns#")
@@ -39,7 +39,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     g.bind("xsd", XSD)
 
     # license URI
-    license_uri = URIRef(convert_https_to_http(license_data.base_url))
+    license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
 
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
     g.add((license_uri, DCTERMS.hasVersion, Literal(f"{version}")))
@@ -47,7 +47,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
         (
             license_uri,
             DC.creator,
-            URIRef(convert_https_to_http(license_data.creator_url)),
+            URIRef(convert_https_to_http(tool_obj.creator_url)),
         )
     )
 
@@ -57,7 +57,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
             license_uri,
             CC.licenseClass,
             URIRef(
-                convert_https_to_http(license_data.creator_url + "/license/")
+                convert_https_to_http(tool_obj.creator_url + "/license/")
             ),
         )
     )
@@ -85,7 +85,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     # Extracted the corresponding id of the Tool from LegalCode and then
     # created according entries (CC.legalcode, DC.title)
     # using appropriate property of LegalCode.
-    legal_code_ids = license_data.legal_codes.values_list("id", flat=True)
+    legal_code_ids = tool_obj.legal_codes.values_list("id", flat=True)
     for legal_code_id in legal_code_ids:
         legal_code_object = LegalCode.objects.get(id=legal_code_id)
 
@@ -101,7 +101,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
                 CC.legalcode,
                 URIRef(
                     convert_https_to_http(
-                        license_data.creator_url + legal_code_url
+                        tool_obj.creator_url + legal_code_url
                     )
                 ),
             )
@@ -111,31 +111,36 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
         # but it is expected soon.
         g.add((CC[legal_code_url], DCTERMS.language, Literal(tool_lang)))
 
+    if tool_obj.deprecated_on:
+        g.add((license_uri, CC.deprecatedOn, Literal(tool_obj.deprecated_on, datatype=XSD.date)))
+
+
+
     # Adding properties
     # Permits
-    if license_data.permits_derivative_works:
+    if tool_obj.permits_derivative_works:
         g.add((license_uri, CC.permits, CC.DerivativeWorks))
-    if license_data.permits_distribution:
+    if tool_obj.permits_distribution:
         g.add((license_uri, CC.permits, CC.Distribution))
-    if license_data.permits_reproduction:
+    if tool_obj.permits_reproduction:
         g.add((license_uri, CC.permits, CC.Reproduction))
-    if license_data.permits_sharing:
+    if tool_obj.permits_sharing:
         g.add((license_uri, CC.permits, CC.Sharing))
 
     # Requires
-    if license_data.requires_attribution:
+    if tool_obj.requires_attribution:
         g.add((license_uri, CC.requires, CC.Attribution))
-    if license_data.requires_notice:
+    if tool_obj.requires_notice:
         g.add((license_uri, CC.requires, CC.Notice))
-    if license_data.requires_share_alike:
+    if tool_obj.requires_share_alike:
         g.add((license_uri, CC.requires, CC.ShareAlike))
-    if license_data.requires_source_code:
+    if tool_obj.requires_source_code:
         g.add((license_uri, CC.requires, CC.SourceCode))
 
     # Prohibits
-    if license_data.prohibits_commercial_use:
+    if tool_obj.prohibits_commercial_use:
         g.add((license_uri, CC.prohibits, CC.CommercialUse))
-    if license_data.prohibits_high_income_nation_use:
+    if tool_obj.prohibits_high_income_nation_use:
         g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
 
     return g
