@@ -6,8 +6,7 @@
 ```xml
 <rdf:RDF
     xmlns:cc='http://creativecommons.org/ns#'
-    xmlns:dc='http://purl.org/dc/elements/1.1/'
-    xmlns:dcq='http://purl.org/dc/terms/'
+    xmlns:dcterms='http://purl.org/dc/terms/'
     xmlns:foaf='http://xmlns.com/foaf/0.1/'
     xmlns:owl='http://www.w3.org/2002/07/owl#'
     xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
@@ -17,8 +16,7 @@
 | Prefix | Name                | URL                                         |
 | ------ | ------------------- | ------------------------------------------- |
 | `cc`   | ccREL               | http://creativecommons.org/ns#              |
-| `dc`   | DCMI Metadata Terms | http://purl.org/dc/elements/1.1/            |
-| `dcq`  | DCMI Metadata Terms | http://purl.org/dc/terms/                   |
+| `dcterms` | DCMI Metadata Terms | http://purl.org/dc/terms/                |
 | `foaf` | FOAF Vocabulary     | http://xmlns.com/foaf/0.1/                  |
 | `owl`  | OWL 2               | http://www.w3.org/2002/07/owl#              |
 | `rdf`  | RDF XML Syntax      | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
@@ -38,8 +36,10 @@
 
 ### DCMI Metadata Terms
 
-- [DCMI: DCMI Metadata Terms][dcmiterms]
+- [DCMI: Dublin Core™][dublicore]
+  - [DCMI: DCMI Metadata Terms][dcmiterms]
 
+[dublincore]: https://www.dublincore.org/specifications/dublin-core/
 [dcmiterms]: https://www.dublincore.org/specifications/dublin-core/dcmi-terms/
 
 
@@ -76,6 +76,6 @@
 [wikipediasameas]: https://en.wikipedia.org/wiki/SameAs
 
 
-### rdf xml syntax
+### RDF XML Syntax
 
 - [RDF 1.1 XML Syntax](https://www.w3.org/TR/rdf-syntax-grammar/)
