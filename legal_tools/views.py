@@ -837,8 +837,8 @@ def order_rdf_xml(serialized_rdf_content):
     return serialized_rdf_content
 
 
-def view_generate_rdf(request, unit, version, jurisdiction=None):
-    rdf_content = generate_rdf_triples(unit, version, jurisdiction)
+def view_generate_rdf(request, category, unit, version, jurisdiction=None):
+    rdf_content = generate_rdf_triples(category, unit, version, jurisdiction)
     serialized_rdf_content = rdf_content.serialize(format="pretty-xml")
     serialized_rdf_content = order_rdf_xml(serialized_rdf_content)
     response = HttpResponse(

@@ -3,7 +3,7 @@ from urllib.parse import urlparse, urlunparse
 
 # Third-party
 from rdflib import Graph, Literal, Namespace, URIRef
-from rdflib.namespace import DC, DCTERMS, FOAF, RDF, XSD
+from rdflib.namespace import DC, DCTERMS, FOAF, RDF, XSD, OWL
 
 # First-party/Local
 from legal_tools.models import LegalCode, Tool
@@ -16,14 +16,19 @@ def convert_https_to_http(url):
     return urlunparse(parsed_url)
 
 
-def generate_rdf_triples(unit, version, jurisdiction=None):
+def generate_rdf_triples(category, unit, version, jurisdiction=None):
     # Retrieving license data from the database based on the arguments.
     if jurisdiction:
         tool_obj = Tool.objects.filter(
-            unit=unit, version=version, jurisdiction_code=jurisdiction
+            category=category,
+            unit=unit,
+            version=version,
+            jurisdiction_code=jurisdiction,
         ).first()
     else:
-        tool_obj = Tool.objects.filter(unit=unit, version=version).first()
+        tool_obj = Tool.objects.filter(
+            category=category, unit=unit, version=version
+        ).first()
 
     # The relevant namespaces for RDF elements
     CC = Namespace("http://creativecommons.org/ns#")
@@ -35,6 +40,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     g.bind("dc", DC)
     g.bind("dcq", DCTERMS)
     g.bind("foaf", FOAF)
+    g.bind("owl", OWL)
     g.bind("rdf", RDF)
     g.bind("xsd", XSD)
 
@@ -44,6 +50,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     g.set((license_uri, RDF.type, CC.License))
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
     g.add((license_uri, DCTERMS.hasVersion, Literal(f"{version}")))
+    g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
     g.add(
         (
             license_uri,
@@ -57,9 +64,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
         (
             license_uri,
             CC.licenseClass,
-            URIRef(
-                convert_https_to_http(tool_obj.creator_url + "/license/")
-            ),
+            URIRef(convert_https_to_http(tool_obj.creator_url + "/license/")),
         )
     )
 
@@ -113,9 +118,13 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
         g.add((CC[legal_code_url], DCTERMS.language, Literal(tool_lang)))
 
     if tool_obj.deprecated_on:
-        g.add((license_uri, CC.deprecatedOn, Literal(tool_obj.deprecated_on, datatype=XSD.date)))
-
-
+        g.add(
+            (
+                license_uri,
+                CC.deprecatedOn,
+                Literal(tool_obj.deprecated_on, datatype=XSD.date),
+            )
+        )
 
     # Adding properties
     # Permits
