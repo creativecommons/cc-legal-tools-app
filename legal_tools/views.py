@@ -826,6 +826,9 @@ def order_rdf_xml(serialized_rdf_content):
     #   - order namespace
     ElementTree.register_namespace("cc", "http://creativecommons.org/ns#")
     ElementTree.register_namespace("dcq", "http://purl.org/dc/terms/")
+    ElementTree.register_namespace("owl", "http://www.w3.org/2002/07/owl#")
+    ElementTree.register_namespace("foaf", "http://xmlns.com/foaf/0.1/")
+
     tree = ElementTree.ElementTree(
         ElementTree.fromstring(serialized_rdf_content.decode())
     )
