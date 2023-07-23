@@ -38,7 +38,7 @@ def generate_rdf_triples(category, unit, version, jurisdiction=None):
     # Bind namespaces
     g.bind("cc", CC)
     g.bind("dc", DC)
-    g.bind("dcq", DCTERMS)
+    g.bind("dcterms", DCTERMS)
     g.bind("foaf", FOAF)
     g.bind("owl", OWL)
     g.bind("rdf", RDF)
