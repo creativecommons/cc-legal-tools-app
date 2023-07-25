@@ -172,16 +172,16 @@ def generate_rdf_file(category, unit, version, jurisdiction=None):
                 DCTERMS.isReplacedBy,
                 URIRef(
                     convert_https_to_http(tool_obj.is_replaced_by.base_url)
-                ),
+                )
             )
         )
 
-    if tool_obj.source:
+    if tool_obj.is_based_on:
         g.add(
             (
                 license_uri,
                 DC.source,
-                URIRef(convert_https_to_http(tool_obj.source.base_url)),
+                URIRef(convert_https_to_http(tool_obj.is_based_on.base_url))
             )
         )
 
