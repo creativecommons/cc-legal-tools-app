@@ -32,7 +32,7 @@ from legal_tools.models import (
     Tool,
     TranslationBranch,
 )
-from .rdf_generator import generate_rdf_triples
+from .rdf_generator import generate_rdf_file
 
 NUM_COMMITS = 3
 
@@ -841,7 +841,7 @@ def order_rdf_xml(serialized_rdf_content):
 
 
 def view_generate_rdf(request, category, unit, version, jurisdiction=None):
-    rdf_content = generate_rdf_triples(category, unit, version, jurisdiction)
+    rdf_content = generate_rdf_file(category, unit, version, jurisdiction)
     serialized_rdf_content = rdf_content.serialize(format="pretty-xml")
     serialized_rdf_content = order_rdf_xml(serialized_rdf_content)
     response = HttpResponse(
