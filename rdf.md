@@ -79,3 +79,13 @@
 ### RDF XML Syntax
 
 - [RDF 1.1 XML Syntax](https://www.w3.org/TR/rdf-syntax-grammar/)
+
+
+## Changes
+
+*(describe what and why of changes between old legacy RDF/XML and new generated RDF/XML)*
+
+
+## History
+
+*(describe history of ccREL and legacy implmentation/resources)*
