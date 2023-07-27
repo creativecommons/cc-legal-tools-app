@@ -65,14 +65,44 @@ def generate_rdf_file(category, unit, version, jurisdiction=None):
         )
     )
 
-    # This will be changed as other types of license types are added
-    g.add(
-        (
-            license_uri,
-            CC.licenseClass,
-            URIRef(convert_https_to_http(f"{tool_obj.creator_url}/license/")),
+    # adding cc:licenseClass
+    if category == "publicdomain":
+        g.add(
+            (
+                license_uri,
+                CC.licenseClass,
+                URIRef(
+                    convert_https_to_http(
+                        f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
+                    )
+                ),
+            )
         )
-    )
+
+    elif unit in ["sampling", "sampling+"]:
+        g.add(
+            (
+                license_uri,
+                CC.licenseClass,
+                URIRef(
+                    convert_https_to_http(
+                        f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
+                    )
+                ),
+            )
+        )
+    else:
+        g.add(
+            (
+                license_uri,
+                CC.licenseClass,
+                URIRef(
+                    convert_https_to_http(
+                        f"{tool_obj.creator_url}/{tool_obj.category}/"
+                    )
+                ),
+            )
+        )
 
     # g.add(
     #     (
@@ -172,7 +202,7 @@ def generate_rdf_file(category, unit, version, jurisdiction=None):
                 DCTERMS.isReplacedBy,
                 URIRef(
                     convert_https_to_http(tool_obj.is_replaced_by.base_url)
-                )
+                ),
             )
         )
 
@@ -181,7 +211,7 @@ def generate_rdf_file(category, unit, version, jurisdiction=None):
             (
                 license_uri,
                 DC.source,
-                URIRef(convert_https_to_http(tool_obj.is_based_on.base_url))
+                URIRef(convert_https_to_http(tool_obj.is_based_on.base_url)),
             )
         )
 
