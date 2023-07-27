@@ -58,7 +58,7 @@
 ### OWL 2
 
 [OWL 2 Web Ontology Language Document Overview (Second Edition)][owl2overiew]
-(retreived 2023-07-20):
+(retrieved 2023-07-20):
 > The OWL 2 Web Ontology Language, informally OWL 2, is an ontology language
 > for the Semantic Web with formally defined meaning. OWL 2 ontologies provide
 > classes, properties, individuals, and data values and are stored as Semantic
