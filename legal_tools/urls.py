@@ -270,13 +270,13 @@ urlpatterns = [
     # RDF generation  #########################################################
     # without Jurisdiction
     path(
-        "licenses/<unit:unit>/<version:version>/rdf",
+        "<category:category>/<unit:unit>/<version:version>/rdf",
         view_generate_rdf,
         name="generate_rdf",
     ),
     # with Jurisdiction
     path(
-        "licenses/<unit:unit>/<version:version>/"
+        "<category:category>/<unit:unit>/<version:version>/"
         "<jurisdiction:jurisdiction>/rdf",
         view_generate_rdf,
         name="generate_rdf",

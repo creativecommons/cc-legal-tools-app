@@ -3,7 +3,7 @@ from urllib.parse import urlparse, urlunparse
 
 # Third-party
 from rdflib import Graph, Literal, Namespace, URIRef
-from rdflib.namespace import DC, DCTERMS, FOAF, RDF, XSD
+from rdflib.namespace import DC, DCTERMS, FOAF, OWL, RDF, XSD
 
 # First-party/Local
 from legal_tools.models import LegalCode, Tool
@@ -16,14 +16,19 @@ def convert_https_to_http(url):
     return urlunparse(parsed_url)
 
 
-def generate_rdf_triples(unit, version, jurisdiction=None):
+def generate_rdf_file(category, unit, version, jurisdiction=None):
     # Retrieving license data from the database based on the arguments.
     if jurisdiction:
         tool_obj = Tool.objects.filter(
-            unit=unit, version=version, jurisdiction_code=jurisdiction
+            category=category,
+            unit=unit,
+            version=version,
+            jurisdiction_code=jurisdiction,
         ).first()
     else:
-        tool_obj = Tool.objects.filter(unit=unit, version=version).first()
+        tool_obj = Tool.objects.filter(
+            category=category, unit=unit, version=version
+        ).first()
 
     # The relevant namespaces for RDF elements
     CC = Namespace("http://creativecommons.org/ns#")
@@ -33,17 +38,25 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
     # Bind namespaces
     g.bind("cc", CC)
     g.bind("dc", DC)
-    g.bind("dcq", DCTERMS)
+    g.bind("dcterms", DCTERMS)
     g.bind("foaf", FOAF)
+    g.bind("owl", OWL)
     g.bind("rdf", RDF)
     g.bind("xsd", XSD)
 
     # license URI
     license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
 
+    # FOAF logo data
+    foaf_logo_url = "http://licensebuttons.net/l/"
+    small_logo = "80x15.png"
+    large_logo = "88x31.png"
+
     g.set((license_uri, RDF.type, CC.License))
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
     g.add((license_uri, DCTERMS.hasVersion, Literal(f"{version}")))
+    g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
+
     g.add(
         (
             license_uri,
@@ -52,16 +65,44 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
         )
     )
 
-    # This will be changed as other types of license types are added
-    g.add(
-        (
-            license_uri,
-            CC.licenseClass,
-            URIRef(
-                convert_https_to_http(tool_obj.creator_url + "/license/")
-            ),
+    # adding cc:licenseClass
+    if category == "publicdomain":
+        g.add(
+            (
+                license_uri,
+                CC.licenseClass,
+                URIRef(
+                    convert_https_to_http(
+                        f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
+                    )
+                ),
+            )
         )
-    )
+
+    elif unit in ["sampling", "sampling+"]:
+        g.add(
+            (
+                license_uri,
+                CC.licenseClass,
+                URIRef(
+                    convert_https_to_http(
+                        f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
+                    )
+                ),
+            )
+        )
+    else:
+        g.add(
+            (
+                license_uri,
+                CC.licenseClass,
+                URIRef(
+                    convert_https_to_http(
+                        f"{tool_obj.creator_url}/{tool_obj.category}/"
+                    )
+                ),
+            )
+        )
 
     # g.add(
     #     (
@@ -80,6 +121,39 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
                     "http://creativecommons.org/international/"
                     + f"{jurisdiction}"
                 ),
+            )
+        )
+        g.add(
+            (
+                license_uri,
+                FOAF.logo,
+                URIRef(
+                    f"{foaf_logo_url}{unit}/{version}/{jurisdiction}/{large_logo}"
+                ),
+            )
+        )
+        g.add(
+            (
+                license_uri,
+                FOAF.logo,
+                URIRef(
+                    f"{foaf_logo_url}{unit}/{version}/{jurisdiction}/{small_logo}"
+                ),
+            )
+        )
+    else:
+        g.add(
+            (
+                license_uri,
+                FOAF.logo,
+                URIRef(f"{foaf_logo_url}{unit}/{version}/{large_logo}"),
+            )
+        )
+        g.add(
+            (
+                license_uri,
+                FOAF.logo,
+                URIRef(f"{foaf_logo_url}{unit}/{version}/{small_logo}"),
             )
         )
 
@@ -102,7 +176,7 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
                 CC.legalcode,
                 URIRef(
                     convert_https_to_http(
-                        tool_obj.creator_url + legal_code_url
+                        f"{tool_obj.creator_url}{legal_code_url}"
                     )
                 ),
             )
@@ -113,9 +187,33 @@ def generate_rdf_triples(unit, version, jurisdiction=None):
         g.add((CC[legal_code_url], DCTERMS.language, Literal(tool_lang)))
 
     if tool_obj.deprecated_on:
-        g.add((license_uri, CC.deprecatedOn, Literal(tool_obj.deprecated_on, datatype=XSD.date)))
+        g.add(
+            (
+                license_uri,
+                CC.deprecatedOn,
+                Literal(tool_obj.deprecated_on, datatype=XSD.date),
+            )
+        )
 
+    if tool_obj.is_replaced_by:
+        g.add(
+            (
+                license_uri,
+                DCTERMS.isReplacedBy,
+                URIRef(
+                    convert_https_to_http(tool_obj.is_replaced_by.base_url)
+                ),
+            )
+        )
 
+    if tool_obj.is_based_on:
+        g.add(
+            (
+                license_uri,
+                DC.source,
+                URIRef(convert_https_to_http(tool_obj.is_based_on.base_url)),
+            )
+        )
 
     # Adding properties
     # Permits

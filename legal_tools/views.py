@@ -32,7 +32,7 @@ from legal_tools.models import (
     Tool,
     TranslationBranch,
 )
-from .rdf_generator import generate_rdf_triples
+from .rdf_generator import generate_rdf_file
 
 NUM_COMMITS = 3
 
@@ -825,7 +825,10 @@ def order_rdf_xml(serialized_rdf_content):
     # Step 2: xml.etree.ElementTree
     #   - order namespace
     ElementTree.register_namespace("cc", "http://creativecommons.org/ns#")
-    ElementTree.register_namespace("dcq", "http://purl.org/dc/terms/")
+    ElementTree.register_namespace("dcterms", "http://purl.org/dc/terms/")
+    ElementTree.register_namespace("owl", "http://www.w3.org/2002/07/owl#")
+    ElementTree.register_namespace("foaf", "http://xmlns.com/foaf/0.1/")
+
     tree = ElementTree.ElementTree(
         ElementTree.fromstring(serialized_rdf_content.decode())
     )
@@ -837,8 +840,8 @@ def order_rdf_xml(serialized_rdf_content):
     return serialized_rdf_content
 
 
-def view_generate_rdf(request, unit, version, jurisdiction=None):
-    rdf_content = generate_rdf_triples(unit, version, jurisdiction)
+def view_generate_rdf(request, category, unit, version, jurisdiction=None):
+    rdf_content = generate_rdf_file(category, unit, version, jurisdiction)
     serialized_rdf_content = rdf_content.serialize(format="pretty-xml")
     serialized_rdf_content = order_rdf_xml(serialized_rdf_content)
     response = HttpResponse(
