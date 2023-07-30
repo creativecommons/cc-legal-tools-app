@@ -16,6 +16,12 @@ def convert_https_to_http(url):
     return urlunparse(parsed_url)
 
 
+# FOAF logo data
+foaf_logo_url = "http://licensebuttons.net/l/"
+small_logo = "80x15.png"
+large_logo = "88x31.png"
+
+
 def generate_rdf_file(category, unit, version, jurisdiction=None):
     # Retrieving license data from the database based on the arguments.
     if jurisdiction:
@@ -46,11 +52,6 @@ def generate_rdf_file(category, unit, version, jurisdiction=None):
 
     # license URI
     license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
-
-    # FOAF logo data
-    foaf_logo_url = "http://licensebuttons.net/l/"
-    small_logo = "80x15.png"
-    large_logo = "88x31.png"
 
     g.set((license_uri, RDF.type, CC.License))
     g.add((license_uri, DC.identifier, Literal(f"{unit}")))
@@ -243,3 +244,54 @@ def generate_rdf_file(category, unit, version, jurisdiction=None):
         g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
 
     return g
+
+
+def generate_images_rdf():
+    all_tools = Tool.objects.all()
+
+    EXIF = Namespace("http://www.w3.org/2003/12/exif/ns#")
+
+    image_graph = Graph()
+
+    image_graph.bind("exif", EXIF)
+
+    for tool in all_tools:
+        if tool.jurisdiction_code:
+            uriref_with_juris = {
+                "large": URIRef(
+                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{tool.jurisdiction_code}/{large_logo}"
+                ),
+                "small": URIRef(
+                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{tool.jurisdiction_code}/{small_logo}"
+                ),
+            }
+            image_graph.add(
+                (uriref_with_juris["large"], EXIF.width, Literal("88"))
+            )
+            image_graph.add(
+                (uriref_with_juris["large"], EXIF.height, Literal("31"))
+            )
+
+            image_graph.add(
+                (uriref_with_juris["small"], EXIF.width, Literal("80"))
+            )
+            image_graph.add(
+                (uriref_with_juris["small"], EXIF.height, Literal("15"))
+            )
+
+        else:
+            uriref = {
+                "large": URIRef(
+                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{large_logo}"
+                ),
+                "small": URIRef(
+                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{small_logo}"
+                ),
+            }
+            image_graph.add((uriref["large"], EXIF.width, Literal("88")))
+            image_graph.add((uriref["large"], EXIF.height, Literal("31")))
+
+            image_graph.add((uriref["small"], EXIF.width, Literal("80")))
+            image_graph.add((uriref["small"], EXIF.height, Literal("15")))
+
+    return image_graph

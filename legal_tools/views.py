@@ -32,7 +32,7 @@ from legal_tools.models import (
     Tool,
     TranslationBranch,
 )
-from .rdf_generator import generate_rdf_file
+from .rdf_generator import generate_images_rdf, generate_rdf_file
 
 NUM_COMMITS = 3
 
@@ -828,6 +828,7 @@ def order_rdf_xml(serialized_rdf_content):
     ElementTree.register_namespace("dcterms", "http://purl.org/dc/terms/")
     ElementTree.register_namespace("owl", "http://www.w3.org/2002/07/owl#")
     ElementTree.register_namespace("foaf", "http://xmlns.com/foaf/0.1/")
+    ElementTree.register_namespace("exif", "http://www.w3.org/2003/12/exif/ns#")
 
     tree = ElementTree.ElementTree(
         ElementTree.fromstring(serialized_rdf_content.decode())
@@ -847,4 +848,12 @@ def view_generate_rdf(request, category, unit, version, jurisdiction=None):
     response = HttpResponse(
         serialized_rdf_content, content_type="application/rdf+xml"
     )
+    return response
+
+
+def view_image_rdf(request):
+    generated_image_rdf = generate_images_rdf()
+    serialized_data = generated_image_rdf.serialize(format="pretty-xml")
+    serialized_data = order_rdf_xml(serialized_data)
+    response = HttpResponse(serialized_data, content_type="application/rdf+xml")
     return response

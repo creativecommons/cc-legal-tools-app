@@ -18,6 +18,7 @@ from legal_tools.views import (
     view_deed,
     view_dev_index,
     view_generate_rdf,
+    view_image_rdf,
     view_legal_code,
     view_list,
     view_metadata,
@@ -280,5 +281,11 @@ urlpatterns = [
         "<jurisdiction:jurisdiction>/rdf",
         view_generate_rdf,
         name="generate_rdf",
+    ),
+    # for images
+    path(
+        "rdf/images.rdf",
+        view_image_rdf,
+        name="image_rdf",
     ),
 ]
