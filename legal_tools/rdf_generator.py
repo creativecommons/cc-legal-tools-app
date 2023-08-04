@@ -22,19 +22,31 @@ small_logo = "80x15.png"
 large_logo = "88x31.png"
 
 
-def generate_rdf_file(category, unit, version, jurisdiction=None):
+def generate_rdf_file(
+    category=None,
+    unit=None,
+    version=None,
+    jurisdiction=None,
+    generate_all_licenses=False,
+):
     # Retrieving license data from the database based on the arguments.
-    if jurisdiction:
-        tool_obj = Tool.objects.filter(
-            category=category,
-            unit=unit,
-            version=version,
-            jurisdiction_code=jurisdiction,
-        ).first()
+    if generate_all_licenses is True:
+        retrieved_tools = Tool.objects.all()
+
     else:
-        tool_obj = Tool.objects.filter(
-            category=category, unit=unit, version=version
-        ).first()
+        if jurisdiction:
+            retrieved_tool = Tool.objects.filter(
+                category=category,
+                unit=unit,
+                version=version,
+                jurisdiction_code=jurisdiction,
+            ).first()
+        else:
+            retrieved_tool = Tool.objects.filter(
+                category=category, unit=unit, version=version
+            ).first()
+        retrieved_tools = []
+        retrieved_tools.append(retrieved_tool)
 
     # The relevant namespaces for RDF elements
     CC = Namespace("http://creativecommons.org/ns#")
@@ -50,198 +62,209 @@ def generate_rdf_file(category, unit, version, jurisdiction=None):
     g.bind("rdf", RDF)
     g.bind("xsd", XSD)
 
-    # license URI
-    license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
+    for tool_obj in retrieved_tools:
+        # license URI
+        license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
 
-    g.set((license_uri, RDF.type, CC.License))
-    g.add((license_uri, DC.identifier, Literal(f"{unit}")))
-    g.add((license_uri, DCTERMS.hasVersion, Literal(f"{version}")))
-    g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
-
-    g.add(
-        (
-            license_uri,
-            DC.creator,
-            URIRef(convert_https_to_http(tool_obj.creator_url)),
+        g.set((license_uri, RDF.type, CC.License))
+        g.add((license_uri, DC.identifier, Literal(f"{tool_obj.unit}")))
+        g.add(
+            (license_uri, DCTERMS.hasVersion, Literal(f"{tool_obj.version}"))
         )
-    )
+        g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
 
-    # adding cc:licenseClass
-    if category == "publicdomain":
         g.add(
             (
                 license_uri,
-                CC.licenseClass,
-                URIRef(
-                    convert_https_to_http(
-                        f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
-                    )
-                ),
+                DC.creator,
+                URIRef(convert_https_to_http(tool_obj.creator_url)),
             )
         )
 
-    elif unit in ["sampling", "sampling+"]:
-        g.add(
-            (
-                license_uri,
-                CC.licenseClass,
-                URIRef(
-                    convert_https_to_http(
-                        f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
-                    )
-                ),
+        # adding cc:licenseClass
+        if tool_obj.category == "publicdomain":
+            g.add(
+                (
+                    license_uri,
+                    CC.licenseClass,
+                    URIRef(
+                        convert_https_to_http(
+                            f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
+                        )
+                    ),
+                )
             )
-        )
-    else:
-        g.add(
-            (
-                license_uri,
-                CC.licenseClass,
-                URIRef(
-                    convert_https_to_http(
-                        f"{tool_obj.creator_url}/{tool_obj.category}/"
-                    )
-                ),
+
+        elif tool_obj.unit in ["sampling", "sampling+"]:
+            g.add(
+                (
+                    license_uri,
+                    CC.licenseClass,
+                    URIRef(
+                        convert_https_to_http(
+                            f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
+                        )
+                    ),
+                )
             )
-        )
-
-    # g.add(
-    #     (
-    #         license_uri,
-    #         DCT.description,
-    #         Literal(" NEED SUGGESTIONS ON WHAT TO PUT HERE."),
-    #     )
-    # )
-
-    if jurisdiction:
-        g.add(
-            (
-                license_uri,
-                CC.jurisdiction,
-                URIRef(
-                    "http://creativecommons.org/international/"
-                    + f"{jurisdiction}"
-                ),
+        else:
+            g.add(
+                (
+                    license_uri,
+                    CC.licenseClass,
+                    URIRef(
+                        convert_https_to_http(
+                            f"{tool_obj.creator_url}/{tool_obj.category}/"
+                        )
+                    ),
+                )
             )
-        )
-        g.add(
-            (
-                license_uri,
-                FOAF.logo,
-                URIRef(
-                    f"{foaf_logo_url}{unit}/{version}/{jurisdiction}/{large_logo}"
-                ),
+
+        # g.add(
+        #     (
+        #         license_uri,
+        #         DCT.description,
+        #         Literal(" NEED SUGGESTIONS ON WHAT TO PUT HERE."),
+        #     )
+        # )
+
+        if tool_obj.jurisdiction_code:
+            g.add(
+                (
+                    license_uri,
+                    CC.jurisdiction,
+                    URIRef(
+                        convert_https_to_http(
+                            f"{tool_obj.creator_url}/international/{tool_obj.jurisdiction_code}"
+                        )
+                    ),
+                )
             )
-        )
-        g.add(
-            (
-                license_uri,
-                FOAF.logo,
-                URIRef(
-                    f"{foaf_logo_url}{unit}/{version}/{jurisdiction}/{small_logo}"
-                ),
+            g.add(
+                (
+                    license_uri,
+                    FOAF.logo,
+                    URIRef(
+                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{tool_obj.jurisdiction_code}/{large_logo}"
+                    ),
+                )
             )
-        )
-    else:
-        g.add(
-            (
-                license_uri,
-                FOAF.logo,
-                URIRef(f"{foaf_logo_url}{unit}/{version}/{large_logo}"),
+            g.add(
+                (
+                    license_uri,
+                    FOAF.logo,
+                    URIRef(
+                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{tool_obj.jurisdiction_code}/{small_logo}"
+                    ),
+                )
             )
-        )
-        g.add(
-            (
-                license_uri,
-                FOAF.logo,
-                URIRef(f"{foaf_logo_url}{unit}/{version}/{small_logo}"),
+        else:
+            g.add(
+                (
+                    license_uri,
+                    FOAF.logo,
+                    URIRef(
+                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{large_logo}"
+                    ),
+                )
             )
-        )
-
-    # Extracted the corresponding id of the Tool from LegalCode and then
-    # created according entries (CC.legalcode, DC.title)
-    # using appropriate property of LegalCode.
-    legal_code_ids = tool_obj.legal_codes.values_list("id", flat=True)
-    for legal_code_id in legal_code_ids:
-        legal_code_object = LegalCode.objects.get(id=legal_code_id)
-
-        get_tool_title = legal_code_object.title
-        tool_lang = legal_code_object.language_code
-        tool_title_data = Literal(get_tool_title, lang=tool_lang)
-        g.add((license_uri, DC.title, (tool_title_data)))
-
-        legal_code_url = legal_code_object.legal_code_url
-        g.add(
-            (
-                license_uri,
-                CC.legalcode,
-                URIRef(
-                    convert_https_to_http(
-                        f"{tool_obj.creator_url}{legal_code_url}"
-                    )
-                ),
+            g.add(
+                (
+                    license_uri,
+                    FOAF.logo,
+                    URIRef(
+                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{small_logo}"
+                    ),
+                )
             )
-        )
-        # added DCTERMS.language for every legal_code_url
-        # currently the output is not sorted as it should be;
-        # but it is expected soon
-        g.add((CC[legal_code_url], DCTERMS.language, Literal(tool_lang)))
 
-    if tool_obj.deprecated_on:
-        g.add(
-            (
-                license_uri,
-                CC.deprecatedOn,
-                Literal(tool_obj.deprecated_on, datatype=XSD.date),
+        # Extracted the corresponding id of the Tool from LegalCode and then
+        # created according entries (CC.legalcode, DC.title)
+        # using appropriate property of LegalCode.
+        legal_code_ids = tool_obj.legal_codes.values_list("id", flat=True)
+        for legal_code_id in legal_code_ids:
+            legal_code_object = LegalCode.objects.get(id=legal_code_id)
+
+            get_tool_title = legal_code_object.title
+            tool_lang = legal_code_object.language_code
+            tool_title_data = Literal(get_tool_title, lang=tool_lang)
+            g.add((license_uri, DC.title, (tool_title_data)))
+
+            legal_code_url = legal_code_object.legal_code_url
+            g.add(
+                (
+                    license_uri,
+                    CC.legalcode,
+                    URIRef(
+                        convert_https_to_http(
+                            f"{tool_obj.creator_url}{legal_code_url}"
+                        )
+                    ),
+                )
             )
-        )
+            # added DCTERMS.language for every legal_code_url
+            if not generate_all_licenses:
+                g.add(
+                    (CC[legal_code_url], DCTERMS.language, Literal(tool_lang))
+                )
 
-    if tool_obj.is_replaced_by:
-        g.add(
-            (
-                license_uri,
-                DCTERMS.isReplacedBy,
-                URIRef(
-                    convert_https_to_http(tool_obj.is_replaced_by.base_url)
-                ),
+        if tool_obj.deprecated_on:
+            g.add(
+                (
+                    license_uri,
+                    CC.deprecatedOn,
+                    Literal(tool_obj.deprecated_on, datatype=XSD.date),
+                )
             )
-        )
 
-    if tool_obj.is_based_on:
-        g.add(
-            (
-                license_uri,
-                DC.source,
-                URIRef(convert_https_to_http(tool_obj.is_based_on.base_url)),
+        if tool_obj.is_replaced_by:
+            g.add(
+                (
+                    license_uri,
+                    DCTERMS.isReplacedBy,
+                    URIRef(
+                        convert_https_to_http(tool_obj.is_replaced_by.base_url)
+                    ),
+                )
             )
-        )
 
-    # Adding properties
-    # Permits
-    if tool_obj.permits_derivative_works:
-        g.add((license_uri, CC.permits, CC.DerivativeWorks))
-    if tool_obj.permits_distribution:
-        g.add((license_uri, CC.permits, CC.Distribution))
-    if tool_obj.permits_reproduction:
-        g.add((license_uri, CC.permits, CC.Reproduction))
-    if tool_obj.permits_sharing:
-        g.add((license_uri, CC.permits, CC.Sharing))
+        if tool_obj.is_based_on:
+            g.add(
+                (
+                    license_uri,
+                    DC.source,
+                    URIRef(
+                        convert_https_to_http(tool_obj.is_based_on.base_url)
+                    ),
+                )
+            )
 
-    # Requires
-    if tool_obj.requires_attribution:
-        g.add((license_uri, CC.requires, CC.Attribution))
-    if tool_obj.requires_notice:
-        g.add((license_uri, CC.requires, CC.Notice))
-    if tool_obj.requires_share_alike:
-        g.add((license_uri, CC.requires, CC.ShareAlike))
-    if tool_obj.requires_source_code:
-        g.add((license_uri, CC.requires, CC.SourceCode))
+        # Adding properties
+        # Permits
+        if tool_obj.permits_derivative_works:
+            g.add((license_uri, CC.permits, CC.DerivativeWorks))
+        if tool_obj.permits_distribution:
+            g.add((license_uri, CC.permits, CC.Distribution))
+        if tool_obj.permits_reproduction:
+            g.add((license_uri, CC.permits, CC.Reproduction))
+        if tool_obj.permits_sharing:
+            g.add((license_uri, CC.permits, CC.Sharing))
 
-    # Prohibits
-    if tool_obj.prohibits_commercial_use:
-        g.add((license_uri, CC.prohibits, CC.CommercialUse))
-    if tool_obj.prohibits_high_income_nation_use:
-        g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
+        # Requires
+        if tool_obj.requires_attribution:
+            g.add((license_uri, CC.requires, CC.Attribution))
+        if tool_obj.requires_notice:
+            g.add((license_uri, CC.requires, CC.Notice))
+        if tool_obj.requires_share_alike:
+            g.add((license_uri, CC.requires, CC.ShareAlike))
+        if tool_obj.requires_source_code:
+            g.add((license_uri, CC.requires, CC.SourceCode))
+
+        # Prohibits
+        if tool_obj.prohibits_commercial_use:
+            g.add((license_uri, CC.prohibits, CC.CommercialUse))
+        if tool_obj.prohibits_high_income_nation_use:
+            g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
 
     return g
 

@@ -828,7 +828,9 @@ def order_rdf_xml(serialized_rdf_content):
     ElementTree.register_namespace("dcterms", "http://purl.org/dc/terms/")
     ElementTree.register_namespace("owl", "http://www.w3.org/2002/07/owl#")
     ElementTree.register_namespace("foaf", "http://xmlns.com/foaf/0.1/")
-    ElementTree.register_namespace("exif", "http://www.w3.org/2003/12/exif/ns#")
+    ElementTree.register_namespace(
+        "exif", "http://www.w3.org/2003/12/exif/ns#"
+    )
 
     tree = ElementTree.ElementTree(
         ElementTree.fromstring(serialized_rdf_content.decode())
@@ -841,8 +843,14 @@ def order_rdf_xml(serialized_rdf_content):
     return serialized_rdf_content
 
 
-def view_generate_rdf(request, category, unit, version, jurisdiction=None):
-    rdf_content = generate_rdf_file(category, unit, version, jurisdiction)
+def view_generate_rdf(
+    request, category=None, unit=None, version=None, jurisdiction=None
+):
+    if category and unit and version or jurisdiction:
+        rdf_content = generate_rdf_file(category, unit, version, jurisdiction)
+    else:
+        rdf_content = generate_rdf_file(generate_all_licenses=True)
+
     serialized_rdf_content = rdf_content.serialize(format="pretty-xml")
     serialized_rdf_content = order_rdf_xml(serialized_rdf_content)
     response = HttpResponse(
@@ -855,5 +863,7 @@ def view_image_rdf(request):
     generated_image_rdf = generate_images_rdf()
     serialized_data = generated_image_rdf.serialize(format="pretty-xml")
     serialized_data = order_rdf_xml(serialized_data)
-    response = HttpResponse(serialized_data, content_type="application/rdf+xml")
+    response = HttpResponse(
+        serialized_data, content_type="application/rdf+xml"
+    )
     return response

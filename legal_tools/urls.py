@@ -282,6 +282,12 @@ urlpatterns = [
         view_generate_rdf,
         name="generate_rdf",
     ),
+    # for all the licenses in one rdf (index.rdf)
+    path(
+        "rdf/index.rdf",
+        view_generate_rdf,
+        name="index_rdf",
+    ),
     # for images
     path(
         "rdf/images.rdf",
