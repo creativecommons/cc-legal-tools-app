@@ -55,7 +55,7 @@ def generate_rdf_file(
 
     # Bind namespaces
     g.bind("cc", CC)
-    g.bind("dc", DC)
+    # g.bind("dc", DC) will remove this after verification.
     g.bind("dcterms", DCTERMS)
     g.bind("foaf", FOAF)
     g.bind("owl", OWL)
@@ -67,7 +67,7 @@ def generate_rdf_file(
         license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
 
         g.set((license_uri, RDF.type, CC.License))
-        g.add((license_uri, DC.identifier, Literal(f"{tool_obj.unit}")))
+        g.add((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
         g.add(
             (license_uri, DCTERMS.hasVersion, Literal(f"{tool_obj.version}"))
         )
@@ -76,7 +76,7 @@ def generate_rdf_file(
         g.add(
             (
                 license_uri,
-                DC.creator,
+                DCTERMS.creator,
                 URIRef(convert_https_to_http(tool_obj.creator_url)),
             )
         )
@@ -179,7 +179,7 @@ def generate_rdf_file(
             )
 
         # Extracted the corresponding id of the Tool from LegalCode and then
-        # created according entries (CC.legalcode, DC.title)
+        # created according entries (CC.legalcode, DCTERMS.title)
         # using appropriate property of LegalCode.
         legal_code_ids = tool_obj.legal_codes.values_list("id", flat=True)
         for legal_code_id in legal_code_ids:
@@ -188,7 +188,7 @@ def generate_rdf_file(
             get_tool_title = legal_code_object.title
             tool_lang = legal_code_object.language_code
             tool_title_data = Literal(get_tool_title, lang=tool_lang)
-            g.add((license_uri, DC.title, (tool_title_data)))
+            g.add((license_uri, DCTERMS.title, (tool_title_data)))
 
             legal_code_url = legal_code_object.legal_code_url
             g.add(
@@ -232,7 +232,7 @@ def generate_rdf_file(
             g.add(
                 (
                     license_uri,
-                    DC.source,
+                    DCTERMS.source,
                     URIRef(
                         convert_https_to_http(tool_obj.is_based_on.base_url)
                     ),
