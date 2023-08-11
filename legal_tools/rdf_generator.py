@@ -3,10 +3,15 @@ from urllib.parse import urlparse, urlunparse
 
 # Third-party
 from rdflib import Graph, Literal, Namespace, URIRef
-from rdflib.namespace import DC, DCTERMS, FOAF, OWL, RDF, XSD
+from rdflib.namespace import DCTERMS, FOAF, OWL, RDF, XSD
 
 # First-party/Local
 from legal_tools.models import LegalCode, Tool
+
+# FOAF logo data
+FOAF_LOGO_URL = "http://licensebuttons.net/l/"
+SMALL_LOGO = "80x15.png"
+LARGE_LOGO = "88x31.png"
 
 
 def convert_https_to_http(url):
@@ -14,12 +19,6 @@ def convert_https_to_http(url):
     if parsed_url.scheme == "https":
         parsed_url = parsed_url._replace(scheme="http")
     return urlunparse(parsed_url)
-
-
-# FOAF logo data
-foaf_logo_url = "http://licensebuttons.net/l/"
-small_logo = "80x15.png"
-large_logo = "88x31.png"
 
 
 def generate_rdf_file(
@@ -55,7 +54,6 @@ def generate_rdf_file(
 
     # Bind namespaces
     g.bind("cc", CC)
-    # g.bind("dc", DC) will remove this after verification.
     g.bind("dcterms", DCTERMS)
     g.bind("foaf", FOAF)
     g.bind("owl", OWL)
@@ -102,7 +100,8 @@ def generate_rdf_file(
                     CC.licenseClass,
                     URIRef(
                         convert_https_to_http(
-                            f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
+                            f"{tool_obj.creator_url}/{tool_obj.category}"
+                            f"/sampling/"
                         )
                     ),
                 )
@@ -129,54 +128,31 @@ def generate_rdf_file(
         # )
 
         if tool_obj.jurisdiction_code:
+            logo_prefix = (
+                f"{FOAF_LOGO_URL}{tool_obj.unit}"
+                f"/{tool_obj.version}/{tool_obj.jurisdiction_code}"
+            )
+
             g.add(
                 (
                     license_uri,
                     CC.jurisdiction,
                     URIRef(
                         convert_https_to_http(
-                            f"{tool_obj.creator_url}/international/{tool_obj.jurisdiction_code}"
+                            f"{tool_obj.creator_url}/international/"
+                            f"{tool_obj.jurisdiction_code}"
                         )
                     ),
                 )
             )
-            g.add(
-                (
-                    license_uri,
-                    FOAF.logo,
-                    URIRef(
-                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{tool_obj.jurisdiction_code}/{large_logo}"
-                    ),
-                )
-            )
-            g.add(
-                (
-                    license_uri,
-                    FOAF.logo,
-                    URIRef(
-                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{tool_obj.jurisdiction_code}/{small_logo}"
-                    ),
-                )
-            )
+
         else:
-            g.add(
-                (
-                    license_uri,
-                    FOAF.logo,
-                    URIRef(
-                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{large_logo}"
-                    ),
-                )
-            )
-            g.add(
-                (
-                    license_uri,
-                    FOAF.logo,
-                    URIRef(
-                        f"{foaf_logo_url}{tool_obj.unit}/{tool_obj.version}/{small_logo}"
-                    ),
-                )
-            )
+            logo_prefix = f"{FOAF_LOGO_URL}{tool_obj.unit}/{tool_obj.version}"
+
+        logo_url_large = f"{logo_prefix}/{LARGE_LOGO}"
+        logo_url_small = f"{logo_prefix}/{SMALL_LOGO}"
+        g.add((license_uri, FOAF.logo, URIRef(logo_url_large)))
+        g.add((license_uri, FOAF.logo, URIRef(logo_url_small)))
 
         # Extracted the corresponding id of the Tool from LegalCode and then
         # created according entries (CC.legalcode, DCTERMS.title)
@@ -282,10 +258,12 @@ def generate_images_rdf():
         if tool.jurisdiction_code:
             uriref_with_juris = {
                 "large": URIRef(
-                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{tool.jurisdiction_code}/{large_logo}"
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
+                    f"{tool.jurisdiction_code}/{LARGE_LOGO}"
                 ),
                 "small": URIRef(
-                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{tool.jurisdiction_code}/{small_logo}"
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
+                    f"{tool.jurisdiction_code}/{SMALL_LOGO}"
                 ),
             }
             image_graph.add(
@@ -305,10 +283,10 @@ def generate_images_rdf():
         else:
             uriref = {
                 "large": URIRef(
-                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{large_logo}"
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{LARGE_LOGO}"
                 ),
                 "small": URIRef(
-                    f"{foaf_logo_url}{tool.unit}/{tool.version}/{small_logo}"
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{SMALL_LOGO}"
                 ),
             }
             image_graph.add((uriref["large"], EXIF.width, Literal("88")))

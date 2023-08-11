@@ -846,7 +846,7 @@ def order_rdf_xml(serialized_rdf_content):
 def view_generate_rdf(
     request, category=None, unit=None, version=None, jurisdiction=None
 ):
-    if category and unit and version or jurisdiction:
+    if category:
         rdf_content = generate_rdf_file(category, unit, version, jurisdiction)
     else:
         rdf_content = generate_rdf_file(generate_all_licenses=True)
