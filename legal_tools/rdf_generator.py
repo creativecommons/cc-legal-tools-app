@@ -81,43 +81,27 @@ def generate_rdf_file(
 
         # adding cc:licenseClass
         if tool_obj.category == "publicdomain":
-            g.add(
-                (
-                    license_uri,
-                    CC.licenseClass,
-                    URIRef(
-                        convert_https_to_http(
-                            f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
-                        )
-                    ),
+            license_class_uriref = URIRef(
+                convert_https_to_http(
+                    f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
                 )
             )
 
         elif tool_obj.unit in ["sampling", "sampling+"]:
-            g.add(
-                (
-                    license_uri,
-                    CC.licenseClass,
-                    URIRef(
-                        convert_https_to_http(
-                            f"{tool_obj.creator_url}/{tool_obj.category}"
-                            f"/sampling/"
-                        )
-                    ),
+            license_class_uriref = URIRef(
+                convert_https_to_http(
+                    f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
                 )
             )
+
         else:
-            g.add(
-                (
-                    license_uri,
-                    CC.licenseClass,
-                    URIRef(
-                        convert_https_to_http(
-                            f"{tool_obj.creator_url}/{tool_obj.category}/"
-                        )
-                    ),
+            license_class_uriref = URIRef(
+                convert_https_to_http(
+                    f"{tool_obj.creator_url}/{tool_obj.category}/"
                 )
             )
+
+        g.add((license_uri, CC.licenseClass, license_class_uriref))
 
         # g.add(
         #     (
