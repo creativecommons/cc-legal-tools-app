@@ -240,7 +240,7 @@ def generate_images_rdf():
 
     for tool in all_tools:
         if tool.jurisdiction_code:
-            uriref_with_juris = {
+            uriref = {
                 "large": URIRef(
                     f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
                     f"{tool.jurisdiction_code}/{LARGE_LOGO}"
@@ -250,19 +250,6 @@ def generate_images_rdf():
                     f"{tool.jurisdiction_code}/{SMALL_LOGO}"
                 ),
             }
-            image_graph.add(
-                (uriref_with_juris["large"], EXIF.width, Literal("88"))
-            )
-            image_graph.add(
-                (uriref_with_juris["large"], EXIF.height, Literal("31"))
-            )
-
-            image_graph.add(
-                (uriref_with_juris["small"], EXIF.width, Literal("80"))
-            )
-            image_graph.add(
-                (uriref_with_juris["small"], EXIF.height, Literal("15"))
-            )
 
         else:
             uriref = {
@@ -273,10 +260,10 @@ def generate_images_rdf():
                     f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{SMALL_LOGO}"
                 ),
             }
-            image_graph.add((uriref["large"], EXIF.width, Literal("88")))
-            image_graph.add((uriref["large"], EXIF.height, Literal("31")))
+        image_graph.add((uriref["large"], EXIF.width, Literal("88")))
+        image_graph.add((uriref["large"], EXIF.height, Literal("31")))
 
-            image_graph.add((uriref["small"], EXIF.width, Literal("80")))
-            image_graph.add((uriref["small"], EXIF.height, Literal("15")))
+        image_graph.add((uriref["small"], EXIF.width, Literal("80")))
+        image_graph.add((uriref["small"], EXIF.height, Literal("15")))
 
     return image_graph
