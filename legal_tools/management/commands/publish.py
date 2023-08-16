@@ -16,7 +16,7 @@ from django.urls import reverse
 from i18n import DEFAULT_CSV_FILE
 from i18n.utils import write_transstats_csv
 from legal_tools.git_utils import commit_and_push_changes, setup_local_branch
-from legal_tools.models import LegalCode, TranslationBranch, build_path, Tool
+from legal_tools.models import LegalCode, TranslationBranch, build_path
 from legal_tools.utils import (
     init_utils_logger,
     relative_symlink,
@@ -24,8 +24,6 @@ from legal_tools.utils import (
     save_redirect,
     save_url_as_static_file,
 )
-from django.http import HttpRequest
-from legal_tools.views import view_generate_rdf
 
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
@@ -241,34 +239,8 @@ class Command(BaseCommand):
             relative_name = os.path.join(*name.split("_"), "rdf")
             dest_file = os.path.join(output_dir, relative_name)
             os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-            # copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
-            # LOG.debug(f"    {relative_name}")
-            request = HttpRequest()
-            # Set any necessary attributes on the request object
-            tools = Tool.objects.all()
-            for tool in tools:
-                if tool.jurisdiction_code:
-                    response = view_generate_rdf(
-                        request,
-                        category=tool.category,
-                        unit=tool.unit,
-                        version=tool.version,
-                        jurisdiction=tool.jurisdiction_code
-                    )
-                else:
-                    response = view_generate_rdf(
-                        request,
-                        category=tool.category,
-                        unit=tool.unit,
-                        version=tool.version,
-                    )
-
-                rdf_content = response.content
-                # Save the RDF content to the destination file
-                with open(dest_file, "wb") as f:
-                    f.write(rdf_content)
-
-            LOG.debug(f"Generated: {relative_name}")
+            copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
+            LOG.debug(f"    {relative_name}")
 
     def copy_meta_rdfs(self):
         hostname = socket.gethostname()
@@ -485,17 +457,17 @@ class Command(BaseCommand):
 
     def distill_and_copy(self):
         self.purge_output_dir()
-        # self.call_collectstatic()
-        # self.write_robots_txt()
-        # self.copy_static_wp_content_files()
-        # self.copy_static_cc_legal_tools_files()
+        self.call_collectstatic()
+        self.write_robots_txt()
+        self.copy_static_wp_content_files()
+        self.copy_static_cc_legal_tools_files()
         self.copy_tools_rdfs()
-        # self.copy_meta_rdfs()
-        # self.copy_legal_code_plaintext()
-        # self.write_dev_index()
-        # self.write_lists()
-        # self.write_legal_tools()
-        # self.run_write_transstats_csv() last ke do phle se hi commented the
+        self.copy_meta_rdfs()
+        self.copy_legal_code_plaintext()
+        self.write_dev_index()
+        self.write_lists()
+        self.write_legal_tools()
+        # self.run_write_transstats_csv()
         # self.write_metadata_yaml()
 
     def publish_branch(self, branch: str):
