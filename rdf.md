@@ -85,6 +85,32 @@
 
 *(describe what and why of changes between old legacy RDF/XML and new generated RDF/XML)*
 
+ The changes between the old legacy RDF/XML and the new generated RDF/XML aim to enhance clarity, accuracy, compatibility, and standardization of the RDF representation of Creative Commons licenses.  The improvements enhance the machine-readability and semantic understanding of the licenses, enabling better integration and interpretation within digital ecosystems.
+
+**A general overview of what and why changes occured:**
+
+**1. Improved Structure and Consistency:**
+
+- What: The structure of the RDF/XML files has been improved for better clarity, consistency, and adherence to RDF standards.
+- Why: A well-defined and consistent structure makes it easier for machines to process and interpret the RDF data accurately.
+- Diff: The newer generated RDF/XML have a more organized and standardized structure compared to the older legacy RDF/XML, ensuring that elements and properties are consistently represented.
+
+**2. Updated License Information:**
+
+- What: License information and conditions have been updated for some of the licenses.
+- Why: Keeping license information up-to-date ensures that users and automated systems are aware of the current permissions and restrictions associated with the licenses.
+- Diff: The newer generated RDF/XML include the most recent and updated license Information.
+
+
+**3. Alignment with RDF Best Practices:**
+
+- What: Changes have been made to align the RDF/XML representation with best practices and recommendations in the RDF.
+- Why: Following best practices ensures that the RDF data is structured in a way that maximizes interoperability and compatibility with other RDF-consuming applications.
+- Diff: The newer generated RDF/XML adhere to established RDF conventions, such as using standardized namespaces, consistent naming conventions, and properly defined relationships.
+
+**(     MAYBE??   4. Removal of Deprecated Elements AND 5. Compatibility with Modern Tools and Libraries)**
+
+
 
 ## History
 
