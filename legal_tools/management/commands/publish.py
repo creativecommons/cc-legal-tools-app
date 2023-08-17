@@ -109,6 +109,16 @@ def save_legal_code(output_dir, legal_code):
         save_redirect(output_dir, redirect_data)
     return legal_code.get_redirect_pairs()
 
+def save_rdf(output_dir, tool):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    relpath = os.path.join(tool._get_save_path(), "rdf")
+    save_url_as_static_file(
+        output_dir,
+        url=build_path(tool.base_url, "rdf", None),
+        relpath=relpath,
+    )
+
 
 class Command(BaseCommand):
     """
@@ -362,17 +372,21 @@ class Command(BaseCommand):
             LOG.info(f"Writing {group}")
             legal_code_arguments = []
             deed_arguments = []
+            rdf_arguments = []
             for legal_code in legal_codes[group]:
                 tools.add(legal_code.tool)
                 legal_code_arguments.append((output_dir, legal_code))
             for tool in tools:
                 for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
                     deed_arguments.append((output_dir, tool, language_code))
+                rdf_arguments.append((output_dir, tool))
 
             redirect_pairs_data += self.pool.starmap(save_deed, deed_arguments)
             redirect_pairs_data += self.pool.starmap(
-                save_legal_code, legal_code_arguments
-            )
+                  save_legal_code, legal_code_arguments
+             )
+            self.pool.starmap(save_rdf, rdf_arguments)
+
 
         redirect_pairs = []
         for pair_list in redirect_pairs_data:
