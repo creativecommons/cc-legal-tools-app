@@ -3,7 +3,6 @@ import os.path
 import re
 from operator import itemgetter
 from typing import Iterable
-from xml.etree import ElementTree
 
 # Third-party
 import git
@@ -776,15 +775,17 @@ def order_rdf_xml(serialized_rdf_content):
         Convert QNAME URI to prefix
         """
         qname = etree.QName(name)
-        for pref, uri in nsmap.items():
-            if qname.namespace == uri:
-                return f"{pref}:{qname.localname}"
-        return name
+        # rdflib assumes xml namespace, but lxml does not
+        nsmap["xml"] = "http://www.w3.org/XML/1998/namespace"
+        uri_map = {y: x for x, y in nsmap.items()}
+        prefix = f"{uri_map[qname.namespace]}:{qname.localname}"
+        return prefix
 
     def get_node_key(node):
         """
         Return the sorting key of an xml node using tag and attributes (using
-        prefixes so they are sorted appropriately when serialized)
+        prefixes so that order matches expectations when files are read by
+        humans)
         """
         tag = uri2prefix(node.tag, node.nsmap)
         attributes = []
@@ -816,29 +817,23 @@ def order_rdf_xml(serialized_rdf_content):
     #   - order XML elements by tag and attribute (using prefixes so they are
     #     sorted appropriately when serialized)
     #   - lxml, however, does not support deterministic output of the namespace
-    root = etree.fromstring(serialized_rdf_content.encode())
+    parser = etree.XMLParser(remove_blank_text=True)
+    root = etree.fromstring(serialized_rdf_content.encode(), parser)
     sort_children(root)
     serialized_rdf_content = etree.tostring(
         root, encoding="utf-8", xml_declaration=True, pretty_print=True
     )
 
-    # Step 2: xml.etree.ElementTree
-    #   - order namespace
-    ElementTree.register_namespace("cc", "http://creativecommons.org/ns#")
-    ElementTree.register_namespace("dcterms", "http://purl.org/dc/terms/")
-    ElementTree.register_namespace("owl", "http://www.w3.org/2002/07/owl#")
-    ElementTree.register_namespace("foaf", "http://xmlns.com/foaf/0.1/")
-    ElementTree.register_namespace(
-        "exif", "http://www.w3.org/2003/12/exif/ns#"
-    )
-
-    tree = ElementTree.ElementTree(
-        ElementTree.fromstring(serialized_rdf_content.decode())
-    )
-    root = tree.getroot()
-    serialized_rdf_content = ElementTree.tostring(
-        root, encoding="utf-8", xml_declaration=True
-    )
+    # Step 2: manually sort namespaces in line 2 of serialized RDF/XML content
+    serialized_rdf_content = serialized_rdf_content.decode().split("\n")
+    namespace_line = serialized_rdf_content[1].split()
+    rdf_rdf = namespace_line.pop(0)
+    namespace_line[-1] = namespace_line[-1].rstrip(">")
+    namespace_line.sort()
+    namespace_line.insert(0, rdf_rdf)
+    namespace_line[-1] = f"{namespace_line[-1]}>"
+    serialized_rdf_content[1] = " ".join(namespace_line)
+    serialized_rdf_content = "\n".join(serialized_rdf_content)
 
     return serialized_rdf_content
 
