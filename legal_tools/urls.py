@@ -288,7 +288,7 @@ urlpatterns = [
         view_generate_rdf,
         name="index_rdf",
     ),
-    # for images
+    # for images (images.rdf)
     path(
         "rdf/images.rdf",
         view_image_rdf,

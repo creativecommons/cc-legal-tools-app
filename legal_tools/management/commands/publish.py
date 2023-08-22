@@ -109,6 +109,7 @@ def save_legal_code(output_dir, legal_code):
         save_redirect(output_dir, redirect_data)
     return legal_code.get_redirect_pairs()
 
+
 def save_rdf(output_dir, tool):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
@@ -119,12 +120,14 @@ def save_rdf(output_dir, tool):
         relpath=relpath,
     )
 
+
 def save_index_rdf(output_dir, filename):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
     index_url = f"/rdf/{filename}"
     relpath = f"rdf/{filename}"
     save_url_as_static_file(output_dir, url=index_url, relpath=relpath)
+
 
 class Command(BaseCommand):
     """
@@ -337,8 +340,6 @@ class Command(BaseCommand):
                 LOG.info(f"Copying {meta_file}")
                 LOG.debug(f"    {dest_relative}")
                 copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
-        
-
 
     def copy_legal_code_plaintext(self):
         hostname = socket.gethostname()
@@ -424,9 +425,8 @@ class Command(BaseCommand):
             redirect_pairs_data += self.pool.starmap(save_deed, deed_arguments)
             redirect_pairs_data += self.pool.starmap(
                 save_legal_code, legal_code_arguments
-             )
+            )
             self.pool.starmap(save_rdf, rdf_arguments)
-
 
         redirect_pairs = []
         for pair_list in redirect_pairs_data:
