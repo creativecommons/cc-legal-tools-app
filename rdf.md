@@ -108,7 +108,6 @@
 - Why: Following best practices ensures that the RDF data is structured in a way that maximizes interoperability and compatibility with other RDF-consuming applications.
 - Diff: The newer generated RDF/XML adhere to established RDF conventions, such as using standardized namespaces, consistent naming conventions, and properly defined relationships.
 
-**(     MAYBE??   4. Removal of Deprecated Elements AND 5. Compatibility with Modern Tools and Libraries)**
 
 
 

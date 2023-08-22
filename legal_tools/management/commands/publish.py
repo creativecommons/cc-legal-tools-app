@@ -119,6 +119,12 @@ def save_rdf(output_dir, tool):
         relpath=relpath,
     )
 
+def save_index_rdf(output_dir, filename):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    index_url = f"/rdf/{filename}"
+    relpath = f"rdf/{filename}"
+    save_url_as_static_file(output_dir, url=index_url, relpath=relpath)
 
 class Command(BaseCommand):
     """
@@ -300,6 +306,22 @@ class Command(BaseCommand):
                 finally:
                     os.close(dir_fd)
 
+    def write_rdf_meta(self):
+        """
+        Generate the index.rdf and images.rdf.
+        """
+        output_dir = self.output_dir
+    
+        dest_dir = os.path.join(output_dir, "rdf-meta")
+        os.makedirs(dest_dir, exist_ok=True)
+
+        filenames = ["index.rdf", "images.rdf"]
+        for filename in filenames:
+            rdf_path = os.path.join(dest_dir, filename)
+            LOG.info(f"Writing {filename}")
+            save_index_rdf(rdf_path, filename)
+
+
     def copy_legal_code_plaintext(self):
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
@@ -383,7 +405,7 @@ class Command(BaseCommand):
 
             redirect_pairs_data += self.pool.starmap(save_deed, deed_arguments)
             redirect_pairs_data += self.pool.starmap(
-                  save_legal_code, legal_code_arguments
+                save_legal_code, legal_code_arguments
              )
             self.pool.starmap(save_rdf, rdf_arguments)
 
@@ -476,7 +498,7 @@ class Command(BaseCommand):
         self.copy_static_wp_content_files()
         self.copy_static_cc_legal_tools_files()
         self.copy_tools_rdfs()
-        self.copy_meta_rdfs()
+        self.write_rdf_meta()
         self.copy_legal_code_plaintext()
         self.write_dev_index()
         self.write_lists()
