@@ -308,18 +308,36 @@ class Command(BaseCommand):
 
     def write_rdf_meta(self):
         """
-        Generate the index.rdf and images.rdf.
+        Generate the index.rdf, images.rdf and copies the rest.
         """
+        hostname = socket.gethostname()
+        legacy_dir = self.legacy_dir
         output_dir = self.output_dir
-    
-        dest_dir = os.path.join(output_dir, "rdf-meta")
+        meta_rdf_dir = os.path.join(legacy_dir, "rdf-meta")
+        meta_files = [
+            meta_file
+            for meta_file in os.listdir(meta_rdf_dir)
+            if os.path.isfile(os.path.join(meta_rdf_dir, meta_file))
+        ]
+        meta_files.sort()
+        dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
+        LOG.debug(f"{hostname}:{output_dir}")
 
-        filenames = ["index.rdf", "images.rdf"]
-        for filename in filenames:
-            rdf_path = os.path.join(dest_dir, filename)
-            LOG.info(f"Writing {filename}")
-            save_index_rdf(rdf_path, filename)
+        for meta_file in meta_files:
+            dest_relative = os.path.join("rdf", meta_file)
+            dest_full = os.path.join(output_dir, dest_relative)
+            filenames = ["index.rdf", "images.rdf"]
+            if meta_file in filenames:
+                for filename in filenames:
+                    rdf_path = os.path.join(dest_dir, filename)
+                    LOG.info(f"Writing {filename}")
+                    save_index_rdf(rdf_path, filename)
+            else:
+                LOG.info(f"Copying {meta_file}")
+                LOG.debug(f"    {dest_relative}")
+                copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
+        
 
 
     def copy_legal_code_plaintext(self):
