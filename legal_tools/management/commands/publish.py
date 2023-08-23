@@ -121,7 +121,7 @@ def save_rdf(output_dir, tool):
     )
 
 
-def save_index_rdf(output_dir, filename):
+def save_images_and_index_rdf(output_dir, filename):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
     index_url = f"/rdf/{filename}"
@@ -237,78 +237,6 @@ class Command(BaseCommand):
                 os.path.join(destination, file_name),
             )
 
-    def copy_tools_rdfs(self):
-        hostname = socket.gethostname()
-        legacy_dir = self.legacy_dir
-        output_dir = self.output_dir
-        tools_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
-        tools_rdfs = [
-            rdf_file
-            for rdf_file in os.listdir(tools_rdf_dir)
-            if os.path.isfile(os.path.join(tools_rdf_dir, rdf_file))
-        ]
-        tools_rdfs.sort()
-        LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Copying legal code RDFs")
-        for rdf in tools_rdfs:
-            if rdf.endswith(".rdf"):
-                name = rdf[:-4]
-            else:
-                continue
-            relative_name = os.path.join(*name.split("_"), "rdf")
-            dest_file = os.path.join(output_dir, relative_name)
-            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-            copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
-            LOG.debug(f"    {relative_name}")
-
-    # def copy_meta_rdfs(self):   TO BE REMOVED
-    #     hostname = socket.gethostname()
-    #     legacy_dir = self.legacy_dir
-    #     output_dir = self.output_dir
-    #     meta_rdf_dir = os.path.join(legacy_dir, "rdf-meta")
-    #     meta_files = [
-    #         meta_file
-    #         for meta_file in os.listdir(meta_rdf_dir)
-    #         if os.path.isfile(os.path.join(meta_rdf_dir, meta_file))
-    #     ]
-    #     meta_files.sort()
-    #     dest_dir = os.path.join(output_dir, "rdf")
-    #     os.makedirs(dest_dir, exist_ok=True)
-    #     LOG.debug(f"{hostname}:{output_dir}")
-    #     LOG.info("Copying RDF information and metadata")
-    #     for meta_file in meta_files:
-    #         dest_relative = os.path.join("rdf", meta_file)
-    #         dest_full = os.path.join(output_dir, dest_relative)
-    #         LOG.debug(f"    {dest_relative}")
-    #         copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
-    #         if meta_file == "index.rdf":
-    #             os.makedirs(
-    #                 os.path.join(output_dir, "licenses"), exist_ok=True
-    #             )
-    #             dir_fd = os.open(output_dir, os.O_RDONLY)
-    #             symlink = os.path.join("licenses", meta_file)
-    #             try:
-    #                 os.symlink(f"../{dest_relative}", symlink, dir_fd=dir_fd)
-    #                 LOG.debug(f"   ^{symlink}")
-    #             finally:
-    #                 os.close(dir_fd)
-    #         elif meta_file == "ns.html":
-    #             dir_fd = os.open(output_dir, os.O_RDONLY)
-    #             symlink = meta_file
-    #             try:
-    #                 os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-    #                 LOG.debug(f"   ^{symlink}")
-    #             finally:
-    #                 os.close(dir_fd)
-    #         elif meta_file == "schema.rdf":
-    #             dir_fd = os.open(output_dir, os.O_RDONLY)
-    #             symlink = meta_file
-    #             try:
-    #                 os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-    #                 LOG.debug(f"   ^{symlink}")
-    #             finally:
-    #                 os.close(dir_fd)
-
     def write_rdf_meta(self):
         """
         Generate the index.rdf, images.rdf and copies the rest.
@@ -333,7 +261,9 @@ class Command(BaseCommand):
             filenames = ["index.rdf", "images.rdf"]
             if meta_file in filenames:
                 LOG.info(f"Writing {meta_file}")
-                save_index_rdf(dest_dir, meta_file)
+                save_images_and_index_rdf(dest_dir, meta_file)
+            elif meta_file == "selectors.rdf":
+                continue
             else:
                 LOG.info(f"Copying {meta_file}")
                 LOG.debug(f"    {dest_relative}")
@@ -541,7 +471,6 @@ class Command(BaseCommand):
         self.write_robots_txt()
         self.copy_static_wp_content_files()
         self.copy_static_cc_legal_tools_files()
-        self.copy_tools_rdfs()
         self.write_rdf_meta()
         self.copy_legal_code_plaintext()
         self.write_dev_index()
