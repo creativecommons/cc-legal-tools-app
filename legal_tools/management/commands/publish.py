@@ -258,17 +258,19 @@ class Command(BaseCommand):
         for meta_file in meta_files:
             dest_relative = os.path.join("rdf", meta_file)
             dest_full = os.path.join(output_dir, dest_relative)
-            filenames = ["index.rdf", "images.rdf"]
-            if meta_file in filenames:
+
+            # Write and Copy RDF/XML meta files
+            if meta_file in ["jurisdictions.rdf", "selectors.rdf"]:
+                continue
+            elif meta_file in ["index.rdf", "images.rdf"]:
                 LOG.info(f"Writing {meta_file}")
                 save_images_and_index_rdf(dest_dir, meta_file)
-            elif meta_file == "selectors.rdf":
-                continue
             else:
                 LOG.info(f"Copying {meta_file}")
                 LOG.debug(f"    {dest_relative}")
                 copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
 
+            # Symlink RDF/XML meta files
             if meta_file == "index.rdf":
                 os.makedirs(
                     os.path.join(output_dir, "licenses"), exist_ok=True
@@ -280,15 +282,7 @@ class Command(BaseCommand):
                     LOG.debug(f"   ^{symlink}")
                 finally:
                     os.close(dir_fd)
-            elif meta_file == "ns.html":
-                dir_fd = os.open(output_dir, os.O_RDONLY)
-                symlink = meta_file
-                try:
-                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-                    LOG.debug(f"   ^{symlink}")
-                finally:
-                    os.close(dir_fd)
-            elif meta_file == "schema.rdf":
+            elif meta_file in ["ns.html", "schema.rdf"]:
                 dir_fd = os.open(output_dir, os.O_RDONLY)
                 symlink = meta_file
                 try:
@@ -366,7 +360,7 @@ class Command(BaseCommand):
         for group in legal_codes.keys():
             tools = set()
             LOG.debug(f"{hostname}:{output_dir}")
-            LOG.info(f"Writing {group}")
+            LOG.info(f"Writing {group} deed HTML, legal code HTML, and RDF/XML")
             legal_code_arguments = []
             deed_arguments = []
             rdf_arguments = []
