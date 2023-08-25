@@ -110,6 +110,25 @@ def save_legal_code(output_dir, legal_code):
     return legal_code.get_redirect_pairs()
 
 
+def save_rdf(output_dir, tool):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    relpath = os.path.join(tool._get_save_path(), "rdf")
+    save_url_as_static_file(
+        output_dir,
+        url=build_path(tool.base_url, "rdf", None),
+        relpath=relpath,
+    )
+
+
+def save_images_and_index_rdf(output_dir, filename):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    index_url = f"/rdf/{filename}"
+    relpath = f"{filename}"
+    save_url_as_static_file(output_dir, url=index_url, relpath=relpath)
+
+
 class Command(BaseCommand):
     """
     Command to push the static files in the build directory to a specified
@@ -218,31 +237,10 @@ class Command(BaseCommand):
                 os.path.join(destination, file_name),
             )
 
-    def copy_tools_rdfs(self):
-        hostname = socket.gethostname()
-        legacy_dir = self.legacy_dir
-        output_dir = self.output_dir
-        tools_rdf_dir = os.path.join(legacy_dir, "rdf-licenses")
-        tools_rdfs = [
-            rdf_file
-            for rdf_file in os.listdir(tools_rdf_dir)
-            if os.path.isfile(os.path.join(tools_rdf_dir, rdf_file))
-        ]
-        tools_rdfs.sort()
-        LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Copying legal code RDFs")
-        for rdf in tools_rdfs:
-            if rdf.endswith(".rdf"):
-                name = rdf[:-4]
-            else:
-                continue
-            relative_name = os.path.join(*name.split("_"), "rdf")
-            dest_file = os.path.join(output_dir, relative_name)
-            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-            copyfile(os.path.join(tools_rdf_dir, rdf), dest_file)
-            LOG.debug(f"    {relative_name}")
-
-    def copy_meta_rdfs(self):
+    def write_rdf_meta(self):
+        """
+        Generate the index.rdf, images.rdf and copies the rest.
+        """
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
         output_dir = self.output_dir
@@ -256,12 +254,23 @@ class Command(BaseCommand):
         dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
         LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Copying RDF information and metadata")
+
         for meta_file in meta_files:
             dest_relative = os.path.join("rdf", meta_file)
             dest_full = os.path.join(output_dir, dest_relative)
-            LOG.debug(f"    {dest_relative}")
-            copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
+
+            # Write and Copy RDF/XML meta files
+            if meta_file in ["jurisdictions.rdf", "selectors.rdf"]:
+                continue
+            elif meta_file in ["index.rdf", "images.rdf"]:
+                LOG.info(f"Writing {meta_file}")
+                save_images_and_index_rdf(dest_dir, meta_file)
+            else:
+                LOG.info(f"Copying {meta_file}")
+                LOG.debug(f"    {dest_relative}")
+                copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
+
+            # Symlink RDF/XML meta files
             if meta_file == "index.rdf":
                 os.makedirs(
                     os.path.join(output_dir, "licenses"), exist_ok=True
@@ -273,15 +282,7 @@ class Command(BaseCommand):
                     LOG.debug(f"   ^{symlink}")
                 finally:
                     os.close(dir_fd)
-            elif meta_file == "ns.html":
-                dir_fd = os.open(output_dir, os.O_RDONLY)
-                symlink = meta_file
-                try:
-                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-                    LOG.debug(f"   ^{symlink}")
-                finally:
-                    os.close(dir_fd)
-            elif meta_file == "schema.rdf":
+            elif meta_file in ["ns.html", "schema.rdf"]:
                 dir_fd = os.open(output_dir, os.O_RDONLY)
                 symlink = meta_file
                 try:
@@ -359,20 +360,23 @@ class Command(BaseCommand):
         for group in legal_codes.keys():
             tools = set()
             LOG.debug(f"{hostname}:{output_dir}")
-            LOG.info(f"Writing {group}")
+            LOG.info(f"Writing {group} deed HTML, legal code HTML, and RDF/XML")
             legal_code_arguments = []
             deed_arguments = []
+            rdf_arguments = []
             for legal_code in legal_codes[group]:
                 tools.add(legal_code.tool)
                 legal_code_arguments.append((output_dir, legal_code))
             for tool in tools:
                 for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
                     deed_arguments.append((output_dir, tool, language_code))
+                rdf_arguments.append((output_dir, tool))
 
             redirect_pairs_data += self.pool.starmap(save_deed, deed_arguments)
             redirect_pairs_data += self.pool.starmap(
                 save_legal_code, legal_code_arguments
             )
+            self.pool.starmap(save_rdf, rdf_arguments)
 
         redirect_pairs = []
         for pair_list in redirect_pairs_data:
@@ -461,8 +465,7 @@ class Command(BaseCommand):
         self.write_robots_txt()
         self.copy_static_wp_content_files()
         self.copy_static_cc_legal_tools_files()
-        self.copy_tools_rdfs()
-        self.copy_meta_rdfs()
+        self.write_rdf_meta()
         self.copy_legal_code_plaintext()
         self.write_dev_index()
         self.write_lists()

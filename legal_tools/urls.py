@@ -17,6 +17,8 @@ from legal_tools.views import (
     view_branch_status,
     view_deed,
     view_dev_index,
+    view_generate_rdf,
+    view_image_rdf,
     view_legal_code,
     view_list,
     view_metadata,
@@ -265,5 +267,31 @@ urlpatterns = [
         r"^dev/status/(?P<id>\d+)/$",
         view_branch_status,
         name="branch_status",
+    ),
+    # RDF generation  #########################################################
+    # without Jurisdiction
+    path(
+        "<category:category>/<unit:unit>/<version:version>/rdf",
+        view_generate_rdf,
+        name="generate_rdf",
+    ),
+    # with Jurisdiction
+    path(
+        "<category:category>/<unit:unit>/<version:version>/"
+        "<jurisdiction:jurisdiction>/rdf",
+        view_generate_rdf,
+        name="generate_rdf",
+    ),
+    # for all the licenses in one rdf (index.rdf)
+    path(
+        "rdf/index.rdf",
+        view_generate_rdf,
+        name="index_rdf",
+    ),
+    # for images (images.rdf)
+    path(
+        "rdf/images.rdf",
+        view_image_rdf,
+        name="image_rdf",
     ),
 ]
