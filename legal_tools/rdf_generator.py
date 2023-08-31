@@ -65,14 +65,21 @@ def generate_rdf_file(
 
         g.set((license_uri, RDF.type, CC.License))
 
-        g.add((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
-        version = Literal(f"{tool_obj.version}")
-        g.add((license_uri, DCTERMS.hasVersion, version))
-        g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
+        # add dcterms:creator
         creator = URIRef(convert_https_to_http(tool_obj.creator_url))
         g.add((license_uri, DCTERMS.creator, creator))
 
-        # adding cc:licenseClass
+        # add dcterms:hasVersion
+        version = Literal(f"{tool_obj.version}")
+        g.add((license_uri, DCTERMS.hasVersion, version))
+
+        # add dcterms:identifier
+        g.add((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
+
+        # add owl:sameAs (alias HTTPS)
+        g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
+
+        # add cc:licenseClass
         if tool_obj.category == "publicdomain":
             license_class_uriref = URIRef(
                 convert_https_to_http(
@@ -93,6 +100,8 @@ def generate_rdf_file(
             )
         g.add((license_uri, CC.licenseClass, license_class_uriref))
 
+        # add cc:jurisdiction, if applicable
+        # add foaf:logo
         if tool_obj.jurisdiction_code:
             logo_prefix = (
                 f"{FOAF_LOGO_URL}{tool_obj.unit}"
@@ -107,15 +116,16 @@ def generate_rdf_file(
             g.add((license_uri, CC.jurisdiction, jurisdiction_uri))
         else:
             logo_prefix = f"{FOAF_LOGO_URL}{tool_obj.unit}/{tool_obj.version}"
-
         logo_url_large = f"{logo_prefix}/{LARGE_LOGO}"
         logo_url_small = f"{logo_prefix}/{SMALL_LOGO}"
         g.add((license_uri, FOAF.logo, URIRef(logo_url_large)))
         g.add((license_uri, FOAF.logo, URIRef(logo_url_small)))
 
-        # Extracted the corresponding id of the Tool from LegalCode and then
-        # created according entries (CC.legalcode, DCTERMS.title)
-        # using appropriate property of LegalCode.
+        # add cc:legalcode
+        # add dcterms.title (for individual RDF/XML, not index.rdf)
+        #
+        # These utilize the LegalCode object(s) assciated with the current Tool
+        # object.
         legal_code_ids = tool_obj.legal_codes.values_list("id", flat=True)
         for legal_code_id in legal_code_ids:
             legal_code_object = LegalCode.objects.get(id=legal_code_id)
@@ -139,24 +149,26 @@ def generate_rdf_file(
                     (CC[legal_code_url], DCTERMS.language, Literal(tool_lang))
                 )
 
+        # add cc:depredatedOn, if applicable
         if tool_obj.deprecated_on:
             deprecated_on = Literal(tool_obj.deprecated_on, datatype=XSD.date)
             g.add((license_uri, CC.deprecatedOn, deprecated_on))
 
+        # add dcterms:isReplacedBy, if applicable
         if tool_obj.is_replaced_by:
             replaced_by = URIRef(
                 convert_https_to_http(tool_obj.is_replaced_by.base_url)
             )
             g.add((license_uri, DCTERMS.isReplacedBy, replaced_by))
 
+        # add dcterms:source, if applicable
         if tool_obj.is_based_on:
             based_on = URIRef(
                 convert_https_to_http(tool_obj.is_based_on.base_url)
             )
             g.add((license_uri, DCTERMS.source, based_on))
 
-        # Adding properties
-        # Permits
+        # add cc:permits, as applicable
         if tool_obj.permits_derivative_works:
             g.add((license_uri, CC.permits, CC.DerivativeWorks))
         if tool_obj.permits_distribution:
@@ -166,7 +178,7 @@ def generate_rdf_file(
         if tool_obj.permits_sharing:
             g.add((license_uri, CC.permits, CC.Sharing))
 
-        # Requires
+        # add cc:requires, as applicable
         if tool_obj.requires_attribution:
             g.add((license_uri, CC.requires, CC.Attribution))
         if tool_obj.requires_notice:
@@ -176,7 +188,7 @@ def generate_rdf_file(
         if tool_obj.requires_source_code:
             g.add((license_uri, CC.requires, CC.SourceCode))
 
-        # Prohibits
+        # add cc:prohibits, as applicable
         if tool_obj.prohibits_commercial_use:
             g.add((license_uri, CC.prohibits, CC.CommercialUse))
         if tool_obj.prohibits_high_income_nation_use:
