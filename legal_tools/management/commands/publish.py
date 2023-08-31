@@ -4,6 +4,7 @@ import os
 import socket
 from argparse import ArgumentParser
 from multiprocessing import Pool
+from pathlib import Path
 from shutil import copyfile, rmtree
 
 # Third-party
@@ -275,21 +276,18 @@ class Command(BaseCommand):
                 os.makedirs(
                     os.path.join(output_dir, "licenses"), exist_ok=True
                 )
-                dir_fd = os.open(output_dir, os.O_RDONLY)
                 symlink = os.path.join("licenses", meta_file)
-                try:
-                    os.symlink(f"../{dest_relative}", symlink, dir_fd=dir_fd)
-                    LOG.debug(f"   ^{symlink}")
-                finally:
-                    os.close(dir_fd)
+                symlink_dest = f"../{dest_relative}"
+                symlink_path = os.path.join(output_dir, symlink)
             elif meta_file in ["ns.html", "schema.rdf"]:
-                dir_fd = os.open(output_dir, os.O_RDONLY)
                 symlink = meta_file
-                try:
-                    os.symlink(dest_relative, symlink, dir_fd=dir_fd)
-                    LOG.debug(f"   ^{symlink}")
-                finally:
-                    os.close(dir_fd)
+                symlink_dest = dest_relative
+                symlink_path = os.path.join(output_dir, symlink)
+            if meta_file in ["index.rdf", "ns.html", "schema.rdf"]:
+                if os.path.islink(symlink_path):
+                    os.remove(symlink_path)
+                Path(symlink_path).symlink_to(Path(symlink_dest))
+                LOG.debug(f"   ^{symlink}")
 
     def copy_legal_code_plaintext(self):
         hostname = socket.gethostname()
@@ -472,8 +470,8 @@ class Command(BaseCommand):
         self.write_dev_index()
         self.write_lists()
         self.write_legal_tools()
-        # self.run_write_transstats_csv()
-        # self.write_metadata_yaml()
+        # DISABLED # self.run_write_transstats_csv()
+        # DISABLED # self.write_metadata_yaml()
 
     def publish_branch(self, branch: str):
         """Workflow for publishing a single branch"""
