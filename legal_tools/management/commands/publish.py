@@ -360,7 +360,9 @@ class Command(BaseCommand):
         for group in legal_codes.keys():
             tools = set()
             LOG.debug(f"{hostname}:{output_dir}")
-            LOG.info(f"Writing {group} deed HTML, legal code HTML, and RDF/XML")
+            LOG.info(
+                f"Writing {group} deed HTML, legal code HTML, and RDF/XML"
+            )
             legal_code_arguments = []
             deed_arguments = []
             rdf_arguments = []

@@ -31,7 +31,6 @@ def generate_rdf_file(
     # Retrieving license data from the database based on the arguments.
     if generate_all_licenses is True:
         retrieved_tools = Tool.objects.all()
-
     else:
         if jurisdiction:
             retrieved_tool = Tool.objects.filter(
@@ -65,19 +64,13 @@ def generate_rdf_file(
         license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
 
         g.set((license_uri, RDF.type, CC.License))
-        g.add((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
-        g.add(
-            (license_uri, DCTERMS.hasVersion, Literal(f"{tool_obj.version}"))
-        )
-        g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
 
-        g.add(
-            (
-                license_uri,
-                DCTERMS.creator,
-                URIRef(convert_https_to_http(tool_obj.creator_url)),
-            )
-        )
+        g.add((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
+        version = Literal(f"{tool_obj.version}")
+        g.add((license_uri, DCTERMS.hasVersion, version))
+        g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
+        creator = URIRef(convert_https_to_http(tool_obj.creator_url))
+        g.add((license_uri, DCTERMS.creator, creator))
 
         # adding cc:licenseClass
         if tool_obj.category == "publicdomain":
@@ -86,50 +79,32 @@ def generate_rdf_file(
                     f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
                 )
             )
-
         elif tool_obj.unit in ["sampling", "sampling+"]:
             license_class_uriref = URIRef(
                 convert_https_to_http(
                     f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
                 )
             )
-
         else:
             license_class_uriref = URIRef(
                 convert_https_to_http(
                     f"{tool_obj.creator_url}/{tool_obj.category}/"
                 )
             )
-
         g.add((license_uri, CC.licenseClass, license_class_uriref))
-
-        # g.add(
-        #     (
-        #         license_uri,
-        #         DCT.description,
-        #         Literal(" NEED SUGGESTIONS ON WHAT TO PUT HERE."),
-        #     )
-        # )
 
         if tool_obj.jurisdiction_code:
             logo_prefix = (
                 f"{FOAF_LOGO_URL}{tool_obj.unit}"
                 f"/{tool_obj.version}/{tool_obj.jurisdiction_code}"
             )
-
-            g.add(
-                (
-                    license_uri,
-                    CC.jurisdiction,
-                    URIRef(
-                        convert_https_to_http(
-                            f"{tool_obj.creator_url}/international/"
-                            f"{tool_obj.jurisdiction_code}"
-                        )
-                    ),
+            jurisdiction_uri = URIRef(
+                convert_https_to_http(
+                    f"{tool_obj.creator_url}/international/"
+                    f"{tool_obj.jurisdiction_code}"
                 )
             )
-
+            g.add((license_uri, CC.jurisdiction, jurisdiction_uri))
         else:
             logo_prefix = f"{FOAF_LOGO_URL}{tool_obj.unit}/{tool_obj.version}"
 
@@ -151,17 +126,13 @@ def generate_rdf_file(
             g.add((license_uri, DCTERMS.title, (tool_title_data)))
 
             legal_code_url = legal_code_object.legal_code_url
-            g.add(
-                (
-                    license_uri,
-                    CC.legalcode,
-                    URIRef(
-                        convert_https_to_http(
-                            f"{tool_obj.creator_url}{legal_code_url}"
-                        )
-                    ),
+            cc_legal_code = URIRef(
+                convert_https_to_http(
+                    f"{tool_obj.creator_url}{legal_code_url}"
                 )
             )
+            g.add((license_uri, CC.legalcode, cc_legal_code))
+
             # added DCTERMS.language for every legal_code_url
             if not generate_all_licenses:
                 g.add(
@@ -169,35 +140,20 @@ def generate_rdf_file(
                 )
 
         if tool_obj.deprecated_on:
-            g.add(
-                (
-                    license_uri,
-                    CC.deprecatedOn,
-                    Literal(tool_obj.deprecated_on, datatype=XSD.date),
-                )
-            )
+            deprecated_on = Literal(tool_obj.deprecated_on, datatype=XSD.date)
+            g.add((license_uri, CC.deprecatedOn, deprecated_on))
 
         if tool_obj.is_replaced_by:
-            g.add(
-                (
-                    license_uri,
-                    DCTERMS.isReplacedBy,
-                    URIRef(
-                        convert_https_to_http(tool_obj.is_replaced_by.base_url)
-                    ),
-                )
+            replaced_by = URIRef(
+                convert_https_to_http(tool_obj.is_replaced_by.base_url)
             )
+            g.add((license_uri, DCTERMS.isReplacedBy, replaced_by))
 
         if tool_obj.is_based_on:
-            g.add(
-                (
-                    license_uri,
-                    DCTERMS.source,
-                    URIRef(
-                        convert_https_to_http(tool_obj.is_based_on.base_url)
-                    ),
-                )
+            based_on = URIRef(
+                convert_https_to_http(tool_obj.is_based_on.base_url)
             )
+            g.add((license_uri, DCTERMS.source, based_on))
 
         # Adding properties
         # Permits
