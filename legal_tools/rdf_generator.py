@@ -65,21 +65,21 @@ def generate_rdf_file(
 
         g.set((license_uri, RDF.type, CC.License))
 
-        # add dcterms:creator
+        # set dcterms:creator
         creator = URIRef(convert_https_to_http(tool_obj.creator_url))
-        g.add((license_uri, DCTERMS.creator, creator))
+        g.set((license_uri, DCTERMS.creator, creator))
 
-        # add dcterms:hasVersion
+        # set dcterms:hasVersion
         version = Literal(f"{tool_obj.version}")
-        g.add((license_uri, DCTERMS.hasVersion, version))
+        g.set((license_uri, DCTERMS.hasVersion, version))
 
-        # add dcterms:identifier
-        g.add((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
+        # set dcterms:identifier
+        g.set((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
 
-        # add owl:sameAs (alias HTTPS)
-        g.add((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
+        # set owl:sameAs (alias HTTPS)
+        g.set((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
 
-        # add cc:licenseClass
+        # set cc:licenseClass
         if tool_obj.category == "publicdomain":
             license_class_uriref = URIRef(
                 convert_https_to_http(
@@ -98,10 +98,10 @@ def generate_rdf_file(
                     f"{tool_obj.creator_url}/{tool_obj.category}/"
                 )
             )
-        g.add((license_uri, CC.licenseClass, license_class_uriref))
+        g.set((license_uri, CC.licenseClass, license_class_uriref))
 
-        # add cc:jurisdiction, if applicable
-        # add foaf:logo
+        # cc:jurisdiction, if applicable
+        # foaf:logo
         if tool_obj.jurisdiction_code:
             logo_prefix = (
                 f"{FOAF_LOGO_URL}{tool_obj.unit}"
@@ -149,24 +149,26 @@ def generate_rdf_file(
                     (CC[legal_code_url], DCTERMS.language, Literal(tool_lang))
                 )
 
-        # add cc:depredatedOn, if applicable
+        # set cc:depredatedOn, if applicable
         if tool_obj.deprecated_on:
             deprecated_on = Literal(tool_obj.deprecated_on, datatype=XSD.date)
-            g.add((license_uri, CC.deprecatedOn, deprecated_on))
+            g.set((license_uri, CC.deprecatedOn, deprecated_on))
 
-        # add dcterms:isReplacedBy, if applicable
+        # set dcterms:isReplacedBy, if applicable
         if tool_obj.is_replaced_by:
-            replaced_by = URIRef(
-                convert_https_to_http(tool_obj.is_replaced_by.base_url)
+            # Convert to Literal so that the URL string is stored instead of
+            # the object referenced
+            replaced_by = Literal(
+                URIRef(convert_https_to_http(tool_obj.is_replaced_by.base_url))
             )
-            g.add((license_uri, DCTERMS.isReplacedBy, replaced_by))
+            g.set((license_uri, DCTERMS.isReplacedBy, replaced_by))
 
-        # add dcterms:source, if applicable
+        # set dcterms:source, if applicable
         if tool_obj.is_based_on:
             based_on = URIRef(
                 convert_https_to_http(tool_obj.is_based_on.base_url)
             )
-            g.add((license_uri, DCTERMS.source, based_on))
+            g.set((license_uri, DCTERMS.source, based_on))
 
         # add cc:permits, as applicable
         if tool_obj.permits_derivative_works:
