@@ -70,7 +70,6 @@ class ToolAdmin(admin.ModelAdmin):
         "jurisdiction_code",
         "source",
         "is_replaced_by",
-        "is_based_on",
         "deprecated_on",
         "permits_derivative_works",
         "permits_reproduction",
@@ -79,7 +78,6 @@ class ToolAdmin(admin.ModelAdmin):
         "requires_share_alike",
         "requires_notice",
         "requires_attribution",
-        "requires_source_code",
         "prohibits_commercial_use",
         "prohibits_high_income_nation_use",
     ]
@@ -99,7 +97,6 @@ class ToolAdmin(admin.ModelAdmin):
     raw_id_fields = [
         "source",
         "is_replaced_by",
-        "is_based_on",
     ]
     search_fields = [
         "unit",

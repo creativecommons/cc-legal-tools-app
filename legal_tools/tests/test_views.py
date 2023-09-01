@@ -105,7 +105,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -121,7 +120,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
@@ -137,7 +135,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
@@ -153,7 +150,6 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
@@ -169,7 +165,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -185,7 +180,6 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -201,7 +195,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
             is_replaced_by=self.by_40,
@@ -218,7 +211,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
             is_replaced_by=self.by_40,
@@ -235,7 +227,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=False,
             requires_attribution=False,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -258,7 +249,6 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
             is_replaced_by=self.by_sa_40,
@@ -281,7 +271,6 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
             is_replaced_by=self.by_40,
@@ -303,7 +292,6 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
             is_replaced_by=self.by_sa_40,

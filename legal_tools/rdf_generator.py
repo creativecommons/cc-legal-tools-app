@@ -138,8 +138,6 @@ def generate_rdf_file(
             g.add((license_uri, CC.requires, CC.Notice))
         if tool_obj.requires_share_alike:
             g.add((license_uri, CC.requires, CC.ShareAlike))
-        if tool_obj.requires_source_code:
-            g.add((license_uri, CC.requires, CC.SourceCode))
 
         # set dcterms:creator
         creator = URIRef(convert_https_to_http(tool_obj.creator_url))
@@ -147,9 +145,11 @@ def generate_rdf_file(
 
         # set dcterms:Jurisdiction
         if tool_obj.jurisdiction_code:
-            data = Literal(
-                tool_obj.jurisdiction_code, datatype=DCTERMS.ISO3166
-            )
+            if tool_obj.jurisdiction_code == "igo":
+                jurisdiction_code = "un"
+            else:
+                jurisdiction_code = tool_obj.jurisdiction_code
+            data = Literal(jurisdiction_code, datatype=DCTERMS.ISO3166)
             g.set((license_uri, DCTERMS.Jurisdiction, data))
 
         # set dcterms:hasVersion
@@ -179,10 +179,8 @@ def generate_rdf_file(
             g.add((license_uri, DCTERMS.LicenseDocument, data))
 
         # set dcterms:source, if applicable
-        if tool_obj.is_based_on:
-            based_on = URIRef(
-                convert_https_to_http(tool_obj.is_based_on.base_url)
-            )
+        if tool_obj.source:
+            based_on = URIRef(convert_https_to_http(tool_obj.source))
             g.set((license_uri, DCTERMS.source, based_on))
 
         # add dcterms:title

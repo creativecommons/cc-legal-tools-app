@@ -57,6 +57,7 @@ UNITS_LICENSES = [
     "sampling",  # ........ in versions: 1.0 unported, 1.0 ported
     "sampling+",  # ....... in versions: 1.0 unported, 1.0 ported
 ]
+UNITS_LICENSES_VERSIONS = ["1.0", "2.0", "2.1", "2.5", "3.0", "4.0"]
 UNITS_PUBLIC_DOMAIN = [
     "certification",
     "mark",
@@ -417,6 +418,8 @@ class Tool(models.Model):
         max_length=9,
         blank=True,
         default="",
+        help_text="legal jurisdiction (usually a ISO 3166-1 alpha-2 country"
+        " code)",
     )
     creator_url = models.URLField(
         "Creator URL",
@@ -438,7 +441,8 @@ class Tool(models.Model):
         default=None,
         on_delete=models.CASCADE,
         related_name="source_of",
-        help_text="another tool that this is the translation of",
+        help_text="A related resource from which the described resource is"
+        " derived (dcterms:source)",
     )
     is_replaced_by = models.ForeignKey(
         "self",
@@ -446,17 +450,9 @@ class Tool(models.Model):
         null=True,
         default=None,
         on_delete=models.CASCADE,
-        related_name="replaces",
-        help_text="another tool that has replaced this one",
-    )
-    is_based_on = models.ForeignKey(
-        "self",
-        blank=True,
-        null=True,
-        default=None,
-        on_delete=models.CASCADE,
-        related_name="base_of",
-        help_text="another tool that this one is based on",
+        related_name="+",
+        help_text="A related resource that supplants, displaces, or supersedes"
+        " the described resource (dcterms:isReplacedBy)",
     )
     deprecated_on = models.DateField(
         blank=True,
@@ -475,7 +471,6 @@ class Tool(models.Model):
     requires_share_alike = models.BooleanField(default=None)
     requires_notice = models.BooleanField(default=None)
     requires_attribution = models.BooleanField(default=None)
-    requires_source_code = models.BooleanField(default=None)
 
     prohibits_commercial_use = models.BooleanField(default=None)
     prohibits_high_income_nation_use = models.BooleanField(default=None)
@@ -600,7 +595,6 @@ class Tool(models.Model):
         data["requires_attribution"] = self.requires_attribution
         data["requires_notice"] = self.requires_notice
         data["requires_share_alike"] = self.requires_share_alike
-        data["requires_source_code"] = self.requires_source_code
         data["title"] = default_lc.title
         data["unit"] = self.unit
         data["version"] = self.version

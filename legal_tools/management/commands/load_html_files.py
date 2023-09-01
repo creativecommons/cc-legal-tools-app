@@ -210,7 +210,6 @@ class Command(BaseCommand):
                 )
                 requires_notice = True
                 requires_share_alike = "sa" in unit_parts
-                requires_source_code = False
                 # prohibits
                 prohibits_commercial_use = "nc" in unit_parts
                 prohibits_high_income_nation_use = "devnations" in unit_parts
@@ -228,7 +227,6 @@ class Command(BaseCommand):
                 requires_attribution = False
                 requires_notice = False
                 requires_share_alike = False
-                requires_source_code = False
 
             # Find or create a Tool object
             tool, created = Tool.objects.get_or_create(
@@ -248,7 +246,6 @@ class Command(BaseCommand):
                     requires_share_alike=requires_share_alike,
                     requires_notice=requires_notice,
                     requires_attribution=requires_attribution,
-                    requires_source_code=requires_source_code,
                     prohibits_commercial_use=prohibits_commercial_use,
                     prohibits_high_income_nation_use=prohibits_high_income_nation_use,  # noqa: E501
                 ),
@@ -384,6 +381,7 @@ class Command(BaseCommand):
                     )
 
         call_command("update_is_replaced_by", verbosity=options["verbosity"])
+        # call_command("update_source", verbosity=options["verbosity"])
 
     def write_temp_po_files(
         self,

@@ -54,7 +54,6 @@ class ToolFactory(factory.django.DjangoModelFactory):
     requires_share_alike = factory.fuzzy.FuzzyChoice([False, True])
     requires_notice = factory.fuzzy.FuzzyChoice([False, True])
     requires_attribution = factory.fuzzy.FuzzyChoice([False, True])
-    requires_source_code = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_commercial_use = factory.fuzzy.FuzzyChoice([False, True])
     prohibits_high_income_nation_use = factory.fuzzy.FuzzyChoice([False, True])
     jurisdiction_code = ""
