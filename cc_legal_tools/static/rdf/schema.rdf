@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:cc='http://creativecommons.org/ns#'
+  xmlns:owl='http://www.w3.org/2002/07/owl#'
+  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#'
+>
+  <rdf:Description rdf:about="http://web.resource.org/cc/License">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#License"/>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#legalcode">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#License"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#jurisdiction">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#License"/>
+    <rdfs:label xml:lang="en-US">jurisdiction</rdfs:label>
+    <rdfs:range rdf:resource="http://creativecommons.org/ns#Jurisdiction"/>
+  </rdf:Property>
+  <rdf:Description rdf:about="http://web.resource.org/cc/prohibits">
+    <owl:equivalentProperty rdf:resource="http://creativecommons.org/ns#prohibits"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/CommercialUse">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#CommercialUse"/>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#useGuidelines">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/relation"/>
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#Work"/>
+  </rdf:Property>
+  <rdf:Description rdf:about="http://web.resource.org/cc/permits">
+    <owl:equivalentProperty rdf:resource="http://creativecommons.org/ns#permits"/>
+  </rdf:Description>
+  <cc:Requirement rdf:about="http://creativecommons.org/ns#LesserCopyleft">
+    <rdfs:label xml:lang="en-US">Lesser Copyleft</rdfs:label>
+    <rdfs:comment xml:lang="en-US">derivative works must
+		    be licensed under specified terms, with at least
+		    the same conditions as the original work;
+		    combinations with the work may be licensed under
+		    different terms</rdfs:comment>
+  </cc:Requirement>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Permission">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Permission"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Attribution">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Attribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Reproduction">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Work">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Work"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Requirement">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Requirement"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/SourceCode">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#SourceCode"/>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#attributionURL">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#Work"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+  </rdf:Property>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#morePermissions">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/relation"/>
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#Work"/>
+  </rdf:Property>
+  <rdf:Description rdf:about="http://web.resource.org/cc/ShareAlike">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#ShareAlike"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Prohibition">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Prohibition"/>
+  </rdf:Description>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#attributionName">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#Work"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+  </rdf:Property>
+  <cc:Prohibition rdf:about="http://creativecommons.org/ns#HighIncomeNationUse">
+    <rdfs:label xml:lang="en-US">High Income Nation Use</rdfs:label>
+    <rdfs:comment xml:lang="en-US">use in a
+		    non-developing country</rdfs:comment>
+  </cc:Prohibition>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Distribution">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Distribution"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/requires">
+    <owl:equivalentProperty rdf:resource="http://creativecommons.org/ns#requires"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/Notice">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#Notice"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://web.resource.org/cc/DerivativeWorks">
+    <owl:equivalentClass rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+  </rdf:Description>
+  <cc:Permission rdf:about="http://creativecommons.org/ns#Sharing">
+    <rdfs:label xml:lang="en-US">Sharing</rdfs:label>
+    <rdfs:comment xml:lang="en-US">permits commercial
+		    derivatives, but only non-commercial
+		    distribution</rdfs:comment>
+  </cc:Permission>
+  <cc:Requirement rdf:about="http://creativecommons.org/ns#Copyleft">
+    <rdfs:label xml:lang="en-US">Copyleft</rdfs:label>
+    <rdfs:comment xml:lang="en-US">derivative and
+		    combined works must be licensed under specified
+		    terms, similar to those on the original
+		    work</rdfs:comment>
+  </cc:Requirement>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#deprecatedOn">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#License"/>
+    <rdfs:label xml:lang="en-US">deprecated
+		  on</rdfs:label>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema-datatypes#date"/>
+  </rdf:Property>
+  <rdf:Description rdf:about="http://web.resource.org/cc/license">
+    <owl:equivalentProperty rdf:resource="http://creativecommons.org/ns#license"/>
+  </rdf:Description>
+  <rdfs:Class rdf:about="http://creativecommons.org/ns#Permission">
+    <rdfs:label xml:lang="en-US">Permission</rdfs:label>
+    <rdfs:comment xml:lang="en-US">an action that may or
+		    may not be allowed or desired</rdfs:comment>
+  </rdfs:Class>
+  <cc:Requirement rdf:about="http://creativecommons.org/ns#SourceCode">
+    <rdfs:label xml:lang="en-US">Source Code</rdfs:label>
+    <rdfs:comment xml:lang="en-US">source code (the
+		    preferred form for making modifications) must be
+		    provided when exercising some rights granted by
+		    the license.</rdfs:comment>
+  </cc:Requirement>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#permits">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#License"/>
+    <rdfs:label xml:lang="en-US">permits</rdfs:label>
+    <rdfs:range rdf:resource="http://creativecommons.org/ns#Permission"/>
+  </rdf:Property>
+  <cc:Requirement rdf:about="http://creativecommons.org/ns#ShareAlike">
+    <rdfs:label xml:lang="en-US">Share Alike</rdfs:label>
+    <rdfs:comment xml:lang="en-US">derivative works be
+		    licensed under the same terms or compatible terms
+		    as the original work</rdfs:comment>
+  </cc:Requirement>
+  <cc:Requirement rdf:about="http://creativecommons.org/ns#Notice">
+    <rdfs:label xml:lang="en-US">Notice</rdfs:label>
+    <rdfs:comment xml:lang="en-US">copyright and license
+		    notices be kept intact</rdfs:comment>
+  </cc:Requirement>
+  <rdfs:Class rdf:about="http://creativecommons.org/ns#Jurisdiction">
+    <rdfs:label xml:lang="en-US">Jurisdiction</rdfs:label>
+    <rdfs:comment xml:lang="en-US">the legal jurisdiction
+		    of a license</rdfs:comment>
+  </rdfs:Class>
+  <cc:Permission rdf:about="http://creativecommons.org/ns#DerivativeWorks">
+    <rdfs:label xml:lang="en-US">Derivative Works</rdfs:label>
+    <rdfs:comment xml:lang="en-US">distribution of
+		    derivative works</rdfs:comment>
+  </cc:Permission>
+  <rdfs:Class rdf:about="http://creativecommons.org/ns#Work">
+    <rdfs:label xml:lang="en-US">Work</rdfs:label>
+    <rdfs:comment xml:lang="en-US">a potentially
+		    copyrightable work</rdfs:comment>
+  </rdfs:Class>
+  <cc:Permission rdf:about="http://creativecommons.org/ns#Reproduction">
+    <rdfs:label xml:lang="en-US">Reproduction</rdfs:label>
+    <rdfs:comment xml:lang="en-US">making multiple
+		    copies</rdfs:comment>
+  </cc:Permission>
+  <cc:Permission rdf:about="http://creativecommons.org/ns#Distribution">
+    <rdfs:label xml:lang="en-US">Distribution</rdfs:label>
+    <rdfs:comment xml:lang="en-US">distribution, public
+		    display, and publicly performance</rdfs:comment>
+  </cc:Permission>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#requires">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#License"/>
+    <rdfs:label xml:lang="en-US">requires</rdfs:label>
+    <rdfs:range rdf:resource="http://creativecommons.org/ns#Requirement"/>
+  </rdf:Property>
+  <cc:Prohibition rdf:about="http://creativecommons.org/ns#CommercialUse">
+    <rdfs:label xml:lang="en-US">Commercial Use</rdfs:label>
+    <rdfs:comment xml:lang="en-US">exercising rights for
+		    commercial purposes</rdfs:comment>
+  </cc:Prohibition>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#prohibits">
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#License"/>
+    <rdfs:label xml:lang="en-US">prohibits</rdfs:label>
+    <rdfs:range rdf:resource="http://creativecommons.org/ns#Prohibition"/>
+  </rdf:Property>
+  <rdfs:Class rdf:about="http://creativecommons.org/ns#Requirement">
+    <rdfs:label xml:lang="en-US">Requirement</rdfs:label>
+    <rdfs:comment xml:lang="en-US">an action that may or
+		    may not be requested of you</rdfs:comment>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://creativecommons.org/ns#Prohibition">
+    <rdfs:label xml:lang="en-US">Prohibition</rdfs:label>
+    <rdfs:comment xml:lang="en-US">something you may be
+		    asked not to do</rdfs:comment>
+  </rdfs:Class>
+  <rdfs:Class rdf:about="http://creativecommons.org/ns#License">
+    <rdfs:label xml:lang="en-US">License</rdfs:label>
+    <rdfs:comment xml:lang="en-US">a set of
+		    requests/permissions to users of a Work, e.g. a
+		    copyright license, the public domain, information
+		    for distributors</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://purl.org/dc/terms/LicenseDocument"/>
+  </rdfs:Class>
+  <rdf:Property rdf:about="http://creativecommons.org/ns#license">
+    <rdfs:range rdf:resource="http://creativecommons.org/ns#License"/>
+    <rdfs:domain rdf:resource="http://creativecommons.org/ns#Work"/>
+    <owl:sameAs rdf:resource="http://www.w3.org/1999/xhtml/vocab#license"/>
+    <rdfs:subPropertyOf rdf:resource="http://purl.org/dc/terms/license"/>
+    <rdfs:label xml:lang="en-US">has
+		  license</rdfs:label>
+  </rdf:Property>
+  <cc:Requirement rdf:about="http://creativecommons.org/ns#Attribution">
+    <rdfs:label xml:lang="en-US">Attribution</rdfs:label>
+    <rdfs:comment xml:lang="en-US">credit be given to
+		    copyright holder and/or author</rdfs:comment>
+  </cc:Requirement>
+</rdf:RDF>
