@@ -99,13 +99,10 @@ def save_redirect(output_dir, redirect_data):
 
 def parse_legal_code_filename(filename):
     """
-    Given the filename where the HTML text of a license is stored,
+    Given the filename where the HTML text of a legal code is stored,
     return a dictionary with the metadata we can figure out from it.
 
     The filename should not include any path. A trailing .html is okay.
-
-    Partially based on:
-    https://github.com/creativecommons/cc-link-checker/blob/a255d2b5d72df31b3e750b34dac2ac6effe7c792/link_checker/utils.py#L419-L469  # noqa: E501
     """
 
     basename = filename
