@@ -87,7 +87,7 @@ def generate_rdf_file(
             license_class_uriref = os.path.join(
                 license_class_uriref, "choose", "publicdomain", ""
             )
-        elif tool_obj.unit in ["sampling", "sampling+"]:
+        elif "sampling" in tool_obj.unit:
             license_class_uriref = os.path.join(
                 license_class_uriref, "license", "sampling", ""
             )
@@ -136,7 +136,9 @@ def generate_rdf_file(
             tool_title_data = Literal(get_tool_title, lang=tool_lang)
             g.add((license_uri, DCTERMS.title, (tool_title_data)))
 
-            legal_code_url = legal_code_object.legal_code_url
+            legal_code_url = legal_code_object.legal_code_url.replace(
+                    f".{tool_lang}", ""
+            )
             cc_legal_code = URIRef(
                 convert_https_to_http(
                     f"{tool_obj.creator_url}{legal_code_url}"
