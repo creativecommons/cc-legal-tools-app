@@ -187,34 +187,35 @@ class Command(BaseCommand):
 
             unit_parts = unit.split("-")
             if category == "licenses":
-                # These are valid for BY only
                 permits_derivative_works = "nd" not in unit_parts
-                permits_reproduction = "nd" not in unit_parts
-                permits_distribution = "nd" not in unit_parts
-                permits_sharing = "nd" not in unit_parts
-                requires_share_alike = "sa" in unit_parts
-                requires_notice = True
+                permits_distribution = "sampling" != unit
+                permits_reproduction = "sampling" != unit
+                permits_sharing = "sampling" != unit
                 requires_attribution = (
                     "by" in unit_parts
                     or "devnations" in unit_parts
                     or "sampling" in unit_parts
                     or "sampling+" in unit_parts
                 )
-                requires_source_code = False  # GPL, LGPL only, I think
+                requires_notice = True
+                requires_share_alike = "sa" in unit_parts
+                requires_source_code = False
                 prohibits_commercial_use = "nc" in unit_parts
                 prohibits_high_income_nation_use = "devnations" in unit_parts
             elif category == "publicdomain":
-                # permits anything, requires nothing, prohibits nothing
+                # permits anything
                 permits_derivative_works = True
-                permits_reproduction = True
                 permits_distribution = True
+                permits_reproduction = True
                 permits_sharing = True
-                requires_share_alike = False
-                requires_notice = False
-                requires_attribution = False
-                requires_source_code = False
+                # prohibits nothing
                 prohibits_commercial_use = False
                 prohibits_high_income_nation_use = False
+                # requires nothing
+                requires_attribution = False
+                requires_notice = False
+                requires_share_alike = False
+                requires_source_code = False
 
             # Find or create a Tool object
             tool, created = Tool.objects.get_or_create(
