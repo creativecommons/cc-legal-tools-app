@@ -455,6 +455,7 @@ class Command(BaseCommand):
 
         if self.options["rdf_only"]:
             return
+        LOG.info("Writing Apache2 redirects configuration")
         redirect_pairs = []
         for pair_list in redirect_pairs_data:
             redirect_pairs += pair_list
