@@ -453,7 +453,7 @@ class Command(BaseCommand):
                 )
             self.pool.starmap(save_rdf, rdf_arguments)
 
-        if not self.options["rdf_only"]:
+        if self.options["rdf_only"]:
             return
         redirect_pairs = []
         for pair_list in redirect_pairs_data:
@@ -503,7 +503,7 @@ class Command(BaseCommand):
         save_bytes_to_file(include_lines, include_filename)
 
     def write_translation_branch_statuses(self):
-        if not self.options["rdf_only"]:
+        if self.options["rdf_only"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -522,13 +522,13 @@ class Command(BaseCommand):
             )
 
     def run_write_transstats_csv(self):
-        if not self.options["rdf_only"]:
+        if self.options["rdf_only"]:
             return
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
 
     def write_metadata_yaml(self):
-        if not self.options["rdf_only"]:
+        if self.options["rdf_only"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
