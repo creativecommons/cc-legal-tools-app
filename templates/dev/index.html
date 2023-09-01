@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,9 +90,9 @@
   <p>
     <strong>
       This page is not visible within integrated environments (ex. production,
-      <a href="https://github.com/creativecommons/project_creativecommons.org/"
+      <a href="https://github.com/creativecommons/index-dev-env"
         target="_blank" rel="noopener noreferrer">
-        creativecommons/project_creativecommons.org</a>
+        creativecommons/index-dev-env</a>
       development).
     </strong>
   </p>
@@ -122,7 +123,8 @@
       </a>
     </li>
     <li>
-      <a href="{% url 'error_404' %}" target="_blank" rel="noopener noreferrer">
+      <a href="{% url 'error_404' %}" target="_blank"
+        rel="noopener noreferrer">
         <code>{% url 'error_404' %}</code> &mdash; Error 404
       </a>
     </li>
@@ -141,20 +143,29 @@
     <li>
       <a href="{% url 'view_list_publicdomain' %}" target="_blank"
         rel="noopener noreferrer">
-        <code>{% url 'view_list_publicdomain' %}</code> &mdash; Public Domain List
+        <code>{% url 'view_list_publicdomain' %}</code> &mdash; Public Domain
+        List
       </a>
     </li>
 {% comment %}
 {# YAML structure not yet finalized #}
     <li>
-      <a href="{% url 'metadata' %}" target="_blank"
-        rel="noopener noreferrer">
+      <a href="{% url 'metadata' %}" target="_blank" rel="noopener noreferrer">
         <code>{% url 'metadata' %}</code>
       </a>
     </li>
 {% endcomment %}
   </ul>
   </div>
+
+  <h1 id="ccrel">ccREL</h1>
+  <ul>
+    <li>
+      <a href="{% static 'rdf/schema.rdf' %}" target="_blank">
+        <code>{% static 'rdf/schema.rdf' %}</code>
+      </a>
+    </li>
+  </ul>
 
   <h1 id="translation">Translation</h1>
 {% comment %}

@@ -3,6 +3,7 @@ Django settings for cc_legal_tools project.
 """
 # Standard library
 import copy
+import mimetypes
 import os
 
 # Third-party
@@ -369,3 +370,5 @@ OFFICIAL_GIT_BRANCH = "main"
 TRANSLATION_REPOSITORY_DEPLOY_KEY = os.getenv(
     "TRANSLATION_REPOSITORY_DEPLOY_KEY", ""
 )
+
+mimetypes.add_type("application/rdf+xml", ".rdf", True)
