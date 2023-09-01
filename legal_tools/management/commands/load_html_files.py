@@ -195,10 +195,13 @@ class Command(BaseCommand):
 
             unit_parts = unit.split("-")
             if category == "licenses":
+                # permits
+                # (sharing has a counter-intuitive definition--see schema.rdf)
                 permits_derivative_works = "nd" not in unit_parts
                 permits_distribution = "sampling" != unit
                 permits_reproduction = "sampling" != unit
-                permits_sharing = "sampling" != unit
+                permits_sharing = "sampling+" == unit
+                # requires
                 requires_attribution = (
                     "by" in unit_parts
                     or "devnations" in unit_parts
@@ -208,14 +211,16 @@ class Command(BaseCommand):
                 requires_notice = True
                 requires_share_alike = "sa" in unit_parts
                 requires_source_code = False
+                # prohibits
                 prohibits_commercial_use = "nc" in unit_parts
                 prohibits_high_income_nation_use = "devnations" in unit_parts
             elif category == "publicdomain":
                 # permits anything
+                # (sharing has a counter-intuitive definition--see schema.rdf)
                 permits_derivative_works = True
                 permits_distribution = True
                 permits_reproduction = True
-                permits_sharing = True
+                permits_sharing = False
                 # prohibits nothing
                 prohibits_commercial_use = False
                 prohibits_high_income_nation_use = False
