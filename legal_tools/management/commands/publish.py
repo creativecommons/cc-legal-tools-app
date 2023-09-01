@@ -124,14 +124,6 @@ def save_rdf(output_dir, tool):
     )
 
 
-def save_images_and_index_rdf(output_dir, filename):
-    # Function is at top level of module so that it can be pickled by
-    # multiprocessing.
-    index_url = f"/rdf/{filename}"
-    relpath = f"{filename}"
-    save_url_as_static_file(output_dir, url=index_url, relpath=relpath)
-
-
 class Command(BaseCommand):
     """
     Publish static files to the data repository's docs directory (by default
@@ -304,7 +296,7 @@ class Command(BaseCommand):
     def copy_static_rdf_files(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
-        LOG.info("Copying static rdf files")
+        LOG.info("Copying static RDF/XML files")
         LOG.debug(f"{hostname}:{output_dir}")
         path = "rdf"
         source = os.path.join(
@@ -321,43 +313,29 @@ class Command(BaseCommand):
                 os.path.join(destination, file_name),
             )
 
-    def write_rdf_meta(self):
+    def distill_and_symlink_rdf_meta(self):
         """
         Generate the index.rdf, images.rdf and copies the rest.
         """
         hostname = socket.gethostname()
-        legacy_dir = self.legacy_dir
         output_dir = self.output_dir
-        meta_rdf_dir = os.path.join(legacy_dir, "rdf-meta")
-        meta_files = [
-            meta_file
-            for meta_file in os.listdir(meta_rdf_dir)
-            if os.path.isfile(os.path.join(meta_rdf_dir, meta_file))
-        ]
-        meta_files.sort()
         dest_dir = os.path.join(output_dir, "rdf")
         os.makedirs(dest_dir, exist_ok=True)
         LOG.debug(f"{hostname}:{output_dir}")
 
-        for meta_file in meta_files:
+        # Distill RDF/XML meta files
+        for meta_file in ["index.rdf", "images.rdf", "ns.html"]:
+            # (schema.rdf is handled by the copy_static_rdf_files function)
+            LOG.info(f"Distilling {meta_file}")
+            save_url_as_static_file(
+                output_dir=dest_dir,
+                url=f"/rdf/{meta_file}",
+                relpath=meta_file,
+            )
+
+        # Symlink RDF/XML meta files
+        for meta_file in ["index.rdf", "ns.html", "schema.rdf"]:
             dest_relative = os.path.join("rdf", meta_file)
-            dest_full = os.path.join(output_dir, dest_relative)
-
-            # Write and Copy RDF/XML meta files
-            if meta_file in ["jurisdictions.rdf", "selectors.rdf"]:
-                continue
-            elif meta_file in ["schema.rdf"]:
-                # see copy_static_rdf_files()
-                pass
-            elif meta_file in ["index.rdf", "images.rdf"]:
-                LOG.info(f"Writing {meta_file}")
-                save_images_and_index_rdf(dest_dir, meta_file)
-            else:
-                LOG.info(f"Copying {meta_file}")
-                LOG.debug(f"    {dest_relative}")
-                copyfile(os.path.join(meta_rdf_dir, meta_file), dest_full)
-
-            # Symlink RDF/XML meta files
             if meta_file == "index.rdf":
                 os.makedirs(
                     os.path.join(output_dir, "licenses"), exist_ok=True
@@ -369,11 +347,10 @@ class Command(BaseCommand):
                 symlink = meta_file
                 symlink_dest = dest_relative
                 symlink_path = os.path.join(output_dir, symlink)
-            if meta_file in ["index.rdf", "ns.html", "schema.rdf"]:
-                if os.path.islink(symlink_path):
-                    os.remove(symlink_path)
-                Path(symlink_path).symlink_to(Path(symlink_dest))
-                LOG.debug(f"   ^{symlink}")
+            if os.path.islink(symlink_path):
+                os.remove(symlink_path)
+            Path(symlink_path).symlink_to(Path(symlink_dest))
+            LOG.debug(f"   ^{symlink}")
 
     def copy_legal_code_plaintext(self):
         if self.options["rdf_only"]:
@@ -408,28 +385,28 @@ class Command(BaseCommand):
             copyfile(os.path.join(plaintext_dir, text), dest_file)
             LOG.debug(f"    {relative_name}")
 
-    def write_dev_index(self):
+    def distill_dev_index(self):
         if self.options["rdf_only"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
         LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Writing dev index")
+        LOG.info("Distilling dev index")
         save_url_as_static_file(
             output_dir,
             url=reverse("dev_index"),
             relpath="index.html",
         )
 
-    def write_lists(self):
+    def distill_lists(self):
         if self.options["rdf_only"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
         LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Writing lists")
+        LOG.info("Distilling lists")
 
         arguments = []
         for category in ["licenses", "publicdomain"]:
@@ -442,7 +419,7 @@ class Command(BaseCommand):
             symlink = "list.html"
             wrap_relative_symlink(output_dir, relpath, symlink)
 
-    def write_legal_tools(self):
+    def distill_legal_tools(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
         legal_codes = LegalCode.objects.validgroups()
@@ -451,10 +428,11 @@ class Command(BaseCommand):
             tools = set()
             LOG.debug(f"{hostname}:{output_dir}")
             if self.options["rdf_only"]:
-                LOG.info(f"Writing {group} RDF/XML")
+                LOG.info(f"Distilling {group} RDF/XML")
             else:
                 LOG.info(
-                    f"Writing {group} deed HTML, legal code HTML, and RDF/XML"
+                    f"Distilling {group} deed HTML, legal code HTML, and"
+                    " RDF/XML"
                 )
             legal_code_arguments = []
             deed_arguments = []
@@ -526,7 +504,7 @@ class Command(BaseCommand):
         include_filename = os.path.join(self.config_dir, "language-redirects")
         save_bytes_to_file(include_lines, include_filename)
 
-    def write_translation_branch_statuses(self):
+    def distill_translation_branch_statuses(self):
         if self.options["rdf_only"]:
             return
         hostname = socket.gethostname()
@@ -536,7 +514,7 @@ class Command(BaseCommand):
 
         tbranches = TranslationBranch.objects.filter(complete=False)
         for tbranch_id in tbranches.values_list("id", flat=True):
-            LOG.info(f"Writing Translation branch status: {tbranch_id}")
+            LOG.info(f"Distilling Translation branch status: {tbranch_id}")
             relpath = f"dev/{tbranch_id}.html"
             LOG.debug(f"    {relpath}")
             save_url_as_static_file(
@@ -545,20 +523,20 @@ class Command(BaseCommand):
                 relpath=relpath,
             )
 
-    def run_write_transstats_csv(self):
+    def distill_transstats_csv(self):
         if self.options["rdf_only"]:
             return
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
 
-    def write_metadata_yaml(self):
+    def distill_metadata_yaml(self):
         if self.options["rdf_only"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
         LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Writing metadata.yaml")
+        LOG.info("Distilling metadata.yaml")
 
         save_url_as_static_file(
             output_dir,
@@ -573,13 +551,13 @@ class Command(BaseCommand):
         self.copy_static_wp_content_files()
         self.copy_static_cc_legal_tools_files()
         self.copy_static_rdf_files()
-        self.write_rdf_meta()
+        self.distill_and_symlink_rdf_meta()
         self.copy_legal_code_plaintext()
-        self.write_dev_index()
-        self.write_lists()
-        self.write_legal_tools()
-        # DISABLED # self.run_write_transstats_csv()
-        # DISABLED # self.write_metadata_yaml()
+        self.distill_dev_index()
+        self.distill_lists()
+        self.distill_legal_tools()
+        # DISABLED # self.distill_transstats_csv()
+        # DISABLED # self.distill_metadata_yaml()
 
     def checkout_publish_and_push(self):
         """Workflow for publishing and pushing active translation branches"""

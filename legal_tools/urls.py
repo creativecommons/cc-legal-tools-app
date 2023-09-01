@@ -10,6 +10,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
 
 # Third-party
 from django.urls import path, re_path, register_converter
+from django.views.generic.base import RedirectView
 
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
@@ -22,6 +23,7 @@ from legal_tools.views import (
     view_legal_code,
     view_list,
     view_metadata,
+    view_ns_html,
 )
 
 
@@ -268,30 +270,42 @@ urlpatterns = [
         view_branch_status,
         name="branch_status",
     ),
-    # RDF generation  #########################################################
-    # without Jurisdiction
+    # ccREL ###################################################################
+    # Legal tool RDF/XML without jurisdiction
     path(
         "<category:category>/<unit:unit>/<version:version>/rdf",
         view_generate_rdf,
         name="generate_rdf",
     ),
-    # with Jurisdiction
+    # Legal tool RDF/XML with jurisdiction
     path(
         "<category:category>/<unit:unit>/<version:version>/"
         "<jurisdiction:jurisdiction>/rdf",
         view_generate_rdf,
         name="generate_rdf",
     ),
-    # for all the licenses in one rdf (index.rdf)
+    # index.rdf - RDF/XML of all legal tools
     path(
         "rdf/index.rdf",
         view_generate_rdf,
         name="index_rdf",
     ),
-    # for images (images.rdf)
+    # images.rdf - RDF/XML of all legal tool images (badges)
     path(
         "rdf/images.rdf",
         view_image_rdf,
         name="image_rdf",
+    ),
+    # images.rdf - RDF/XML of all legal tool images (badges)
+    re_path(
+        r"^rdf/ns",
+        view_ns_html,
+        name="ns_html",
+    ),
+    # Redirect /ns to /rdf/ns
+    re_path(
+        r"^ns",
+        RedirectView.as_view(url="rdf/ns", permanent=False),
+        name="ns_html_redirect",
     ),
 ]

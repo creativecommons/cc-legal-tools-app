@@ -744,6 +744,10 @@ def view_metadata(request):
     )
 
 
+def view_ns_html(request):
+    return render(request, template_name="ns.html")
+
+
 def view_page_not_found(request, exception, template_name="dev/404.html"):
     return render(
         request,
