@@ -168,6 +168,16 @@ def generate_rdf_file(
             )
             g.set((license_uri, DCTERMS.isReplacedBy, replaced_by))
 
+        # add dcterms:LicenseDocument
+        # (utilize LegalCode object(s) assciated with the current Tool object)
+        for legal_code_id in legal_code_ids:
+            lc_object = LegalCode.objects.get(id=legal_code_id)
+            legal_code_uri = URIRef(
+                f"{tool_obj.creator_url}{lc_object.legal_code_url}"
+            )
+            data = Literal(legal_code_uri, lang=lc_object.language_code)
+            g.add((license_uri, DCTERMS.LicenseDocument, data))
+
         # set dcterms:source, if applicable
         if tool_obj.is_based_on:
             based_on = URIRef(
