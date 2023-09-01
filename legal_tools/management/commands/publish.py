@@ -301,6 +301,26 @@ class Command(BaseCommand):
                 os.path.join(destination, file_name),
             )
 
+    def copy_static_rdf_files(self):
+        hostname = socket.gethostname()
+        output_dir = self.output_dir
+        LOG.info("Copying static rdf files")
+        LOG.debug(f"{hostname}:{output_dir}")
+        path = "rdf"
+        source = os.path.join(
+            settings.PROJECT_ROOT,
+            "cc_legal_tools",
+            "static",
+            path,
+        )
+        destination = os.path.join(output_dir, path)
+        os.makedirs(destination, exist_ok=True)
+        for file_name in os.listdir(source):
+            copyfile(
+                os.path.join(source, file_name),
+                os.path.join(destination, file_name),
+            )
+
     def write_rdf_meta(self):
         """
         Generate the index.rdf, images.rdf and copies the rest.
@@ -326,6 +346,9 @@ class Command(BaseCommand):
             # Write and Copy RDF/XML meta files
             if meta_file in ["jurisdictions.rdf", "selectors.rdf"]:
                 continue
+            elif meta_file in ["schema.rdf"]:
+                # see copy_static_rdf_files()
+                pass
             elif meta_file in ["index.rdf", "images.rdf"]:
                 LOG.info(f"Writing {meta_file}")
                 save_images_and_index_rdf(dest_dir, meta_file)
@@ -549,6 +572,7 @@ class Command(BaseCommand):
         self.write_robots_txt()
         self.copy_static_wp_content_files()
         self.copy_static_cc_legal_tools_files()
+        self.copy_static_rdf_files()
         self.write_rdf_meta()
         self.copy_legal_code_plaintext()
         self.write_dev_index()
