@@ -127,7 +127,7 @@ def save_rdf(output_dir, tool):
 class Command(BaseCommand):
     """
     Publish static files to the data repository's docs directory (by default
-    it manage local changes in git and doesn't push changes to origin).
+    manage local changes in git and don't push changes to origin).
     """
 
     def add_arguments(self, parser: ArgumentParser):
