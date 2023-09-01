@@ -66,36 +66,10 @@ def generate_rdf_file(
 
         g.set((license_uri, RDF.type, CC.License))
 
-        # set dcterms:creator
-        creator = URIRef(convert_https_to_http(tool_obj.creator_url))
-        g.set((license_uri, DCTERMS.creator, creator))
-
-        # set dcterms:hasVersion
-        version = Literal(f"{tool_obj.version}")
-        g.set((license_uri, DCTERMS.hasVersion, version))
-
-        # set dcterms:identifier
-        g.set((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
-
-        # set owl:sameAs (alias HTTPS)
-        g.set((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
-
-        # set cc:licenseClass
-        # (trailing "" creates a trailing slash to match legacy rdf)
-        license_class_uriref = convert_https_to_http(tool_obj.creator_url)
-        if tool_obj.category == "publicdomain":
-            license_class_uriref = os.path.join(
-                license_class_uriref, "choose", "publicdomain", ""
-            )
-        elif "sampling" in tool_obj.unit:
-            license_class_uriref = os.path.join(
-                license_class_uriref, "license", "sampling", ""
-            )
-        else:
-            license_class_uriref = os.path.join(
-                license_class_uriref, "license", ""
-            )
-        g.set((license_uri, CC.licenseClass, URIRef(license_class_uriref)))
+        # set cc:deprecatedOn, if applicable
+        if tool_obj.deprecated_on:
+            deprecated_on = Literal(tool_obj.deprecated_on, datatype=XSD.date)
+            g.set((license_uri, CC.deprecatedOn, deprecated_on))
 
         # cc:jurisdiction, if applicable
         # foaf:logo
@@ -137,7 +111,7 @@ def generate_rdf_file(
             g.add((license_uri, DCTERMS.title, (tool_title_data)))
 
             legal_code_url = legal_code_object.legal_code_url.replace(
-                    f".{tool_lang}", ""
+                f".{tool_lang}", ""
             )
             cc_legal_code = URIRef(
                 convert_https_to_http(
@@ -152,10 +126,59 @@ def generate_rdf_file(
                     (CC[legal_code_url], DCTERMS.language, Literal(tool_lang))
                 )
 
-        # set cc:depredatedOn, if applicable
-        if tool_obj.deprecated_on:
-            deprecated_on = Literal(tool_obj.deprecated_on, datatype=XSD.date)
-            g.set((license_uri, CC.deprecatedOn, deprecated_on))
+        # set cc:licenseClass
+        # (trailing "" creates a trailing slash to match legacy rdf)
+        license_class_uriref = convert_https_to_http(tool_obj.creator_url)
+        if tool_obj.category == "publicdomain":
+            license_class_uriref = os.path.join(
+                license_class_uriref, "choose", "publicdomain", ""
+            )
+        elif "sampling" in tool_obj.unit:
+            license_class_uriref = os.path.join(
+                license_class_uriref, "license", "sampling", ""
+            )
+        else:
+            license_class_uriref = os.path.join(
+                license_class_uriref, "license", ""
+            )
+        g.set((license_uri, CC.licenseClass, URIRef(license_class_uriref)))
+
+        # add cc:permits, as applicable
+        if tool_obj.permits_derivative_works:
+            g.add((license_uri, CC.permits, CC.DerivativeWorks))
+        if tool_obj.permits_distribution:
+            g.add((license_uri, CC.permits, CC.Distribution))
+        if tool_obj.permits_reproduction:
+            g.add((license_uri, CC.permits, CC.Reproduction))
+        if tool_obj.permits_sharing:
+            g.add((license_uri, CC.permits, CC.Sharing))
+
+        # add cc:prohibits, as applicable
+        if tool_obj.prohibits_commercial_use:
+            g.add((license_uri, CC.prohibits, CC.CommercialUse))
+        if tool_obj.prohibits_high_income_nation_use:
+            g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
+
+        # add cc:requires, as applicable
+        if tool_obj.requires_attribution:
+            g.add((license_uri, CC.requires, CC.Attribution))
+        if tool_obj.requires_notice:
+            g.add((license_uri, CC.requires, CC.Notice))
+        if tool_obj.requires_share_alike:
+            g.add((license_uri, CC.requires, CC.ShareAlike))
+        if tool_obj.requires_source_code:
+            g.add((license_uri, CC.requires, CC.SourceCode))
+
+        # set dcterms:creator
+        creator = URIRef(convert_https_to_http(tool_obj.creator_url))
+        g.set((license_uri, DCTERMS.creator, creator))
+
+        # set dcterms:hasVersion
+        version = Literal(f"{tool_obj.version}")
+        g.set((license_uri, DCTERMS.hasVersion, version))
+
+        # set dcterms:identifier
+        g.set((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
 
         # set dcterms:isReplacedBy, if applicable
         if tool_obj.is_replaced_by:
@@ -173,31 +196,8 @@ def generate_rdf_file(
             )
             g.set((license_uri, DCTERMS.source, based_on))
 
-        # add cc:permits, as applicable
-        if tool_obj.permits_derivative_works:
-            g.add((license_uri, CC.permits, CC.DerivativeWorks))
-        if tool_obj.permits_distribution:
-            g.add((license_uri, CC.permits, CC.Distribution))
-        if tool_obj.permits_reproduction:
-            g.add((license_uri, CC.permits, CC.Reproduction))
-        if tool_obj.permits_sharing:
-            g.add((license_uri, CC.permits, CC.Sharing))
-
-        # add cc:requires, as applicable
-        if tool_obj.requires_attribution:
-            g.add((license_uri, CC.requires, CC.Attribution))
-        if tool_obj.requires_notice:
-            g.add((license_uri, CC.requires, CC.Notice))
-        if tool_obj.requires_share_alike:
-            g.add((license_uri, CC.requires, CC.ShareAlike))
-        if tool_obj.requires_source_code:
-            g.add((license_uri, CC.requires, CC.SourceCode))
-
-        # add cc:prohibits, as applicable
-        if tool_obj.prohibits_commercial_use:
-            g.add((license_uri, CC.prohibits, CC.CommercialUse))
-        if tool_obj.prohibits_high_income_nation_use:
-            g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
+        # set owl:sameAs (alias HTTPS)
+        g.set((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
 
     return g
 
