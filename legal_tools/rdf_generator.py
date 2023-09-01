@@ -97,34 +97,28 @@ def generate_rdf_file(
         g.add((license_uri, FOAF.logo, URIRef(logo_url_small)))
 
         # add cc:legalcode
-        # add dcterms.title (for individual RDF/XML, not index.rdf)
-        #
+        # add dcterms:title
         # These utilize the LegalCode object(s) assciated with the current Tool
         # object.
         legal_code_ids = tool_obj.legal_codes.values_list("id", flat=True)
         for legal_code_id in legal_code_ids:
             legal_code_object = LegalCode.objects.get(id=legal_code_id)
+            language_code = legal_code_object.language_code
+            legal_code_url = legal_code_object.legal_code_url
+            title = legal_code_object.title
 
-            get_tool_title = legal_code_object.title
-            tool_lang = legal_code_object.language_code
-            tool_title_data = Literal(get_tool_title, lang=tool_lang)
-            g.add((license_uri, DCTERMS.title, (tool_title_data)))
-
-            legal_code_url = legal_code_object.legal_code_url.replace(
-                f".{tool_lang}", ""
-            )
-            cc_legal_code = URIRef(
+            # add cc:legalcode
+            legal_code_uri = URIRef(
                 convert_https_to_http(
                     f"{tool_obj.creator_url}{legal_code_url}"
                 )
             )
-            g.add((license_uri, CC.legalcode, cc_legal_code))
+            legal_code_data = Literal(legal_code_uri, lang=language_code)
+            g.add((license_uri, CC.legalcode, legal_code_data))
 
-            # added DCTERMS.language for every legal_code_url
-            if not generate_all_licenses:
-                g.add(
-                    (CC[legal_code_url], DCTERMS.language, Literal(tool_lang))
-                )
+            # add dcterms:title
+            title_data = Literal(title, lang=language_code)
+            g.add((license_uri, DCTERMS.title, (title_data)))
 
         # set cc:licenseClass
         # (trailing "" creates a trailing slash to match legacy rdf)
