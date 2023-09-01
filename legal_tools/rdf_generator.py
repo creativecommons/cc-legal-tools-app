@@ -88,7 +88,7 @@ def generate_rdf_file(
                     )
                 )
             )
-            g.add((license_uri, CC.jurisdiction, jurisdiction_uri))
+            g.set((license_uri, CC.jurisdiction, jurisdiction_uri))
         else:
             logo_prefix = f"{FOAF_LOGO_URL}{tool_obj.unit}/{tool_obj.version}"
         logo_url_large = f"{logo_prefix}/{LARGE_LOGO}"
@@ -166,6 +166,13 @@ def generate_rdf_file(
         # set dcterms:creator
         creator = URIRef(convert_https_to_http(tool_obj.creator_url))
         g.set((license_uri, DCTERMS.creator, creator))
+
+        # set dcterms:Jurisdiction
+        if tool_obj.jurisdiction_code:
+            data = Literal(
+                tool_obj.jurisdiction_code, datatype=DCTERMS.ISO3166
+            )
+            g.set((license_uri, DCTERMS.Jurisdiction, data))
 
         # set dcterms:hasVersion
         version = Literal(f"{tool_obj.version}")
