@@ -180,8 +180,12 @@ def generate_rdf_file(
 
         # set dcterms:source, if applicable
         if tool_obj.source:
-            based_on = URIRef(convert_https_to_http(tool_obj.source))
-            g.set((license_uri, DCTERMS.source, based_on))
+            # Convert to Literal so that the URL string is stored instead of
+            # the object referenced
+            source = Literal(
+                URIRef(convert_https_to_http(tool_obj.source.base_url))
+            )
+            g.set((license_uri, DCTERMS.source, source))
 
         # add dcterms:title
         # (utilize LegalCode object(s) assciated with the current Tool object)

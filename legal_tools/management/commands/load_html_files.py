@@ -381,7 +381,7 @@ class Command(BaseCommand):
                     )
 
         call_command("update_is_replaced_by", verbosity=options["verbosity"])
-        # call_command("update_source", verbosity=options["verbosity"])
+        call_command("update_source", verbosity=options["verbosity"])
 
     def write_temp_po_files(
         self,

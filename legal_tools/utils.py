@@ -335,3 +335,64 @@ def update_is_replaced_by():
             )
             tool.is_replaced_by = latest
             tool.save()
+
+
+def update_source():
+    """
+    Update the source property of all licenses by doing simple unit
+    and version comparisons.
+    """
+
+    def get_unported_by_version(tool, version_index):
+        versions = legal_tools.models.UNITS_LICENSES_VERSIONS
+        source = legal_tools.models.Tool.objects.get(
+            category=tool.category,
+            jurisdiction_code="",
+            unit=tool.unit,
+            version=versions[version_index],
+        )
+        return source
+
+    versions = legal_tools.models.UNITS_LICENSES_VERSIONS
+    # Get the list of units and languages that occur among the tools
+    # to let the template iterate over them as it likes.
+    tool_objects = legal_tools.models.Tool.objects.all().order_by(
+        "version",
+        "unit",
+        "jurisdiction_code",
+    )
+    for tool in tool_objects:
+        if tool.version == versions[0]:
+            continue
+        version_same = versions.index(tool.version)
+        version_minus_one = version_same - 1
+        version_minus_two = version_same - 2
+        if tool.jurisdiction_code:
+            try:
+                source = get_unported_by_version(tool, version_same)
+            except legal_tools.models.Tool.DoesNotExist:
+                source = get_unported_by_version(tool, version_minus_one)
+        else:
+            try:
+                source = get_unported_by_version(tool, version_minus_one)
+            except legal_tools.models.Tool.DoesNotExist:
+                try:
+                    source = get_unported_by_version(tool, version_minus_two)
+                except legal_tools.models.Tool.DoesNotExist:
+                    source = None
+        if tool.source == source:
+            if source:
+                source_value = source.resource_name
+            else:
+                source_value = source
+            LOG.debug(f"{tool.resource_name} source: {source_value}")
+        elif source:
+            tool.source = source
+            tool.save()
+            LOG.info(
+                f"Set {tool.resource_name} source: {source.resource_name}"
+            )
+        else:
+            LOG.info(f"Remove {tool.resource_name} source: '{tool.source}'")
+            tool.source = None
+            tool.save()
