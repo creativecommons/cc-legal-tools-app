@@ -511,7 +511,7 @@ not push any commits (`--nopush` is implied by `--nogit`).
 3. Delete the contents of the `docs/` directory and then recreate/copy the
    static files it should contain:
     ```shell
-    docker compose exec app ./manage.py publish --nogit --branch=main
+    docker compose exec app ./manage.py publish -v2
     ```
 
 
