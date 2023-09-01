@@ -179,6 +179,18 @@ Improved multilingual support:
 - Removed top level `rdf:Description` that were redundant with `cc:legalcode`
   and `dcterms:LicenseDocument`
 
+Remove third-party license RDF/XML (the deeds and legal code were replaced by
+redirects long ago):
+- `/licenses/BSD/rdf`
+- `/licenses/GPL/2.0/rdf`
+- `/licenses/LGPL/2.1/rdf`
+- `/licenses/MIT/rdf`
+- `/licenses/by-nd-nc/2.0/jp/rdf`
+
+Remove unused RDF/XML files:
+- `/rdf/jurisdictions.rdf`
+- `/rdf/selectors.rdf`
+
 
 ## History
 
