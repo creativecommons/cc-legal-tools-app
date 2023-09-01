@@ -1,4 +1,5 @@
 # Standard library
+import os.path
 from urllib.parse import urlparse, urlunparse
 
 # Third-party
@@ -80,25 +81,21 @@ def generate_rdf_file(
         g.set((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
 
         # set cc:licenseClass
+        # (trailing "" creates a trailing slash to match legacy rdf)
+        license_class_uriref = convert_https_to_http(tool_obj.creator_url)
         if tool_obj.category == "publicdomain":
-            license_class_uriref = URIRef(
-                convert_https_to_http(
-                    f"{tool_obj.creator_url}/choose/{tool_obj.unit}/"
-                )
+            license_class_uriref = os.path.join(
+                license_class_uriref, "choose", "publicdomain", ""
             )
         elif tool_obj.unit in ["sampling", "sampling+"]:
-            license_class_uriref = URIRef(
-                convert_https_to_http(
-                    f"{tool_obj.creator_url}/{tool_obj.category}/sampling/"
-                )
+            license_class_uriref = os.path.join(
+                license_class_uriref, "license", "sampling", ""
             )
         else:
-            license_class_uriref = URIRef(
-                convert_https_to_http(
-                    f"{tool_obj.creator_url}/{tool_obj.category}/"
-                )
+            license_class_uriref = os.path.join(
+                license_class_uriref, "license", ""
             )
-        g.set((license_uri, CC.licenseClass, license_class_uriref))
+        g.set((license_uri, CC.licenseClass, URIRef(license_class_uriref)))
 
         # cc:jurisdiction, if applicable
         # foaf:logo
@@ -109,8 +106,12 @@ def generate_rdf_file(
             )
             jurisdiction_uri = URIRef(
                 convert_https_to_http(
-                    f"{tool_obj.creator_url}/international/"
-                    f"{tool_obj.jurisdiction_code}"
+                    os.path.join(
+                        tool_obj.creator_url,
+                        "international",
+                        tool_obj.jurisdiction_code,
+                        "",  # legacy rdf has a trailing slash
+                    )
                 )
             )
             g.add((license_uri, CC.jurisdiction, jurisdiction_uri))
