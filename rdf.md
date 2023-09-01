@@ -83,34 +83,103 @@
 
 ## Changes
 
-*(describe what and why of changes between old legacy RDF/XML and new generated RDF/XML)*
+### Overview
 
- The changes between the old legacy RDF/XML and the new generated RDF/XML aim to enhance clarity, accuracy, compatibility, and standardization of the RDF representation of Creative Commons licenses.  The improvements enhance the machine-readability and semantic understanding of the licenses, enabling better integration and interpretation within digital ecosystems.
-
-**A general overview of what and why changes occured:**
-
-**1. Improved Structure and Consistency:**
-
-- What: The structure of the RDF/XML files has been improved for better clarity, consistency, and adherence to RDF standards.
-- Why: A well-defined and consistent structure makes it easier for machines to process and interpret the RDF data accurately.
-- Diff: The newer generated RDF/XML have a more organized and standardized structure compared to the older legacy RDF/XML, ensuring that elements and properties are consistently represented.
-
-**2. Updated License Information:**
-
-- What: License information and conditions have been updated for some of the licenses.
-- Why: Keeping license information up-to-date ensures that users and automated systems are aware of the current permissions and restrictions associated with the licenses.
-- Diff: The newer generated RDF/XML include the most recent and updated license Information.
+The changes between the old legacy ccEngine RDF/XML and the new CC Legal Tools
+App  RDF/XML aim to enhance clarity, accuracy, compatibility, and
+standardization of the RDF representation of Creative Commons licenses.  The
+improvements enhance the machine-readability and semantic understanding of the
+licenses, enabling better integration and interpretation within digital
+ecosystems. A general overview of what and why changes occured:
 
 
-**3. Alignment with RDF Best Practices:**
+#### Improved Structure and Consistency
 
-- What: Changes have been made to align the RDF/XML representation with best practices and recommendations in the RDF.
-- Why: Following best practices ensures that the RDF data is structured in a way that maximizes interoperability and compatibility with other RDF-consuming applications.
-- Diff: The newer generated RDF/XML adhere to established RDF conventions, such as using standardized namespaces, consistent naming conventions, and properly defined relationships.
+- What: The structure of the RDF/XML files has been improved for better
+  clarity, consistency, and adherence to RDF standards.
+- Why: A well-defined and consistent structure makes it easier for machines to
+  process and interpret the RDF data accurately.
+- Diff: The newer generated RDF/XML have a more organized and standardized
+  structure compared to the older legacy RDF/XML, ensuring that elements and
+  properties are consistently represented.
 
 
+#### Updated License Information
+
+- What: License information and conditions have been updated for some of the
+  licenses.
+- Why: Keeping license information up-to-date ensures that users and automated
+  systems are aware of the current permissions and restrictions associated with
+  the licenses.
+- Diff: The newer generated RDF/XML include the most recent and updated license
+  Information.
+
+
+#### Alignment with RDF Best Practices
+
+- What: Changes have been made to align the RDF/XML representation with best
+  practices and recommendations in the RDF.
+- Why: Following best practices ensures that the RDF data is structured in a
+  way that maximizes interoperability and compatibility with other
+  RDF-consuming applications.
+- Diff: The newer generated RDF/XML adhere to established RDF conventions, such
+  as using standardized namespaces, consistent naming conventions, and properly
+  defined relationships.
+
+
+### Version 1.0.0 RDF/XML Changes
+
+Fixed wrong `cc:deprecatedOn` on the following legal tools:
+- CC Sampling+ 1.0 BR
+- CC Sampling+ 1.0 DE
+- CC Sampling+ 1.0 TW
+- CC Sampling+ 1.0
+
+Updated RDF namespace
+- `dcterms` replaced `dc` and `dcq`
+
+Added missing license RDF/XML:
+- CC BY-NC-ND 2.1 CA
+- CC BY-NC-SA 2.1 CA
+- CC BY-NC 2.1 CA
+- CC BY-ND 2.1 CA
+- CC BY 2.1 CA
+- CC BY-NC-ND 3.0 AM
+- CC BY-NC-SA 3.0 AM
+- CC BY-NC 3.0 AM
+- CC BY-ND 3.0 AM
+- CC BY 3.0 AM
+- CC BY-NC-ND 3.0 AZ
+- CC BY-NC-SA 3.0 AZ
+- CC BY-NC 3.0 AZ
+- CC BY-ND 3.0 AZ
+- CC BY 3.0 AZ
+- CC BY-NC-ND 3.0 CA
+- CC BY-NC-SA 3.0 CA
+- CC BY-NC 3.0 CA
+- CC BY-ND 3.0 CA
+- CC BY 3.0 CA
+- CC BY-NC-ND 3.0 GE
+- CC BY-NC-SA 3.0 GE
+- CC BY-NC 3.0 GE
+- CC BY-ND 3.0 GE
+- CC BY 3.0 GE
+
+Removed legacy ccEngine RDF/XML for nonexistent license:
+- ~~CC BY-ND-NC 2.0 JP~~
+
+Added additional [DCMI: DCMI Metadata Terms][dcmiterms] to RDF/XML:
+- `dcterms:LicenseDocument` (duplicates `cc:legalcode`)
+- `dcterms:Jurisdiction` with `rdf:datatype="http://purl.org/dc/terms/ISO3166"`
+  (duplicates `cc:jurisdiction` except for `igo` which uses `un`)
+
+Improved multilingual support:
+- Title translations now match legal code
+- Added `xml:lang` to `cc:legalcode`
+- Removed top level `rdf:Description` that were redundant with `cc:legalcode`
+  and `dcterms:LicenseDocument`
 
 
 ## History
 
-*(describe history of ccREL and legacy implmentation/resources)*
+*(describe history of ccREL and legacy implementation/resources)*
