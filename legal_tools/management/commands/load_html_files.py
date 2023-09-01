@@ -142,7 +142,15 @@ class Command(BaseCommand):
         html_filenames.append("certification_1.0.html")
         html_filenames.append("mark_1.0.html")
 
-        html_filenames.sort()
+        # Sort by version number so source can be set accurately
+        def sort_filenames(filename):
+            parts = filename.replace(".html", "").split("_")
+            new_key = f"{parts[1]}__{parts[0]}__{'__'.join(parts[2:])}"
+            new_key = new_key.rstrip("_")
+            return new_key
+
+        html_filenames.sort(key=sort_filenames)
+
         LOG.debug(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
             try:
