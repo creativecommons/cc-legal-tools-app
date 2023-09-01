@@ -138,15 +138,15 @@ def normalize_rdf_xml(serialized_rdf_content):
     #   - order XML elements by tag and attribute (using prefixes so they are
     #     sorted appropriately when serialized)
     #   - lxml, however, does not support deterministic output of the namespace
-    parser = etree.XMLParser(remove_blank_text=True)
+    parser = etree.XMLParser(ns_clean=True, remove_blank_text=True)
     root = etree.fromstring(serialized_rdf_content.encode(), parser)
     sort_children(root)
     serialized_rdf_content = etree.tostring(
         root, encoding="utf-8", xml_declaration=True, pretty_print=True
-    )
+    ).decode()
 
     # Step 3: manually sort namespaces in line 2 of serialized RDF/XML content
-    serialized_rdf_content = serialized_rdf_content.decode().split("\n")
+    serialized_rdf_content = serialized_rdf_content.split("\n")
     namespace_line = serialized_rdf_content[1].split()
     rdf_rdf = namespace_line.pop(0)
     namespace_line[-1] = namespace_line[-1].rstrip(">")
