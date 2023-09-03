@@ -14,7 +14,6 @@ from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils import translation
-from lxml import etree
 
 # First-party/Local
 from i18n import UNIT_NAMES
@@ -31,7 +30,11 @@ from legal_tools.models import (
     Tool,
     TranslationBranch,
 )
-from .rdf_generator import generate_images_rdf, generate_rdf_file
+from legal_tools.rdf_utils import (
+    generate_images_rdf,
+    generate_legal_code_rdf,
+    order_rdf_xml,
+)
 
 NUM_COMMITS = 3
 
@@ -773,82 +776,15 @@ def render_redirect(title, destination, language_code):
     return html_content
 
 
-def order_rdf_xml(serialized_rdf_content):
-    def uri2prefix(name, nsmap):
-        """
-        Convert QNAME URI to prefix
-        """
-        qname = etree.QName(name)
-        # rdflib assumes xml namespace, but lxml does not
-        nsmap["xml"] = "http://www.w3.org/XML/1998/namespace"
-        uri_map = {y: x for x, y in nsmap.items()}
-        prefix = f"{uri_map[qname.namespace]}:{qname.localname}"
-        return prefix
-
-    def get_node_key(node):
-        """
-        Return the sorting key of an xml node using tag and attributes (using
-        prefixes so that order matches expectations when files are read by
-        humans)
-        """
-        tag = uri2prefix(node.tag, node.nsmap)
-        attributes = []
-        for qname, value in sorted(node.attrib.items()):
-            prefix = uri2prefix(qname, node.nsmap)
-            attributes.append(f"{prefix}:{value}")
-        key = f"{tag} {' '.join(attributes)}"
-        return key
-
-    def sort_children(node):
-        """
-        Sort children by tag and attributes
-        """
-        if not isinstance(node.tag, str):
-            # Only sort tags (not comments or data)
-            return
-        # sort this node
-        node[:] = sorted(node, key=lambda child: get_node_key(child))
-        # sort this node's children
-        for child in node:
-            sort_children(child)
-
-    # Step 0: rdflib
-    #   - rdflib's pretty-xml serializer does not support deterministic output.
-    #   - left alone, this would result in unnecessary and obfuscating changes
-    #     in git commits
-
-    # Step 1: lxml
-    #   - order XML elements by tag and attribute (using prefixes so they are
-    #     sorted appropriately when serialized)
-    #   - lxml, however, does not support deterministic output of the namespace
-    parser = etree.XMLParser(remove_blank_text=True)
-    root = etree.fromstring(serialized_rdf_content.encode(), parser)
-    sort_children(root)
-    serialized_rdf_content = etree.tostring(
-        root, encoding="utf-8", xml_declaration=True, pretty_print=True
-    )
-
-    # Step 2: manually sort namespaces in line 2 of serialized RDF/XML content
-    serialized_rdf_content = serialized_rdf_content.decode().split("\n")
-    namespace_line = serialized_rdf_content[1].split()
-    rdf_rdf = namespace_line.pop(0)
-    namespace_line[-1] = namespace_line[-1].rstrip(">")
-    namespace_line.sort()
-    namespace_line.insert(0, rdf_rdf)
-    namespace_line[-1] = f"{namespace_line[-1]}>"
-    serialized_rdf_content[1] = " ".join(namespace_line)
-    serialized_rdf_content = "\n".join(serialized_rdf_content)
-
-    return serialized_rdf_content
-
-
-def view_generate_rdf(
+def view_legal_tool_rdf(
     request, category=None, unit=None, version=None, jurisdiction=None
 ):
     if category:
-        rdf_content = generate_rdf_file(category, unit, version, jurisdiction)
+        rdf_content = generate_legal_code_rdf(
+            category, unit, version, jurisdiction
+        )
     else:
-        rdf_content = generate_rdf_file(generate_all_licenses=True)
+        rdf_content = generate_legal_code_rdf(generate_all_licenses=True)
 
     serialized_rdf_content = rdf_content.serialize(format="pretty-xml")
     serialized_rdf_content = order_rdf_xml(serialized_rdf_content)
@@ -860,9 +796,9 @@ def view_generate_rdf(
 
 def view_image_rdf(request):
     generated_image_rdf = generate_images_rdf()
-    serialized_data = generated_image_rdf.serialize(format="pretty-xml")
-    serialized_data = order_rdf_xml(serialized_data)
+    serialized_rdf_content = generated_image_rdf.serialize(format="pretty-xml")
+    serialized_rdf_content = order_rdf_xml(serialized_rdf_content)
     response = HttpResponse(
-        serialized_data, content_type="application/rdf+xml"
+        serialized_rdf_content, content_type="application/rdf+xml"
     )
     return response

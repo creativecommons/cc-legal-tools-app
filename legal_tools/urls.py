@@ -18,9 +18,9 @@ from legal_tools.views import (
     view_branch_status,
     view_deed,
     view_dev_index,
-    view_generate_rdf,
     view_image_rdf,
     view_legal_code,
+    view_legal_tool_rdf,
     view_list,
     view_metadata,
     view_ns_html,
@@ -264,39 +264,33 @@ urlpatterns = [
     #     kwargs=dict(jurisdiction="", is_plain_text=True),
     #     name="view_legal_code_unported",
     # ),
-    # TRANSLATION PAGES #######################################################
-    re_path(
-        r"^dev/status/(?P<id>\d+)/$",
-        view_branch_status,
-        name="branch_status",
-    ),
-    # ccREL ###################################################################
-    # Legal tool RDF/XML without jurisdiction
+    # CCREL DOCUMENTS #########################################################
+    # Legal tool RDF/XML: no Jurisdiction (international/unported)
     path(
         "<category:category>/<unit:unit>/<version:version>/rdf",
-        view_generate_rdf,
-        name="generate_rdf",
+        view_legal_tool_rdf,
+        name="view_legal_tool_rdf_unported",
     ),
-    # Legal tool RDF/XML with jurisdiction
+    # Legal tool RDF/XML: with Jurisdiction (ported)
     path(
         "<category:category>/<unit:unit>/<version:version>/"
         "<jurisdiction:jurisdiction>/rdf",
-        view_generate_rdf,
-        name="generate_rdf",
+        view_legal_tool_rdf,
+        name="view_legal_tool_rdf_ported",
     ),
     # index.rdf - RDF/XML of all legal tools
     path(
         "rdf/index.rdf",
-        view_generate_rdf,
-        name="index_rdf",
+        view_legal_tool_rdf,
+        name="view_legal_tool_rdf_index",
     ),
     # images.rdf - RDF/XML of all legal tool images (badges)
     path(
         "rdf/images.rdf",
         view_image_rdf,
-        name="image_rdf",
+        name="view_image_rdf",
     ),
-    # images.rdf - RDF/XML of all legal tool images (badges)
+    # images.rdf - ccREL description & namespace
     re_path(
         r"^rdf/ns",
         view_ns_html,
@@ -307,5 +301,11 @@ urlpatterns = [
         r"^ns",
         RedirectView.as_view(url="rdf/ns", permanent=False),
         name="ns_html_redirect",
+    ),
+    # TRANSLATION PAGES #######################################################
+    re_path(
+        r"^dev/status/(?P<id>\d+)/$",
+        view_branch_status,
+        name="branch_status",
     ),
 ]

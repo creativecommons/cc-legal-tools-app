@@ -3,6 +3,7 @@ import os.path
 from urllib.parse import urlparse, urlunparse
 
 # Third-party
+from lxml import etree
 from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DCTERMS, FOAF, OWL, RDF, XSD
 
@@ -22,7 +23,47 @@ def convert_https_to_http(url):
     return urlunparse(parsed_url)
 
 
-def generate_rdf_file(
+def generate_images_rdf():
+    all_tools = Tool.objects.all()
+
+    EXIF = Namespace("http://www.w3.org/2003/12/exif/ns#")
+
+    image_graph = Graph()
+
+    image_graph.bind("exif", EXIF)
+
+    for tool in all_tools:
+        if tool.jurisdiction_code:
+            uriref = {
+                "large": URIRef(
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
+                    f"{tool.jurisdiction_code}/{LARGE_LOGO}"
+                ),
+                "small": URIRef(
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
+                    f"{tool.jurisdiction_code}/{SMALL_LOGO}"
+                ),
+            }
+
+        else:
+            uriref = {
+                "large": URIRef(
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{LARGE_LOGO}"
+                ),
+                "small": URIRef(
+                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{SMALL_LOGO}"
+                ),
+            }
+        image_graph.add((uriref["large"], EXIF.width, Literal("88")))
+        image_graph.add((uriref["large"], EXIF.height, Literal("31")))
+
+        image_graph.add((uriref["small"], EXIF.width, Literal("80")))
+        image_graph.add((uriref["small"], EXIF.height, Literal("15")))
+
+    return image_graph
+
+
+def generate_legal_code_rdf(
     category=None,
     unit=None,
     version=None,
@@ -213,41 +254,70 @@ def generate_rdf_file(
     return g
 
 
-def generate_images_rdf():
-    all_tools = Tool.objects.all()
+def order_rdf_xml(serialized_rdf_content):
+    def uri2prefix(name, nsmap):
+        """
+        Convert QNAME URI to prefix
+        """
+        qname = etree.QName(name)
+        # rdflib assumes xml namespace, but lxml does not
+        nsmap["xml"] = "http://www.w3.org/XML/1998/namespace"
+        uri_map = {y: x for x, y in nsmap.items()}
+        prefix = f"{uri_map[qname.namespace]}:{qname.localname}"
+        return prefix
 
-    EXIF = Namespace("http://www.w3.org/2003/12/exif/ns#")
+    def get_node_key(node):
+        """
+        Return the sorting key of an xml node using tag and attributes (using
+        prefixes so that order matches expectations when files are read by
+        humans)
+        """
+        tag = uri2prefix(node.tag, node.nsmap)
+        attributes = []
+        for qname, value in sorted(node.attrib.items()):
+            prefix = uri2prefix(qname, node.nsmap)
+            attributes.append(f"{prefix}:{value}")
+        key = f"{tag} {' '.join(attributes)}"
+        return key
 
-    image_graph = Graph()
+    def sort_children(node):
+        """
+        Sort children by tag and attributes
+        """
+        if not isinstance(node.tag, str):
+            # Only sort tags (not comments or data)
+            return
+        # sort this node
+        node[:] = sorted(node, key=lambda child: get_node_key(child))
+        # sort this node's children
+        for child in node:
+            sort_children(child)
 
-    image_graph.bind("exif", EXIF)
+    # Step 0: rdflib
+    #   - rdflib's pretty-xml serializer does not support deterministic output.
+    #   - left alone, this would result in unnecessary and obfuscating changes
+    #     in git commits
 
-    for tool in all_tools:
-        if tool.jurisdiction_code:
-            uriref = {
-                "large": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
-                    f"{tool.jurisdiction_code}/{LARGE_LOGO}"
-                ),
-                "small": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
-                    f"{tool.jurisdiction_code}/{SMALL_LOGO}"
-                ),
-            }
+    # Step 1: lxml
+    #   - order XML elements by tag and attribute (using prefixes so they are
+    #     sorted appropriately when serialized)
+    #   - lxml, however, does not support deterministic output of the namespace
+    parser = etree.XMLParser(remove_blank_text=True)
+    root = etree.fromstring(serialized_rdf_content.encode(), parser)
+    sort_children(root)
+    serialized_rdf_content = etree.tostring(
+        root, encoding="utf-8", xml_declaration=True, pretty_print=True
+    )
 
-        else:
-            uriref = {
-                "large": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{LARGE_LOGO}"
-                ),
-                "small": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{SMALL_LOGO}"
-                ),
-            }
-        image_graph.add((uriref["large"], EXIF.width, Literal("88")))
-        image_graph.add((uriref["large"], EXIF.height, Literal("31")))
+    # Step 2: manually sort namespaces in line 2 of serialized RDF/XML content
+    serialized_rdf_content = serialized_rdf_content.decode().split("\n")
+    namespace_line = serialized_rdf_content[1].split()
+    rdf_rdf = namespace_line.pop(0)
+    namespace_line[-1] = namespace_line[-1].rstrip(">")
+    namespace_line.sort()
+    namespace_line.insert(0, rdf_rdf)
+    namespace_line[-1] = f"{namespace_line[-1]}>"
+    serialized_rdf_content[1] = " ".join(namespace_line)
+    serialized_rdf_content = "\n".join(serialized_rdf_content)
 
-        image_graph.add((uriref["small"], EXIF.width, Literal("80")))
-        image_graph.add((uriref["small"], EXIF.height, Literal("15")))
-
-    return image_graph
+    return serialized_rdf_content

@@ -19,6 +19,15 @@ from legal_tools.views import render_redirect
 LOG = logging.getLogger(__name__)
 
 
+class MockRequest:
+    method = "GET"
+    META = {}
+    GET = {"distilling": 1}
+
+    def __init__(self, path):
+        self.path = path
+
+
 def init_utils_logger(logger: logging.Logger = None):
     global LOG
     if logger is None:
@@ -34,15 +43,6 @@ def save_bytes_to_file(filebytes, output_filename):
     os.makedirs(dirname, mode=0o755, exist_ok=True)
     with open(output_filename, "w+b") as f:
         f.write(filebytes)
-
-
-class MockRequest:
-    method = "GET"
-    META = {}
-    GET = {"distilling": 1}
-
-    def __init__(self, path):
-        self.path = path
 
 
 def save_url_as_static_file(output_dir, url, relpath):
