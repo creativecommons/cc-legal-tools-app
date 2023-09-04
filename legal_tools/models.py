@@ -1,16 +1,3 @@
-"""
-Every legal tool can be identified by a URL. Examples:
-    "https://creativecommons.org/licenses/by-nc-sa/4.0/"
-    "https://creativecommons.org/licenses/by-nc-nd/2.0/tw/"
-
-In the RDF, this is the rdf:about attribute on the cc:License element.
-
-If a legal tool has a child dc:source element, then this legal tool is a
-translation of the legal tool with the url in the dc:source's rdf:resource
-attribute.
-
-Some legal tools have a dcq:isReplacedBy element.
-"""
 # Standard library
 import os
 import posixpath
@@ -475,6 +462,23 @@ class Tool(models.Model):
     prohibits_commercial_use = models.BooleanField(default=None)
     prohibits_high_income_nation_use = models.BooleanField(default=None)
 
+    def __lt__(self, other):
+        """Magic method to support sorting"""
+        return (
+            self.category,
+            self.unit,
+            self.version,
+            self.jurisdiction_code,
+        ) < (
+            other.category,
+            other.unit,
+            other.version,
+            other.jurisdiction_code,
+        )
+
+    def __str__(self):
+        return f"Tool<{self.unit},{self.version}," f"{self.jurisdiction_code}>"
+
     def _get_save_path(self):
         """
         If saving the deed or legal code as a static file, this returns the
@@ -527,22 +531,9 @@ class Tool(models.Model):
     class Meta:
         ordering = ["-version", "unit", "jurisdiction_code"]
 
-    def __str__(self):
-        return f"Tool<{self.unit},{self.version}," f"{self.jurisdiction_code}>"
-
-    def __lt__(self, other):
-        """Magic method to support sorting"""
-        return (
-            self.category,
-            self.unit,
-            self.version,
-            self.jurisdiction_code,
-        ) < (
-            other.category,
-            other.unit,
-            other.version,
-            other.jurisdiction_code,
-        )
+    def save(self, *args, **kwargs):
+        self.creator_url = self.creator_url.rstrip("/")
+        super().save(*args, **kwargs)
 
     def get_legal_code_for_language_code(self, language_code):
         """
@@ -673,10 +664,6 @@ class Tool(models.Model):
         slug = slug.lower()
         return slug
 
-    def rdf(self):
-        """Generate RDF for this tool?"""
-        return "RDF Generation Not Implemented"  # FIXME if needed
-
     def identifier(self):
         """
         Returns ex. 'CC BY-SA 4.0' - all upper case etc. No language.
@@ -765,7 +752,7 @@ class TranslationBranch(models.Model):
         )
 
 
-def build_path(base_url, document, language_code):
+def build_path(base_url, document, language_code=None):
     path = base_url.replace(settings.CANONICAL_SITE, "")
     if document == "legalcode.txt" or not language_code:
         path = posixpath.join(path, document)
