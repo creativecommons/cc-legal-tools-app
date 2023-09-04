@@ -11,6 +11,7 @@ from django.utils.translation.trans_real import DjangoTranslation
 
 # First-party/Local
 from legal_tools.models import UNITS_LICENSES, LegalCode, Tool, build_path
+from legal_tools.rdf_utils import convert_https_to_http
 from legal_tools.tests.factories import (
     LegalCodeFactory,
     ToolFactory,
@@ -1210,3 +1211,73 @@ class RenderRedirect(TestCase):
         self.assertIn(f'dir="rtl" lang="{language_code}">', rendered)
         self.assertIn(f"Redirect to: {title}", rendered)
         self.assertIn(f'<meta content="0;url={destination}"', rendered)
+
+
+class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
+    def validate_rdf_properties(self, tool, content):
+        base_url_http = convert_https_to_http(tool.base_url)
+        self.assertIn(
+            f'<cc:License rdf:about="{base_url_http}">',
+            content,
+        )
+        creator_url_http = convert_https_to_http(tool.creator_url)
+        self.assertIn(
+            f'<dcterms:creator rdf:resource="{creator_url_http}"/>',
+            content,
+        )
+        self.assertIn(
+            f"<dcterms:hasVersion>{tool.version}</dcterms:hasVersion>",
+            content,
+        )
+        self.assertIn(
+            f"<dcterms:identifier>{tool.unit}</dcterms:identifier>",
+            content,
+        )
+
+    def test_view_legal_tool_rdf_singles_mixin(self):
+        for tool in Tool.objects.all():
+            url = build_path(
+                base_url=tool.base_url,
+                document="rdf",
+            )
+            response = self.client.get(url)
+            content = response.content.decode()
+            self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_singles_faker(self):
+        ToolFactory()
+        for tool in Tool.objects.all():
+            url = build_path(
+                base_url=tool.base_url,
+                document="rdf",
+            )
+            response = self.client.get(url)
+            content = response.content.decode()
+            self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_index_mixin(self):
+        url = os.path.join(
+            Tool.objects.first().creator_url, "rdf", "index.rdf"
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        for tool in Tool.objects.all():
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_index_faker(self):
+        ToolFactory()
+        url = os.path.join(
+            Tool.objects.first().creator_url, "rdf", "index.rdf"
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        for tool in Tool.objects.all():
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)

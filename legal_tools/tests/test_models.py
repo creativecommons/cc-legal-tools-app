@@ -1002,12 +1002,6 @@ class ToolModelTest(TestCase):
             f"Tool<{tool.unit},{tool.version}," f"{tool.jurisdiction_code}>",
         )
 
-    def test_rdf(self):
-        tool = ToolFactory(
-            unit="bx-oh", version="1.3", jurisdiction_code="any"
-        )
-        self.assertEqual("RDF Generation Not Implemented", tool.rdf())
-
     # def test_default_language_code(self):
     #     tool = ToolFactory(
     #         unit="bx-oh", version="1.3", jurisdiction_code=""
