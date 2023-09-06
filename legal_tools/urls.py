@@ -213,7 +213,7 @@ urlpatterns = [
         f"(/{RE_JURISDICTION})?)/?$",
         # "^(?P<path>licenses/by/4.0)",
         RedirectView.as_view(url="/%(path)s/deed", permanent=False),
-        name="nodocument_redirect_deed",
+        name="nodocument_redirect",
     ),
     # Deed: with Jurisdiction (ported), with language_code
     path(
