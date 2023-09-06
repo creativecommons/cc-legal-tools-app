@@ -340,7 +340,7 @@ def update_source():
     Update the source property of all licenses by doing simple unit
     and version comparisons.
     """
-    versions = sorted(legal_tools.models.UNITS_LICENSES_VERSIONS, reverse=True)
+    versions = sorted(legal_tools.models.TOOLS_VERSIONS, reverse=True)
     tool_objects = legal_tools.models.Tool.objects.all()
 
     for tool in tool_objects:
@@ -349,8 +349,8 @@ def update_source():
 
         # exlude earliest versions which can't have a source
         if tool.version != "1.0":
-            # loop through the versions defined in UNITS_LICENSES_VERSIONS
-            # starting with the same version as the current tool
+            # loop through the versions defined in TOOLS_VERSIONS starting with
+            # the same version as the current tool
             for version in versions[version_index:]:
                 if version == tool.version and not tool.jurisdiction_code:
                     # only ported legal tools might have a source with the same

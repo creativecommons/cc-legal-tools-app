@@ -6,8 +6,8 @@ import factory
 
 # First-party/Local
 from legal_tools.models import (
+    TOOLS_VERSIONS,
     UNITS_LICENSES,
-    UNITS_LICENSES_VERSIONS,
     UNITS_PUBLIC_DOMAIN,
     LegalCode,
     Tool,
@@ -70,7 +70,7 @@ class ToolFactory(factory.django.DjangoModelFactory):
         "random_element",
         elements=UNITS_LICENSES + UNITS_PUBLIC_DOMAIN,
     )
-    version = factory.Faker("random_element", elements=UNITS_LICENSES_VERSIONS)
+    version = factory.Faker("random_element", elements=TOOLS_VERSIONS)
 
     base_url = factory.LazyAttribute(
         lambda obj: os.path.join(

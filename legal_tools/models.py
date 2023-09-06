@@ -44,7 +44,7 @@ UNITS_LICENSES = [
     "sampling",  # ........ in versions: 1.0 unported, 1.0 ported
     "sampling+",  # ....... in versions: 1.0 unported, 1.0 ported
 ]
-UNITS_LICENSES_VERSIONS = ["1.0", "2.0", "2.1", "2.5", "3.0", "4.0"]
+TOOLS_VERSIONS = ["1.0", "2.0", "2.1", "2.5", "3.0", "4.0"]
 UNITS_PUBLIC_DOMAIN = [
     "certification",
     "mark",
