@@ -462,34 +462,32 @@ def view_deed(
         request.path, jurisdiction, language_code
     )
     if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
-        raise Http404(f"invalid language: {language_code}")
+        return view_page_not_found(
+            request, Http404(f"invalid language: {language_code}")
+        )
     translation.activate(language_code)
 
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
 
     try:
+        tool = Tool.objects.get(
+            unit=unit, version=version, jurisdiction_code=jurisdiction
+        )
+    except Tool.DoesNotExist as e:
+        return view_page_not_found(request, e)
+    tool_title = get_tool_title(tool)
+
+    try:
         # Try to load legal code with specified language
-        legal_code = LegalCode.objects.filter(
-            tool__unit=unit,
-            tool__version=version,
-            tool__jurisdiction_code=jurisdiction,
-            language_code=language_code,
-        )[0]
-    except IndexError:
+        legal_code = tool.get_legal_code_for_language_code(language_code)
+    except LegalCode.DoesNotExist:
         # Else load legal code with default language
-        legal_code = LegalCode.objects.filter(
-            tool__unit=unit,
-            tool__version=version,
-            tool__jurisdiction_code=jurisdiction,
-            language_code=language_default,
-        )[0]
+        legal_code = tool.get_legal_code_for_language_code(language_default)
+
     legal_code_rel_path = os.path.relpath(
         legal_code.legal_code_url, path_start
     )
-
-    tool = legal_code.tool
-    tool_title = get_tool_title(tool)
 
     category, category_title = get_category_and_category_title(
         category,
