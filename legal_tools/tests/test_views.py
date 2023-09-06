@@ -192,6 +192,7 @@ class ToolsTestsMixin:
             category="licenses",
             unit="by",
             version="3.0",
+            is_replaced_by=self.by_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -201,13 +202,13 @@ class ToolsTestsMixin:
             requires_attribution=True,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_40,
         )
         self.by_20 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by/2.0/",
             category="licenses",
             unit="by",
             version="2.0",
+            is_replaced_by=self.by_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -217,7 +218,6 @@ class ToolsTestsMixin:
             requires_attribution=True,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_40,
         )
         self.zero_10 = ToolFactory(
             base_url="https://creativecommons.org/publicdomain/zero/1.0/",
@@ -246,6 +246,7 @@ class ToolsTestsMixin:
             unit="by-sa",
             version="3.0",
             jurisdiction_code="es",
+            is_replaced_by=self.by_sa_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -255,7 +256,6 @@ class ToolsTestsMixin:
             requires_attribution=True,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_sa_40,
         )
         LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_sa_30_es, language_code="es"
@@ -268,6 +268,7 @@ class ToolsTestsMixin:
             unit="by",
             version="3.0",
             jurisdiction_code="th",
+            is_replaced_by=self.by_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -277,7 +278,6 @@ class ToolsTestsMixin:
             requires_attribution=True,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_40,
         )
         LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_30_th, language_code="th"
@@ -289,6 +289,7 @@ class ToolsTestsMixin:
             unit="by-sa",
             version="2.0",
             jurisdiction_code="es",
+            is_replaced_by=self.by_sa_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -298,11 +299,28 @@ class ToolsTestsMixin:
             requires_attribution=True,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_sa_40,
         )
         LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_sa_20_es, language_code="es"
         )
+
+        self.sampling = ToolFactory(
+            base_url="https://creativecommons.org/licenses/sampling/1.0/",
+            category="licenses",
+            unit="sampling",
+            version="1.0",
+            deprecated_on="2007-06-04",
+            permits_derivative_works=True,
+            permits_reproduction=False,
+            permits_distribution=False,
+            permits_sharing=False,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        LegalCodeFactory(tool=self.sampling, language_code="en")
 
         super().setUp()
 
