@@ -277,9 +277,6 @@ def order_rdf_xml(serialized_rdf_content):
         """
         Sort children by tag and attributes
         """
-        if not isinstance(node.tag, str):
-            # Only sort tags (not comments or data)
-            return
         # sort this node
         node[:] = sorted(node, key=lambda child: get_node_key(child))
         # sort this node's children
