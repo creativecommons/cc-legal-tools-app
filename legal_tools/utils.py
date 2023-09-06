@@ -296,8 +296,6 @@ def update_is_replaced_by():
     Since version 4.0, the licenses are international, so no jurisdiction
     comparison is made.
     """
-    # Get the list of units and languages that occur among the tools
-    # to let the template iterate over them as it likes.
     tool_objects = (
         legal_tools.models.Tool.objects.all()
         .filter(category="licenses")
@@ -342,50 +340,39 @@ def update_source():
     Update the source property of all licenses by doing simple unit
     and version comparisons.
     """
+    versions = sorted(legal_tools.models.UNITS_LICENSES_VERSIONS, reverse=True)
+    tool_objects = legal_tools.models.Tool.objects.all()
 
-    def get_unported_by_version(tool, version_index):
-        versions = legal_tools.models.UNITS_LICENSES_VERSIONS
-        source = legal_tools.models.Tool.objects.get(
-            category=tool.category,
-            jurisdiction_code="",
-            unit=tool.unit,
-            version=versions[version_index],
-        )
-        return source
-
-    versions = legal_tools.models.UNITS_LICENSES_VERSIONS
-    # Get the list of units and languages that occur among the tools
-    # to let the template iterate over them as it likes.
-    tool_objects = legal_tools.models.Tool.objects.all().order_by(
-        "version",
-        "unit",
-        "jurisdiction_code",
-    )
     for tool in tool_objects:
-        if tool.version == versions[0]:
-            continue
-        version_same = versions.index(tool.version)
-        version_minus_one = version_same - 1
-        version_minus_two = version_same - 2
-        if tool.jurisdiction_code:
-            try:
-                source = get_unported_by_version(tool, version_same)
-            except legal_tools.models.Tool.DoesNotExist:
-                source = get_unported_by_version(tool, version_minus_one)
-        else:
-            try:
-                source = get_unported_by_version(tool, version_minus_one)
-            except legal_tools.models.Tool.DoesNotExist:
+        version_index = versions.index(tool.version)
+        source = None
+
+        # exlude earliest versions which can't have a source
+        if tool.version != "1.0":
+            # loop through the versions defined in UNITS_LICENSES_VERSIONS
+            # starting with the same version as the current tool
+            for version in versions[version_index:]:
+                if version == tool.version and not tool.jurisdiction_code:
+                    # only ported legal tools might have a source with the same
+                    # versions as the tool itself
+                    continue
+
                 try:
-                    source = get_unported_by_version(tool, version_minus_two)
+                    source = legal_tools.models.Tool.objects.get(
+                        unit=tool.unit,
+                        version=version,
+                        jurisdiction_code="",
+                    )
+                    break
                 except legal_tools.models.Tool.DoesNotExist:
-                    source = None
+                    continue
+
         if tool.source == source:
             if source:
                 source_value = source.resource_name
             else:
                 source_value = source
-            LOG.debug(f"{tool.resource_name} source: {source_value}")
+            LOG.debug(f"No-op: {tool.resource_name} source: {source_value}")
         elif source:
             tool.source = source
             tool.save()
