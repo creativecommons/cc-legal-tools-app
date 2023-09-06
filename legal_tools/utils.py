@@ -211,10 +211,10 @@ def validate_list_is_all_text(list_):
     """
     newlist = []
     for i, value in enumerate(list_):
-        if type(value) == NavigableString:
+        if isinstance(value, NavigableString):
             newlist.append(str(value))
             continue
-        elif type(value) not in (str, list, dict):
+        elif not isinstance(value, (str, list, dict)):
             raise ValueError(
                 f"Not a str, list, or dict: {type(value)}: {value}"
             )
