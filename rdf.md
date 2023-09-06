@@ -127,7 +127,7 @@ ecosystems. A general overview of what and why changes occured:
   defined relationships.
 
 
-### 2023-09-07 CC Legal Tools machine layer added
+### 2023-09-08 Added machine layer to (this) CC Legal Tools App
 
 Fixed wrong `cc:deprecatedOn` on the following legal tools:
 - CC Sampling+ 1.0 BR
