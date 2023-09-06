@@ -344,6 +344,14 @@ class ToolsTestsMixin:
         )
         LegalCodeFactory(tool=self.sampling, language_code="en")
 
+        # sources (non-exhaustive)
+        self.by_40.source = self.by_30
+        self.by_40.save()
+        self.by_30.source = self.by_20
+        self.by_30.save()
+        self.by_sa_20_es.source = self.by_20
+        self.by_sa_20_es.save()
+
         super().setUp()
 
 
@@ -437,11 +445,11 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
 
     def test_deed_translation_by_40_es(self):
         # Test with valid Deed & UX and valid Legal Code translations
-        legal_code = LegalCode.objects.filter(
+        legal_code = LegalCode.objects.get(
             tool__unit="by",
             tool__version="4.0",
             language_code="es",
-        )[0]
+        )
         url = legal_code.deed_url
         rsp = self.client.get(url)
         text = rsp.content.decode("utf-8")
@@ -1312,6 +1320,21 @@ class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
             self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
             with self.subTest(tool.identifier):
                 self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_source(self):
+        tool = Tool.objects.get(unit="by", version="4.0")
+        url = build_path(
+            base_url=tool.base_url,
+            document="rdf",
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        self.assertIn(
+            "<dcterms:source>http://creativecommons.org/licenses/by/3.0/"
+            "</dcterms:source>",
+            content,
+        )
 
     def test_view_legal_tool_rdf_index_mixin(self):
         url = os.path.join(
