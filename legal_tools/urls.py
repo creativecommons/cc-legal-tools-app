@@ -26,10 +26,11 @@ from legal_tools.views import (
     view_ns_html,
 )
 
+# See Converter functions, below, for a description of the following regex:
 RE_CATEGORY = r"licenses|publicdomain"
 RE_JURISDICTION = r"[a-z]{2}|igo|scotland"
 RE_UNIT = r"(?i)[-a-z0-9+]+"
-RE_VERSION = r"[0-9]+[.][0-9]+"  # MAJOR.MINOR
+RE_VERSION = r"[0-9]+[.][0-9]+"
 
 
 class CategoryConverter:
@@ -209,8 +210,8 @@ urlpatterns = [
     # DEED PAGES ##############################################################
     # Redirect URLs without a document/layer to the deed (no language_code)
     re_path(
-        f"^(?P<path>({RE_CATEGORY})/{RE_UNIT}/{RE_VERSION}"
-        f"(/{RE_JURISDICTION})?)/?$",
+        f"^(?P<path>(?:{RE_CATEGORY})/{RE_UNIT}/{RE_VERSION}"
+        f"(/(?:{RE_JURISDICTION}))?)/?$",
         # "^(?P<path>licenses/by/4.0)",
         RedirectView.as_view(url="/%(path)s/deed", permanent=False),
         name="nodocument_redirect",
