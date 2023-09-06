@@ -447,7 +447,6 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
                 self.assertNotContains(rsp, s)
 
     def test_text_in_deeds(self):
-        ToolFactory()
         for tool in Tool.objects.filter(version="4.0"):
             with self.subTest(tool.identifier):
                 # Test in English and for 4.0 since that's how we've set up
