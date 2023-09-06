@@ -184,7 +184,7 @@ def generate_legal_code_rdf(
         g.set((license_uri, DCTERMS.creator, creator))
 
         # set dcterms:Jurisdiction
-        if tool.jurisdiction_code:
+        if tool.jurisdiction_code and tool.jurisdiction_code != "scotland":
             if tool.jurisdiction_code == "igo":
                 jurisdiction_code = "un"
             else:

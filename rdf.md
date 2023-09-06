@@ -127,7 +127,7 @@ ecosystems. A general overview of what and why changes occured:
   defined relationships.
 
 
-### Version 1.0.0 RDF/XML Changes
+### 2023-09-07 CC Legal Tools machine layer added
 
 Fixed wrong `cc:deprecatedOn` on the following legal tools:
 - CC Sampling+ 1.0 BR
@@ -135,8 +135,8 @@ Fixed wrong `cc:deprecatedOn` on the following legal tools:
 - CC Sampling+ 1.0 TW
 - CC Sampling+ 1.0
 
-Updated RDF namespace
-- `dcterms` replaced `dc` and `dcq`
+Updated RDF namespace prefix:
+- `dcterms` replaced ~~`dc`~~ and ~~`dcq`~~
 
 Added missing license RDF/XML:
 - CC BY-NC-ND 2.1 CA
@@ -168,18 +168,24 @@ Added missing license RDF/XML:
 Removed legacy ccEngine RDF/XML for nonexistent license:
 - ~~CC BY-ND-NC 2.0 JP~~
 
-Added additional [DCMI: DCMI Metadata Terms][dcmiterms] to RDF/XML:
-- `dcterms:LicenseDocument` (duplicates `cc:legalcode`)
-- `dcterms:Jurisdiction` with `rdf:datatype="http://purl.org/dc/terms/ISO3166"`
-  (duplicates `cc:jurisdiction` except for `igo` which uses `un`)
+Improved compatibility:
+- Added additional [DCMI: DCMI Metadata Terms][dcmiterms] to RDF/XML:
+  - `dcterms:LicenseDocument` (duplicates `cc:legalcode`)
+  - `dcterms:Jurisdiction` with
+    `rdf:datatype="http://purl.org/dc/terms/ISO3166"` (duplicates
+    `cc:jurisdiction` except for `igo` which uses `un` and for `scotland` for
+    which this element is omitted)
+    - Also see [ISO 3166-1 alpha-2 - Wikipedia][wp3166alpha2]
+- Added `owl:sameAs` element with HTTPS URL
 
 Improved multilingual support:
-- Title translations now match legal code
+- Title translations now match legal code (removed title translatins languages
+  that the legal code has not yet been translated into)
 - Added `xml:lang` to `cc:legalcode`
-- Removed top level `rdf:Description` that were redundant with `cc:legalcode`
-  and `dcterms:LicenseDocument`
+- Removed top level `rdf:Description` elements that were redundant with
+  `cc:legalcode` and `dcterms:LicenseDocument` elements
 
-Remove third-party license RDF/XML (the deeds and legal code were replaced by
+Removed third-party license RDF/XML (the deeds and legal codes were replaced by
 redirects long ago):
 - `/licenses/BSD/rdf`
 - `/licenses/GPL/2.0/rdf`
@@ -187,11 +193,54 @@ redirects long ago):
 - `/licenses/MIT/rdf`
 - `/licenses/by-nd-nc/2.0/jp/rdf`
 
-Remove unused RDF/XML files:
+Removed unused RDF/XML files:
 - `/rdf/jurisdictions.rdf`
 - `/rdf/selectors.rdf`
 
+[wp3166alpha2]: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 
-## History
 
-*(describe history of ccREL and legacy implementation/resources)*
+### More information needed
+
+The following entries are non-exhaustive. More work is required.
+
+
+### 2011-01-06: CC REL by Example published
+
+- [CC REL by Example](https://opensource.creativecommons.org/ccrel-guide/)
+- [creativecommons/ccrel-guide][ghccrelguide]: *A guide to using the Creative
+  Commons Rights Expression Language (CC REL)*
+
+[ghccrelguide]: https://github.com/creativecommons/ccrel-guide
+
+
+### 2008-08-20: Received World Wide Web Consortium (W3C) team comment on ccREL
+
+- [Team Comment on ccREL: The Creative Commons Rights Expression Language
+  Member Submission][w3comment].
+
+[w3comment]: https://www.w3.org/submissions/2008/02/Comment
+
+
+### 2008-07-24: cc.license component of the ccEngine entered alpha
+
+- [cc.license in alpha — Creative Commons Open Source][cclicblogalpha]
+- [creativecommons/cc.license](https://github.com/creativecommons/cc.license):
+  *Python app that runs part of the license engine on CC's website*
+  - (the ccEngine was deprecated by this project, the CC Legal Tools)
+
+[cclicblogalpha]: https://opensource.creativecommons.org/archives/old-tech-blog/entries/cclicense-in-alpha/
+
+
+### 2008-05-01: Submitted ccREL to W3C
+
+- [ccREL: The Creative Commons Rights Expression Language][w3ccrel]
+
+[w3ccrel]: https://www.w3.org/submissions/ccREL/
+
+
+### 2008-04-08: Published ccREL
+
+- [ccREL: The Creative Commons Rights Expression Language][ccrel]
+
+[ccrel]: https://opensource.creativecommons.org/ccrel/
