@@ -233,19 +233,19 @@ def validate_dictionary_is_all_text(d):
     types that we expect to be in there.
     """
     newdict = dict()
-    for k, v in d.items():
-        assert isinstance(k, str)
-        if type(v) == NavigableString:
-            newdict[k] = str(v)
+    for key, value in d.items():
+        assert isinstance(key, str)
+        if isinstance(value, NavigableString):
+            newdict[key] = str(value)
             continue
-        elif type(v) not in (str, dict, list):
-            raise ValueError(f"Not a str: k={k} {type(v)}: {v}")
-        if isinstance(v, dict):
-            newdict[k] = validate_dictionary_is_all_text(v)
-        elif isinstance(v, list):
-            newdict[k] = validate_list_is_all_text(v)
+        elif not isinstance(value, (str, dict, list)):
+            raise ValueError(f"Not a str: key={key} {type(value)}: {value}")
+        if isinstance(value, dict):
+            newdict[key] = validate_dictionary_is_all_text(value)
+        elif isinstance(value, list):
+            newdict[key] = validate_list_is_all_text(value)
         else:
-            newdict[k] = v
+            newdict[key] = value
     return newdict
 
 
