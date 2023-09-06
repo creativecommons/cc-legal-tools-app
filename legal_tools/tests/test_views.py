@@ -262,6 +262,28 @@ class ToolsTestsMixin:
         )
         LegalCodeFactory(tool=self.by_sa_30_es, language_code="ca")
 
+        self.by_sa_30_igo = ToolFactory(
+            base_url="https://creativecommons.org/licenses/by-sa/3.0/igo/",
+            category="licenses",
+            unit="by-sa",
+            version="3.0",
+            jurisdiction_code="igo",
+            is_replaced_by=self.by_sa_40,
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        LegalCodeFactory(  # Jurisdiction default language
+            tool=self.by_sa_30_igo, language_code="en"
+        )
+        LegalCodeFactory(tool=self.by_sa_30_igo, language_code="fr")
+
         self.by_30_th = ToolFactory(
             base_url="https://creativecommons.org/licenses/by/3.0/th/",
             category="licenses",
