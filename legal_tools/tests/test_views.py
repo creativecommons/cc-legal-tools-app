@@ -1232,9 +1232,17 @@ class ViewMetadataTest(TestCase):
         )
 
 
+class ViewNsHtmlTest(TestCase):
+    def test_view_ns_html(self):
+        for url in ["/rdf/ns", "/rdf/ns.html"]:
+            rsp = self.client.get(url)
+            self.assertTemplateUsed("ns.html")
+            self.assertEqual(rsp.status_code, 200)
+
+
 class ViewPageNotFoundTest(TestCase):
     def test_view_page_not_found(self):
-        url = "/does/not/exist"
+        url = "/d-o-e-s/n.o.t/e_x_i_s_t"
         rsp = self.client.get(url)
         self.assertTemplateUsed("404.html")
         self.assertEqual(rsp.status_code, 404)
