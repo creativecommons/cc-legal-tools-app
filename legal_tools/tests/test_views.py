@@ -326,6 +326,24 @@ class ToolsTestsMixin:
             tool=self.by_sa_20_es, language_code="es"
         )
 
+        self.devnations = ToolFactory(
+            base_url="https://creativecommons.org/licenses/devnations/2.0/",
+            category="licenses",
+            unit="devnations",
+            version="2.0",
+            deprecated_on="2007-06-04",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=False,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=True,
+        )
+        LegalCodeFactory(tool=self.devnations, language_code="en")
+
         self.sampling = ToolFactory(
             base_url="https://creativecommons.org/licenses/sampling/1.0/",
             category="licenses",
