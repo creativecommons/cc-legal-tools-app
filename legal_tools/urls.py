@@ -26,13 +26,18 @@ from legal_tools.views import (
     view_ns_html,
 )
 
+RE_CATEGORY = r"licenses|publicdomain"
+RE_JURISDICTION = r"[a-z]{2}|igo|scotland"
+RE_UNIT = r"(?i)[-a-z0-9+]+"
+RE_VERSION = r"[0-9]+[.][0-9]+"  # MAJOR.MINOR
+
 
 class CategoryConverter:
     """
     Category must be either "licenses" or "publicdomain".
     """
 
-    regex = r"licenses|publicdomain"
+    regex = RE_CATEGORY
 
     def to_python(self, value):
         return value
@@ -46,11 +51,13 @@ register_converter(CategoryConverter, "category")
 
 class UnitConverter:
     """
-    Units look like "MIT" or "by-sa" or "by-nc-nd" or "zero".
-    We accept any mix of letters, digits, and dashes.
+    units are short lowercase legal tool designations that may contain letters,
+    dashes and pluses
+
+    (see UNITS_LICENSES and UNITS_PUBLIC_DOMAIN in legal_tools.models)
     """
 
-    regex = r"(?i)[-a-z0-9+]+"
+    regex = RE_UNIT
 
     def to_python(self, value):
         return value
@@ -64,12 +71,11 @@ register_converter(UnitConverter, "unit")
 
 class JurisdictionConverter:
     """
-    jurisdiction should be ISO 3166-1 alpha-2 country code
-
-    BUT it also looks as if we use "igo" and "scotland".
+    jurisdiction should be ISO 3166-1 alpha-2 country code with the exceptions
+    of "igo" and "scotland".
     """
 
-    regex = r"[a-z]{2}|igo|scotland"
+    regex = RE_JURISDICTION
 
     def to_python(self, value):
         return value
@@ -82,7 +88,11 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 
 class VersionConverter:
-    regex = r"[0-9]+[.][0-9]+"  # X.Y
+    """
+    version is in the format MAJOR.MINOR
+    """
+
+    regex = RE_VERSION
 
     def to_python(self, value):
         return value
@@ -96,7 +106,7 @@ register_converter(VersionConverter, "version")
 
 class LangConverter:
     """
-    Django language code should be lowercase IETF language tag
+    Django language codes should be lowercase IETF language tags
     """
 
     regex = LANGUAGE_CODE_REGEX_STRING
@@ -197,6 +207,14 @@ urlpatterns = [
         name="view_list_publicdomain",
     ),
     # DEED PAGES ##############################################################
+    # Redirect URLs without a document/layer to the deed (no language_code)
+    re_path(
+        f"^(?P<path>({RE_CATEGORY})/{RE_UNIT}/{RE_VERSION}"
+        f"(/{RE_JURISDICTION})?)/?$",
+        # "^(?P<path>licenses/by/4.0)",
+        RedirectView.as_view(url="/%(path)s/deed", permanent=False),
+        name="deed_unported_redirect",
+    ),
     # Deed: with Jurisdiction (ported), with language_code
     path(
         "<category:category>/<unit:unit>/<version:version>"
