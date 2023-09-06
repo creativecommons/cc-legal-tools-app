@@ -317,7 +317,7 @@ urlpatterns = [
     # Redirect /ns to /rdf/ns
     re_path(
         r"^ns",
-        RedirectView.as_view(url="rdf/ns", permanent=False),
+        RedirectView.as_view(url="/rdf/ns", permanent=False),
         name="ns_html_redirect",
     ),
     # TRANSLATION PAGES #######################################################
