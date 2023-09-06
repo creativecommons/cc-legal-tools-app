@@ -11,7 +11,10 @@ from django.utils.translation.trans_real import DjangoTranslation
 
 # First-party/Local
 from legal_tools.models import UNITS_LICENSES, LegalCode, Tool, build_path
-from legal_tools.rdf_utils import convert_https_to_http
+from legal_tools.rdf_utils import (
+    convert_https_to_http,
+    generate_foaf_logo_uris,
+)
 from legal_tools.tests.factories import (
     LegalCodeFactory,
     ToolFactory,
@@ -1216,6 +1219,9 @@ class RenderRedirect(TestCase):
 class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
     def validate_rdf_properties(self, tool, content):
         base_url_http = convert_https_to_http(tool.base_url)
+        logo_uris = generate_foaf_logo_uris(
+            tool.unit, tool.version, tool.jurisdiction_code
+        )
         self.assertIn(
             f'<cc:License rdf:about="{base_url_http}">',
             content,
@@ -1231,6 +1237,14 @@ class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
         )
         self.assertIn(
             f"<dcterms:identifier>{tool.unit}</dcterms:identifier>",
+            content,
+        )
+        self.assertIn(
+            f'<foaf:logo rdf:resource="{logo_uris["large"]}"/>',
+            content,
+        )
+        self.assertIn(
+            f'<foaf:logo rdf:resource="{logo_uris["small"]}"/>',
             content,
         )
 
@@ -1281,3 +1295,30 @@ class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
         for tool in Tool.objects.all():
             with self.subTest(tool.identifier):
                 self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_images_mixin(self):
+        url = os.path.join(
+            Tool.objects.first().creator_url, "rdf", "images.rdf"
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        for tool in Tool.objects.all():
+            with self.subTest(tool.identifier):
+                logo_uris = generate_foaf_logo_uris(
+                    tool.unit, tool.version, tool.jurisdiction_code
+                )
+                self.assertIn(
+                    f'  <rdf:Description rdf:about="{logo_uris["large"]}">\n'
+                    "    <exif:height>31</exif:height>\n"
+                    "    <exif:width>88</exif:width>\n"
+                    "  </rdf:Description>\n",
+                    content,
+                )
+                self.assertIn(
+                    f'  <rdf:Description rdf:about="{logo_uris["small"]}">\n'
+                    "    <exif:height>15</exif:height>\n"
+                    "    <exif:width>80</exif:width>\n"
+                    "  </rdf:Description>\n",
+                    content,
+                )

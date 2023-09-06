@@ -23,42 +23,41 @@ def convert_https_to_http(url):
     return urlunparse(parsed_url)
 
 
+def generate_foaf_logo_uris(unit, version, jurisdiction_code):
+    uri_prefix = os.path.join(FOAF_LOGO_URL, unit, version)
+    if jurisdiction_code:
+        logo_uris = {
+            "large": URIRef(
+                os.path.join(uri_prefix, jurisdiction_code, LARGE_LOGO)
+            ),
+            "small": URIRef(
+                os.path.join(uri_prefix, jurisdiction_code, SMALL_LOGO)
+            ),
+        }
+    else:
+        logo_uris = {
+            "large": URIRef(os.path.join(uri_prefix, LARGE_LOGO)),
+            "small": URIRef(os.path.join(uri_prefix, SMALL_LOGO)),
+        }
+    return logo_uris
+
+
 def generate_images_rdf():
     all_tools = Tool.objects.all()
 
     EXIF = Namespace("http://www.w3.org/2003/12/exif/ns#")
-
     image_graph = Graph()
-
     image_graph.bind("exif", EXIF)
 
     for tool in all_tools:
-        if tool.jurisdiction_code:
-            uriref = {
-                "large": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
-                    f"{tool.jurisdiction_code}/{LARGE_LOGO}"
-                ),
-                "small": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/"
-                    f"{tool.jurisdiction_code}/{SMALL_LOGO}"
-                ),
-            }
+        logo_uris = generate_foaf_logo_uris(
+            tool.unit, tool.version, tool.jurisdiction_code
+        )
+        image_graph.add((logo_uris["large"], EXIF.width, Literal("88")))
+        image_graph.add((logo_uris["large"], EXIF.height, Literal("31")))
 
-        else:
-            uriref = {
-                "large": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{LARGE_LOGO}"
-                ),
-                "small": URIRef(
-                    f"{FOAF_LOGO_URL}{tool.unit}/{tool.version}/{SMALL_LOGO}"
-                ),
-            }
-        image_graph.add((uriref["large"], EXIF.width, Literal("88")))
-        image_graph.add((uriref["large"], EXIF.height, Literal("31")))
-
-        image_graph.add((uriref["small"], EXIF.width, Literal("80")))
-        image_graph.add((uriref["small"], EXIF.height, Literal("15")))
+        image_graph.add((logo_uris["small"], EXIF.width, Literal("80")))
+        image_graph.add((logo_uris["small"], EXIF.height, Literal("15")))
 
     return image_graph
 
@@ -101,26 +100,26 @@ def generate_legal_code_rdf(
     g.bind("rdf", RDF)
     g.bind("xsd", XSD)
 
-    for tool_obj in retrieved_tools:
-        legal_code_ids = tool_obj.legal_codes.values_list("id", flat=True)
-        license_uri = URIRef(convert_https_to_http(tool_obj.base_url))
+    for tool in retrieved_tools:
+        legal_code_ids = tool.legal_codes.values_list("id", flat=True)
+        license_uri = URIRef(convert_https_to_http(tool.base_url))
 
         # set cc:License (parent)
         g.set((license_uri, RDF.type, CC.License))
 
         # set cc:deprecatedOn, if applicable
-        if tool_obj.deprecated_on:
-            deprecated_on = Literal(tool_obj.deprecated_on, datatype=XSD.date)
+        if tool.deprecated_on:
+            deprecated_on = Literal(tool.deprecated_on, datatype=XSD.date)
             g.set((license_uri, CC.deprecatedOn, deprecated_on))
 
         # set cc:jurisdiction, if applicable
-        if tool_obj.jurisdiction_code:
+        if tool.jurisdiction_code:
             jurisdiction_uri = URIRef(
                 convert_https_to_http(
                     os.path.join(
-                        tool_obj.creator_url,
+                        tool.creator_url,
                         "international",
-                        tool_obj.jurisdiction_code,
+                        tool.jurisdiction_code,
                         "",  # legacy rdf has a trailing slash
                     )
                 )
@@ -133,7 +132,7 @@ def generate_legal_code_rdf(
             lc_object = LegalCode.objects.get(id=legal_code_id)
             legal_code_uri = URIRef(
                 convert_https_to_http(
-                    f"{tool_obj.creator_url}{lc_object.legal_code_url}"
+                    f"{tool.creator_url}{lc_object.legal_code_url}"
                 )
             )
             data = Literal(legal_code_uri, lang=lc_object.language_code)
@@ -141,12 +140,12 @@ def generate_legal_code_rdf(
 
         # set cc:licenseClass
         # (trailing "" creates a trailing slash to match legacy rdf)
-        license_class_uriref = convert_https_to_http(tool_obj.creator_url)
-        if tool_obj.category == "publicdomain":
+        license_class_uriref = convert_https_to_http(tool.creator_url)
+        if tool.category == "publicdomain":
             license_class_uriref = os.path.join(
                 license_class_uriref, "choose", "publicdomain", ""
             )
-        elif "sampling" in tool_obj.unit:
+        elif "sampling" in tool.unit:
             license_class_uriref = os.path.join(
                 license_class_uriref, "license", "sampling", ""
             )
@@ -157,55 +156,55 @@ def generate_legal_code_rdf(
         g.set((license_uri, CC.licenseClass, URIRef(license_class_uriref)))
 
         # add cc:permits, as applicable
-        if tool_obj.permits_derivative_works:
+        if tool.permits_derivative_works:
             g.add((license_uri, CC.permits, CC.DerivativeWorks))
-        if tool_obj.permits_distribution:
+        if tool.permits_distribution:
             g.add((license_uri, CC.permits, CC.Distribution))
-        if tool_obj.permits_reproduction:
+        if tool.permits_reproduction:
             g.add((license_uri, CC.permits, CC.Reproduction))
-        if tool_obj.permits_sharing:
+        if tool.permits_sharing:
             g.add((license_uri, CC.permits, CC.Sharing))
 
         # add cc:prohibits, as applicable
-        if tool_obj.prohibits_commercial_use:
+        if tool.prohibits_commercial_use:
             g.add((license_uri, CC.prohibits, CC.CommercialUse))
-        if tool_obj.prohibits_high_income_nation_use:
+        if tool.prohibits_high_income_nation_use:
             g.add((license_uri, CC.prohibits, CC.HighIncomeNationUse))
 
         # add cc:requires, as applicable
-        if tool_obj.requires_attribution:
+        if tool.requires_attribution:
             g.add((license_uri, CC.requires, CC.Attribution))
-        if tool_obj.requires_notice:
+        if tool.requires_notice:
             g.add((license_uri, CC.requires, CC.Notice))
-        if tool_obj.requires_share_alike:
+        if tool.requires_share_alike:
             g.add((license_uri, CC.requires, CC.ShareAlike))
 
         # set dcterms:creator
-        creator = URIRef(convert_https_to_http(tool_obj.creator_url))
+        creator = URIRef(convert_https_to_http(tool.creator_url))
         g.set((license_uri, DCTERMS.creator, creator))
 
         # set dcterms:Jurisdiction
-        if tool_obj.jurisdiction_code:
-            if tool_obj.jurisdiction_code == "igo":
+        if tool.jurisdiction_code:
+            if tool.jurisdiction_code == "igo":
                 jurisdiction_code = "un"
             else:
-                jurisdiction_code = tool_obj.jurisdiction_code
+                jurisdiction_code = tool.jurisdiction_code
             data = Literal(jurisdiction_code, datatype=DCTERMS.ISO3166)
             g.set((license_uri, DCTERMS.Jurisdiction, data))
 
         # set dcterms:hasVersion
-        version = Literal(f"{tool_obj.version}")
+        version = Literal(f"{tool.version}")
         g.set((license_uri, DCTERMS.hasVersion, version))
 
         # set dcterms:identifier
-        g.set((license_uri, DCTERMS.identifier, Literal(f"{tool_obj.unit}")))
+        g.set((license_uri, DCTERMS.identifier, Literal(f"{tool.unit}")))
 
         # set dcterms:isReplacedBy, if applicable
-        if tool_obj.is_replaced_by:
+        if tool.is_replaced_by:
             # Convert to Literal so that the URL string is stored instead of
             # the object referenced
             replaced_by = Literal(
-                URIRef(convert_https_to_http(tool_obj.is_replaced_by.base_url))
+                URIRef(convert_https_to_http(tool.is_replaced_by.base_url))
             )
             g.set((license_uri, DCTERMS.isReplacedBy, replaced_by))
 
@@ -214,17 +213,17 @@ def generate_legal_code_rdf(
         for legal_code_id in legal_code_ids:
             lc_object = LegalCode.objects.get(id=legal_code_id)
             legal_code_uri = URIRef(
-                f"{tool_obj.creator_url}{lc_object.legal_code_url}"
+                f"{tool.creator_url}{lc_object.legal_code_url}"
             )
             data = Literal(legal_code_uri, lang=lc_object.language_code)
             g.add((license_uri, DCTERMS.LicenseDocument, data))
 
         # set dcterms:source, if applicable
-        if tool_obj.source:
+        if tool.source:
             # Convert to Literal so that the URL string is stored instead of
             # the object referenced
             source = Literal(
-                URIRef(convert_https_to_http(tool_obj.source.base_url))
+                URIRef(convert_https_to_http(tool.source.base_url))
             )
             g.set((license_uri, DCTERMS.source, source))
 
@@ -236,20 +235,14 @@ def generate_legal_code_rdf(
             g.add((license_uri, DCTERMS.title, data))
 
         # add foaf:logo
-        if tool_obj.jurisdiction_code:
-            logo_prefix = (
-                f"{FOAF_LOGO_URL}{tool_obj.unit}"
-                f"/{tool_obj.version}/{tool_obj.jurisdiction_code}"
-            )
-        else:
-            logo_prefix = f"{FOAF_LOGO_URL}{tool_obj.unit}/{tool_obj.version}"
-        logo_url_large = f"{logo_prefix}/{LARGE_LOGO}"
-        logo_url_small = f"{logo_prefix}/{SMALL_LOGO}"
-        g.add((license_uri, FOAF.logo, URIRef(logo_url_large)))
-        g.add((license_uri, FOAF.logo, URIRef(logo_url_small)))
+        logo_uris = generate_foaf_logo_uris(
+            tool.unit, tool.version, tool.jurisdiction_code
+        )
+        g.add((license_uri, FOAF.logo, logo_uris["large"]))
+        g.add((license_uri, FOAF.logo, logo_uris["small"]))
 
         # set owl:sameAs (alias HTTPS)
-        g.set((license_uri, OWL.sameAs, URIRef(tool_obj.base_url)))
+        g.set((license_uri, OWL.sameAs, URIRef(tool.base_url)))
 
     return g
 
