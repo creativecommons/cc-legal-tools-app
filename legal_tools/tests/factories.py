@@ -96,7 +96,7 @@ class TranslationBranchFactory(factory.django.DjangoModelFactory):
     language_code = factory.Faker("random_element", elements=LANGUAGE_CODES)
     version = "4.0"
     branch_name = factory.LazyAttribute(
-        lambda o: f"cc4-{o.language_code}".lower().replace("_", "-")
+        lambda obj: f"cc4-{obj.language_code}".lower().replace("_", "-")
     )
 
     @factory.post_generation
