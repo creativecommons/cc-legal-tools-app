@@ -179,7 +179,7 @@ Improved compatibility:
 - Added `owl:sameAs` element with HTTPS URL
 
 Improved multilingual support:
-- Title translations now match legal code (removed title translatins languages
+- Title translations now match legal code (removed title translation languages
   that the legal code has not yet been translated into)
 - Added `xml:lang` to `cc:legalcode`
 - Removed top level ~~`rdf:Description`~~ elements that were redundant with
