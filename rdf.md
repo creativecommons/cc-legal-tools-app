@@ -182,20 +182,20 @@ Improved multilingual support:
 - Title translations now match legal code (removed title translatins languages
   that the legal code has not yet been translated into)
 - Added `xml:lang` to `cc:legalcode`
-- Removed top level `rdf:Description` elements that were redundant with
+- Removed top level ~~`rdf:Description`~~ elements that were redundant with
   `cc:legalcode` and `dcterms:LicenseDocument` elements
 
 Removed third-party license RDF/XML (the deeds and legal codes were replaced by
 redirects long ago):
-- `/licenses/BSD/rdf`
-- `/licenses/GPL/2.0/rdf`
-- `/licenses/LGPL/2.1/rdf`
-- `/licenses/MIT/rdf`
-- `/licenses/by-nd-nc/2.0/jp/rdf`
+- ~~`/licenses/BSD/rdf`~~
+- ~~`/licenses/GPL/2.0/rdf`~~
+- ~~`/licenses/LGPL/2.1/rdf`~~
+- ~~`/licenses/MIT/rdf`~~
+- ~~`/licenses/by-nd-nc/2.0/jp/rdf`~~
 
 Removed unused RDF/XML files:
-- `/rdf/jurisdictions.rdf`
-- `/rdf/selectors.rdf`
+- ~~`/rdf/jurisdictions.rdf`~~
+- ~~`/rdf/selectors.rdf`~~
 
 [wp3166alpha2]: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
 
