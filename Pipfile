@@ -10,12 +10,14 @@ dealer = "*"
 Django = ">=3.2.19,<3.3"
 colorlog = "*"
 GitPython = "*"
-lxml = "*"  # For use by beautifulsoup4 (but not a stated dependency)
+lxml = "*"  # Used for RDF/XML processing and by beautifulsoup4
 polib = "*"
 python-dateutil = "*"
 PyYAML = "*"
+rdflib = "*"
 transifex-python = "*"
 whitenoise = "*"
+
 
 [dev-packages]
 black = "*"

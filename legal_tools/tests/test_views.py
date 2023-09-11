@@ -11,6 +11,10 @@ from django.utils.translation.trans_real import DjangoTranslation
 
 # First-party/Local
 from legal_tools.models import UNITS_LICENSES, LegalCode, Tool, build_path
+from legal_tools.rdf_utils import (
+    convert_https_to_http,
+    generate_foaf_logo_uris,
+)
 from legal_tools.tests.factories import (
     LegalCodeFactory,
     ToolFactory,
@@ -105,7 +109,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -121,7 +124,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
@@ -137,7 +139,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
@@ -153,7 +154,6 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=True,
             prohibits_high_income_nation_use=False,
         )
@@ -169,7 +169,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -185,7 +184,6 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -194,6 +192,7 @@ class ToolsTestsMixin:
             category="licenses",
             unit="by",
             version="3.0",
+            is_replaced_by=self.by_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -201,16 +200,15 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_40,
         )
         self.by_20 = ToolFactory(
             base_url="https://creativecommons.org/licenses/by/2.0/",
             category="licenses",
             unit="by",
             version="2.0",
+            is_replaced_by=self.by_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -218,10 +216,8 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_40,
         )
         self.zero_10 = ToolFactory(
             base_url="https://creativecommons.org/publicdomain/zero/1.0/",
@@ -235,7 +231,6 @@ class ToolsTestsMixin:
             requires_share_alike=False,
             requires_notice=False,
             requires_attribution=False,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
@@ -251,6 +246,7 @@ class ToolsTestsMixin:
             unit="by-sa",
             version="3.0",
             jurisdiction_code="es",
+            is_replaced_by=self.by_sa_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -258,15 +254,35 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_sa_40,
         )
         LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_sa_30_es, language_code="es"
         )
         LegalCodeFactory(tool=self.by_sa_30_es, language_code="ca")
+
+        self.by_sa_30_igo = ToolFactory(
+            base_url="https://creativecommons.org/licenses/by-sa/3.0/igo/",
+            category="licenses",
+            unit="by-sa",
+            version="3.0",
+            jurisdiction_code="igo",
+            is_replaced_by=self.by_sa_40,
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=True,
+            requires_notice=True,
+            requires_attribution=True,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        LegalCodeFactory(  # Jurisdiction default language
+            tool=self.by_sa_30_igo, language_code="en"
+        )
+        LegalCodeFactory(tool=self.by_sa_30_igo, language_code="fr")
 
         self.by_30_th = ToolFactory(
             base_url="https://creativecommons.org/licenses/by/3.0/th/",
@@ -274,6 +290,7 @@ class ToolsTestsMixin:
             unit="by",
             version="3.0",
             jurisdiction_code="th",
+            is_replaced_by=self.by_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -281,10 +298,8 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_40,
         )
         LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_30_th, language_code="th"
@@ -296,6 +311,7 @@ class ToolsTestsMixin:
             unit="by-sa",
             version="2.0",
             jurisdiction_code="es",
+            is_replaced_by=self.by_sa_40,
             permits_derivative_works=True,
             permits_reproduction=True,
             permits_distribution=True,
@@ -303,14 +319,56 @@ class ToolsTestsMixin:
             requires_share_alike=True,
             requires_notice=True,
             requires_attribution=True,
-            requires_source_code=False,
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
-            is_replaced_by=self.by_sa_40,
         )
         LegalCodeFactory(  # Jurisdiction default language
             tool=self.by_sa_20_es, language_code="es"
         )
+
+        self.devnations = ToolFactory(
+            base_url="https://creativecommons.org/licenses/devnations/2.0/",
+            category="licenses",
+            unit="devnations",
+            version="2.0",
+            deprecated_on="2007-06-04",
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=False,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=True,
+        )
+        LegalCodeFactory(tool=self.devnations, language_code="en")
+
+        self.sampling = ToolFactory(
+            base_url="https://creativecommons.org/licenses/sampling/1.0/",
+            category="licenses",
+            unit="sampling",
+            version="1.0",
+            deprecated_on="2007-06-04",
+            permits_derivative_works=True,
+            permits_reproduction=False,
+            permits_distribution=False,
+            permits_sharing=False,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        LegalCodeFactory(tool=self.sampling, language_code="en")
+
+        # sources (non-exhaustive)
+        self.by_40.source = self.by_30
+        self.by_40.save()
+        self.by_30.source = self.by_20
+        self.by_30.save()
+        self.by_sa_20_es.source = self.by_20
+        self.by_sa_20_es.save()
 
         super().setUp()
 
@@ -389,7 +447,6 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
                 self.assertNotContains(rsp, s)
 
     def test_text_in_deeds(self):
-        ToolFactory()
         for tool in Tool.objects.filter(version="4.0"):
             with self.subTest(tool.identifier):
                 # Test in English and for 4.0 since that's how we've set up
@@ -405,11 +462,11 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
 
     def test_deed_translation_by_40_es(self):
         # Test with valid Deed & UX and valid Legal Code translations
-        legal_code = LegalCode.objects.filter(
+        legal_code = LegalCode.objects.get(
             tool__unit="by",
             tool__version="4.0",
             language_code="es",
-        )[0]
+        )
         url = legal_code.deed_url
         rsp = self.client.get(url)
         text = rsp.content.decode("utf-8")
@@ -1192,9 +1249,17 @@ class ViewMetadataTest(TestCase):
         )
 
 
+class ViewNsHtmlTest(TestCase):
+    def test_view_ns_html(self):
+        for url in ["/rdf/ns", "/rdf/ns.html"]:
+            rsp = self.client.get(url)
+            self.assertTemplateUsed("ns.html")
+            self.assertEqual(rsp.status_code, 200)
+
+
 class ViewPageNotFoundTest(TestCase):
     def test_view_page_not_found(self):
-        url = "/does/not/exist"
+        url = "/d-o-e-s/n.o.t/e_x_i_s_t"
         rsp = self.client.get(url)
         self.assertTemplateUsed("404.html")
         self.assertEqual(rsp.status_code, 404)
@@ -1222,3 +1287,126 @@ class RenderRedirect(TestCase):
         self.assertIn(f'dir="rtl" lang="{language_code}">', rendered)
         self.assertIn(f"Redirect to: {title}", rendered)
         self.assertIn(f'<meta content="0;url={destination}"', rendered)
+
+
+class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
+    def validate_rdf_properties(self, tool, content):
+        base_url_http = convert_https_to_http(tool.base_url)
+        logo_uris = generate_foaf_logo_uris(
+            tool.unit, tool.version, tool.jurisdiction_code
+        )
+        self.assertIn(
+            f'<cc:License rdf:about="{base_url_http}">',
+            content,
+        )
+        creator_url_http = convert_https_to_http(tool.creator_url)
+        self.assertIn(
+            f'<dcterms:creator rdf:resource="{creator_url_http}"/>',
+            content,
+        )
+        self.assertIn(
+            f"<dcterms:hasVersion>{tool.version}</dcterms:hasVersion>",
+            content,
+        )
+        self.assertIn(
+            f"<dcterms:identifier>{tool.unit}</dcterms:identifier>",
+            content,
+        )
+        self.assertIn(
+            f'<foaf:logo rdf:resource="{logo_uris["large"]}"/>',
+            content,
+        )
+        self.assertIn(
+            f'<foaf:logo rdf:resource="{logo_uris["small"]}"/>',
+            content,
+        )
+
+    def test_view_legal_tool_rdf_singles_mixin(self):
+        for tool in Tool.objects.all():
+            url = build_path(
+                base_url=tool.base_url,
+                document="rdf",
+            )
+            response = self.client.get(url)
+            content = response.content.decode()
+            self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_singles_faker(self):
+        ToolFactory()
+        for tool in Tool.objects.all():
+            url = build_path(
+                base_url=tool.base_url,
+                document="rdf",
+            )
+            response = self.client.get(url)
+            content = response.content.decode()
+            self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_source(self):
+        tool = Tool.objects.get(unit="by", version="4.0")
+        url = build_path(
+            base_url=tool.base_url,
+            document="rdf",
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        self.assertIn(
+            "<dcterms:source>http://creativecommons.org/licenses/by/3.0/"
+            "</dcterms:source>",
+            content,
+        )
+
+    def test_view_legal_tool_rdf_index_mixin(self):
+        url = os.path.join(
+            Tool.objects.first().creator_url, "rdf", "index.rdf"
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        for tool in Tool.objects.all():
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_index_faker(self):
+        ToolFactory()
+        url = os.path.join(
+            Tool.objects.first().creator_url, "rdf", "index.rdf"
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        for tool in Tool.objects.all():
+            with self.subTest(tool.identifier):
+                self.validate_rdf_properties(tool, content)
+
+    def test_view_legal_tool_rdf_images_mixin(self):
+        url = os.path.join(
+            Tool.objects.first().creator_url, "rdf", "images.rdf"
+        )
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        for tool in Tool.objects.all():
+            with self.subTest(tool.identifier):
+                logo_uris = generate_foaf_logo_uris(
+                    tool.unit, tool.version, tool.jurisdiction_code
+                )
+                self.assertIn(
+                    f'  <rdf:Description rdf:about="{logo_uris["large"]}">\n'
+                    "    <exif:height>31</exif:height>\n"
+                    "    <exif:width>88</exif:width>\n"
+                    "  </rdf:Description>\n",
+                    content,
+                )
+                self.assertIn(
+                    f'  <rdf:Description rdf:about="{logo_uris["small"]}">\n'
+                    "    <exif:height>15</exif:height>\n"
+                    "    <exif:width>80</exif:width>\n"
+                    "  </rdf:Description>\n",
+                    content,
+                )

@@ -506,3 +506,66 @@ class UpdatePropertiesTest(TestCase):
         self.assertEqual(license1by.is_replaced_by, license4by)
         license1xx.refresh_from_db()
         self.assertIsNone(license1xx.is_replaced_by)
+
+    def test_update_source(self):
+        def tool(unit, version, jurisdiction_code=None):
+            if jurisdiction_code is None:
+                jurisdiction_code = ""
+            return Tool.objects.get(
+                category="licenses",
+                unit=unit,
+                version=version,
+                jurisdiction_code=jurisdiction_code,
+            )
+
+        tools = [
+            ["by", "4.0", ""],
+            ["by", "3.0", ""],
+            ["by", "3.0", "ar"],
+            ["by", "2.5", "bg"],
+            ["by", "2.0", ""],
+            ["by-nc", "4.0", ""],
+            ["by-nc", "3.0", ""],
+            ["by-nc", "2.5", ""],
+            ["by-nc", "1.0", ""],
+        ]
+
+        # Setup
+        for unit, version, jurisdiction_code in tools:
+            ToolFactory(
+                category="licenses",
+                unit=unit,
+                version=version,
+                jurisdiction_code=jurisdiction_code,
+            )
+
+        # Verify setup
+        for unit, version, jurisdiction_code in tools:
+            self.assertIsNone(tool(unit, version, jurisdiction_code).source)
+
+        # Add some bad data
+        tool_object = tool("by-nc", "1.0")
+        tool_object.source = tool("by-nc", "3.0")
+        tool_object.save()
+
+        # Test
+        def validate_udpate_source():
+            utils.update_source()
+
+            self.assertEqual(tool("by", "4.0").source, tool("by", "3.0"))
+            self.assertEqual(tool("by", "3.0").source, tool("by", "2.0"))
+            self.assertEqual(tool("by", "3.0", "ar").source, tool("by", "3.0"))
+            self.assertEqual(tool("by", "2.5", "bg").source, tool("by", "2.0"))
+            self.assertIsNone(tool("by", "2.0").source)
+
+            self.assertEqual(tool("by-nc", "4.0").source, tool("by-nc", "3.0"))
+            self.assertEqual(tool("by-nc", "3.0").source, tool("by-nc", "2.5"))
+            self.assertEqual(tool("by-nc", "2.5").source, tool("by-nc", "1.0"))
+            self.assertIsNone(tool("by-nc", "1.0").source)
+
+        # First run
+        validate_udpate_source()
+
+        # Subsequent run to test with wrong data and verify behavior of
+        # repeated runs
+        validate_udpate_source()

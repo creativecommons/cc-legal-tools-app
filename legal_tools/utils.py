@@ -19,6 +19,15 @@ from legal_tools.views import render_redirect
 LOG = logging.getLogger(__name__)
 
 
+class MockRequest:
+    method = "GET"
+    META = {}
+    GET = {"distilling": 1}
+
+    def __init__(self, path):
+        self.path = path
+
+
 def init_utils_logger(logger: logging.Logger = None):
     global LOG
     if logger is None:
@@ -34,15 +43,6 @@ def save_bytes_to_file(filebytes, output_filename):
     os.makedirs(dirname, mode=0o755, exist_ok=True)
     with open(output_filename, "w+b") as f:
         f.write(filebytes)
-
-
-class MockRequest:
-    method = "GET"
-    META = {}
-    GET = {"distilling": 1}
-
-    def __init__(self, path):
-        self.path = path
 
 
 def save_url_as_static_file(output_dir, url, relpath):
@@ -99,13 +99,10 @@ def save_redirect(output_dir, redirect_data):
 
 def parse_legal_code_filename(filename):
     """
-    Given the filename where the HTML text of a license is stored,
+    Given the filename where the HTML text of a legal code is stored,
     return a dictionary with the metadata we can figure out from it.
 
     The filename should not include any path. A trailing .html is okay.
-
-    Partially based on:
-    https://github.com/creativecommons/cc-link-checker/blob/a255d2b5d72df31b3e750b34dac2ac6effe7c792/link_checker/utils.py#L419-L469  # noqa: E501
     """
 
     basename = filename
@@ -214,10 +211,10 @@ def validate_list_is_all_text(list_):
     """
     newlist = []
     for i, value in enumerate(list_):
-        if type(value) == NavigableString:
+        if isinstance(value, NavigableString):
             newlist.append(str(value))
             continue
-        elif type(value) not in (str, list, dict):
+        elif not isinstance(value, (str, list, dict)):
             raise ValueError(
                 f"Not a str, list, or dict: {type(value)}: {value}"
             )
@@ -236,19 +233,19 @@ def validate_dictionary_is_all_text(d):
     types that we expect to be in there.
     """
     newdict = dict()
-    for k, v in d.items():
-        assert isinstance(k, str)
-        if type(v) == NavigableString:
-            newdict[k] = str(v)
+    for key, value in d.items():
+        assert isinstance(key, str)
+        if isinstance(value, NavigableString):
+            newdict[key] = str(value)
             continue
-        elif type(v) not in (str, dict, list):
-            raise ValueError(f"Not a str: k={k} {type(v)}: {v}")
-        if isinstance(v, dict):
-            newdict[k] = validate_dictionary_is_all_text(v)
-        elif isinstance(v, list):
-            newdict[k] = validate_list_is_all_text(v)
+        elif not isinstance(value, (str, dict, list)):
+            raise ValueError(f"Not a str: key={key} {type(value)}: {value}")
+        if isinstance(value, dict):
+            newdict[key] = validate_dictionary_is_all_text(value)
+        elif isinstance(value, list):
+            newdict[key] = validate_list_is_all_text(value)
         else:
-            newdict[k] = v
+            newdict[key] = value
     return newdict
 
 
@@ -299,8 +296,6 @@ def update_is_replaced_by():
     Since version 4.0, the licenses are international, so no jurisdiction
     comparison is made.
     """
-    # Get the list of units and languages that occur among the tools
-    # to let the template iterate over them as it likes.
     tool_objects = (
         legal_tools.models.Tool.objects.all()
         .filter(category="licenses")
@@ -337,4 +332,54 @@ def update_is_replaced_by():
                 f"{tool.resource_name} is_replaced_by {latest.resource_name}"
             )
             tool.is_replaced_by = latest
+            tool.save()
+
+
+def update_source():
+    """
+    Update the source property of all licenses by doing simple unit
+    and version comparisons.
+    """
+    versions = sorted(legal_tools.models.TOOLS_VERSIONS, reverse=True)
+    tool_objects = legal_tools.models.Tool.objects.all()
+
+    for tool in tool_objects:
+        version_index = versions.index(tool.version)
+        source = None
+
+        # exlude earliest versions which can't have a source
+        if tool.version != "1.0":
+            # loop through the versions defined in TOOLS_VERSIONS starting with
+            # the same version as the current tool
+            for version in versions[version_index:]:
+                if version == tool.version and not tool.jurisdiction_code:
+                    # only ported legal tools might have a source with the same
+                    # versions as the tool itself
+                    continue
+
+                try:
+                    source = legal_tools.models.Tool.objects.get(
+                        unit=tool.unit,
+                        version=version,
+                        jurisdiction_code="",
+                    )
+                    break
+                except legal_tools.models.Tool.DoesNotExist:
+                    continue
+
+        if tool.source == source:
+            if source:
+                source_value = source.resource_name
+            else:
+                source_value = source
+            LOG.debug(f"No-op: {tool.resource_name} source: {source_value}")
+        elif source:
+            tool.source = source
+            tool.save()
+            LOG.info(
+                f"Set {tool.resource_name} source: {source.resource_name}"
+            )
+        else:
+            LOG.info(f"Remove {tool.resource_name} source: '{tool.source}'")
+            tool.source = None
             tool.save()

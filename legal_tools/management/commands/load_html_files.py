@@ -142,7 +142,15 @@ class Command(BaseCommand):
         html_filenames.append("certification_1.0.html")
         html_filenames.append("mark_1.0.html")
 
-        html_filenames.sort()
+        # Sort by version number so source can be set accurately
+        def sort_filenames(filename):
+            parts = filename.replace(".html", "").split("_")
+            new_key = f"{parts[1]}__{parts[0]}__{'__'.join(parts[2:])}"
+            new_key = new_key.rstrip("_")
+            return new_key
+
+        html_filenames.sort(key=sort_filenames)
+
         LOG.debug(f"\n{hostname}:{input_directory}")
         for filename in html_filenames:
             try:
@@ -187,34 +195,38 @@ class Command(BaseCommand):
 
             unit_parts = unit.split("-")
             if category == "licenses":
-                # These are valid for BY only
+                # permits
+                # (sharing has a counter-intuitive definition--see schema.rdf)
                 permits_derivative_works = "nd" not in unit_parts
-                permits_reproduction = "nd" not in unit_parts
-                permits_distribution = "nd" not in unit_parts
-                permits_sharing = "nd" not in unit_parts
-                requires_share_alike = "sa" in unit_parts
-                requires_notice = True
+                permits_distribution = "sampling" != unit
+                permits_reproduction = "sampling" != unit
+                permits_sharing = "sampling+" == unit
+                # requires
                 requires_attribution = (
                     "by" in unit_parts
                     or "devnations" in unit_parts
                     or "sampling" in unit_parts
                     or "sampling+" in unit_parts
                 )
-                requires_source_code = False  # GPL, LGPL only, I think
+                requires_notice = True
+                requires_share_alike = "sa" in unit_parts
+                # prohibits
                 prohibits_commercial_use = "nc" in unit_parts
                 prohibits_high_income_nation_use = "devnations" in unit_parts
             elif category == "publicdomain":
-                # permits anything, requires nothing, prohibits nothing
+                # permits anything
+                # (sharing has a counter-intuitive definition--see schema.rdf)
                 permits_derivative_works = True
-                permits_reproduction = True
                 permits_distribution = True
-                permits_sharing = True
-                requires_share_alike = False
-                requires_notice = False
-                requires_attribution = False
-                requires_source_code = False
+                permits_reproduction = True
+                permits_sharing = False
+                # prohibits nothing
                 prohibits_commercial_use = False
                 prohibits_high_income_nation_use = False
+                # requires nothing
+                requires_attribution = False
+                requires_notice = False
+                requires_share_alike = False
 
             # Find or create a Tool object
             tool, created = Tool.objects.get_or_create(
@@ -234,7 +246,6 @@ class Command(BaseCommand):
                     requires_share_alike=requires_share_alike,
                     requires_notice=requires_notice,
                     requires_attribution=requires_attribution,
-                    requires_source_code=requires_source_code,
                     prohibits_commercial_use=prohibits_commercial_use,
                     prohibits_high_income_nation_use=prohibits_high_income_nation_use,  # noqa: E501
                 ),
@@ -370,6 +381,7 @@ class Command(BaseCommand):
                     )
 
         call_command("update_is_replaced_by", verbosity=options["verbosity"])
+        call_command("update_source", verbosity=options["verbosity"])
 
     def write_temp_po_files(
         self,

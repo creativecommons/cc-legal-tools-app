@@ -544,7 +544,6 @@ class ToolModelTest(TestCase):
                 "requires_share_alike": True,
                 "requires_notice": True,
                 "requires_attribution": True,
-                "requires_source_code": True,
                 "prohibits_commercial_use": True,
                 "prohibits_high_income_nation_use": False,
             }
@@ -566,7 +565,6 @@ class ToolModelTest(TestCase):
             "requires_attribution": True,
             "requires_notice": True,
             "requires_share_alike": True,
-            "requires_source_code": True,
             "legal_code_languages": {
                 "en": "English",
                 "pt": "Portuguese",
@@ -594,7 +592,6 @@ class ToolModelTest(TestCase):
                 "requires_share_alike": True,
                 "requires_notice": True,
                 "requires_attribution": True,
-                "requires_source_code": True,
                 "prohibits_commercial_use": True,
                 "prohibits_high_income_nation_use": False,
             }
@@ -615,7 +612,6 @@ class ToolModelTest(TestCase):
             "requires_attribution": True,
             "requires_notice": True,
             "requires_share_alike": True,
-            "requires_source_code": True,
             "legal_code_languages": {
                 "en": "English",
             },
@@ -642,7 +638,6 @@ class ToolModelTest(TestCase):
                 "requires_share_alike": False,
                 "requires_notice": True,
                 "requires_attribution": True,
-                "requires_source_code": False,
                 "prohibits_commercial_use": False,
                 "prohibits_high_income_nation_use": False,
             }
@@ -664,7 +659,6 @@ class ToolModelTest(TestCase):
             "requires_attribution": True,
             "requires_notice": True,
             "requires_share_alike": False,
-            "requires_source_code": False,
             "legal_code_languages": {
                 "en": "English",
             },
@@ -692,7 +686,6 @@ class ToolModelTest(TestCase):
                 "requires_share_alike": False,
                 "requires_notice": False,
                 "requires_attribution": False,
-                "requires_source_code": False,
                 "prohibits_commercial_use": False,
                 "prohibits_high_income_nation_use": False,
             }
@@ -714,7 +707,6 @@ class ToolModelTest(TestCase):
             "requires_attribution": False,
             "requires_notice": False,
             "requires_share_alike": False,
-            "requires_source_code": False,
         }
 
         for key in expected_data.keys():
@@ -1009,12 +1001,6 @@ class ToolModelTest(TestCase):
             str(tool),
             f"Tool<{tool.unit},{tool.version}," f"{tool.jurisdiction_code}>",
         )
-
-    def test_rdf(self):
-        tool = ToolFactory(
-            unit="bx-oh", version="1.3", jurisdiction_code="any"
-        )
-        self.assertEqual("RDF Generation Not Implemented", tool.rdf())
 
     # def test_default_language_code(self):
     #     tool = ToolFactory(

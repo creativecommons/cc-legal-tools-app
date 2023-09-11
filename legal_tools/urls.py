@@ -10,6 +10,7 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es
 
 # Third-party
 from django.urls import path, re_path, register_converter
+from django.views.generic.base import RedirectView
 
 # First-party/Local
 from i18n import LANGUAGE_CODE_REGEX_STRING
@@ -17,10 +18,19 @@ from legal_tools.views import (
     view_branch_status,
     view_deed,
     view_dev_index,
+    view_image_rdf,
     view_legal_code,
+    view_legal_tool_rdf,
     view_list,
     view_metadata,
+    view_ns_html,
 )
+
+# See Converter functions, below, for a description of the following regex:
+RE_CATEGORY = r"licenses|publicdomain"
+RE_JURISDICTION = r"[a-z]{2}|igo|scotland"
+RE_UNIT = r"(?i)[-a-z0-9+]+"
+RE_VERSION = r"[0-9]+[.][0-9]+"
 
 
 class CategoryConverter:
@@ -28,7 +38,7 @@ class CategoryConverter:
     Category must be either "licenses" or "publicdomain".
     """
 
-    regex = r"licenses|publicdomain"
+    regex = RE_CATEGORY
 
     def to_python(self, value):
         return value
@@ -42,11 +52,13 @@ register_converter(CategoryConverter, "category")
 
 class UnitConverter:
     """
-    Units look like "MIT" or "by-sa" or "by-nc-nd" or "zero".
-    We accept any mix of letters, digits, and dashes.
+    units are short lowercase legal tool designations that may contain letters,
+    dashes and pluses
+
+    (see UNITS_LICENSES and UNITS_PUBLIC_DOMAIN in legal_tools.models)
     """
 
-    regex = r"(?i)[-a-z0-9+]+"
+    regex = RE_UNIT
 
     def to_python(self, value):
         return value
@@ -60,12 +72,11 @@ register_converter(UnitConverter, "unit")
 
 class JurisdictionConverter:
     """
-    jurisdiction should be ISO 3166-1 alpha-2 country code
-
-    BUT it also looks as if we use "igo" and "scotland".
+    jurisdiction should be ISO 3166-1 alpha-2 country code with the exceptions
+    of "igo" and "scotland".
     """
 
-    regex = r"[a-z]{2}|igo|scotland"
+    regex = RE_JURISDICTION
 
     def to_python(self, value):
         return value
@@ -78,7 +89,11 @@ register_converter(JurisdictionConverter, "jurisdiction")
 
 
 class VersionConverter:
-    regex = r"[0-9]+[.][0-9]+"  # X.Y
+    """
+    version is in the format MAJOR.MINOR
+    """
+
+    regex = RE_VERSION
 
     def to_python(self, value):
         return value
@@ -92,7 +107,7 @@ register_converter(VersionConverter, "version")
 
 class LangConverter:
     """
-    Django language code should be lowercase IETF language tag
+    Django language codes should be lowercase IETF language tags
     """
 
     regex = LANGUAGE_CODE_REGEX_STRING
@@ -193,6 +208,14 @@ urlpatterns = [
         name="view_list_publicdomain",
     ),
     # DEED PAGES ##############################################################
+    # Redirect URLs without a document/layer to the deed (no language_code)
+    re_path(
+        f"^(?P<path>(?:{RE_CATEGORY})/{RE_UNIT}/{RE_VERSION}"
+        f"(/(?:{RE_JURISDICTION}))?)/?$",
+        # "^(?P<path>licenses/by/4.0)",
+        RedirectView.as_view(url="/%(path)s/deed", permanent=False),
+        name="nodocument_redirect",
+    ),
     # Deed: with Jurisdiction (ported), with language_code
     path(
         "<category:category>/<unit:unit>/<version:version>"
@@ -260,6 +283,44 @@ urlpatterns = [
     #     kwargs=dict(jurisdiction="", is_plain_text=True),
     #     name="view_legal_code_unported",
     # ),
+    # CCREL DOCUMENTS #########################################################
+    # Legal tool RDF/XML: no Jurisdiction (international/unported)
+    path(
+        "<category:category>/<unit:unit>/<version:version>/rdf",
+        view_legal_tool_rdf,
+        name="view_legal_tool_rdf_unported",
+    ),
+    # Legal tool RDF/XML: with Jurisdiction (ported)
+    path(
+        "<category:category>/<unit:unit>/<version:version>/"
+        "<jurisdiction:jurisdiction>/rdf",
+        view_legal_tool_rdf,
+        name="view_legal_tool_rdf_ported",
+    ),
+    # index.rdf - RDF/XML of all legal tools
+    path(
+        "rdf/index.rdf",
+        view_legal_tool_rdf,
+        name="view_legal_tool_rdf_index",
+    ),
+    # images.rdf - RDF/XML of all legal tool images (badges)
+    path(
+        "rdf/images.rdf",
+        view_image_rdf,
+        name="view_image_rdf",
+    ),
+    # images.rdf - ccREL description & namespace
+    re_path(
+        r"^rdf/ns",
+        view_ns_html,
+        name="ns_html",
+    ),
+    # Redirect /ns to /rdf/ns
+    re_path(
+        r"^ns",
+        RedirectView.as_view(url="/rdf/ns", permanent=False),
+        name="ns_html_redirect",
+    ),
     # TRANSLATION PAGES #######################################################
     re_path(
         r"^dev/status/(?P<id>\d+)/$",

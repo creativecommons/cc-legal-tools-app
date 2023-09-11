@@ -1,11 +1,21 @@
+# Standard library
+import os.path
+
 # Third-party
-import factory.fuzzy
+import factory
 
 # First-party/Local
-from legal_tools.models import LegalCode, Tool, TranslationBranch
+from legal_tools.models import (
+    TOOLS_VERSIONS,
+    UNITS_LICENSES,
+    UNITS_PUBLIC_DOMAIN,
+    LegalCode,
+    Tool,
+    TranslationBranch,
+)
 
 # The language codes we already have translations for
-language_codes = [
+LANGUAGE_CODES = [
     "ar",
     "cs",
     "de",
@@ -33,8 +43,8 @@ language_codes = [
     "sv",
     "tr",
     "uk",
-    "zh_Hans",
-    "zh_Hant",
+    "zh-hans",
+    "zh-hant",
 ]
 
 
@@ -42,31 +52,41 @@ class ToolFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Tool
 
-    base_url = factory.Faker("url")
-    unit = factory.fuzzy.FuzzyChoice(
-        ["by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa", "zero"]
+    category = factory.Faker(
+        "random_element", elements=["licenses", "publicdomain"]
     )
-    version = factory.Faker("numerify", text="#.#")
-    permits_derivative_works = factory.fuzzy.FuzzyChoice([False, True])
-    permits_reproduction = factory.fuzzy.FuzzyChoice([False, True])
-    permits_distribution = factory.fuzzy.FuzzyChoice([False, True])
-    permits_sharing = factory.fuzzy.FuzzyChoice([False, True])
-    requires_share_alike = factory.fuzzy.FuzzyChoice([False, True])
-    requires_notice = factory.fuzzy.FuzzyChoice([False, True])
-    requires_attribution = factory.fuzzy.FuzzyChoice([False, True])
-    requires_source_code = factory.fuzzy.FuzzyChoice([False, True])
-    prohibits_commercial_use = factory.fuzzy.FuzzyChoice([False, True])
-    prohibits_high_income_nation_use = factory.fuzzy.FuzzyChoice([False, True])
-    jurisdiction_code = ""
     creator_url = factory.Faker("url")
-    category = factory.fuzzy.FuzzyChoice(["licenses", "publicdomain"])
+    jurisdiction_code = ""
+    permits_derivative_works = factory.Faker("pybool")
+    permits_distribution = factory.Faker("pybool")
+    permits_reproduction = factory.Faker("pybool")
+    permits_sharing = factory.Faker("pybool")
+    prohibits_commercial_use = factory.Faker("pybool")
+    prohibits_high_income_nation_use = factory.Faker("pybool")
+    requires_attribution = factory.Faker("pybool")
+    requires_notice = factory.Faker("pybool")
+    requires_share_alike = factory.Faker("pybool")
+    unit = factory.Faker(
+        "random_element",
+        elements=UNITS_LICENSES + UNITS_PUBLIC_DOMAIN,
+    )
+    version = factory.Faker("random_element", elements=TOOLS_VERSIONS)
+
+    base_url = factory.LazyAttribute(
+        lambda obj: os.path.join(
+            obj.creator_url,
+            obj.category,
+            obj.unit,
+            obj.version,
+        )
+    )
 
 
 class LegalCodeFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = LegalCode
 
-    language_code = factory.fuzzy.FuzzyChoice(language_codes)
+    language_code = factory.Faker("random_element", elements=LANGUAGE_CODES)
     tool = factory.SubFactory(ToolFactory)
 
 
@@ -74,10 +94,10 @@ class TranslationBranchFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = TranslationBranch
 
-    language_code = factory.fuzzy.FuzzyChoice(language_codes)
+    language_code = factory.Faker("random_element", elements=LANGUAGE_CODES)
     version = "4.0"
     branch_name = factory.LazyAttribute(
-        lambda o: f"cc4-{o.language_code}".lower().replace("_", "-")
+        lambda obj: f"cc4-{obj.language_code}".lower().replace("_", "-")
     )
 
     @factory.post_generation

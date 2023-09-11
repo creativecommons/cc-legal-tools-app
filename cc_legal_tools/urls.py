@@ -22,6 +22,12 @@ urlpatterns = [
         ),
         name="static_cc_legal_tools_redirect",
     ),
+    # Redirect rdf/schema.rdf to static/rdf/schema.rdf
+    re_path(
+        r"^(?P<rdf>rdf/schema.rdf)",
+        RedirectView.as_view(url="/static/%(rdf)s", permanent=False),
+        name="static_rdf_redirect",
+    ),
     # Redirect wp-content/ to static/wp-content/
     re_path(
         r"^(?P<wp_content>wp-content/.*)",
