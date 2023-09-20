@@ -206,56 +206,6 @@ def view_dev_index(request):
     # heads = repo.remotes.origin.refs
     # branches = [head.name[len("origin/") :] for head in heads]
 
-    # Serve CC navigation header menu
-    # Path: /?rest_route=/ccnavigation-header/menu
-    if request.GET.get("rest_route"):  # pragma: no cover
-        # Standard library
-        import json
-
-        ccnavigation_header_menu = [
-            {
-                "ID": 1,
-                "url": "#",
-                "title": "Who we are",
-                "child_items": [
-                    {"ID": 1, "url": "#", "title": "Item 1"},
-                    {"ID": 2, "url": "#", "title": "Item 2"},
-                    {"ID": 3, "url": "#", "title": "Item 3"},
-                    {"ID": 4, "url": "#", "title": "Item 4"},
-                    {"ID": 5, "url": "#", "title": "Item 5"},
-                    {"ID": 6, "url": "#", "title": "Item 6"},
-                    {"ID": 7, "url": "#", "title": "Item 7"},
-                    {"ID": 8, "url": "#", "title": "Item 8"},
-                    {"ID": 9, "url": "#", "title": "Item 9"},
-                ],
-            },
-            {"ID": 2, "url": "#", "title": "What we do"},
-            {
-                "ID": 3,
-                "url": "#",
-                "title": "Licenses and tools",
-                "child_items": [
-                    {
-                        "ID": 1,
-                        "url": "/licenses/list",
-                        "title": "Licenses List",
-                    },
-                    {
-                        "ID": 2,
-                        "url": "/publicdomain/list",
-                        "title": "Public Domain List",
-                    },
-                ],
-            },
-            {"ID": 4, "url": "#", "title": "News"},
-            {"ID": 4, "url": "#", "title": "Support Us"},
-        ]
-
-        return HttpResponse(
-            json.dumps(ccnavigation_header_menu),
-            content_type="application/json",
-        )
-
     translation.activate(settings.LANGUAGE_CODE)
     distilling = request.GET.get("distilling", False)
 
