@@ -1,0 +1,80 @@
+/*
+Theme Name: CC Vocabulary Theme
+Author: the Creative Commons team; possumbilities, Timid Robot
+Author URI: https://opensource.creativecommons.org/
+Description: Theme based on the Vocabulary Design System
+Version: 0.10.0
+Requires at least: 5.0
+Tested up to: 6.2.2
+Requires PHP: 7.0
+License: MIT License
+License URI: https://github.com/creativecommons/vocabulary-theme/blob/main/LICENSE
+*/
+
+@import 'vocabulary/css/vocabulary.css' layer(vocabulary);
+
+
+/* WordPress specific rules */
+
+/* Mainly for hiding the pagination heading WP provides */
+.screen-reader-text {
+    height: 0;
+    margin: 0;
+    padding: 0;
+    visibility: hidden;
+}
+
+/* Classic Editor TinyMCE WYSIWYG editor image alignment  */
+/* TODO: port in alignleft and alignright rules here as well? */
+main figure:has(img.aligncenter) {
+    width: 100%;
+    margin-left: 0;
+}
+
+/* WP Outputs pagination as ul, rather than more semantic ul */
+nav.pagination ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    text-indent: none;
+
+    font-size: 1em;
+    list-style: none;
+}
+
+main nav.pagination ul li {
+    margin: 0 .5em;
+}
+
+main nav.pagination ul li a, main nav.pagination ul li span {
+    padding: .4em .7em;
+
+    background: #F5F5F5;
+    --underline-background-color: #F5F5F5;
+    color: black;
+    font-family: 'Roboto Condensed';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.2em;
+    text-transform: none;
+    text-decoration: none;
+}
+
+main nav.pagination ul li span.current {
+    padding: .4em .7em;
+
+    background: black;
+    --underline-background-color: black;
+    color: white;
+}
+
+/* patches */
+
+.person-page main > header .pronouns {
+    grid-column-start: 2;
+    margin-bottom: 1em;
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.5em;
+}
