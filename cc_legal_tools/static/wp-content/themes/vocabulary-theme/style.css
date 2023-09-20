@@ -3,7 +3,7 @@ Theme Name: CC Vocabulary Theme
 Author: the Creative Commons team; possumbilities, Timid Robot
 Author URI: https://opensource.creativecommons.org/
 Description: Theme based on the Vocabulary Design System
-Version: 0.10.0
+Version: 0.12.0
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.0
@@ -29,6 +29,64 @@ License URI: https://github.com/creativecommons/vocabulary-theme/blob/main/LICEN
 main figure:has(img.aligncenter) {
     width: 100%;
     margin-left: 0;
+}
+
+/* Classic Editor TinyMCE WYSIWYG editor image alignment, previous theme's markukp  */
+/* presently <figure> */
+div[id^="attachment_"] {
+    width: 120%;
+    margin: 0;
+    margin-left: -10%;
+    margin-bottom: 3em;
+    padding: 0;
+    float: none;
+}
+
+/* presently <img> */
+div[id^="attachment_"] img[class^="wp-image"]:not([width]) {
+    width: 100%;
+}
+
+/* presently <span class="attribution> */
+div[id^="attachment_"] p[id^="caption-attachment-"] {
+    display: block;
+    margin-top: 1em;
+}
+
+div[id^="attachment_"].alignleft {
+    margin-top: 2em;
+    margin-right: 2em;
+    margin-left: -10%;
+    width: 50%;
+    float: left;
+}
+
+div[id^="attachment_"].alignleft:after {
+    display: block;
+    content: '';
+    height: 3em;
+    clear: both;
+}
+
+div[id^="attachment_"].aligncenter {
+    width: 100%;
+
+    margin-left: 0;
+}
+
+div[id^="attachment_"].alignright {
+    margin-top: 2em;
+    margin-right: -10%;
+    margin-left: 2em;
+    width: 50%;
+    float: right;
+}
+
+div[id^="attachment_"].alignright:after {
+    display: block;
+    content: '';
+    height: 2em;
+    clear: both;
 }
 
 /* WP Outputs pagination as ul, rather than more semantic ul */
@@ -77,4 +135,39 @@ main nav.pagination ul li span.current {
     font-style: normal;
     font-weight: 700;
     font-size: 1.5em;
+}
+
+.team-index main .closing {
+    grid-column: span 3;
+}
+
+.team-index main .closing p {
+    font-style: italic;
+}
+
+main article.related-posts .authored-posts.highlight article header {
+    flex-direction: column;
+    align-items: baseline;
+}
+
+main h2 {
+    width: 100%;
+}
+
+main figure .attribution {
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+}
+
+main .authored-posts.highlight article {
+    gap: 0 2em;
+    align-content: flex-start;
+}
+
+main .authored-posts.highlight article header {
+    flex-direction: column;
+    align-items: baseline;
+    margin-top: 2em;
 }
