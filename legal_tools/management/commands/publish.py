@@ -6,7 +6,7 @@ from argparse import SUPPRESS, ArgumentParser
 from multiprocessing import Pool
 from pathlib import Path
 from pprint import pprint
-from shutil import copyfile, rmtree
+from shutil import copyfile, copytree, rmtree
 
 # Third-party
 import git
@@ -256,7 +256,7 @@ class Command(BaseCommand):
         output_dir = self.output_dir
         LOG.info("Copying WordPress content files")
         LOG.debug(f"{hostname}:{output_dir}")
-        path = "wp-content/themes/creativecommons-base/assets/img"
+        path = "wp-content"
         source = os.path.join(
             settings.PROJECT_ROOT,
             "cc_legal_tools",
@@ -264,12 +264,7 @@ class Command(BaseCommand):
             path,
         )
         destination = os.path.join(output_dir, path)
-        os.makedirs(destination, exist_ok=True)
-        for file_name in os.listdir(source):
-            copyfile(
-                os.path.join(source, file_name),
-                os.path.join(destination, file_name),
-            )
+        copytree(source, destination)
 
     def copy_static_cc_legal_tools_files(self):
         if self.options["rdf_only"]:
@@ -283,15 +278,10 @@ class Command(BaseCommand):
             settings.PROJECT_ROOT,
             "cc_legal_tools",
             "static",
-            path,
+            "cc-legal-tools",
         )
         destination = os.path.join(output_dir, path)
-        os.makedirs(destination, exist_ok=True)
-        for file_name in os.listdir(source):
-            copyfile(
-                os.path.join(source, file_name),
-                os.path.join(destination, file_name),
-            )
+        copytree(source, destination)
 
     def copy_static_rdf_files(self):
         hostname = socket.gethostname()
@@ -306,12 +296,7 @@ class Command(BaseCommand):
             path,
         )
         destination = os.path.join(output_dir, path)
-        os.makedirs(destination, exist_ok=True)
-        for file_name in os.listdir(source):
-            copyfile(
-                os.path.join(source, file_name),
-                os.path.join(destination, file_name),
-            )
+        copytree(source, destination)
 
     def distill_and_symlink_rdf_meta(self):
         """
