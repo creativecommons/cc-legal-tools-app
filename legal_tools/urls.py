@@ -321,6 +321,12 @@ urlpatterns = [
         RedirectView.as_view(url="/rdf/ns", permanent=False),
         name="ns_html_redirect",
     ),
+    # Redirect rdf/schema.rdf to static/rdf/schema.rdf
+    re_path(
+        r"^(?P<rdf>rdf/schema.rdf)",
+        RedirectView.as_view(url="/static/%(rdf)s", permanent=False),
+        name="static_rdf_redirect",
+    ),
     # TRANSLATION PAGES #######################################################
     re_path(
         r"^dev/status/(?P<id>\d+)/$",
