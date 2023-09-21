@@ -10,7 +10,7 @@
         url('../fonts/RobotoCondensed-Regular.woff') format('woff'),
         url('../fonts/RobotoCondensed-Regular.otf') format('opentype');
 }
-    
+
 @font-face {
     font-family:"Roboto Condensed";
     font-style: normal;
@@ -28,9 +28,9 @@
     font-display: swap;
     src: url(../fonts/SourceSansPro-Regular.woff2) format("woff2"),
         url(../fonts/SourceSansPro-Regular.woff) format("woff"),
-        url(../fonts/SourceSansPro-Regular.otf) format("opentype"); 
+        url(../fonts/SourceSansPro-Regular.otf) format("opentype");
  }
-    
+
 @font-face {
     font-family: "Source Sans Pro";
     font-style: normal;
@@ -38,7 +38,7 @@
     font-display: swap;
     src: url(../fonts/SourceSansPro-SemiBold.woff2) format("woff2"),
         url(../fonts/SourceSansPro-SemiBold.woff) format("woff"),
-        url(../fonts/SourceSansPro-SemiBold.otf) format("opentype");       
+        url(../fonts/SourceSansPro-SemiBold.otf) format("opentype");
 }
 
 @font-face {
@@ -56,13 +56,13 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url(../fonts/AccidenzCommons.otf) format("opentype");          
+    src: url(../fonts/AccidenzCommons.otf) format("opentype");
 }
 
 
 :root {
     /* brand colors */
-    
+
     --vocabulary-brand-color-gold: #FBD43C;
     --vocabulary-brand-color-green: #008000;
     --vocabulary-brand-color-tomato: #C74200;
@@ -76,7 +76,7 @@
     --vocabulary-brand-color-soft-turquoise: #DFF6FC;
 
     --vocabulary-brand-color-soft-tomato: #FEEDE9;
-    --vocabulary-brand-color-dark-tomato: #903101; 
+    --vocabulary-brand-color-dark-tomato: #903101;
 
     --vocabulary-neutral-color-lighter-gray: #F5F5F5;
     --vocabulary-neutral-color-dark-gray: #767676;
@@ -93,7 +93,7 @@
 
     /* brand svg sprite sheet capabilities */
 
-    /* note: Be sure you utilize the icons in the way that is most 
+    /* note: Be sure you utilize the icons in the way that is most
     accessible and semantic.
 
     This system allows for 5 icon implementation strategies:
@@ -108,13 +108,13 @@
         <a class="icon-attach icon-name">Mastodon</a>
 
     4. Bypass the use of CSS classes, and put icon in content as an
-    <svg> with <use> fragment identifiers. 
+    <svg> with <use> fragment identifiers.
          <svg>
            <use href="/svg/cc/icons/cc-icons.svg#icon-name"></use>
          </svg>
 
     5. Target an element precisely with less extraneous "icon name classes",
-    using mostly CSS. (This could optionally be abstracted further to remove 
+    using mostly CSS. (This could optionally be abstracted further to remove
     the need for the .icon class entirely.)
 
         <a class="icon">Mastodon</a>
@@ -130,19 +130,19 @@
      --icon-sprite: url('../svg/cc/icons/cc-icons.svg#cc-logo');
      --icon-sprite-color: black;
      --icon-sprite-size: 1em;
- 
+
      /* cc sprite names */
      --cc-logo: url('./../svg/cc/icons/cc-icons.svg#cc-logo');
      --cc-heart: url('./../svg/cc/icons/cc-icons.svg#cc-heart');
      --cc-heart-filled: url('./../svg/cc/icons/cc-icons.svg#cc-heart-filled');
- 
+
      /* font awesome sprite names */
      --fa-globe: url('./../svg/font-awesome/icons/fa-icons.svg#fa-globe');
      --fa-heart: url('./../svg/font-awesome/icons/fa-icons.svg#fa-heart');
      --fa-quote: url('./../svg/font-awesome/icons/fa-icons.svg#fa-quote');
      --fa-right-angle: url('./../svg/font-awesome/icons/fa-icons.svg#fa-right-angle');
      --fa-search: url('./../svg/font-awesome/icons/fa-icons.svg#fa-search');
- 
+
      --fa-instagram: url('./../svg/font-awesome/icons/fa-icons.svg#fa-instagram');
      --fa-twitter: url('./../svg/font-awesome/icons/fa-icons.svg#fa-twitter');
      --fa-facebook: url('./../svg/font-awesome/icons/fa-icons.svg#fa-facebook');
@@ -162,7 +162,7 @@
     font-size: var(--icon-sprite-size);
     background-color: var(--icon-sprite-color);
     -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat; 
+    mask-repeat: no-repeat;
 
     -webkit-mask-image: var(--icon-sprite);
     mask-image: var(--icon-sprite);
@@ -237,13 +237,13 @@ leaving room for semantic and accessible implementation choices  */
     font-size: var(--icon-sprite-size);
     background-color: var(--icon-sprite-color);
     -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat; 
+    mask-repeat: no-repeat;
     -webkit-mask-image: var(--icon-sprite);
     mask-image: var(--icon-sprite);
 
     -webkit-mask-size: contain;
     mask-size: contain;
-  
+
     --icon-sprite: var(--cc-logo);
 }
 
@@ -251,7 +251,7 @@ leaving room for semantic and accessible implementation choices  */
     display: inline-block;
     content: '';
     text-indent: -1000px;
-    
+
     /* min-width: 30px; */
     /* min-height: 30px; */
     height: 1em;
@@ -260,12 +260,12 @@ leaving room for semantic and accessible implementation choices  */
     font-size: var(--icon-sprite-size);
     background-color: var(--icon-sprite-color);
     -webkit-mask-repeat: no-repeat;
-    mask-repeat: no-repeat; 
+    mask-repeat: no-repeat;
     -webkit-mask-image: var(--icon-sprite);
     mask-image: var(--icon-sprite);
 
     -webkit-mask-size: contain;
     mask-size: contain;
-  
+
     --icon-sprite: var(--cc-logo);
 }
