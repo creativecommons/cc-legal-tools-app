@@ -648,7 +648,6 @@ class Tool(models.Model):
             for unit_part in self.unit.split("-"):
                 if unit_part in ["by", "nc", "nd", "sa"]:
                     result.append(f"cc-{unit_part}")
-        print(f"DEBUG\nlogos: {result}")
         return result
 
     @property
