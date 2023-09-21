@@ -633,16 +633,22 @@ class Tool(models.Model):
         ["cc-logo", "cc-zero", "cc-by"]
         """
         result = ["cc-logo"]  # Everybody gets this
-        if self.unit == "zero":
+        if self.unit == "mark":
+            result.append("cc-pdm")
+        elif self.unit == "sampling":
+            result.append("cc-sampling")
+        elif self.unit == "sampling+":
+            result.append("cc-sampling-plus")
+        elif self.unit == "nc-sampling+":
+            result.append("cc-nc")
+            result.append("cc-sampling-plus")
+        elif self.unit == "zero":
             result.append("cc-zero")
-        elif self.unit.startswith("by"):
-            result.append("cc-by")
-            if self.prohibits_commercial_use:
-                result.append("cc-nc")
-            if self.requires_share_alike:
-                result.append("cc-sa")
-            if not self.permits_derivative_works:
-                result.append("cc-nd")
+        else:
+            for unit_part in self.unit.split("-"):
+                if unit_part in ["by", "nc", "nd", "sa"]:
+                    result.append(f"cc-{unit_part}")
+        print(f"DEBUG\nlogos: {result}")
         return result
 
     @property
