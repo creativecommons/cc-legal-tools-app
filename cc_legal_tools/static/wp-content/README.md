@@ -12,4 +12,3 @@ Also see the primary repository [`../../../README.md`](../../../README.md).
 
 [vocabulary-theme]: https://github.com/creativecommons/vocabulary-theme
 [index-dev-env]: https://github.com/creativecommons/index-dev-env
-
