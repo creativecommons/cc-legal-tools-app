@@ -630,7 +630,7 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+        self.assertTemplateUsed("includes/notice_newer_license.html")
 
     def test_view_deed_replaced_jurisdiction_language(self):
         lc = LegalCode.objects.get(
@@ -642,7 +642,7 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
         url = lc.deed_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+        self.assertTemplateUsed("includes/notice_newer_license.html")
 
     # def test_deed_for_superseded_tool(self):
     #     unit = "by-nc-sa"
@@ -855,24 +855,13 @@ class ViewLegalCodeTest(TestCase):
             for template in (
                 "base.html",
                 "legalcode.html",
-                "includes/about_cc.html",
-                "includes/about_cc_and_license.html",
+                "includes/notice_about_cc_and_trademark.html",
+                "includes/notice_about_licenses_and_cc.html",
                 "includes/footer.html",
                 "includes/header.html",
                 "includes/legalcode_licenses_4.0.html",
-                "includes/legalcode_menu_sidebar.html",
-                "includes/licenses_header.html",
+                "includes/legalcode_contextual_menu.html",
                 "includes/related_links.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
-                "includes/snippet/icon.html",
                 "includes/use_of_licenses.html",
             ):
                 self.assertTemplateUsed(rsp, template)
@@ -1012,7 +1001,7 @@ class ViewLegalCodeTest(TestCase):
         url = by_30.legal_code_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+        self.assertTemplateUsed("includes/notice_newer_license.html")
 
     def test_view_legal_code_replaced_jurisdiction_language(self):
         by_40 = LegalCodeFactory(
@@ -1034,7 +1023,7 @@ class ViewLegalCodeTest(TestCase):
         url = by_30_es.legal_code_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+        self.assertTemplateUsed("includes/notice_newer_license.html")
 
     def test_view_legal_code_replaced_default_language(self):
         by_40 = LegalCodeFactory(
@@ -1056,7 +1045,7 @@ class ViewLegalCodeTest(TestCase):
         url = by_30_es.legal_code_url
         rsp = self.client.get(url)
         self.assertEqual(200, rsp.status_code)
-        self.assertTemplateUsed("includes/disclaimer_newer_license.html")
+        self.assertTemplateUsed("includes/notice_newer_license.html")
 
 
 class ViewBranchStatusTest(TestCase):

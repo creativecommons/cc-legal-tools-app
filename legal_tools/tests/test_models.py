@@ -499,6 +499,22 @@ class LegalCodeModelTest(TestCase):
             redirect_pairs,
         )
 
+    def test_identifier(self):
+        self.assertEqual(
+            "CC BY 4.0",
+            LegalCodeFactory(
+                tool__unit="by", tool__version="4.0"
+            ).identifier(),
+        )
+        self.assertEqual(
+            "CC BY-SA 3.0 NL",
+            LegalCodeFactory(
+                tool__jurisdiction_code="nl",
+                tool__unit="by-sa",
+                tool__version="3.0",
+            ).identifier(),
+        )
+
 
 class ToolModelTest(TestCase):
     def test_nc(self):
@@ -898,6 +914,10 @@ class ToolModelTest(TestCase):
         # Every tool includes "cc-logo"
         self.assertIn("cc-logo", ToolFactory().logos())
         self.assertEqual(
+            ["cc-logo"],
+            ToolFactory(unit="devnations", version="2.0").logos(),
+        )
+        self.assertEqual(
             ["cc-logo", "cc-zero"], ToolFactory(unit="zero").logos()
         )
         self.assertEqual(
@@ -959,6 +979,34 @@ class ToolModelTest(TestCase):
                 requires_share_alike=True,
                 permits_derivative_works=True,
             ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-nc"],
+            ToolFactory(
+                unit="nc",
+                version="1.0",
+                prohibits_commercial_use=True,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-nc", "cc-sampling-plus"],
+            ToolFactory(unit="nc-sampling+", version="1.0").logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-nd"],
+            ToolFactory(
+                unit="nd",
+                version="1.0",
+                permits_derivative_works=False,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-sampling"],
+            ToolFactory(unit="sampling", version="1.0").logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-sampling-plus"],
+            ToolFactory(unit="sampling+", version="1.0").logos(),
         )
 
     def test_get_legal_code_for_language_code(self):
