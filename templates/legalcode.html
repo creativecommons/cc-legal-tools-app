@@ -1,71 +1,73 @@
 {% extends 'base.html' %}
 {% load bidi i18n static %}
 
-{% block title %}{{ tool.identifier }} {% trans "Legal Code" %} &mdash; {{ tool_title }} &mdash; Creative Commons{% endblock %}
+
+{% block title %}
+{{ tool.identifier }} {% trans "Legal Code" %} | {{ tool_title }}
+{% endblock %}
+
+
 {% block head_extra %}
 <link href="/cc-legal-tools/legalcode.css" rel="stylesheet"/>
 {% endblock %}
 
-{% block active-breadcrumb-li %}
-  <li class="is-active"><a href="{{ legal_code.legal_code_url }}" aria-current="page displayed">{{ legal_code.identifier }} {% trans "Legal Code" %}</a></li>
+
+{% block title_header %}
+{% include 'includes/snippet/title_with_icons.html' with document_type="legalcode" %}
 {% endblock %}
 
-{% block next_btn_section %}
-<div class="columns">
-  <div class="column is-one-quarter"></div>
-  <div class="column columns padding-vertical-normal">
-    <div class="column is-three-quarters padding-top-normal">
-      Version {{ legal_code.tool.version }} &#8226;
-      See the <a href="/legal-code-errata/">errata page</a> for any corrections and the date of change
-      {% if legal_code.translation_last_update %}
-        &#8226; Translation published {{ legal_code.translation_last_update|date:'Y/m/d' }}
-      {% endif %}
-    </div>
-    <div class="column">
-      <a id="next-btn" class="button tiny is-pulled-{% bidi_end %}" href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
-    </div>
-  </div>
-</div>
+{% block contextual_menu %}
+{% if not legal_code.html %} {# if not raw html #}
+{% include 'includes/legalcode_contextual_menu.html' %}
+{% endif %}
 {% endblock %}
+
 
 {% block content %}
-  <div class="columns">
-    {% if not legal_code.html %} {# if not raw html #}
-      {% include 'includes/legalcode_menu_sidebar.html' %}
-    {% endif %}
-    <div class="column">
-      {% include 'includes/licenses_header.html' %} {# Title and icons #}
-      {% if tool.deprecated_on %}
-        {# Retired legal tool notice #}
-        {% include 'includes/disclaimer_deprecated.html' %}
-      {% endif %}
-      {% if replaced_path %}
-        {# Newer license notice #}
-        {% include 'includes/disclaimer_newer_license.html' %}
-      {% endif %}
-      {% if not legal_code.html %}
-        {% include 'includes/about_cc_and_license.html' %} {# CC IS NOT A LAW FIRM #}
-        {% include 'includes/use_of_licenses.html' %} {# Considerations... #}
-        {% if tool.category == "publicdomain" and tool.unit == "zero" %}
-          {% include 'includes/legalcode_zero.html' %} {# <<< THE ACTUAL CC0 LICENSE TEXT #}
-        {% elif tool.category == "licenses" and tool.version == "4.0" %}
-          {% include 'includes/legalcode_licenses_4.0.html' %} {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
-        {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
-          {% include 'includes/legalcode_licenses_3.0_unported.html' %} {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
-        {% else %}
-          <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black    ">
-            <p class="has-text-black body-big padding-bottom-normal"><strong>{% trans "Unimplemented" %}</strong> &mdash; {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %} <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues · creativecommons/cc-legal-tools-app</a>.</p>
-          </div>
-        {% endif %}
-        {% include 'includes/about_cc.html' %}
-        {# NOTE: plaintext functionality disabled #}
-        {# {% include 'includes/view_legal_code_link_plain_text.html' %} #}
-      {% else %}
-        {% include "includes/legalcode_crude_html.html" %}
-      {% endif %}
-      {% include 'includes/related_links.html' %}
+<p class="document-link">
+<a href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
+</p>
+<p>
+{% trans "Version" %} {{ legal_code.tool.version }} &#8226;
+{% blocktrans trimmed %}
+See the <a href="/legal-code-errata/">errata page</a> for any corrections and
+the date of change
+{% endblocktrans %}
+{% if legal_code.translation_last_update %}
+  &#8226; Translation published {{ legal_code.translation_last_update|date:'Y/m/d' }}
+{% endif %}
+</p>
+
+{#{% include 'includes/licenses_header.html' %}#} {# Title and icons #}
+{% if tool.deprecated_on %}
+  {# Retired legal tool notice #}
+  {% include 'includes/notice_deprecated.html' %}
+{% endif %}
+{% if replaced_path %}
+  {# Newer license notice #}
+  {% include 'includes/notice_newer_license.html' %}
+{% endif %}
+{% if not legal_code.html %}
+  {% include 'includes/notice_about_licenses_and_cc.html' %} {# CC IS NOT A LAW FIRM #}
+  {% include 'includes/use_of_licenses.html' %} {# Considerations... #}
+  {% if tool.category == "publicdomain" and tool.unit == "zero" %}
+    {% include 'includes/legalcode_zero.html' %} {# <<< THE ACTUAL CC0 LICENSE TEXT #}
+  {% elif tool.category == "licenses" and tool.version == "4.0" %}
+    {% include 'includes/legalcode_licenses_4.0.html' %} {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
+  {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
+    {% include 'includes/legalcode_licenses_3.0_unported.html' %} {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
+  {% else %}
+    <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black    ">
+      <p class="has-text-black body-big padding-bottom-normal"><strong>{% trans "Unimplemented" %}</strong> &mdash; {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %} <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues · creativecommons/cc-legal-tools-app</a>.</p>
     </div>
-  </div>
+  {% endif %}
+  {# NOTE: plaintext functionality disabled #}
+  {# {% include 'includes/view_legal_code_link_plain_text.html' %} #}
+{% else %}
+  {% include "includes/legalcode_crude_html.html" %}
+{% endif %}
+{% include 'includes/notice_about_cc_and_trademark.html' %}
+{% include 'includes/related_links.html' %}
 {% endblock %}
 
 {% block extra-js%}

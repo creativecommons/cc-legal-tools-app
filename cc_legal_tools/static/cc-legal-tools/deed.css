@@ -1,15 +1,68 @@
-#deed-body {
-  background-color: rgb(255, 255, 255);
-  border-top: 10px solid rgb(60, 92, 153);
-  border-bottom: 5px solid rgb(176, 176, 176);
-  border-left: 5px solid rgb(176, 176, 176);
-  border-right: 5px solid rgb(176, 176, 176);
+.cc-legal-tools main > header > h1 {
+  margin: 0.5em 0;
 }
-/* Used by multiple includes */
-#disclaimer-info-section {
-  color: #000 !important;
+
+.cc-legal-tools div.content div#deed-body {
+  border-top: 10px solid var(--vocabulary-brand-color-turquoise);
+  border-bottom: 5px solid var(--vocabulary-neutral-color-dark-gray);
+  border-left: 5px solid var(--vocabulary-neutral-color-dark-gray);
+  border-right: 5px solid var(--vocabulary-neutral-color-dark-gray);
+  margin-left: -3em;
+  margin-right: -3em;
+  padding-left: 3em;
+  padding-right: 3em;
+  padding-top: 3em;
+  padding-bottom: 3em;
 }
-#disclaimer-info-section p:nth-child(n+1) {
-/* padding for all but first paragraph */
-  padding-top: 1rem !important;
+
+.cc-legal-tools div#deed-body ol > li {
+  clear: both;
+  list-style: none;
+  margin-bottom: 2em;
+  min-height: 2em;
+}
+.cc-legal-tools.bidi-left div#deed-body ol > li {
+  padding-left: 2.5em;
+}
+.cc-legal-tools.bidi-right div#deed-body ol > li {
+  padding-right: 2.5em;
+}
+.cc-legal-tools div#deed-body ol > li:before {
+  background-repeat: no-repeat;
+  background-size: contain;
+  content: '';
+  height: 2em;
+  width: 2em;
+}
+.cc-legal-tools.bidi-left div#deed-body ol > li:before {
+  float: left;
+  margin-left: -2.5em;
+}
+.cc-legal-tools.bidi-right div#deed-body ol > li:before {
+  float: right;
+  margin-right: -2.5em;
+}
+.cc-legal-tools div#deed-body ol > li.cc-by:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-by');
+}
+.cc-legal-tools div#deed-body ol > li.cc-mark:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-pdm');
+}
+.cc-legal-tools div#deed-body ol > li.cc-nc:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nc');
+}
+.cc-legal-tools div#deed-body ol > li.cc-nd:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nd');
+}
+.cc-legal-tools div#deed-body ol > li.cc-sa:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sa');
+}
+.cc-legal-tools div#deed-body ol > li.cc-sampling:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sampling');
+}
+.cc-legal-tools div#deed-body ol > li.cc-sampling-plus:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sampling-plus');
+}
+.cc-legal-tools div#deed-body ol > li.cc-zero:before {
+  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-zero');
 }

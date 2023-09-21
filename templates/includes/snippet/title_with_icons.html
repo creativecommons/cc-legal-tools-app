@@ -1,0 +1,19 @@
+{% load i18n %}
+<span class="tool-icons">
+  {% for code in tool.logos %}
+  <span class="cc-icon">
+    <svg viewBox="0 0 30 30">
+      <use href="/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#{{ code }}"></use>
+    </svg>
+  </span>
+  {% endfor %}
+</span>
+<h1>
+  {% if document_type == "deed" %}
+    {{ tool.identifier }} {% trans "Deed" %}
+  {% else %}
+    {{ tool.identifier }} {% trans "Legal Code" %}
+  {% endif %}
+</h1>
+<h2>{{ tool_title }}</h2>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

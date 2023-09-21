@@ -1,91 +1,162 @@
-body {
-  background-color: rgb(245, 245, 245);
+/* html */
+.bidi-left main ul, .bidi-left main ol {
+  margin: 0 0 2em 2em;
 }
-html[dir="rtl"] nav.breadcrumb>ul li+li:before {
-  transform: scaleX(-1);
+.bidi-right main ul, .bidi-right main ol {
+  margin: 0 2em 2em 0;
 }
-html[dir="rtl"] .breadcrumb li:first-child a {
-  padding-right: 0;
-  padding-left: .5rem;
-}
-a.skip-link {
-  left:-999px;
-  position:absolute;
-  top:auto;
-  width:1px;
-  height:1px;
-  overflow:hidden;
-  z-index:-999;
-}
-a.skip-link:focus, a.skip-link:active {
-  color: black;
-  font-weight: bolder;
+
+
+/* Ancilliary menu */
+.bidi-left div.masthead > nav.ancilliary-menu {
   left: auto;
-  top: auto;
-  width: 30%;
-  height: auto;
-  overflow:auto;
-  margin: 10px 35%;
-  padding:5px;
-  background-color: rgb(255, 255, 255);
-  border-top: 10px solid rgb(60, 92, 153);
-  border-bottom: 5px solid rgb(176, 176, 176);
-  border-left: 5px solid rgb(176, 176, 176);
-  border-right: 5px solid rgb(176, 176, 176);
-  text-align:center;
-  font-size:1.2em;
-  z-index:999;
+  right: 0;
 }
-
-
-/* begin donate button for templates/includes/header.html */
-
-.button.donate.is-header {
- --icon-size: 10px;
- background-color: #feede9;
- color: #c74200;
- font-family: "Source Sans Pro", sans-serif;
- font-size: 0.75rem;
- font-weight: bold;
- max-height: 1.6875rem;
- padding: calc(0.25rem - 0.7px) 0.5rem calc(0.25rem - 0.7px) 0.5rem;
- text-transform: none;
-}
-
-[dir="ltr"] .button.donate.is-header {
- margin-right: 6rem;
-}
-
-[dir="rtl"] .button.donate.is-header {
- margin-left: 6rem;
-}
-
-[dir="ltr"] .button.donate.is-header > i {
-  margin-right: 0.25rem;
-}
-
-[dir="rtl"] .button.donate.is-header > i {
-  margin-left: 0.25rem;
-}
-/* end donate button for templates/includes/header.html */
-
-
-
-/* begin Explore CC for templates/includes/header.html */
-
-[dir="rtl"] .cc-global-header .open-tab {
-  right: auto;
+.bidi-right div.masthead > nav.ancilliary-menu {
   left: 0;
+  right: auto !important;
+}
+div.masthead > nav.ancilliary-menu span.locale {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 5px;
+  padding: 6px 10px;
+
+  background:  var(--vocabulary-neutral-color-lighter-gray);
+  border: none;
+  border-radius: 3px;
+}
+div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
+  --icon-sprite: var(--fa-globe);
+  --icon-sprite-size: .8em;
+  opacity: .5;
+}
+.bidi-left div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
+.bidi-left div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
+.bidi-left div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
+  margin-left: 0;
+  margin-right: .8em;
+}
+.bidi-right div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
+.bidi-right div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
+.bidi-right div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
+  margin-left: .8em;
+  margin-right: 0;
+}
+.icon.fa-info, .icon-attach.fa-info:before {
+  --icon-sprite: url('./../svg/font-awesome/icons/fa-icons.svg#fa-info');
+  --icon-sprite-size: .75em;
 }
 
-/* end Explore CC for templates/includes/header.html */
 
-
-/* begin donate button for templates/includes/footer.html */
-
-[dir="rtl"] a.button.small.donate > i {
-  margin-left: 8px;
-  margin-right: -6px !important;
+/* header title */
+.cc-legal-tools main > header > span.tool-icons > span.cc-icon > svg {
+  display: inline;
+  height: 4em;
+  width: 4em;
 }
 
-/* end donate button for templates/includes/footer.html */
+
+/* right nav */
+.cc-legal-tools main > aside {
+  background-color: var(--vocabulary-brand-color-soft-gold);
+  padding: 1em;
+}
+.cc-legal-tools main > aside a {
+  --underline-background-color: var(--vocabulary-brand-color-soft-gold);
+}
+main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
+  font-size: 1rem;/
+}
+
+
+/* content */
+.cc-legal-tools main > div.content > h2:first-child {
+  margin-top:0;
+}
+
+.cc-legal-tools table {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.cc-legal-tools table > thead > tr {
+  position: -webkit-sticky;
+  position: sticky;
+  background-color: var(--vocabulary-brand-color-soft-tomato);
+}
+.cc-legal-tools table tr > td {
+  border: solid var(--vocabulary-neutral-color-dark-gray);
+  padding: 1em 0.5em;
+  margin: 0;
+}
+.cc-legal-tools table tr > th {
+  border: solid var(--vocabulary-neutral-color-dark-gray);
+  padding: 0.5em;
+  margin: 0;
+}
+
+.cc-legal-tools table tr > th {
+}
+.cc-legal-tools table > tbody > tr:nth-child(3n) {
+    background-color: var(--vocabulary-neutral-color-lighter-gray);
+}
+
+
+/* Notices */
+.cc-legal-tools div.notice-bottom, .cc-legal-tools div.notice-top {
+  padding: 1em;
+  margin-bottom: 2em;
+  margin-top: 2em;
+}
+.cc-legal-tools div.notice-bottom > h2:first-child,
+.cc-legal-tools div.notice-top > h2:first-child {
+  margin-top: 0;
+}
+.cc-legal-tools div.notice-bottom > p:last-child,
+.cc-legal-tools div.notice-top > p:last-child {
+  margin-bottom: 0;
+}
+.cc-legal-tools div.notice-bottom {
+  background-color: var(--vocabulary-brand-color-soft-turquoise);
+}
+.cc-legal-tools div.notice-bottom a {
+  --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+}
+.cc-legal-tools div.notice-top {
+  background-color: var(--vocabulary-brand-color-soft-tomato);
+}
+.cc-legal-tools div.notice-top a {
+  --underline-background-color: var(--vocabulary-brand-color-soft-tomato);
+}
+
+.cc-legal-tools p.document-link {
+  font-weight: bold;
+}
+.cc-legal-tools.bidi-left p.document-link {
+  text-align: right;
+}
+.cc-legal-tools.bidi-right p.document-link {
+  text-align: left;
+}
+
+.cc-legal-tools div.content h2:first-child {
+  margin-top: 0;
+}
+.cc-legal-tools div.content p:last-child {
+  margin-bottom: 0;
+}
+
+/* footer */
+.bidi-left footer > div.donate > a.donate.icon-attach.cc-heart-filled:before {
+  margin-left: 0;
+  margin-right: .3em;
+}
+.bidi-right footer > div.donate > a.donate.icon-attach.cc-heart-filled:before {
+  margin-left: .3em;
+  margin-right: 0;
+}

@@ -1,165 +1,126 @@
 {% load i18n license_tags static %}
-<div id="deed-body" class="margin-vertical-bigger padding-xxl" >
-  {% include 'includes/snippet/icon_header_snippet.html' %}
+<div id="deed-body">
 
   {# RIGHTS #}
 
-  <h3 class="b-header has-text-black padding-bottom-big padding-top-normal" style="font-weight: bold;">{% trans "You are free to:" %}</h3>
+  <h2 id="rights">{% trans "You are free to:" %}</h2>
+  <ol>
 
   {% if tool.unit == "devnations" %}
 
-      <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>to Share</strong> &mdash; to copy, distribute and transmit the work{% endblocktrans %}</p>
-      <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}<strong>to Remix</strong> &mdash; to adapt the work{% endblocktrans %}</p>
+    <li>{% blocktrans %}<strong>to Share</strong> &mdash; to copy, distribute and transmit the work{% endblocktrans %}</li>
+    <li>{% blocktrans %}<strong>to Remix</strong> &mdash; to adapt the work{% endblocktrans %}</li>
 
   {% elif "sampling" in tool.unit %}
-
     {% if tool.prohibits_commercial_use %}
-      <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for noncommercial purposes.{% endblocktrans %}</p>
+    <li class="cc-sampling{% if "sampling+" in tool.unit %}-plus{% endif %}">
+      {% blocktrans trimmed %}
+        To sample, mash-up, or otherwise creatively transform this work for
+        noncommercial purposes.
+      {% endblocktrans %}
+    </li>
     {% else %}
-      <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To sample, mash-up, or otherwise creatively transform this work for commercial or noncommercial purposes.{% endblocktrans %}</p>
+    <li class="cc-sampling{% if "sampling+" in tool.unit %}-plus{% endif %}">
+    {% blocktrans trimmed %}To sample, mash-up, or otherwise creatively transform this work for commercial or noncommercial purposes.{% endblocktrans %}</li>
     {% endif %}
 
     {% if "sampling+" in tool.unit %}
-      <p class="has-text-black body-big padding-bottom-normal">{% blocktrans %}To perform, display, and distribute copies of this whole work for noncommercial purposes (e.g., file-sharing or noncommercial webcasting).{% endblocktrans %}</p>
+    <li class="cc-sampling-plus">{% blocktrans %}To perform, display, and distribute copies of this whole work for noncommercial purposes (e.g., file-sharing or noncommercial webcasting).{% endblocktrans %}</li>
     {% endif %}
 
   {% else %}
 
-    <p class="has-text-black body-big padding-bottom-normal">
-      {% blocktrans %}<strong>Share</strong> &mdash; copy and redistribute the material in any medium or format{% endblocktrans %}{% if not tool.prohibits_commercial_use%}
+    <li>
+      {% blocktrans trimmed %}<strong>Share</strong> &mdash; copy and redistribute the material in any medium or format{% endblocktrans %}{% if not tool.prohibits_commercial_use%}
         {% blocktrans %}for any purpose, even commercially.{% endblocktrans %}
       {% endif %}
-    </p>
+    </li>
 
     {% if tool.permits_derivative_works %}
-      <p class="has-text-black body-big padding-bottom-small">
-        {% blocktrans %}<strong>Adapt</strong> &mdash; remix, transform, and build upon the material{% endblocktrans %}{% if not tool.prohibits_commercial_use%}
-          {% blocktrans %}for any purpose, even commercially.{% endblocktrans %}
-        {% endif %}
-      </p>
+    <li>
+      {% blocktrans trimmed %}<strong>Adapt</strong> &mdash; remix, transform, and build upon the material{% endblocktrans %}{% if not tool.prohibits_commercial_use%}
+        {% blocktrans trimmed %}for any purpose, even commercially.{% endblocktrans %}
+      {% endif %}
+    </li>
     {% endif %}
   {% endif %}
 
-  <p class="has-text-black body-big padding-bottom-small">
-    {% blocktrans %}The licensor cannot revoke these freedoms as long as you follow the license terms.{% endblocktrans %}
-  </p>
+    <li>
+      {% blocktrans trimmed %}The licensor cannot revoke these freedoms as long as you follow the license terms.{% endblocktrans %}
+    </li>
+  </ol>
 
   {# TERMS #}
 
-  <h3 class="b-header has-text-black padding-bottom-big padding-top-normal" style="font-weight: bold;">
+  <h2 id="terms">
     {% trans "Under the following terms:" %}
-  </h3>
-  <div class="columns is-multiline">
+  </h2>
+  <ol>
 
   {% if tool.prohibits_high_income_nation_use %}
-    <div class="column is-1">
-      {# empty div because there is no icon, but we need spacing #}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
-        <span style="font-weight: bold;">{% trans "Developing Nations" %}</span> -
-        {% blocktrans %}You may exercise the above freedoms in developing nations only. {% endblocktrans %}
-      </p>
-    </div>
+    <li>
+      <strong>{% trans "Developing Nations" %}</strong> -
+      {% blocktrans %}You may exercise the above freedoms in developing nations only. {% endblocktrans %}
+    </li>
   {% endif %}
 
   {% if tool.requires_attribution %}
-    <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-by' %}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
-        <span style="font-weight: bold;">{% trans "Attribution" %}</span> -
-        {% blocktrans %}You must give <a href="#" id="appropriate_credit_popup" class="helpLink">appropriate credit</a></span>, provide a link to the license, and <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#" id="indicate_changes_popup" class="helpLink">indicate if changes were made</a></span>. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.{% endblocktrans %}
-      </p>
-    </div>
+    <li class="cc-by">
+      <strong>{% trans "Attribution" %}</strong> -
+      {% blocktrans %}You must give <a href="#" id="appropriate_credit_popup" class="helpLink">appropriate credit</a></span>, provide a link to the license, and <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#" id="indicate_changes_popup" class="helpLink">indicate if changes were made</a></span>. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.{% endblocktrans %}
+    </li>
   {% endif %}
 
   {% if tool.prohibits_commercial_use %}
-    <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-nc' %}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
-        <span style="font-weight: bold;">{% trans "NonCommercial" %}</span> -
-        {% blocktrans %}You may not use the material for <a href="#" id="commercial_purposes_popup" class="helpLink">commercial purposes</a>.{% endblocktrans %}
-      </p>
-    </div>
+    <li class="cc-nc">
+      <strong>{% trans "NonCommercial" %}</strong> -
+      {% blocktrans %}You may not use the material for <a href="#" id="commercial_purposes_popup" class="helpLink">commercial purposes</a>.{% endblocktrans %}
+    </li>
   {% endif %}
 
   {% if tool.requires_share_alike %}
-    <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-sa' %}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
-        <span style="font-weight: bold;">{% trans "ShareAlike" %}</span> - {% blocktrans %}If you remix, transform, or build upon the material, you must distribute your contributions under the <a href="#" id="same_license_popup" class="helpLink">same license</a> as the original.{% endblocktrans %}
-      </p>
-    </div>
+    <li class="cc-sa">
+      <strong>{% trans "ShareAlike" %}</strong> - {% blocktrans %}If you remix, transform, or build upon the material, you must distribute your contributions under the <a href="#" id="same_license_popup" class="helpLink">same license</a> as the original.{% endblocktrans %}
+    </li>
   {% endif %}
 
   {% if not tool.permits_derivative_works %}
-    <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-nd' %}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
-        <span style="font-weight: bold;">{% trans "NoDerivatives" %}</span> - {% blocktrans %}If you <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
-      </p>
-    </div>
+    <li class="cc-nd">
+      <strong>{% trans "NoDerivatives" %}</strong> - {% blocktrans %}If you <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
+    </li>
   {% endif %}
 
   {% if tool.unit == "sampling" or tool.unit == "sampling+" %}
-    <div class="column is-1">
-      {# empty div because there is no icon, but we need spacing #}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
+    <li>
       {% blocktrans %}You may not use this work to advertise for or promote anything but the work you create from it.{% endblocktrans %}
-      </p>
-    </div>
+    </li>
   {% endif %}
 
   {% if "sampling" in tool.unit %}
-    <div class="column is-1">
-      {# empty div because there is no icon, but we need spacing #}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
+    <li>
       {% blocktrans %}For any reuse or distribution, you must make clear to others the license terms of this work. The best way to do this is with a link to this web page.{% endblocktrans %}
-      </p>
-    </div>
+    </li>
   {% endif %}
 
   {% if tool.unit == "sampling" %}
-    <div class="column is-1">
-      {# empty div because there is no icon, but we need spacing #}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
+    <li>
       {% blocktrans %}You may not perform, display, or distribute copies of this whole work for any purpose.{% endblocktrans %}
-      </p>
-    </div>
+    </li>
   {% endif %}
 
-    <div class="column is-1">
-      {# empty div because there is no icon, but we need spacing #}
-    </div>
-    <div class="column is-11">
-      <p class="has-text-black body-big padding-bottom-normal">
-        <span style="font-weight: bold;">{% trans "No additional restrictions" %}</span> - {% blocktrans %}You may not apply legal terms or <a href="#" id="technological_measures_popup" class="helpLink">technological measures</a> that legally restrict others from doing anything the license permits.{% endblocktrans %}
-      </p>
-    </div>
-  </div>
+    <li>
+      <strong>{% trans "No additional restrictions" %}</strong> - {% blocktrans %}You may not apply legal terms or <a href="#" id="technological_measures_popup" class="helpLink">technological measures</a> that legally restrict others from doing anything the license permits.{% endblocktrans %}
+    </li>
+  </ol>
 
   {# NOTICES #}
 
-  <h3 class="b-header has-text-black padding-bottom-big padding-top-normal" style="font-weight: bold;">{% trans "Notices:" %}</h3>
+  <h2 class="b-header has-text-black padding-bottom-big padding-top-normal" style="font-weight: bold;">{% trans "Notices:" %}</h2>
 
-  <p class="has-text-black body-big padding-bottom-normal">
+  <p>
     {% blocktrans %}You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable <a href="#" id="exception_or_limitation_popup" class="helpLink">exception or limitation</a>.{% endblocktrans %}
   </p>
-  <p class="has-text-black body-big padding-bottom-normal">
+  <p>
     {% blocktrans %}No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as <a href="#" id="publicity_privacy_or_moral_rights_popup" class="helpLink">publicity, privacy, or moral rights</a> may limit how you use the material.{% endblocktrans %}
   </p>
 </div>

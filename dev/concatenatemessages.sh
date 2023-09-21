@@ -40,7 +40,7 @@ docker compose exec app ./manage.py \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
-        --ignore **/includes/legalcode_menu_sidebar.html \
+        --ignore **/includes/legalcode_contextual_menu.html \
         --ignore **/includes/legalcode_zero.html \
         --no-obsolete
 echo
@@ -159,7 +159,7 @@ docker compose exec app ./manage.py \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
-        --ignore **/includes/legalcode_menu_sidebar.html \
+        --ignore **/includes/legalcode_contextual_menu.html \
         --ignore **/includes/legalcode_zero.html \
         --no-obsolete
 echo

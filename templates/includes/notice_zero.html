@@ -1,12 +1,6 @@
-{% load bidi i18n %}
-
-
-{# disclaimer_40.html is an identical component to about_cc_and_license and about_cc #}
-{# refactor this code and use "with" template tag in licenses_detail.html to pass header and text to these templates #}
-{# if this content will be modified through the django admin in the future #}
-
-<div id="disclaimer-info-section" class="padding-bigger has-background-info-light" >
-  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% bidi_end %}-normal"></i>{% trans "Disclaimer" %}</h4>
+{% load i18n %}
+<div id="notice-zero" class="notice-bottom" >
+  <h2 class="icon-attach fa-info">{% trans "Notice" %}</h2>
     {% blocktrans trimmed %}
       <p> The Commons Deed is not a legal instrument. It is simply a handy
       reference for understanding the CC0 Legal Code, a human-readable
@@ -20,10 +14,5 @@
       no warranties about any work or its copyright status in any jurisdiction,
       and disclaims all liability for all uses of any work. </p>
     {% endblocktrans %}
-    <p>
-    {% blocktrans trimmed %}
-      This is a human-readable summary of the <a href="./legalcode">Legal Code
-        (read the full text)</a>.
-    {% endblocktrans %}</p>
 </div>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

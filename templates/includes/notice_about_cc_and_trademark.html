@@ -1,12 +1,7 @@
-{% load bidi i18n %}
-
-{# about_cc.html is an identical component to about__cc_and_license #}
-{# refactor this code and use "with" template tag in licenses_detail.html to pass header and text to these templates #}
-{# if this content will be modified through the django admin in the future #}
-
-<div id="about-cc-and-license" class="padding-bigger has-background-info-light" >
-  <h4 class="padding-bottom-normal is-vcentered b-header"><i class="info icon padding-{% bidi_end %}-normal"></i>About Creative Commons</h4>
-  <p class="has-text-black padding-{% bidi_start %}-big">
+{% load i18n %}
+<div id="notice-about-cc-and-trademark" class="notice-bottom" >
+  <h2 class="icon-attach fa-info">{% trans "About Creative Commons" %}</h2>
+  <p>
     {% blocktrans trimmed %}
       Creative Commons is not a party to its public licenses. Notwithstanding,
       Creative Commons may elect to apply one of its public licenses to
@@ -26,7 +21,7 @@
       of the public licenses.
     {% endblocktrans %}
   </p>
-  <p class="has-text-black padding-{% bidi_start %}-big padding-top-normal">
+  <p>
     {% blocktrans trimmed %}
       Creative Commons may be contacted at
       <a href="//creativecommons.org/">creativecommons.org</a>.
