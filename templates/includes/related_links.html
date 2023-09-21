@@ -1,28 +1,22 @@
 {% load bidi i18n %}
 
-<div
-  class="menu padding-vertical-normal column padding-{% bidi_end %}-large"
->
-  <ul class="menu-list" >
-    <li>
-        <p class="body-big has-text-black">
-          {% blocktrans trimmed %}
-            Creative Commons is the nonprofit behind the open licenses and
-            other legal tools that allow creators to share their work. Our
-            legal tools are free to use.
-          {% endblocktrans %}
-        </p>
-      <ul>
-        {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="/about/" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about our work" %}</a></li>
-        {% endif %}
-        <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="/about/cclicenses/" class="is-inline body-big" style="font-weight: bold;">{% trans "Learn more about CC Licensing" %}</a></li>
-        <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="/donate/" class="is-inline body-big" style="font-weight: bold;">{% trans "Support our work" %}</a></li>
-        {% if not show_sampling_deed %}
-          <li><span class="body-bigger padding-{% bidi_end %}-normal padding-top-small">&#8226;</span><a href="/choose/" class="is-inline body-big" style="font-weight: bold;">{% trans "Use the license for your own material." %}</a></li>
-        {% endif %}
-      </ul>
-    </li>
+<p>
+  {% blocktrans trimmed %}
+    Creative Commons is the nonprofit behind the open licenses and
+    other legal tools that allow creators to share their work. Our
+    legal tools are free to use.
+  {% endblocktrans %}
+  <ul>
+    {% if not show_sampling_deed %}
+    <li><a href="/about/">{% trans "Learn more about our work" %}</a></li>
+    {% endif %}
+    <li><a href="/about/cclicenses/">{% trans "Learn more about CC Licensing" %}</a></li>
+    <li><a href="/donate/">{% trans "Support our work" %}</a></li>
+    {% if not show_sampling_deed %}
+    <li><a href="/choose/">{% trans "Use the license for your own material." %}</a></li>
+    <li><a href="/licenses/list">{% trans "Licenses List" %}</a></li>
+    <li><a href="/licenses/list">{% trans "Public Domain List" %}</a></li>
+    {% endif %}
   </ul>
-</div>
+</p>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

@@ -1,0 +1,171 @@
+{% load i18n %}
+<aside>
+<nav>
+<ul>
+<li>
+<a href="#legal-code-title">{% trans legal_code.title %}</a>
+<ul>
+
+
+{% if tool.unit == "zero" %}
+<li>
+<a href="#sop">
+{% blocktrans trimmed %}
+Statement of Purpose
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#copyright">
+{% blocktrans trimmed %}
+1. Copyright and Related Rights.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#waiver">
+{% blocktrans trimmed %}
+2. Waiver.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#fallback">
+{% blocktrans trimmed %}
+3. Public License Fallback.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#limitations">
+{% blocktrans trimmed %}
+4. Limitations and Disclaimers.
+{% endblocktrans %}
+</a>
+</li>
+
+
+{% elif category == "licenses" and tool.version == "4.0" %}
+<li>
+<a href="#s1">
+{% blocktrans trimmed %}
+Section 1 – Definitions.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#s2">
+{% blocktrans trimmed %}
+Section 2 – Scope.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#s3">
+{% blocktrans trimmed %}
+Section 3 – License Conditions.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#s4">
+{% blocktrans trimmed %}
+Section 4 – Sui Generis Database Rights.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#s5">
+{% blocktrans trimmed %}
+Section 5 – Disclaimer of Warranties and Limitation of Liability.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#s6">{% blocktrans trimmed %}
+Section 6 – Term and Termination.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#s7">
+{% blocktrans trimmed %}
+Section 7 – Other Terms and Conditions.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#s8">
+{% blocktrans trimmed %}
+Section 8 – Interpretation.
+{% endblocktrans %}
+</a>
+</li>
+
+
+{% elif category == "licenses" and tool.version == "3.0" and tool.jurisdiction_code == "" %}
+<li>
+<a href="#definitions">
+{% blocktrans trimmed %}
+1. Definitions
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#fairdealing">
+{% blocktrans trimmed %}
+2. Fair Dealing Rights.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#grant">
+{% blocktrans trimmed %}
+3. License Grant.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#restrictions">
+{% blocktrans trimmed %}
+4. Restrictions.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#representations">
+{% blocktrans trimmed %}
+5. Representations, Warranties and Disclaimer
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#liability">
+{% blocktrans trimmed %}
+6. Limitation on Liability.
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#termination">
+{% blocktrans trimmed %}
+7. Termination
+{% endblocktrans %}
+</a>
+</li>
+<li>
+<a href="#misc">
+{% blocktrans trimmed %}
+8. Miscellaneous
+{% endblocktrans %}
+</a>
+</li>
+
+
+{% endif %}
+</ul>
+</li>
+</ul>
+</nav>
+</aside>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

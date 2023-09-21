@@ -1,45 +1,64 @@
 {% load i18n %}
-<div id="deed-body" class="margin-vertical-bigger padding-xxl has-text-black" >
-  {% include 'includes/snippet/icon_header_snippet.html' %}
+<div id="deed-body">
 
   {# NO COPYRIGHT #}
 
-  <h3 class="b-header  padding-bottom-big padding-top-normal" style="font-weight: bold;">{% blocktrans trimmed %}No Copyright{% endblocktrans %}</h3>
-
-  <div class="columns is-multiline">
-    <div class="column is-1">
-      {% include 'includes/snippet/icon.html' with icon_type='cc-zero' additional_classes="padding-top-normal" %}
-    </div>
-    <div class="column is-11">
-      {% blocktrans %}<p id="nolaw-text"> This work has been <b>identified</b> as being free of known restrictions under copyright law, including all related and neighboring rights. </p> <p> <br /> You can copy, modify, distribute and perform the work, even for commercial purposes, all without asking permission. See <b>Other Information</b> below. </p>{% endblocktrans %}
-    </div>
-  </div>{# end columns #}
-
-  {# END NO COPYRIGHT #}
+  <h2>{% blocktrans trimmed %}No Copyright{% endblocktrans %}</h2>
+  <ol>
+    <li class="cc-mark" style="font-size: 1rem;">
+      {% blocktrans %}
+        <p id="nolaw-text"> This work has been <b>identified</b> as being free
+        of known restrictions under copyright law, including all related and
+        neighboring rights. </p> <p> <br /> You can copy, modify, distribute
+        and perform the work, even for commercial purposes, all without asking
+        permission. See <b>Other Information</b> below. </p>
+      {% endblocktrans %}
+    </li>
+  </ol>
 
   {# OTHER INFORMATION #}
 
-  <h3 class="b-header  padding-bottom-big padding-top-normal" style="font-weight: bold;">{% blocktrans trimmed %}Other Information{% endblocktrans %}</h3>
+  <h2>{% blocktrans trimmed %}Other Information{% endblocktrans %}</h2>
 
-  <div class="columns is-multiline">
-    <div class="column is-1"></div>
-    <div class="column is-11">
-      <ul>
-        <li><p  class=" body-big padding-bottom-normal">{% blocktrans %}The work may not be free of known copyright restrictions in all <a href="" class="helpLink" id="all_jurisdictions">jurisdictions</a>.{% endblocktrans %}</p>
-        </li>
-        <li><p  class=" body-big padding-bottom-normal">{% blocktrans %}Persons may have other rights in or related to the work, such as patent or trademark rights, and others may have rights in how the work is used, such as <a href="https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant" class="helpLink" id="publicity_rights">publicity or privacy</a> rights.{% endblocktrans %}</p>
-        </li>
-        <li><p  class=" body-big padding-bottom-normal">{% blocktrans %}In some jurisdictions <a href="" class="helpLink" id="moral_rights">moral rights</a> of the author may persist beyond the term of copyright. These rights may include the right to be identified as the author and the right to object to derogatory treatments.{% endblocktrans %}</p>
-        </li>
-        <li><p  class=" body-big padding-bottom-normal">{% blocktrans %}Unless expressly stated otherwise, the person who identified the work makes no warranties about the work, and disclaims liability for all uses of the work, to the fullest extent permitted by applicable law.{% endblocktrans %}</p>
-        </li>
-        <li><p  class=" body-big padding-bottom-normal">{% blocktrans %}When using or citing the work, you should not imply <a href="" class="helpLink" id="endorsement">endorsement</a> by the author or the person who identified the work.{% endblocktrans %}</p>
-        </li>
-      </ul>
-    </div>
-  </div>{# end columns #}
-
-  {# END OTHER INFORMATIN #}
+  <ol>
+    <li>
+      {% blocktrans %}
+        The work may not be free of known copyright restrictions in all <a
+        href="" class="helpLink" id="all_jurisdictions">jurisdictions</a>.
+      {% endblocktrans %}
+    </li>
+    <li>
+      {% blocktrans %}
+        Persons may have other rights in or related to the work, such as patent
+        or trademark rights, and others may have rights in how the work is
+        used, such as <a
+        href="https://wiki.creativecommons.org/Frequently_Asked_Questions#When_are_publicity_rights_relevant"
+        class="helpLink" id="publicity_rights">publicity or privacy</a> rights.
+      {% endblocktrans %}
+    </li>
+    <li>
+      {% blocktrans %}
+        In some jurisdictions <a href="" class="helpLink"
+        id="moral_rights">moral rights</a> of the author may persist beyond the
+        term of copyright. These rights may include the right to be identified
+        as the author and the right to object to derogatory treatments.
+      {% endblocktrans %}
+    </li>
+    <li>
+      {% blocktrans %}
+        Unless expressly stated otherwise, the person who identified the work
+        makes no warranties about the work, and disclaims liability for all
+        uses of the work, to the fullest extent permitted by applicable law.
+      {% endblocktrans %}
+    </li>
+    <li>
+      {% blocktrans %}
+        When using or citing the work, you should not imply <a href=""
+        class="helpLink" id="endorsement">endorsement</a> by the author or the
+        person who identified the work.
+      {% endblocktrans %}
+    </li>
+  </ol>
 
 </div>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

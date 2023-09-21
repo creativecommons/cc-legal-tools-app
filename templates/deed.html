@@ -2,55 +2,61 @@
 {% load i18n license_tags static %}
 
 {% block head_about %}{{ tool.base_url }}{% endblock %}
-{% block title %}{{ tool.identifier }} {% trans "Deed" %} &mdash; {{ tool_title }} &mdash; Creative Commons{% endblock %}
+
+{% block body_class%}walkthrough-page{% endblock %}
+
+{% block title %}
+{{ tool.identifier }} {% trans "Deed" %} | {{ tool_title }}
+{% endblock %}
+
+
 {% block head_extra %}
 <link href="/cc-legal-tools/deed.css" rel="stylesheet"/>
 {% endblock %}
 
+
 {% block body_about %}{{ tool.base_url }}{% endblock %}
+
+
 {% block body_typeof %}cc:License{% endblock %}
 
-{% block active-breadcrumb-li %}
-<li class="is-active"><a href="{{ request.path }}" aria-current="page displayed">{{ tool.identifier }} {% trans "Deed" %}</a></li>
+
+{% block title_header %}
+{% include 'includes/snippet/title_with_icons.html' with document_type="deed" %}
 {% endblock %}
 
-{% block next_btn_section %}
-{% if not tool.deed_only %}
-<div class="level container">
-  <div class="level-item level-right">
-    <a id="next-btn" class="button tiny is-pulled-right" href="{{ legal_code_rel_path }}">{% trans "See the legal code" %}</a>
-  </div>
-</div>
-{% endif %}
-{% endblock %}
 
 {% block content %}
-  <div class="container">
-    {% if tool.deprecated_on %}
-      {# Retired legal tool notice #}
-      {% include 'includes/disclaimer_deprecated.html' %}
-    {% endif %}
-    {% if replaced_path %}
-      {# Newer license notice #}
-      {% include 'includes/disclaimer_newer_license.html' %}
-    {% endif %}
+{% if tool.deprecated_on %}
+  {# Retired legal tool notice #}
+  {% include 'includes/notice_deprecated.html' %}
+{% endif %}
+{% if replaced_path %}
+  {# Newer license notice #}
+  {% include 'includes/notice_newer_license.html' %}
+{% endif %}
 
-    {% include body_template %}
+{% if not tool.deed_only %}
+<p class="document-link">
+<a href="{{ legal_code_rel_path }}">{% trans "See the legal code" %}</a>
+</p>
+{% endif %}
 
-    {% if category == "licenses" and tool.version == "4.0" %}
-      {% include 'includes/disclaimer_40.html' %}
-    {% elif tool.unit == "zero" %}
-      {% include 'includes/disclaimer_zero.html' %}
-    {% elif tool.unit == "certification" %}
-      {% include 'includes/disclaimer_certification.html' %}
-    {% endif %}
-    <div class="columns margin-top-normal is-vcentered" >
-      {% if "sampling" in tool.unit %}
-        {% include 'includes/related_links.html' with show_sampling_deed=True %}
-      {% else %}
-        {% include 'includes/related_links.html' %}
-      {% endif %}
-    </div>
-  </div>
+{% include body_template %}
+
+{% if category == "licenses" and tool.version == "4.0" %}
+  {% include 'includes/notice_40.html' %}
+{% elif tool.unit == "zero" %}
+  {% include 'includes/notice_zero.html' %}
+{% elif tool.unit == "certification" %}
+  {% include 'includes/notice_certification.html' %}
+{% endif %}
+<div>
+  {% if "sampling" in tool.unit %}
+    {% include 'includes/related_links.html' with show_sampling_deed=True %}
+  {% else %}
+    {% include 'includes/related_links.html' %}
+  {% endif %}
+</div>
 {% endblock %}
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

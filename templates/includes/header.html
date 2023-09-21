@@ -1,31 +1,61 @@
 <!-- Div element used to mount the Explore CC component-->
-<div id="explore-cc">
-  <cc-explore
-    donation-url="https://www.classy.org/give/313412/#!/donation/checkout?c_src=website&c_src2=top-of-page-banner"
-    logo-url="/wp-content/themes/creativecommons-base/assets/img/cc.logo.white.svg"
-  />
-</div>
-<!-- Div element used to mount the Global Header component-->
-<div id="header-cc">
-  <header class="vocab header">
-    <div class="is-flex is-justify-content-flex-end">
-      <a type="button" href="https://www.classy.org/give/313412/#!/donation/checkout?c_src=website&amp;c_src2=NavBar" class="button normal donate is-header">
-        <i class="icon heart"></i>
-        Donate
-      </a>
-    </div>
-    <nav class="navbar" aria-label="Main">
-      <div class="navbar-brand">
-        <a class="main-logo navbar-item" href="/" target="_blank">
-          <div class="has-text-black">
-            <img src="/wp-content/themes/creativecommons-base/assets/img/cc.logo.dark.gray.svg" alt="Logo" />
-          </div>
-        </a>
-      </div>
-      <div>
-        <p>(development instance: no site menu)</p>
-      </div>
+<header>
+  <div class="masthead">
+    <h1><a class="identity-logo" href="/">Creative Commons</a></h1>
+    <button class="expand-menu">Menu</button>
+    <!-- below menu is not final items, for testing only -->
+    <nav class="primary-menu">
+      <ul>
+        <li><a href="/about/team">Who We Are</a></li>
+        <li><a href="/about">What We Do</a></li>
+        <li><a href="/about/cclicenses/">Licenses and Tools</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/about/support-cc/">Support Us</a></li>
+      </ul>
     </nav>
-  </header>
-</div>
+
+    <nav class="ancilliary-menu">
+      <ul>
+        {% if languages_and_links %}
+        {% include "includes/languages_dropdown.html" %}
+        {% endif %}
+        <li><a class="search icon-attach fa-search" href="/?s">Search</a></li>
+        <li><a class="donate icon-attach fa-heart" href="https://www.classy.org/give/313412/#!/donation/checkout?c_src=website&c_src2=top-of-page-banner" target="_blank">Donate</a></li>
+        <li><button class="explore">Explore CC</button></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="explore-panel">
+    <nav class="explore-menu">
+      <ul>
+        <li>
+          <a href="https://network.creativecommons.org/" target="_blank">Global Network</a>
+          <p>Join a  global community working to strengthen the Commons</p>
+        </li>
+        <li>
+          <a href="https://certificate.creativecommons.org/" target="_blank">Certificate</a>
+          <p>Become an expert in creating and engaging with openly licensed materials</p>
+        </li>
+        <li>
+          <a href="https://summit.creativecommons.org/" target="_blank">Global Summit</a>
+          <p>Attend our annual event, promoting the power of open licensing</p>
+        </li>
+        <li>
+          <a href="/choose" target="_blank">Chooser</a>
+          <p>Get help choosing the appropriate license for your work</p>
+        </li>
+        <li>
+          <a href="https://search.creativecommons.org/"  target="_blank">Search Portal</a>
+          <p>Find engines to search openly licensed material for creative and educational reuse</p>
+        </li>
+        <li>
+          <a href="https://opensource.creativecommons.org/" target="_blank">Open Source</a>
+          <p>Help us build products that maximize creativity and innovation</p>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+</header>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

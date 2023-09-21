@@ -1,0 +1,12 @@
+{% load i18n %}
+<div id="notice-deprecated" class="notice-top">
+  <h2 class="icon-attach fa-info">{% trans "Notice" %}</h2>
+  <p>
+  {{ tool.deprecated_on|date:'Y-m-d' }}: {% blocktrans trimmed %}
+    Creative Commons has
+    <a href="http://creativecommons.org/retiredlicenses">retired this legal
+      tool</a> and does not recommend that it be applied to works.
+  {% endblocktrans %}
+  </p>
+</div>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

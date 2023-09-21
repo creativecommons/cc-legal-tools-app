@@ -1,0 +1,15 @@
+{% load i18n %}
+<div id="notice-newer-license" class="notice-top">
+  <h2 class="icon-attach fa-info">{% trans "Notice" %}</h2>
+  <p>
+    {% blocktrans trimmed %}
+      This is an older version of this license. Compared to previous versions,
+      the 4.0 versions of all CC licenses are <a href="/version4/">
+      more user-friendly and more internationally robust</a>. If you are
+      <a href="/choose/">licensing your own work</a>, we strongly recommend the
+      use of the 4.0 license instead:
+    {% endblocktrans %}
+    <a href="{{ replaced_path }}">{{ replaced_title }}</a></li></ul>
+  </p>
+</div>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

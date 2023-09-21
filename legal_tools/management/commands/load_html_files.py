@@ -1261,6 +1261,12 @@ class Command(BaseCommand):
             if div_left:
                 div_left.decompose()
 
+        # Remove disclaimers
+        disclaimer = soup.find("a", href="/licenses/disclaimer-legalcode")
+        if disclaimer:
+            disclaimer_div = disclaimer.find_parent("div", align="center")
+            disclaimer_div.decompose()
+
         # Legalcode
         if version == "3.0":
             html = soup.find(id="deed-main-content")

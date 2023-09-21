@@ -150,7 +150,7 @@ def get_legal_code_replaced_rel_path(
     language_default,
 ):
     if not tool:
-        return None, None, None
+        return None, None, None, None
     try:
         # Same language
         legal_code = LegalCode.objects.valid().get(
@@ -170,17 +170,27 @@ def get_legal_code_replaced_rel_path(
                 tool=tool,
                 language_code=settings.LANGUAGE_CODE,
             )
-    replaced_title = legal_code.title
+    identifier = legal_code.tool.identifier()
+    lazy_deed = translation.gettext_lazy("Deed")
+    title = get_tool_title(legal_code.tool)
+    replaced_deed_title = f"{identifier} {lazy_deed} | {title}"
     replaced_deed_path = get_deed_rel_path(
         legal_code.deed_url,
         path_start,
         language_code,
         language_default,
     )
+    lazy_legal_code = translation.gettext_lazy("Legal Code")
+    replaced_legal_code_title = f"{identifier} {lazy_legal_code} | {title}"
     replaced_legal_code_path = os.path.relpath(
         legal_code.legal_code_url, path_start
     )
-    return replaced_title, replaced_deed_path, replaced_legal_code_path
+    return (
+        replaced_deed_title,
+        replaced_deed_path,
+        replaced_legal_code_title,
+        replaced_legal_code_path,
+    )
 
 
 def name_local(legal_code):
@@ -205,56 +215,6 @@ def view_dev_index(request):
     # repo.remotes.origin.fetch()
     # heads = repo.remotes.origin.refs
     # branches = [head.name[len("origin/") :] for head in heads]
-
-    # Serve CC navigation header menu
-    # Path: /?rest_route=/ccnavigation-header/menu
-    if request.GET.get("rest_route"):  # pragma: no cover
-        # Standard library
-        import json
-
-        ccnavigation_header_menu = [
-            {
-                "ID": 1,
-                "url": "#",
-                "title": "Who we are",
-                "child_items": [
-                    {"ID": 1, "url": "#", "title": "Item 1"},
-                    {"ID": 2, "url": "#", "title": "Item 2"},
-                    {"ID": 3, "url": "#", "title": "Item 3"},
-                    {"ID": 4, "url": "#", "title": "Item 4"},
-                    {"ID": 5, "url": "#", "title": "Item 5"},
-                    {"ID": 6, "url": "#", "title": "Item 6"},
-                    {"ID": 7, "url": "#", "title": "Item 7"},
-                    {"ID": 8, "url": "#", "title": "Item 8"},
-                    {"ID": 9, "url": "#", "title": "Item 9"},
-                ],
-            },
-            {"ID": 2, "url": "#", "title": "What we do"},
-            {
-                "ID": 3,
-                "url": "#",
-                "title": "Licenses and tools",
-                "child_items": [
-                    {
-                        "ID": 1,
-                        "url": "/licenses/list",
-                        "title": "Licenses List",
-                    },
-                    {
-                        "ID": 2,
-                        "url": "/publicdomain/list",
-                        "title": "Public Domain List",
-                    },
-                ],
-            },
-            {"ID": 4, "url": "#", "title": "News"},
-            {"ID": 4, "url": "#", "title": "Support Us"},
-        ]
-
-        return HttpResponse(
-            json.dumps(ccnavigation_header_menu),
-            content_type="application/json",
-        )
 
     translation.activate(settings.LANGUAGE_CODE)
     distilling = request.GET.get("distilling", False)
@@ -498,7 +458,7 @@ def view_deed(
         selected_language_code=language_code,
     )
 
-    replaced_title, replaced_path, _ = get_legal_code_replaced_rel_path(
+    replaced_title, replaced_path, _, _ = get_legal_code_replaced_rel_path(
         tool.is_replaced_by,
         path_start,
         language_code,
@@ -605,7 +565,7 @@ def view_legal_code(
             language_default,
         )
 
-        replaced_title, _, replaced_path = get_legal_code_replaced_rel_path(
+        _, _, replaced_title, replaced_path = get_legal_code_replaced_rel_path(
             tool.is_replaced_by,
             path_start,
             language_code,

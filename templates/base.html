@@ -7,58 +7,46 @@
 <head about="{% block head_about %}{% endblock %}">
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}{% endblock %}</title>
+  <title>{% block title %}{% endblock %} | Creative Commons</title>
   <link href="{{ canonical_url }}" rel="canonical"/>
   {% block head_meta %}
   {% endblock %}
-  <link
-    href="https://unpkg.com/bulma@0.9.3/css/bulma.min.css"
-    rel="stylesheet"
-    />
-  <link
-    href="https://unpkg.com/@creativecommons/vocabulary-fonts@0.1.1/dist/css/fonts.css"
-    rel="stylesheet"
-  />
-  <link
-    href="https://unpkg.com/@creativecommons/vocabulary-styles@0.3.0/dist/css/vocabulary-styles.css"
-    rel="stylesheet"
-  />
+  <link rel="stylesheet" media="all" href="/wp-content/themes/vocabulary-theme/style.css">
   <link href="/cc-legal-tools/base.css" rel="stylesheet"/>
-  <!-- Import Vue JS via CDN -->
-  <script src="https://unpkg.com/vue@3.2.31/dist/vue.global.js"></script>
-  <!-- Import Axios via CDN. Needed for the Global Header Component -->
-  <script src="https://unpkg.com/axios@0.26.0/dist/axios.min.js"></script>
-  <!-- Import the Component Library via CDN -->
-  <script src="https://unpkg.com/@creativecommons/cc-global-components@0.5.0/dist/cc-globals.min.js"></script>
   {% block head_extra %}
   {% endblock %}
 </head>
-<body typeof="{% block body_typeof %}{% endblock %}" about="{% block body_about %}{% endblock %}">
-  {% include 'includes/header.html' %}
-  <main>
-    <div class="level padding-{% bidi_start %}-big padding-{% bidi_end %}-large padding-vertical-normal">
-      {# the skip link is not normally visible--it is an accessability aide #}
-      <a class="skip-link" href="#content" >{% trans "Skip to content" %}</a>
-      <nav class="breadcrumb level-left caption bold" aria-label="breadcrumbs">
-        <ul>
-          <li><a href="/">{% trans "Home" %}</a></li>
-          <li><a href="/{{ category }}/">{% trans category_title %}</a></li>
-          {% block active-breadcrumb-li %}{% endblock %}
-        </ul>
-      </nav>
-      {% if languages_and_links %}
-        {% include "includes/languages_dropdown.html" %}
-      {% endif %}
-    </div>
-    <section id="content" class="padding-horizontal-larger">
-      {% block next_btn_section %}{% endblock %}
-      {% block content %}{% endblock %}
-    </section>
-  </main>
-  {% include 'includes/footer.html' %}
-  <script src="/cc-legal-tools/load_components.js"></script>
-  {% block extra-js %}
-  {% endblock %}
+
+<body
+    class="{% block body_class %}default-page{% endblock %} cc-legal-tools bidi-{% bidi_lr %}"
+    typeof="{% block body_typeof %}{% endblock %}"
+    about="{% block body_about %}{% endblock %}"
+>
+{# the skip link is not normally visible--it is an accessability aide #}
+<a class="skip-to-content" href="#main-content-marker">{% trans "Skip to content" %}</a>
+
+{% include 'includes/header.html' %}
+
+<main>
+
+<header>
+{% block title_header %}{% endblock %}
+</header>
+
+{% block contextual_menu %}{% endblock %}
+
+<div class="content">
+{% block content %}{% endblock %}
+</div>
+
+</main>
+
+{% include 'includes/footer.html' %}
+
+<script src="/wp-content/themes/vocabulary-theme/vocabulary/js/vocabulary.js"></script>
+{% block extra-js %}
+{% endblock %}
+
 </body>
 </html>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
