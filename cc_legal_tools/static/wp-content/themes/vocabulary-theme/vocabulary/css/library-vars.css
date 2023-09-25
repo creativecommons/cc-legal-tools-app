@@ -137,8 +137,13 @@
      --cc-heart-filled: url('./../svg/cc/icons/cc-icons.svg#cc-heart-filled');
 
      /* font awesome sprite names */
+     --fa-angle-down: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-down');
+     --fa-angle-left: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-left');
+     --fa-angle-right: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-right');
+     --fa-angle-up: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-up');
      --fa-globe: url('./../svg/font-awesome/icons/fa-icons.svg#fa-globe');
      --fa-heart: url('./../svg/font-awesome/icons/fa-icons.svg#fa-heart');
+     --fa-info: url('./../svg/font-awesome/icons/fa-icons.svg#fa-info');
      --fa-quote: url('./../svg/font-awesome/icons/fa-icons.svg#fa-quote');
      --fa-right-angle: url('./../svg/font-awesome/icons/fa-icons.svg#fa-right-angle');
      --fa-search: url('./../svg/font-awesome/icons/fa-icons.svg#fa-search');
@@ -184,12 +189,32 @@ leaving room for semantic and accessible implementation choices  */
     --icon-sprite: var(--cc-heart-filled);
 }
 
+.icon.fa-angle-down, .icon-attach.fa-angle-down:before {
+    --icon-sprite: var(--fa-angle-down);
+}
+
+.icon.fa-angle-left, .icon-attach.fa-angle-left:before {
+    --icon-sprite: var(--fa-angle-left);
+}
+
+.icon.fa-angle-right, .icon-attach.fa-angle-rignt:before {
+    --icon-sprite: var(--fa-angle-right);
+}
+
+.icon.fa-angle-up, .icon-attach.fa-angle-up:before {
+    --icon-sprite: var(--fa-angle-up);
+}
+
 .icon.fa-globe, .icon-attach.fa-globe:before {
     --icon-sprite: var(--fa-globe);
 }
 
 .icon.fa-heart, .icon-attach.fa-heart:before {
     --icon-sprite: var(--fa-heart);
+}
+
+.icon.fa-info, .icon-attach.fa-info:before {
+    --icon-sprite: var(--fa-info);
 }
 
 .icon.fa-quote, .icon-attach.fa-quote:before {
