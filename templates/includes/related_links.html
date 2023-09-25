@@ -11,11 +11,11 @@
     <li><strong><a href="/share-your-work/cclicenses/">{% trans "Learn more about CC Licensing" %}</a></strong></li>
     <li><a href="/donate/">{% trans "Support our work" %}</a></li>
     <li><a href="/choose/">{% trans "Use the license for your own material." %}</a></li>
-    {% if not category_list or category == "publicdomain" %}
-    <li><a href="/licenses/list">{% trans "Licenses List" %}</a></li>
+    {% if list_licenses %}
+      <li><a href="{{ list_licenses }}">{% trans "Licenses List" %}</a></li>
     {% endif %}
-    {% if not category_list or category == "licenses" %}
-    <li><a href="/publicdomain/list">{% trans "Public Domain List" %}</a></li>
+    {% if list_publicdomain %}
+      <li><a href="{{ list_publicdomain }}">{% trans "Public Domain List" %}</a></li>
     {% endif %}
   </ul>
 </p>
