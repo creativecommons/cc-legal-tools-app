@@ -401,6 +401,8 @@ class Command(BaseCommand):
 
         for category in ["licenses", "publicdomain"]:
             relpath = f"{category}/list.{settings.LANGUAGE_CODE}.html"
+            symlink = "index.html"
+            wrap_relative_symlink(output_dir, relpath, symlink)
             symlink = "list.html"
             wrap_relative_symlink(output_dir, relpath, symlink)
 
