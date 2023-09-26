@@ -583,6 +583,14 @@ body > article.attention a {
     margin-bottom: .8em;
 }
 
+.default-page main > aside nav ul ul {
+    margin-left: 1em;
+}
+
+.default-page main > aside nav ul ul li {
+    margin-bottom: .8em;
+}
+
 .default-page main > aside nav.filter-menu h2 {
     /* margin-left: .5em; */
 }
@@ -811,6 +819,41 @@ body > article.attention a {
     width: 120%;
     margin-left: -10%;
 }
+
+.blog-post main .closing {
+    display: inline-block;
+    /* position: absolute;
+    left: -25%;
+    bottom: -10%; */
+    box-sizing: border-box;
+    /* min-height: 150px; */
+    width: 25%;
+    /* float: left; */
+    /* margin: 2em; */
+    margin-bottom: 2em;
+    padding: 2em;
+    width: 100%;
+
+    background: var(--vocabulary-brand-color-soft-turquoise);
+    /* color: white; */
+    /* color: var(--vocabulary-brand-color-dark-tomato); */
+
+  }
+
+  .blog-post main .closing a {
+    color: var(--vocabulary-brand-color-dark-tomato);
+    --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+  }
+
+  .blog-post main .closing p {
+    margin :0;
+
+    font-family: 'Source Sans Pro';
+    font-size: 1.2em;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
+  }
 
 
 
@@ -1365,6 +1408,8 @@ body > article.attention a {
 .authored-posts article header {
     display: flex;
     flex-wrap: wrap;
+    flex-direction: column;
+    align-items: baseline;
     width: 100%;
 }
 
@@ -1380,6 +1425,10 @@ body > article.attention a {
     font-size: 2.1em;
     text-transform: none;
     text-transform: initial;
+}
+
+.authored-posts.highlight article .byline {
+    margin-bottom: 2em;
 }
 
 .authored-posts article .categories {
@@ -1446,6 +1495,15 @@ body > article.attention a {
     text-transform: none;
     text-decoration: none;
     text-shadow: none;
+}
+
+main .authored-posts.highlight article {
+    gap: 0 2em;
+    align-content: flex-start;
+}
+
+.authored-posts.highlight figure {
+    margin-bottom: 2em;
 }
 
 nav.pagination {
@@ -1574,6 +1632,14 @@ main nav.pagination ol li.current a {
     font-size: .75em;
 }
 
+.team-index main .closing {
+    grid-column: span 3;
+}
+
+.team-index main .closing p {
+    font-style: italic;
+}
+
 .person-page main > header {
     position: relative;
     box-sizing: border-box;
@@ -1601,6 +1667,15 @@ main nav.pagination ol li.current a {
     font-style: normal;
     font-weight: 700;
     font-size: 1.9em;
+}
+
+.person-page main > header .pronouns {
+    grid-column-start: 2;
+    margin-bottom: 1em;
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 1.5em;
 }
 
 .person-page main > header figure {
@@ -1785,6 +1860,8 @@ main > header .byline {
 }
 
 main h2 {
+    width: 100%;
+
     font-family: 'Roboto Condensed';
     font-style: normal;
     font-weight: 700;
@@ -1937,9 +2014,13 @@ main figure {
 }
 
 main figure .attribution {
-
     display: block;
     margin-top: 1em;
+
+    font-family: 'Source Sans Pro';
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%;
 }
 
 /* main figure:nth-of-type(even):has(img) {
@@ -2099,6 +2180,11 @@ main article.related-posts .authored-posts.highlight {
 
 main article.related-posts .authored-posts.highlight article {
     margin-bottom: 3em;
+}
+
+main article.related-posts .authored-posts.highlight article header {
+    flex-direction: column;
+    align-items: baseline;
 }
 
 main article.related-posts .authored-posts.highlight article figure {

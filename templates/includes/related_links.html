@@ -7,15 +7,15 @@
     legal tools are free to use.
   {% endblocktrans %}
   <ul>
-    {% if not show_sampling_deed %}
     <li><a href="/about/">{% trans "Learn more about our work" %}</a></li>
-    {% endif %}
-    <li><a href="/about/cclicenses/">{% trans "Learn more about CC Licensing" %}</a></li>
+    <li><strong><a href="/share-your-work/cclicenses/">{% trans "Learn more about CC Licensing" %}</a></strong></li>
     <li><a href="/donate/">{% trans "Support our work" %}</a></li>
-    {% if not show_sampling_deed %}
     <li><a href="/choose/">{% trans "Use the license for your own material." %}</a></li>
-    <li><a href="/licenses/list">{% trans "Licenses List" %}</a></li>
-    <li><a href="/licenses/list">{% trans "Public Domain List" %}</a></li>
+    {% if list_licenses %}
+      <li><a href="{{ list_licenses }}">{% trans "Licenses List" %}</a></li>
+    {% endif %}
+    {% if list_publicdomain %}
+      <li><a href="{{ list_publicdomain }}">{% trans "Public Domain List" %}</a></li>
     {% endif %}
   </ul>
 </p>

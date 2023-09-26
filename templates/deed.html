@@ -52,11 +52,7 @@
   {% include 'includes/notice_certification.html' %}
 {% endif %}
 <div>
-  {% if "sampling" in tool.unit %}
-    {% include 'includes/related_links.html' with show_sampling_deed=True %}
-  {% else %}
-    {% include 'includes/related_links.html' %}
-  {% endif %}
+  {% include 'includes/related_links.html' %}
 </div>
 {% endblock %}
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

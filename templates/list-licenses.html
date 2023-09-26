@@ -38,6 +38,8 @@
 {% trans "Deed" as deed_label_translated %}
 {% trans "Legal Code" as legal_code_label_translated %}
 
+{% include 'includes/related_links.html' with show_standard_deed=True %}
+
 {% regroup tools|dictsortreversed:"version" by version as version_list %}
 {% for version_group in version_list %}
 {% with version=version_group.grouper %}
@@ -81,8 +83,6 @@
   {% endfor %}
 {% endwith %}
 {% endfor %}
-
-{% include 'includes/related_links.html' with show_standard_deed=True %}
 
 {% endblock %}
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

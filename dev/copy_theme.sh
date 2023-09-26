@@ -33,8 +33,7 @@ environments, see [creativecommons/index-dev-env][index-dev-env].
 Also see the primary repository [`../../../README.md`](../../../README.md).
 
 [vocabulary-theme]: https://github.com/creativecommons/vocabulary-theme
-[index-dev-env]: https://github.com/creativecommons/index-dev-env
-'
+[index-dev-env]: https://github.com/creativecommons/index-dev-env'
 REPO_DIR="$(cd -P -- "${0%/*}/.." && pwd -P)"
 STATIC_DIR="${REPO_DIR}/cc_legal_tools/static"
 STATIC_THEME_DIR="${STATIC_DIR}/wp-content/themes/vocabulary-theme"

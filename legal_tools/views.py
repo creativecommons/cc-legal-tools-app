@@ -136,11 +136,31 @@ def get_deed_rel_path(
                 f"deed.{language_code}", f"deed.{language_default}"
             )
         else:
-            # Translation incomplete, use English
+            # Translation incomplete, use app default language (English)
             deed_rel_path = deed_rel_path.replace(
                 f"deed.{language_code}", f"deed.{settings.LANGUAGE_CODE}"
             )
     return deed_rel_path
+
+
+def get_list_paths(language_code, language_default):
+    paths = [
+        f"/licenses/list.{language_code}",
+        f"/publicdomain/list.{language_code}",
+    ]
+    for index, path in enumerate(paths):
+        if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
+            if language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+                # Translation incomplete, use region default language
+                paths[index] = path.replace(
+                    f"/list.{language_code}", f"/list.{language_default}"
+                )
+            else:
+                # Translation incomplete, use app default language (English)
+                paths[index] = path.replace(
+                    f"/list.{language_code}", f"/list.{settings.LANGUAGE_CODE}"
+                )
+    return paths
 
 
 def get_legal_code_replaced_rel_path(
@@ -317,6 +337,7 @@ def view_list(request, category, language_code=None):
     if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
         raise Http404(f"invalid language: {language_code}")
     translation.activate(language_code)
+    list_licenses, list_publicdomain = get_list_paths(language_code, None)
     # Get the list of units and languages that occur among the tools
     # to let the template iterate over them as it likes.
     legal_code_objects = (
@@ -384,8 +405,10 @@ def view_list(request, category, language_code=None):
     )
     if category == "licenses":
         category_list = translation.gettext("Licenses List")
+        list_licenses = None
     else:
         category_list = translation.gettext("Public Domain List")
+        list_publicdomain = None
 
     languages_and_links = get_languages_and_links_for_deeds_ux(
         request_path=request.path,
@@ -400,6 +423,8 @@ def view_list(request, category, language_code=None):
             "category_title": category_title,
             "category_list": category_list,
             "languages_and_links": languages_and_links,
+            "list_licenses": list_licenses,
+            "list_publicdomain": list_publicdomain,
             "tools": tools,
         },
     )
@@ -429,6 +454,10 @@ def view_deed(
 
     path_start = os.path.dirname(request.path)
     language_default = get_default_language_for_jurisdiction(jurisdiction)
+
+    list_licenses, list_publicdomain = get_list_paths(
+        language_code, language_default
+    )
 
     try:
         tool = Tool.objects.get(
@@ -488,6 +517,8 @@ def view_deed(
             "identifier": tool.identifier(),
             "languages_and_links": languages_and_links,
             "legal_code_rel_path": legal_code_rel_path,
+            "list_licenses": list_licenses,
+            "list_publicdomain": list_publicdomain,
             "replaced_path": replaced_path,
             "replaced_title": replaced_title,
             "tool": tool,
@@ -514,6 +545,10 @@ def view_legal_code(
         request.path, jurisdiction, language_code
     )
     language_default = get_default_language_for_jurisdiction(jurisdiction)
+
+    list_licenses, list_publicdomain = get_list_paths(
+        language_code, language_default
+    )
 
     path_start = os.path.dirname(request.path)
 
@@ -582,6 +617,8 @@ def view_legal_code(
                 "identifier": tool.identifier(),
                 "languages_and_links": languages_and_links,
                 "legal_code": legal_code,
+                "list_licenses": list_licenses,
+                "list_publicdomain": list_publicdomain,
                 "replaced_path": replaced_path,
                 "replaced_title": replaced_title,
                 "tool": tool,
