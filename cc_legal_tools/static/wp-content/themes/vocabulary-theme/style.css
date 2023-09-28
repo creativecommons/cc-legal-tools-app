@@ -3,7 +3,7 @@ Theme Name: CC Vocabulary Theme
 Author: the Creative Commons team; possumbilities, Timid Robot
 Author URI: https://opensource.creativecommons.org/
 Description: Theme based on the Vocabulary Design System
-Version: 0.17.0
+Version: 0.19.0
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.0
@@ -658,6 +658,10 @@ main nav.pagination ul li span.current {
 
 /* patches */
 
+.masthead .identity-logo:focus, body > footer .identity-logo:focus, .icon-replace:focus {
+  background-color: purple;
+}
+
 main p:has(img) {
   overflow: hidden;
 }
@@ -668,6 +672,26 @@ main p:has(img) {
 
 .home-narrative main .authored-posts > h2 {
   margin-top: 0;
+}
+
+.home-narrative main .authored-posts.highlight article.attribution-list h2 {
+  margin: 0;
+}
+
+.home-narrative main .authored-posts.highlight article.attribution-list ul {
+  margin-top: 2em;
+}
+
+.default-page main > header {
+  padding: 3.7em 0;
+}
+
+  .default-page main > header h1 {
+  margin: 0;
+}
+
+.default-page main > header p {
+  margin-bottom: .3em;
 }
 
 .default-page main > aside nav ul {
@@ -696,7 +720,18 @@ main p:has(img) {
 .default-page main figure:has(img.alignright) {
   margin-right: 0;
   width: 40%;
+}
 
+.blog-index .attribution-list h2 {
+  margin: 0;
+}
+
+.blog-index .attribution-list ul.expand {
+  margin-top: 2em;
+}
+
+.team-index main .persons .person img {
+  zoom: 2;
 }
 
 .team-index main .persons .person h3 {
@@ -727,6 +762,14 @@ body > footer {
 
   .home-narrative main .authored-posts article {
     margin-bottom: 2em;
+  }
+
+  .blog-index main .authored-posts.highlight:nth-of-type(1) > article:nth-child(1) {
+    padding: 2em;
+  }
+
+  .blog-index main .authored-posts.highlight {
+    padding: 0 5%;
   }
 
 }
