@@ -451,13 +451,12 @@ class Command(BaseCommand):
         widths = [max(map(len, map(str, col))) for col in zip(*redirect_pairs)]
         redirect_lines = []
         for pair in redirect_pairs:
-            pcre_match = f'"{pair[0]}"'
+            pcre_match = f'"^{pair[0]}$"'
             pad = widths[0] + 2
             redirect_lines.append(
                 f'RedirectMatch  301  {pcre_match.ljust(pad)}  "{pair[1]}"'
             )
         del redirect_pairs
-        redirect_lines.sort(reverse=True)
         redirect_lines.sort(reverse=True)
         include_lines = [
             "# DO NOT EDIT MANUALLY",
@@ -474,7 +473,7 @@ class Command(BaseCommand):
             "# Step 1: Redirect mixed/uppercase to lowercase",
             "#",
             "# Must be set within virtual host context:",
-            "#     RewriteMap lowercase int:tolower",
+            "RewriteMap lowercase int:tolower",
             "RewriteCond $1 [A-Z]",
             "RewriteRule ^/?(.*)$ /${lowercase:$1} [R=301,L]",
             "",
