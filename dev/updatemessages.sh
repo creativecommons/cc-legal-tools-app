@@ -25,7 +25,7 @@ if ! docker compose exec app true 2>/dev/null; then
     exit 1
 fi
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment nofuzzy_makemessages'
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment: nofuzzy_makemessages'
 docker compose exec app coverage run manage.py \
     nofuzzy_makemessages \
         --all \
@@ -53,11 +53,11 @@ done
 popd >/dev/null
 echo
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management format_pofile'
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management: format_pofile'
 docker compose exec app ./manage.py format_pofile locale
 echo
 
-printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Managment compilemessages'
+printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management: compilemessages'
 docker compose exec app coverage run manage.py \
     compilemessages
 echo
