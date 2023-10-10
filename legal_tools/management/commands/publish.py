@@ -474,6 +474,7 @@ class Command(BaseCommand):
             "#",
             "# Must be set within virtual host context:",
             "RewriteMap lowercase int:tolower",
+            "RewriteCond %{REQUEST_URI} ^/(licenses|publicdomain)",
             "RewriteCond $1 [A-Z]",
             "RewriteRule ^/?(.*)$ /${lowercase:$1} [R=301,L]",
             "",
