@@ -188,7 +188,7 @@ class Command(BaseCommand):
             if include:
                 LOG.debug(f"{filename} loading")
             else:
-                LOG.info(f"{filename} skipped.")
+                LOG.debug(f"{filename} skipped.")
                 continue
 
             base_url = metadata["base_url"]
@@ -229,6 +229,7 @@ class Command(BaseCommand):
                 requires_share_alike = False
 
             # Find or create a Tool object
+            prohibits_hinu = prohibits_high_income_nation_use
             tool, created = Tool.objects.get_or_create(
                 base_url=base_url,
                 category=category,
@@ -247,7 +248,7 @@ class Command(BaseCommand):
                     requires_notice=requires_notice,
                     requires_attribution=requires_attribution,
                     prohibits_commercial_use=prohibits_commercial_use,
-                    prohibits_high_income_nation_use=prohibits_high_income_nation_use,  # noqa: E501
+                    prohibits_high_income_nation_use=prohibits_hinu,
                 ),
             )
             if created:
@@ -414,7 +415,8 @@ class Command(BaseCommand):
                     else "",
                 )
             )
-        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html  # noqa: E501
+        # noqa: E501
+        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html
         pofile.metadata = {
             "Content-Transfer-Encoding": "8bit",
             "Content-Type": "text/plain; charset=utf-8",
@@ -469,7 +471,8 @@ class Command(BaseCommand):
                     msgstr=clean_string(message_value),
                 )
             )
-        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html  # noqa: E501
+        # noqa: E501
+        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html
         pofile.metadata = {
             "Content-Transfer-Encoding": "8bit",
             "Content-Type": "text/plain; charset=utf-8",
@@ -576,11 +579,11 @@ class Command(BaseCommand):
 
     def import_by_40_license_html(self, *, content, legal_code):
         """
-        Returns a dictionary mapping our internal keys to strings.
+        Returns a dictionary mapping our internal keys to strings for the 4.0
+        licenses.
         """
         tool = legal_code.tool
         unit = tool.unit
-        language_code = legal_code.language_code
         html_file = os.path.basename(legal_code.html_file)
         assert tool.version == "4.0", f"{tool.version} is not '4.0'"
         assert tool.unit.startswith("by")
@@ -701,6 +704,7 @@ class Command(BaseCommand):
             deed_main_content.h3.find_next_sibling("p")
         )
 
+        # LICENSES 4.0 #######################################################
         # Section 1 – Definitions.
 
         # We're going to work out a list of what definitions we expect in this
@@ -728,10 +732,6 @@ class Command(BaseCommand):
             insert_after("adapted_material", "adapters_license")
             insert_after("adapters_license", "by_sa_compatible_license")
             insert_after("exceptions_and_limitations", "license_elements_sa")
-            # See https://github.com/creativecommons/creativecommons.org/issues/1153  # noqa: E501
-            # BY-SA 4.0 for "pt" has an extra definition. Work around for now.
-            if language_code == "pt":
-                insert_after("you", "you2")
         elif unit == "by":
             insert_after("adapted_material", "adapters_license")
         elif unit == "by-nc":
@@ -764,7 +764,9 @@ class Command(BaseCommand):
                 f"{thing['name']}</span> {thing['text']}"
             )
 
+        # LICENSES 4.0 #######################################################
         # Section 2 – Scope.
+
         messages["s2_scope"] = inner_html(soup.find(id="s2").strong)
 
         # s2a: License grant.
@@ -863,7 +865,9 @@ class Command(BaseCommand):
         messages["s2b2_other_rights_patent"] = nested_text(list_items[1])
         messages["s2b3_other_rights_waive"] = nested_text(list_items[2])
 
+        # LICENSES 4.0 #######################################################
         # Section 3: conditions
+
         s3 = soup.find(id="s3")
         messages["s3_conditions_title"] = nested_text(s3)
         messages["s3_conditions_intro"] = nested_text(
@@ -943,7 +947,9 @@ class Command(BaseCommand):
             messages["s3b2"] = nested_text(soup.find(id="s3b2"))
             messages["s3b3"] = nested_text(soup.find(id="s3b3"))
 
+        # LICENSES 4.0 #######################################################
         # Section 4: Sui generis database rights
+
         messages["s4_sui_generics_database_rights_titles"] = nested_text(
             soup.find(id="s4")
         )
@@ -991,13 +997,17 @@ class Command(BaseCommand):
             parts
         )
 
+        # LICENSES 4.0 #######################################################
         # Section 5: Disclaimer
+
         messages["s5_disclaimer_title"] = soup.find(id="s5").string
         messages["s5_a"] = soup.find(id="s5a").string  # bold
         messages["s5_b"] = soup.find(id="s5b").string  # bold
         messages["s5_c"] = soup.find(id="s5c").string  # not bold
 
+        # LICENSES 4.0 #######################################################
         # Section 6: Term and Termination
+
         messages["s6_termination_title"] = nested_text(soup.find(id="s6"))
         messages["s6_termination_applies"] = nested_text(soup.find(id="s6a"))
         s6b = soup.find(id="s6b")
@@ -1030,12 +1040,16 @@ class Command(BaseCommand):
         messages["s6_separate_terms"] = inner_html(soup.find(id="s6c"))
         messages["s6_survival"] = inner_html(soup.find(id="s6d"))
 
+        # LICENSES 4.0 #######################################################
         # Section 7: Other terms and conditions
+
         messages["s7_other_terms_title"] = soup.find(id="s7").string
         messages["s7_a"] = soup.find(id="s7a").string
         messages["s7_b"] = soup.find(id="s7b").string
 
+        # LICENSES 4.0 #######################################################
         # Section 8: Interpretation
+
         messages["s8_interpretation_title"] = soup.find(id="s8").string
         for key in ["s8a", "s8b", "s8c", "s8d"]:
             messages[key] = inner_html(soup.find(id=key))

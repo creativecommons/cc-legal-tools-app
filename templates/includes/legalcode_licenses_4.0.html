@@ -272,19 +272,26 @@ reproduce and Share the Licensed Material, in whole or in part; and
 </li>
 {% endif %}
 
-{% if legal_code|is_one_of:"by-nc,by-nc-nd,by-nd-sa" %}
 <li id="s2a1B">
+{% if legal_code|is_one_of:"by-nc,by-nc-sa" %}
 {% blocktrans trimmed %}
 produce, reproduce, and Share Adapted Material for NonCommercial purposes only.
 {% endblocktrans %}
-</li>
+{% elif legal_code|is_one_of:"by-nc-nd" %}
+{% blocktrans trimmed %}
+produce and reproduce, but not Share, Adapted Material for NonCommercial
+purposes only.
+{% endblocktrans %}
+{% elif legal_code|is_one_of:"by-nd" %}
+{% blocktrans trimmed %}
+produce and reproduce, but not Share, Adapted Material.
+{% endblocktrans %}
 {% else %}
-<li id="s2a1B">
 {% blocktrans trimmed %}
 produce, reproduce, and Share Adapted Material.
 {% endblocktrans %}
-</li>
 {% endif %}
+</li>
 
 </ol>
 </li>
