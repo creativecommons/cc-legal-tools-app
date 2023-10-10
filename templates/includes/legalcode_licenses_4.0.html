@@ -647,11 +647,24 @@ Your use of the Licensed Material:
 <ol type="a">
 
 <li id="s4a">
-{% if legal_code|is_one_of:"by-nc,by-nc-nd,by-nc-sa" %}
+{% if legal_code|is_one_of:"by-nc,by-nc-sa" %}
 {% blocktrans trimmed %}
 for the avoidance of doubt, Section <a href="#s2a1">2(a)(1)</a> grants You the
 right to extract, reuse, reproduce, and Share all or a substantial portion of
 the contents of the database for NonCommercial purposes only;
+{% endblocktrans %}
+{% elif legal_code|is_one_of:"by-nc-nd" %}
+{% blocktrans trimmed %}
+for the avoidance of doubt, Section <a href="#s2a1">2(a)(1)</a> grants You
+the right to extract, reuse, reproduce, and Share all or a substantial portion
+of the contents of the database for NonCommercial purposes only and provided
+You do not Share Adapted Material;
+{% endblocktrans %}
+{% elif legal_code|is_one_of:"by-nd" %}
+{% blocktrans trimmed %}
+for the avoidance of doubt, Section <a href="#s2a1">2(a)(1)</a> grants You the
+right to extract, reuse, reproduce, and Share all or a substantial portion of
+the contents of the database, provided You do not Share Adapted Material;
 {% endblocktrans %}
 {% else %}
 {% blocktrans trimmed %}
