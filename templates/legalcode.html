@@ -12,25 +12,6 @@
 {% endblock %}
 
 
-{# temporary attention for issues: #365, #366, and #367 #}
-{% block attention %}
-{% if tool.category == "licenses" and tool.version == "4.0" and legal_code|is_one_of:"by-nc-nd,by-nd" %}
-<article class="attention">
-<p>
-We have identified an error in the legal code below. It was caused by our
-recent site relaunch and will be corrected soon. Until then, please reference
-the English plain text version:
-{% if legal_code|is_one_of:"by-nc-nd" %}
-<a href="/licenses/by-nc-nd/4.0/legalcode.txt">/licenses/by-nc-nd/4.0/legalcode.txt</a>
-{% else %}
-<a href="/licenses/by-nd/4.0/legalcode.txt">/licenses/by-nd/4.0/legalcode.txt</a>
-{% endif %}
-</p>
-</article>
-{% endif %}
-{% endblock %}
-
-
 {% block title_header %}
 {% include 'includes/snippet/title_with_icons.html' with document_type="legalcode" %}
 {% endblock %}

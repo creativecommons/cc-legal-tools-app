@@ -927,6 +927,11 @@ class Command(BaseCommand):
         messages["s3a1C_conditions_licensed"] = inner_html(
             soup.find(id="s3a1C")
         )
+
+        if "nd" in unit:
+            last_content = soup.find(id="s3a1").contents[-1]
+            messages["s3a1_nd_avoidance_of_doubt"] = last_content
+
         messages["s3a2_conditions_satisfy"] = inner_html(soup.find(id="s3a2"))
         messages["s3a3_conditions_remove"] = inner_html(soup.find(id="s3a3"))
         if soup.find(id="s3a4"):
