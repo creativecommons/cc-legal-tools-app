@@ -704,6 +704,7 @@ class Command(BaseCommand):
             deed_main_content.h3.find_next_sibling("p")
         )
 
+        # LICENSES 4.0 #######################################################
         # Section 1 – Definitions.
 
         # We're going to work out a list of what definitions we expect in this
@@ -763,7 +764,9 @@ class Command(BaseCommand):
                 f"{thing['name']}</span> {thing['text']}"
             )
 
+        # LICENSES 4.0 #######################################################
         # Section 2 – Scope.
+
         messages["s2_scope"] = inner_html(soup.find(id="s2").strong)
 
         # s2a: License grant.
@@ -862,7 +865,9 @@ class Command(BaseCommand):
         messages["s2b2_other_rights_patent"] = nested_text(list_items[1])
         messages["s2b3_other_rights_waive"] = nested_text(list_items[2])
 
+        # LICENSES 4.0 #######################################################
         # Section 3: conditions
+
         s3 = soup.find(id="s3")
         messages["s3_conditions_title"] = nested_text(s3)
         messages["s3_conditions_intro"] = nested_text(
@@ -942,7 +947,9 @@ class Command(BaseCommand):
             messages["s3b2"] = nested_text(soup.find(id="s3b2"))
             messages["s3b3"] = nested_text(soup.find(id="s3b3"))
 
+        # LICENSES 4.0 #######################################################
         # Section 4: Sui generis database rights
+
         messages["s4_sui_generics_database_rights_titles"] = nested_text(
             soup.find(id="s4")
         )
@@ -990,13 +997,17 @@ class Command(BaseCommand):
             parts
         )
 
+        # LICENSES 4.0 #######################################################
         # Section 5: Disclaimer
+
         messages["s5_disclaimer_title"] = soup.find(id="s5").string
         messages["s5_a"] = soup.find(id="s5a").string  # bold
         messages["s5_b"] = soup.find(id="s5b").string  # bold
         messages["s5_c"] = soup.find(id="s5c").string  # not bold
 
+        # LICENSES 4.0 #######################################################
         # Section 6: Term and Termination
+
         messages["s6_termination_title"] = nested_text(soup.find(id="s6"))
         messages["s6_termination_applies"] = nested_text(soup.find(id="s6a"))
         s6b = soup.find(id="s6b")
@@ -1029,12 +1040,16 @@ class Command(BaseCommand):
         messages["s6_separate_terms"] = inner_html(soup.find(id="s6c"))
         messages["s6_survival"] = inner_html(soup.find(id="s6d"))
 
+        # LICENSES 4.0 #######################################################
         # Section 7: Other terms and conditions
+
         messages["s7_other_terms_title"] = soup.find(id="s7").string
         messages["s7_a"] = soup.find(id="s7a").string
         messages["s7_b"] = soup.find(id="s7b").string
 
+        # LICENSES 4.0 #######################################################
         # Section 8: Interpretation
+
         messages["s8_interpretation_title"] = soup.find(id="s8").string
         for key in ["s8a", "s8b", "s8c", "s8d"]:
             messages[key] = inner_html(soup.find(id=key))
