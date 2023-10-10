@@ -188,7 +188,7 @@ class Command(BaseCommand):
             if include:
                 LOG.debug(f"{filename} loading")
             else:
-                LOG.info(f"{filename} skipped.")
+                LOG.debug(f"{filename} skipped.")
                 continue
 
             base_url = metadata["base_url"]
@@ -229,6 +229,7 @@ class Command(BaseCommand):
                 requires_share_alike = False
 
             # Find or create a Tool object
+            prohibits_hinu = prohibits_high_income_nation_use
             tool, created = Tool.objects.get_or_create(
                 base_url=base_url,
                 category=category,
@@ -247,7 +248,7 @@ class Command(BaseCommand):
                     requires_notice=requires_notice,
                     requires_attribution=requires_attribution,
                     prohibits_commercial_use=prohibits_commercial_use,
-                    prohibits_high_income_nation_use=prohibits_high_income_nation_use,  # noqa: E501
+                    prohibits_high_income_nation_use=prohibits_hinu,
                 ),
             )
             if created:
@@ -414,7 +415,8 @@ class Command(BaseCommand):
                     else "",
                 )
             )
-        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html  # noqa: E501
+        # noqa: E501
+        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html
         pofile.metadata = {
             "Content-Transfer-Encoding": "8bit",
             "Content-Type": "text/plain; charset=utf-8",
@@ -469,7 +471,8 @@ class Command(BaseCommand):
                     msgstr=clean_string(message_value),
                 )
             )
-        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html  # noqa: E501
+        # noqa: E501
+        # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html
         pofile.metadata = {
             "Content-Transfer-Encoding": "8bit",
             "Content-Type": "text/plain; charset=utf-8",
@@ -576,11 +579,11 @@ class Command(BaseCommand):
 
     def import_by_40_license_html(self, *, content, legal_code):
         """
-        Returns a dictionary mapping our internal keys to strings.
+        Returns a dictionary mapping our internal keys to strings for the 4.0
+        licenses.
         """
         tool = legal_code.tool
         unit = tool.unit
-        language_code = legal_code.language_code
         html_file = os.path.basename(legal_code.html_file)
         assert tool.version == "4.0", f"{tool.version} is not '4.0'"
         assert tool.unit.startswith("by")
@@ -728,10 +731,6 @@ class Command(BaseCommand):
             insert_after("adapted_material", "adapters_license")
             insert_after("adapters_license", "by_sa_compatible_license")
             insert_after("exceptions_and_limitations", "license_elements_sa")
-            # See https://github.com/creativecommons/creativecommons.org/issues/1153  # noqa: E501
-            # BY-SA 4.0 for "pt" has an extra definition. Work around for now.
-            if language_code == "pt":
-                insert_after("you", "you2")
         elif unit == "by":
             insert_after("adapted_material", "adapters_license")
         elif unit == "by-nc":
