@@ -5,19 +5,21 @@ name = "pypi"
 
 [packages]
 Babel = "*"
+Django = ">=3.2.20,<3.3"
+GitPython = ">=3.1.37"
+PyYAML = "*"
 beautifulsoup4 = "*"
-dealer = "*"
-Django = ">=3.2.19,<3.3"
+certifi = ">=2023.7.22"  # Ensure dependency is secure
 colorlog = "*"
-GitPython = "*"
+dealer = "*"
+gitpython = ">=3.1.37"  # Ensure dependency is secure
 lxml = "*"  # Used for RDF/XML processing and by beautifulsoup4
 polib = "*"
 python-dateutil = "*"
-PyYAML = "*"
 rdflib = "*"
 transifex-python = "*"
+urllib3 = ">=2.0.6"  # Ensure dependency is secure
 whitenoise = "*"
-
 
 [dev-packages]
 black = "*"
