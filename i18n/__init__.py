@@ -223,7 +223,7 @@ LANGMAP_DJANGO_TO_PCRE = {
     # The following PCREs handle altnate codes and characters. Alternate case
     # should be handled by an Apache RewriteMap.
     "de-at": ["de[@_]at"],
-    "en": ["en[@_-]us", "en[@_-]gb"],
+    "en": ["en[@_-]gb", "en[@_-]us"],
     "en-ca": ["en[@_]ca"],
     "en-gb": ["en[@_]gb"],
     "es": ["es[@_-]es"],
