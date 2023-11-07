@@ -3,7 +3,7 @@ Theme Name: CC Vocabulary Theme
 Author: the Creative Commons team; possumbilities, Timid Robot
 Author URI: https://opensource.creativecommons.org/
 Description: Theme based on the Vocabulary Design System
-Version: 0.19.0
+Version: 1.3
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.0
@@ -186,6 +186,7 @@ main nav.pagination ul li span.current {
   margin: 0 5%;
   margin-bottom: 6.4em;
   gap: 0 4em;
+  position: relative;
 
 }
 
@@ -202,6 +203,31 @@ main nav.pagination ul li span.current {
   background: black;
 }
 
+.home-narrative .topic-summary .attention {
+  display: inline-block;
+  padding: 2em;
+  margin-bottom: 1em;
+
+  background: var(--vocabulary-brand-color-soft-turquoise);
+  font-size: .67em;
+}
+
+.home-narrative .topic-summary .attention .icon-attach:before {
+  margin-right: .3em;
+}
+
+.home-narrative .topic-summary .attention p {
+  display: inline;
+  margin: 0;
+  padding: 0;
+
+  font-size: 1.5em;
+}
+
+.home-narrative .topic-summary .attention a {
+  --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+}
+
 .home-narrative .topic-summary figure {
   width: 100%;
   /* height: 60%; */
@@ -215,6 +241,10 @@ main nav.pagination ul li span.current {
   height: 70%;
 
   background: black;
+}
+
+.home-narrative .topic-summary figure:has(.attention) iframe {
+  height: 55%;
 }
 
 .home-narrative .topic-summary .description {
@@ -658,6 +688,64 @@ main nav.pagination ul li span.current {
 
 /* patches */
 
+body > .attention {
+  text-align: center;
+}
+
+body > .attention a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5em .8em;;
+
+    margin-left: .5em;
+
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed';
+    font-style: normal;
+    font-weight: 700;
+    text-decoration: none;
+    vertical-align: middle;
+    background: var(--vocabulary-brand-color-turquoise);
+    color: white;
+    border-radius: 4px;
+}
+
+body > .attention a:before {
+  --icon-sprite: url('vocabulary/svg/cc/icons/cc-icons.svg#cc-heart-filled');
+  --icon-sprite-color: white;
+  --icon-sprite-size: 1em;
+
+  display: inline-block;
+  content: '';
+  height: 1em;
+  width: 1em;
+  margin-right: .2em;
+
+  font-size: var(--icon-sprite-size);
+  background-color: var(--icon-sprite-color);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-image: var(--icon-sprite);
+  mask-image: var(--icon-sprite);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+}
+
+body > .attention.low-importance {
+  background: var(--vocabulary-brand-color-soft-green);
+  border-bottom: 8px solid var(--vocabulary-brand-color-green);
+}
+
+body > .attention.medium-importance {
+  background: var(--vocabulary-brand-color-soft-gold);
+  border-bottom: 8px solid var(--vocabulary-brand-color-gold);
+}
+
+body > .attention.high-importance {
+  background: var(--vocabulary-brand-color-soft-tomato);
+  border-bottom: 8px solid var(--vocabulary-brand-color-tomato);
+}
+
 .masthead .identity-logo:focus, body > footer .identity-logo:focus, .icon-replace:focus {
   background-color: purple;
 }
@@ -731,7 +819,7 @@ main p:has(img) {
 }
 
 .team-index main .persons .person img {
-  zoom: 2;
+  zoom: 10;
 }
 
 .team-index main .persons .person h3 {
@@ -744,6 +832,17 @@ main p:has(img) {
 
 body > footer {
   padding-top: 40px;
+}
+
+@media (min-width: 1500px) {
+  body {
+    width: 1500px;
+    margin: 0 auto;
+  }
+
+  .home-narrative .data-points .data-point.khan-academy h2 {
+    text-indent: -6000px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -778,6 +877,29 @@ body > footer {
 
   .home-narrative main .authored-posts.highlight > article:nth-of-type(1) {
     padding: 1.2em;
+  }
+
+  .home-narrative .attribution-list {
+    padding: 2em;
+  }
+
+  .home-narrative .attribution-list h2 {
+    width: 50%;
+    font-size: .5em;
+    hyphens: auto;
+    word-break: break-word;
+
+  }
+
+  .blog-index .attribution-list {
+    padding: 2em;
+  }
+
+  .blog-index .attribution-list h2 {
+    width: 50%;
+    hyphens: auto;
+    word-break: break-word;
+
   }
 
 }
