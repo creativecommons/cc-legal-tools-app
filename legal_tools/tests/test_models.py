@@ -492,6 +492,10 @@ class LegalCodeModelTest(TestCase):
         self.assertEqual(
             [
                 [
+                    "/license/by/4[.]0/legalcode[.]en[@_-]gb(?:[.]html)?",
+                    "/license/by/4.0/legalcode.en",
+                ],
+                [
                     "/license/by/4[.]0/legalcode[.]en[@_-]us(?:[.]html)?",
                     "/license/by/4.0/legalcode.en",
                 ],
