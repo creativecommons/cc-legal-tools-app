@@ -414,11 +414,12 @@ def view_list(request, category, language_code=None):
         request_path=request.path,
         selected_language_code=language_code,
     )
+    canonical_url_html = os.path.join(settings.CANONICAL_SITE, request.path)
     html_response = render(
         request,
         template_name=f"list-{category}.html",
         context={
-            "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
+            "canonical_url_html": canonical_url_html,
             "category": category,
             "category_title": category_title,
             "category_list": category_list,
@@ -505,13 +506,16 @@ def view_deed(
     else:
         body_template = "includes/deed_body_unimplemented.html"
 
+    canonical_url_html = os.path.join(settings.CANONICAL_SITE, request.path)
+    canonical_url_cc = os.path.join(os.path.dirname(canonical_url_html), "")
     html_response = render(
         request,
         template_name="deed.html",
         context={
             "additional_classes": "",
             "body_template": body_template,
-            "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
+            "canonical_url_cc": canonical_url_cc,
+            "canonical_url_html": canonical_url_html,
             "category": category,
             "category_title": category_title,
             "identifier": tool.identifier(),
@@ -607,10 +611,17 @@ def view_legal_code(
             language_default,
         )
 
+        canonical_url_html = os.path.join(
+            settings.CANONICAL_SITE, request.path
+        )
+        canonical_url_cc = os.path.join(
+            os.path.dirname(canonical_url_html), ""
+        )
         kwargs = dict(
             template_name="legalcode.html",
             context={
-                "canonical_url": f"{settings.CANONICAL_SITE}{request.path}",
+                "canonical_url_cc": canonical_url_cc,
+                "canonical_url_html": canonical_url_html,
                 "category": category,
                 "category_title": category_title,
                 "deed_rel_path": deed_rel_path,
