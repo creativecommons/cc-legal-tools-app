@@ -24,9 +24,30 @@
 
 
 {% block content %}
-<p class="document-link">
-<a href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
-</p>
+
+<div class="tool-meta">
+
+<div>
+<article class="canonical-url">
+<h2>{% trans "Canonical URL" %}</h2>
+<a href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
+</article>
+
+{% if plain_text_url %}
+<article class="formats">
+<h2>Formats</h2>
+<ul>
+<li><a href="{{ plain_text_url }}">{% trans "plain text" %}</a></li>
+</ul>
+</article>
+{% endif %}
+
+</div>
+
+<a class="alt-view" href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
+
+</div>
+
 <p>
 {% trans "Version" %} {{ legal_code.tool.version }} &#8226;
 {% blocktrans trimmed %}

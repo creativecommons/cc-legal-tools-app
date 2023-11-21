@@ -36,11 +36,22 @@
   {% include 'includes/notice_newer_license.html' %}
 {% endif %}
 
+<div class="tool-meta">
+
+<div>
+<article class="canonical-url">
+<h2>{% trans "Canonical URL" %}</h2>
+<a href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
+</article>
+</div>
+
 {% if not tool.deed_only %}
-<p class="document-link">
-<a href="{{ legal_code_rel_path }}">{% trans "See the legal code" %}</a>
-</p>
+<a class="alt-view" href="{{ legal_code_rel_path }}">
+{% trans "See the legal code" %}
+</a>
 {% endif %}
+
+</div>
 
 {% include body_template %}
 
