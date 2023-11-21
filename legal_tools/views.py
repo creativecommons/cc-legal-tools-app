@@ -1,9 +1,8 @@
 # Standard library
-import os.path
+import os
 import re
 from operator import itemgetter
 from typing import Iterable
-from urllib import parse
 
 # Third-party
 import git
@@ -38,6 +37,21 @@ from legal_tools.rdf_utils import (
 )
 
 NUM_COMMITS = 3
+PLAIN_TEXT_TOOL_IDENTIFIERS = [
+    "CC BY 3.0",
+    "CC BY-NC 3.0",
+    "CC BY-NC-ND 3.0",
+    "CC BY-NC-SA 3.0",
+    "CC BY-ND 3.0",
+    "CC BY-SA 3.0",
+    "CC BY 4.0",
+    "CC BY-NC 4.0",
+    "CC BY-NC-ND 4.0",
+    "CC BY-NC-SA 4.0",
+    "CC BY-ND 4.0",
+    "CC BY-SA 4.0",
+    "CC0 1.0",
+]
 
 # For removing the deed.foo section of a deed url
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
@@ -415,7 +429,9 @@ def view_list(request, category, language_code=None):
         request_path=request.path,
         selected_language_code=language_code,
     )
-    canonical_url_html = parse.urljoin(settings.CANONICAL_SITE, request.path)
+    canonical_url_html = os.path.join(
+        settings.CANONICAL_SITE, request.path.lstrip(os.sep)
+    )
     html_response = render(
         request,
         template_name=f"list-{category}.html",
@@ -507,7 +523,9 @@ def view_deed(
     else:
         body_template = "includes/deed_body_unimplemented.html"
 
-    canonical_url_html = parse.urljoin(settings.CANONICAL_SITE, request.path)
+    canonical_url_html = os.path.join(
+        settings.CANONICAL_SITE, request.path.lstrip(os.sep)
+    )
     canonical_url_cc = os.path.join(os.path.dirname(canonical_url_html), "")
     html_response = render(
         request,
@@ -546,6 +564,7 @@ def view_legal_code(
     language_code=None,
     is_plain_text=False,
 ):
+    plain_text_url = None
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
@@ -612,8 +631,11 @@ def view_legal_code(
             language_default,
         )
 
-        canonical_url_html = parse.urljoin(
-            settings.CANONICAL_SITE, request.path
+        if tool.identifier() in PLAIN_TEXT_TOOL_IDENTIFIERS:
+            plain_text_url = "legalcode.txt"
+
+        canonical_url_html = os.path.join(
+            settings.CANONICAL_SITE, request.path.lstrip(os.sep)
         )
         canonical_url_cc = os.path.join(
             os.path.dirname(canonical_url_html), ""
@@ -631,6 +653,7 @@ def view_legal_code(
                 "legal_code": legal_code,
                 "list_licenses": list_licenses,
                 "list_publicdomain": list_publicdomain,
+                "plain_text_url": plain_text_url,
                 "replaced_path": replaced_path,
                 "replaced_title": replaced_title,
                 "tool": tool,
@@ -808,4 +831,30 @@ def view_image_rdf(request):
     response = HttpResponse(
         serialized_rdf_content, content_type="application/rdf+xml"
     )
+    return response
+
+
+def view_legacy_plaintext(
+    request,
+    unit,
+    version,
+    category=None,
+):
+    """
+    Display plain text file, if it exists (this view is only used in
+    development).
+    """
+    published_docs_path = os.path.abspath(
+        os.path.realpath(os.path.join("..", "cc-legal-tools-data", "docs"))
+    )
+    plain_text_path = os.path.join(
+        published_docs_path, request.path.lstrip(os.sep)
+    )
+    if os.path.isfile(plain_text_path):
+        with open(plain_text_path, "rt") as file_obj:
+            content = file_obj.read()
+        response = HttpResponse(content, content_type="text/plain")
+    else:
+        raise Http404("plain text file does not exist")
+
     return response
