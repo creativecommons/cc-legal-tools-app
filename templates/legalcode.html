@@ -33,14 +33,15 @@
 <a href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
 </article>
 
-{% if plain_text_url %}
 <article class="formats">
-<h2>Formats</h2>
+<h2>{% trans "Formats" %}</h2>
 <ul>
-<li><a href="{{ plain_text_url }}">{% trans "plain text" %}</a></li>
+{% if plain_text_url %}
+<li><a href="{{ plain_text_url }}">{% trans "Plain Text" %}</a></li>
+{% endif %}
+<li><a href="rdf">RDF/XML</a></li>
 </ul>
 </article>
-{% endif %}
 
 </div>
 
