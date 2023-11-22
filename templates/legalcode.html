@@ -27,7 +27,7 @@
 
 <div class="tool-meta">
 
-<div>
+<div class="meta-box">
 <article class="canonical-url">
 <h2>{% trans "Canonical URL" %}</h2>
 <a href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
@@ -42,10 +42,11 @@
 <li><a href="rdf">RDF/XML</a></li>
 </ul>
 </article>
-
 </div>
 
-<a class="alt-view" href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
+<div class="alt-view">
+<a href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
+</div>
 
 </div>
 

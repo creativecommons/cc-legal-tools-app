@@ -118,69 +118,64 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
 
 /*.tool-meta */
 .cc-legal-tools .tool-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    vertical-align: bottom;
-    position: relative;
-    margin-bottom: 1em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
 }
-.cc-legal-tools .tool-meta div {
-    list-style: none;
-    background-color: var(--vocabulary-brand-color-soft-turquoise);
-    border-radius: 5px;
-    padding: 0.8em;
-    display: inline-block;
-    position: relative;
-    padding-top: 1em;
-    padding-right: 1.4em;
+.cc-legal-tools .tool-meta div.meta-box {
+  list-style: none;
+  background-color: var(--vocabulary-brand-color-soft-turquoise);
+  border-radius: 5px;
+  padding: 0.8em;
+  padding-top: 1em;
+  padding-right: 1.4em;
 }
-.cc-legal-tools .tool-meta div a {
-    --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
-    font-family: 'Source Sans Pro';
+.cc-legal-tools .tool-meta div.meta-box a {
+  --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+  font-family: 'Source Sans Pro';
 }
 .cc-legal-tools .tool-meta h2 {
-    font-size: 1em;
-    margin: 0;
-    font-family: 'Source Sans Pro';
-    margin-left: 0.6em;
-    display: inline;
+  font-size: 1em;
+  margin: 0;
+  font-family: 'Source Sans Pro';
+  margin-left: 0.6em;
+  display: inline;
 }
 .cc-legal-tools .tool-meta h2:after {
-    content: ':';
+  content: ':';
 }
 .cc-legal-tools article.canonical-url {
-    margin-bottom: 0.5em;
+  margin-bottom: 0.5em;
 }
 .cc-legal-tools article.canonical-url h2 {
-    margin-bottom: 0.6em;
+  margin-bottom: 0.6em;
 }
 .cc-legal-tools article.canonical-url a {
-    font-family: monospace;
+  font-family: monospace;
 }
 .cc-legal-tools .tool-meta .formats ul {
-    list-style: none;
-    display: inline-flex;
-    margin: 0;
-    font-size: 1em;
+  list-style: none;
+  display: inline-flex;
+  margin: 0;
+  font-size: 1em;
 }
 .cc-legal-tools .tool-meta .formats ul li {
-    padding: 0.3em;
+  padding: 0.3em;
 }
 .cc-legal-tools .tool-meta .formats ul li:first-child {
-    padding-left: 0;
+  padding-left: 0;
 }
-.cc-legal-tools a.alt-view {
-    font-family: 'Source Sans Pro';
-    font-size: 1.5em;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 150%;
-    vertical-align: bottom;
-    position: absolute;
-    bottom: 1em;
-    right: 0;
-  }
+.cc-legal-tools .alt-view {
+  align-self: center;
+  margin-left: auto;
+}
+.cc-legal-tools .alt-view a {
+  font-family: 'Source Sans Pro';
+  font-size: 1.5em;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
+}
 
 
 /* Notices */

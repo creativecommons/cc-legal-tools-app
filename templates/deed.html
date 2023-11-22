@@ -38,7 +38,7 @@
 
 <div class="tool-meta">
 
-<div>
+<div class="meta-box">
 <article class="canonical-url">
 <h2>{% trans "Canonical URL" %}</h2>
 <a href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
@@ -46,9 +46,11 @@
 </div>
 
 {% if not tool.deed_only %}
-<a class="alt-view" href="{{ legal_code_rel_path }}">
+<div class="alt-view">
+<a href="{{ legal_code_rel_path }}">
 {% trans "See the legal code" %}
 </a>
+</div>
 {% endif %}
 
 </div>
