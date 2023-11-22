@@ -12,9 +12,9 @@ repository.
 ## Not the live site
 
 This project is not intended to serve the legal tools directly. Instead, a
-command line tool can be used to save all the rendered HTML pages as files.
-Then those files are used as part of the real creativecommons.org site, just
-served as static files.
+command line tool can be used to save all the rendered HTML and RDF/XML pages
+as files.  Then those files are used as part of the real CreativeCommons.org
+site (served as static files).
 
 
 ## Software Versions

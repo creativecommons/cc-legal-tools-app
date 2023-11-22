@@ -1399,3 +1399,22 @@ class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
                     "  </rdf:Description>\n",
                     content,
                 )
+
+
+class ViewLegacyPlaintext(ToolsTestsMixin, TestCase):
+    def test_view_legacy_plaintext_file_exists(self):
+        tool = Tool.objects.get(unit="by", version="4.0")
+        url = build_path(base_url=tool.base_url, document="legalcode")
+        url = f"{url}.txt"
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        self.assertEqual(response.headers["Content-Type"], "text/plain")
+        self.assertIn("Attribution 4.0 International", content)
+
+    def test_view_legacy_plaintext_file_does_not_exist(self):
+        tool = Tool.objects.get(unit="by", version="2.0")
+        url = build_path(base_url=tool.base_url, document="legalcode")
+        url = f"{url}.txt"
+        response = self.client.get(url)
+        self.assertEqual(f"{response.status_code} {url}", f"404 {url}")

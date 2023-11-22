@@ -19,6 +19,7 @@ from legal_tools.views import (
     view_deed,
     view_dev_index,
     view_image_rdf,
+    view_legacy_plaintext,
     view_legal_code,
     view_legal_tool_rdf,
     view_list,
@@ -246,6 +247,20 @@ urlpatterns = [
         name="view_deed_unported",
     ),
     # LEGALCODE PAGES #########################################################
+    # Legalcode: plain text
+    path(
+        "<category:category>/<unit:unit>/<version:version>/legalcode.txt",
+        view_legacy_plaintext,
+        name="view_legacy_plaintext",
+    ),
+    # NOTE: programmatic plaintext functionality disabled
+    # # Plaintext Legalcode: no Jurisdiction (int/unported), no language_code
+    # path(
+    #     "<category:category>/<unit:unit>/<version:version>/legalcode.txt",
+    #     view_legal_code,
+    #     kwargs=dict(jurisdiction="", is_plain_text=True),
+    #     name="view_legal_code_unported",
+    # ),
     # Legalcode: with Jurisdiction (ported), with language_code
     path(
         "<category:category>/<unit:unit>/<version:version>"
@@ -275,14 +290,6 @@ urlpatterns = [
         kwargs=dict(jurisdiction=""),
         name="view_legal_code_unported",
     ),
-    # NOTE: plaintext functionality disabled
-    # # Plaintext Legalcode: no Jurisdiction (int/unported), no language_code
-    # path(
-    #     "<category:category>/<unit:unit>/<version:version>/legalcode.txt",
-    #     view_legal_code,
-    #     kwargs=dict(jurisdiction="", is_plain_text=True),
-    #     name="view_legal_code_unported",
-    # ),
     # CCREL DOCUMENTS #########################################################
     # Legal tool RDF/XML: no Jurisdiction (international/unported)
     path(

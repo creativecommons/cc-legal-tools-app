@@ -50,10 +50,20 @@ div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
 
 
 /* header title */
+/* TODO: resolve with vocabulary-theme */
+.cc-legal-tools main > header {
+  padding: 3em 0;
+}
 .cc-legal-tools main > header > span.tool-icons > span.cc-icon > svg {
   display: inline;
   height: 4em;
   width: 4em;
+}
+.cc-legal-tools main > header > h1 {
+  margin: 0.2em 0;
+}
+.cc-legal-tools main > header > h2 {
+  margin: 0;
 }
 
 
@@ -99,11 +109,72 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
   padding: 0.5em;
   margin: 0;
 }
-
 .cc-legal-tools table tr > th {
 }
 .cc-legal-tools table > tbody > tr:nth-child(3n) {
     background-color: var(--vocabulary-neutral-color-lighter-gray);
+}
+
+
+/*.tool-meta */
+.cc-legal-tools .tool-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+}
+.cc-legal-tools .tool-meta div.meta-box {
+  list-style: none;
+  background-color: var(--vocabulary-brand-color-soft-turquoise);
+  border-radius: 5px;
+  padding: 0.8em;
+  padding-top: 1em;
+  padding-right: 1.4em;
+}
+.cc-legal-tools .tool-meta div.meta-box a {
+  --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+  font-family: 'Source Sans Pro';
+}
+.cc-legal-tools .tool-meta h2 {
+  font-size: 1em;
+  margin: 0;
+  font-family: 'Source Sans Pro';
+  margin-left: 0.6em;
+  display: inline;
+}
+.cc-legal-tools .tool-meta h2:after {
+  content: ':';
+}
+.cc-legal-tools article.canonical-url {
+  margin-bottom: 0.5em;
+}
+.cc-legal-tools article.canonical-url h2 {
+  margin-bottom: 0.6em;
+}
+.cc-legal-tools article.canonical-url a {
+  font-family: monospace;
+}
+.cc-legal-tools .tool-meta .formats ul {
+  list-style: none;
+  display: inline-flex;
+  margin: 0;
+  font-size: 1em;
+}
+.cc-legal-tools .tool-meta .formats ul li {
+  padding: 0.3em;
+}
+.cc-legal-tools .tool-meta .formats ul li:first-child {
+  padding-left: 0;
+}
+.cc-legal-tools .alt-view {
+  align-self: center;
+  margin-left: auto;
+}
+.cc-legal-tools .alt-view a {
+  font-family: 'Source Sans Pro';
+  font-size: 1.5em;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 150%;
 }
 
 
