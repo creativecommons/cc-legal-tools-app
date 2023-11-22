@@ -476,10 +476,16 @@ Attribution
 <ol type="1">
 
 <li id="s3a1">
+{% if legal_code|is_one_of:"by-nc-nd,by-nd" %}
+{% blocktrans trimmed %}
+<p>If You Share the Licensed Material, You must:</p>
+{% endblocktrans %}
+{% else %}
 {% blocktrans trimmed %}
 <p>If You Share the Licensed Material (including in modified form), You
 must:</p>
 {% endblocktrans %}
+{% endif %}
 
 <ol type="A">
 
