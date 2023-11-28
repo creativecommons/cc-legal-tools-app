@@ -1,7 +1,3 @@
-.cc-legal-tools main > header > h1 {
-  margin: 0.5em 0;
-}
-
 .cc-legal-tools div.content div#deed-body {
   border-top: 10px solid var(--vocabulary-brand-color-turquoise);
   border-bottom: 5px solid var(--vocabulary-neutral-color-dark-gray);

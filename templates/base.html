@@ -9,7 +9,19 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>{% block title %}{% endblock %} | Creative Commons</title>
-  <link href="{{ canonical_url }}" rel="canonical"/>
+  <link href="{{ canonical_url_html }}" rel="canonical"/>
+{% for option in languages_and_links %}
+{% if option.cc_language_code == language_default %}
+  <!-- Default: {{ option.name_local }} -->
+  <link href="{{ option.link }}" hreflang="x-default" rel="alternate" />
+{% endif %}
+{% endfor %}
+{% for option in languages_and_links %}
+{% if not option.selected %}
+  <!-- {{ option.name_local }} -->
+  <link href="{{ option.link }}" hreflang="{{ option.cc_language_code }}" rel="alternate" />
+{% endif %}
+{% endfor %}
   {% block head_meta %}
   {% endblock %}
   <link rel="icon" href="/wp-content/themes/vocabulary-theme/vocabulary/favicon/favicon.ico" sizes="any">
