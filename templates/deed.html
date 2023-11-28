@@ -71,13 +71,19 @@
 {# FOOTNOTES ##}
 
 {% if category == "licenses" or tool.unit == "mark" or tool.unit == "zero" %}
-<h2>{% blocktrans %}Footnotes{% endblocktrans %}</h2>
+<footer>
+<article class="footnotes">
+<h2 id="footnotes">{% blocktrans %}Footnotes{% endblocktrans %}</h2>
 <ul>
 
 {# footnote_mediation_and_arbitration #}
 {% if tool.jurisdiction_code == "igo" %}
 <li>
-{% blocktrans %}mediation and arbitration{% endblocktrans %} &mdash;
+<article class="note" id="ref-mediation-and-arbitration">
+<a href="#src-mediation-and-arbitration">
+<span class="icon-replace fa-angle-up"></span><span>return to reference</span>
+</a>
+<strong>{% trans "mediation and arbitration" %}</strong> &mdash;
 {% blocktrans trimmed %}
 The applicable mediation rules will be designated in the copyright notice
 published with the work, or if none then in the request for mediation.  Unless
@@ -89,13 +95,15 @@ Arbitration Rules apply to any arbitration.
 <a href="https://wiki.creativecommons.org/Intergovernmental_Organizations#What_should_I_know_before_I_use_a_work_licensed_under_the_IGO_3.0_ported_licenses.3F">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
+</article>
 </li>
 {% endif %}
 
 {# footnote_appropriate_credit #}
 {% if tool.requires_attribution %}
 <li>
-{% blocktrans %}appropriate credit{% endblocktrans %} &mdash;
+<article class="note" id="ref-appropriate-credit">
+<strong>{% trans "appropriate credit" %}</strong> &mdash;
 {% blocktrans trimmed %}
 If supplied, you must provide the name of the creator and attribution parties,
 a copyright notice, a license notice, a disclaimer notice, and a link to the
@@ -107,13 +115,14 @@ title of the material if supplied, and may have other slight differences.
 <a href="https://wiki.creativecommons.org/License_Versions#Detailed_attribution_comparison_chart">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
+</article>
 </li>
 {% endif %}
 
 {# footnote_indicate_changes #}
 {% if tool.requires_attribution %}
 <li>
-{% blocktrans %}indicate if changes were made{% endblocktrans %} &mdash;
+<strong>{% trans "indicate if changes were made" %}</strong> &mdash;
 {% blocktrans trimmed %}
 In 4.0, you must indicate if you modified the material and retain an indication
 of previous modifications. In 3.0 and earlier license versions, the indication
@@ -133,7 +142,7 @@ of changes is only required if you create a derivative.
 {# footnote_same_license #}
 {% if tool.requires_share_alike %}
 <li>
-{% blocktrans %}same license{% endblocktrans %} &mdash;
+<strong>{% trans "same license" %}</strong> &mdash;
 {% blocktrans trimmed %}
 You may also use a license listed as compatible at
 <a href="https://creativecommons.org/compatiblelicenses">
@@ -150,7 +159,7 @@ https://creativecommons.org/compatiblelicenses</a>
 {# footnote_commercial_purposes #}
 {% if tool.prohibits_commercial_use %}
 <li>
-{% blocktrans %}commercial purposes{% endblocktrans %} &mdash;
+<strong>{% trans "commercial purposes" %}</strong> &mdash;
 {% blocktrans trimmed %}
 A commercial use is one primarily intended for commercial advantage or monetary
 compensation.
@@ -166,7 +175,7 @@ compensation.
 {# footnote_some_kinds_of_mods #}
 {% if not tool.permits_derivative_works %}
 <li>
-{% blocktrans %}remix, transform, or build upon{% endblocktrans %} &mdash;
+<strong>{% trans "remix, transform, or build upon" %}</strong> &mdash;
 {% blocktrans trimmed %}
 Merely changing the format never creates a derivative.
 {% endblocktrans %}
@@ -181,7 +190,7 @@ Merely changing the format never creates a derivative.
 {# footnote_technological_measures #}
 {% if "sampling" in tool.unit %}
 <li>
-{% blocktrans %}technological measures{% endblocktrans %} &mdash;
+<strong>{% trans "technological measures" %}</strong> &mdash;
 {% blocktrans trimmed %}
 The license prohibits application of effective technological measures, defined
 with reference to Article 11 of the WIPO Copyright Treaty.
@@ -197,7 +206,7 @@ with reference to Article 11 of the WIPO Copyright Treaty.
 {# footnote_exception_or_limitation #}
 {% if category == "licenses" %}
 <li>
-{% blocktrans %}exception or limitation{% endblocktrans %} &mdash;
+<strong>{% trans "exception or limitation" %}</strong> &mdash;
 {% blocktrans trimmed %}
 The rights of users under exceptions and limitations, such as fair use and fair dealing, are not affected by the CC licenses.
 {% endblocktrans %}
@@ -212,7 +221,7 @@ The rights of users under exceptions and limitations, such as fair use and fair 
 {# footnote_publicity_privacy_or_moral_rights #}
 {% if category == "licenses" %}
 <li>
-{% blocktrans %}publicity, privacy, or moral rights{% endblocktrans %} &mdash;
+<strong>{% trans "publicity, privacy, or moral rights" %}</strong> &mdash;
 {% blocktrans trimmed %}
 You may need to get additional permissions before using the material as you
 intend.
@@ -228,7 +237,7 @@ intend.
 {# footnote_jurisdictions  #}
 {% if tool.unit == "mark" %}
 <li>
-{% blocktrans %}jurisdictions {% endblocktrans %} &mdash;
+<strong>{% trans "jurisdictions " %}</strong> &mdash;
 {% blocktrans trimmed %}
 Copyright terms vary jurisdiction to jurisdiction. A work free of copyright
 restrictions in one jurisdiction may not be similarly free in other
@@ -245,7 +254,7 @@ jurisdictions.
 {# footnote_publicity_rights #}
 {% if tool.unit == "mark" or tool.unit == "zero" %}
 <li>
-{% blocktrans %}publicity or privacy{% endblocktrans %} &mdash;
+<strong>{% trans "publicity or privacy" %}</strong> &mdash;
 {% blocktrans trimmed %}
 The use of a work free of known copyright restrictions may be otherwise
 regulated or limited. The work or its use may be subject to personal data
@@ -264,7 +273,7 @@ limitations under applicable law.
 {# footnote_moral_rights #}
 {% if tool.unit == "mark" %}
 <li>
-{% blocktrans %}moral rights{% endblocktrans %} &mdash;
+<strong>{% trans "}moral rights" %}</strong> &mdash;
 {% blocktrans trimmed %}
 Copyright laws in most jurisdictions around the world grant creators "moral
 rights" which may provide some redress if use of a work is considered
@@ -281,7 +290,7 @@ rights" which may provide some redress if use of a work is considered
 {# footnote_endorsement #}
 {% if tool.unit == "mark" or tool.unit == "zero" %}
 <li>
-{% blocktrans %}endorsement{% endblocktrans %} &mdash;
+<strong>{% trans "endorsement" %}</strong> &mdash;
 {% blocktrans trimmed %}
 In some jurisdictions, wrongfully implying that an author, publisher or anyone
 else endorses your use of a work may be unlawful.
@@ -295,6 +304,8 @@ else endorses your use of a work may be unlawful.
 {% endif %}
 
 </ul>
+</article>
+</footer>
 {% endif %}
 
 {% endblock %}
