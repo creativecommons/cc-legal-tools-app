@@ -44,7 +44,7 @@ div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
   margin-right: 0;
 }
 .icon.fa-info, .icon-attach.fa-info:before {
-  --icon-sprite: url('./../svg/font-awesome/icons/fa-icons.svg#fa-info');
+  --icon-sprite: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/font-awesome/icons/fa-icons.svg');
   --icon-sprite-size: .75em;
 }
 
