@@ -117,6 +117,12 @@
 
   <h2 class="b-header has-text-black padding-bottom-big padding-top-normal" style="font-weight: bold;">{% trans "Notices:" %}</h2>
 
+  {% if tool.jurisdiction_code == "igo" %}
+  <p>
+    {% blocktrans %}When the Licensor is an intergovernmental organization, disputes will be resolved by <a href="#" id="mediation_and_arbitration_popup" class="helpLink">mediation and arbitration</a> unless otherwise agreed.{% endblocktrans %}
+  </p>
+  {% endif %}
+
   <p>
     {% blocktrans %}You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable <a href="#" id="exception_or_limitation_popup" class="helpLink">exception or limitation</a>.{% endblocktrans %}
   </p>
