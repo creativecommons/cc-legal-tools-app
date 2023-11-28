@@ -59,34 +59,34 @@
 
   {% if tool.prohibits_high_income_nation_use %}
     <li>
-      <strong>{% trans "Developing Nations" %}</strong> -
+      <strong>{% trans "Developing Nations" %}</strong> &mdash;
       {% blocktrans %}You may exercise the above freedoms in developing nations only. {% endblocktrans %}
     </li>
   {% endif %}
 
   {% if tool.requires_attribution %}
     <li class="cc-by">
-      <strong>{% trans "Attribution" %}</strong> -
+      <strong>{% trans "Attribution" %}</strong> &mdash;
       {% blocktrans %}You must give <a href="#" id="appropriate_credit_popup" class="helpLink">appropriate credit</a></span>, provide a link to the license, and <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#" id="indicate_changes_popup" class="helpLink">indicate if changes were made</a></span>. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.{% endblocktrans %}
     </li>
   {% endif %}
 
   {% if tool.prohibits_commercial_use %}
     <li class="cc-nc">
-      <strong>{% trans "NonCommercial" %}</strong> -
+      <strong>{% trans "NonCommercial" %}</strong> &mdash;
       {% blocktrans %}You may not use the material for <a href="#" id="commercial_purposes_popup" class="helpLink">commercial purposes</a>.{% endblocktrans %}
     </li>
   {% endif %}
 
   {% if tool.requires_share_alike %}
     <li class="cc-sa">
-      <strong>{% trans "ShareAlike" %}</strong> - {% blocktrans %}If you remix, transform, or build upon the material, you must distribute your contributions under the <a href="#" id="same_license_popup" class="helpLink">same license</a> as the original.{% endblocktrans %}
+      <strong>{% trans "ShareAlike" %}</strong> &mdash; {% blocktrans %}If you remix, transform, or build upon the material, you must distribute your contributions under the <a href="#" id="same_license_popup" class="helpLink">same license</a> as the original.{% endblocktrans %}
     </li>
   {% endif %}
 
   {% if not tool.permits_derivative_works %}
     <li class="cc-nd">
-      <strong>{% trans "NoDerivatives" %}</strong> - {% blocktrans %}If you <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
+      <strong>{% trans "NoDerivatives" %}</strong> &mdash; {% blocktrans %}If you <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
     </li>
   {% endif %}
 
@@ -109,7 +109,7 @@
   {% endif %}
 
     <li>
-      <strong>{% trans "No additional restrictions" %}</strong> - {% blocktrans %}You may not apply legal terms or <a href="#" id="technological_measures_popup" class="helpLink">technological measures</a> that legally restrict others from doing anything the license permits.{% endblocktrans %}
+      <strong>{% trans "No additional restrictions" %}</strong> &mdash; {% blocktrans %}You may not apply legal terms or <a href="#" id="technological_measures_popup" class="helpLink">technological measures</a> that legally restrict others from doing anything the license permits.{% endblocktrans %}
     </li>
   </ol>
 
