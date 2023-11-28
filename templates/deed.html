@@ -68,41 +68,32 @@
   {% include 'includes/related_links.html' %}
 </div>
 
+{# FOOTNOTES ##}
 
-{% if false %}{# body_template == "includes/deed_body_licenses.html" %} #}
-{# #}
-{# #}
-{# WIP: cc0 and mark both have pop-ups, as well #}
-{# #}
-{# #}
+{% if category == "licenses" or tool.unit == "mark" or tool.unit == "zero" %}
 <h2>{% blocktrans %}Footnotes{% endblocktrans %}</h2>
 <ul>
 
-{% if false %}{# this isn't curently used #}
-{# footnote_attribution_help #}
-{% blocktrans %}What does "Attribute this work" mean?{% endblocktrans %}
-{% blocktrans trimmed %}
-The page you came from contained embedded licensing metadata, including how the
-creator wishes to be attributed for re-use. You can use the HTML here to cite
-the work. Doing so will also include metadata on your page so that others can
-find the original work as well.
-{% endblocktrans %}
-{% endif %}
-
-{% if false %}{# this isn't curently used #}
 {# footnote_mediation_and_arbitration #}
+{% if tool.jurisdiction_code == "igo" %}
+<li>
+{% blocktrans %}mediation and arbitration{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
 The applicable mediation rules will be designated in the copyright notice
 published with the work, or if none then in the request for mediation.  Unless
 otherwise designated in a copyright notice attached to the work, the UNCITRAL
 Arbitration Rules apply to any arbitration.
 {% endblocktrans %}
-<a href="http://wiki.creativecommons.org/Intergovernmental_Organizations#What_should_I_know_before_I_use_a_work_licensed_under_the_IGO_3.0_ported_licenses.3F">
-{% blocktrans %}More info{% endblocktrans %}</a>
+<ul>
+<li>
+<a href="https://wiki.creativecommons.org/Intergovernmental_Organizations#What_should_I_know_before_I_use_a_work_licensed_under_the_IGO_3.0_ported_licenses.3F">{% blocktrans %}More info{% endblocktrans %}</a>
+</li>
+</ul>
+</li>
 {% endif %}
 
-{% if tool.requires_attribution %}
 {# footnote_appropriate_credit #}
+{% if tool.requires_attribution %}
 <li>
 {% blocktrans %}appropriate credit{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -113,12 +104,14 @@ title of the material if supplied, and may have other slight differences.
 {% endblocktrans %}
 <ul>
 <li>
-<a href="http://wiki.creativecommons.org/License_Versions#Detailed_attribution_comparison_chart">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="https://wiki.creativecommons.org/License_Versions#Detailed_attribution_comparison_chart">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
+{% endif %}
 
 {# footnote_indicate_changes #}
+{% if tool.requires_attribution %}
 <li>
 {% blocktrans %}indicate if changes were made{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -128,17 +121,17 @@ of changes is only required if you create a derivative.
 {% endblocktrans %}
 <ul>
 <li>
-<a href="http://wiki.creativecommons.org/Best_practices_for_attribution#This_is_a_good_attribution_for_material_you_modified_slightly">{% blocktrans %}Marking guide{% endblocktrans %}</a>
+<a href="https://wiki.creativecommons.org/Best_practices_for_attribution#This_is_a_good_attribution_for_material_you_modified_slightly">{% blocktrans %}Marking guide{% endblocktrans %}</a>
 </li>
 <li>
-<a href="http://wiki.creativecommons.org/License_Versions#Modifications_and_adaptations_must_be_marked_as_such ">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="https://wiki.creativecommons.org/License_Versions#Modifications_and_adaptations_must_be_marked_as_such ">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
 {% endif %}
 
-{% if tool.requires_share_alike %}
 {# footnote_same_license #}
+{% if tool.requires_share_alike %}
 <li>
 {% blocktrans %}same license{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -148,14 +141,14 @@ https://creativecommons.org/compatiblelicenses</a>
 {% endblocktrans %}
 <ul>
 <li>
-<a href="http://wiki.creativecommons.org/FAQ#If_I_derive_or_adapt_material_offered_under_a_Creative_Commons_license.2C_which_CC_license.28s.29_can_I_use.3F">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="/faq/#if-i-derive-or-adapt-material-offered-under-a-creative-commons-license-which-cc-licenses-can-i-use">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
 {% endif %}
 
-{% if tool.prohibits_commercial_use %}
 {# footnote_commercial_purposes #}
+{% if tool.prohibits_commercial_use %}
 <li>
 {% blocktrans %}commercial purposes{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -164,14 +157,14 @@ compensation.
 {% endblocktrans %}
 <ul>
 <li>
-<a href="https://creativecommons.org/faq/#does-my-use-violate-the-noncommercial-clause-of-the-licenses">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="/faq/#does-my-use-violate-the-noncommercial-clause-of-the-licenses">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
 {% endif %}
 
-{% if not tool.permits_derivative_works %}
 {# footnote_some_kinds_of_mods #}
+{% if not tool.permits_derivative_works %}
 <li>
 {% blocktrans %}remix, transform, or build upon{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -179,14 +172,14 @@ Merely changing the format never creates a derivative.
 {% endblocktrans %}
 <ul>
 <li>
-<a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#When_is_my_use_considered_an_adaptation.3F">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="/faq/#when-is-my-use-considered-an-adaptation">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
 {% endif %}
 
-{% if "sampling" in tool.unit %}
 {# footnote_technological_measures #}
+{% if "sampling" in tool.unit %}
 <li>
 {% blocktrans %}technological measures{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -195,13 +188,14 @@ with reference to Article 11 of the WIPO Copyright Treaty.
 {% endblocktrans %}
 <ul>
 <li>
-<a href="http://wiki.creativecommons.org/License_Versions#Application_of_effective_technological_measures_by_users_of_CC-licensed_works_prohibited">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="https://wiki.creativecommons.org/License_Versions#Application_of_effective_technological_measures_by_users_of_CC-licensed_works_prohibited">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
 {% endif %}
 
 {# footnote_exception_or_limitation #}
+{% if category == "licenses" %}
 <li>
 {% blocktrans %}exception or limitation{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -209,12 +203,14 @@ The rights of users under exceptions and limitations, such as fair use and fair 
 {% endblocktrans %}
 <ul>
 <li>
-<a href="http://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_exceptions_and_limitations_to_copyright.2C_such_as_fair_dealing_and_fair_use.3F">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="https://wiki.creativecommons.org/Frequently_Asked_Questions#Do_Creative_Commons_licenses_affect_exceptions_and_limitations_to_copyright.2C_such_as_fair_dealing_and_fair_use.3F">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
+{% endif %}
 
 {# footnote_publicity_privacy_or_moral_rights #}
+{% if category == "licenses" %}
 <li>
 {% blocktrans %}publicity, privacy, or moral rights{% endblocktrans %} &mdash;
 {% blocktrans trimmed %}
@@ -223,10 +219,80 @@ intend.
 {% endblocktrans %}
 <ul>
 <li>
-<a href="http://wiki.creativecommons.org/Considerations_for_licensors_and_licensees">{% blocktrans %}More info{% endblocktrans %}</a>
+<a href="https://wiki.creativecommons.org/Considerations_for_licensors_and_licensees">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </li>
+{% endif %}
+
+{# footnote_jurisdictions  #}
+{% if tool.unit == "mark" %}
+<li>
+{% blocktrans %}jurisdictions {% endblocktrans %} &mdash;
+{% blocktrans trimmed %}
+Copyright terms vary jurisdiction to jurisdiction. A work free of copyright
+restrictions in one jurisdiction may not be similarly free in other
+jurisdictions.
+{% endblocktrans %}
+<ul>
+<li>
+<a href="https://wiki.creativecommons.org/wiki/PDM_FAQ#If_I_apply_the_PDM_to_a_work.2C_am_I_warranting_or_promising_that_the_work_is_free_of_copyright_around_the_world.3F">{% blocktrans %}More info{% endblocktrans %}</a>
+</li>
+</ul>
+</li>
+{% endif %}
+
+{# footnote_publicity_rights #}
+{% if tool.unit == "mark" or tool.unit == "zero" %}
+<li>
+{% blocktrans %}publicity or privacy{% endblocktrans %} &mdash;
+{% blocktrans trimmed %}
+The use of a work free of known copyright restrictions may be otherwise
+regulated or limited. The work or its use may be subject to personal data
+protection laws, publicity, image, or privacy rights that allow a person to
+control how their voice, image or likeness is used, or other restrictions or
+limitations under applicable law.
+{% endblocktrans %}
+<ul>
+<li>
+<a href="/faq/#what-are-publicity-personality-and-privacy-rights">{% blocktrans %}More info{% endblocktrans %}</a>
+</li>
+</ul>
+</li>
+{% endif %}
+
+{# footnote_moral_rights #}
+{% if tool.unit == "mark" %}
+<li>
+{% blocktrans %}moral rights{% endblocktrans %} &mdash;
+{% blocktrans trimmed %}
+Copyright laws in most jurisdictions around the world grant creators "moral
+rights" which may provide some redress if use of a work is considered
+"derogatory".
+{% endblocktrans %}
+<ul>
+<li>
+<a href="/faq/#what-are-moral-rights">{% blocktrans %}More info{% endblocktrans %}</a>
+</li>
+</ul>
+</li>
+{% endif %}
+
+{# footnote_endorsement #}
+{% if tool.unit == "mark" or tool.unit == "zero" %}
+<li>
+{% blocktrans %}endorsement{% endblocktrans %} &mdash;
+{% blocktrans trimmed %}
+In some jurisdictions, wrongfully implying that an author, publisher or anyone
+else endorses your use of a work may be unlawful.
+{% endblocktrans %}
+<ul>
+<li>
+<a href="/faq/#do-i-need-to-be-aware-of-anything-else-when-providing-attribution">{% blocktrans %}More info{% endblocktrans %}</a>
+</li>
+</ul>
+</li>
+{% endif %}
 
 </ul>
 {% endif %}
