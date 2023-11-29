@@ -147,6 +147,27 @@ of changes is only required if you create a derivative.
 </li>
 {% endif %}
 
+{# footnote-commercial-purposes #}
+{% if tool.prohibits_commercial_use %}
+<li>
+<article class="note" id="ref-commercial-purposes">
+<a href="#src-commercial-purposes">
+<span class="icon-replace fa-angle-up"></span><span>return to reference</span>
+</a>
+<strong>{% trans "commercial purposes" %}</strong> &mdash;
+{% blocktrans trimmed %}
+A commercial use is one primarily intended for commercial advantage or monetary
+compensation.
+{% endblocktrans %}
+<ul>
+<li>
+<a href="/faq/#does-my-use-violate-the-noncommercial-clause-of-the-licenses">{% blocktrans %}More info{% endblocktrans %}</a>
+</li>
+</ul>
+</article>
+</li>
+{% endif %}
+
 {# footnote-same-license #}
 {% if tool.requires_share_alike %}
 <li>
@@ -163,27 +184,6 @@ https://creativecommons.org/compatiblelicenses</a>
 <ul>
 <li>
 <a href="/faq/#if-i-derive-or-adapt-material-offered-under-a-creative-commons-license-which-cc-licenses-can-i-use">{% blocktrans %}More info{% endblocktrans %}</a>
-</li>
-</ul>
-</article>
-</li>
-{% endif %}
-
-{# footnote-commercial-purposes #}
-{% if tool.prohibits_commercial_use %}
-<li>
-<article class="note" id="ref-commercial-purposes">
-<a href="#src-commercial-purposes">
-<span class="icon-replace fa-angle-up"></span><span>return to reference</span>
-</a>
-<strong>{% trans "commercial purposes" %}</strong> &mdash;
-{% blocktrans trimmed %}
-A commercial use is one primarily intended for commercial advantage or monetary
-compensation.
-{% endblocktrans %}
-<ul>
-<li>
-<a href="/faq/#does-my-use-violate-the-noncommercial-clause-of-the-licenses">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </article>
