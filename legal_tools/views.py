@@ -8,6 +8,8 @@ from typing import Iterable
 import git
 import yaml
 from bs4 import BeautifulSoup
+from bs4.dammit import EntitySubstitution
+from bs4.formatter import HTMLFormatter
 from django.conf import settings
 from django.core.cache import caches
 from django.http import Http404, HttpResponse
@@ -55,6 +57,16 @@ PLAIN_TEXT_TOOL_IDENTIFIERS = [
 
 # For removing the deed.foo section of a deed url
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
+# Register a custom BeatifulSoup HTML Formatter
+HTMLFormatter.REGISTRY["html5ish"] = HTMLFormatter(
+    # The html5 formatter replaces accented characters with entities, which
+    # significantly alters translations and breaks tests. This custom
+    # formatter uses the same EntitySubstitution as the minimal formatter
+    # and the html5 values for the other parameters.
+    entity_substitution=EntitySubstitution.substitute_xml,
+    void_element_close_prefix=None,
+    empty_attributes_are_booleans=True,
+)
 
 
 def get_category_and_category_title(category=None, tool=None):
@@ -336,7 +348,9 @@ def view_dev_index(request):
     )
 
     html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        BeautifulSoup(html_response.content, features="lxml").prettify(
+            formatter="html5ish"
+        ),
         "utf-8",
     )
     return html_response
@@ -448,7 +462,9 @@ def view_list(request, category, language_code=None):
         },
     )
     html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        BeautifulSoup(html_response.content, features="lxml").prettify(
+            formatter="html5ish"
+        ),
         "utf-8",
     )
     return html_response
@@ -551,7 +567,9 @@ def view_deed(
         },
     )
     html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(),
+        BeautifulSoup(html_response.content, features="lxml").prettify(
+            formatter="html5ish"
+        ),
         "utf-8",
     )
     return html_response
@@ -692,7 +710,9 @@ def view_legal_code(
         #
         html_response = render(request, **kwargs)
         html_response.content = bytes(
-            BeautifulSoup(html_response.content, features="lxml").prettify(),
+            BeautifulSoup(html_response.content, features="lxml").prettify(
+                formatter="html5ish"
+            ),
             "utf-8",
         )
         return html_response
