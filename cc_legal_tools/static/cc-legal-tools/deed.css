@@ -74,3 +74,15 @@
   list-style: none;
   font-size: 1rem;
 }
+.cc-legal-tools article.footnotes ul ul {
+  list-style: revert;
+}
+.cc-legal-tools article.footnotes .icon-replace.fa-angle-up {
+  --icon-sprite: var(--fa-angle-up);
+  --icon-sprite-color: var(--vocabulary-brand-color-dark-tomato);
+  position: relative;
+}
+.cc-legal-tools article.footnotes ul li a span {
+  display: inline-block;
+  text-indent: -3000px;
+}
