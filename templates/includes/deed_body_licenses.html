@@ -67,26 +67,26 @@
   {% if tool.requires_attribution %}
     <li class="cc-by">
       <strong>{% trans "Attribution" %}</strong> &mdash;
-      {% blocktrans %}You must give <a href="#" id="appropriate_credit_popup" class="helpLink">appropriate credit</a></span>, provide a link to the license, and <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#" id="indicate_changes_popup" class="helpLink">indicate if changes were made</a></span>. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.{% endblocktrans %}
+      {% blocktrans %}You must give <a href="#ref-appropriate-credit" id="src-appropriate-credit">appropriate credit</a></span>, provide a link to the license, and <span rel="cc:requires" resource="http://creativecommons.org/ns#Notice"><a href="#ref-indicate-changes" id="src-indicate-changes">indicate if changes were made</a></span>. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.{% endblocktrans %}
     </li>
   {% endif %}
 
   {% if tool.prohibits_commercial_use %}
     <li class="cc-nc">
       <strong>{% trans "NonCommercial" %}</strong> &mdash;
-      {% blocktrans %}You may not use the material for <a href="#" id="commercial_purposes_popup" class="helpLink">commercial purposes</a>.{% endblocktrans %}
+      {% blocktrans %}You may not use the material for <a href="#ref-commercial-purposes" id="src-commercial-purposes">commercial purposes</a>.{% endblocktrans %}
     </li>
   {% endif %}
 
   {% if tool.requires_share_alike %}
     <li class="cc-sa">
-      <strong>{% trans "ShareAlike" %}</strong> &mdash; {% blocktrans %}If you remix, transform, or build upon the material, you must distribute your contributions under the <a href="#" id="same_license_popup" class="helpLink">same license</a> as the original.{% endblocktrans %}
+      <strong>{% trans "ShareAlike" %}</strong> &mdash; {% blocktrans %}If you remix, transform, or build upon the material, you must distribute your contributions under the <a href="#ref-same-license" id="src-same-license">same license</a> as the original.{% endblocktrans %}
     </li>
   {% endif %}
 
   {% if not tool.permits_derivative_works %}
     <li class="cc-nd">
-      <strong>{% trans "NoDerivatives" %}</strong> &mdash; {% blocktrans %}If you <a href="#" id="some_kinds_of_mods_popup" class="helpLink">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
+      <strong>{% trans "NoDerivatives" %}</strong> &mdash; {% blocktrans %}If you <a href="#ref-some-kinds-of-mods" id="src-some-kinds-of-mods">remix, transform, or build upon</a> the material, you may not distribute the modified material.{% endblocktrans %}
     </li>
   {% endif %}
 
@@ -109,7 +109,7 @@
   {% endif %}
 
     <li>
-      <strong>{% trans "No additional restrictions" %}</strong> &mdash; {% blocktrans %}You may not apply legal terms or <a href="#" id="technological_measures_popup" class="helpLink">technological measures</a> that legally restrict others from doing anything the license permits.{% endblocktrans %}
+      <strong>{% trans "No additional restrictions" %}</strong> &mdash; {% blocktrans %}You may not apply legal terms or <a href="#ref-technological-measures" id="src-technological-measures">technological measures</a> that legally restrict others from doing anything the license permits.{% endblocktrans %}
     </li>
   </ol>
 
@@ -119,15 +119,15 @@
 
   {% if tool.jurisdiction_code == "igo" %}
   <p>
-    {% blocktrans %}When the Licensor is an intergovernmental organization, disputes will be resolved by <a href="#" id="mediation_and_arbitration_popup" class="helpLink">mediation and arbitration</a> unless otherwise agreed.{% endblocktrans %}
+    {% blocktrans %}When the Licensor is an intergovernmental organization, disputes will be resolved by <a href="#ref-mediation-and-arbitration" id="src-mediation-and-arbitration">mediation and arbitration</a> unless otherwise agreed.{% endblocktrans %}
   </p>
   {% endif %}
 
   <p>
-    {% blocktrans %}You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable <a href="#" id="exception_or_limitation_popup" class="helpLink">exception or limitation</a>.{% endblocktrans %}
+    {% blocktrans %}You do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable <a href="#ref-exception-or-limitation" id="src-exception-or-limitation">exception or limitation</a>.{% endblocktrans %}
   </p>
   <p>
-    {% blocktrans %}No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as <a href="#" id="publicity_privacy_or_moral_rights_popup" class="helpLink">publicity, privacy, or moral rights</a> may limit how you use the material.{% endblocktrans %}
+    {% blocktrans %}No warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as <a href="#ref-publicity-privacy-or-moral-rights" id="src-publicity-privacy-or-moral-rights">publicity, privacy, or moral rights</a> may limit how you use the material.{% endblocktrans %}
   </p>
 </div>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
