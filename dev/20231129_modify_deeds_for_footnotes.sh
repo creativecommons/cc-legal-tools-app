@@ -11,13 +11,10 @@ trap '_es=${?};
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 E0="$(printf "\e[0m")"        # reset
-E1="$(printf "\e[1m")"        # bold
-E9="$(printf "\e[9m")"        # strike (not supported in Terminal.app)
 E30="$(printf "\e[30m")"      # black foreground
 E31="$(printf "\e[31m")"      # red foreground
 E33="$(printf "\e[33m")"      # yellow foreground
 E47="$(printf "\e[47m")"      # white background
-E90="$(printf "\e[90m")"      # bright black (gray) foreground
 E97="$(printf "\e[97m")"      # bright white foreground
 E100="$(printf "\e[100m")"    # bright black (gray) background
 E107="$(printf "\e[107m")"    # bright white background
