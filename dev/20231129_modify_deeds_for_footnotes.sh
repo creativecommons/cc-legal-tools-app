@@ -180,7 +180,7 @@ do
         echo 'modifying src anchor'
         cd "${DATA_DIR}"
         gsed --regexp-extended \
-            -e"s|<a[^>]*id=\\\\\"${KEY_LEGACY}[^\"]*\\\\\"[^>]*>[[:space:]]*([^<]+)[[:space:]]*</[[:space:]]*a>|<a id=\\\\\"src-${KEY}\\\\\" href=\\\\\"#ref-${KEY}\\\\\">\\1</a>|g" \
+            -e"s|<a[^>]*id=\\\\\"${KEY_LEGACY}[^\"]*\\\\\"[^>]*>[[:space:]]*([^<]+)[[:space:]]*</[[:space:]]*a>|<a href=\\\\\"#ref-${KEY}\\\\\" id=\\\\\"src-${KEY}\\\\\">\\1</a>|g" \
             --in-place "${PO}"
         echo
 
