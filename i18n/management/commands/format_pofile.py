@@ -27,6 +27,13 @@ class Command(BaseCommand):
             help="dry run: do not make any changes",
         )
         parser.add_argument(
+            "-w",
+            "--wrapwidth",
+            default=78,
+            type=int,
+            help="wrap width (default: 78)",
+        )
+        parser.add_argument(
             "path",
             action="store",
             help="relative path to PO file or directory containing PO files"
@@ -68,7 +75,7 @@ class Command(BaseCommand):
             print(pofile_path)
             pofile_obj = polib.pofile(
                 pofile_path,
-                wrapwidth=78,  # Default: 78
+                wrapwidth=options["wrapwidth"],  # Default: 78
                 check_for_duplicates=True,  # Default: False
             )
             pofile_obj.save(pofile_path)

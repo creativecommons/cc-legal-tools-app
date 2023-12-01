@@ -6,20 +6,20 @@
 {% get_language_info for LANGUAGE_CODE as lang %}
 <html lang="{{ lang.code }}" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
 <head about="{% block head_about %}{% endblock %}">
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{% endblock %} | Creative Commons</title>
-  <link href="{{ canonical_url_html }}" rel="canonical"/>
+  <link href="{{ canonical_url_html }}" rel="canonical">
 {% for option in languages_and_links %}
 {% if option.cc_language_code == language_default %}
   <!-- Default: {{ option.name_local }} -->
-  <link href="{{ option.link }}" hreflang="x-default" rel="alternate" />
+  <link href="{{ option.link }}" hreflang="x-default" rel="alternate">
 {% endif %}
 {% endfor %}
 {% for option in languages_and_links %}
 {% if not option.selected %}
   <!-- {{ option.name_local }} -->
-  <link href="{{ option.link }}" hreflang="{{ option.cc_language_code }}" rel="alternate" />
+  <link href="{{ option.link }}" hreflang="{{ option.cc_language_code }}" rel="alternate">
 {% endif %}
 {% endfor %}
   {% block head_meta %}
@@ -27,9 +27,9 @@
   <link rel="icon" href="/wp-content/themes/vocabulary-theme/vocabulary/favicon/favicon.ico" sizes="any">
   <link rel="icon" href="/wp-content/themes/vocabulary-theme/vocabulary/favicon/favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="/wp-content/themes/vocabulary-theme/vocabulary/favicon/manifest.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/wp-content/themes/vocabulary-theme/vocabulary/favicon/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/wp-content/themes/vocabulary-theme/vocabulary/favicon/apple-touch-icon.png">
   <link rel="stylesheet" media="all" href="/wp-content/themes/vocabulary-theme/style.css">
-  <link href="/cc-legal-tools/base.css" rel="stylesheet"/>
+  <link href="/cc-legal-tools/base.css" rel="stylesheet">
   {% block head_extra %}
   {% endblock %}
 </head>

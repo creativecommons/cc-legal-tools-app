@@ -62,3 +62,27 @@
 .cc-legal-tools div#deed-body ol > li.cc-zero:before {
   background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-zero');
 }
+
+/* FOOTNOTES */
+.cc-legal-tools article.footnotes {
+  padding-top: 1em;
+  border-top: 2px solid black;
+}
+.cc-legal-tools article.footnotes ul {
+  margin: 0 inherit;
+  padding: 0;
+  list-style: none;
+  font-size: 1rem;
+}
+.cc-legal-tools article.footnotes ul ul {
+  list-style: revert;
+}
+.cc-legal-tools article.footnotes .icon-replace.fa-angle-up {
+  --icon-sprite: var(--fa-angle-up);
+  --icon-sprite-color: var(--vocabulary-brand-color-dark-tomato);
+  position: relative;
+}
+.cc-legal-tools article.footnotes ul li a span {
+  display: inline-block;
+  text-indent: -3000px;
+}
