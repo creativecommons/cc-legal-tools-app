@@ -76,29 +76,6 @@
 <h2 id="footnotes">{% blocktrans %}Footnotes{% endblocktrans %}</h2>
 <ul>
 
-{# footnote-mediation-and-arbitration #}
-{% if tool.jurisdiction_code == "igo" %}
-<li>
-<article class="note" id="ref-mediation-and-arbitration">
-<a href="#src-mediation-and-arbitration">
-<span class="icon-replace fa-angle-up"></span><span>return to reference</span>
-</a>
-<strong>{% trans "mediation and arbitration" %}</strong> &mdash;
-{% blocktrans trimmed %}
-The applicable mediation rules will be designated in the copyright notice
-published with the work, or if none then in the request for mediation.  Unless
-otherwise designated in a copyright notice attached to the work, the UNCITRAL
-Arbitration Rules apply to any arbitration.
-{% endblocktrans %}
-<ul>
-<li>
-<a href="https://wiki.creativecommons.org/Intergovernmental_Organizations#What_should_I_know_before_I_use_a_work_licensed_under_the_IGO_3.0_ported_licenses.3F">{% blocktrans %}More info{% endblocktrans %}</a>
-</li>
-</ul>
-</article>
-</li>
-{% endif %}
-
 {# footnote-appropriate-credit #}
 {% if tool.requires_attribution %}
 <li>
@@ -211,7 +188,7 @@ Merely changing the format never creates a derivative.
 {% endif %}
 
 {# footnote-technological-measures #}
-{% if "sampling" in tool.unit %}
+{% if category == "licenses" %}
 <li>
 <article class="note" id="ref-technological-measures">
 <a href="#src-technological-measures">
@@ -225,6 +202,29 @@ with reference to Article 11 of the WIPO Copyright Treaty.
 <ul>
 <li>
 <a href="https://wiki.creativecommons.org/License_Versions#Application_of_effective_technological_measures_by_users_of_CC-licensed_works_prohibited">{% blocktrans %}More info{% endblocktrans %}</a>
+</li>
+</ul>
+</article>
+</li>
+{% endif %}
+
+{# footnote-mediation-and-arbitration #}
+{% if tool.jurisdiction_code == "igo" %}
+<li>
+<article class="note" id="ref-mediation-and-arbitration">
+<a href="#src-mediation-and-arbitration">
+<span class="icon-replace fa-angle-up"></span><span>return to reference</span>
+</a>
+<strong>{% trans "mediation and arbitration" %}</strong> &mdash;
+{% blocktrans trimmed %}
+The applicable mediation rules will be designated in the copyright notice
+published with the work, or if none then in the request for mediation.  Unless
+otherwise designated in a copyright notice attached to the work, the UNCITRAL
+Arbitration Rules apply to any arbitration.
+{% endblocktrans %}
+<ul>
+<li>
+<a href="https://wiki.creativecommons.org/Intergovernmental_Organizations#What_should_I_know_before_I_use_a_work_licensed_under_the_IGO_3.0_ported_licenses.3F">{% blocktrans %}More info{% endblocktrans %}</a>
 </li>
 </ul>
 </article>
