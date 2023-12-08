@@ -597,7 +597,7 @@ License.
 
 </li>
 
-{% if "sa" in legal_code.tool.unit %}
+{% if legal_code|is_one_of:"by-nc-sa,by-sa" %}
 <li id="s3b">
 <strong>
 {% blocktrans trimmed %}
@@ -614,10 +614,17 @@ Adapted Material You produce, the following conditions also apply.
 <ol>
 
 <li id="s3b1">
+{% if legal_code|is_one_of:"by-nc-sa" %}
+{% blocktrans trimmed %}
+The Adapter’s License You apply must be a Creative Commons license with the
+same License Elements, this version or later, or a BY-NC-SA Compatible License.
+{% endblocktrans %}
+{% else %}
 {% blocktrans trimmed %}
 The Adapter’s License You apply must be a Creative Commons license with the
 same License Elements, this version or later, or a BY-SA Compatible License.
 {% endblocktrans %}
+{% endif %}
 </li>
 
 <li id="s3b2">
