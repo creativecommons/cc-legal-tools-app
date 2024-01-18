@@ -1,3 +1,5 @@
+@import '/wp-content/themes/vocabulary-theme/style.css' layer(vocabulary-theme);
+
 /* html */
 .bidi-left main ul, .bidi-left main ol {
   margin: 0 0 2em 2em;
