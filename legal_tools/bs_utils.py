@@ -1,6 +1,7 @@
 """
 Little utility methods for use with BeautifulSoup4
 """
+
 # Standard library
 from itertools import takewhile
 

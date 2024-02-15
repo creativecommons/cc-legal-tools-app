@@ -580,9 +580,9 @@ class Tool(models.Model):
         data["permits_reproduction"] = self.permits_reproduction
         data["permits_sharing"] = self.permits_sharing
         data["prohibits_commercial_use"] = self.prohibits_commercial_use
-        data[
-            "prohibits_high_income_nation_use"
-        ] = self.prohibits_high_income_nation_use
+        data["prohibits_high_income_nation_use"] = (
+            self.prohibits_high_income_nation_use
+        )
         data["requires_attribution"] = self.requires_attribution
         data["requires_notice"] = self.requires_notice
         data["requires_share_alike"] = self.requires_share_alike
