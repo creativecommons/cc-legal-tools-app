@@ -752,9 +752,9 @@ def branch_status_helper(repo, translation_branch):
         "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
         "branch": translation_branch,
         "commits": commits_for_template[:NUM_COMMITS],
-        "last_commit": commits_for_template[0]
-        if commits_for_template
-        else None,
+        "last_commit": (
+            commits_for_template[0] if commits_for_template else None
+        ),
     }
 
 
