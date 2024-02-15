@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 Babel = "*"
-Django = ">=3.2.23,<3.3"
+Django = ">=3.2.24,<3.3"
 GitPython = ">=3.1.37"
 PyYAML = "*"
 beautifulsoup4 = "*"
