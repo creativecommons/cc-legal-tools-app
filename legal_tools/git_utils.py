@@ -37,9 +37,9 @@ def setup_to_call_git():
     if "GIT_SSH" not in env:
         env["GIT_SSH"] = os.path.join(settings.PROJECT_ROOT, "ssh_wrapper.sh")
     if "TRANSLATION_REPOSITORY_DEPLOY_KEY" not in env:
-        env[
-            "TRANSLATION_REPOSITORY_DEPLOY_KEY"
-        ] = settings.TRANSLATION_REPOSITORY_DEPLOY_KEY
+        env["TRANSLATION_REPOSITORY_DEPLOY_KEY"] = (
+            settings.TRANSLATION_REPOSITORY_DEPLOY_KEY
+        )
     if "PROJECT_ROOT" not in env:
         env["PROJECT_ROOT"] = settings.PROJECT_ROOT
 

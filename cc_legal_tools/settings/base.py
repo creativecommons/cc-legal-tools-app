@@ -1,6 +1,7 @@
 """
 Django settings for cc_legal_tools project.
 """
+
 # Standard library
 import copy
 import mimetypes

@@ -410,9 +410,11 @@ class Command(BaseCommand):
             pofile.append(
                 POEntry(
                     msgid=clean_string(english[index]),
-                    msgstr=clean_string(disclaimers_text[index])
-                    if language_code != "en"
-                    else "",
+                    msgstr=(
+                        clean_string(disclaimers_text[index])
+                        if language_code != "en"
+                        else ""
+                    ),
                 )
             )
         # noqa: E501
@@ -797,21 +799,21 @@ class Command(BaseCommand):
 
         # s2a2: Exceptions and Limitations.
         nt = name_and_text(soup.find(id="s2a2"))
-        messages[
-            "s2a2_license_grant_exceptions"
-        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        messages["s2a2_license_grant_exceptions"] = (
+            f"<strong>{nt['name']}</strong>{nt['text']}"
+        )
 
         # s2a3: Term.
         nt = name_and_text(soup.find(id="s2a3"))
-        messages[
-            "s2a3_license_grant_term"
-        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        messages["s2a3_license_grant_term"] = (
+            f"<strong>{nt['name']}</strong>{nt['text']}"
+        )
 
         # s2a4: Media and formats; technical modifications allowed.
         nt = name_and_text(soup.find(id="s2a4"))
-        messages[
-            "s2a4_license_grant_media"
-        ] = f"<strong>{nt['name']}</strong>{nt['text']}"
+        messages["s2a4_license_grant_media"] = (
+            f"<strong>{nt['name']}</strong>{nt['text']}"
+        )
 
         # s2a5: scope/grant/downstream
         # The title is just the prefix to the list of items, which are in their
@@ -970,9 +972,9 @@ class Command(BaseCommand):
 
         s4b = nested_text(soup.find(id="s4b"))
         if unit.endswith("-sa"):
-            messages[
-                "s4_sui_generics_database_rights_adapted_material_sa"
-            ] = s4b
+            messages["s4_sui_generics_database_rights_adapted_material_sa"] = (
+                s4b
+            )
         else:
             messages["s4_sui_generics_database_rights_adapted_material"] = s4b
         messages["s4_sui_generics_database_rights_comply_s3a"] = nested_text(

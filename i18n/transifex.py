@@ -1,6 +1,7 @@
 """
 Interface with Transifex
 """
+
 # Standard library
 import difflib
 import logging
