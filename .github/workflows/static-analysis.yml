@@ -13,7 +13,7 @@ jobs:
 
     # https://github.com/actions/setup-python
     - name: Install Python 3.9
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.9'
 
@@ -27,7 +27,7 @@ jobs:
 
     # https://github.com/actions/checkout
     - name: Checkout cc-legal-tools-app
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: cc-legal-tools-app
 
