@@ -7,7 +7,25 @@
 .bidi-right main ul, .bidi-right main ol {
   margin: 0 2em 2em 0;
 }
+/*for device having width <=400px*/
+@media (max-width: 400px) {
+  .language-span {
+      width: 80px;
+  }
+  .language-span-select {
+      width: 60px;
+  }
+}
+/* For Samsung Galaxy Fold */
+@media (max-width: 280px) {
+  .language-span {
+      width: 55px;
 
+  }
+  .language-span-select {
+      width: 50px;
+  }
+}
 
 /* Ancilliary menu */
 .bidi-left div.masthead > nav.ancilliary-menu {
