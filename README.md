@@ -528,7 +528,7 @@ the full path to that deploy key file.
 [lxml]: https://lxml.de/
 
 
-## License
+## Licenses
 
 
 ### Code
