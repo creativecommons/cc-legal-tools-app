@@ -207,6 +207,12 @@ Best run before every commit:
 - `./dev/coverage.sh` - Run coverage tests and report
 - `./dev/tools.sh` - Run Python code tools (isort, black, flake8)
 
+Run as needed:
+- `./dev/copy_theme.sh` - Copy the portions of
+  [creativecommons/vocabulary-theme][vocab-theme] needed for local development
+  - Run after each new release of
+    [creativecommons/vocabulary-theme][vocab-theme]
+
 Esoteric and dangerous:
 - `./dev/concatenatemessages.sh` - Concatenate legacy ccEngine translations
   into cc-legal-tools-app
@@ -215,6 +221,8 @@ Esoteric and dangerous:
   - usually only helpful if you're doing model/schema work
 - `./dev/updatemessages.sh` - Run Django Management nofuzzy_makemessages with
   helpful options (including excluding legalcode) and compilemessages
+
+[vocab-theme]: https://github.com/creativecommons/vocabulary-theme
 
 
 #### Coverage Tests and Report
@@ -520,7 +528,7 @@ the full path to that deploy key file.
 [lxml]: https://lxml.de/
 
 
-## License
+## Licenses
 
 
 ### Code
@@ -542,3 +550,72 @@ Dedication][cc-zero].
 
 [cc-zero-png]: https://licensebuttons.net/l/zero/1.0/88x31.png "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication button"
 [cc-zero]: https://creativecommons.org/publicdomain/zero/1.0/
+
+
+### vocabulary-theme
+
+[![CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
+button][cc-zero-png]][cc-zero]
+
+[`COPYING`](COPYING): All the code within Vocabulary is dedicated to
+the public domain under the [CC0 1.0 Universal (CC0 1.0) Public Domain
+Dedication][cc-zero].
+
+[cc-zero-png]: https://licensebuttons.net/l/zero/1.0/88x31.png "CC0 1.0 Universal (CC0 1.0) Public Domain Dedication button"
+[cc-zero]: https://creativecommons.org/publicdomain/zero/1.0/ "Creative Commons — CC0 1.0 Universal"
+
+
+#### Normalize.css
+
+normalize.css is licensed under the Expat/[MIT][mit] License.
+
+[mit]: https://opensource.org/license/mit/
+
+
+#### Fonts
+
+
+##### Accidenz Commons
+
+[Accidenz Commons][accidenzcommons] by Archetypo is licensed under the [Creative
+Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+License][ccbysa40].
+
+[accidenzcommons]: https://creativecommons.org/2019/10/28/accidenz-commons-open-licensed-font/
+[ccbysa40]: https://creativecommons.org/licenses/by-sa/4.0/
+
+
+##### JetBrains Mono
+
+[JetBrains Mono][jetbrainsmono] is licensed under the [OFL-1.1 License][ofl].
+
+[jetbrainsmono]: https://www.jetbrains.com/lp/mono/
+[ofl]: https://github.com/JetBrains/JetBrainsMono/blob/master/OFL.txt
+
+
+##### Roboto Condensed
+
+[Roboto Condensed][robotocondensed] by Christian Robertson is licensed under
+the [Apache License, Version 2.0][apache20].
+
+[robotocondensed]: https://fonts.google.com/specimen/Roboto+Condensed
+[apache20]: http://www.apache.org/licenses/LICENSE-2.0
+
+
+##### Source Sans Pro
+
+[Source Sans Pro][sourcesanspro] by Paul D. Hunt is licensed under the [Open
+Font License][oflsil].
+
+[sourcesanspro]: https://fonts.adobe.com/fonts/source-sans
+[oflsil]: https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL
+
+
+##### Vocabulary Icons
+
+Vocabulary Icons use icons from [Font Awesome][fontawesome] which are licensed
+under the [Creative Commons Attribution 4.0 International (CC BY 4.0)
+License][ccbysa40].
+
+[fontawesome]: https://fontawesome.com/
+[ccby40]: https://creativecommons.org/licenses/by/4.0/
