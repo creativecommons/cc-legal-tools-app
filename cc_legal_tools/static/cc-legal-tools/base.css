@@ -9,23 +9,17 @@
 }
 /*for device having width <=400px*/
 @media (max-width: 400px) {
-  .language-span {
-      width: 80px;
-  }
-  .language-span-select {
-      width: 60px;
+  #languages-dropdown {
+    width: 20vw;
   }
 }
-/* For Samsung Galaxy Fold */
 @media (max-width: 280px) {
-  .language-span {
-      width: 55px;
-
-  }
-  .language-span-select {
-      width: 50px;
+  #languages-dropdown {
+    width: 16vw;
   }
 }
+
+
 
 /* Ancilliary menu */
 .bidi-left div.masthead > nav.ancilliary-menu {
