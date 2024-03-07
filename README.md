@@ -22,7 +22,7 @@ site (served as static files).
 - [Python 3.9][python39] (For parity with Debian GNU/Linux 11 [bullseye])
 - [Django 3.2][django32]
 
-Both versions are specified in the [`Pipfile`](Pipefile).
+Both versions are specified in the [`Pipfile`](Pipfile).
 
 [python39]: https://docs.python.org/3.9/
 [django32]: https://docs.djangoproject.com/en/3.2/
