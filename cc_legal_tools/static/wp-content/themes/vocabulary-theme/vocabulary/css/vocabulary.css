@@ -85,13 +85,23 @@ body > header {
 .masthead h1 {
     margin: 0;
 }
-
+@media (max-width:500px) {
+    .masthead .identity-logo {
+        height: 15vw;
+        width: 70vw;
+    }
+}
+@media (min-width:500px) {
+    .masthead .identity-logo{
+    height: 50px;
+    width: 191px;
+    }
+}
 .masthead .identity-logo {
     display: inline-block;
     text-indent: -1000px;
     vertical-align: bottom;
-    height: 50px;
-    width: 191px;
+    
 
 
     /* allows for color manipulation of svg */
@@ -256,6 +266,7 @@ button.expand-menu {
 }
 
 .ancilliary-menu {
+
     position: absolute;
     top: 0;
     /* right: var(--vocabulary-page-edges-space); */
@@ -267,17 +278,29 @@ button.expand-menu {
     font-size: .8em;
     /* font-size: 1em; */
 }
-
+@media (max-width:500px) {
+    .ancilliary-menu{
+        font-size: 2.6vw;
+    }
+    .ancilliary-menu ul li {
+        margin-left: 3vw;
+    }
+    
+}
+@media (min-width:500px) {
+    .ancilliary-menu ul li {
+        margin-left: 10px;
+    }
+}
 .ancilliary-menu ul {
     display: flex;
     margin: 0;
     padding: 0;
+
     list-style: none;
 }
 
-.ancilliary-menu ul li {
-    margin-left: 10px;
-}
+
 .ancilliary-menu ul li a {
     /* generalize this */
     display: inline-block;
