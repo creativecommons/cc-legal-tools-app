@@ -3,7 +3,7 @@ Theme Name: CC Vocabulary Theme
 Author: the Creative Commons team; possumbilities, Timid Robot
 Author URI: https://opensource.creativecommons.org/
 Description: Theme based on the Vocabulary Design System
-Version: 1.3.2
+Version: 1.3.3
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.0
@@ -90,6 +90,26 @@ div[id^="attachment_"].alignright:after {
     clear: both;
 }
 
+.default-page div[id^="attachment_"].alignleft {
+  margin-left: 0;
+  width: 40%;
+}
+
+.default-page div[id^="attachment_"].alignright {
+  margin-right: 0;
+  width: 40%;
+}
+
+.default-page main figure:has(img.alignleft) {
+  margin-left: 0;
+  width: 40%;
+}
+
+.default-page main figure:has(img.alignright) {
+  margin-right: 0;
+  width: 40%;
+}
+
 /* WP Outputs pagination as ul, rather than more semantic ul */
 nav.pagination ul {
     display: flex;
@@ -168,6 +188,8 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative main > article:nth-of-type(1) > h2 {
+  margin-top: 0;
+
   font-size: 3.56em;
 }
 
@@ -186,7 +208,6 @@ main nav.pagination ul li span.current {
   margin: 0 5%;
   margin-bottom: 6.4em;
   gap: 0 4em;
-  position: relative;
 
 }
 
@@ -203,31 +224,6 @@ main nav.pagination ul li span.current {
   background: black;
 }
 
-.home-narrative .topic-summary .attention {
-  display: inline-block;
-  padding: 2em;
-  margin-bottom: 1em;
-
-  background: var(--vocabulary-brand-color-soft-turquoise);
-  font-size: .67em;
-}
-
-.home-narrative .topic-summary .attention .icon-attach:before {
-  margin-right: .3em;
-}
-
-.home-narrative .topic-summary .attention p {
-  display: inline;
-  margin: 0;
-  padding: 0;
-
-  font-size: 1.5em;
-}
-
-.home-narrative .topic-summary .attention a {
-  --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
-}
-
 .home-narrative .topic-summary figure {
   width: 100%;
   /* height: 60%; */
@@ -241,10 +237,6 @@ main nav.pagination ul li span.current {
   height: 70%;
 
   background: black;
-}
-
-.home-narrative .topic-summary figure:has(.attention) iframe {
-  height: 55%;
 }
 
 .home-narrative .topic-summary .description {
@@ -418,6 +410,7 @@ main nav.pagination ul li span.current {
 
 .home-narrative main .authored-posts > h2 {
   grid-column: span 12;
+  margin-top: 0;
   margin-bottom: 0;
   /* margin-bottom: 1em; */
 
@@ -526,7 +519,12 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative main .authored-posts.highlight article.attribution-list h2 {
+  margin: 0;
   font-size: 2.1em;
+}
+
+.home-narrative main .authored-posts.highlight article.attribution-list ul {
+  margin-top: 2em;
 }
 
 .home-narrative >  h2 {
@@ -599,9 +597,15 @@ main nav.pagination ul li span.current {
 
 
 
+@media (min-width: 1500px) {
+  .home-narrative .data-points .data-point.khan-academy h2 {
+    text-indent: -6000px;
+  }
+}
+
 @media (max-width: 1140px) {
   .home-narrative main footer .attribution-list ul.expand {
-      grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
   }
 }
 
@@ -629,15 +633,19 @@ main nav.pagination ul li span.current {
 
 
   .home-narrative main .authored-posts.highlight {
-      display: flex;
-      flex-wrap: wrap;
-      padding: 0 5%;
-      /* width: 90%; */
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 5%;
+    /* width: 90%; */
 
   }
 
+  .home-narrative .authored-posts.highlight h2 {
+    margin-top: 1em;
+  }
+
   .home-narrative main .authored-posts.highlight > article:nth-child(1) {
-      width: 100%;
+    width: 100%;
   }
 
   .home-narrative .authored-posts article {
@@ -669,6 +677,10 @@ main nav.pagination ul li span.current {
     padding-top: 2em;
    }
 
+  .home-narrative main .authored-posts article {
+    margin-bottom: 2em;
+  }
+
   .home-narrative main footer .attribution-list ul.expand {
     display: block;
 }
@@ -683,194 +695,6 @@ main nav.pagination ul li span.current {
   .home-narrative .case-studies > ul li {
     margin-bottom: 3em;
   }
-}
-
-
-/* patches */
-
-body > .attention {
-  text-align: center;
-}
-
-body > .attention a {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5em .8em;;
-
-    margin-left: .5em;
-
-    text-transform: uppercase;
-    font-family: 'Roboto Condensed';
-    font-style: normal;
-    font-weight: 700;
-    text-decoration: none;
-    vertical-align: middle;
-    background: var(--vocabulary-brand-color-turquoise);
-    color: white;
-    border-radius: 4px;
-}
-
-body > .attention a:before {
-  --icon-sprite: url('vocabulary/svg/cc/icons/cc-icons.svg#cc-heart-filled');
-  --icon-sprite-color: white;
-  --icon-sprite-size: 1em;
-
-  display: inline-block;
-  content: '';
-  height: 1em;
-  width: 1em;
-  margin-right: .2em;
-
-  font-size: var(--icon-sprite-size);
-  background-color: var(--icon-sprite-color);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-image: var(--icon-sprite);
-  mask-image: var(--icon-sprite);
-  -webkit-mask-size: contain;
-  mask-size: contain;
-}
-
-body > .attention.low-importance {
-  background: var(--vocabulary-brand-color-soft-green);
-  border-bottom: 8px solid var(--vocabulary-brand-color-green);
-}
-
-body > .attention.medium-importance {
-  background: var(--vocabulary-brand-color-soft-gold);
-  border-bottom: 8px solid var(--vocabulary-brand-color-gold);
-}
-
-body > .attention.high-importance {
-  background: var(--vocabulary-brand-color-soft-tomato);
-  border-bottom: 8px solid var(--vocabulary-brand-color-tomato);
-}
-
-.masthead .identity-logo:focus, body > footer .identity-logo:focus, .icon-replace:focus {
-  background-color: purple;
-}
-
-main p:has(img) {
-  overflow: hidden;
-}
-
-.home-narrative main > article:nth-of-type(1) > h2 {
-  margin-top: 0;
-}
-
-.home-narrative main .authored-posts > h2 {
-  margin-top: 0;
-}
-
-.home-narrative main .authored-posts.highlight article.attribution-list h2 {
-  margin: 0;
-}
-
-.home-narrative main .authored-posts.highlight article.attribution-list ul {
-  margin-top: 2em;
-}
-
-.default-page main > header {
-  padding: 3.7em 0;
-}
-
-  .default-page main > header h1 {
-  margin: 0;
-}
-
-.default-page main > header p {
-  margin-bottom: .3em;
-}
-
-.default-page main > aside nav ul {
-  font-size: 1rem;
-}
-
-.default-page main > aside nav ul ul {
-  margin-top: .8em;
-}
-
-.default-page div[id^="attachment_"].alignleft {
-  margin-left: 0;
-  width: 40%;
-}
-
-.default-page div[id^="attachment_"].alignright {
-  margin-right: 0;
-  width: 40%;
-}
-
-.default-page main figure:has(img.alignleft) {
-  margin-left: 0;
-  width: 40%;
-}
-
-.default-page main figure:has(img.alignright) {
-  margin-right: 0;
-  width: 40%;
-}
-
-.blog-index .attribution-list h2 {
-  margin: 0;
-}
-
-.blog-index .attribution-list ul.expand {
-  margin-top: 2em;
-}
-
-.team-index main .persons .person img {
-  zoom: 10;
-}
-
-.team-index main .persons .person h3 {
-  width: 100%;
-}
-
-.person-page main > header {
-  min-height: 410px;
-}
-
-body > footer {
-  padding-top: 40px;
-}
-
-@media (min-width: 1500px) {
-  body {
-    width: 1500px;
-    margin: 0 auto;
-  }
-
-  .home-narrative .data-points .data-point.khan-academy h2 {
-    text-indent: -6000px;
-  }
-}
-
-@media (max-width: 900px) {
-
-  .home-narrative .authored-posts.highlight h2 {
-    margin-top: 1em;
-  }
-
-}
-
-@media (max-width: 705px) {
-
-  .search-index .search-form form button {
-    width: 20%;
-  }
-
-  .home-narrative main .authored-posts article {
-    margin-bottom: 2em;
-  }
-
-  .blog-index main .authored-posts.highlight:nth-of-type(1) > article:nth-child(1) {
-    padding: 2em;
-  }
-
-  .blog-index main .authored-posts.highlight {
-    padding: 0 5%;
-  }
-
 }
 
 @media (max-width: 425px) {
@@ -891,15 +715,7 @@ body > footer {
 
   }
 
-  .blog-index .attribution-list {
-    padding: 2em;
-  }
-
-  .blog-index .attribution-list h2 {
-    width: 50%;
-    hyphens: auto;
-    word-break: break-word;
-
-  }
-
 }
+
+
+/* patches */
