@@ -150,7 +150,7 @@ body > header {
     box-sizing: border-box;
 
     text-decoration: none;
-    font-family: "Accidenz Commons";
+    font-family: "CC Accidenz Commons";
     font-weight: normal;
     text-transform: lowercase;
     letter-spacing: -1px;
@@ -187,7 +187,7 @@ body > header {
     box-sizing: border-box;
 
     text-decoration: none;
-    font-family: "Accidenz Commons";
+    font-family: "CC Accidenz Commons";
     font-weight: normal;
     text-transform: lowercase;
     letter-spacing: -1px;
@@ -488,6 +488,7 @@ body > article.attention {
     font-weight: 400;
     font-size: 1.2em;
     line-height: 150%;
+    text-align: center;
     border-bottom: 3px solid white;
 }
 
@@ -502,14 +503,58 @@ body > article.attention a {
     --underline-background-color: var(--vocabulary-brand-color-soft-green);
 }
 
-.default-page main > header {
-    justify-content: left;
-    text-align: left;
+body > article.attention.low-importance a, body > article.attention.medium-importance a, body > article.attention.high-importance a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5em .8em;
+    margin-left: .5em;
+
+    text-transform: uppercase;
+    font-family: 'Roboto Condensed';
+    font-style: normal;
+    font-weight: 700;
+    text-decoration: none;
+    vertical-align: middle;
+    background: var(--vocabulary-brand-color-turquoise);
+    color: white;
+    border-radius: 4px;
 }
 
-.default-page main > header:before {
-    left: -5.5%;
-}
+body > article.attention.low-importance a:before, body > article.attention.medium-importance a:before, body > article.attention.high-importance a:before {
+    --icon-sprite: var(--cc-heart-filled);
+    --icon-sprite-color: white;
+    --icon-sprite-size: 1em;
+
+    display: inline-block;
+    content: '';
+    height: 1em;
+    width: 1em;
+    margin-right: .2em;
+
+    font-size: var(--icon-sprite-size);
+    background-color: var(--icon-sprite-color);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: var(--icon-sprite);
+    mask-image: var(--icon-sprite);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+
+  body > .attention.low-importance {
+    background: var(--vocabulary-brand-color-soft-green);
+    border-bottom: 8px solid var(--vocabulary-brand-color-green);
+  }
+
+  body > .attention.medium-importance {
+    background: var(--vocabulary-brand-color-soft-gold);
+    border-bottom: 8px solid var(--vocabulary-brand-color-gold);
+  }
+
+  body > .attention.high-importance {
+    background: var(--vocabulary-brand-color-soft-tomato);
+    border-bottom: 8px solid var(--vocabulary-brand-color-tomato);
+  }
 
 .default-page main {
     width: 90%;
@@ -524,22 +569,27 @@ body > article.attention a {
 
 }
 
+.default-page main > header:before {
+    left: -5.5%;
+}
+
 .default-page main > header {
     display: block;
     grid-area: header;
-    padding-top: 1em;
+    padding: 3.7em 0;
 
+    justify-content: left;
+    text-align: left;
 }
 
 .default-page main > header h1 {
-    margin-bottom: 0;
-
+    margin: 0;
 }
 
 .default-page main > header p {
     /* margin-top: 0;
     margin-bottom: 0; */
-
+    margin-bottom: .3em;
 }
 
 .default-page main > aside {
@@ -583,11 +633,12 @@ body > article.attention a {
     text-indent: none;
 
     list-style: none;
-    font-size: 1em;
+    font-size: 1rem;
     font-weight: 700;
 }
 
 .default-page main > aside nav ul ul {
+    margin-top: .8em;
     margin-left: 1em;
 }
 
@@ -1042,7 +1093,7 @@ body > article.attention a {
 }
 
 .blog-index .attribution-list h2 {
-    margin-top: 0;
+    margin: 0;
 }
 
 .blog-index .attribution-list button.expand-attribution {
@@ -1070,6 +1121,7 @@ body > article.attention a {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     margin: 0;
+    margin-top: 2em;
     padding: 0;
     gap: 2em;
 
@@ -1600,6 +1652,7 @@ main nav.pagination ol li.current a {
 }
 
 .team-index main .persons .person h3 {
+    width: 100%;
     margin-top: .6em;
     margin-bottom: .5em;
 
@@ -1628,6 +1681,7 @@ main nav.pagination ol li.current a {
 
 .team-index main .persons .person img {
     width: 100%;
+    zoom: 10;
 }
 
 
@@ -1663,6 +1717,7 @@ main nav.pagination ol li.current a {
 }
 
 .person-page main > header {
+    min-height: 410px;
     position: relative;
     box-sizing: border-box;
     display: grid;
@@ -1937,7 +1992,6 @@ main .series p {
     line-height: 150%;
 }
 
-
 main a {
      /* better hyperlink underline typesetting inspired by Tufte CSS */
      --underline-color: var(--vocabulary-brand-color-dark-tomato);
@@ -1967,6 +2021,9 @@ main p {
     line-height: 150%;
 }
 
+main p:has(img) {
+    overflow: hidden;
+  }
 
 main ul, main ol {
     margin: 0 0 2em 1em;
@@ -2250,8 +2307,7 @@ body > footer {
     "contact subscribe subscribe donate"
     "contact license license donate";
     gap: 40px;
-    padding: 20px var(--vocabulary-page-edges-space);
-    padding-bottom: 40px;
+    padding: 40px var(--vocabulary-page-edges-space);
 
     font-family: 'Source Sans Pro';
     font-style: normal;
@@ -2530,6 +2586,13 @@ body > footer .license svg {
     grid-area: button;
 }
 
+@media (min-width: 1500px) {
+    body {
+      width: 1500px;
+      margin: 0 auto;
+    }
+
+  }
 
 @media (max-width: 1140px) {
     .blog-index main footer .attribution-list ul.expand {
@@ -2618,6 +2681,14 @@ body > footer .license svg {
         display: block;
     }
 
+    .blog-index main .authored-posts.highlight:nth-of-type(1) > article:nth-child(1) {
+        padding: 2em;
+    }
+
+    .blog-index main .authored-posts.highlight {
+        padding: 0 5%;
+    }
+
     .blog-index main footer .attribution-list ul.expand {
         display: block;
     }
@@ -2633,6 +2704,10 @@ body > footer .license svg {
 
     .program-index main > article.projects ul li {
         margin-bottom: 2em;
+    }
+
+    .search-index .search-form form button {
+        width: 20%;
     }
 
 }
@@ -2716,6 +2791,21 @@ body > footer .license svg {
         display: block;
     }
 }
+
+@media (max-width: 425px) {
+
+    .blog-index .attribution-list {
+      padding: 2em;
+    }
+
+    .blog-index .attribution-list h2 {
+      width: 50%;
+      hyphens: auto;
+      word-break: break-word;
+
+    }
+
+  }
 
 @media (max-width:400px) {
 

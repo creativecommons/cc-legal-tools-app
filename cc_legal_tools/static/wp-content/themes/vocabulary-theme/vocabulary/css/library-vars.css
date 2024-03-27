@@ -52,11 +52,11 @@
 }
 
 @font-face {
-    font-family: "Accidenz Commons";
+    font-family: "CC Accidenz Commons";
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url(../fonts/AccidenzCommons.otf) format("opentype");
+    src: url(../fonts/CCAccidenzCommons-medium.otf) format("opentype");
 }
 
 
