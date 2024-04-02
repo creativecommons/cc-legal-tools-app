@@ -73,6 +73,7 @@ div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
 .cc-legal-tools main > aside {
   background-color: var(--vocabulary-brand-color-soft-gold);
   padding: 1em;
+  height: fit-content;
 }
 .cc-legal-tools main > aside a {
   --underline-background-color: var(--vocabulary-brand-color-soft-gold);
