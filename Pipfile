@@ -22,14 +22,21 @@ urllib3 = ">=2.0.7"  # Ensure dependency is secure
 whitenoise = "*"
 
 [dev-packages]
-black = ">=24.3.0"
+black = ">=24.3.0"  # Sync version with [static-analysis], below
 coverage = "*"
 django-debug-toolbar = "*"
 factory-boy = "*"
-flake8 = "*"
-isort = "*"
-pre-commit = "*"
+flake8 = "*"  # Sync version with [static-analysis], below
+isort = "*"  # Sync version with [static-analysis], below
+pre-commit = "*"  # Sync version with [static-analysis], below
 tblib = "*"  # Dependency of coverage (with --parallel)
+
+[static-analysis]
+# Also see: .github/workflows/static-analysis.yml
+black = ">=24.3.0"  # Sync version with [dev-packages], above
+flake8 = "*"  # Sync version with [dev-packages], above
+isort = "*"  # Sync version with [dev-packages], above
+pre-commit = "*"  # Sync version with [dev-packages], above
 
 [requires]
 python_version = "3.10"

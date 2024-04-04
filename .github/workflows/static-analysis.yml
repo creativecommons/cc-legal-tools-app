@@ -17,20 +17,18 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install Python dependencies
+    - name: Install pipenv
       run: |
         pip install --upgrade pip
-        pip install black
-        pip install flake8
-        pip install isort
-        pip install pre-commit
+        pip install pipenv
 
     # https://github.com/actions/checkout
     - name: Checkout cc-legal-tools-app
       uses: actions/checkout@v4
-      with:
-        path: cc-legal-tools-app
+
+    - name: Install Python dependencies
+      # Install _only_ [dev-packages]
+      run: pipenv sync --categories static-analysis --system
 
     - name: pre-commit
       run: pre-commit run --show-diff-on-failure --color=always --all-files
-      working-directory: ./cc-legal-tools-app
