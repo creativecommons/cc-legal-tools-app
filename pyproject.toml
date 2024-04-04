@@ -9,7 +9,7 @@ force-exclude = '''
 )
 '''
 line-length = 79
-target-version = ['py39', 'py310']
+target-version = ['py310', 'py311']
 
 
 [tool.coverage.run]

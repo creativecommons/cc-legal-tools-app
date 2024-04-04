@@ -33,4 +33,4 @@ pre-commit = "*"
 tblib = "*"  # For use by coverage (with --parallel)
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
