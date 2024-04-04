@@ -1,7 +1,7 @@
 # https://docs.docker.com/engine/reference/builder/
 
 # https://hub.docker.com/_/python/
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Configure apt not to prompt during docker build
 ARG DEBIAN_FRONTEND=noninteractive
@@ -22,9 +22,9 @@ WORKDIR /root
 
 # Configure apt to avoid installing recommended and suggested packages
 RUN apt-config dump \
-| grep -E '^APT::Install-(Recommends|Suggests)' \
-| sed -e's/1/0/' \
-| tee /etc/apt/apt.conf.d/99no-recommends-no-suggests
+    | grep -E '^APT::Install-(Recommends|Suggests)' \
+    | sed -e's/1/0/' \
+    | tee /etc/apt/apt.conf.d/99no-recommends-no-suggests
 
 # Resynchronize the package index
 RUN apt-get update
@@ -32,7 +32,7 @@ RUN apt-get update
 # Install apt packages missing from slim docker image
 RUN apt-get install -y git ssh
 
-# Install apt package dependencies
+# Install apt package dependencies for App
 RUN apt-get install -y gcc gettext sqlite3
 
 ## Install pipenv

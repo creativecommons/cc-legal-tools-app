@@ -8,6 +8,7 @@ repository.
 
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
+
 ## Code of conduct
 
 [`CODE_OF_CONDUCT.md`][org-coc]:
@@ -28,6 +29,7 @@ See [`CONTRIBUTING.md`][org-contrib].
 
 [org-contrib]: https://github.com/creativecommons/.github/blob/main/CONTRIBUTING.md
 
+
 ## Not the live site
 
 This project is not intended to serve the legal tools directly. Instead, a
@@ -38,12 +40,19 @@ site (served as static files).
 
 ## Software Versions
 
-- [Python 3.9][python39] (For parity with Debian GNU/Linux 11 [bullseye])
-- [Django 3.2][django32]
+- [Python 3.10][python310] specified in:
+  - [`.github/workflows/django-app-coverage.yml`][django-app-coverage]
+  - [`.github/workflows/static-analysis.yml`][static-analysis]
+  - [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
+  - [`Dockerfile`](Dockerfile)
+  - [`Pipfile`](Pipfile)
+  - [`pyproject.toml`](pyproject.toml)
+- [Django 3.2 (LTS)][django32]
+  - [`Pipfile`](Pipfile)
 
-Both versions are specified in the [`Pipfile`](Pipfile).
-
-[python39]: https://docs.python.org/3.9/
+[django-app-coverage]: .github/workflows/django-app-coverage.yml
+[static-analysis]: .github/workflows/static-analysis.yml
+[python310]: https://docs.python.org/3.10/
 [django32]: https://docs.djangoproject.com/en/3.2/
 
 
