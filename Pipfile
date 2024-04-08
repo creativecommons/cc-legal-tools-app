@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 Babel = "*"
-Django = ">=3.2.24,<3.3"
+Django = ">=3.2.25,<3.3"
 GitPython = ">=3.1.41"
 PyYAML = "*"
 beautifulsoup4 = "*"
@@ -13,7 +13,7 @@ certifi = ">=2023.7.22"  # Ensure dependency is secure
 colorlog = "*"
 dealer = "*"
 gitpython = ">=3.1.37"  # Ensure dependency is secure
-lxml = "*"  # Used for RDF/XML processing and by beautifulsoup4
+lxml = "*"  # Dependency of beautifulsoup4 and RDF/XML processing
 polib = "*"
 python-dateutil = "*"
 rdflib = "*"
@@ -22,15 +22,21 @@ urllib3 = ">=2.0.7"  # Ensure dependency is secure
 whitenoise = "*"
 
 [dev-packages]
-black = "*"
+black = ">=24.3.0"  # Sync version with [static-analysis], below
 coverage = "*"
 django-debug-toolbar = "*"
 factory-boy = "*"
-flake8 = "*"
-isort = "*"
-#link-checker = {file = "https://github.com/creativecommons/cc-link-checker/archive/v2020.09.1.zip"}
-pre-commit = "*"
-tblib = "*"  # For use by coverage (with --parallel)
+flake8 = "*"  # Sync version with [static-analysis], below
+isort = "*"  # Sync version with [static-analysis], below
+pre-commit = "*"  # Sync version with [static-analysis], below
+tblib = "*"  # Dependency of coverage (with --parallel)
+
+[static-analysis]
+# Also see: .github/workflows/static-analysis.yml
+black = ">=24.3.0"  # Sync version with [dev-packages], above
+flake8 = "*"  # Sync version with [dev-packages], above
+isort = "*"  # Sync version with [dev-packages], above
+pre-commit = "*"  # Sync version with [dev-packages], above
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"

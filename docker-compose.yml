@@ -5,9 +5,10 @@
 #   .env
 #   Dockerfile
 #
-# https://docs.docker.com/compose/compose-file/compose-file-v3/
+# Use docker compose v2 for non swarm deployments
+# https://docs.docker.com/compose/compose-file/compose-file-v2/
 
-version: "3.6"
+version: '2.4'
 
 services:
 
