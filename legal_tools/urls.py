@@ -30,7 +30,7 @@ from legal_tools.views import (
 # See Converter functions, below, for a description of the following regex:
 RE_CATEGORY = r"licenses|publicdomain"
 RE_JURISDICTION = r"[a-z]{2}|igo|scotland"
-RE_UNIT = r"(?i)[-a-z0-9+]+"
+RE_UNIT = r"[-a-z0-9+]+"
 RE_VERSION = r"[0-9]+[.][0-9]+"
 
 

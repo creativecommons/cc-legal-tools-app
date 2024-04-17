@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 Babel = "*"
-Django = ">=3.2.25,<3.3"
+Django = ">=4.2.11,<4.3"
 GitPython = ">=3.1.41"
 PyYAML = "*"
 beautifulsoup4 = "*"
@@ -26,17 +26,17 @@ black = ">=24.3.0"  # Sync version with [static-analysis], below
 coverage = "*"
 django-debug-toolbar = "*"
 factory-boy = "*"
-flake8 = "*"  # Sync version with [static-analysis], below
-isort = "*"  # Sync version with [static-analysis], below
-pre-commit = "*"  # Sync version with [static-analysis], below
+flake8 = "*"        # Sync version with [static-analysis], below
+isort = "*"         # Sync version with [static-analysis], below
+pre-commit = "*"    # Sync version with [static-analysis], below
 tblib = "*"  # Dependency of coverage (with --parallel)
 
 [static-analysis]
 # Also see: .github/workflows/static-analysis.yml
 black = ">=24.3.0"  # Sync version with [dev-packages], above
-flake8 = "*"  # Sync version with [dev-packages], above
-isort = "*"  # Sync version with [dev-packages], above
-pre-commit = "*"  # Sync version with [dev-packages], above
+flake8 = "*"        # Sync version with [dev-packages], above
+isort = "*"         # Sync version with [dev-packages], above
+pre-commit = "*"    # Sync version with [dev-packages], above
 
 [requires]
-python_version = "3.10"
+python_version = "3.11"
