@@ -336,8 +336,8 @@ Documentation:
 [namespace]: https://github.com/creativecommons/cc-legal-tools-data#legal-tools-namespace
 [unportedtemplate]: templates/includes/legalcode_licenses_3.0_unported.html
 [cctransifex]: https://www.transifex.com/creativecommons/public/
-[djangomodels]: https://docs.djangoproject.com/en/3.2/topics/db/models/
-[djangotemplates]: https://docs.djangoproject.com/en/3.2/topics/templates/
+[djangomodels]: https://docs.djangoproject.com/en/4.2/topics/db/models/
+[djangotemplates]: https://docs.djangoproject.com/en/4.2/topics/templates/
 
 
 ## Importing the existing legal tool text
@@ -460,7 +460,7 @@ Documentation:
 [api30]: https://transifex.github.io/openapi/index.html#section/Introduction
 [api30intro]: https://docs.transifex.com/api-3-0/introduction-to-api-3-0
 [apisdk]: https://github.com/transifex/transifex-python/tree/devel/transifex/api
-[djangotranslation]: https://docs.djangoproject.com/en/3.2/topics/i18n/translation/
+[djangotranslation]: https://docs.djangoproject.com/en/4.2/topics/i18n/translation/
 [repodata]: https://github.com/creativecommons/cc-legal-tools-data
 
 
