@@ -1,7 +1,7 @@
 # https://docs.docker.com/engine/reference/builder/
 
 # https://hub.docker.com/_/python/
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 # Configure apt not to prompt during docker build
 ARG DEBIAN_FRONTEND=noninteractive

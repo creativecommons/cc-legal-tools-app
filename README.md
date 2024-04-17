@@ -40,20 +40,20 @@ site (served as static files).
 
 ## Software Versions
 
-- [Python 3.10][python310] specified in:
+- [Python 3.11][python311] specified in:
   - [`.github/workflows/django-app-coverage.yml`][django-app-coverage]
   - [`.github/workflows/static-analysis.yml`][static-analysis]
   - [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
   - [`Dockerfile`](Dockerfile)
   - [`Pipfile`](Pipfile)
   - [`pyproject.toml`](pyproject.toml)
-- [Django 3.2 (LTS)][django32]
+- [Django 4.2 (LTS)][django42]
   - [`Pipfile`](Pipfile)
 
 [django-app-coverage]: .github/workflows/django-app-coverage.yml
 [static-analysis]: .github/workflows/static-analysis.yml
-[python310]: https://docs.python.org/3.10/
-[django32]: https://docs.djangoproject.com/en/3.2/
+[python310]: https://docs.python.org/3.11/
+[django42]: https://docs.djangoproject.com/en/4.2/
 
 
 ## Setting up the Project
