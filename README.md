@@ -52,7 +52,7 @@ site (served as static files).
 
 [django-app-coverage]: .github/workflows/django-app-coverage.yml
 [static-analysis]: .github/workflows/static-analysis.yml
-[python310]: https://docs.python.org/3.11/
+[python311]: https://docs.python.org/3.11/
 [django42]: https://docs.djangoproject.com/en/4.2/
 
 
