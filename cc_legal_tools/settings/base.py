@@ -75,7 +75,7 @@ WSGI_APPLICATION = "cc_legal_tools.wsgi.application"
 
 
 # Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
@@ -95,7 +95,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, "tmp", "public", "media")
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
 MEDIA_URL = "/media/"
 
-# https://docs.djangoproject.com/en/3.2/topics/logging/
+# https://docs.djangoproject.com/en/4.2/topics/logging/
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -189,7 +189,7 @@ LEGACY_DIR = os.path.abspath(
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/3.2/topics/i18n/
+# https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 # Language code for this installation.
 LANGUAGE_CODE = "en"  # "en" matches our default language code in Transifex
@@ -293,7 +293,7 @@ USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
