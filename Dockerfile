@@ -7,15 +7,15 @@ FROM python:3.11-slim
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Python: disable bytecode (.pyc) files
-# https://docs.python.org/3.9/using/cmdline.html
+# https://docs.python.org/3.11/using/cmdline.html
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Python: force the stdout and stderr streams to be unbuffered
-# https://docs.python.org/3.9/using/cmdline.html
+# https://docs.python.org/3.11/using/cmdline.html
 ENV PYTHONUNBUFFERED=1
 
 # Python: enable faulthandler to dump Python traceback on catastrophic cases
-# https://docs.python.org/3.9/library/faulthandler.html
+# https://docs.python.org/3.11/library/faulthandler.html
 ENV PYTHONFAULTHANDLER=1
 
 WORKDIR /root

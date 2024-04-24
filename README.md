@@ -134,14 +134,14 @@ documenting other operating systems if you encounter issues.
    2. Install dependencies
       - Linux:
         ```shell
-        sudo apt-get install python3.9 python3.9-dev python3-pip
+        sudo apt-get install python3.11 python3.11-dev python3-pip
         ```
         ```shell
         pip3 install pipenv
         ```
       - macOS: via [Homebrew](https://brew.sh/):
         ```shell
-        brew install pipenv python@3.9
+        brew install pipenv python@3.11
         ```
       - Windows: [install Python][python-windows] and then use `pip` to install
         `pipenv`:
@@ -152,11 +152,11 @@ documenting other operating systems if you encounter issues.
       virtualenv
       - Linux:
         ```shell
-        pipenv install --dev --python /usr/bin/python3.9
+        pipenv install --dev --python /usr/bin/python3.11
         ```
       - macOS: via [Homebrew](https://brew.sh/):
         ```shell
-        pipenv install --dev --python /usr/local/opt/python@3.9/libexec/bin/python
+        pipenv install --dev --python /usr/local/opt/python@3.11/libexec/bin/python
         ```
       - Windows:
         ```shell
