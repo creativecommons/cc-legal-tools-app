@@ -1,0 +1,19 @@
+name: Check Python versions
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # https://github.com/actions/checkout
+    - name: Checkout cc-legal-tools-app
+      uses: actions/checkout@v4
+
+    - name: Run script to check Python versions
+      run: ./dev/check_python_versions.sh
