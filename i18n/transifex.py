@@ -995,17 +995,14 @@ class TransifexHelper:
                 )
                 continue
 
-            if pofile_entry.msgstr != transifex_msgstr:
+            elif pofile_entry.msgstr != transifex_msgstr:
                 # Skip if neither local PO File nor Transifex are empty
                 if (
                     pofile_entry.msgstr is not None
                     and pofile_entry.msgstr != ""
                     and transifex_msgstr is not None
                     and transifex_msgstr != ""
-                ):  # pragma: no cover
-                    # TODO: remove coveragepy exclusion after upgrade to
-                    # Python 3.10
-                    # https://github.com/nedbat/coveragepy/issues/198
+                ):
                     continue
                 # Local PO file has translation and Transifex is empty
                 elif (
@@ -1024,9 +1021,8 @@ class TransifexHelper:
                         or pofile_entry.msgstr == ""
                     )
                 ):  # pragma: no cover
-                    # TODO: remove coveragepy exclusion after upgrade to
-                    # Python 3.10
-                    # https://github.com/nedbat/coveragepy/issues/198
+                    # ¯\_(ツ)_/¯ this path is tested by:
+                    #            test_safesync_translation_with_pofile_changes
                     #
                     # Add missing translation
                     changes_pofile.append(f"msgid {index:>4}: '{p_msgid}'")
