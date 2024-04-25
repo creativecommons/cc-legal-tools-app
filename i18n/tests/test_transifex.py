@@ -127,29 +127,32 @@ class TestTransifex(TestCase):
             ]
         )
 
-        i18n_format_xa = mock.Mock(id="XA")
-        i18n_format_xa.__str__ = mock.Mock(return_value=i18n_format_xa.id)
-        i18n_format_xb = mock.Mock(id="XB")
-        i18n_format_xb.__str__ = mock.Mock(return_value=i18n_format_xb.id)
-        i18n_format_po = mock.Mock(id="PO")
-        i18n_format_po.__str__ = mock.Mock(return_value=i18n_format_po.id)
-        i18n_format_xc = mock.Mock(id="XC")
-        i18n_format_xc.__str__ = mock.Mock(return_value=i18n_format_xc.id)
+        return_value = []
+        hundred = range(0, 100)
+        for i in hundred:
+            i18n_format = mock.Mock(id=f"X{i:03}")
+            i18n_format.__str__ = mock.Mock(return_value=i18n_format.id)
+            return_value.append(i18n_format)
+        i18n_format = mock.Mock(id="PO")
+        i18n_format.__str__ = mock.Mock(return_value=i18n_format.id)
+        return_value.append(i18n_format)
+        hundred = range(100, 200)
+        for i in hundred:
+            i18n_format = mock.Mock(id=f"X{i:4}")
+            i18n_format.__str__ = mock.Mock(return_value=i18n_format.id)
+            return_value.append(i18n_format)
+
         with mock.patch("i18n.transifex.transifex_api") as api:
             api.Organization.get = mock.Mock(return_value=organization)
             api.I18nFormat.filter = mock.Mock(
-                return_value=[
-                    i18n_format_po,
-                    i18n_format_xa,
-                    i18n_format_xb,
-                    i18n_format_xc,
-                ]
+            return_value = return_value
             )
             self.helper = TransifexHelper(dryrun=False)
 
         api.Organization.get.assert_called_once()
         organization.fetch.assert_called_once()
         api.I18nFormat.filter.assert_called_once()
+        self.assertEquals(self.helper.api_i18n_format.id, "PO")
 
     def test__empty_branch_object(self):
         empty = _empty_branch_object()
