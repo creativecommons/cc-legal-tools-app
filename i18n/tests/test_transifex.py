@@ -144,9 +144,7 @@ class TestTransifex(TestCase):
 
         with mock.patch("i18n.transifex.transifex_api") as api:
             api.Organization.get = mock.Mock(return_value=organization)
-            api.I18nFormat.filter = mock.Mock(
-            return_value = return_value
-            )
+            api.I18nFormat.filter = mock.Mock(return_value=return_value)
             self.helper = TransifexHelper(dryrun=False)
 
         api.Organization.get.assert_called_once()
@@ -1511,8 +1509,8 @@ class TestTransifex(TestCase):
         )
         self.helper.clear_transifex_stats = mock.Mock()
         pofile_obj[0].msgstr = pofile_obj[0].msgstr.replace(
-                        "Attribution", "YYYYYYYYYYY"
-                    )
+            "Attribution", "YYYYYYYYYYY"
+        )
 
         with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
             pofile_obj_new = self.helper.safesync_translation(

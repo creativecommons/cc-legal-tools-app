@@ -53,9 +53,7 @@ class TransifexHelper:
         # (^[a-z0-9._-]+$'), but the web interfaces does not (did not?). Our
         # Deeds & UX project slug is uppercase.
         # https://transifex.github.io/openapi/#tag/Projects
-        for project in self.api_organization.fetch(
-            "projects"
-        ):
+        for project in self.api_organization.fetch("projects"):
             if (
                 project.attributes["slug"]
                 == transifex["DEEDS_UX_PROJECT_SLUG"]
