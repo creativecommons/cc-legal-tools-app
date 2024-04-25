@@ -72,28 +72,6 @@ class GitTestMixin:
 
 @override_settings(DATA_REPOSITORY_DIR="/trans/repo")
 class SetupLocalBranchTest(GitTestMixin, TestCase):
-    def test_setup_local_branch_protocol_error(self):
-        with mock.patch("sys.stderr", new_callable=StringIO) as mock_err:
-            with self.assertRaises(SystemExit):
-                with mock.patch("git.remote.Remote.fetch") as mock_fetch:
-                    mock_fetch.side_effect = git.exc.GitCommandError(
-                        "Mock_Error", 1, stderr="protocol error"
-                    )
-                    setup_local_branch(self.local_repo, "branch_name")
-
-            self.assertEqual(
-                mock_err.getvalue().strip(),
-                "ERROR: git origin.fetch() stderr: 'protocol error'. Check git"
-                " remote access/authentication.",
-            )
-
-    def test_setup_local_branch_other_error(self):
-        with self.assertRaises(git.exc.GitCommandError):
-            with mock.patch("git.remote.Remote.fetch") as mock_fetch:
-                mock_fetch.side_effect = git.exc.GitCommandError(
-                    "Mock_Error", 1
-                )
-                setup_local_branch(self.local_repo, "branch_name")
 
     def test_branch_exists_nowhere_but_parent_does(self):
         # No "ourbranch" locally or upstream, so we branch from origin/main
@@ -192,6 +170,72 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
             str(cm.exception),
             "'IterableList' object has no attribute 'deletemebranch'",
         )
+
+    def test_setup_local_branch_protocol_error(self):
+        with mock.patch("sys.stderr", new_callable=StringIO) as mock_err:
+            with self.assertRaises(SystemExit):
+                with mock.patch("git.remote.Remote.fetch") as mock_fetch:
+                    mock_fetch.side_effect = git.exc.GitCommandError(
+                        "Mock_Error", 1, stderr="protocol error"
+                    )
+                    setup_local_branch(self.local_repo, "branch_name")
+
+            self.assertEqual(
+                mock_err.getvalue().strip(),
+                "ERROR: git origin.fetch() stderr: 'protocol error'. Check git"
+                " remote access/authentication.",
+            )
+
+    def test_setup_local_branch_other_error(self):
+        with self.assertRaises(git.exc.GitCommandError):
+            with mock.patch("git.remote.Remote.fetch") as mock_fetch:
+                mock_fetch.side_effect = git.exc.GitCommandError(
+                    "Mock_Error", 1
+                )
+                setup_local_branch(self.local_repo, "branch_name")
+
+    def test_setup_local_branch_with_local_missing_and_origin_present(self):
+        # newbranch exists upstream
+        self.origin_repo.create_head("newbranch")
+
+        setup_local_branch(self.local_repo, "newbranch")
+        new_branch = get_branch(self.local_repo, "newbranch")
+        self.assertEqual(new_branch.name, "newbranch")
+        self.assertTrue(new_branch.tracking_branch())
+
+    def test_setup_local_branch_with_local_missing_and_origin_missing(self):
+        # newbranch does not exist upstream
+
+        setup_local_branch(self.local_repo, "newbranch")
+        new_branch = get_branch(self.local_repo, "newbranch")
+        self.assertEqual(new_branch.name, "newbranch")
+        self.assertFalse(new_branch.tracking_branch())
+
+    def test_setup_local_branch_with_local_present_and_with_tracking(self):
+        # otherbranch exists and is tracking
+        other_branch = get_branch(self.local_repo, "otherbranch")
+        other_branch.set_tracking_branch(
+            get_branch(self.local_repo.remotes.origin, "otherbranch")
+        )
+
+        setup_local_branch(self.local_repo, "otherbranch")
+        other_branch = get_branch(self.local_repo, "otherbranch")
+        self.assertEqual(other_branch.name, "otherbranch")
+        self.assertTrue(other_branch.tracking_branch())
+
+    def test_setup_local_branch_with_local_present_and_without_tracking(self):
+        # otherbranch exits and isn't tracking
+        other_branch = get_branch(self.local_repo, "otherbranch")
+        # set tracking to intialize configuration
+        other_branch.set_tracking_branch(
+            get_branch(self.local_repo.remotes.origin, "otherbranch")
+        )
+        other_branch.set_tracking_branch(None)
+
+        setup_local_branch(self.local_repo, "otherbranch")
+        other_branch = get_branch(self.local_repo, "otherbranch")
+        self.assertEqual(other_branch.name, "otherbranch")
+        self.assertFalse(other_branch.tracking_branch())
 
 
 @override_settings(DATA_REPOSITORY_DIR="/trans/repo")

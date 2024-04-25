@@ -126,14 +126,7 @@ def setup_local_branch(repo: git.Repo, branch_name: str):
         if branch_exists(origin, branch_name):
             repo.create_head(branch_name, get_branch(origin, branch_name))
             branch = get_branch(repo, branch_name)
-            if not branch.tracking_branch():  # pragma: no cover
-                # TODO: investigate coveragepy exclusion after upgrade to
-                # Python 3.10. This code has been confirmed to execute during
-                # tests. May be an issue with Python pre-3.10 tracing.
-                # Examples:
-                # https://github.com/nedbat/coveragepy/issues/198
-                # https://github.com/nedbat/coveragepy/issues/1175
-                branch.set_tracking_branch(get_branch(origin, branch_name))
+            branch.set_tracking_branch(get_branch(origin, branch_name))
             assert branch.tracking_branch()
             branch.checkout(force=True)
         else:
@@ -148,14 +141,7 @@ def setup_local_branch(repo: git.Repo, branch_name: str):
         # branch exists.
         branch = get_branch(repo, branch_name)
         branch.checkout(force=True)
-        if branch.tracking_branch():  # pragma: no cover
-            # TODO: investigate coveragepy exclusion after upgrade to Python
-            # 3.10. This code has been confirmed to execute during tests. May
-            # be an issue with Python pre-3.10 tracing. Examples:
-            # https://github.com/nedbat/coveragepy/issues/198
-            # https://github.com/nedbat/coveragepy/issues/1175
-
-            # Use upstream branch tip commit
+        if branch.tracking_branch():
             repo.head.reset(
                 f"origin/{branch_name}", index=True, working_tree=True
             )
