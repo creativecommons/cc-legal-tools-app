@@ -155,6 +155,22 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         self.assertEqual(upstream_commit, our_branch.commit)
         self.assertNotEqual(old_local_repo_commit, our_branch.commit)
 
+    def test_branch_missing_locally(self):
+        # There's an ourbranch upstream
+        self.origin_repo.create_head("ourbranch")
+        self.origin_repo.heads.ourbranch.checkout()
+        self.add_file(self.origin_repo)
+        upstream_commit = self.origin_repo.heads.ourbranch.commit
+        self.origin_repo.heads.otherbranch.checkout()  # Switch to otherbranch
+
+        # We use the local branch, but update to the upstream tip
+        self.local_repo.remotes.origin.fetch()
+        self.local_repo.create_head("ourbranch")
+        upstream_branch = get_branch(
+            self.local_repo.remotes.origin, "notourbranch"
+        )
+        self.assertIsNone(upstream_branch)
+
     def test_kill_branch(self):
         self.origin_repo.create_head("deletemebranch")
 

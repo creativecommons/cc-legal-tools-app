@@ -67,12 +67,7 @@ def get_branch(repo_or_remote, name):
     if isinstance(repo_or_remote, git.Remote):
         remote = repo_or_remote
         prefix_length = len(remote.name) + 1  # "origin/"
-        for ref in remote.refs:  # pragma: no cover
-            # TODO: investigate coveragepy exclusion after upgrade to
-            # Python 3.10. This code has been confirmed to execute during
-            # tests. May be an issue with Python pre-3.10 tracing. Examples:
-            # https://github.com/nedbat/coveragepy/issues/198
-            # https://github.com/nedbat/coveragepy/issues/1175
+        for ref in remote.refs:
             full_name = ref.name
             if full_name[prefix_length:] == name:
                 return ref
