@@ -53,11 +53,7 @@ class TransifexHelper:
         # (^[a-z0-9._-]+$'), but the web interfaces does not (did not?). Our
         # Deeds & UX project slug is uppercase.
         # https://transifex.github.io/openapi/#tag/Projects
-        for project in self.api_organization.fetch(
-            "projects"
-        ):  # pragma: no cover
-            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
-            # https://github.com/nedbat/coveragepy/issues/198
+        for project in self.api_organization.fetch("projects"):
             if (
                 project.attributes["slug"]
                 == transifex["DEEDS_UX_PROJECT_SLUG"]
@@ -71,12 +67,9 @@ class TransifexHelper:
 
         for i18n_format in self.api.I18nFormat.filter(
             organization=self.api_organization
-        ):  # pragma: no cover
-            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
-            # https://github.com/nedbat/coveragepy/issues/198
+        ):
             if i18n_format.id == "PO":
                 self.api_i18n_format = i18n_format
-                break
 
         self.projects = {
             "deeds_ux": {
@@ -1000,17 +993,14 @@ class TransifexHelper:
                 )
                 continue
 
-            if pofile_entry.msgstr != transifex_msgstr:
+            elif pofile_entry.msgstr != transifex_msgstr:
                 # Skip if neither local PO File nor Transifex are empty
                 if (
                     pofile_entry.msgstr is not None
                     and pofile_entry.msgstr != ""
                     and transifex_msgstr is not None
                     and transifex_msgstr != ""
-                ):  # pragma: no cover
-                    # TODO: remove coveragepy exclusion after upgrade to
-                    # Python 3.10
-                    # https://github.com/nedbat/coveragepy/issues/198
+                ):
                     continue
                 # Local PO file has translation and Transifex is empty
                 elif (
@@ -1029,9 +1019,8 @@ class TransifexHelper:
                         or pofile_entry.msgstr == ""
                     )
                 ):  # pragma: no cover
-                    # TODO: remove coveragepy exclusion after upgrade to
-                    # Python 3.10
-                    # https://github.com/nedbat/coveragepy/issues/198
+                    # ¯\_(ツ)_/¯ this path is tested by:
+                    #            test_safesync_translation_with_pofile_changes
                     #
                     # Add missing translation
                     changes_pofile.append(f"msgid {index:>4}: '{p_msgid}'")

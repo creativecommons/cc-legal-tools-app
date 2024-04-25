@@ -127,29 +127,30 @@ class TestTransifex(TestCase):
             ]
         )
 
-        i18n_format_xa = mock.Mock(id="XA")
-        i18n_format_xa.__str__ = mock.Mock(return_value=i18n_format_xa.id)
-        i18n_format_xb = mock.Mock(id="XB")
-        i18n_format_xb.__str__ = mock.Mock(return_value=i18n_format_xb.id)
-        i18n_format_po = mock.Mock(id="PO")
-        i18n_format_po.__str__ = mock.Mock(return_value=i18n_format_po.id)
-        i18n_format_xc = mock.Mock(id="XC")
-        i18n_format_xc.__str__ = mock.Mock(return_value=i18n_format_xc.id)
+        return_value = []
+        hundred = range(0, 100)
+        for i in hundred:
+            i18n_format = mock.Mock(id=f"X{i:03}")
+            i18n_format.__str__ = mock.Mock(return_value=i18n_format.id)
+            return_value.append(i18n_format)
+        i18n_format = mock.Mock(id="PO")
+        i18n_format.__str__ = mock.Mock(return_value=i18n_format.id)
+        return_value.append(i18n_format)
+        hundred = range(100, 200)
+        for i in hundred:
+            i18n_format = mock.Mock(id=f"X{i:4}")
+            i18n_format.__str__ = mock.Mock(return_value=i18n_format.id)
+            return_value.append(i18n_format)
+
         with mock.patch("i18n.transifex.transifex_api") as api:
             api.Organization.get = mock.Mock(return_value=organization)
-            api.I18nFormat.filter = mock.Mock(
-                return_value=[
-                    i18n_format_po,
-                    i18n_format_xa,
-                    i18n_format_xb,
-                    i18n_format_xc,
-                ]
-            )
+            api.I18nFormat.filter = mock.Mock(return_value=return_value)
             self.helper = TransifexHelper(dryrun=False)
 
         api.Organization.get.assert_called_once()
         organization.fetch.assert_called_once()
         api.I18nFormat.filter.assert_called_once()
+        self.assertEquals(self.helper.api_i18n_format.id, "PO")
 
     def test__empty_branch_object(self):
         empty = _empty_branch_object()
@@ -1460,6 +1461,74 @@ class TestTransifex(TestCase):
         translations[1].save.assert_called()
         self.helper.clear_transifex_stats.assert_called()
         mock_pofile_save.assert_called_once()
+
+    def test_safesync_translation_with_mismatched_changes(self):
+        api = self.helper.api
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        language = mock.Mock(
+            id=f"l:{transifex_code}",
+        )
+        api.Language.get = mock.Mock(return_value=language)
+        resource = mock.Mock(
+            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
+            attributes={"i18n_type": "PO"},
+        )
+        api.Resource.get = mock.Mock(return_value=resource)
+        translations = [
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[0].msgid}
+                ),
+                strings={
+                    "other": pofile_obj[0].msgstr.replace(
+                        "Attribution", "XXXXXXXXXXX"
+                    ),
+                },
+                save=mock.Mock(),
+            ),
+            mock.Mock(
+                resource_string=mock.Mock(
+                    strings={"other": pofile_obj[1].msgid}
+                ),
+                strings={"other": pofile_obj[1].msgstr},
+                save=mock.Mock(),
+            ),
+        ]
+        api.ResourceTranslation.filter = mock.Mock(
+            return_value=mock.Mock(
+                include=mock.Mock(
+                    return_value=mock.Mock(
+                        all=mock.Mock(return_value=translations)
+                    ),
+                ),
+            ),
+        )
+        self.helper.clear_transifex_stats = mock.Mock()
+        pofile_obj[0].msgstr = pofile_obj[0].msgstr.replace(
+            "Attribution", "YYYYYYYYYYY"
+        )
+
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            pofile_obj_new = self.helper.safesync_translation(
+                resource_slug,
+                transifex_code,
+                language_code,
+                pofile_path,
+                pofile_obj,
+            )
+
+        self.assertEqual(
+            pofile_obj_new[0].msgstr,
+            "YYYYYYYYYYY-NoDerivatives 4.0 International",
+        )
+        translations[0].save.assert_not_called()
+        translations[1].save.assert_not_called()
+        self.helper.clear_transifex_stats.assert_not_called()
+        mock_pofile_save.assert_not_called()
 
     def test_safesync_translation_with_both_changes_dryrun(self):
         api = self.helper.api
