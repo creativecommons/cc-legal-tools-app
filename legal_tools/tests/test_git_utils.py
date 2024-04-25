@@ -39,10 +39,11 @@ class GitTestMixin:
 
         self.upstream_repo_path = os.path.join(self.temp_dir_path, "upstream")
         os.makedirs(self.upstream_repo_path)
-        self.origin_repo = git.Repo.init(self.upstream_repo_path)
+        self.origin_repo = git.Repo.init(
+            self.upstream_repo_path, initial_branch="main"
+        )
         self.origin_repo.index.commit("Initial commit")
         self.origin_repo.create_head("otherbranch", "HEAD")
-        self.origin_repo.create_head("main", "HEAD")
         # "checkout" main
         self.origin_repo.heads.main.checkout()
         # We want the main branch to be a different commit from otherbranch so
@@ -155,21 +156,29 @@ class SetupLocalBranchTest(GitTestMixin, TestCase):
         self.assertEqual(upstream_commit, our_branch.commit)
         self.assertNotEqual(old_local_repo_commit, our_branch.commit)
 
-    def test_branch_missing_locally(self):
-        # There's an ourbranch upstream
-        self.origin_repo.create_head("ourbranch")
-        self.origin_repo.heads.ourbranch.checkout()
-        self.add_file(self.origin_repo)
-        upstream_commit = self.origin_repo.heads.ourbranch.commit
-        self.origin_repo.heads.otherbranch.checkout()  # Switch to otherbranch
-
-        # We use the local branch, but update to the upstream tip
-        self.local_repo.remotes.origin.fetch()
-        self.local_repo.create_head("ourbranch")
-        upstream_branch = get_branch(
-            self.local_repo.remotes.origin, "notourbranch"
+    def test_get_branch_present_upstream(self):
+        self.origin_repo.heads.otherbranch.checkout()
+        present_branch = get_branch(
+            self.local_repo.remotes.origin, "otherbranch"
         )
-        self.assertIsNone(upstream_branch)
+        self.assertEqual(present_branch.name, "origin/otherbranch")
+
+    def test_get_branch_missing_upstream(self):
+        self.origin_repo.heads.otherbranch.checkout()
+        missing_branch = get_branch(
+            self.local_repo.remotes.origin, "originmissing"
+        )
+        self.assertIsNone(missing_branch)
+
+    def test_get_branch_present_locally(self):
+        self.local_repo.heads.otherbranch.checkout()
+        present_branch = get_branch(self.local_repo, "otherbranch")
+        self.assertEqual(present_branch.name, "otherbranch")
+
+    def test_get_branch_missing_locally(self):
+        self.local_repo.heads.otherbranch.checkout()
+        missing_branch = get_branch(self.local_repo, "localmissing")
+        self.assertIsNone(missing_branch)
 
     def test_kill_branch(self):
         self.origin_repo.create_head("deletemebranch")
