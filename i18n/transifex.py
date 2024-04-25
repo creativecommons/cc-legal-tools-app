@@ -55,9 +55,7 @@ class TransifexHelper:
         # https://transifex.github.io/openapi/#tag/Projects
         for project in self.api_organization.fetch(
             "projects"
-        ):  # pragma: no cover
-            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
-            # https://github.com/nedbat/coveragepy/issues/198
+        ):
             if (
                 project.attributes["slug"]
                 == transifex["DEEDS_UX_PROJECT_SLUG"]
@@ -71,12 +69,9 @@ class TransifexHelper:
 
         for i18n_format in self.api.I18nFormat.filter(
             organization=self.api_organization
-        ):  # pragma: no cover
-            # TODO: remove coveragepy exclusion after upgrade to Python 3.10
-            # https://github.com/nedbat/coveragepy/issues/198
+        ):
             if i18n_format.id == "PO":
                 self.api_i18n_format = i18n_format
-                break
 
         self.projects = {
             "deeds_ux": {
