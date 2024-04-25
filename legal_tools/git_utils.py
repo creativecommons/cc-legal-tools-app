@@ -73,7 +73,10 @@ def get_branch(repo_or_remote, name):
                 return ref
     else:
         repo = repo_or_remote
-        return getattr(repo.heads, name)
+        try:
+            return getattr(repo.heads, name)
+        except AttributeError:
+            return None
 
 
 def branch_exists(repo_or_remote, name):
