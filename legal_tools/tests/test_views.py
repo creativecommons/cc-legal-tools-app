@@ -240,6 +240,26 @@ class ToolsTestsMixin:
             LegalCodeFactory(tool=tool, language_code="es")
             LegalCodeFactory(tool=tool, language_code="fr")
 
+        self.by_30_es = ToolFactory(
+            base_url="https://creativecommons.org/licenses/by/3.0/es/",
+            category="licenses",
+            unit="by",
+            version="3.0",
+            jurisdiction_code="es",
+            is_replaced_by=self.by_40,
+            permits_derivative_works=True,
+            permits_reproduction=True,
+            permits_distribution=True,
+            permits_sharing=True,
+            requires_share_alike=False,
+            requires_notice=True,
+            requires_attribution=True,
+            prohibits_commercial_use=False,
+            prohibits_high_income_nation_use=False,
+        )
+        # global default language
+        LegalCodeFactory(tool=self.by_30_es, language_code="en")
+
         self.by_sa_30_es = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-sa/3.0/es/",
             category="licenses",
@@ -257,9 +277,8 @@ class ToolsTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        LegalCodeFactory(  # Jurisdiction default language
-            tool=self.by_sa_30_es, language_code="es"
-        )
+        # Jurisdiction default language
+        LegalCodeFactory(tool=self.by_sa_30_es, language_code="es")
         LegalCodeFactory(tool=self.by_sa_30_es, language_code="ca")
 
         self.by_sa_30_igo = ToolFactory(
@@ -279,9 +298,8 @@ class ToolsTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        LegalCodeFactory(  # Jurisdiction default language
-            tool=self.by_sa_30_igo, language_code="en"
-        )
+        # Jurisdiction default language
+        LegalCodeFactory(tool=self.by_sa_30_igo, language_code="en")
         LegalCodeFactory(tool=self.by_sa_30_igo, language_code="fr")
 
         self.by_30_th = ToolFactory(
@@ -301,9 +319,8 @@ class ToolsTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        LegalCodeFactory(  # Jurisdiction default language
-            tool=self.by_30_th, language_code="th"
-        )
+        # Jurisdiction default language
+        LegalCodeFactory(tool=self.by_30_th, language_code="th")
 
         self.by_sa_20_es = ToolFactory(
             base_url="https://creativecommons.org/licenses/by-sa/2.0/es/",
@@ -322,9 +339,8 @@ class ToolsTestsMixin:
             prohibits_commercial_use=False,
             prohibits_high_income_nation_use=False,
         )
-        LegalCodeFactory(  # Jurisdiction default language
-            tool=self.by_sa_20_es, language_code="es"
-        )
+        # Jurisdiction default language
+        LegalCodeFactory(tool=self.by_sa_20_es, language_code="es")
 
         self.devnations = ToolFactory(
             base_url="https://creativecommons.org/licenses/devnations/2.0/",
@@ -495,6 +511,39 @@ class DeedViewViewTest(ToolsTestsMixin, TestCase):
             tool.category,
             tool.unit,
             tool.version,
+            f"deed.{language_code}",
+        )
+        rsp = self.client.get(url)
+        text = rsp.content.decode("utf-8")
+        self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
+        if (
+            "INVALID_VARIABLE" in text
+        ):  # Some unresolved variable in the template
+            msgs = ["INVALID_VARIABLE in output"]
+            for line in text.splitlines():
+                if "INVALID_VARIABLE" in line:
+                    msgs.append(line)
+            self.fail("\n".join(msgs))
+        self.assertContains(rsp, "Atribución")
+        self.assertContains(rsp, "Sen restricións adicionais")
+        self.assertContains(rsp, "Notas")
+
+    def test_deed_translation_by_30_es_gl(self):
+        # Test with valid Deed & UX and *invalid* Legal Code translations
+        # (with no jurisdiction default language legal code, but with
+        #  global default lanage legal code)
+        language_code = "gl"
+        tool = Tool.objects.get(
+            unit="by",
+            version="3.0",
+            jurisdiction_code="es",
+        )
+        url = os.path.join(
+            "/",
+            tool.category,
+            tool.unit,
+            tool.version,
+            tool.jurisdiction_code,
             f"deed.{language_code}",
         )
         rsp = self.client.get(url)
