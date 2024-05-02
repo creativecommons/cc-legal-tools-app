@@ -448,17 +448,26 @@ class Command(BaseCommand):
         for pair_list in redirect_pairs_data:
             redirect_pairs += pair_list
         del redirect_pairs_data
-        # Add RedirectMatch for ccEngine bug URLs. An entry is added for each
-        # of the 4.0 licenses (versus a single regex) to increase readability.
+        # Add RedirectMatch for ccEngine bug URLs. Entries are added for each
+        # of the 4.0 licenses (versus only two regex) to increase readability.
         # https://github.com/creativecommons/cc-legal-tools-app/issues/438
         for unit in ("by", "by-nc", "by-nc-nd", "by-nc-sa", "by-nd", "by-sa"):
+            # deed
             redirect_pairs.append(
                 [
                     f"/licenses/{unit}/4[.]0/([^/]+)/"
-                    "(deed|legalcode)(?:[.]html)?",
-                    f"/licenses/{unit}/4.0/$2.$1",
+                    "(deed|deed[.]html)?",
+                    f"/licenses/{unit}/4.0/deed.$1",
                 ]
             )
+            # legalcode
+            redirect_pairs.append(
+                [
+                    f"/licenses/{unit}/4[.]0/([^/]+)/legalcode(?:[.]html)?",
+                    f"/licenses/{unit}/4.0/legalcode.$1",
+                ]
+            )
+
         widths = [max(map(len, map(str, col))) for col in zip(*redirect_pairs)]
         pad = widths[0] + 2
         redirect_lines = []
