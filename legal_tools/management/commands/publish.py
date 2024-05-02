@@ -455,8 +455,7 @@ class Command(BaseCommand):
             # deed
             redirect_pairs.append(
                 [
-                    f"/licenses/{unit}/4[.]0/([^/]+)/"
-                    "(deed|deed[.]html)?",
+                    f"/licenses/{unit}/4[.]0/([^/]+)/(deed|deed[.]html)?",
                     f"/licenses/{unit}/4.0/deed.$1",
                 ]
             )
