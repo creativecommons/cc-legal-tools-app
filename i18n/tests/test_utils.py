@@ -13,7 +13,8 @@ from django.test import TestCase, override_settings
 # First-party/Local
 from i18n.utils import (
     active_translation,
-    get_default_language_for_jurisdiction,
+    get_default_language_for_jurisdiction_deed,
+    get_default_language_for_jurisdiction_naive,
     get_jurisdiction_name,
     get_pofile_creation_date,
     get_pofile_path,
@@ -160,14 +161,32 @@ class UtilTest(TestCase):
 
 
 class I18NTest(TestCase):
-    def test_get_language_for_jurisdiction(self):
-        # 'be' default is "fr"
+    def test_get_language_for_jurisdiction_deed(self):
+        # "be" jurisdiction default is "fr"
         self.assertEqual(
-            "fr", get_default_language_for_jurisdiction("be", "ar")
+            "fr", get_default_language_for_jurisdiction_deed("be")
         )
-        # There is none for "xx" so we return the default instead
+        # "am" jurisdiction default is "hy"
+        # the "hy" translation is incomplete so we return the global default
+        # https://github.com/creativecommons/cc-legal-tools-app/issues/444
         self.assertEqual(
-            "ar", get_default_language_for_jurisdiction("xx", "ar")
+            "en", get_default_language_for_jurisdiction_deed("am")
+        )
+        # "xx" is an invalid jurisdiction
+        # return global default ("en")
+        self.assertEqual(
+            "en", get_default_language_for_jurisdiction_deed("xx")
+        )
+
+    def test_get_language_for_jurisdiction_legal_code(self):
+        # "be" jurisdiction default is "fr"
+        self.assertEqual(
+            "fr", get_default_language_for_jurisdiction_naive("be")
+        )
+        # "xx" is an invalid jurisdiction
+        # return global default ("en")
+        self.assertEqual(
+            "en", get_default_language_for_jurisdiction_naive("xx")
         )
 
 

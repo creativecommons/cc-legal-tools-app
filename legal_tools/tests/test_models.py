@@ -290,8 +290,9 @@ class LegalCodeModelTest(TestCase):
         self.assertTrue(lc_fr.has_english())
         self.assertTrue(lc_en.has_english())
 
-    # get_publish_files BY-NC-ND 4.0 #########################################
-    # BY-NC-ND 4.0 is an international license with multiple languages
+    # get_publish_files BY-NC-ND 4.0 legal code ##############################
+    # BY-NC-ND 4.0 is an international (unported) license with multiple
+    # languages
 
     def test_get_publish_files_by_nc_nd4_legal_code_en(self):
         legal_code = LegalCodeFactory(
@@ -337,7 +338,7 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
-    # get_publish_files BY-NC 3.0 CA #########################################
+    # get_publish_files BY-NC 3.0 CA legal code ##############################
     # BY-NC 3.0 CA is a ported license with multiple languages
 
     def test_get_publish_files_by_nc3_legal_code_ca_en(self):
@@ -363,7 +364,7 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
-    # get_publish_files BY-SA 3.0 AM #########################################
+    # get_publish_files BY-SA 3.0 AM legal code ##############################
     # BY-SA 3.0 AM is a ported license with a single language
 
     def test_get_publish_files_by_sa3_legal_code_am_hy(self):
@@ -389,8 +390,8 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
-    # LegalCode.get_publish_files CC0 1.0 ####################################
-    # CC0 1.0 is an unported dedication with multiple languages
+    # get_publish_files CC0 1.0 legal code ###################################
+    # CC0 1.0 is a univeral (unported) dedication with multiple languages
 
     def test_get_publish_files_zero_legal_code_en(self):
         legal_code = LegalCodeFactory(
@@ -436,8 +437,8 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
-    # get_publish_files Mark 1.0 #############################################
-    # Mark 1.0 is an unported deed-only declaration
+    # get_publish_files Mark 1.0 legal code ##################################
+    # Mark 1.0 is a universal (unported) deed-only declaration
 
     def test_get_publish_files_mark_legal_code_en(self):
         legal_code = LegalCodeFactory(
@@ -732,8 +733,9 @@ class ToolModelTest(TestCase):
         for key in expected_data.keys():
             self.assertEqual(expected_data[key], data[key])
 
-    # get_publish_files BY-NC-ND 4.0 #########################################
-    # BY-NC-ND 4.0 is an international license with multiple languages
+    # get_publish_files BY-NC-ND 4.0 deed ####################################
+    # BY-NC-ND 4.0 is an international (unported) license with multiple
+    # languages
 
     def test_get_publish_files_by_nc_nd4_deed_en(self):
         language_code = "en"
@@ -755,7 +757,7 @@ class ToolModelTest(TestCase):
             returned_list,
         )
 
-    # get_publish_files BY-NC 3.0 CA #########################################
+    # get_publish_files BY-NC 3.0 CA deed ####################################
     # BY-NC 3.0 CA is a ported license with multiple languages
 
     def test_get_publish_files_by_nc3_deed_ca_en(self):
@@ -779,8 +781,9 @@ class ToolModelTest(TestCase):
             returned_list,
         )
 
-    # get_publish_files BY-NC-ND 4.0 #########################################
-    # BY-NC-ND 4.0 is an international license with multiple languages
+    # get_publish_files BY-NC-ND 4.0 deed ####################################
+    # BY-NC-ND 4.0 is an international (unported) license with multiple
+    # languages
 
     def test_get_publish_files_by_nc_nd_4_deed_zh_hant(self):
         # English content is returned as translation.activate() is not used
@@ -803,8 +806,33 @@ class ToolModelTest(TestCase):
             returned_list,
         )
 
-    # get_publish_files BY-SA 3.0 AM #########################################
+    # get_publish_files BY-SA 3.0 AM deed ####################################
     # BY-SA 3.0 AM is a ported license with a single language
+
+    def test_get_publish_files_by_sa3_deed_am_en(self):
+        # English content is returned as translation.activate() is not used
+        language_code = "en"
+        tool = ToolFactory(
+            category="licenses",
+            jurisdiction_code="am",
+            unit="by-sa",
+            version="3.0",
+        )
+
+        returned_list = tool.get_publish_files(language_code)
+
+        # symlinks should be populated as the Armenian Deeds & UX translation
+        # is incomplete
+        # https://github.com/creativecommons/cc-legal-tools-app/issues/444
+        self.assertEqual(
+            [
+                # relpath
+                "licenses/by-sa/3.0/am/deed.en.html",
+                # symlinks
+                ["deed.html", "index.html"],
+            ],
+            returned_list,
+        )
 
     def test_get_publish_files_by_sa3_deed_am_hy(self):
         # English content is returned as translation.activate() is not used
@@ -818,18 +846,21 @@ class ToolModelTest(TestCase):
 
         returned_list = tool.get_publish_files(language_code)
 
+        # symlinks shouldn't be populated as the Armenian Deeds & UX
+        # translation is incomplete
+        # https://github.com/creativecommons/cc-legal-tools-app/issues/444
         self.assertEqual(
             [
                 # relpath
                 "licenses/by-sa/3.0/am/deed.hy.html",
                 # symlinks
-                ["deed.html", "index.html"],
+                [],
             ],
             returned_list,
         )
 
-    # get_publish_files CC0 1.0 ##############################################
-    # CC0 1.0 is an unported dedication with multiple languages
+    # get_publish_files CC0 1.0 deed #########################################
+    # CC0 1.0 is a universal (unported) dedication with multiple languages
 
     def test_get_publish_files_zero_deed_en(self):
         language_code = "en"

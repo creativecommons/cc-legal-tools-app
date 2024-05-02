@@ -309,8 +309,6 @@ class ParseLegalcodeFilenameTest(TestCase):
                 self.assertEqual(expected_result, result)
         with self.assertRaisesMessage(ValueError, "Invalid language_code="):
             utils.parse_legal_code_filename("by_3.0_es_aaa")
-        with self.assertRaisesMessage(ValueError, "What language? "):
-            utils.parse_legal_code_filename("by_3.0_zz")
 
 
 class GetToolUtilityTest(TestCase):
