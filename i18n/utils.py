@@ -253,13 +253,19 @@ def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
     return django_language_code
 
 
-def get_default_language_for_jurisdiction(
-    jurisdiction_code, default_language=settings.LANGUAGE_CODE
-):
-    # Input: a jurisdiction code
-    # Output: a CC language code
+def get_default_language_for_jurisdiction_deed(jurisdiction_code):
+    default_language = DEFAULT_JURISDICTION_LANGUAGES.get(
+        jurisdiction_code, settings.LANGUAGE_CODE
+    )
+    if default_language in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        return default_language
+    else:
+        return settings.LANGUAGE_CODE
+
+
+def get_default_language_for_jurisdiction_naive(jurisdiction_code):
     return DEFAULT_JURISDICTION_LANGUAGES.get(
-        jurisdiction_code, default_language
+        jurisdiction_code, settings.LANGUAGE_CODE
     )
 
 
