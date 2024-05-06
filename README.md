@@ -30,11 +30,28 @@ See [`CONTRIBUTING.md`][org-contrib].
 [org-contrib]: https://github.com/creativecommons/.github/blob/main/CONTRIBUTING.md
 
 
-## Not the live site
+## About
+
+This application manages 639 legal tools (636 licenses and 3 public domain
+tools). The current version of the licenses is 4.0 and includes 6 licenses.
+They are international and are designed to operate globally, ensuring they are
+robust, enforceable and easily adopted worldwide. Prior versions were adapted
+to specific jurisdictions ("ported"). That is why there are 636 licenses.
+
+Broadly speaking, each legal tool consists of three layers:
+1. `deed`: a plain language summary of the legal tool
+2. `legalcode`: the legal tool itself
+3. `rdf`: metadata about the legal tool in RDF/XML format
+
+With translations of the deed and translations of the legal code, this
+application manages over 30,000 documents.
+
+
+### Not the live site
 
 This project is not intended to serve the legal tools directly. Instead, a
 command line tool can be used to save all the rendered HTML and RDF/XML pages
-as files.  Then those files are used as part of the real CreativeCommons.org
+as files. Then those files are used as part of the CreativeCommons.org
 site (served as static files).
 
 

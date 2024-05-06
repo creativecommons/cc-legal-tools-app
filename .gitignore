@@ -2,6 +2,12 @@
 # between them and this file:
 # - https://github.com/github/gitignore/blob/master/Python.gitignore
 
+# OS generated files
+.DS_Store
+.DS_Store?
+.Spotlight-V100
+.Trashes
+
 # Byte-compiled / optimized / DLL files
 *$py.class
 *.py[cod]
