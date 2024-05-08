@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# TODO: stop expanding this bash script and move it to the publishing process
+#       so that the information is on an HTML page that is updated with each
+#       publish
+#
 set -o errexit
 set -o errtrace
 set -o nounset
@@ -24,7 +29,10 @@ DIR_PUB_LICENSES="$(cd -P -- \
     "${DIR_REPO}/../cc-legal-tools-data/docs/licenses" && pwd -P)"
 DIR_PUB_PUBLICDOMAIN="$(cd -P -- \
     "${DIR_REPO}/../cc-legal-tools-data/docs/publicdomain" && pwd -P)"
-
+PORTED_NOTE="\
+Prior to the international 4.0 version, the licenses were adapted to specific
+legal jurisdictions (\"ported\"). This means there are more legal tools for
+these earlier versions than there are licenses."
 
 #### FUNCTIONS ################################################################
 
@@ -69,13 +77,70 @@ print_var() {
 
 
 published_documents() {
-    local _count
+    local _count _subtotal _ver
     header 'Published'
     print_var DIR_PUB_LICENSES
     print_var DIR_PUB_PUBLICDOMAIN
     echo
 
-    echo "${E1}Legal Tools${E0}"
+    echo "${E1}Licenses per license version${E0}"
+    printf "  %-7s  %-4s  %s\n" 'Version' 'Count' 'Licenses'
+    for _ver in '1.0' '2.0' '2.1' '2.5' '3.0' '4.0'
+    do
+        _count=$(find "${DIR_PUB_LICENSES}"/*/"${_ver}" \
+            -maxdepth 0 -type d \
+            | wc -l \
+            | sed -e's/[[:space:]]*//g')
+        _list=$(find "${DIR_PUB_LICENSES}"/*/"${_ver}" \
+            -maxdepth 0 -type d \
+            | awk -F'/' '{print $9}' \
+            | sort \
+            | tr '\n' ' ')
+        printf "  %-7s  %'5d  " "${_ver}" "${_count}"
+        _chars=0
+        for _license in ${_list}
+        do
+            _len=${#_license}
+            [[ -z "${_license}" ]] && continue
+            if (( _chars + _len < 61 ))
+            then
+                printf "%s  " "${_license}"
+            else
+                _chars=0
+                echo
+                printf "%18s%s  " ' ' "${_license}"
+            fi
+            _chars=$(( _chars + _len + 2 ))
+        done
+        echo
+    done
+    echo
+
+    echo "${E1}Legal tools per license version${E0}"
+    echo "${PORTED_NOTE}"
+    # per version
+    for _ver in '1.0' '2.0' '2.1' '2.5' '3.0' '4.0'
+    do
+        _count=$(find "${DIR_PUB_LICENSES}"/*/"${_ver}" \
+            -type f -name 'deed.en.html' \
+            | wc -l \
+            | sed -e's/[[:space:]]*//g')
+        if [[ "${_ver}" != '4.0' ]]
+        then
+            printf "  %-5s%'4d\n" "${_ver}" "${_count}"
+        else
+            printf "  ${E4}%-5s%'4d${E0}\n" "${_ver}" "${_count}"
+        fi
+    done
+    # total
+    _count=$(find "${DIR_PUB_LICENSES}" \
+        -type f -name 'deed.en.html' \
+        | wc -l \
+        | sed -e's/[[:space:]]*//g')
+    printf "  %-5s%'4d\n" "Total" "${_count}"
+    echo
+
+    echo "${E1}Legal tools${E0}"
     # licenses
     _count=$(find "${DIR_PUB_LICENSES}" \
         -type f -name 'deed.en.html' \
