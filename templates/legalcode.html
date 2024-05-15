@@ -30,7 +30,7 @@
 <div class="meta-box">
 <article class="canonical-url">
 <h2>{% trans "Canonical URL" %}</h2>
-<a href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
+<a {% if lang.bidi %}dir="ltr"{% endif %} href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
 </article>
 
 <article class="formats">
