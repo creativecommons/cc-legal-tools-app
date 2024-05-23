@@ -41,7 +41,7 @@ def save_bytes_to_file(filebytes, output_filename):
     if os.path.isfile(dirname):
         os.remove(dirname)
     os.makedirs(dirname, mode=0o755, exist_ok=True)
-    with open(output_filename, "w+b") as f:
+    with open(output_filename, "wb") as f:
         f.write(filebytes)
 
 
