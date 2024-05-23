@@ -556,13 +556,10 @@ class Command(BaseCommand):
                     "RewriteCond %{REQUEST_FILENAME}.html !-f",
                     "RewriteCond %{REQUEST_FILENAME} !-l",
                     "RewriteCond %{REQUEST_FILENAME}.html !-l",
-                    f"RewriteRule licenses/([a-z+-]+)/{ver}/"
-                    f"{jur}/deed[.].*$"
+                    f"RewriteRule licenses/([a-z+-]+)/{ver}/{jur}/deed[.].*$"
                     f" /licenses/$1/{ver}/{jur}/deed.{default_lang} [R=301,L]",
                 ]
-        # DISABLED until generated file has been moved to within inside
-        #          directory stanza in Apache2 config
-        # DISABLED  include_lines += step2_lines
+        include_lines += step2_lines
         del step2_lines
 
         # Step 3: Redirect absent deed translations for international/universal
@@ -592,9 +589,7 @@ class Command(BaseCommand):
             " /licenses/$1/$2/deed.en [R=301,L]",
             "",
         ]
-        # DISABLED until generated file has been moved to within inside
-        #          directory stanza in Apache2 config
-        # DISABLED  include_lines += step3_lines
+        include_lines += step3_lines
         del step3_lines
 
         include_lines.append("# vim: ft=apache ts=4 sw=4 sts=4 sr noet")
