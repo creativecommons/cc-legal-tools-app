@@ -221,7 +221,7 @@ LANGMAP_DJANGO_TO_PCRE = {
     # Django language codes are lowercase IETF language tags
     #
     # The following PCREs handle altnate codes and characters. Alternate case
-    # should be handled by an Apache RewriteMap.
+    # should be handled by an Apache configuraiton generated during publishing.
     "de-at": ["de[@_]at"],
     "en": ["en[@_-]gb", "en[@_-]us"],
     "en-ca": ["en[@_]ca"],
