@@ -7,13 +7,14 @@
     </svg>
   </span>
   {% endfor %}
+  {{ tool.identifier }}
 </span>
-<h1>
+<h1>{{ tool_title }}</h2>
+<h2>
   {% if document_type == "deed" %}
-    {{ tool.identifier }} {% trans "Deed" %}
+    {% trans "Deed" %}
   {% else %}
-    {{ tool.identifier }} {% trans "Legal Code" %}
+     {% trans "Legal Code" %}
   {% endif %}
-</h1>
-<h2>{{ tool_title }}</h2>
+</h2>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
