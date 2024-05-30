@@ -55,7 +55,7 @@ error_exit() {
 
 header() {
     # Print 80 character wide black on white heading with time
-    printf "${E30}${E107} %-71s$(date '+%T') ${E0}\n" "${@}"
+    printf "${E30}${E107}# %-70s$(date '+%T') ${E0}\n" "${@}"
 }
 
 
