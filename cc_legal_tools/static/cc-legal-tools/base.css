@@ -54,12 +54,27 @@ div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
 /* header title */
 /* TODO: resolve with vocabulary-theme */
 .cc-legal-tools main > header {
+  align-items: center;  /* deed display: flex */
   padding: 3em 0;
+}
+.cc-legal-tools,.bidi-left main > header > span.tool-icons {
+  padding-right: 1em;
+  height: 2em;
+}
+.cc-legal-tools,.bidi-right main > header > span.tool-icons {
+  padding-left: 1em;
 }
 .cc-legal-tools main > header > span.tool-icons > span.cc-icon > svg {
   display: inline;
-  height: 4em;
-  width: 4em;
+  height: 2em;
+  width: 2em;
+  vertical-align: text-bottom;  /* legalcode display: block */
+}
+.cc-legal-tools main > header > span.tool-identifier {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2.1em;
 }
 .cc-legal-tools main > header > h1 {
   margin: 0.2em 0;
