@@ -1,15 +1,17 @@
 {% load i18n %}
-<span class="tool-icons">
-  {% for code in tool.logos %}
-  <span class="cc-icon">
-    <svg viewBox="0 0 30 30">
-      <use href="/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#{{ code }}"></use>
-    </svg>
+<h1>{{ tool_title }}</h1>
+<span class="alt-titles">
+  <span class="tool-icons">
+    {% for code in tool.logos %}
+    <span class="cc-icon">
+      <svg viewBox="0 0 30 30">
+        <use href="/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#{{ code }}"></use>
+      </svg>
+    </span>
+    {% endfor %}
   </span>
-  {% endfor %}
+  <span class="tool-identifier">{{ tool.identifier }}</span>
 </span>
-<span class="tool-identifier">{{ tool.identifier }}</span>
-<h1>{{ tool_title }}</h2>
 <h2>
   {% if document_type == "deed" %}
     {% trans "Deed" %}
