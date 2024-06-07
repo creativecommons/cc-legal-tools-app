@@ -170,9 +170,15 @@
       </a>
     </li>
     <li>
+      {% if not distilling %}
       <a href="{% static 'rdf/schema.rdf' %}" target="_blank">
         <code>{% static 'rdf/schema.rdf' %}</code>
       </a>
+      {% else %}
+      <a href="/rdf/schema.rdf" target="_blank">
+        <code>/rdf/schema.rdf</code>
+      </a>
+      {% endif %}
     </li>
   </ul>
 
