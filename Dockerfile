@@ -26,38 +26,38 @@ RUN apt-config dump \
     | sed -e's/1/0/' \
     | tee /etc/apt/apt.conf.d/99no-recommends-no-suggests
 
-# Resynchronize the package index
-RUN apt-get update
-
-# Install apt packages missing from slim docker image
-RUN apt-get install -y git ssh
-
-# Install apt package dependencies for App
-RUN apt-get install -y gcc gettext sqlite3
+# Resynchronize the package index and install packages
+# https://docs.docker.com/build/building/best-practices/#apt-get
+RUN apt-get update && apt-get install -y \
+        gcc \
+        gettext \
+        git \
+        sqlite3 \
+        ssh \
+    && rm -rf /var/lib/apt/lists/*
 
 ## Install pipenv
-RUN pip install --upgrade pip
-RUN pip install --upgrade setuptools
-RUN pip install --upgrade pipenv
+RUN pip install --upgrade \
+    pip \
+    pipenv \
+    setuptools
 
 # Install python dependencies
-COPY Pipfile .
-COPY Pipfile.lock .
+COPY Pipfile Pipfile.lock .
 RUN pipenv sync --dev --system
 
 # Create and switch to a new "cc" user
 RUN useradd --create-home cc
 WORKDIR /home/cc
 USER cc:cc
-RUN mkdir .ssh
-RUN chmod 0700 .ssh
+RUN mkdir .ssh && chmod 0700 .ssh
 
 # Configure git for tests
-RUN git config --global user.email 'app@docker-container'
-RUN git config --global user.name 'App DockerContainer'
-RUN git config --global --add safe.directory '*'
+RUN git config --global user.email 'app@docker-container' \
+    && git config --global user.name 'App DockerContainer' \
+    && git config --global --add safe.directory '*'
 
 ## Prepare for running app
-RUN mkdir cc-legal-tools-app
-RUN mkdir cc-legal-tools-data
+RUN mkdir cc-legal-tools-app \
+    && mkdir cc-legal-tools-data
 WORKDIR /home/cc/cc-legal-tools-app
