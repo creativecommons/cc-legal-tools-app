@@ -7,6 +7,18 @@
 .bidi-right main ul, .bidi-right main ol {
   margin: 0 2em 2em 0;
 }
+/*for device having width <=400px*/
+@media (max-width: 400px) {
+  #languages-dropdown {
+    width: 20vw;
+  }
+}
+@media (max-width: 280px) {
+  #languages-dropdown {
+    width: 16vw;
+  }
+}
+
 
 
 /* Ancilliary menu */
