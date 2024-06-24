@@ -1,5 +1,5 @@
 """
-Django settings for cc_legal_tools project.
+Django settings for CC-Legal-Tools project.
 """
 
 # Standard library
@@ -11,21 +11,64 @@ import os
 import colorlog  # noqa: F401
 from django.conf.locale import LANG_INFO
 
-CANONICAL_SITE = "https://creativecommons.org"
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# Paths #######################################################################
 # SETTINGS_DIR is where this settings file is
-SETTINGS_DIR = os.path.dirname(os.path.abspath(__file__))
+SETTINGS_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 # DJANGO_ROOT is the directory under root that contains the settings directory,
 #             urls.py, and other global stuff.
 DJANGO_ROOT = os.path.dirname(SETTINGS_DIR)
 # PROJECT_ROOT is the top directory under source control
 PROJECT_ROOT = os.path.dirname(DJANGO_ROOT)
+# Location of the data repository directory.
+# Look in environment for DATA_REPOSITORY_DIR. Default is next to this one.
+DATA_REPOSITORY_DIR = os.path.abspath(
+    os.path.realpath(
+        os.getenv(
+            "DATA_REPOSITORY_DIR",
+            os.path.join(PROJECT_ROOT, "..", "cc-legal-tools-data"),
+        )
+    )
+)
+DISTILL_DIR = os.path.abspath(
+    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "docs"))
+)
+LEGACY_DIR = os.path.abspath(
+    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "legacy"))
+)
+# Localication paths
+DEEDS_UX_LOCALE_PATH = os.path.abspath(
+    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "locale"))
+)
+LEGAL_CODE_LOCALE_PATH = os.path.abspath(
+    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "legalcode"))
+)
+LOCALE_PATHS = (
+    DEEDS_UX_LOCALE_PATH,
+    LEGAL_CODE_LOCALE_PATH,
+)
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+# Absolute path to the directory static files should be collected to.
+# Don't put anything in this directory yourself; store your static files
+# in apps' "static/" subdirectories and in STATICFILES_DIRS.
+# Example: "/home/media/media.lawrence.com/static/"
+STATIC_ROOT = os.path.abspath(
+    os.path.realpath(os.path.join(PROJECT_ROOT, "tmp", "public", "static"))
+)
+# URL prefix for static files.
+# Example: "http://media.lawrence.com/static/"
+STATIC_URL = "static/"
+# Additional locations of static files
+STATICFILES_DIRS = (
+    os.path.abspath(os.path.realpath(os.path.join(DJANGO_ROOT, "static"))),
+)
+
+
+# Application definition ######################################################
+CANONICAL_SITE = "https://creativecommons.org"
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
-
-# Application definition
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -64,6 +107,8 @@ TEMPLATES = [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
+                # django.contrib.messages.context_processors.messages must be
+                # enabled in order to use the admin application
                 "django.contrib.messages.context_processors.messages",
                 "dealer.contrib.django.context_processor",
             ],
@@ -71,10 +116,22 @@ TEMPLATES = [
     },
 ]
 
+# template_fragments
+# For our use case, caching doesn't appear to offer any benefits and only adds
+# complexity. This was determined by testing both publishing speed and page
+# speed.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+    },
+}
+
 WSGI_APPLICATION = "cc_legal_tools.wsgi.application"
 
+mimetypes.add_type("application/rdf+xml", ".rdf", True)
 
-# Database
+
+# Database ####################################################################
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
@@ -83,8 +140,6 @@ DATABASES = {
         "NAME": os.path.join(PROJECT_ROOT, "db.sqlite3"),
     }
 }
-
-DEALER_TYPE = "git"
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -170,25 +225,8 @@ LOGGING = {
     },
 }
 
-# Location of the data repository directory.
-# Look in environment for DATA_REPOSITORY_DIR. Default is next to this one.
-DATA_REPOSITORY_DIR = os.path.abspath(
-    os.path.realpath(
-        os.getenv(
-            "DATA_REPOSITORY_DIR",
-            os.path.join(PROJECT_ROOT, "..", "cc-legal-tools-data"),
-        )
-    )
-)
-DISTILL_DIR = os.path.abspath(
-    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "docs"))
-)
-LEGACY_DIR = os.path.abspath(
-    os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "legacy"))
-)
 
-
-# Internationalization
+# Internationalization ########################################################
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 # Language code for this installation.
@@ -200,25 +238,31 @@ DEEDS_UX_RESOURCE_SLUG = "deeds_ux"
 # Percent translated that languages should be at or above
 TRANSLATION_THRESHOLD = 60
 
-DEEDS_UX_LOCALE_PATH = os.path.abspath(
-    os.path.abspath(
-        os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "locale"))
-    )
-)
-LEGAL_CODE_LOCALE_PATH = os.path.abspath(
-    os.path.abspath(
-        os.path.realpath(os.path.join(DATA_REPOSITORY_DIR, "legalcode"))
-    )
-)
-LOCALE_PATHS = (
-    DEEDS_UX_LOCALE_PATH,
-    LEGAL_CODE_LOCALE_PATH,
-)
+TRANSIFEX = {
+    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "[!] MISSING [!]"),
+    "ORGANIZATION_SLUG": "creativecommons",
+    "DEEDS_UX_TEAM_ID": 11342,
+    "DEEDS_UX_PROJECT_SLUG": "CC",
+    "DEEDS_UX_RESOURCE_SLUGS": [DEEDS_UX_RESOURCE_SLUG],
+    "LEGAL_CODE_PROJECT_SLUG": "cc-legal-code",
+    "LEGAL_CODE_TEAM_ID": 153501,
+    "LEGAL_CODE_RESOURCE_SLUGS": [
+        "by-nc-nd_40",
+        "by-nc-sa_40",
+        "by-nc_40",
+        "by-nd_40",
+        "by-sa_40",
+        "by_40",
+        "zero_10",
+    ],
+}
+
 
 # Preserve Django language information
 # - This is used for translation/internationalization troubleshooting
 # - The following line MUST come before any modifications of LANG_INFO
 DJANGO_LANG_INFO = copy.deepcopy(LANG_INFO)
+
 
 # Teach Django about a few more languages (sorted by language code)
 
@@ -257,25 +301,6 @@ LANG_INFO["si-lk"] = {"code": "si-lk"}  # Remaining data from Babel
 # Zulu
 LANG_INFO["zu"] = {"code": "zu"}  # Remaining data from Babel
 
-TRANSIFEX = {
-    "API_TOKEN": os.getenv("TRANSIFEX_API_TOKEN", "[!] MISSING [!]"),
-    "ORGANIZATION_SLUG": "creativecommons",
-    "DEEDS_UX_TEAM_ID": 11342,
-    "DEEDS_UX_PROJECT_SLUG": "CC",
-    "DEEDS_UX_RESOURCE_SLUGS": [DEEDS_UX_RESOURCE_SLUG],
-    "LEGAL_CODE_PROJECT_SLUG": "cc-legal-code",
-    "LEGAL_CODE_TEAM_ID": 153501,
-    "LEGAL_CODE_RESOURCE_SLUGS": [
-        "by-nc-nd_40",
-        "by-nc-sa_40",
-        "by-nc_40",
-        "by-nd_40",
-        "by-sa_40",
-        "by_40",
-        "zero_10",
-    ],
-}
-
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -292,25 +317,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, "tmp", "public", "static")
 
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = "static/"
-
-# Additional locations of static files
-STATICFILES_DIRS = (os.path.join(DJANGO_ROOT, "static"),)
-
-# If using Celery, tell it to obey our logging configuration.
-CELERYD_HIJACK_ROOT_LOGGER = False
-
-# https://docs.djangoproject.com/en/1.9/topics/auth/passwords/#password-validation
+# https://docs.djangoproject.com/en/4.2/topics/auth/passwords/#password-validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": (
@@ -345,24 +353,6 @@ SECURE_BROWSER_XSS_FILTER = True
 CSRF_COOKIE_HTTPONLY = True
 X_FRAME_OPTIONS = "DENY"
 
-# template_fragments
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
-    },
-    "branchstatuscache": {
-        # Use memory caching so template fragments get cached whether we have
-        # memcached running or not.
-        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-    },
-}
-# This will use memcached if we have it, and otherwise just not cache.
-if "CACHE_HOST" in os.environ:
-    CACHES["default"] = {
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-        "LOCATION": "%(CACHE_HOST)s" % os.environ,
-    }
-
 # The git branch where the official, approved, used in production translations
 # are.
 OFFICIAL_GIT_BRANCH = "main"
@@ -371,5 +361,3 @@ OFFICIAL_GIT_BRANCH = "main"
 TRANSLATION_REPOSITORY_DEPLOY_KEY = os.getenv(
     "TRANSLATION_REPOSITORY_DEPLOY_KEY", ""
 )
-
-mimetypes.add_type("application/rdf+xml", ".rdf", True)

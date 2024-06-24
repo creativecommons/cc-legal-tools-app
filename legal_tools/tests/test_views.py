@@ -1103,32 +1103,33 @@ class ViewBranchStatusTest(TestCase):
             language_code="fr",
         )
 
-    def test_simple_branch(self):
-        url = reverse(
-            "branch_status", kwargs=dict(id=self.translation_branch.id)
-        )
-        with mock.patch("legal_tools.views.git"):
-            with mock.patch.object(LegalCode, "get_pofile"):
-                with mock.patch(
-                    "legal_tools.views.branch_status_helper"
-                ) as mock_helper:
-                    mock_helper.return_value = {
-                        "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
-                        "branch": self.translation_branch,
-                        "commits": [],
-                        "last_commit": None,
-                    }
-                    r = self.client.get(url)
-                    # Call a second time to test cache and fully exercise
-                    # branch_status()
-                    self.client.get(url)
-        mock_helper.assert_called_with(mock.ANY, self.translation_branch)
-        self.assertTemplateUsed(r, "dev/branch_status.html")
-        context = r.context
-        self.assertEqual(self.translation_branch, context["branch"])
-        self.assertEqual(
-            settings.OFFICIAL_GIT_BRANCH, context["official_git_branch"]
-        )
+    # TODO: evalute when branch status is re-implemented
+    # def test_simple_branch(self):
+    #     url = reverse(
+    #         "branch_status", kwargs=dict(id=self.translation_branch.id)
+    #     )
+    #     with mock.patch("legal_tools.views.git"):
+    #         with mock.patch.object(LegalCode, "get_pofile"):
+    #             with mock.patch(
+    #                 "legal_tools.views.branch_status_helper"
+    #             ) as mock_helper:
+    #                 mock_helper.return_value = {
+    #                     "official_git_branch": settings.OFFICIAL_GIT_BRANCH,
+    #                     "branch": self.translation_branch,
+    #                     "commits": [],
+    #                     "last_commit": None,
+    #                 }
+    #                 r = self.client.get(url)
+    #                 # Call a second time to test cache and fully exercise
+    #                 # branch_status()
+    #                 self.client.get(url)
+    #     mock_helper.assert_called_with(mock.ANY, self.translation_branch)
+    #     self.assertTemplateUsed(r, "dev/branch_status.html")
+    #     context = r.context
+    #     self.assertEqual(self.translation_branch, context["branch"])
+    #     self.assertEqual(
+    #         settings.OFFICIAL_GIT_BRANCH, context["official_git_branch"]
+    #     )
 
     def test_branch_helper_local_branch_exists(self):
         mock_repo = mock.MagicMock()

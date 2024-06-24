@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DJANGO_SETTINGS_MODULE: cc_legal_tools.settings.ephemeral
+      DJANGO_SETTINGS_MODULE: cc_legal_tools.settings.dev
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONFAULTHANDLER: 1
 

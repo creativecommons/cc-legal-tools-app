@@ -5,19 +5,22 @@
 #   .env
 #   Dockerfile
 #
-# Use docker compose v2 for non swarm deployments
-# https://docs.docker.com/compose/compose-file/compose-file-v2/
+# https://docs.docker.com/compose/compose-file/
 
 services:
 
   app:
     build: .
-    command: ./manage.py runserver 0.0.0.0:${PORT_APP}
+    command: "./manage.py runserver 0.0.0.0:${PORT_APP}"
     environment:
       - DJANGO_SETTINGS_MODULE=${DOCKER_DJANGO_SETTINGS_MODULE}
     ports:
       - "127.0.0.1:${PORT_APP}:${PORT_APP}"
-    restart: always
+    restart: on-failure
     volumes:
-      - .:/home/cc/cc-legal-tools-app
-      - ${RELPATH_DATA}:/home/cc/cc-legal-tools-data
+      - '.:/home/cc/cc-legal-tools-app'
+      - "${RELPATH_DATA}:/home/cc/cc-legal-tools-data"
+
+  # static
+  #   the static service is loaded from ../cc-legal-tools-data if the .env
+  #   file has been properly copied and configured.
