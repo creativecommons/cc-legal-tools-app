@@ -5,13 +5,11 @@ from operator import itemgetter
 from typing import Iterable
 
 # Third-party
-import git
 import yaml
 from bs4 import BeautifulSoup
 from bs4.dammit import EntitySubstitution
 from bs4.formatter import HTMLFormatter
 from django.conf import settings
-from django.core.cache import caches
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
@@ -775,32 +773,34 @@ def branch_status_helper(repo, translation_branch):
     }
 
 
-# using cache_page seems to break django-distill (weird error about invalid
-# host "testserver"). Do our caching more directly.
-# @cache_page(timeout=5 * 60, cache="branchstatuscache")
-def view_branch_status(request, id):
-    translation_branch = get_object_or_404(TranslationBranch, id=id)
-    cache = caches["branchstatuscache"]
-    cachekey = (
-        f"{settings.DATA_REPOSITORY_DIR}-{translation_branch.branch_name}"
-    )
-    html_response = cache.get(cachekey)
-    if html_response is None:
-        with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
-            context = branch_status_helper(repo, translation_branch)
-            html_response = render(
-                request,
-                "dev/branch_status.html",
-                context,
-            )
-            html_response.content = bytes(
-                BeautifulSoup(
-                    html_response.content, features="lxml"
-                ).prettify(),
-                "utf-8",
-            )
-        cache.set(cachekey, html_response, 5 * 60)
-    return html_response
+# TODO: evalute when branch status is re-implemented
+# # using cache_page seems to break django-distill (weird error about invalid
+# # host "testserver"). Do our caching more directly.
+# # @cache_page(timeout=5 * 60, cache="branchstatuscache")
+def view_branch_status(request, id):  # pragma: no cover
+    # translation_branch = get_object_or_404(TranslationBranch, id=id)
+    # cache = caches["branchstatuscache"]
+    # cachekey = (
+    #     f"{settings.DATA_REPOSITORY_DIR}-{translation_branch.branch_name}"
+    # )
+    # html_response = cache.get(cachekey)
+    # if html_response is None:
+    #     with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
+    #         context = branch_status_helper(repo, translation_branch)
+    #         html_response = render(
+    #             request,
+    #             "dev/branch_status.html",
+    #             context,
+    #         )
+    #         html_response.content = bytes(
+    #             BeautifulSoup(
+    #                 html_response.content, features="lxml"
+    #             ).prettify(),
+    #             "utf-8",
+    #         )
+    #     cache.set(cachekey, html_response, 5 * 60)
+    # return html_response
+    pass
 
 
 def view_metadata(request):
