@@ -110,6 +110,7 @@ documenting other operating systems if you encounter issues.
     ```shell
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
+    - Update variables in new file, as necessary
 5. Build the containers
     ```shell
     docker compose build
@@ -124,18 +125,15 @@ documenting other operating systems if you encounter issues.
         transparently as long as the development server is running.
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
       server serving [creativecommons/cc-legal-tools-data][repodata]:`docs/`
-7. Run database migrations
+7. Initialize data
     ```shell
-    docker compose exec app ./manage.py migrate
+    ./dev/init_data.sh
     ```
-8. Clear data in the database
-    ```shell
-    docker compose exec app ./manage.py clear_license_data
-    ```
-9. Load legacy HTML in the database
-    ```shell
-    docker compose exec app ./manage.py load_html_files
-    ```
+    1. Delete database (which may not yet exist)
+    2. Initialize database
+    3. Perform databsea migrations
+    4. Crate supseruser (will prompt for password)
+    5. Load data
 
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
@@ -143,12 +141,12 @@ documenting other operating systems if you encounter issues.
 ### Manual Setup
 
 > :warning: **This section may be helpful for maintaining the project, but
-> should NOT be used for development. Please use the Docker Compose Setup,
+> should _NOT_ be used for development. Please use the Docker Compose Setup,
 > above.**
 
-1. Development Environment
-   1. Ensure the [Data Repository](#data-repository), above, is in place
-   2. Install dependencies
+1. Complete Docker Compose Setup, above
+2. Development Environment
+   1. Install dependencies
       - Linux:
         ```shell
         sudo apt-get install python3.11 python3.11-dev python3-pip
@@ -165,7 +163,7 @@ documenting other operating systems if you encounter issues.
         ```shell
         pip install pipenv
         ```
-   3. Install Python environment and modules via pipenv to create a
+   2. Install Python environment and modules via pipenv to create a
       virtualenv
       - Linux:
         ```shell
@@ -179,31 +177,9 @@ documenting other operating systems if you encounter issues.
         ```shell
         pipenv install --dev --python \User\Appdata\programs\python
         ```
-   4. Install pre-commit hooks
+   3. Install pre-commit hooks
     ```shell
     pipenv run pre-commit install
-    ```
-2. Configure Django
-   1. Create Django local settings file
-    ```shell
-    cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
-    ```
-   2. Create project database
-      - Linux:
-        ```shell
-        sudo createdb -E UTF-8 cc_legal_tools
-        ```
-      - macOS:
-        ```shell
-        createdb -E UTF-8 cc_legal_tools
-        ```
-      - Windows:
-        ```shell
-        createdb -E UTF-8 cc_legal_tools
-        ```
-   3. Load database schema
-    ```shell
-    pipenv run ./manage.py migrate
     ```
 3. Run development server ([127.0.0.1:8005](http://127.0.0.1:8005/))
     ```shell
@@ -258,14 +234,15 @@ Run as needed:
   - Run after each new release of
     [creativecommons/vocabulary-theme][vocab-theme]
 
+Data management:
+- `./dev/dump_data.sh` - Dump Django application data
+- `./dev/init_data.sh` - :warning: Initialize Django application data
+- `./dev/load_data.sh` - Load Django application data
+
 Esoteric and dangerous:
-- `./dev/concatenatemessages.sh` - Concatenate legacy ccEngine translations
-  into cc-legal-tools-app
-  - rarely used (only after source strings are updated)
-- `./dev/resetdb.sh` - Reset Django application database data (!!DANGER!!)
-  - usually only helpful if you're doing model/schema work
-- `./dev/updatemessages.sh` - Run Django Management nofuzzy_makemessages with
-  helpful options (including excluding legalcode) and compilemessages
+- `./dev/updatemessages.sh` - :warning: Run Django Management
+  nofuzzy_makemessages with helpful options (including excluding legalcode) and
+  compilemessages
 
 [vocab-theme]: https://github.com/creativecommons/vocabulary-theme
 
@@ -359,7 +336,8 @@ Documentation:
 
 ## Importing the existing legal tool text
 
-The process of getting the text into the site varies by legal tool.
+> :warning: **This section should no longer be required and will eventually be
+> moved to a better location.**
 
 Note that once the site is up and running in production, the data in the site
 will become the canonical source, and the process described here should not
@@ -395,6 +373,9 @@ code:
 
 ### Import Process
 
+> :warning: **This section should no longer be required and will eventually be
+> moved to a better location.**
+
 This process will read the HTML files from the specified directory, populate
 `LegalCode` and `Tool` models, and create the `.po` portable object Gettext
 files in [creativecommons/cc-legal-tools-data][repodata].
@@ -419,6 +400,9 @@ files in [creativecommons/cc-legal-tools-data][repodata].
 
 
 ### Import Dependency Documentation
+
+> :warning: **This section should no longer be required and will eventually be
+> moved to a better location.**
 
 - [Beautiful Soup Documentation — Beautiful Soup 4 documentation][bs4docs]
   - [lxml - Processing XML and HTML with Python][lxml]

@@ -76,11 +76,11 @@ INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
-    "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sessions",
     "django.contrib.staticfiles",
-    "legal_tools",
     "i18n",
+    "legal_tools",
 ]
 
 MIDDLEWARE = [
@@ -196,16 +196,6 @@ LOGGING = {
         },
     },
     "loggers": {
-        "i18n.management.commands": {
-            "handlers": ["handle_mgmt"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-        "legal_tools.management.commands": {
-            "handlers": ["handle_mgmt"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
         "django.request": {
             "handlers": ["mail_admins"],
             "level": "ERROR",
@@ -215,6 +205,16 @@ LOGGING = {
             "handlers": ["mail_admins"],
             "level": "ERROR",
             "propagate": True,
+        },
+        "i18n.management.commands": {
+            "handlers": ["handle_mgmt"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        "legal_tools.management.commands": {
+            "handlers": ["handle_mgmt"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
     "root": {

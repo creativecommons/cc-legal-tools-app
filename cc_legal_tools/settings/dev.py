@@ -37,9 +37,16 @@ MIDDLEWARE.remove(  # noqa: F405
 new_value = "INVALID_VARIABLE(%s)"
 TEMPLATES[0]["OPTIONS"]["string_if_invalid"] = new_value  # noqa: F405
 
-if "publish" not in sys.argv and "test" not in sys.argv:
-    # 1) We don't want debug output in published files
-    # 2) The Django Debug Toolbar can't be used with tests
+if (
+    "dumpdata" not in sys.argv
+    and "loaddata" not in sys.argv
+    and "publish" not in sys.argv
+    and "test" not in sys.argv
+):
+    # 1) "dumpdata": avoid the Django Debug Toolbar when dumping data
+    # 2) "loaddata": avoid the Django Debug Toolbar when loading data
+    # 3) "publish": avoid debug output in published files
+    # 4) "test": the Django Debug Toolbar can't be used with tests:
     #      HINT: Django changes the DEBUG setting to False when running tests.
     #      By default the Django Debug Toolbar is installed because DEBUG is
     #      set to True. For most cases, you need to avoid installing the
