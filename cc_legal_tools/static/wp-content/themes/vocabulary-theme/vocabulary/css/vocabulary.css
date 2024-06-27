@@ -86,6 +86,14 @@ body > header {
     margin: 0;
 }
 
+/* allows the child identity-logo element to have a focus state */
+.identity-logo-wrapper {
+    height: 50px;
+    width: 191px;
+    display: block;
+    position: absolute;
+}
+
 .masthead .identity-logo {
     display: inline-block;
     text-indent: -1000px;
@@ -108,7 +116,6 @@ body > header {
 
 .masthead .identity-logo:hover {
     background-color: var(--vocabulary-neutral-color-dark-gray);
-
 }
 
 /* TODO: needs focus outline to be fixed */
@@ -1559,7 +1566,8 @@ main .authored-posts.highlight article {
 }
 
 nav.pagination {
-    grid-column: span 3;
+    grid-column: span 2;
+    margin: 0 auto;
 }
 
 nav.pagination ol {
@@ -2028,7 +2036,7 @@ main blockquote {
 
 /* manually include quote icon to avoid extraneous html classes */
 main blockquote p:before {
-    --icon-sprite: var(--fa-quote);
+    --icon-sprite: var(--cc-quote);
 
     display: block;
     content: '';

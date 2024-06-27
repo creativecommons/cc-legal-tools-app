@@ -135,6 +135,7 @@
      --cc-logo: url('./../svg/cc/icons/cc-icons.svg#cc-logo');
      --cc-heart: url('./../svg/cc/icons/cc-icons.svg#cc-heart');
      --cc-heart-filled: url('./../svg/cc/icons/cc-icons.svg#cc-heart-filled');
+     --cc-quote: url('./../svg/cc/icons/cc-icons.svg#cc-quote');
 
      /* font awesome sprite names */
      --fa-angle-down: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-down');
@@ -144,7 +145,6 @@
      --fa-globe: url('./../svg/font-awesome/icons/fa-icons.svg#fa-globe');
      --fa-heart: url('./../svg/font-awesome/icons/fa-icons.svg#fa-heart');
      --fa-info: url('./../svg/font-awesome/icons/fa-icons.svg#fa-info');
-     --fa-quote: url('./../svg/font-awesome/icons/fa-icons.svg#fa-quote');
      --fa-right-angle: url('./../svg/font-awesome/icons/fa-icons.svg#fa-right-angle');
      --fa-search: url('./../svg/font-awesome/icons/fa-icons.svg#fa-search');
 
@@ -189,6 +189,10 @@ leaving room for semantic and accessible implementation choices  */
     --icon-sprite: var(--cc-heart-filled);
 }
 
+.icon.cc-quote, .icon-attach.cc-quote:before {
+    --icon-sprite: var(--cc-quote);
+}
+
 .icon.fa-angle-down, .icon-attach.fa-angle-down:before {
     --icon-sprite: var(--fa-angle-down);
 }
@@ -215,10 +219,6 @@ leaving room for semantic and accessible implementation choices  */
 
 .icon.fa-info, .icon-attach.fa-info:before {
     --icon-sprite: var(--fa-info);
-}
-
-.icon.fa-quote, .icon-attach.fa-quote:before {
-    --icon-sprite: var(--fa-quote);
 }
 
 .icon.fa-right-angle, .icon-attach.fa-righ-angle:before {
