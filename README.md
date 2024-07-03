@@ -557,6 +557,11 @@ the full path to that deploy key file.
 [lxml]: https://lxml.de/
 
 
+## Machine/metadata layer: RDF/XML
+
+For details and hisotry, see [`docs/rdf.md`](docs/rdf.md).
+
+
 ## Licenses
 
 
