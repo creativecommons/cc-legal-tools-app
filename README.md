@@ -334,184 +334,9 @@ Documentation:
 [djangotemplates]: https://docs.djangoproject.com/en/4.2/topics/templates/
 
 
-## Importing the existing legal tool text
-
-> :warning: **This section should no longer be required and will eventually be
-> moved to a better location.**
-
-Note that once the site is up and running in production, the data in the site
-will become the canonical source, and the process described here should not
-need to be repeated after that.
-
-The implementation is the Django management command `load_html_files`, which
-reads from the legacy HTML legal code files in the
-[creativecommons/cc-legal-tools-data][repodata] repository, and populates the
-database records and translation files.
-
-`load_html_files` uses [BeautifulSoup4][bs4docs] to parse the legacy HTML legal
-code:
-1. `import_zero_license_html()` for CC0 Public Domain tool
-   - HTML is handled specifically (using tag ids and classes) to populate
-     translation strings and to be used with specific HTML formatting when
-     displayed via template
-2. `import_by_40_license_html()` for 4.0 License tools
-   - HTML is handled specifically (using tag ids and classes) to populate
-     translation strings and to be used with specific HTML formatting when
-     displayed via a template
-3. `import_by_30_unported_license_html()` for unported 3.0 License tools
-   (English-only)
-   - HTML is handled specifically to be used with specific HTML formatting
-     when displayed via a template
-4. `simple_import_license_html()` for everything else
-   - HTML is handled generically; only the title and license body are
-     identified. The body is stored in the `html` field of the
-     `LegalCode` model
-
-[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-[repodata]: https://github.com/creativecommons/cc-legal-tools-data
-
-
-### Import Process
-
-> :warning: **This section should no longer be required and will eventually be
-> moved to a better location.**
-
-This process will read the HTML files from the specified directory, populate
-`LegalCode` and `Tool` models, and create the `.po` portable object Gettext
-files in [creativecommons/cc-legal-tools-data][repodata].
-
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Clear data in the database
-    ```shell
-    docker compose exec app ./manage.py clear_license_data
-    ```
-4. Load legacy HTML in the database
-    ```shell
-    docker compose exec app ./manage.py load_html_files
-    ```
-5. Optionally (and only as appropriate):
-   1. Commit the `.po` portable object Gettext file changes in
-      [creativecommons/cc-legal-tools-data][repodata]
-   2. [Translation Update Process](#translation-update-process), below
-   3. [Generate Static Files](#generate-static-files), below
-
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
-
-
-### Import Dependency Documentation
-
-> :warning: **This section should no longer be required and will eventually be
-> moved to a better location.**
-
-- [Beautiful Soup Documentation — Beautiful Soup 4 documentation][bs4docs]
-  - [lxml - Processing XML and HTML with Python][lxml]
-- [Quick start guide — polib documentation][polibdocs]
-
-[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-[lxml]: https://lxml.de/
-[polibdocs]: https://polib.readthedocs.io/en/latest/quickstart.html
-
-
 ## Translation
 
-To upload/download translation files to/from Transifex, you'll need an account
-there with access to these translations. Then follow the [Authentication -
-Transifex API v3][transauth]: to get an API token, and set
-`TRANSIFEX["API_TOKEN"]` in your environment with its value.
-
-The [creativecommons/cc-legal-tools-data][repodata] repository must be cloned
-next to this `cc-legal-tools-app` repository. (It can be elsewhere, then you
-need to set `DATA_REPOSITORY_DIR` to its location.) Be sure to clone using a
-URL that starts with `git@github...` and not `https://github...`, or you won't
-be able to push to it. Also see [Data Repository](#data-repository), above.
-
-In production, the `check_for_translation_updates` management command should be
-run hourly. See [Check for Translation
-Updates](#check-for-translation-updates), below.
-
-Also see [Publishing changes to git repo](#publishing-changes-to-git-repo),
-below.
-
-[Babel][babel] is used for localization information.
-
-Documentation:
-- [Babel — Babel documentation][babel]
-- [Translation | Django documentation | Django][djangotranslation]
-
-[babel]: http://babel.pocoo.org/en/latest/index.html
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
-[transauth]: https://transifex.github.io/openapi/index.html#section/Authentication
-
-
-### How the tool translation is implemented
-
-Django Translation uses two sets of Gettext Files in the
-[creativecommons/cc-legal-tools-data][repodata] repository (the [Data
-Repository](#data-repository), above). See that repository for detailed
-information and definitions.
-
-Documentation:
-- [Translation | Django documentation | Django][djangotranslation]
-- Transifex API
-  - [Introduction to API 3.0 | Transifex Documentation][api30intro]
-  - [Transifex API v3][api30]
-  - Python SDK: [transifex-python/transifex/api][apisdk]
-
-[api30]: https://transifex.github.io/openapi/index.html#section/Introduction
-[api30intro]: https://docs.transifex.com/api-3-0/introduction-to-api-3-0
-[apisdk]: https://github.com/transifex/transifex-python/tree/devel/transifex/api
-[djangotranslation]: https://docs.djangoproject.com/en/4.2/topics/i18n/translation/
-[repodata]: https://github.com/creativecommons/cc-legal-tools-data
-
-
-### Check for Translation Updates
-
-> :warning: **This functionality is currently disabled.**
-
-The hourly run of `check_for_translation_updates` looks to see if any of the
-translation files in Transifex have newer last modification times than we know
-about. It performs the following process (which can also be done manually:
-
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Within the [creativecommons/cc-legal-tools-data][repodata] (the [Data
-   Repository](#data-repository)):
-   1. Checkout or create the appropriate branch.
-      - For example, if a French translation file for BY 4.0 has changed, the
-        branch name will be `cc4-fr`.
-   2. Download the updated `.po` portable object Gettext file from Transifex
-   3. Do the [Translation Update Process](#translation-update-process) (below)
-      - _This is important and easy to forget,_ but without it, Django will
-        keep using the old translations
-   4. Commit that change and push it upstream.
-3. Within this `cc-legal-tools-app` repository:
-   1. For each branch that has been updated, [Generate Static
-      Files](#generate-static-files) (below). Use the options to update git and
-      push the changes.
-
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
-
-
-### Check for Translation Updates Dependency Documentation
-
-- [GitPython Documentation — GitPython documentation][gitpythondocs]
-- [Requests: HTTP for Humans™ — Requests documentation][requestsdocs]
-
-[gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
-[requestsdocs]: https://docs.python-requests.org/en/master/
-
-
-### Translation Update Process
-
-This Django Admin command must be run any time the `.po` portable object
-Gettext files are created or changed.
-
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Compile translation messages (update the `.mo` machine object Gettext files)
-    ```shell
-    docker compose exec app ./manage.py compilemessages
-    ```
+See [`docs/translation.md`](docs/translation.md)
 
 
 ## Generate Static Files
@@ -555,6 +380,11 @@ the full path to that deploy key file.
 [bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 [gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
 [lxml]: https://lxml.de/
+
+
+## Machine/metadata layer: RDF/XML
+
+For details and history, see [`docs/rdf.md`](docs/rdf.md).
 
 
 ## Licenses

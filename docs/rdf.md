@@ -1,8 +1,48 @@
 # RDF/XML
 
+(Return to primary [`../README.md`](../README.md).)
+
 
 ## Namespaces
 
+
+### ccREL Schema
+
+`schema.rdf` excerpt:
+```xml
+<rdf:RDF
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+```
+| Prefix | Name                | URL                                         |
+| ------ | ------------------- | ------------------------------------------- |
+| `cc`   | ccREL               | http://creativecommons.org/ns#              |
+| `owl`  | OWL 2               | http://www.w3.org/2002/07/owl#              |
+| `rdf`  | RDF XML Syntax      | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
+| `rdfs` | RDF Schema          | http://www.w3.org/2000/01/rdf-schema#       |
+
+
+### Images
+
+`images.rdf` excerpt:
+```xml
+<rdf:RDF
+    xmlns:exif="http://www.w3.org/2003/12/exif/ns#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+```
+| Prefix | Name                | URL                                         |
+| ------ | ------------------- | ------------------------------------------- |
+| `exif` | Exif RDF Schema     | http://www.w3.org/2003/12/exif/ns#          |
+| `rdf`  | RDF XML Syntax      | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
+
+
+### Legal code
+
+`**/rdf` excerpt:
 ```xml
 <rdf:RDF
     xmlns:cc='http://creativecommons.org/ns#'
@@ -22,7 +62,7 @@
 | `rdf`  | RDF XML Syntax      | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
 
 
-### ccREL
+### ccREL ( `cc` prefix)
 
 - [Describing Copyright in RDF - Creative Commons Rights Expression
   Language][ccrelns]
@@ -34,16 +74,26 @@
 [ccrelguide]: https://opensource.creativecommons.org/ccrel-guide/
 
 
-### DCMI Metadata Terms
+### DCMI Metadata Terms (`dcterms` prefix)
 
-- [DCMI: Dublin Core™][dublicore]
+- [DCMI: Dublin Core™][dublincore]
   - [DCMI: DCMI Metadata Terms][dcmiterms]
 
 [dublincore]: https://www.dublincore.org/specifications/dublin-core/
 [dcmiterms]: https://www.dublincore.org/specifications/dublin-core/dcmi-terms/
 
 
-### FOAF Vocabulary
+### Exif RDF Schema (`exif` prefix)
+
+[Exif RDF Schema][exifrdf] (retrieved 2024-07-03):
+> Vocabulary to describe an Exif format picture data. All Exif 2.2 tags are defined as RDF properties, as well as several terms to help this schema
+
+- [Exif RDF Schema][exifrdf]
+
+[exifrdf]: https://www.w3.org/2003/12/exif/
+
+
+### FOAF Vocabulary (`foaf`)
 
 [FOAF - Wikipedia](https://en.wikipedia.org/wiki/FOAF) (retrieved 2023-07-20):
 > FOAF (an acronym of friend of a friend) is a machine-readable ontology
@@ -55,16 +105,17 @@
 [foafvocab]: http://xmlns.com/foaf/0.1/
 
 
-### OWL 2
+### OWL 2 (`owl` prefix)
 
-[OWL 2 Web Ontology Language Document Overview (Second Edition)][owl2overiew]
+[OWL 2 Web Ontology Language Document Overview (Second Edition)][owl2overview]
 (retrieved 2023-07-20):
 > The OWL 2 Web Ontology Language, informally OWL 2, is an ontology language
 > for the Semantic Web with formally defined meaning. OWL 2 ontologies provide
 > classes, properties, individuals, and data values and are stored as Semantic
 > Web documents.
 
-- [OWL 2 Web Ontology Language Document Overview (Second Edition)][owl2overiew]
+- [OWL 2 Web Ontology Language Document Overview (Second
+  Edition)][owl2overview]
 - [OWL 2 Web Ontology Language Structural Specification and Functional-Style
   Syntax (Second Edition)][owl2spec]
 - [OWL 2 Web Ontology Language XML Serialization (Second Edition)][owl2xml]
@@ -76,12 +127,38 @@
 [wikipediasameas]: https://en.wikipedia.org/wiki/SameAs
 
 
-### RDF XML Syntax
+### RDF XML Syntax (`rdf` prefix)
 
 - [RDF 1.1 XML Syntax](https://www.w3.org/TR/rdf-syntax-grammar/)
 
 
+### RDF Schema (`rdfs` prefix)
+
+- [RDF Schema 1.1](https://www.w3.org/TR/rdf11-schema/)
+
+
+## RDF canonical URL
+
+Due to historical reasons, the canonical URL for the legal tools in RDF uses
+the HTTP (unencrypted) protocol.
+
+Although the legal tools are not available via HTTP, the URLs still function
+correctly due to redirects. Additionally, the RDF now includes an `owl:sameAs`
+element with the HTTPS URL for further compatibility.
+
+For example:
+
+| Context | Protocol | Canonical URL | Published data example |
+| ------- | -------- | ------------: | ---------------------- |
+| RDF | HTTP | `http://creativecommons.org/licenses/by/4.0/` | [licenses/by/4.0/rdf#L3][ex1]
+| all other uses | HTTPS | `https://creativecommons.org/licenses/by/4.0/` | [licenses/by/4.0/legalcode.en.html#L390-L397][ex2]
+
+[ex1]: https://github.com/creativecommons/cc-legal-tools-data/blob/ba0781024c735f5cd4eb59f8a1716eb9a12df212/docs/licenses/by/4.0/rdf#L3
+[ex2]: https://github.com/creativecommons/cc-legal-tools-data/blob/ba0781024c735f5cd4eb59f8a1716eb9a12df212/docs/licenses/by/4.0/legalcode.en.html#L390-L397
+
+
 ## Changes
+
 
 ### Overview
 
