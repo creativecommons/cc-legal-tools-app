@@ -38,7 +38,7 @@
 
 ### DCMI Metadata Terms
 
-- [DCMI: Dublin Core™][dublicore]
+- [DCMI: Dublin Core™][dublincore]
   - [DCMI: DCMI Metadata Terms][dcmiterms]
 
 [dublincore]: https://www.dublincore.org/specifications/dublin-core/
