@@ -70,9 +70,12 @@ Documentation:
         docker compose exec app ./manage.py add_objects -v2 --zero -l tlh
         ```
 4. Synchronize repository Gettext files with Transifex
+5. Compile `.mo` machine object Gettext files:
+    ```shell
+    docker compose exec app ./manage.py compilemessages
+    ```
 
-
-## Synchronize with Transifex
+## Synchronize repository Gettext files with Transifex
 
 - **TODO** document processes of synchronizing the repository Gettext files
   with Transifex, including the following management commands:
@@ -119,16 +122,3 @@ Documentation:
 
 [gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
 [requestsdocs]: https://docs.python-requests.org/en/master/
-
-
-## Translation Update Process
-
-This Django Admin command must be run any time the `.po` portable object
-Gettext files are created or changed.
-
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Compile translation messages (update the `.mo` machine object Gettext files)
-    ```shell
-    docker compose exec app ./manage.py compilemessages
-    ```
