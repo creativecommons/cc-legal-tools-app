@@ -55,6 +55,35 @@ Documentation:
 [repodata]: https://github.com/creativecommons/cc-legal-tools-data
 
 
+## Add translation
+
+1. Add language to appropriate resource in Transifex
+2. Ensure language is present in Django
+   - If not, update `cc_legal_tools/settings/base.py`
+3. Add objects for new language translation using the `add_objects` management
+   command.
+   - Examples:
+        ```shell
+        docker compose exec app ./manage.py add_objects -v2 --licenses -l tlh
+        ```
+        ```shell
+        docker compose exec app ./manage.py add_objects -v2 --zero -l tlh
+        ```
+4. Synchronize repository Gettext files with Transifex
+
+
+## Synchronize with Transifex
+
+- **TODO** document processes of synchronizing the repository Gettext files
+  with Transifex, including the following management commands:
+  - `locale_info`
+  - `normalize_translations`
+  - `compare_translations`
+  - `pull_translation`
+  - `push_translation`
+  - `compilemessages`
+
+
 ## Check for translation updates
 
 > :warning: **This functionality is currently disabled.**
