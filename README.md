@@ -384,7 +384,7 @@ the full path to that deploy key file.
 
 ## Machine/metadata layer: RDF/XML
 
-For details and hisotry, see [`docs/rdf.md`](docs/rdf.md).
+For details and history, see [`docs/rdf.md`](docs/rdf.md).
 
 
 ## Licenses
