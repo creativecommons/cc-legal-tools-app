@@ -1,5 +1,7 @@
 # RDF/XML
 
+(Return to primary [`../README.md`](../README.md).)
+
 
 ## Namespaces
 
