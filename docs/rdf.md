@@ -36,7 +36,7 @@
 ```
 | Prefix | Name                | URL                                         |
 | ------ | ------------------- | ------------------------------------------- |
-| `exif` | Exif RDF Schem      | http://www.w3.org/2003/12/exif/ns#          |
+| `exif` | Exif RDF Schema     | http://www.w3.org/2003/12/exif/ns#          |
 | `rdf`  | RDF XML Syntax      | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
 
 
@@ -107,14 +107,15 @@
 
 ### OWL 2 (`owl` prefix)
 
-[OWL 2 Web Ontology Language Document Overview (Second Edition)][owl2overiew]
+[OWL 2 Web Ontology Language Document Overview (Second Edition)][owl2overview]
 (retrieved 2023-07-20):
 > The OWL 2 Web Ontology Language, informally OWL 2, is an ontology language
 > for the Semantic Web with formally defined meaning. OWL 2 ontologies provide
 > classes, properties, individuals, and data values and are stored as Semantic
 > Web documents.
 
-- [OWL 2 Web Ontology Language Document Overview (Second Edition)][owl2overiew]
+- [OWL 2 Web Ontology Language Document Overview (Second
+  Edition)][owl2overview]
 - [OWL 2 Web Ontology Language Structural Specification and Functional-Style
   Syntax (Second Edition)][owl2spec]
 - [OWL 2 Web Ontology Language XML Serialization (Second Edition)][owl2xml]
@@ -147,8 +148,8 @@ element with the HTTPS URL for further compatibility.
 
 For example:
 
-| Context | Protocol | Canonical URL | Example |
-| ------- | -------- | ------------: | ------- |
+| Context | Protocol | Canonical URL | Published data example |
+| ------- | -------- | ------------: | ---------------------- |
 | RDF | HTTP | `http://creativecommons.org/licenses/by/4.0/` | [licenses/by/4.0/rdf#L3][ex1]
 | all other uses | HTTPS | `https://creativecommons.org/licenses/by/4.0/` | [licenses/by/4.0/legalcode.en.html#L390-L397][ex2]
 
