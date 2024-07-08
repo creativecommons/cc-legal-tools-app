@@ -100,7 +100,7 @@ main > header > span.alt-titles > span.tool-icons > span.cc-icon > svg {
   --underline-background-color: var(--vocabulary-brand-color-soft-gold);
 }
 main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
-  font-size: 1rem;/
+  font-size: 1rem;
 }
 
 
