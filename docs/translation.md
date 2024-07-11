@@ -76,6 +76,13 @@ Documentation:
     docker compose exec app ./manage.py compilemessages
     ```
 
+Documentation:
+- [Quick start guide — polib documentation][polibdocs]
+- Also see How the tool translation is implemented documentation, above
+
+[polibdocs]: https://polib.readthedocs.io/en/latest/quickstart.html
+
+
 ## Synchronize repository Gettext files with Transifex
 
 - **TODO** document processes of synchronizing the repository Gettext files
