@@ -343,8 +343,15 @@ class TransifexHelper:
             ):
                 self.log.debug(
                     f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): Transifex already contains"
-                    " translation."
+                    f" ({transifex_code}): Skipping upload of translation"
+                    " already present on Transifex."
+                )
+                return
+            elif pofile_obj.percent_translated() == 0:
+                self.log.debug(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): Skipping upload of 0% complete"
+                    f" translation: {pofile_path}"
                 )
                 return
 
