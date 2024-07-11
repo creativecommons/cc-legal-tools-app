@@ -317,43 +317,46 @@ class TransifexHelper:
         """
         project_api = self.resource_to_api[resource_slug]
 
-        if not push_overwrite:
-            if language_code == settings.LANGUAGE_CODE:
-                raise ValueError(
-                    f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): This function,"
-                    " upload_translation_to_transifex_resource(), is for"
-                    " translations, not sources."
-                )
-            elif resource_slug not in self.resource_stats.keys():
-                raise ValueError(
-                    f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): Transifex does not yet contain"
-                    " resource. The upload_resource_to_transifex() function"
-                    " must be called before this one "
-                    " [upload_translation_to_transifex_resource()]."
-                )
-            elif (
-                resource_slug in self.translation_stats
-                and transifex_code in self.translation_stats[resource_slug]
-                and self.translation_stats[resource_slug][transifex_code].get(
-                    "translated_strings", 0
-                )
-                > 0
-            ):
-                self.log.debug(
-                    f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): Skipping upload of translation"
-                    " already present on Transifex."
-                )
-                return
-            elif pofile_obj.percent_translated() == 0:
-                self.log.debug(
-                    f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): Skipping upload of 0% complete"
-                    f" translation: {pofile_path}"
-                )
-                return
+        # Always perform following tests (regardless of push_overwrite)
+        if language_code == settings.LANGUAGE_CODE:
+            raise ValueError(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): This function,"
+                " upload_translation_to_transifex_resource(), is for"
+                " translations, not sources."
+            )
+        elif resource_slug not in self.resource_stats.keys():
+            raise ValueError(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Transifex does not yet contain"
+                " resource. The upload_resource_to_transifex() function"
+                " must be called before this one "
+                " [upload_translation_to_transifex_resource()]."
+            )
+        elif pofile_obj.percent_translated() == 0:
+            self.log.debug(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Skipping upload of 0% complete"
+                f" translation: {pofile_path}"
+            )
+            return
+
+        # Only perform tests if push_oversite is False
+        if (
+            not push_overwrite
+            and resource_slug in self.translation_stats
+            and transifex_code in self.translation_stats[resource_slug]
+            and self.translation_stats[resource_slug][transifex_code].get(
+                "translated_strings", 0
+            )
+            > 0
+        ):
+            self.log.debug(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Skipping upload of translation"
+                " already present on Transifex."
+            )
+            return
 
         pofile_content = get_pofile_content(pofile_obj)
         language = self.api.Language.get(code=transifex_code)

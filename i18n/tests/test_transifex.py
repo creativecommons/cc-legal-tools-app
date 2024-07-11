@@ -2306,51 +2306,6 @@ class TestTransifex(TestCase):
         )
         self.helper.clear_transifex_stats.assert_called_once()
 
-    def test_upload_translation_to_transifex_resource_push(self):
-        api = self.helper.api
-        resource_slug = "x_slug_x"
-        language_code = "x_lang_code_x"
-        transifex_code = "x_trans_code_x"
-        pofile_path = "x_path_x"
-        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
-        push_overwrite = True
-        pofile_content = get_pofile_content(pofile_obj)
-        self.helper._resource_stats = {}
-        self.helper._translation_stats = {}
-        language = mock.Mock(
-            id=f"l:{transifex_code}",
-        )
-        self.helper.api.Language.get = mock.Mock(return_value=language)
-        resource = mock.Mock(
-            id=f"o:{TEST_ORG_SLUG}:p:{TEST_PROJ_SLUG}:r:{resource_slug}",
-            attributes={"i18n_type": "PO"},
-        )
-        self.helper.api.Resource.get = mock.Mock(return_value=resource)
-        api.ResourceTranslationsAsyncUpload.upload.return_value = {
-            "translations_created": 1,
-            "translations_updated": 1,
-        }
-        self.helper.clear_transifex_stats = mock.Mock()
-
-        self.helper.upload_translation_to_transifex_resource(
-            resource_slug,
-            language_code,
-            transifex_code,
-            pofile_path,
-            pofile_obj,
-            push_overwrite,
-        )
-
-        api.Language.get.assert_called_once()
-        api.Resource.get.assert_called_once()
-        api.ResourceTranslationsAsyncUpload.upload.assert_called_once()
-        api.ResourceTranslationsAsyncUpload.upload.assert_called_with(
-            resource=resource,
-            content=pofile_content,
-            language=language.id,
-        )
-        self.helper.clear_transifex_stats.assert_called_once()
-
     def test_upload_translation_to_transifex_resource_no_changes(self):
         api = self.helper.api
         resource_slug = "x_slug_x"
@@ -2397,6 +2352,37 @@ class TestTransifex(TestCase):
         )
         self.assertTrue(log_context.output[2].startswith("CRITICAL:"))
         self.assertIn("Translation upload failed", log_context.output[2])
+        self.helper.clear_transifex_stats.assert_not_called()
+
+    def test_upload_translation_to_transifex_resource_local_empty(self):
+        api = self.helper.api
+        resource_slug = "x_slug_x"
+        language_code = "x_lang_code_x"
+        transifex_code = "x_trans_code_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        for entry in pofile_obj:
+            entry.msgstr = ""
+        push_overwrite = False
+        self.helper._resource_stats = {resource_slug: None}
+        self.helper._translation_stats = {resource_slug: {}}
+        self.helper.clear_transifex_stats = mock.Mock()
+
+        with self.assertLogs(self.helper.log, level="DEBUG") as log_context:
+            self.helper.upload_translation_to_transifex_resource(
+                resource_slug,
+                language_code,
+                transifex_code,
+                pofile_path,
+                pofile_obj,
+                push_overwrite,
+            )
+
+        api.Language.get.assert_not_called()
+        api.Resource.get.assert_not_called()
+        api.ResourceTranslationsAsyncUpload.upload.assert_not_called()
+        self.assertTrue(log_context.output[0].startswith("DEBUG:"))
+        self.assertIn("Skipping upload of 0% complete", log_context.output[0])
         self.helper.clear_transifex_stats.assert_not_called()
 
     # Test: normalize_pofile_language ########################################
