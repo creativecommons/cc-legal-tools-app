@@ -1,25 +1,15 @@
 #!/usr/bin/env python
 # Standard library
 import logging
-import os
 import sys
+
+# Third-party
+from django.core.management import execute_from_command_line
 
 LOG = logging.getLogger("management.commands")
 
 
 def main():
-    if "DATABASE_URL" in os.environ:
-        os.environ.setdefault(
-            "DJANGO_SETTINGS_MODULE", "cc_legal_tools.settings.deploy"
-        )
-    else:
-        os.environ.setdefault(
-            "DJANGO_SETTINGS_MODULE", "cc_legal_tools.settings.local"
-        )
-
-    # Third-party
-    from django.core.management import execute_from_command_line
-
     execute_from_command_line(sys.argv)
 
 
