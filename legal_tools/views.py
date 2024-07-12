@@ -10,10 +10,12 @@ from bs4 import BeautifulSoup
 from bs4.dammit import EntitySubstitution
 from bs4.formatter import HTMLFormatter
 from django.conf import settings
+from django.core.cache import cache
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.utils import translation
+from django.utils.text import format_lazy
 
 # First-party/Local
 from i18n import UNIT_NAMES
@@ -83,12 +85,61 @@ def get_category_and_category_title(category=None, tool=None):
     return category, category_title
 
 
-def get_tool_title(tool):
+def get_tool_title(legal_code):
+    tool = legal_code.tool
+    prefix = (
+        f"{tool.unit}-{tool.version}-{tool.jurisdiction_code}"
+        f"-{legal_code.language_code}-"
+    )
+    tool_title = cache.get(f"{prefix}title", "")
+    if tool_title:
+        return tool_title
+    tool_name = ""
+    jurisdiction_name = ""
+    # Default title translation (uses Deeds & UX translation domain)
     tool_name = UNIT_NAMES.get(tool.unit, "UNIMPLEMENTED")
     jurisdiction_name = get_jurisdiction_name(
         tool.category, tool.unit, tool.version, tool.jurisdiction_code
     )
-    tool_title = f"{tool_name} {tool.version} {jurisdiction_name}"
+    tool_title = format_lazy(
+        "{tool_name} {tool_version} {jurisdiction_name}",
+        tool_name=tool_name,
+        tool_version=tool.version,
+        jurisdiction_name=jurisdiction_name,
+    )
+    # Attempt to override title with translation from legal code translation
+    # domain for tools that support full translation (Licenses 4.0 and CC0)
+    # always:
+    if (
+        tool.category == "licenses" and tool.version == "4.0"
+    ) or tool.unit == "zero":
+        tool_title_en = ""
+        tool_title_lc = ""
+        # Retrieve title parts untranslated (English)
+        with translation.override(None):
+            # Licenses before 4.0 use "NoDerivs" instead of "NoDerivatives"
+            tool_name = str(
+                UNIT_NAMES.get(tool.unit, "UNIMPLEMENTED")
+            ).replace("NoDerivs", "NoDerivatives")
+            jurisdiction_name = str(
+                get_jurisdiction_name(
+                    tool.category,
+                    tool.unit,
+                    tool.version,
+                    tool.jurisdiction_code,
+                )
+            )
+        tool_title_en = (
+            f"{tool_name} {tool.version} {jurisdiction_name}".strip()
+        )
+        # Translate title parts using legal code translation domain
+        current_translation = legal_code.get_translation_object()
+        with active_translation(current_translation):
+            tool_title_lc = translation.gettext(tool_title_en)
+        if tool_title_lc != tool_title_en:
+            tool_title = tool_title_lc
+
+    cache.add(f"{prefix}title", tool_title)
     return tool_title
 
 
@@ -200,34 +251,52 @@ def get_legal_code_replaced_rel_path(
     try:
         # Same language
         legal_code = LegalCode.objects.valid().get(
-            tool=tool,
-            language_code=language_code,
+            tool=tool, language_code=language_code
         )
     except LegalCode.DoesNotExist:
         try:
             # Jurisdiction default language
             legal_code = LegalCode.objects.valid().get(
-                tool=tool,
-                language_code=language_default,
+                tool=tool, language_code=language_default
             )
         except LegalCode.DoesNotExist:
             # Global default language
             legal_code = LegalCode.objects.valid().get(
-                tool=tool,
-                language_code=settings.LANGUAGE_CODE,
+                tool=tool, language_code=settings.LANGUAGE_CODE
             )
-    identifier = legal_code.tool.identifier()
-    lazy_deed = translation.gettext_lazy("Deed")
-    title = get_tool_title(legal_code.tool)
-    replaced_deed_title = f"{identifier} {lazy_deed} | {title}"
+    title = get_tool_title(legal_code)
+    prefix = (
+        f"{legal_code.tool.unit}-{legal_code.tool.version}-"
+        f"{legal_code.tool.jurisdiction_code}-{legal_code.language_code}-"
+    )
+    replaced_deed_title = cache.get(f"{prefix}replaced_deed_title", "")
+    if not replaced_deed_title:
+        deed_str = cache.get(f"{prefix}deed_str", "")
+        if not deed_str:
+            with translation.override(language_code):
+                deed_str = translation.gettext("Deed")
+                cache.add(f"{prefix}deed_str", deed_str)
+        replaced_deed_title = f"{deed_str} - {title}"
+        cache.add(f"{prefix}replaced_deed_title", replaced_deed_title)
     replaced_deed_path = get_deed_rel_path(
         legal_code.deed_url,
         path_start,
         language_code,
         language_default,
     )
-    lazy_legal_code = translation.gettext_lazy("Legal Code")
-    replaced_legal_code_title = f"{identifier} {lazy_legal_code} | {title}"
+    replaced_legal_code_title = cache.get(
+        f"{prefix}replaced_legal_code_title", ""
+    )
+    if not replaced_legal_code_title:
+        legal_code_str = cache.get(f"{prefix}legal_code_str", "")
+        if not legal_code_str:
+            with translation.override(language_code):
+                legal_code_str = translation.gettext("Legal Code")
+                cache.add(f"{prefix}legal_code_str", legal_code_str)
+        replaced_legal_code_title = f"{legal_code_str} - {title}"
+        cache.add(
+            f"{prefix}replaced_legal_code_title", replaced_legal_code_title
+        )
     replaced_legal_code_path = os.path.relpath(
         legal_code.legal_code_url, path_start
     )
@@ -504,7 +573,6 @@ def view_deed(
         )
     except Tool.DoesNotExist as e:
         return view_page_not_found(request, e)
-    tool_title = get_tool_title(tool)
 
     try:
         # Try to load legal code with specified language
@@ -521,6 +589,8 @@ def view_deed(
             legal_code = tool.get_legal_code_for_language_code(
                 settings.LANGUAGE_CODE
             )
+
+    tool_title = get_tool_title(legal_code)
 
     legal_code_rel_path = os.path.relpath(
         legal_code.legal_code_url, path_start
@@ -636,7 +706,17 @@ def view_legal_code(
     else:
         translation.activate(settings.LANGUAGE_CODE)
     tool = legal_code.tool
-    tool_title = get_tool_title(tool)
+
+    # get_tool_title manipulates the translation domain and, therefore, MUST
+    # be called before we Activate Legal Code translation
+    tool_title = get_tool_title(legal_code)
+    # get_legal_code_replaced_rel_path calls get_tool_title, see note above
+    _, _, replaced_title, replaced_path = get_legal_code_replaced_rel_path(
+        tool.is_replaced_by,
+        path_start,
+        language_code,
+        language_default,
+    )
 
     # Activate Legal Code translation
     current_translation = legal_code.get_translation_object()
@@ -654,13 +734,6 @@ def view_legal_code(
 
         deed_rel_path = get_deed_rel_path(
             legal_code.deed_url,
-            path_start,
-            language_code,
-            language_default,
-        )
-
-        _, _, replaced_title, replaced_path = get_legal_code_replaced_rel_path(
-            tool.is_replaced_by,
             path_start,
             language_code,
             language_default,
