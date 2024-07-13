@@ -7,7 +7,7 @@ from argparse import ArgumentParser
 # Third-party
 import polib
 from django.conf import settings
-from django.core.management import BaseCommand, CommandError
+from django.core.management import BaseCommand, CommandError, call_command
 
 # First-party/Local
 from i18n.utils import (
@@ -134,3 +134,5 @@ class Command(BaseCommand):
             self.add_legal_code(options, "licenses", "4.0")
         elif options["domains"] == "zero":
             self.add_legal_code(options, "publicdomain", "1.0", "zero")
+        call_command("update_is_replaced_by", verbosity=options["verbosity"])
+        call_command("update_source", verbosity=options["verbosity"])
