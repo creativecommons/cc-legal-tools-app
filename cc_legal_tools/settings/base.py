@@ -116,13 +116,13 @@ TEMPLATES = [
     },
 ]
 
-# template_fragments
-# For our use case, caching doesn't appear to offer any benefits and only adds
-# complexity. This was determined by testing both publishing speed and page
-# speed.
+# The caching API is used, but there are no caching MIDDLEWARE, above, as we
+# are not using site caching (which adds overhead without benefit for our uses)
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "TIMEOUT": 600,
+        "OPTIONS": {"CULL_FREQUENCY": 0, "MAX_ENTRIES": 3000},
     },
 }
 

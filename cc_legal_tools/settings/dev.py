@@ -54,9 +54,10 @@ if (
     #      can set DEBUG_TOOLBAR_CONFIG['IS_RUNNING_TESTS'] = False to bypass
     #      this check.
     DEBUG = True
+    DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda request: DEBUG}
     INSTALLED_APPS += [  # noqa: F405
         "debug_toolbar",
     ]
-    MIDDLEWARE += (  # noqa: F405
+    MIDDLEWARE += [  # noqa: F405
         "debug_toolbar.middleware.DebugToolbarMiddleware",
-    )
+    ]
