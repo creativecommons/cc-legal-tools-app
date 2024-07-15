@@ -318,6 +318,8 @@ class TransifexHelper:
         project_api = self.resource_to_api[resource_slug]
 
         # Always perform following tests (regardless of push_overwrite)
+        #
+        # Raise error if attempting to push resource
         if language_code == settings.LANGUAGE_CODE:
             raise ValueError(
                 f"{self.nop}{resource_slug} {language_code}"
@@ -325,6 +327,7 @@ class TransifexHelper:
                 " upload_translation_to_transifex_resource(), is for"
                 " translations, not sources."
             )
+        # Raise error if related resource is missing from Transifex
         elif resource_slug not in self.resource_stats.keys():
             raise ValueError(
                 f"{self.nop}{resource_slug} {language_code}"
@@ -333,6 +336,7 @@ class TransifexHelper:
                 " must be called before this one "
                 " [upload_translation_to_transifex_resource()]."
             )
+        # Skip push if there is nothing to push (local translation empty)
         elif pofile_obj.percent_translated() == 0:
             self.log.debug(
                 f"{self.nop}{resource_slug} {language_code}"
@@ -341,22 +345,23 @@ class TransifexHelper:
             )
             return
 
-        # Only perform tests if push_oversite is False
-        if (
-            not push_overwrite
-            and resource_slug in self.translation_stats
-            and transifex_code in self.translation_stats[resource_slug]
-            and self.translation_stats[resource_slug][transifex_code].get(
-                "translated_strings", 0
-            )
-            > 0
-        ):
-            self.log.debug(
-                f"{self.nop}{resource_slug} {language_code}"
-                f" ({transifex_code}): Skipping upload of translation"
-                " already present on Transifex."
-            )
-            return
+        # Only perform the follwoing tests if push_oversite is False
+        if not push_overwrite:
+            # Skip push if Transifex translation isn't empty
+            if (
+                resource_slug in self.translation_stats
+                and transifex_code in self.translation_stats[resource_slug]
+                and self.translation_stats[resource_slug][transifex_code].get(
+                    "translated_strings", 0
+                )
+                > 0
+            ):
+                self.log.debug(
+                    f"{self.nop}{resource_slug} {language_code}"
+                    f" ({transifex_code}): Skipping upload of translation"
+                    " already present on Transifex."
+                )
+                return
 
         pofile_content = get_pofile_content(pofile_obj)
         language = self.api.Language.get(code=transifex_code)
