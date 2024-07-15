@@ -389,6 +389,79 @@ class ToolsTestsMixin:
         super().setUp()
 
 
+class ViewHelperFunctionsTest(ToolsTestsMixin, TestCase):
+    def test_get_category_and_category_title_category_tool(self):
+        category, category_title = get_category_and_category_title(
+            category=None,
+            tool=None,
+        )
+        self.assertEqual(category, "licenses")
+        self.assertEqual(category_title, "Licenses")
+
+        tool = Tool.objects.get(unit="by", version="4.0")
+        category, category_title = get_category_and_category_title(
+            category=None,
+            tool=tool,
+        )
+        self.assertEqual(category, "licenses")
+        self.assertEqual(category_title, "Licenses")
+
+    def test_get_category_and_category_title_category_publicdomain(self):
+        category, category_title = get_category_and_category_title(
+            category="publicdomain",
+            tool=None,
+        )
+        self.assertEqual(category, "publicdomain")
+        self.assertEqual(category_title, "Public Domain")
+
+    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
+    def test_get_deed_rel_path_mostly_translated_language_code(self):
+        expected_deed_rel_path = "deed.x1"
+        deed_rel_path = get_deed_rel_path(
+            deed_url="/deed.x1",
+            path_start="/",
+            language_code="x1",
+            language_default="x2",
+        )
+        self.assertEqual(expected_deed_rel_path, deed_rel_path)
+
+    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
+    def test_get_deed_rel_path_less_translated_language_code(self):
+        expected_deed_rel_path = "deed.x2"
+        deed_rel_path = get_deed_rel_path(
+            deed_url="/deed.x3",
+            path_start="/",
+            language_code="x3",
+            language_default="x2",
+        )
+        self.assertEqual(expected_deed_rel_path, deed_rel_path)
+
+    @override_settings(
+        LANGUAGE_CODE="x1",
+        LANGUAGES_MOSTLY_TRANSLATED=[],
+    )
+    def test_get_deed_rel_path_less_translated_language_default(self):
+        expected_deed_rel_path = "deed.x1"
+        deed_rel_path = get_deed_rel_path(
+            deed_url="/deed.x3",
+            path_start="/",
+            language_code="x3",
+            language_default="x2",
+        )
+        self.assertEqual(expected_deed_rel_path, deed_rel_path)
+
+    def test_normalize_path_and_lang(self):
+        request_path = "/licenses/by/3.0/de/legalcode"
+        jurisdiction = "de"
+        norm_request_path, norm_language_code = normalize_path_and_lang(
+            request_path,
+            jurisdiction,
+            language_code=None,
+        )
+        self.assertEqual(norm_request_path, f"{request_path}.de")
+        self.assertEqual(norm_language_code, "de")
+
+
 class ViewDevHomeTest(ToolsTestsMixin, TestCase):
     def test_view_dev_index_view(self):
         url = reverse("dev_index")
@@ -785,81 +858,6 @@ class ViewLegalCodeTest(TestCase):
     #        context = rsp.context
     #        self.assertContains(rsp, 'lang="de"')
     #        self.assertEqual(lc, context["legal_code"])
-
-    def test_get_category_and_category_title_category_tool(self):
-        category, category_title = get_category_and_category_title(
-            category=None,
-            tool=None,
-        )
-        self.assertEqual(category, "licenses")
-        self.assertEqual(category_title, "Licenses")
-
-        tool = ToolFactory(
-            category="licenses",
-            base_url="https://creativecommons.org/licenses/by/4.0/",
-            version="4.0",
-        )
-        category, category_title = get_category_and_category_title(
-            category=None,
-            tool=tool,
-        )
-        self.assertEqual(category, "licenses")
-        self.assertEqual(category_title, "Licenses")
-
-    def test_get_category_and_category_title_category_publicdomain(self):
-        category, category_title = get_category_and_category_title(
-            category="publicdomain",
-            tool=None,
-        )
-        self.assertEqual(category, "publicdomain")
-        self.assertEqual(category_title, "Public Domain")
-
-    def test_normalize_path_and_lang(self):
-        request_path = "/licenses/by/3.0/de/legalcode"
-        jurisdiction = "de"
-        norm_request_path, norm_language_code = normalize_path_and_lang(
-            request_path,
-            jurisdiction,
-            language_code=None,
-        )
-        self.assertEqual(norm_request_path, f"{request_path}.de")
-        self.assertEqual(norm_language_code, "de")
-
-    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
-    def test_get_deed_rel_path_mostly_translated_language_code(self):
-        expected_deed_rel_path = "deed.x1"
-        deed_rel_path = get_deed_rel_path(
-            deed_url="/deed.x1",
-            path_start="/",
-            language_code="x1",
-            language_default="x2",
-        )
-        self.assertEqual(expected_deed_rel_path, deed_rel_path)
-
-    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
-    def test_get_deed_rel_path_less_translated_language_code(self):
-        expected_deed_rel_path = "deed.x2"
-        deed_rel_path = get_deed_rel_path(
-            deed_url="/deed.x3",
-            path_start="/",
-            language_code="x3",
-            language_default="x2",
-        )
-        self.assertEqual(expected_deed_rel_path, deed_rel_path)
-
-    @override_settings(
-        LANGUAGE_CODE="x1",
-        LANGUAGES_MOSTLY_TRANSLATED=[],
-    )
-    def test_get_deed_rel_path_less_translated_language_default(self):
-        expected_deed_rel_path = "deed.x1"
-        deed_rel_path = get_deed_rel_path(
-            deed_url="/deed.x3",
-            path_start="/",
-            language_code="x3",
-            language_default="x2",
-        )
-        self.assertEqual(expected_deed_rel_path, deed_rel_path)
 
     def test_view_legal_code_identifying_jurisdiction_default_language(self):
         language_code = "de"
