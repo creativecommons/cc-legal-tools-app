@@ -2705,6 +2705,94 @@ class TestTransifex(TestCase):
         mock_pofile_save.assert_called()
         self.assertNotIn("Last-Translator", new_pofile_obj.metadata)
 
+    # Test: normalize_pofile_percent_translated ##############################
+
+    def test_normalize_pofile_percent_translated_resource_language(self):
+        transifex_code = settings.LANGUAGE_CODE
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Percent-Translated"] = (
+            pofile_obj.percent_translated()
+        )
+
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            self.helper.normalize_pofile_percent_translated(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_normalize_pofile_percent_translated_correct(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Percent-Translated"] = (
+            pofile_obj.percent_translated()
+        )
+
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            self.helper.normalize_pofile_percent_translated(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_normalize_pofile_percent_translated_dryrun(self):
+        self.helper.dryrun = True
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Percent-Translated"] = 37
+
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            self.helper.normalize_pofile_percent_translated(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_not_called()
+
+    def test_normalize_pofile_percent_translated_incorrect(self):
+        transifex_code = "x_trans_code_x"
+        resource_slug = "x_slug_x"
+        resource_name = "x_name_x"
+        pofile_path = "x_path_x"
+        pofile_obj = polib.pofile(pofile=POFILE_CONTENT)
+        pofile_obj.metadata["Percent-Translated"] = 37
+
+        with mock.patch.object(polib.POFile, "save") as mock_pofile_save:
+            new_pofile_obj = self.helper.normalize_pofile_percent_translated(
+                transifex_code,
+                resource_slug,
+                resource_name,
+                pofile_path,
+                pofile_obj,
+            )
+
+        mock_pofile_save.assert_called()
+        self.assertIn("Percent-Translated", new_pofile_obj.metadata)
+        self.assertEqual(
+            new_pofile_obj.percent_translated(),
+            new_pofile_obj.metadata["Percent-Translated"],
+        )
+
     # Test: normalize_pofile_project_id ######################################
 
     def test_normalize_pofile_project_id_correct(self):
