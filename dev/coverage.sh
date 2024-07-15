@@ -45,20 +45,24 @@ docker compose exec app true 2>/dev/null \
     || error_exit \
         'The Docker app container/service is not avaialable. See README.md'
 
-print_header 'Coverage Erase'
+print_header 'Coverage erase'
 docker compose exec app coverage erase --debug=dataio
 echo
 
-print_header 'Coverage Tests'
+print_header 'Coverage tests'
 docker compose exec app coverage run --debug=pytest \
     manage.py test --noinput --parallel 4 ${@:-} \
     || exit
 echo
 
-print_header 'Coverage Combine'
+print_header 'Coverage combine'
 docker compose exec app coverage combine
 echo
 
-print_header 'Coverage Report'
+print_header 'Coverage html'
+docker compose exec app coverage html
+echo
+
+print_header 'Coverage report'
 docker compose exec app coverage report
 echo
