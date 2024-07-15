@@ -53,9 +53,9 @@ error_exit() {
 }
 
 
-header() {
+print_header() {
     # Print 80 character wide black on white heading with time
-    printf "${E30}${E107}# %-70s$(date '+%T') ${E0}\n" "${@}"
+    printf "${E30}${E107}# %-69s$(date '+%T') ${E0}\n" "${@}"
 }
 
 
@@ -78,7 +78,7 @@ print_var() {
 
 published_documents() {
     local _count _subtotal _ver
-    header 'Published'
+    print_header 'Published'
     print_var DIR_PUB_LICENSES
     print_var DIR_PUB_PUBLICDOMAIN
     echo
@@ -185,7 +185,7 @@ published_documents() {
 
 
 source_code() {
-    header 'Source code'
+    print_header 'Source code'
     print_var DIR_REPO
     cd "${DIR_REPO}"
     scc \
@@ -197,10 +197,10 @@ source_code() {
 
 
 todo() {
-    header 'Deeds & UX translation'
+    print_header 'Deeds & UX translation'
     echo "${E33}TODO${E0}"
     echo
-    header 'Legal Code translation'
+    print_header 'Legal Code translation'
     echo "${E33}TODO${E0}"
     echo
 }
