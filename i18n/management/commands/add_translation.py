@@ -83,7 +83,7 @@ class Command(BaseCommand):
         # https://www.gnu.org/software/gettext/manual/html_node/Header-Entry.html
         pofile.metadata = {
             "Content-Transfer-Encoding": "8bit",
-            "Content-Type": "text/plain; charset=utf-8",
+            "Content-Type": "text/plain; charset=UTF-8",
             "Language": transifex_language,
             "Language-Django": language_code,
             "Language-Transifex": transifex_language,
@@ -118,12 +118,18 @@ class Command(BaseCommand):
             }
             if LegalCode.objects.filter(**legal_code_parameters).exists():
                 LOG.warn(f"LegalCode object already exists: {title}")
+                legal_code = LegalCode.objects.get(**legal_code_parameters)
             else:
                 LOG.info(f"Creating LeglCode object: {title}")
                 if not options["dryrun"]:
                     legal_code = LegalCode.objects.create(
                         **legal_code_parameters
                     )
+            if not options["dryrun"]:
+                po_filename = legal_code.translation_filename()
+                if os.path.isfile(po_filename):
+                    LOG.debug(f"File already exists: {po_filename}")
+                else:
                     self.write_po_files(legal_code, options["language"])
 
     def handle(self, **options):
