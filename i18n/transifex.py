@@ -617,6 +617,34 @@ class TransifexHelper:
         pofile_obj.save(pofile_path)
         return pofile_obj
 
+    def normalize_pofile_percent_translated(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+    ):
+        if transifex_code == settings.LANGUAGE_CODE:
+            return pofile_obj
+
+        key = "Percent-Translated"
+        percent_translated = pofile_obj.percent_translated()
+
+        if int(pofile_obj.metadata.get(key, None)) == percent_translated:
+            return pofile_obj
+
+        self.log.info(
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}':"
+            f"\n{pofile_path}: New value: '{percent_translated}'"
+        )
+        if self.dryrun:
+            return pofile_obj
+        pofile_obj.metadata[key] = percent_translated
+        pofile_obj.save(pofile_path)
+        return pofile_obj
+
     def normalize_pofile_project_id(
         self,
         transifex_code,
@@ -665,6 +693,13 @@ class TransifexHelper:
             pofile_obj,
         )
         pofile_obj = self.normalize_pofile_last_translator(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
+        pofile_obj = self.normalize_pofile_percent_translated(
             transifex_code,
             resource_slug,
             resource_name,
@@ -765,7 +800,7 @@ class TransifexHelper:
             )
 
         # Process revision date
-        if pofile_revision is None:
+        if pofile_revision is None and transifex_revision is not None:
             # Normalize Local PO File revision date if its empty or invalid
             pofile_obj = self.update_pofile_revision_datetime(
                 resource_slug,
