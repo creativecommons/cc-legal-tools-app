@@ -4,12 +4,14 @@ from unittest import mock
 
 # Third-party
 from django.conf import settings
+from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation.trans_real import DjangoTranslation
 
 # First-party/Local
+from i18n.utils import get_default_language_for_jurisdiction_deed
 from legal_tools.models import UNITS_LICENSES, LegalCode, Tool, build_path
 from legal_tools.rdf_utils import (
     convert_https_to_http,
@@ -25,6 +27,7 @@ from legal_tools.views import (
     branch_status_helper,
     get_category_and_category_title,
     get_deed_rel_path,
+    get_legal_code_replaced_rel_path,
     normalize_path_and_lang,
     render_redirect,
 )
@@ -449,6 +452,31 @@ class ViewHelperFunctionsTest(ToolsTestsMixin, TestCase):
             language_default="x2",
         )
         self.assertEqual(expected_deed_rel_path, deed_rel_path)
+
+    def test_get_legal_code_replaced_rel_path_cache_miss(self):
+        tool = Tool.objects.get(
+            unit="by",
+            version="3.0",
+            jurisdiction_code="",
+        )
+        path_start = "/licenses/by/3.0"
+        language_code = "en"
+        language_default = get_default_language_for_jurisdiction_deed(None)
+
+        cache.clear()
+        self.assertFalse(cache.has_key("by-4.0--en-replaced_deed_str"))
+        self.assertFalse(cache.has_key("by-4.0--en-replaced_legal_code_title"))
+        _, _, _, _ = get_legal_code_replaced_rel_path(
+            tool.is_replaced_by, path_start, language_code, language_default
+        )
+        self.assertEqual(
+            cache.get("by-4.0--en-replaced_deed_title"),
+            "Deed - Attribution 4.0 International",
+        )
+        self.assertEqual(
+            cache.get("by-4.0--en-replaced_legal_code_title"),
+            "Legal Code - Attribution 4.0 International",
+        )
 
     def test_normalize_path_and_lang(self):
         request_path = "/licenses/by/3.0/de/legalcode"

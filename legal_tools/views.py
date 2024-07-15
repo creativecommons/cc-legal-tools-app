@@ -288,11 +288,8 @@ def get_legal_code_replaced_rel_path(
     )
     replaced_deed_title = cache.get(f"{prefix}replaced_deed_title", "")
     if not replaced_deed_title:
-        deed_str = cache.get(f"{prefix}deed_str", "")
-        if not deed_str:
-            with translation.override(legal_code.language_code):
-                deed_str = translation.gettext("Deed")
-                cache.add(f"{prefix}deed_str", deed_str)
+        with translation.override(legal_code.language_code):
+            deed_str = translation.gettext("Deed")
         replaced_deed_title = f"{deed_str} - {title}"
         cache.add(f"{prefix}replaced_deed_title", replaced_deed_title)
     replaced_deed_path = get_deed_rel_path(
@@ -305,11 +302,8 @@ def get_legal_code_replaced_rel_path(
         f"{prefix}replaced_legal_code_title", ""
     )
     if not replaced_legal_code_title:
-        legal_code_str = cache.get(f"{prefix}legal_code_str", "")
-        if not legal_code_str:
-            with translation.override(legal_code.language_code):
-                legal_code_str = translation.gettext("Legal Code")
-                cache.add(f"{prefix}legal_code_str", legal_code_str)
+        with translation.override(legal_code.language_code):
+            legal_code_str = translation.gettext("Legal Code")
         replaced_legal_code_title = f"{legal_code_str} - {title}"
         cache.add(
             f"{prefix}replaced_legal_code_title", replaced_legal_code_title
