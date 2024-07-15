@@ -1173,6 +1173,13 @@ class TransifexHelper:
             pofile=transifex_pofile_content.decode(), encoding="utf-8"
         )
 
+        # Ensure correct metadata values for items unsupported by Transifex
+        transifex_obj.metadata["Language-Django"] = language_code
+        transifex_obj.metadata["Language-Transifex"] = transifex_code
+        transifex_obj.metadata["Percent-Translated"] = (
+            transifex_obj.percent_translated()
+        )
+
         # Overrite local PO File
         self.log.info(
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
