@@ -119,12 +119,12 @@ def get_tool_title(unit, version, category, jurisdiction, language_code):
         cache.add(f"{prefix}title", tool_title)
         return tool_title
 
-    # Translate title using legal code translation domain
+    # Translate title using legal code translation domain for legal code that
+    # is in Transifex (ex. CC0, Licenses 4.0)
     if (
         category == "licenses"
         and version not in ("1.0", "2.0", "2.1", "2.5", "3.0")
     ) or unit == "zero":
-        # Translate title parts using legal code translation domain
         slug = f"{unit}_{version}".replace(".", "")
         language_default = get_default_language_for_jurisdiction_naive(
             jurisdiction
@@ -136,7 +136,8 @@ def get_tool_title(unit, version, category, jurisdiction, language_code):
         with active_translation(current_translation):
             tool_title_lc = translation.gettext(tool_title_en)
         # Only use legal code translation domain version if translation
-        # was successful (does not match English)
+        # was successful (does not match English). There are deed translations
+        # in languages for which we do not yet have legal code translations.
         if tool_title_lc != tool_title_en:
             tool_title = tool_title_lc
             cache.add(f"{prefix}title", tool_title)
