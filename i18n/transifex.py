@@ -631,7 +631,7 @@ class TransifexHelper:
         key = "Percent-Translated"
         percent_translated = pofile_obj.percent_translated()
 
-        if int(pofile_obj.metadata.get(key, None)) == percent_translated:
+        if int(pofile_obj.metadata.get(key, 0)) == percent_translated:
             return pofile_obj
 
         self.log.info(
