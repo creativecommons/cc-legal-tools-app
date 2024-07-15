@@ -1535,6 +1535,15 @@ class TransifexHelper:
                     )
                     transifex_translated = t_stats["translated_strings"]
 
+                # Normalize percent translated
+                pofile_obj = self.normalize_pofile_percent_translated(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                )
+
                 # Normalize Creation and Revision dates in local PO File
                 pofile_obj = self.normalize_pofile_dates(
                     resource_slug,
