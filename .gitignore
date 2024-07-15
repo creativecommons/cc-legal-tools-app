@@ -19,6 +19,7 @@ build/
 
 # Unit test / coverage reports
 .coverage*
+htmlcov
 
 # Django development
 */settings/local.py

@@ -1,7 +1,7 @@
 {% load bidi i18n license_tags %}
 <div id="legal-code-body">
 
-<h2 id="legal-code-title">{% trans legal_code.title %}</h2>
+<h2 id="legal-code-title">{{ tool_title }}</h2>
 
 <p>
 {% if legal_code|is_one_of:"by" %}
