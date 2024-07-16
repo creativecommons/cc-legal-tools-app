@@ -317,23 +317,38 @@ class TransifexHelper:
         """
         project_api = self.resource_to_api[resource_slug]
 
+        # Always perform following tests (regardless of push_overwrite)
+        #
+        # Raise error if attempting to push resource
+        if language_code == settings.LANGUAGE_CODE:
+            raise ValueError(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): This function,"
+                " upload_translation_to_transifex_resource(), is for"
+                " translations, not sources."
+            )
+        # Raise error if related resource is missing from Transifex
+        elif resource_slug not in self.resource_stats.keys():
+            raise ValueError(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Transifex does not yet contain"
+                " resource. The upload_resource_to_transifex() function"
+                " must be called before this one "
+                " [upload_translation_to_transifex_resource()]."
+            )
+        # Skip push if there is nothing to push (local translation empty)
+        elif pofile_obj.percent_translated() == 0:
+            self.log.debug(
+                f"{self.nop}{resource_slug} {language_code}"
+                f" ({transifex_code}): Skipping upload of 0% complete"
+                f" translation: {pofile_path}"
+            )
+            return
+
+        # Only perform the follwoing tests if push_oversite is False
         if not push_overwrite:
-            if language_code == settings.LANGUAGE_CODE:
-                raise ValueError(
-                    f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): This function,"
-                    " upload_translation_to_transifex_resource(), is for"
-                    " translations, not sources."
-                )
-            elif resource_slug not in self.resource_stats.keys():
-                raise ValueError(
-                    f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): Transifex does not yet contain"
-                    " resource. The upload_resource_to_transifex() function"
-                    " must be called before this one "
-                    " [upload_translation_to_transifex_resource()]."
-                )
-            elif (
+            # Skip push if Transifex translation isn't empty
+            if (
                 resource_slug in self.translation_stats
                 and transifex_code in self.translation_stats[resource_slug]
                 and self.translation_stats[resource_slug][transifex_code].get(
@@ -343,8 +358,8 @@ class TransifexHelper:
             ):
                 self.log.debug(
                     f"{self.nop}{resource_slug} {language_code}"
-                    f" ({transifex_code}): Transifex already contains"
-                    " translation."
+                    f" ({transifex_code}): Skipping upload of translation"
+                    " already present on Transifex."
                 )
                 return
 
@@ -602,6 +617,34 @@ class TransifexHelper:
         pofile_obj.save(pofile_path)
         return pofile_obj
 
+    def normalize_pofile_percent_translated(
+        self,
+        transifex_code,
+        resource_slug,
+        resource_name,
+        pofile_path,
+        pofile_obj,
+    ):
+        if transifex_code == settings.LANGUAGE_CODE:
+            return pofile_obj
+
+        key = "Percent-Translated"
+        percent_translated = pofile_obj.percent_translated()
+
+        if int(pofile_obj.metadata.get(key, 0)) == percent_translated:
+            return pofile_obj
+
+        self.log.info(
+            f"{self.nop}{resource_name} ({resource_slug}) {transifex_code}:"
+            f" Correcting PO file '{key}':"
+            f"\n{pofile_path}: New value: '{percent_translated}'"
+        )
+        if self.dryrun:
+            return pofile_obj
+        pofile_obj.metadata[key] = percent_translated
+        pofile_obj.save(pofile_path)
+        return pofile_obj
+
     def normalize_pofile_project_id(
         self,
         transifex_code,
@@ -650,6 +693,13 @@ class TransifexHelper:
             pofile_obj,
         )
         pofile_obj = self.normalize_pofile_last_translator(
+            transifex_code,
+            resource_slug,
+            resource_name,
+            pofile_path,
+            pofile_obj,
+        )
+        pofile_obj = self.normalize_pofile_percent_translated(
             transifex_code,
             resource_slug,
             resource_name,
@@ -750,7 +800,7 @@ class TransifexHelper:
             )
 
         # Process revision date
-        if pofile_revision is None:
+        if pofile_revision is None and transifex_revision is not None:
             # Normalize Local PO File revision date if its empty or invalid
             pofile_obj = self.update_pofile_revision_datetime(
                 resource_slug,
@@ -1158,6 +1208,13 @@ class TransifexHelper:
             pofile=transifex_pofile_content.decode(), encoding="utf-8"
         )
 
+        # Ensure correct metadata values for items unsupported by Transifex
+        transifex_obj.metadata["Language-Django"] = language_code
+        transifex_obj.metadata["Language-Transifex"] = transifex_code
+        transifex_obj.metadata["Percent-Translated"] = (
+            transifex_obj.percent_translated()
+        )
+
         # Overrite local PO File
         self.log.info(
             f"{self.nop}{resource_slug} {language_code} ({transifex_code}):"
@@ -1477,6 +1534,15 @@ class TransifexHelper:
                         t_stats["last_translation_update"]
                     )
                     transifex_translated = t_stats["translated_strings"]
+
+                # Normalize percent translated
+                pofile_obj = self.normalize_pofile_percent_translated(
+                    transifex_code,
+                    resource_slug,
+                    resource_name,
+                    pofile_path,
+                    pofile_obj,
+                )
 
                 # Normalize Creation and Revision dates in local PO File
                 pofile_obj = self.normalize_pofile_dates(
