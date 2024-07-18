@@ -73,49 +73,125 @@ site (served as static files).
 [django42]: https://docs.djangoproject.com/en/4.2/
 
 
-## Setting up the Project
+## Setup and Usage
+
+Once this project's required dependencies are enabled on your system, you will
+be able to run the legal-tools application and generate static files.
 
 
-### Data Repository
+### Prerequisites
 
-Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository.
+This project depends on Docker and Git. It also requires this repository and
+the data repository (the codebases) be cloned next to each other.
 
-The [creativecommons/cc-legal-tools-data][repodata] project repository should
-be cloned into a directory adjacent to this one:
+
+#### MacOS
+
+Mac users can install Git using these instructions: [Git - Installing Git -
+Installing on macOS][macos-git].
+
+Docker Desktop can be installed using these instructions: [Install Docker
+Desktop on Mac | Docker Docs][macos-docker].
+
+[macos-git]: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git#_installing_on_macos
+[macos-docker]: https://docs.docker.com/desktop/install/mac-install
+
+
+#### Linux
+
+Git is optimally installed using your distribution's package manager. See
+[Git- Download for Linux and Unix][linux-git] for a wide range of popular
+distros.
+
+Both Docker Desktop and Docker Engine are separately supported on Linux.
+Both include the required Compose command plugin, but Docker Engine is
+typically much easier to install:
+- _Recommended:_ See [Install Docker Engine | Docker Docs][linux-docker-engine]
+  for links to installation instructions for Docker Engine and Compose for
+  various Linux distributions.
+- See [Install Docker Desktop on Linux | Docker
+  Docs][linux-docker-desktop] for links to instructions for the graphical
+  desktop app that includes the commandline interface and Compose
+
+[linux-git]: https://git-scm.com/download/linux
+[linux-docker-engine]: https://docs.docker.com/engine/install
+[linux-docker-desktop]: https://docs.docker.com/desktop/install/linux-install
+
+
+#### Windows
+
+You must use Windows 10 or 11 with Windows Subsystem for Linux (WSL2). For
+installation instructions: see [Install WSL | Microsoft Learn][wsl2].
+
+Git should be installed within WSL2, using the appropriate Linux installation
+method. For WSL2 Ubuntu, the command is `sudo apt-get install git`.
+
+Docker Desktop should be installed on Windows itself and integrated with WSL2
+as explained in [Docker Desktop WSL 2 backend on Windows | Docker
+Docs][docker-wsl2]. Unlike Git, you should not install Docker within your WSL2
+environment.
+
+[wsl2]: https://docs.microsoft.com/en-us/windows/wsl/install
+[docker-wsl2]: https://docs.docker.com/desktop/windows/wsl
+
+
+### Codebases Setup
+
+Both this repository and the [creativecommons/cc-legal-tools-data][repodata]
+project repository should be cloned side by side, resulting in a structure like
+the following:
 ```
-PARENT_DIR
-├── cc-legal-tools-app     (git clone of this repository)
-└── cc-legal-tools-data    (git clone of the cc-legal-tools-data repository)
+creative-commons/
+├── cc-legal-tools-app/     (git clone of this repository)
+└── cc-legal-tools-data/    (git clone of the cc-legal-tools-data repository)
 ```
 
-If it is not cloned into the default location, the Django
-`DATA_REPOSITORY_DIR` Django configuration setting, or the
-`DATA_REPOSITORY_DIR` environment variable can be used to configure its
-location.
+To achieve this, we recommend the following procedure:
+
+1. Create and change to a container directory, such as `creative-commons` or `cc`.
+    ```shell
+    mkdir creative-commons
+    cd creative-commons
+    ```
+2. Clone both repos using SSH or, if that does not work, HTTPS protocol.
+    ```shell
+    git clone git@github.com:creativecommons/cc-legal-tools-app.git
+    git clone git@github.com:creativecommons/cc-legal-tools-data.git
+    ```
+    or
+    ```shell
+    git clone https://github.com/creativecommons/cc-legal-tools-app.git
+    git clone https://github.com/creativecommons/cc-legal-tools-data.git
+    ```
+
+Visit [Cloning a repository - GitHub Docs][gitclone] for more on how to clone a
+GitHub repository.
 
 [gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
-### Docker Compose Setup
+### Docker Prep and Execution
 
-Use the following instructions to start the project with Docker compose.
-Pleaes note that CC staff use macOS for development--please help us with
-documenting other operating systems if you encounter issues.
+Use the following instructions to prepare and run the project with Docker
+Compose.
 
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. [Install Docker Engine](https://docs.docker.com/engine/install/)
-3. Ensure you are at the top level of the directory where you cloned this repository (where `manage.py` is)
-4. Create Django local settings file
+1. Ensure all prerequisites and repositories are in place.
+2. Ensure you are at the top level of the directory where you cloned this
+repository (where `manage.py` is).
+    ```shell
+    cd cc-legal-tools-app
+    ```
+3. Create Django local settings file from the example file.
     ```shell
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
-    - Update variables in new file, as necessary
-5. Build the containers
+    - Update variables in new file, if necessary.
+    - This file is ignored by Git.
+4. Build the containers.
     ```shell
     docker compose build
     ```
-6. **Run the containers**
+5. **Run the containers.**
     ```shell
     docker compose up
     ```
@@ -125,17 +201,19 @@ documenting other operating systems if you encounter issues.
         transparently as long as the development server is running.
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
       server serving [creativecommons/cc-legal-tools-data][repodata]:`docs/`
-7. Initialize data
+6. Initialize data.
+Open a separate terminal tab, and in the same directory, run:
     ```shell
     ./dev/init_data.sh
     ```
-    1. Delete database (which may not yet exist)
-    2. Initialize database
-    3. Perform databsea migrations
-    4. Crate supseruser (will prompt for password)
-    5. Load data
+    1. Deletes database (which may not yet exist)
+    2. Initializes database
+    3. Performs database migrations
+    4. Creates supseruser (will prompt for password)
+    5. Loads data
 
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
+Note: Once this full setup is performed, running Step 5 above will execute the
+application on any subsequent occasion.
 
 
 ### Manual Setup
