@@ -199,11 +199,11 @@ Open a separate terminal tab, and in the same directory, run:
     ```shell
     ./dev/init_data.sh
     ```
-    a. Deletes database (which may not yet exist)
-    b. Initializes database
-    c. Performs database migrations
-    d. Creates supseruser (will prompt for password)
-    e. Loads data
+    1. Deletes database (which may not yet exist)
+    2. Initializes database
+    3. Performs database migrations
+    4. Creates supseruser (will prompt for password)
+    5. Loads data
 
 Note: Once this full setup is performed, running Step 5 above will execute the
 application on any subsequent occasion.
