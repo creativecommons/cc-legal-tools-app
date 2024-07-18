@@ -73,12 +73,13 @@ site (served as static files).
 [django42]: https://docs.djangoproject.com/en/4.2/
 
 
-## Setting up the Project
+## Setup and Usage
+
+Once this project's required dependencies are enabled on your system, you will
+be able to run the legal-tools application and generate static files.
 
 
-### Data Repository
-
-Visit [Cloning a Repository][gitclone] on how to clone a GitHub repository.
+### Prerequisites
 
 The [creativecommons/cc-legal-tools-data][repodata] project repository should
 be cloned into a directory adjacent to this one:
