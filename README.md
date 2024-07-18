@@ -134,9 +134,9 @@ Both this repository and the [creativecommons/cc-legal-tools-data][repodata]
 project repository should be cloned side by side, resulting in a structure like 
 the following:
 ```
-PARENT_DIR
-├── cc-legal-tools-app     (git clone of this repository)
-└── cc-legal-tools-data    (git clone of the cc-legal-tools-data repository)
+creative-commons/
+├── cc-legal-tools-app/     (git clone of this repository)
+└── cc-legal-tools-data/    (git clone of the cc-legal-tools-data repository)
 ```
 
 If it is not cloned into the default location, the Django
