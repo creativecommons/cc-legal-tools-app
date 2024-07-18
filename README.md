@@ -139,10 +139,6 @@ creative-commons/
 └── cc-legal-tools-data/    (git clone of the cc-legal-tools-data repository)
 ```
 
-If it is not cloned into the default location, the Django
-`DATA_REPOSITORY_DIR` Django configuration setting, or the
-`DATA_REPOSITORY_DIR` environment variable can be used to configure its
-location.
 
 [gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
