@@ -191,6 +191,8 @@ JURISDICTION_NAMES = {
     "za": gettext_lazy("South Africa"),
 }
 UNIT_NAMES = {
+    # 4.0 licenses use "NoDerivatives" instead of "NoDerivs". When appropriate,
+    # the following values are updated by legal_tools.views.get_tool_title()
     "by": gettext_lazy("Attribution"),
     "by-nc": gettext_lazy("Attribution-NonCommercial"),
     "by-nc-nd": gettext_lazy("Attribution-NonCommercial-NoDerivs"),

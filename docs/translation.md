@@ -60,20 +60,28 @@ Documentation:
 1. Add language to appropriate resource in Transifex
 2. Ensure language is present in Django
    - If not, update `cc_legal_tools/settings/base.py`
-3. Add objects for new language translation using the `add_objects` management
+3. Add objects for new language translation using the `add_translation`
+   management
    command.
    - Examples:
         ```shell
-        docker compose exec app ./manage.py add_objects -v2 --licenses -l tlh
+        docker compose exec app ./manage.py add_translation -v2 --licenses -l tlh
         ```
         ```shell
-        docker compose exec app ./manage.py add_objects -v2 --zero -l tlh
+        docker compose exec app ./manage.py add_translation -v2 --zero -l tlh
         ```
 4. Synchronize repository Gettext files with Transifex
 5. Compile `.mo` machine object Gettext files:
     ```shell
     docker compose exec app ./manage.py compilemessages
     ```
+
+Documentation:
+- [Quick start guide — polib documentation][polibdocs]
+- Also see How the tool translation is implemented documentation, above
+
+[polibdocs]: https://polib.readthedocs.io/en/latest/quickstart.html
+
 
 ## Synchronize repository Gettext files with Transifex
 
