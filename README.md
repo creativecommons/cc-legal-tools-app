@@ -103,9 +103,9 @@ Both Docker Desktop and Docker Engine are separately supported on Linux.
 Both include the required Compose command plugin, but Docker Engine is
 typically much easier to install.
 
-The [Docker CE resource][linux-docker-engine] links to installation 
+The [Docker CE resource][linux-docker-engine] links to installation
 instructions for Docker Engine and Compose for various Linux distributions.
-[Linux Docker Desktop][linux-docker-desktop] links to instructions for the 
+[Linux Docker Desktop][linux-docker-desktop] links to instructions for the
 graphical desktop app that includes the commandline interface and Compose.
 
 [linux-git]: https://git-scm.com/download/linux
@@ -117,11 +117,11 @@ graphical desktop app that includes the commandline interface and Compose.
 
 You must use Windows 10 or 11 with [Windows Subsystem for Linux (WSL2)][wsl2].
 
-Git should be installed within WSL2, using the appropriate Linux installation 
+Git should be installed within WSL2, using the appropriate Linux installation
 method. For WSL2 Ubuntu, the command is `sudo apt-get install git`.
 
-Docker Desktop should be installed on Windows itself and integrated with WSL2 as 
-explained in [these instructions][docker-wsl2]. Unlike Git, you should not 
+Docker Desktop should be installed on Windows itself and integrated with WSL2 as
+explained in [these instructions][docker-wsl2]. Unlike Git, you should not
 install Docker within your WSL2 environment.
 
 [wsl2]: https://docs.microsoft.com/en-us/windows/wsl/install
@@ -130,8 +130,8 @@ install Docker within your WSL2 environment.
 
 ### Codebases Setup
 
-Both this repository and the [creativecommons/cc-legal-tools-data][repodata] 
-project repository should be cloned side by side, resulting in a structure like 
+Both this repository and the [creativecommons/cc-legal-tools-data][repodata]
+project repository should be cloned side by side, resulting in a structure like
 the following:
 ```
 creative-commons/
@@ -157,7 +157,7 @@ To achieve this, we recommend the following procedure:
     git clone https://github.com/creativecommons/cc-legal-tools-data.git
     ```
 
-Visit [Cloning a Repository][gitclone] for more on how to clone a GitHub 
+Visit [Cloning a Repository][gitclone] for more on how to clone a GitHub
 repository.
 
 [gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
@@ -165,11 +165,11 @@ repository.
 
 ### Docker Prep and Execution
 
-Use the following instructions to prepare and run the project with Docker 
+Use the following instructions to prepare and run the project with Docker
 Compose.
 
 1. Ensure all prerequisites and repositories are in place.
-2. Ensure you are at the top level of the directory where you cloned this 
+2. Ensure you are at the top level of the directory where you cloned this
 repository (where `manage.py` is).
     ```shell
     cd cc-legal-tools-app
@@ -205,7 +205,7 @@ Open a separate terminal tab, and in the same directory, run:
     d. Creates supseruser (will prompt for password)
     e. Loads data
 
-Note: Once this full setup is performed, running Step 5 above will execute the 
+Note: Once this full setup is performed, running Step 5 above will execute the
 application on any subsequent occasion.
 
 
