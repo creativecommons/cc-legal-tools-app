@@ -81,7 +81,8 @@ be able to run the legal-tools application and generate static files.
 
 ### Prerequisites
 
-This project depends on Docker and Git.
+This project depends on Docker and Git. It also requires this repository and
+the data repository (the codebases) be cloned next to each other.
 
 
 #### MacOS
