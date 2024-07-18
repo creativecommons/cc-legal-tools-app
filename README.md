@@ -99,8 +99,9 @@ Desktop on Mac | Docker Docs][macos-docker].
 
 #### Linux
 
-Git is optimally installed using your distribution's package manager.  See [Git
-- Download for Linux and Unix][linux-git] for a wide range of popular distros.
+Git is optimally installed using your distribution's package manager. See
+[Git- Download for Linux and Unix][linux-git] for a wide range of popular
+distros.
 
 Both Docker Desktop and Docker Engine are separately supported on Linux.
 Both include the required Compose command plugin, but Docker Engine is
