@@ -81,8 +81,58 @@ be able to run the legal-tools application and generate static files.
 
 ### Prerequisites
 
-The [creativecommons/cc-legal-tools-data][repodata] project repository should
-be cloned into a directory adjacent to this one:
+This project depends on Docker and Git.
+
+
+#### MacOS
+
+Mac users can install Git using [these instructions][macos-git].
+
+Docker Desktop can be installed using [these instructions][macos-docker].
+
+[macos-git]: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git#_installing_on_macos
+[macos-docker]: https://docs.docker.com/desktop/install/mac-install
+
+
+#### Linux
+
+Git is optimally installed using your distribution's package manager.
+See [these commands][linux-git] for a wide range of popular distros.
+
+Both Docker Desktop and Docker Engine are separately supported on Linux.
+Both include the required Compose command plugin, but Docker Engine is
+typically much easier to install.
+
+The [Docker CE resource][linux-docker-engine] links to installation 
+instructions for Docker Engine and Compose for various Linux distributions.
+[Linux Docker Desktop][linux-docker-desktop] links to instructions for the 
+graphical desktop app that includes the commandline interface and Compose.
+
+[linux-git]: https://git-scm.com/download/linux
+[linux-docker-engine]: https://docs.docker.com/engine/install
+[linux-docker-desktop]: https://docs.docker.com/desktop/install/linux-install
+
+
+#### Windows
+
+You must use Windows 10 or 11 with [Windows Subsystem for Linux (WSL2)][wsl2].
+
+Git should be installed within WSL2, using the appropriate Linux installation 
+method. For WSL2 Ubuntu, the command is `sudo apt-get install git`.
+
+Docker Desktop should be installed on Windows itself and integrated with WSL2 as 
+explained in [these instructions][docker-wsl2]. Unlike Git, you should not 
+install Docker within your WSL2 environment.
+
+[wsl2]: https://docs.microsoft.com/en-us/windows/wsl/install
+[docker-wsl2]: https://docs.docker.com/desktop/windows/wsl
+
+
+### Codebases Setup
+
+Both this repository and the [creativecommons/cc-legal-tools-data][repodata] 
+project repository should be cloned side by side, resulting in a structure like 
+the following:
 ```
 PARENT_DIR
 ├── cc-legal-tools-app     (git clone of this repository)
