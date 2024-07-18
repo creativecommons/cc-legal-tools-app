@@ -139,30 +139,52 @@ creative-commons/
 └── cc-legal-tools-data/    (git clone of the cc-legal-tools-data repository)
 ```
 
+To achieve this, we recommend the following procedure:
+
+1. Create and change to a container directory, such as `creative-commons` or `cc`.
+    ```shell
+    mkdir creative-commons
+    cd creative-commons
+    ```
+2. Clone both repos using SSH or, if that does not work, HTTPS protocol.
+    ```shell
+    git clone git@github.com:creativecommons/cc-legal-tools-app.git
+    git clone git@github.com:creativecommons/cc-legal-tools-data.git
+    ```
+    or
+    ```shell
+    git clone https://github.com/creativecommons/cc-legal-tools-app.git
+    git clone https://github.com/creativecommons/cc-legal-tools-data.git
+    ```
+
+Visit [Cloning a Repository][gitclone] for more on how to clone a GitHub 
+repository.
 
 [gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
-### Docker Compose Setup
+### Docker Prep and Execution
 
-Use the following instructions to start the project with Docker compose.
-Pleaes note that CC staff use macOS for development--please help us with
-documenting other operating systems if you encounter issues.
+Use the following instructions to prepare and run the project with Docker 
+Compose.
 
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. [Install Docker Engine](https://docs.docker.com/engine/install/)
-3. Ensure you are at the top level of the directory where you cloned this repository (where `manage.py` is)
-4. Create Django local settings file
+1. Ensure all prerequisites and repositories are in place.
+2. Ensure you are at the top level of the directory where you cloned this 
+repository (where `manage.py` is).
+    ```shell
+    cd cc-legal-tools-app
+    ```
+3. Create Django local settings file from the example file.
     ```shell
     cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
     ```
-    - Update variables in new file, as necessary
-5. Build the containers
+    - Update variables in new file, if necessary.
+    - This file is ignored by Git.
+4. Build the containers.
     ```shell
     docker compose build
     ```
-6. **Run the containers**
+5. **Run the containers.**
     ```shell
     docker compose up
     ```
@@ -172,17 +194,19 @@ documenting other operating systems if you encounter issues.
         transparently as long as the development server is running.
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
       server serving [creativecommons/cc-legal-tools-data][repodata]:`docs/`
-7. Initialize data
+6. Initialize data.
+Open a separate terminal tab, and in the same directory, run:
     ```shell
     ./dev/init_data.sh
     ```
-    1. Delete database (which may not yet exist)
-    2. Initialize database
-    3. Perform databsea migrations
-    4. Crate supseruser (will prompt for password)
-    5. Load data
+    a. Deletes database (which may not yet exist)
+    b. Initializes database
+    c. Performs database migrations
+    d. Creates supseruser (will prompt for password)
+    e. Loads data
 
-[repodata]:https://github.com/creativecommons/cc-legal-tools-data
+Note: Once this full setup is performed, running Step 5 above will execute the 
+application on any subsequent occasion.
 
 
 ### Manual Setup
