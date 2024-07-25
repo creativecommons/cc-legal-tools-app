@@ -9,27 +9,6 @@ repository.
 [repodata]:https://github.com/creativecommons/cc-legal-tools-data
 
 
-## Code of conduct
-
-[`CODE_OF_CONDUCT.md`][org-coc]:
-> The Creative Commons team is committed to fostering a welcoming community.
-> This project and all other Creative Commons open source projects are governed
-> by our [Code of Conduct][code_of_conduct]. Please report unacceptable
-> behavior to [conduct@creativecommons.org](mailto:conduct@creativecommons.org)
-> per our [reporting guidelines][reporting_guide].
-
-[org-coc]: https://github.com/creativecommons/.github/blob/main/CODE_OF_CONDUCT.md
-[code_of_conduct]: https://opensource.creativecommons.org/community/code-of-conduct/
-[reporting_guide]: https://opensource.creativecommons.org/community/code-of-conduct/enforcement/
-
-
-## Contributing
-
-See [`CONTRIBUTING.md`][org-contrib].
-
-[org-contrib]: https://github.com/creativecommons/.github/blob/main/CONTRIBUTING.md
-
-
 ## About
 
 This application manages 639 legal tools (636 licenses and 3 public domain
@@ -53,24 +32,6 @@ This project is not intended to serve the legal tools directly. Instead, a
 command line tool can be used to save all the rendered HTML and RDF/XML pages
 as files. Then those files are used as part of the CreativeCommons.org
 site (served as static files).
-
-
-## Software Versions
-
-- [Python 3.11][python311] specified in:
-  - [`.github/workflows/django-app-coverage.yml`][django-app-coverage]
-  - [`.github/workflows/static-analysis.yml`][static-analysis]
-  - [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
-  - [`Dockerfile`](Dockerfile)
-  - [`Pipfile`](Pipfile)
-  - [`pyproject.toml`](pyproject.toml)
-- [Django 4.2 (LTS)][django42]
-  - [`Pipfile`](Pipfile)
-
-[django-app-coverage]: .github/workflows/django-app-coverage.yml
-[static-analysis]: .github/workflows/static-analysis.yml
-[python311]: https://docs.python.org/3.11/
-[django42]: https://docs.djangoproject.com/en/4.2/
 
 
 ## Setup and Usage
@@ -216,6 +177,140 @@ Note: Once this full setup is performed, running Step 5 above will execute the
 application on any subsequent occasion.
 
 
+## Project Usage
+
+With the prerequisites installed and built, these tools can be used to generate and manage data from the associated [data repository][datrepo].
+
+### Data
+
+The legal tools metadata is in a database. The metadata tracks which legal
+tools exist, their translations, their ports, and their characteristics like
+what they permit, require, and prohibit.
+
+~~The metadata can be downloaded by visiting the URL path:
+`127.0.0.1:8005`[`/licenses/metadata.yaml`][metadata]~~ (currently disabled)
+
+[metadata]: http://127.0.0.1:8005/licenses/metadata.yaml
+
+There are two main models (Django terminology for tables) in
+[`legal_tools/models.py`](legal_tools/models.py):
+1. `LegalCode`
+2. `Tool`
+
+A Tool can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`) which
+is a proxy for the complete set of permissions, requirements, and prohibitions;
+a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction` for ports. So we
+might refer to the tool by its **identifier** "BY 3.0 AM" which would be the
+3.0 version of the BY license terms as ported to the Armenia jurisdiction. For
+additional information see: [**Legal Tools Namespace** -
+creativecommons/cc-legal-tools-data: CC Legal Tools Data (static HTML, language
+files, etc.)][namespace].
+
+There are three places legal code text could be:
+1. **Gettext files** (`.po` and `.mo`) in the
+   [creativecommons/cc-legal-tools-data][repodata] repository (legal tools with
+   full translation support):
+   - 4.0 Licenses
+   - CC0
+2. **Django template**
+   ([`legalcode_licenses_3.0_unported.html`][unportedtemplate]):
+   - Unported 3.0 Licenses (English-only)
+3. **`html` field** (in the `LegalCode` model):
+   - Everything else
+
+The text that's in gettext files can be translated via Transifex at [Creative
+Commons localization][cctransifex]. For additional information on the Django
+translation domains / Transifex resources, see [How the license translation is
+implemented](#how-the-tool-translation-is-implemented), below.
+
+Documentation:
+- [Models | Django documentation | Django][djangomodels]
+- [Templates | Django documentation | Django][djangotemplates]
+
+[namespace]: https://github.com/creativecommons/cc-legal-tools-data#legal-tools-namespace
+[unportedtemplate]: templates/includes/legalcode_licenses_3.0_unported.html
+[cctransifex]: https://www.transifex.com/creativecommons/public/
+[djangomodels]: https://docs.djangoproject.com/en/4.2/topics/db/models/
+[djangotemplates]: https://docs.djangoproject.com/en/4.2/topics/templates/
+
+
+### Translation
+
+See [`docs/translation.md`](docs/translation.md)
+
+
+### Generate Static Files
+
+Generating static files updates the static files in the `docs/` directory of
+the [creativecommons/cc-legal-tools-data][repodata] repository (the [Data
+Repository](#data-repository), above).
+
+
+#### Static Files Process
+
+This process will write the HTML files in the cc-legal-tools-data clone
+directory under `docs/`. It will not commit the changes (`--nogit`) and will
+not push any commits (`--nopush` is implied by `--nogit`).
+
+1. Ensure the [Data Repository](#data-repository), above, is in place
+2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
+3. Delete the contents of the `docs/` directory and then recreate/copy the
+   static files it should contain:
+    ```shell
+    docker compose exec app ./manage.py publish -v2
+    ```
+
+#### Publishing changes to git repo
+
+When the site is deployed, to enable pushing and pulling the licenses data repo
+with GitHub, create an SSH deploy key for the cc-legal-tools-data repo with
+write permissions, and put the private key file (not password protected)
+somewhere safe (owned by `www-data` if on a server), and readable only by its
+owner (0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be
+the full path to that deploy key file.
+
+
+#### Publishing Dependency Documentation
+
+- [Beautiful Soup Documentation — Beautiful Soup 4 documentation][bs4docs]
+  - [lxml - Processing XML and HTML with Python][lxml]
+- [GitPython Documentation — GitPython documentation][gitpythondocs]
+
+[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+[gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
+[lxml]: https://lxml.de/
+
+
+### Machine/metadata layer: RDF/XML
+
+For details and history, see [`docs/rdf.md`](docs/rdf.md).
+
+
+## Tooling
+
+Inside the Docker container, the Python-based tooling centers around by pre-commit and Django.
+
+
+### Code of conduct
+
+[`CODE_OF_CONDUCT.md`][org-coc]:
+> The Creative Commons team is committed to fostering a welcoming community.
+> This project and all other Creative Commons open source projects are governed
+> by our [Code of Conduct][code_of_conduct]. Please report unacceptable
+> behavior to [conduct@creativecommons.org](mailto:conduct@creativecommons.org)
+> per our [reporting guidelines][reporting_guide].
+
+[org-coc]: https://github.com/creativecommons/.github/blob/main/CODE_OF_CONDUCT.md
+[code_of_conduct]: https://opensource.creativecommons.org/community/code-of-conduct/
+[reporting_guide]: https://opensource.creativecommons.org/community/code-of-conduct/enforcement/
+
+
+### Contributing
+
+See [`CONTRIBUTING.md`][org-contrib].
+
+[org-contrib]: https://github.com/creativecommons/.github/blob/main/CONTRIBUTING.md
+
 ### Manual Setup
 
 > :warning: **This section may be helpful for maintaining the project, but
@@ -269,15 +364,28 @@ application on any subsequent occasion.
 [python-windows]:https://www.pythontutorial.net/getting-started/install-python/
 
 
-#### Manual Commands
+### Software Versions
 
-> :information_source: The rest of the documentation assumes Docker. If you are
-> using a manual setup, use `pipenv run` instead of `docker compose exec app`
-> for the commands below.
+These are the currently designated versions of the various dependencies:
+- [Python 3.11][python311] specified in:
+  - [`.github/workflows/django-app-coverage.yml`][django-app-coverage]
+  - [`.github/workflows/static-analysis.yml`][static-analysis]
+  - [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
+  - [`Dockerfile`](Dockerfile)
+  - [`Pipfile`](Pipfile)
+  - [`pyproject.toml`](pyproject.toml)
+- [Django 4.2 (LTS)][django42]
+  - [`Pipfile`](Pipfile)
+
+[django-app-coverage]: .github/workflows/django-app-coverage.yml
+[static-analysis]: .github/workflows/static-analysis.yml
+[python311]: https://docs.python.org/3.11/
+[django42]: https://docs.djangoproject.com/en/4.2/
 
 
-### Tooling
+### Developer Resources
 
+These resources are available for developing this tooling:
 - **[Python Guidelines — Creative Commons Open Source][ccospyguide]**
 - [Black][black]: the uncompromising Python code formatter
 - [Coverage.py][coveragepy]: Code coverage measurement for Python
@@ -300,7 +408,13 @@ application on any subsequent occasion.
 [precommit]: https://pre-commit.com/
 
 
-#### Helper Scripts
+## Manual Usage
+
+> :information_source: The rest of the documentation assumes Docker. If you are
+> using a manual setup, use `pipenv run` instead of `docker compose exec app`
+> for the commands below.
+
+### Helper Scripts
 
 Best run before every commit:
 - `./dev/coverage.sh` - Run coverage tests and report
@@ -325,7 +439,7 @@ Esoteric and dangerous:
 [vocab-theme]: https://github.com/creativecommons/vocabulary-theme
 
 
-#### Coverage Tests and Report
+### Coverage Tests and Report
 
 The coverage tests and report are run as part of pre-commit and as a GitHub
 Action. To run it manually:
@@ -359,110 +473,7 @@ The following CC projects are used to achieve a consistent look and feel:
 [vocabulary-theme]: https://github.com/creativecommons/vocabulary-theme
 
 
-## Data
 
-The legal tools metadata is in a database. The metadata tracks which legal
-tools exist, their translations, their ports, and their characteristics like
-what they permit, require, and prohibit.
-
-~~The metadata can be downloaded by visiting the URL path:
-`127.0.0.1:8005`[`/licenses/metadata.yaml`][metadata]~~ (currently disabled)
-
-[metadata]: http://127.0.0.1:8005/licenses/metadata.yaml
-
-There are two main models (Django terminology for tables) in
-[`legal_tools/models.py`](legal_tools/models.py):
-1. `LegalCode`
-2. `Tool`
-
-A Tool can be identified by a `unit` (ex. `by`, `by-nc-sa`, `devnations`) which
-is a proxy for the complete set of permissions, requirements, and prohibitions;
-a `version` (ex. `4.0`, `3.0)`, and an optional `jurisdiction` for ports. So we
-might refer to the tool by its **identifier** "BY 3.0 AM" which would be the
-3.0 version of the BY license terms as ported to the Armenia jurisdiction. For
-additional information see: [**Legal Tools Namespace** -
-creativecommons/cc-legal-tools-data: CC Legal Tools Data (static HTML, language
-files, etc.)][namespace].
-
-There are three places legal code text could be:
-1. **Gettext files** (`.po` and `.mo`) in the
-   [creativecommons/cc-legal-tools-data][repodata] repository (legal tools with
-   full translation support):
-   - 4.0 Licenses
-   - CC0
-2. **Django template**
-   ([`legalcode_licenses_3.0_unported.html`][unportedtemplate]):
-   - Unported 3.0 Licenses (English-only)
-3. **`html` field** (in the `LegalCode` model):
-   - Everything else
-
-The text that's in gettext files can be translated via Transifex at [Creative
-Commons localization][cctransifex]. For additional information on the Django
-translation domains / Transifex resources, see [How the license translation is
-implemented](#how-the-tool-translation-is-implemented), below.
-
-Documentation:
-- [Models | Django documentation | Django][djangomodels]
-- [Templates | Django documentation | Django][djangotemplates]
-
-[namespace]: https://github.com/creativecommons/cc-legal-tools-data#legal-tools-namespace
-[unportedtemplate]: templates/includes/legalcode_licenses_3.0_unported.html
-[cctransifex]: https://www.transifex.com/creativecommons/public/
-[djangomodels]: https://docs.djangoproject.com/en/4.2/topics/db/models/
-[djangotemplates]: https://docs.djangoproject.com/en/4.2/topics/templates/
-
-
-## Translation
-
-See [`docs/translation.md`](docs/translation.md)
-
-
-## Generate Static Files
-
-Generating static files updates the static files in the `docs/` directory of
-the [creativecommons/cc-legal-tools-data][repodata] repository (the [Data
-Repository](#data-repository), above).
-
-
-### Static Files Process
-
-This process will write the HTML files in the cc-legal-tools-data clone
-directory under `docs/`. It will not commit the changes (`--nogit`) and will
-not push any commits (`--nopush` is implied by `--nogit`).
-
-1. Ensure the [Data Repository](#data-repository), above, is in place
-2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Delete the contents of the `docs/` directory and then recreate/copy the
-   static files it should contain:
-    ```shell
-    docker compose exec app ./manage.py publish -v2
-    ```
-
-
-### Publishing changes to git repo
-
-When the site is deployed, to enable pushing and pulling the licenses data repo
-with GitHub, create an SSH deploy key for the cc-legal-tools-data repo with
-write permissions, and put the private key file (not password protected)
-somewhere safe (owned by `www-data` if on a server), and readable only by its
-owner (0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be
-the full path to that deploy key file.
-
-
-### Publishing Dependency Documentation
-
-- [Beautiful Soup Documentation — Beautiful Soup 4 documentation][bs4docs]
-  - [lxml - Processing XML and HTML with Python][lxml]
-- [GitPython Documentation — GitPython documentation][gitpythondocs]
-
-[bs4docs]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-[gitpythondocs]: https://gitpython.readthedocs.io/en/stable/index.html
-[lxml]: https://lxml.de/
-
-
-## Machine/metadata layer: RDF/XML
-
-For details and history, see [`docs/rdf.md`](docs/rdf.md).
 
 
 ## Licenses
