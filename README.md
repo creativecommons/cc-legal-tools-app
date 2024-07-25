@@ -131,7 +131,7 @@ GitHub repository.
 [gitclone]:https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository
 
 
-### Docker Prep and Execution
+### Docker Prep and Initial Execution
 
 Use the following instructions to prepare and run the project with Docker
 Compose.
@@ -180,6 +180,7 @@ application on any subsequent occasion.
 ## Project Usage
 
 With the prerequisites installed and built, these tools can be used to generate and manage data from the associated [data repository][datrepo].
+
 
 ### Data
 
@@ -260,7 +261,8 @@ not push any commits (`--nopush` is implied by `--nogit`).
     docker compose exec app ./manage.py publish -v2
     ```
 
-#### Publishing changes to git repo
+
+#### Publishing Changes to Git Repo
 
 When the site is deployed, to enable pushing and pulling the licenses data repo
 with GitHub, create an SSH deploy key for the cc-legal-tools-data repo with
@@ -281,17 +283,17 @@ the full path to that deploy key file.
 [lxml]: https://lxml.de/
 
 
-### Machine/metadata layer: RDF/XML
+### Machine/metadata Layer: RDF/XML
 
 For details and history, see [`docs/rdf.md`](docs/rdf.md).
 
 
-## Tooling
+## Development
 
 Inside the Docker container, the Python-based tooling centers around by pre-commit and Django.
 
 
-### Code of conduct
+### Code of Conduct
 
 [`CODE_OF_CONDUCT.md`][org-coc]:
 > The Creative Commons team is committed to fostering a welcoming community.
@@ -310,6 +312,7 @@ Inside the Docker container, the Python-based tooling centers around by pre-comm
 See [`CONTRIBUTING.md`][org-contrib].
 
 [org-contrib]: https://github.com/creativecommons/.github/blob/main/CONTRIBUTING.md
+
 
 ### Manual Setup
 
@@ -414,6 +417,7 @@ These resources are available for developing this tooling:
 > using a manual setup, use `pipenv run` instead of `docker compose exec app`
 > for the commands below.
 
+
 ### Helper Scripts
 
 Best run before every commit:
@@ -458,7 +462,7 @@ Action. To run it manually:
 ### Commit Errors
 
 
-#### Error building trees
+#### Error Building Trees
 
 If you encounter an `error: Error building trees` error from pre-commit when
 you commit, try adding your files (`git add <FILES>`) before committing them.
@@ -471,9 +475,6 @@ The following CC projects are used to achieve a consistent look and feel:
   implementation of the Vocabulary design system
 
 [vocabulary-theme]: https://github.com/creativecommons/vocabulary-theme
-
-
-
 
 
 ## Licenses
@@ -500,7 +501,7 @@ Dedication][cc-zero].
 [cc-zero]: https://creativecommons.org/publicdomain/zero/1.0/
 
 
-### vocabulary-theme
+### Vocabulary Theme
 
 [![CC0 1.0 Universal (CC0 1.0) Public Domain Dedication
 button][cc-zero-png]][cc-zero]
