@@ -180,7 +180,7 @@ application on any subsequent occasion.
 ## Project Usage
 
 With the prerequisites installed and built, these tools can be used to generate
-and manage data from the associated [data repository][datarepo].
+and manage data from the associated [data repository][repodata].
 
 
 ### Data
