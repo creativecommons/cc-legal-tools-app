@@ -413,8 +413,6 @@ These resources are available for developing this tooling:
 [precommit]: https://pre-commit.com/
 
 
-## Manual Usage
-
 > :information_source: The rest of the documentation assumes Docker. If you are
 > using a manual setup, use `pipenv run` instead of `docker compose exec app`
 > for the commands below.
