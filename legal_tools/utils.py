@@ -461,7 +461,7 @@ def update_source():
 
 def update_title(options):
     """
-    Update the title property of all legal tools by normalizing legalcy titles
+    Update the title property of all legal tools by normalizing legacy titles
     and normalizing translated titles for current legal tools (Licenses 4.0 and
     CC0 1.0).
     """
