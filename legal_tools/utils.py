@@ -5,6 +5,7 @@ import posixpath
 
 # Third-party
 from bs4 import NavigableString
+from colorlog.escape_codes import escape_codes
 from django.conf import settings
 from django.core.cache import cache
 from django.urls import get_resolver
@@ -288,6 +289,12 @@ def clean_string(s):
 
 
 def get_tool_title(unit, version, category, jurisdiction, language_code):
+    """
+    Determine tool title:
+    1. If English, use English
+    2. Attempt to pull translated title from DB
+    3. Translate title using Deeds & UX translation domain
+    """
     prefix = f"{unit}-{version}-{jurisdiction}-{language_code}-"
     tool_title = cache.get(f"{prefix}title", "")
     if tool_title:
@@ -296,31 +303,25 @@ def get_tool_title(unit, version, category, jurisdiction, language_code):
     # English is easy given it is the default
     tool_title_en = get_tool_title_en(unit, version, category, jurisdiction)
     if language_code == "en":
-        tool_title = tool_title_en
+        tool_title = tool_title_en  # already applied clean_string()
         cache.add(f"{prefix}title", tool_title)
         return tool_title
 
-    # Translate title using legal code translation domain for legal code that
-    # is in Transifex (ex. CC0, Licenses 4.0)
-    if (
-        category == "licenses"
-        and version not in ("1.0", "2.0", "2.1", "2.5", "3.0")
-    ) or unit == "zero":
-        slug = f"{unit}_{version}".replace(".", "")
-        language_default = get_default_language_for_jurisdiction_naive(
-            jurisdiction
+    # Use the legal code title, if it exists
+    try:
+        legal_tool = legal_tools.models.LegalCode.objects.get(
+            tool__category=category,
+            tool__version=version,
+            tool__unit=unit,
+            tool__jurisdiction_code=jurisdiction,
+            language_code=language_code,
         )
-        current_translation = get_translation_object(
-            slug, language_code, language_default
-        )
-        tool_title_lc = ""
-        with active_translation(current_translation):
-            tool_title_lc = translation.gettext(tool_title_en)
-        # Only use legal code translation domain version if translation
-        # was successful (does not match English). There are deed translations
-        # in languages for which we do not yet have legal code translations.
-        if tool_title_lc != tool_title_en:
-            tool_title = tool_title_lc
+    except legal_tools.models.LegalCode.DoesNotExist:
+        legal_tool = False
+    if legal_tool:
+        tool_title_db = clean_string(legal_tool.title)
+        if tool_title_db != tool_title_en:
+            tool_title = tool_title_db
             cache.add(f"{prefix}title", tool_title)
             return tool_title
 
@@ -330,7 +331,7 @@ def get_tool_title(unit, version, category, jurisdiction, language_code):
         jurisdiction_name = get_jurisdiction_name(
             category, unit, version, jurisdiction
         )
-        tool_title = f"{tool_name} {version} {jurisdiction_name}"
+        tool_title = clean_string(f"{tool_name} {version} {jurisdiction_name}")
 
     cache.add(f"{prefix}title", tool_title)
     return tool_title
@@ -351,7 +352,11 @@ def get_tool_title_en(unit, version, category, jurisdiction):
     # Licenses before 4.0 use "NoDerivs" instead of "NoDerivatives"
     if version not in ("1.0", "2.0", "2.1", "2.5", "3.0"):
         tool_name = tool_name.replace("NoDerivs", "NoDerivatives")
-    tool_title_en = f"{tool_name} {version} {jurisdiction_name}".strip()
+    tool_title_en = f"{tool_name} {version} {jurisdiction_name}"
+    tool_title_en = tool_title_en.replace(
+        " Intergovernmental Organization", " IGO"
+    )
+    tool_title_en = clean_string(tool_title_en)
 
     cache.add(f"{prefix}title", tool_title_en)
     return tool_title_en
@@ -452,3 +457,108 @@ def update_source():
             LOG.info(f"Remove {tool.resource_name} source: '{tool.source}'")
             tool.source = None
             tool.save()
+
+
+def update_title(options):
+    """
+    Update the title property of all legal tools by normalizing legalcy titles
+    and normalizing translated titles for current legal tools (Licenses 4.0 and
+    CC0 1.0).
+    """
+    bold = escape_codes["bold"]
+    green = escape_codes["green"]
+    red = escape_codes["red"]
+    reset = escape_codes["reset"]
+    pad = " " * 14
+
+    results = {"records_updated": 0, "records_requiring_update": 0}
+    if options["dryrun"]:
+        message = "requires update (dryrun)"
+    else:
+        message = "changed"
+
+    LOG.info("Updating legal code object titles in database")
+    legal_code_objects = legal_tools.models.LegalCode.objects.all()
+    for legal_code in legal_code_objects:
+        tool = legal_code.tool
+        category = tool.category
+        version = tool.version
+        unit = tool.unit
+        jurisdiction = tool.jurisdiction_code
+        language_code = legal_code.language_code
+        language_name = translation.get_language_info(language_code)["name"]
+        full_identifier = f"{bold}{tool.identifier()} {language_name}{reset}"
+        old_title = legal_code.title
+        new_title = None
+
+        # English is easy given it is the default
+        tool_title_en = get_tool_title_en(
+            unit, version, category, jurisdiction
+        )
+        if language_code == "en":
+            new_title = tool_title_en  # already applied clean_string()
+        else:
+            if (
+                category == "licenses"
+                and version in ("1.0", "2.0", "2.1", "2.5", "3.0")
+            ) and unit != "zero":
+                # Query database for title extracted from legacy HTML and clean
+                # it
+                new_title_db = clean_string(old_title)
+                if new_title_db != tool_title_en:
+                    new_title = new_title_db
+            else:
+                # Translate title using legal code translation domain for legal
+                # code that is in Transifex (ex. CC0, Licenses 4.0)
+                slug = f"{unit}_{version}".replace(".", "")
+                language_default = get_default_language_for_jurisdiction_naive(
+                    jurisdiction
+                )
+                current_translation = get_translation_object(
+                    slug, language_code, language_default
+                )
+                tool_title_lc = ""
+                with active_translation(current_translation):
+                    tool_title_lc = clean_string(
+                        translation.gettext(tool_title_en)
+                    )
+                # Only use legal code translation domain version if translation
+                # was successful (does not match English). There are deed
+                # translations in languages for which we do not yet have legal
+                # code translations.
+                if tool_title_lc != tool_title_en:
+                    new_title = tool_title_lc
+            if not new_title:
+                # Translate title using Deeds & UX translation domain
+                with translation.override(language_code):
+                    tool_name = UNIT_NAMES.get(unit, "UNIMPLEMENTED")
+                    jurisdiction_name = get_jurisdiction_name(
+                        category, unit, version, jurisdiction
+                    )
+                    new_title = clean_string(
+                        f"{tool_name} {version} {jurisdiction_name}"
+                    )
+
+        if old_title == new_title:
+            LOG.debug(f'{full_identifier} title unchanged: "{old_title}"')
+        else:
+            if options["dryrun"]:
+                results["records_requiring_update"] += 1
+            else:
+                legal_code.title = new_title
+                legal_code.save()
+                results["records_updated"] += 1
+            LOG.info(
+                f"{full_identifier} title {message}:"
+                f'\n{pad}{red}- "{reset}{old_title}{red}"{reset}'
+                f'\n{pad}{green}+ "{reset}{new_title}{green}"{reset}'
+            )
+
+    if options["dryrun"]:
+        count = results["records_requiring_update"]
+        LOG.info(f"legal code object titles requiring an update: {count}")
+    else:
+        count = results["records_updated"]
+        LOG.info(f"legal code object titles updated: {count}")
+
+    return results
