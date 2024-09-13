@@ -6,15 +6,20 @@ import posixpath
 # Third-party
 from bs4 import NavigableString
 from django.conf import settings
+from django.core.cache import cache
 from django.urls import get_resolver
+from django.utils import translation
 
 # First-party/Local
 import legal_tools.models
+from i18n import UNIT_NAMES
 from i18n.utils import (
+    active_translation,
     get_default_language_for_jurisdiction_naive,
+    get_jurisdiction_name,
+    get_translation_object,
     map_legacy_to_django_language_code,
 )
-from legal_tools.views import render_redirect
 
 LOG = logging.getLogger(__name__)
 
@@ -83,18 +88,12 @@ def relative_symlink(src1, src2, dst):
         os.close(dir_fd)
 
 
-def save_redirect(output_dir, redirect_data):
-    relpath = redirect_data["redirect_file"]
-    content = render_redirect(
-        title=redirect_data["title"],
-        destination=redirect_data["destination"],
-        language_code=redirect_data["language_code"],
-    )
-    path, filename = os.path.split(relpath)
+def save_redirect(output_dir, redirect_file, redirect_content):
+    path, filename = os.path.split(redirect_file)
     padding = " " * (len(os.path.dirname(path)) + 8)
     LOG.debug(f"{padding}*{filename}")
-    output_filename = os.path.join(output_dir, relpath)
-    save_bytes_to_file(content, output_filename)
+    output_filename = os.path.join(output_dir, redirect_file)
+    save_bytes_to_file(redirect_content, output_filename)
 
 
 def parse_legal_code_filename(filename):
@@ -286,6 +285,76 @@ def clean_string(s):
         # I guess.
         s = s.replace("  ", " ")
     return s
+
+
+def get_tool_title(unit, version, category, jurisdiction, language_code):
+    prefix = f"{unit}-{version}-{jurisdiction}-{language_code}-"
+    tool_title = cache.get(f"{prefix}title", "")
+    if tool_title:
+        return tool_title
+
+    # English is easy given it is the default
+    tool_title_en = get_tool_title_en(unit, version, category, jurisdiction)
+    if language_code == "en":
+        tool_title = tool_title_en
+        cache.add(f"{prefix}title", tool_title)
+        return tool_title
+
+    # Translate title using legal code translation domain for legal code that
+    # is in Transifex (ex. CC0, Licenses 4.0)
+    if (
+        category == "licenses"
+        and version not in ("1.0", "2.0", "2.1", "2.5", "3.0")
+    ) or unit == "zero":
+        slug = f"{unit}_{version}".replace(".", "")
+        language_default = get_default_language_for_jurisdiction_naive(
+            jurisdiction
+        )
+        current_translation = get_translation_object(
+            slug, language_code, language_default
+        )
+        tool_title_lc = ""
+        with active_translation(current_translation):
+            tool_title_lc = translation.gettext(tool_title_en)
+        # Only use legal code translation domain version if translation
+        # was successful (does not match English). There are deed translations
+        # in languages for which we do not yet have legal code translations.
+        if tool_title_lc != tool_title_en:
+            tool_title = tool_title_lc
+            cache.add(f"{prefix}title", tool_title)
+            return tool_title
+
+    # Translate title using Deeds & UX translation domain
+    with translation.override(language_code):
+        tool_name = UNIT_NAMES.get(unit, "UNIMPLEMENTED")
+        jurisdiction_name = get_jurisdiction_name(
+            category, unit, version, jurisdiction
+        )
+        tool_title = f"{tool_name} {version} {jurisdiction_name}"
+
+    cache.add(f"{prefix}title", tool_title)
+    return tool_title
+
+
+def get_tool_title_en(unit, version, category, jurisdiction):
+    prefix = f"{unit}-{version}-{jurisdiction}-en-"
+    tool_title_en = cache.get(f"{prefix}title", "")
+    if tool_title_en:
+        return tool_title_en
+
+    # Retrieve title parts untranslated (English)
+    with translation.override(None):
+        tool_name = str(UNIT_NAMES.get(unit, "UNIMPLEMENTED"))
+        jurisdiction_name = str(
+            get_jurisdiction_name(category, unit, version, jurisdiction)
+        )
+    # Licenses before 4.0 use "NoDerivs" instead of "NoDerivatives"
+    if version not in ("1.0", "2.0", "2.1", "2.5", "3.0"):
+        tool_name = tool_name.replace("NoDerivs", "NoDerivatives")
+    tool_title_en = f"{tool_name} {version} {jurisdiction_name}".strip()
+
+    cache.add(f"{prefix}title", tool_title_en)
+    return tool_title_en
 
 
 def update_is_replaced_by():

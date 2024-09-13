@@ -149,27 +149,12 @@ class SaveURLAsStaticFileTest(TestCase):
 
     def test_save_redirect(self):
         output_dir = "/OUTPUT_DIR"
-        redirect_data = {
-            "destination": "DESTINATION",
-            "language_code": "LANGUAGE_CODE",
-            "redirect_file": ("FILE_PATH"),
-            "title": "TITLE",
-        }
+        redirect_file = "FILE_PATH"
+        redirect_content = "STRING"
 
-        with mock.patch(
-            "legal_tools.utils.render_redirect",
-            return_value="STRING",
-        ) as mock_render:
-            with mock.patch(
-                "legal_tools.utils.save_bytes_to_file"
-            ) as mock_save:
-                utils.save_redirect(output_dir, redirect_data)
+        with mock.patch("legal_tools.utils.save_bytes_to_file") as mock_save:
+            utils.save_redirect(output_dir, redirect_file, redirect_content)
 
-        mock_render.assert_called_with(
-            title="TITLE",
-            destination="DESTINATION",
-            language_code="LANGUAGE_CODE",
-        )
         mock_save.assert_called_with("STRING", "/OUTPUT_DIR/FILE_PATH")
 
 

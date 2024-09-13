@@ -29,6 +29,7 @@ from legal_tools.utils import (
     save_redirect,
     save_url_as_static_file,
 )
+from legal_tools.views import render_redirect
 
 ALL_TRANSLATION_BRANCHES = "###all###"
 LOG = logging.getLogger(__name__)
@@ -114,7 +115,14 @@ def save_legal_code(output_dir, legal_code, opt_apache_only):
         for symlink in symlinks:
             wrap_relative_symlink(output_dir, relpath, symlink)
         for redirect_data in redirects_data:
-            save_redirect(output_dir, redirect_data)
+            redirect_content = render_redirect(
+                title=redirect_data["title"],
+                destination=redirect_data["destination"],
+                language_code=redirect_data["language_code"],
+            )
+            save_redirect(
+                output_dir, redirect_data["redirect_file"], redirect_content
+            )
     return legal_code.get_redirect_pairs()
 
 

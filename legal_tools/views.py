@@ -17,13 +17,11 @@ from django.template.loader import render_to_string
 from django.utils import translation
 
 # First-party/Local
-from i18n import UNIT_NAMES
 from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction_deed,
     get_default_language_for_jurisdiction_naive,
     get_jurisdiction_name,
-    get_translation_object,
     load_deeds_ux_translations,
     map_django_to_transifex_language_code,
 )
@@ -38,6 +36,7 @@ from legal_tools.rdf_utils import (
     generate_legal_code_rdf,
     order_rdf_xml,
 )
+from legal_tools.utils import get_tool_title
 
 NUM_COMMITS = 3
 PLAIN_TEXT_TOOL_IDENTIFIERS = [
@@ -83,76 +82,6 @@ def get_category_and_category_title(category=None, tool=None):
     else:
         category_title = translation.gettext("Licenses")
     return category, category_title
-
-
-def get_tool_title_en(unit, version, category, jurisdiction):
-    prefix = f"{unit}-{version}-{jurisdiction}-en-"
-    tool_title_en = cache.get(f"{prefix}title", "")
-    if tool_title_en:
-        return tool_title_en
-
-    # Retrieve title parts untranslated (English)
-    with translation.override(None):
-        tool_name = str(UNIT_NAMES.get(unit, "UNIMPLEMENTED"))
-        jurisdiction_name = str(
-            get_jurisdiction_name(category, unit, version, jurisdiction)
-        )
-    # Licenses before 4.0 use "NoDerivs" instead of "NoDerivatives"
-    if version not in ("1.0", "2.0", "2.1", "2.5", "3.0"):
-        tool_name = tool_name.replace("NoDerivs", "NoDerivatives")
-    tool_title_en = f"{tool_name} {version} {jurisdiction_name}".strip()
-
-    cache.add(f"{prefix}title", tool_title_en)
-    return tool_title_en
-
-
-def get_tool_title(unit, version, category, jurisdiction, language_code):
-    prefix = f"{unit}-{version}-{jurisdiction}-{language_code}-"
-    tool_title = cache.get(f"{prefix}title", "")
-    if tool_title:
-        return tool_title
-
-    # English is easy given it is the default
-    tool_title_en = get_tool_title_en(unit, version, category, jurisdiction)
-    if language_code == "en":
-        tool_title = tool_title_en
-        cache.add(f"{prefix}title", tool_title)
-        return tool_title
-
-    # Translate title using legal code translation domain for legal code that
-    # is in Transifex (ex. CC0, Licenses 4.0)
-    if (
-        category == "licenses"
-        and version not in ("1.0", "2.0", "2.1", "2.5", "3.0")
-    ) or unit == "zero":
-        slug = f"{unit}_{version}".replace(".", "")
-        language_default = get_default_language_for_jurisdiction_naive(
-            jurisdiction
-        )
-        current_translation = get_translation_object(
-            slug, language_code, language_default
-        )
-        tool_title_lc = ""
-        with active_translation(current_translation):
-            tool_title_lc = translation.gettext(tool_title_en)
-        # Only use legal code translation domain version if translation
-        # was successful (does not match English). There are deed translations
-        # in languages for which we do not yet have legal code translations.
-        if tool_title_lc != tool_title_en:
-            tool_title = tool_title_lc
-            cache.add(f"{prefix}title", tool_title)
-            return tool_title
-
-    # Translate title using Deeds & UX translation domain
-    with translation.override(language_code):
-        tool_name = UNIT_NAMES.get(unit, "UNIMPLEMENTED")
-        jurisdiction_name = get_jurisdiction_name(
-            category, unit, version, jurisdiction
-        )
-        tool_title = f"{tool_name} {version} {jurisdiction_name}"
-
-    cache.add(f"{prefix}title", tool_title)
-    return tool_title
 
 
 def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
