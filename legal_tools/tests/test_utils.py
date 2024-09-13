@@ -552,3 +552,79 @@ class UpdatePropertiesTest(TestCase):
         # Subsequent run to test with wrong data and verify behavior of
         # repeated runs
         validate_udpate_source()
+
+
+class TitleTest(TestCase):
+    def setup(self):
+        for version in ("1.0", "4.0"):
+            ToolFactory(category="licenses", unit="by", version=version)
+        for tool in Tool.objects.all():
+            LegalCodeFactory(tool=tool, language_code="fr")
+            title_en = utils.get_tool_title_en(
+                tool.unit,
+                tool.version,
+                tool.category,
+                tool.jurisdiction_code,
+            )
+            LegalCodeFactory(tool=tool, title=title_en, language_code="en")
+            LegalCodeFactory(tool=tool, title=title_en, language_code="nl")
+            if tool.version == "1.0":
+                LegalCodeFactory(
+                    tool=tool,
+                    title="Namensnennung 1.0 Generic",
+                    language_code="de",
+                )
+            elif tool.version == "4.0":
+                LegalCodeFactory(
+                    tool=tool,
+                    title="Namensnennung 4.0 International",
+                    language_code="de",
+                )
+
+    def test_get_tool_title(self):
+        self.setup()
+        unit = "by"
+        category = "licenses"
+        jurisdiction = ""
+        titles = {}
+
+        with self.assertNumQueries(6):
+            for version in ("1.0", "4.0"):
+                for language_code in ("de", "en", "fr", "nl"):
+                    title = utils.get_tool_title(
+                        unit=unit,
+                        version=version,
+                        category=category,
+                        jurisdiction=jurisdiction,
+                        language_code=language_code,
+                    )
+                    titles[f"{version}{language_code}"] = title
+
+        self.assertEqual("Namensnennung 1.0 Generic", titles["1.0de"])
+        self.assertEqual("Attribution 1.0 Generic", titles["1.0en"])
+        self.assertEqual("Attribution 1.0 Générique", titles["1.0fr"])
+        self.assertEqual("Naamsvermelding 1.0 Unported", titles["1.0nl"])
+        self.assertEqual("Namensnennung 4.0 International", titles["4.0de"])
+        self.assertEqual("Attribution 4.0 International", titles["4.0en"])
+        self.assertEqual("Attribution 4.0 International", titles["4.0fr"])
+        self.assertEqual("Naamsvermelding 4.0 Internationaal", titles["4.0nl"])
+
+    def test_update_titles_dryrun(self):
+        self.setup()
+
+        with self.assertNumQueries(9):
+            results = utils.update_title({"dryrun": True})
+
+        self.assertEqual(
+            {"records_updated": 0, "records_requiring_update": 4}, results
+        )
+
+    def test_update_titles_with_updates(self):
+        self.setup()
+
+        with self.assertNumQueries(13):
+            results = utils.update_title({"dryrun": False})
+
+        self.assertEqual(
+            {"records_updated": 4, "records_requiring_update": 0}, results
+        )

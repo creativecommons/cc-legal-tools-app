@@ -309,7 +309,7 @@ def get_tool_title(unit, version, category, jurisdiction, language_code):
 
     # Use the legal code title, if it exists
     try:
-        legal_tool = legal_tools.models.LegalCode.objects.get(
+        legal_code = legal_tools.models.LegalCode.objects.get(
             tool__category=category,
             tool__version=version,
             tool__unit=unit,
@@ -317,10 +317,10 @@ def get_tool_title(unit, version, category, jurisdiction, language_code):
             language_code=language_code,
         )
     except legal_tools.models.LegalCode.DoesNotExist:
-        legal_tool = False
-    if legal_tool:
-        tool_title_db = clean_string(legal_tool.title)
-        if tool_title_db != tool_title_en:
+        legal_code = False
+    if legal_code:
+        tool_title_db = clean_string(legal_code.title)
+        if tool_title_db and tool_title_db != tool_title_en:
             tool_title = tool_title_db
             cache.add(f"{prefix}title", tool_title)
             return tool_title
@@ -505,7 +505,7 @@ def update_title(options):
                 # Query database for title extracted from legacy HTML and clean
                 # it
                 new_title_db = clean_string(old_title)
-                if new_title_db != tool_title_en:
+                if new_title_db and new_title_db != tool_title_en:
                     new_title = new_title_db
             else:
                 # Translate title using legal code translation domain for legal
