@@ -3,6 +3,7 @@ import logging
 import os
 import socket
 from argparse import SUPPRESS, ArgumentParser
+from copy import copy
 from multiprocessing import Pool
 from pathlib import Path
 from pprint import pprint
@@ -28,7 +29,9 @@ from legal_tools.utils import (
     save_bytes_to_file,
     save_redirect,
     save_url_as_static_file,
+    update_title,
 )
+from legal_tools.views import render_redirect
 
 ALL_TRANSLATION_BRANCHES = "###all###"
 LOG = logging.getLogger(__name__)
@@ -114,7 +117,14 @@ def save_legal_code(output_dir, legal_code, opt_apache_only):
         for symlink in symlinks:
             wrap_relative_symlink(output_dir, relpath, symlink)
         for redirect_data in redirects_data:
-            save_redirect(output_dir, redirect_data)
+            redirect_content = render_redirect(
+                title=redirect_data["title"],
+                destination=redirect_data["destination"],
+                language_code=redirect_data["language_code"],
+            )
+            save_redirect(
+                output_dir, redirect_data["redirect_file"], redirect_content
+            )
     return legal_code.get_redirect_pairs()
 
 
@@ -230,6 +240,18 @@ class Command(BaseCommand):
             help="Only distill the Apache2 language redirects configuration",
             dest="apache_only",
         )
+
+    def check_titles(self):
+        LOG.info("Checking legal code titles")
+        log_level = copy(LOG.level)
+        LOG.setLevel(LOG_LEVELS[0])
+        results = update_title(options={"dryrun": True})
+        LOG.setLevel(log_level)
+        if results["records_requiring_update"] > 0:
+            raise CommandError(
+                "Legal code titles require an update. See the `update_title`"
+                " command."
+            )
 
     def purge_output_dir(self):
         if self.options["apache_only"] or self.options["rdf_only"]:
@@ -639,6 +661,7 @@ class Command(BaseCommand):
         )
 
     def distill_and_copy(self):
+        self.check_titles()
         self.purge_output_dir()
         self.call_collectstatic()
         self.write_robots_txt()
