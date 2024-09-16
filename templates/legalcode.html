@@ -92,44 +92,4 @@ the date of change
 {% include 'includes/related_links.html' %}
 {% endblock %}
 
-{% block extra-js%}
-  <script>
-    /*
-      Show/Hide Functionality for expand/collapse sections in use_of_licenses.html
-    */
-    let arrowArray = Array.from(document.getElementsByClassName("angle-down"))
-    arrowArray.forEach(function(arrow) {
-      arrow.addEventListener("click", handleArrowClicked);
-    });
-
-    function handleArrowClicked() {
-      // Toggle consideration section's screen reader announcement text (inside of icon)
-      if (this.dataset.consideration === "1" && this.dataset.direction === "down") {
-        this.firstChild.innerHTML = "{% trans "Hide Considerations for Licensors" %}"
-      } else if (this.dataset.consideration !== "1" && this.dataset.direction === "down") {
-        this.firstChild.innerHTML = "{% trans "Hide Considerations for the Public" %}"
-      } else if (this.dataset.consideration === "1" && this.dataset.direction === "up") {
-        this.firstChild.innerHTML = "{% trans "Show Considerations for Licensors" %}"
-      } else {
-        this.firstChild.innerHTML = "{% trans "Show Considerations for the Public" %}"
-      }
-      // Toggle icon between up and down
-      if (this.dataset.direction === "down") {
-        // toggle icon to up arrow icon
-        this.classList.remove("angle-down")
-        this.classList.add("angle-up")
-        this.dataset.direction = "up"
-        // show <p> tag
-        this.parentNode.parentNode.nextSibling.nextSibling.classList.remove("is-hidden");
-      } else {
-        // toggle icon to up arrow icon
-        this.classList.add("angle-down")
-        this.classList.remove("angle-up")
-        this.dataset.direction = "down"
-        // hide <p> tag
-        this.parentNode.parentNode.nextSibling.nextSibling.classList.add("is-hidden");
-      }
-    };
-  </script>
-{% endblock %}
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
