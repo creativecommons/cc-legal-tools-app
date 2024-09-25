@@ -53,8 +53,8 @@ Once this project's required dependencies (ex. Docker, Git) are enabled on your
 system, you will be able to run the legal-tools application and generate static
 files.
 
-For information on learning and installing the prerequisite technology for this
-project, please see [Foundational technologies — Creative Commons Open
+For information on learning and installing the prerequisite technologies for
+this project, please see [Foundational technologies — Creative Commons Open
 Source][found-tech].
 
 [found-tech]: https://opensource.creativecommons.org/contributing-code/foundational-tech/
