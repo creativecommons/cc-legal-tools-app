@@ -49,9 +49,9 @@ site (served as static files).
 
 ## Setup and Usage
 
-Once this project's required dependencies (ex. Docker, Git) are enabled on your
-system, you will be able to run the legal-tools application and generate static
-files.
+Once this project's required dependencies (Docker, Git, etc.) are enabled on
+your system, you will be able to run the legal-tools application and generate
+static files.
 
 For information on learning and installing the prerequisite technologies for
 this project, please see [Foundational technologies — Creative Commons Open
