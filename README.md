@@ -49,64 +49,15 @@ site (served as static files).
 
 ## Setup and Usage
 
-Once this project's required dependencies are enabled on your system, you will
-be able to run the legal-tools application and generate static files.
+Once this project's required dependencies (Docker, Git, etc.) are enabled on
+your system, you will be able to run the legal-tools application and generate
+static files.
 
+For information on learning and installing the prerequisite technologies for
+this project, please see [Foundational technologies — Creative Commons Open
+Source][found-tech].
 
-### Prerequisites
-
-This project depends on Docker and Git. It also requires this repository and
-the data repository (the codebases) be cloned next to each other.
-
-
-#### MacOS
-
-Mac users can install Git using these instructions: [Git - Installing Git -
-Installing on macOS][macos-git].
-
-Docker Desktop can be installed using these instructions: [Install Docker
-Desktop on Mac | Docker Docs][macos-docker].
-
-[macos-git]: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git#_installing_on_macos
-[macos-docker]: https://docs.docker.com/desktop/install/mac-install
-
-
-#### Linux
-
-Git is optimally installed using your distribution's package manager. See
-[Git- Download for Linux and Unix][linux-git] for a wide range of popular
-distros.
-
-Both Docker Desktop and Docker Engine are separately supported on Linux.
-Both include the required Compose command plugin, but Docker Engine is
-typically much easier to install:
-- _Recommended:_ See [Install Docker Engine | Docker Docs][linux-docker-engine]
-  for links to installation instructions for Docker Engine and Compose for
-  various Linux distributions.
-- See [Install Docker Desktop on Linux | Docker
-  Docs][linux-docker-desktop] for links to instructions for the graphical
-  desktop app that includes the commandline interface and Compose
-
-[linux-git]: https://git-scm.com/download/linux
-[linux-docker-engine]: https://docs.docker.com/engine/install
-[linux-docker-desktop]: https://docs.docker.com/desktop/install/linux-install
-
-
-#### Windows
-
-You must use Windows 10 or 11 with Windows Subsystem for Linux (WSL2). For
-installation instructions: see [Install WSL | Microsoft Learn][wsl2].
-
-Git should be installed within WSL2, using the appropriate Linux installation
-method. For WSL2 Ubuntu, the command is `sudo apt-get install git`.
-
-Docker Desktop should be installed on Windows itself and integrated with WSL2
-as explained in [Docker Desktop WSL 2 backend on Windows | Docker
-Docs][docker-wsl2]. Unlike Git, you should not install Docker within your WSL2
-environment.
-
-[wsl2]: https://docs.microsoft.com/en-us/windows/wsl/install
-[docker-wsl2]: https://docs.docker.com/desktop/windows/wsl
+[found-tech]: https://opensource.creativecommons.org/contributing-code/foundational-tech/
 
 
 ### Codebases Setup
