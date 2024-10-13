@@ -628,3 +628,16 @@ class TitleTest(TestCase):
         self.assertEqual(
             {"records_updated": 4, "records_requiring_update": 0}, results
         )
+        class UpdateLangInfoTest(TestCase):
+            def test_update_lang_info(self):
+                language_code = "fr"
+                utils.update_lang_info(language_code)
+                self.assertIn(language_code, LANG_INFO)
+                self.assertEqual(LANG_INFO[language_code]["name"], "French")
+                self.assertEqual(LANG_INFO[language_code]["name_local"], "français")
+                self.assertFalse(LANG_INFO[language_code]["bidi"])
+
+            def test_update_lang_info_unknown_locale(self):
+                language_code = "unknown"
+                utils.update_lang_info(language_code)
+                self.assertNotIn(language_code, LANG_INFO)

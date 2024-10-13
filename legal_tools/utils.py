@@ -16,7 +16,7 @@ import legal_tools.models
 from i18n import UNIT_NAMES
 from i18n.utils import (
     active_translation,
-    get_default_language_for_jurisdiction_naive,
+    get_default_language_for_jurisdiction_legal_code,
     get_jurisdiction_name,
     get_translation_object,
     map_legacy_to_django_language_code,
@@ -145,7 +145,7 @@ def parse_legal_code_filename(filename):
     if jurisdiction:
         language_code = (
             language_code
-            or get_default_language_for_jurisdiction_naive(jurisdiction)
+            or get_default_language_for_jurisdiction_legal_code(jurisdiction)
         )
     else:
         language_code = language_code or settings.LANGUAGE_CODE
@@ -511,7 +511,7 @@ def update_title(options):
                 # Translate title using legal code translation domain for legal
                 # code that is in Transifex (ex. CC0, Licenses 4.0)
                 slug = f"{unit}_{version}".replace(".", "")
-                language_default = get_default_language_for_jurisdiction_naive(
+                language_default = get_default_language_for_jurisdiction_legal_code(
                     jurisdiction
                 )
                 current_translation = get_translation_object(
