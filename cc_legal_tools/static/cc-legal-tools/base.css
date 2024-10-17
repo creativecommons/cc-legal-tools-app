@@ -262,4 +262,12 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
   .cc-legal-tools > header {
     display: none;
   }
+
+  .cc-legal-tools main {
+    display: block;
+  }
+  
+  .cc-legal-tools main > aside {
+    display: none;
+  }
 }
