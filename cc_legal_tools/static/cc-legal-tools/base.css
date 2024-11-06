@@ -255,3 +255,19 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
   margin-left: .3em;
   margin-right: 0;
 }
+
+/* print media */
+@media print {
+  .cc-legal-tools > footer,
+  .cc-legal-tools > header {
+    display: none;
+  }
+
+  .cc-legal-tools main {
+    display: block;
+  }
+
+  .cc-legal-tools main > aside {
+    display: none;
+  }
+}
