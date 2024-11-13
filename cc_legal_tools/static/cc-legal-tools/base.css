@@ -10,9 +10,12 @@
 
 
 /* Ancilliary menu */
+.ancilliary-menu {
+  font-size: min(.8em, 2.5vw);
+}
 .bidi-left div.masthead > nav.ancilliary-menu {
   left: auto;
-  right: 0;
+  right: calc( -1 * var(--vocabulary-page-edges-space));
 }
 .bidi-right div.masthead > nav.ancilliary-menu {
   left: 0;
