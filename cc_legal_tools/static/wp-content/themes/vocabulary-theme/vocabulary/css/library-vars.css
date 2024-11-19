@@ -26,9 +26,9 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url(../fonts/SourceSansPro-Regular.woff2) format("woff2"),
-        url(../fonts/SourceSansPro-Regular.woff) format("woff"),
-        url(../fonts/SourceSansPro-Regular.otf) format("opentype");
+    src: url('../fonts/SourceSansPro-Regular.woff2') format("woff2"),
+        url('../fonts/SourceSansPro-Regular.woff') format("woff"),
+        url('../fonts/SourceSansPro-Regular.otf') format("opentype");
  }
 
 @font-face {
@@ -36,9 +36,9 @@
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src: url(../fonts/SourceSansPro-SemiBold.woff2) format("woff2"),
-        url(../fonts/SourceSansPro-SemiBold.woff) format("woff"),
-        url(../fonts/SourceSansPro-SemiBold.otf) format("opentype");
+    src: url('../fonts/SourceSansPro-SemiBold.woff2') format("woff2"),
+        url('../fonts/SourceSansPro-SemiBold.woff') format("woff"),
+        url('../fonts/SourceSansPro-SemiBold.otf') format("opentype");
 }
 
 @font-face {
@@ -46,9 +46,9 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url(../fonts/SourceSansPro-Bold.woff2) format("woff2"),
-        url(../fonts/SourceSansPro-Bold.woff) format("woff"),
-            url(../fonts/SourceSansPro-Bold.otf) format("opentype");
+    src: url('../fonts/SourceSansPro-Bold.woff2') format("woff2"),
+        url('../fonts/SourceSansPro-Bold.woff') format("woff"),
+            url('../fonts/SourceSansPro-Bold.otf') format("opentype");
 }
 
 @font-face {
@@ -56,7 +56,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url(../fonts/CCAccidenzCommons-medium.otf) format("opentype");
+    src: url('../fonts/CCAccidenzCommons-medium.otf') format("opentype");
 }
 
 
@@ -132,27 +132,27 @@
      --icon-sprite-size: 1em;
 
      /* cc sprite names */
-     --cc-logo: url('./../svg/cc/icons/cc-icons.svg#cc-logo');
-     --cc-heart: url('./../svg/cc/icons/cc-icons.svg#cc-heart');
-     --cc-heart-filled: url('./../svg/cc/icons/cc-icons.svg#cc-heart-filled');
-     --cc-quote: url('./../svg/cc/icons/cc-icons.svg#cc-quote');
+     --cc-logo: url('../svg/cc/icons/cc-icons.svg#cc-logo');
+     --cc-heart: url('../svg/cc/icons/cc-icons.svg#cc-heart');
+     --cc-heart-filled: url('../svg/cc/icons/cc-icons.svg#cc-heart-filled');
+     --cc-quote: url('../svg/cc/icons/cc-icons.svg#cc-quote');
 
      /* font awesome sprite names */
-     --fa-angle-down: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-down');
-     --fa-angle-left: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-left');
-     --fa-angle-right: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-right');
-     --fa-angle-up: url('./../svg/font-awesome/icons/fa-icons.svg#fa-angle-up');
-     --fa-globe: url('./../svg/font-awesome/icons/fa-icons.svg#fa-globe');
-     --fa-heart: url('./../svg/font-awesome/icons/fa-icons.svg#fa-heart');
-     --fa-info: url('./../svg/font-awesome/icons/fa-icons.svg#fa-info');
-     --fa-right-angle: url('./../svg/font-awesome/icons/fa-icons.svg#fa-right-angle');
-     --fa-search: url('./../svg/font-awesome/icons/fa-icons.svg#fa-search');
+     --fa-angle-down: url('../svg/font-awesome/icons/fa-icons.svg#fa-angle-down');
+     --fa-angle-left: url('../svg/font-awesome/icons/fa-icons.svg#fa-angle-left');
+     --fa-angle-right: url('../svg/font-awesome/icons/fa-icons.svg#fa-angle-right');
+     --fa-angle-up: url('../svg/font-awesome/icons/fa-icons.svg#fa-angle-up');
+     --fa-globe: url('../svg/font-awesome/icons/fa-icons.svg#fa-globe');
+     --fa-heart: url('../svg/font-awesome/icons/fa-icons.svg#fa-heart');
+     --fa-info: url('../svg/font-awesome/icons/fa-icons.svg#fa-info');
+     --fa-right-angle: url('../svg/font-awesome/icons/fa-icons.svg#fa-right-angle');
+     --fa-search: url('../svg/font-awesome/icons/fa-icons.svg#fa-search');
 
-     --fa-instagram: url('./../svg/font-awesome/icons/fa-icons.svg#fa-instagram');
-     --fa-twitter: url('./../svg/font-awesome/icons/fa-icons.svg#fa-twitter');
-     --fa-facebook: url('./../svg/font-awesome/icons/fa-icons.svg#fa-facebook');
-     --fa-linkedin: url('./../svg/font-awesome/icons/fa-icons.svg#fa-linkedin');
-     --fa-mastodon: url('./../svg/font-awesome/icons/fa-icons.svg#fa-mastodon');
+     --fa-bluesky: url('../svg/font-awesome/icons/fa-icons.svg#fa-bluesky');
+     --fa-facebook: url('../svg/font-awesome/icons/fa-icons.svg#fa-facebook');
+     --fa-instagram: url('../svg/font-awesome/icons/fa-icons.svg#fa-instagram');
+     --fa-linkedin: url('../svg/font-awesome/icons/fa-icons.svg#fa-linkedin');
+     --fa-mastodon: url('../svg/font-awesome/icons/fa-icons.svg#fa-mastodon');
 
 }
 
@@ -201,7 +201,7 @@ leaving room for semantic and accessible implementation choices  */
     --icon-sprite: var(--fa-angle-left);
 }
 
-.icon.fa-angle-right, .icon-attach.fa-angle-rignt:before {
+.icon.fa-angle-right, .icon-attach.fa-angle-right:before {
     --icon-sprite: var(--fa-angle-right);
 }
 
@@ -221,24 +221,25 @@ leaving room for semantic and accessible implementation choices  */
     --icon-sprite: var(--fa-info);
 }
 
-.icon.fa-right-angle, .icon-attach.fa-righ-angle:before {
-    --icon-sprite: var(--fa-heart);
+.icon.fa-right-angle, .icon-attach.fa-right-angle:before {
+    --icon-sprite: var(--fa-right-angle);
 }
 
 .icon.fa-search, .icon-attach.fa-search:before {
     --icon-sprite: var(--fa-search);
 }
 
-.icon-replace.fa-instagram {
-    --icon-sprite: var(--fa-instagram);
-}
 
-.icon-replace.fa-twitter {
-    --icon-sprite: var(--fa-twitter);
+.icon-replace.fa-bluesky {
+    --icon-sprite: var(--fa-bluesky);
 }
 
 .icon-replace.fa-facebook {
     --icon-sprite: var(--fa-facebook);
+}
+
+.icon-replace.fa-instagram {
+    --icon-sprite: var(--fa-instagram);
 }
 
 .icon-replace.fa-linkedin {
