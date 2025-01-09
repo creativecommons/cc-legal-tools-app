@@ -1,28 +1,18 @@
 {% extends 'base.html' %}
-{% block content %}
-<!DOCTYPE html>
-<html lang="en"
-     xmlns:cc="http://creativecommons.org/ns#"
-     xmlns:dcterms="http://purl.org/dc/terms/"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:rddl="http://www.rddl.org/"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     xmlns="http://www.w3.org/1999/xhtml">
- <head>
-  <meta charset="utf-8">
-  <title>
-   Describing Copyright in RDF - Creative Commons Rights Expression Language
-  </title>
- </head>
- <body>
-  <div class="container">
-   <h1>
+{% block title %}
+Describing Copyright in RDF -
+Creative Commons Rights Expression Language
+{% endblock %}
+
+{% block title_header %}
+    <h1>
     <a href="/">
      <img alt="Creative Commons" id="cc-title" src="/cc-legal-tools/logo_trademark_250.png">
     </a>
    </h1>
+{% endblock %}
+
+{% block content %}
    <div id="content">
     <div id="main-content">
      <div class="block" id="title">
@@ -442,23 +432,7 @@
         </a>
        </li>
       </ul>
-      <p class="box">
-       <a href="/licenses/by/4.0/" rel="license">
-        <img alt="Creative Commons License" height="31" src="https://licensebuttons.net/l/by/4.0/88x31.png" width="88">
-       </a>
-       Except where otherwise
-       <a class="subfoot" href="/policies#license">
-        noted
-       </a>
-       , content on this site is licensed under a
-       <a class="subfoot" href="/licenses/by/4.0/" rel="license">
-        Creative Commons Attribution 4.0 International license
-       </a>
-      </p>
      </div>
     </div>
    </div>
-  </div>
- </body>
-</html>
 {% endblock %}
