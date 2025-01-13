@@ -89,11 +89,11 @@ def get_translation_object(
 
     # Add a fallback to the standard Django translation for this language. This
     # gets us the non-legal-code parts of the pages.
-    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if language_code in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         tool_translation_object.add_fallback(
             translation.trans_real.translation(language_code)
         )
-    elif language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    elif language_default in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         tool_translation_object.add_fallback(
             translation.trans_real.translation(language_default)
         )
@@ -253,11 +253,11 @@ def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
     return django_language_code
 
 
-def get_default_language_for_jurisdiction_deed(jurisdiction_code):
+def get_default_language_for_jurisdiction_deed_ux(jurisdiction_code):
     default_language = DEFAULT_JURISDICTION_LANGUAGES.get(
         jurisdiction_code, settings.LANGUAGE_CODE
     )
-    if default_language in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if default_language in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         return default_language
     else:
         return settings.LANGUAGE_CODE
@@ -310,7 +310,7 @@ def load_deeds_ux_translations():
     that meet or exceed the TRANSLATION_THRESHOLD).
     """
     deeds_ux_po_file_info = {}
-    languages_mostly_translated = []
+    languages_available_deeds_ux = []
     for language_code, pofile_path in get_deeds_ux_pofiles():
         pofile_obj = polib.pofile(pofile_path)
         percent_translated = pofile_obj.percent_translated()
@@ -326,12 +326,12 @@ def load_deeds_ux_translations():
             and language_code != settings.LANGUAGE_CODE
         ):
             continue
-        languages_mostly_translated.append(language_code)
+        languages_available_deeds_ux.append(language_code)
     deeds_ux_po_file_info = dict(sorted(deeds_ux_po_file_info.items()))
     # Add global settings
     settings.DEEDS_UX_PO_FILE_INFO = deeds_ux_po_file_info
-    settings.LANGUAGES_MOSTLY_TRANSLATED = sorted(
-        list(set(languages_mostly_translated))
+    settings.LANGUAGES_AVAILABLE_DEEDS_UX = sorted(
+        list(set(languages_available_deeds_ux))
     )
 
 
