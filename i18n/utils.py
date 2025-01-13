@@ -309,7 +309,7 @@ def load_legal_code_translations():
         ):
             continue
         languages_available_legal_code.append(language_code)
-    logel_code_po_file_info = dict(sorted(legal_code_po_file_info.items()))
+    legal_code_po_file_info = dict(sorted(legal_code_po_file_info.items()))
     # Add global settings
     settings.DEEDS_UX_PO_FILE_INFO = legal_code_po_file_info
     settings.LANGUAGES_AVAILABLE_LEGAL_CODE = sorted(
