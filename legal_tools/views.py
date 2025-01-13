@@ -20,7 +20,7 @@ from django.utils import translation
 from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction_deed_ux,
-    get_default_language_for_jurisdiction_naive,
+    get_default_language_for_jurisdiction_legal_code,
     get_jurisdiction_name,
     load_deeds_ux_translations,
     map_django_to_transifex_language_code,
@@ -258,11 +258,11 @@ def name_local(legal_code):
 def normalize_path_and_lang(request_path, jurisdiction, language_code):
     if not language_code:
         if "legalcode" in request_path:
-            language_code = get_default_language_for_jurisdiction_naive(
+            language_code = get_default_language_for_jurisdiction_legal_code(
                 jurisdiction
             )
         else:
-            language_code = get_default_language_for_jurisdiction_deed_ux(
+            language_code = get_default_language_for_jurisdiction_legal_code(
                 jurisdiction
             )
     if not request_path.endswith(f".{language_code}"):
@@ -403,7 +403,7 @@ def view_list(request, category, language_code=None):
         lc_unit = lc.tool.unit
         lc_version = lc.tool.version
         lc_identifier = lc.tool.identifier()
-        lc_language_default = get_default_language_for_jurisdiction_naive(
+        lc_language_default = get_default_language_for_jurisdiction_legal_code(
             lc.tool.jurisdiction_code,
         )
         lc_lang_code = lc.language_code
@@ -521,7 +521,7 @@ def view_deed(
             # Next, try to load legal code with default language for the
             # jurisdiction
             legal_code = tool.get_legal_code_for_language_code(
-                get_default_language_for_jurisdiction_naive(jurisdiction)
+                get_default_language_for_jurisdiction_legal_code(jurisdiction)
             )
         except LegalCode.DoesNotExist:
             # Last, load legal code with global default language (English)
@@ -619,7 +619,7 @@ def view_legal_code(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    language_default = get_default_language_for_jurisdiction_naive(
+    language_default = get_default_language_for_jurisdiction_legal_code(
         jurisdiction
     )
 

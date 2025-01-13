@@ -13,7 +13,7 @@ from django.utils import translation
 from i18n import LANGMAP_DJANGO_TO_PCRE
 from i18n.utils import (
     get_default_language_for_jurisdiction_deed_ux,
-    get_default_language_for_jurisdiction_naive,
+    get_default_language_for_jurisdiction_legal_code,
     get_jurisdiction_name,
     get_pofile_path,
     get_translation_object,
@@ -249,7 +249,7 @@ class LegalCode(models.Model):
         language_code = self.language_code
         tool = self.tool
         juris_code = tool.jurisdiction_code
-        language_default = get_default_language_for_jurisdiction_naive(
+        language_default = get_default_language_for_jurisdiction_legal_code(
             juris_code
         )
         filename = f"legalcode.{self.language_code}.html"
@@ -348,7 +348,7 @@ class LegalCode(models.Model):
         return self.tool.resource_slug
 
     def get_translation_object(self):
-        language_default = get_default_language_for_jurisdiction_naive(
+        language_default = get_default_language_for_jurisdiction_legal_code(
             self.tool.jurisdiction_code
         )
         return get_translation_object(

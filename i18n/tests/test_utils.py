@@ -14,7 +14,7 @@ from django.test import TestCase, override_settings
 from i18n.utils import (
     active_translation,
     get_default_language_for_jurisdiction_deed_ux,
-    get_default_language_for_jurisdiction_naive,
+    get_default_language_for_jurisdiction_legal_code,
     get_jurisdiction_name,
     get_pofile_creation_date,
     get_pofile_path,
@@ -181,12 +181,12 @@ class I18NTest(TestCase):
     def test_get_language_for_jurisdiction_legal_code(self):
         # "be" jurisdiction default is "fr"
         self.assertEqual(
-            "fr", get_default_language_for_jurisdiction_naive("be")
+            "fr", get_default_language_for_jurisdiction_legal_code("be")
         )
         # "xx" is an invalid jurisdiction
         # return global default ("en")
         self.assertEqual(
-            "en", get_default_language_for_jurisdiction_naive("xx")
+            "en", get_default_language_for_jurisdiction_legal_code("xx")
         )
 
 
