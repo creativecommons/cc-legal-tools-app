@@ -24,7 +24,6 @@
 
 
 {% block content %}
-
 <div class="tool-meta">
 
 <div class="meta-box">
@@ -90,6 +89,13 @@ the date of change
 {% endif %}
 {% include 'includes/notice_about_cc_and_trademark.html' %}
 {% include 'includes/related_links.html' %}
+
+{# These four strings were removed from UX. Maintaining here to preserve #}
+{# translations until new UX is decided. #}
+{% trans "Hide Considerations for Licensors" as _ %}
+{% trans "Show Considerations for Licensors" as _ %}
+{% trans "Hide Considerations for the Public" as _ %}
+{% trans "Show Considerations for the Public" as _ %}
 {% endblock %}
 
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}
