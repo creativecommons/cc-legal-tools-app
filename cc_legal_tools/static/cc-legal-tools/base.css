@@ -96,6 +96,7 @@ main > header > span.alt-titles > span.tool-icons > span.cc-icon > svg {
 /* right nav */
 .cc-legal-tools main > aside {
   background-color: var(--vocabulary-brand-color-soft-gold);
+  margin-left: 4.1rem;
   padding: 1em;
   height: fit-content;
 }
