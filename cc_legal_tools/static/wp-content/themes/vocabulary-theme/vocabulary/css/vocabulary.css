@@ -2610,7 +2610,7 @@ body > footer .license svg {
     button.expand-menu {
         position: absolute;
         top: 4.5em;
-        right: 0;
+        right: -2rem;
         display: inline-block;
         padding: .3em .5em;
         border: none;
@@ -2621,7 +2621,7 @@ body > footer .license svg {
         font-style: normal;
         font-weight: 700;
         font-size: 1em;
-        padding: .5rem 1rem;
+        padding: 0.5rem 1rem;
     }
 
     .primary-menu {
