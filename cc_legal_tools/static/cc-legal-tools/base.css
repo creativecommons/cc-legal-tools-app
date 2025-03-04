@@ -9,19 +9,19 @@
 }
 
 
-/* Ancilliary menu */
-.ancilliary-menu {
+/* Ancillary menu */
+.ancillary-menu {
   font-size: min(.8em, 2.5vw);
 }
-.bidi-left div.masthead > nav.ancilliary-menu {
+.bidi-left div.masthead > nav.ancillary-menu {
   left: auto;
   right: calc( -1 * var(--vocabulary-page-edges-space));
 }
-.bidi-right div.masthead > nav.ancilliary-menu {
+.bidi-right div.masthead > nav.ancillary-menu {
   left: 0;
   right: auto !important;
 }
-div.masthead > nav.ancilliary-menu span.locale {
+div.masthead > nav.ancillary-menu span.locale {
   display: inline-flex;
   align-items: center;
   margin-top: 5px;
@@ -31,20 +31,20 @@ div.masthead > nav.ancilliary-menu span.locale {
   border: none;
   border-radius: 3px;
 }
-div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
+div.masthead > nav.ancillary-menu span.locale.icon-attach:before {
   --icon-sprite: var(--fa-globe);
   --icon-sprite-size: .8em;
   opacity: .5;
 }
-.bidi-left div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
-.bidi-left div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
-.bidi-left div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
+.bidi-left div.masthead > nav.ancillary-menu a.donate.icon-attach:before,
+.bidi-left div.masthead > nav.ancillary-menu span.locale.icon-attach:before,
+.bidi-left div.masthead > nav.ancillary-menu a.search.icon-attach:before {
   margin-left: 0;
   margin-right: .8em;
 }
-.bidi-right div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
-.bidi-right div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
-.bidi-right div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
+.bidi-right div.masthead > nav.ancillary-menu a.donate.icon-attach:before,
+.bidi-right div.masthead > nav.ancillary-menu span.locale.icon-attach:before,
+.bidi-right div.masthead > nav.ancillary-menu a.search.icon-attach:before {
   margin-left: .8em;
   margin-right: 0;
 }
