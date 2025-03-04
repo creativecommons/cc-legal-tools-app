@@ -62,13 +62,13 @@ div.masthead > nav.ancillary-menu span.locale.icon-attach:before {
   display: flex;
   padding: 3em 0;
 }
-.cc-legal-tools,.bidi-left main > header > span.alt-titles {
+.cc-legal-tools .bidi-left main > header > span.alt-titles {
   order: 1;
 }
-.cc-legal-tools,.bidi-left main > header > span.alt-titles > span.tool-icons {
+.cc-legal-tools .bidi-left main > header > span.alt-titles > span.tool-icons {
   padding-right: 1em;
 }
-.cc-legal-tools,.bidi-right main > header > span.alt-titles > span.tool-icons {
+.cc-legal-tools .bidi-right main > header > span.alt-titles > span.tool-icons {
   padding-left: 1em;
 }
 main > header > span.alt-titles > span.tool-icons > span.cc-icon > svg {
