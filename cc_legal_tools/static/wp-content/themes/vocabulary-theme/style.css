@@ -3,7 +3,7 @@ Theme Name: CC Vocabulary Theme
 Author: the Creative Commons team; possumbilities, Timid Robot
 Author URI: https://opensource.creativecommons.org/
 Description: Theme based on the Vocabulary Design System
-Version: 1.7
+Version: 1.9.4
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.0
@@ -165,17 +165,17 @@ main nav.pagination ul li span.current {
 
 
 .home-narrative main {
-  width: 100%;
-  margin-top: 5.4em;
+  margin-top: 3.4em;
   margin-right: 0;
   margin-bottom: 0;
-  margin-left: 0;
-  padding: 0;
-  /* padding: 0 5%; */
 
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 400;
+}
+
+.home-narrative main > header {
+  margin-bottom: 0;
 }
 
 .home-narrative main > article > h2 {
@@ -203,12 +203,16 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative .topic-summary {
+  grid-column: 2 / span 9;
+  display: grid;
+  grid-template:
+      "title graphic graphic"
+      "description graphic graphic"
+      "button graphic graphic";
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin: 0 5%;
   margin-bottom: 6.4em;
   gap: 0 4em;
-
 }
 
 .home-narrative .topic-summary h2 {
@@ -226,7 +230,6 @@ main nav.pagination ul li span.current {
 
 .home-narrative .topic-summary figure {
   width: 100%;
-  /* height: 60%; */
   grid-area: graphic;
   margin: 0;
   padding: 0;
@@ -248,10 +251,8 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative .topic-summary .description a {
-  /* grid-area: button; */
   display: inline;
   box-sizing: border-box;
-  /* grid-area: none; */
   grid-column-start: 1;
   grid-row-start: 3;
 
@@ -261,6 +262,7 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative .case-studies {
+  grid-column: 1 / span 11;
   padding: 0 5%;
   padding-top: 3.5em;
   position: relative;
@@ -307,9 +309,7 @@ main nav.pagination ul li span.current {
 
 .home-narrative .case-studies footer {
   margin: 0 0;
-  /* margin-top: 6em; */
   margin-top: 4em;
-  /* margin-bottom: 6em; */
   margin-bottom: 3em;
   padding: 2em;
 
@@ -338,7 +338,7 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative .data-points .data-point.wikipedia h2 {
-  text-indent: -3000px;
+  text-indent: -10000px;
   min-height: 150px;
   background: center center no-repeat;
   background-size: contain;
@@ -347,7 +347,7 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative .data-points .data-point.the-met h2 {
-  text-indent: -3000px;
+  text-indent: -10000px;
   min-height: 150px;
   background: center center no-repeat;
   background-size: contain;
@@ -358,7 +358,7 @@ main nav.pagination ul li span.current {
 }
 
 .home-narrative .data-points .data-point.khan-academy h2 {
-  text-indent: -3000px;
+  text-indent: -10000px;
   min-height: 150px;
   width: 90%;
   background: center center no-repeat;
@@ -375,238 +375,126 @@ main nav.pagination ul li span.current {
   text-transform: uppercase;
 }
 
-
-
 .home-narrative .data-points .data-point p {
   margin-bottom: 0;
 
-  /* font-size: 1.2em; */
   font-size: 1em;
 }
 
-
-
-.home-narrative main .authored-posts {
-  /* display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  margin-top: 8em;
-  padding: 0 4em;
-  gap: 3em;
-  box-sizing: border-box; */
-  width: 60%;
-  margin: 0 auto;
-  margin-top: 8em;
-
-  background: var(--vocabulary-neutral-color-lighter-gray);
+.home-narrative main .posts {
+  grid-column: 2 / span 9;
+  padding-top: 4em;
 }
 
-.home-narrative main .authored-posts article {
-  margin-bottom: 4em;
-}
-
-.home-narrative main .authored-posts.highlight article header {
-  margin-top: 0;
-}
-
-.home-narrative main .authored-posts > h2 {
-  grid-column: span 12;
-  margin-top: 0;
-  margin-bottom: 0;
-  /* margin-bottom: 1em; */
-
+.home-narrative main .posts h2 {
   text-align: center;
 }
 
-.home-narrative main .authored-posts.highlight {
+.home-narrative main .posts ul {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(12, 1fr);
   margin-top: 8em;
-  padding: 6em 4em;
   gap: 2em;
   box-sizing: border-box;
-
   width:100%;
   margin: 0 auto;
   margin-top: 0;
-  /* padding: 0; */
 
-  /* background: var(--vocabulary-neutral-color-lighter-gray); */
-}
-
-.home-narrative main .authored-posts.highlight:nth-of-type(1) article {
-  /* margin-bottom: 6em; */
-  margin-bottom: 4em;
-}
-
-.home-narrative main .authored-posts.highlight article.story {
-  grid-column: span 3;
-}
-
-.home-narrative main .authored-posts.highlight article figure {
-  order: -1;
-
-}
-
-.home-narrative main .authored-posts.highlight article a {
-  --underline-background-color: var(--vocabulary-neutral-color-lighter-gray);
-}
-
-.home-narrative main .authored-posts.highlight article h2, .home-narrative main .authored-posts.highlight article h3 {
-  font-size: 1.4em;
-}
-
-.home-narrative main .authored-posts.highlight > article:nth-of-type(1) {
-  grid-column: span 12;
-  margin-bottom: 1em;
-  padding: 4em;
-
-  background: var(--vocabulary-brand-color-soft-tomato);
-  /* background: var(--vocabulary-brand-color-soft-turquoise); */
-  background: white;
-  /* background: var(--vocabulary-neutral-color-lighter-gray); */
-  /* border-top: 2px solid black; */
-
-}
-
-.home-narrative main .authored-posts.highlight > article:nth-of-type(1) a {
-  --underline-background-color: var(--vocabulary-brand-color-soft-tomato);
-  /* --underline-background-color: var(--vocabulary-brand-color-soft-turquoise); */
-  --underline-background-color: white;
-}
-
-.home-narrative main .authored-posts.highlight article:nth-of-type(1) h3 {
-  font-size: 2.1em;
-}
-
-.home-narrative main .authored-posts.highlight article:nth-of-type(1) figure {
-  order: initial;
-}
-
-.home-narrative main .authored-posts.highlight article:nth-of-type(1) p {
-  margin-bottom: 0;
-}
-
-.home-narrative main footer {
-  grid-column: span 12;
-  margin: 0 5%;
-  margin: 0;
-
-  text-align: center;
-}
-
-.home-narrative footer a.more {
-  display: inline-block;
-  margin: 0 auto;
-  margin-bottom: 4em;
-
-}
-
-.home-narrative .attribution-list {
-  position: relative;
-  padding: 4em;
-  gap: 0;
-
-
-  background:  var(--vocabulary-brand-color-soft-turquoise);
-  background: var(--vocabulary-brand-color-tomato);
-  background: var(--vocabulary-brand-color-soft-tomato);
-  background: var(--vocabulary-neutral-color-lighter-gray);
-  /* background: white; */
-  /* color: white; */
-  text-align: left;
-
-  border: 2px solid var(--vocabulary-neutral-color-dark-gray);
-}
-
-.home-narrative main .authored-posts.highlight article.attribution-list h2 {
-  margin: 0;
-  font-size: 2.1em;
-}
-
-.home-narrative main .authored-posts.highlight article.attribution-list ul {
-  margin-top: 2em;
-}
-
-.home-narrative >  h2 {
-  margin-top: 0;
-  font-size: 2.4em;
-}
-
-.home-narrative .attribution-list button.expand-attribution {
-  position: absolute;
-  top: 4.5em;
-  right: 4em;
-
-  cursor: pointer;
-  border: 1px solid black;
-  border-radius: 3px;
-  padding: .5em;
-  font-family: "Source Sans Pro";
-}
-
-.home-narrative .attribution-list button.expand-attribution.selected {
-  background: black;
-  color: white;
-}
-
-.home-narrative .attribution-list ul {
-  display: none;
-}
-
-.home-narrative .attribution-list ul.expand {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  margin: 0;
-  padding: 0;
-  gap: 2em;
-
-  font-size: 1em;
+  font-size: 1rem;
   list-style: none;
 }
 
-.home-narrative .attribution-list article {
-  margin-bottom: 1em;
+.home-narrative main .posts ul li {
+  grid-column: span 4;
 }
 
-.home-narrative .attribution-list article article a {
-  /* --underline-background-color: var(--vocabulary-brand-color-tomato); */
-  /* color: white; */
+.home-narrative main .posts ul li h3 {
+  font-size: 1.5em;
+}
 
-  /* --underline-background-color: var(--vocabulary-brand-color-soft-tomato); */
+.home-narrative main .posts .post figure {
+  order: -1;
+}
 
+/* targets the featured posts section */
+.home-narrative main .posts.featured {
+  grid-column: 1 / span 11;
+  margin-bottom: 3em;
+
+  background: var(--vocabulary-neutral-color-lighter-gray);
+}
+
+.home-narrative main .posts.featured .post h3 {
+  font-size: 1.4em;
+}
+
+.home-narrative main .posts.featured ul li:nth-child(1) h3 {
+  font-size: 2.1em;
+}
+
+.home-narrative main .posts.featured .post a {
   --underline-background-color: var(--vocabulary-neutral-color-lighter-gray);
-
-
 }
 
-.home-narrative .attribution-list article figure {
-  display: flex;
-  gap: 1em;
-  margin-top: 1em;
+.home-narrative main .posts.featured li:nth-of-type(1) .post a {
+  --underline-background-color: white;
 }
 
-.home-narrative .attribution-list article img {
-  object-fit: cover;
-  width: 4em;
-  height: 4em;
+.home-narrative main .posts.featured li:nth-of-type(1) .post figure {
+  order: initial;
 }
 
-.home-narrative .attribution-list article figure .attribution {
-  margin-top: 0;
+.home-narrative main .posts.featured ul {
+  padding: 0 var(--vocabulary-page-edges-space);
 }
 
+.home-narrative main .posts.featured ul li {
+  grid-column: span 3;
+}
+
+.home-narrative main .posts.featured ul li:nth-of-type(1) {
+  grid-column: span 12;
+
+  background: white;
+}
+
+.home-narrative main .posts.featured ul li:nth-of-type(1) article.post {
+  margin-bottom: 1em;
+  padding: 4em;
+}
+
+.home-narrative main > footer {
+  grid-column: 1 / span 11;
+  display: grid;
+  grid-template-columns: subgrid;
+  padding-top: 3em;
+  padding-bottom: 8em;
+
+  background: var(--vocabulary-neutral-color-lighter-gray);
+}
+
+.home-narrative main > footer .attribution-list {
+  grid-column: 2 / span 9;
+
+  background: none;
+  border: 2px solid var(--vocabulary-neutral-color-dark-gray);
+}
 
 
 @media (min-width: 1500px) {
+
   .home-narrative .data-points .data-point.khan-academy h2 {
     text-indent: -6000px;
   }
+
 }
 
 @media (max-width: 1140px) {
+
   .home-narrative main footer .attribution-list ul.expand {
     grid-template-columns: 1fr 1fr;
   }
+
 }
 
 @media (max-width: 900px) {
@@ -631,29 +519,14 @@ main nav.pagination ul li span.current {
     /* padding: 0 1em; */
   }
 
-
-  .home-narrative main .authored-posts.highlight {
+  .home-narrative main .posts ul {
     display: flex;
     flex-wrap: wrap;
-    padding: 0 5%;
-    /* width: 90%; */
-
-  }
-
-  .home-narrative .authored-posts.highlight h2 {
-    margin-top: 1em;
-  }
-
-  .home-narrative main .authored-posts.highlight > article:nth-child(1) {
-    width: 100%;
-  }
-
-  .home-narrative .authored-posts article {
-    margin-bottom: 3em;
   }
 
   .home-narrative main footer {
     width: 100%;
+    box-sizing: border-box;
   }
 
 }
@@ -675,15 +548,33 @@ main nav.pagination ul li span.current {
   .home-narrative .data-points ul {
     display: block;
     padding-top: 2em;
-   }
+  }
 
-  .home-narrative main .authored-posts article {
-    margin-bottom: 2em;
+   .home-narrative main article.posts.featured > ul li:nth-child(1) {
+    padding: 2em;
+  }
+
+  .home-narrative main .posts {
+      padding: 0 var(--vocabulary-page-edges-space);
   }
 
   .home-narrative main footer .attribution-list ul.expand {
-    display: block;
+      display: block;
+  }
 }
+
+@media (max-width: 425px) {
+
+  .home-narrative .attribution-list {
+    padding: 2em;
+  }
+
+  .home-narrative .attribution-list h2 {
+    width: 50%;
+
+    hyphens: auto;
+    word-break: break-word;
+  }
 
 }
 
@@ -699,9 +590,7 @@ main nav.pagination ul li span.current {
 
 @media (max-width: 425px) {
 
-  .home-narrative main .authored-posts.highlight > article:nth-of-type(1) {
-    padding: 1.2em;
-  }
+
 
   .home-narrative .attribution-list {
     padding: 2em;
@@ -717,5 +606,11 @@ main nav.pagination ul li span.current {
 
 }
 
-
 /* patches */
+
+main > article figure img, main > figure img {
+  width: 100%;
+}
+main .content ul, main .content ol {
+    line-height: 150%;
+}
