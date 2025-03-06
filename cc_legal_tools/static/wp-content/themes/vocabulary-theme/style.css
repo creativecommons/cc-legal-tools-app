@@ -444,7 +444,7 @@ main nav.pagination ul li span.current {
   order: initial;
 }
 
-.home-narrative main .posts.featured ul {    
+.home-narrative main .posts.featured ul {
   padding: 0 var(--vocabulary-page-edges-space);
 }
 
@@ -603,7 +603,7 @@ main nav.pagination ul li span.current {
     word-break: break-word;
 
   }
-  
+
 }
 
 /* patches */
