@@ -3,7 +3,7 @@ Theme Name: CC Vocabulary Theme
 Author: the Creative Commons team; possumbilities, Timid Robot
 Author URI: https://opensource.creativecommons.org/
 Description: Theme based on the Vocabulary Design System
-Version: 1.10
+Version: 1.11.1
 Requires at least: 5.0
 Tested up to: 6.2.2
 Requires PHP: 7.0
@@ -12,6 +12,7 @@ License URI: https://github.com/creativecommons/vocabulary-theme/blob/main/LICEN
 */
 
 @import 'vocabulary/css/vocabulary.css' layer(vocabulary);
+@import 'chooser/css/chooser.css' layer(chooser);
 
 
 /* WordPress specific rules */
@@ -914,6 +915,10 @@ main nav.pagination ul li span.current {
 
 main .content ul, main .content ol {
     line-height: 150%;
+}
+
+.chooser-page main .content ul, .chooser-page main .content ol {
+  line-height: 100%;
 }
 
 /* Classic Editor TinyMCE WYSIWYG editor image alignment  */
