@@ -1,0 +1,367 @@
+:root {
+
+    /* localized cc sprite names */
+    --cc-by: url('../../vocabulary/svg/cc/icons/cc-icons.svg#cc-by');
+    --cc-nc: url('../../vocabulary/svg/cc/icons/cc-icons.svg#cc-nc');
+    --cc-nd: url('../../vocabulary/svg/cc/icons/cc-icons.svg#cc-nd');
+    --cc-pd: url('../../vocabulary/svg/cc/icons/cc-icons.svg#cc-pd');
+    --cc-pdm: url('../../vocabulary/svg/cc/icons/cc-icons.svg#cc-pdm');
+    --cc-sa: url('../../vocabulary/svg/cc/icons/cc-icons.svg#cc-sa');
+    --cc-zero: url('../../vocabulary/svg/cc/icons/cc-icons.svg#cc-zero');
+}
+
+.chooser-page .icon-attach.cc-by:before {
+    --icon-sprite: var(--cc-by);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.chooser-page .icon-attach.cc-nc:before {
+    --icon-sprite: var(--cc-nc);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.chooser-page .icon-attach.cc-nd:before {
+    --icon-sprite: var(--cc-nd);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.chooser-page .icon-attach.cc-pd:before {
+    --icon-sprite: var(--cc-pd);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.chooser-page .icon-attach.cc-pdm:before {
+    --icon-sprite: var(--cc-pdm);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.chooser-page .icon-attach.cc-sa:before {
+    --icon-sprite: var(--cc-sa);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.chooser-page .icon-attach.cc-zero:before {
+    --icon-sprite: var(--cc-zero);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.chooser-page dl div {
+    margin-bottom: .8em;
+}
+
+.chooser-page dt, .chooser-page dd {
+    display: inline-block;
+}
+
+.chooser-page dt:after {
+    content: ':';
+}
+
+.chooser-page dd {
+    margin-left: .2em;
+}
+
+.chooser-page dd span {
+    display: block;
+}
+
+.chooser-page ol li:has(.disable) {
+    display: none;
+}
+
+.chooser-page .disable {
+    display: none;
+}
+
+.chooser-page .hide {
+    display: none;
+}
+
+.chooser-page .tool header {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.chooser-page .tool header > h4 {
+    width: 100%;
+}
+
+.chooser-page .tool header > .tool-icons {
+    order: -1;
+    margin: 0 1em 0 0;
+}
+
+.chooser-page .tool .tool-icons svg {
+    display: inline;
+    width: 1.9em;
+    height: 1.9em;
+    margin-right: .3em;
+}
+
+.chooser-page .content {
+    display: grid;
+    gap: 2em;
+    grid-template-columns: 1fr 2fr;
+}
+
+.chooser-page .mark svg {
+    display: inline;
+    width: 1.3em;
+    height: 1.3em;
+}
+
+.chooser-page .mark svg:first-of-type {
+    margin-left: .5em;
+}
+
+.chooser-page .tool-rec-details input {
+    color: lightgray;
+}
+
+.chooser-page form#chooser > ol {
+    position: relative;
+
+    list-style: none;
+    counter-reset: chooser-counter;
+}
+
+.chooser-page form#chooser > ol li {
+    counter-increment: chooser-counter;
+}
+.chooser-page form#chooser > ol li::before {
+    position: absolute;
+    --size: 32px;
+    left: calc(-1 * var(--size) - 25px);
+    min-height: 2em;
+    min-width: 2em;
+    padding-top: .4em;
+    box-sizing: border-box;
+
+    content: counter(chooser-counter);
+    font-weight: bold;
+    border-radius: 200px;
+    background: var(--vocabulary-neutral-color-lighter-gray);
+    color: black;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.chooser-page form#chooser legend {
+    font-weight: bold;
+}
+
+.chooser-page form#chooser fieldset {
+    margin-bottom: 1em;
+}
+
+.chooser-page form#chooser label {
+    font-size: .7em;
+    font-weight: 400;
+}
+
+.chooser-page form#chooser #attribution-details span {
+    display: inline-block;
+    padding: .7em 0;
+
+    font-size: .8em;
+    line-height: 1.3;
+}
+
+.chooser-page form#chooser #attribution-details div {
+    margin-bottom: .5em;
+}
+
+.chooser-page form#chooser #waive-your-copyright div {
+    margin-bottom: 1em;
+}
+
+.chooser-page form#chooser #attribution-details input {
+    padding: .2em .2em;
+
+    font-size: 1em;
+}
+
+.chooser-page form#chooser #atrribution-details input::placeholder {
+    opacity: .5;
+}
+
+.chooser-page aside #empty {
+    min-height: 10em;
+    padding: 2em;
+
+    background: var(--vocabulary-brand-color-soft-turquoise);
+    background: var(--vocabulary-neutral-color-lighter-gray);
+}
+
+.chooser-page aside #empty p {
+    font-size: 1.2em;
+}
+
+.chooser-page #tool-recommendation {
+    margin-bottom: 4em;
+
+    font-family: 'Source Sans Pro';
+}
+
+.chooser-page #tool-recommendation .tool {
+    padding: 2em;
+
+    background: var(--vocabulary-brand-color-soft-turquoise);
+}
+
+.chooser-page #tool-recommendation .tool a {
+    --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+}
+
+.chooser-page #tool-recommendation h3 {
+    margin: 0;
+
+    font-family: 'Source Sans Pro';
+    font-size: 1.4em;
+}
+
+.chooser-page #tool-recommendation h4 {
+    margin: .2em;
+
+    font-family: 'Source Sans Pro';
+    font-size: 1.4em;
+}
+
+.chooser-page #tool-recommendation p {
+    font-size: 1.2em;
+}
+
+.chooser-page #tool-recommendation a {
+    font-weight: 700;
+}
+
+.chooser-page #tool-recommendation .conditions-definitions {
+    margin-bottom: 2em;
+
+    font-family: 'Source Sans Pro';
+}
+
+.chooser-page #tool-recommendation .conditions-definitions dt {
+    font-weight: 700;
+}
+
+.chooser-page #mark-your-work textarea {
+    min-height: 9em;
+    width: 90%;
+    margin: 1em;
+    box-sizing: border-box;
+}
+
+.chooser-page #mark-your-work p {
+    font-size: 1.2em;
+}
+
+.chooser-page details {
+    font-family: 'Source Sans Pro';
+
+    border: 2px solid var(--vocabulary-neutral-color-lighter-gray);
+    border-radius: 5px;
+}
+
+.chooser-page details details {
+    margin: 1em;
+}
+
+.chooser-page details.medium {
+    margin-bottom: 1em;
+}
+
+.chooser-page details summary {
+    padding: .2em .5em;
+
+    background: var(--vocabulary-neutral-color-lighter-gray);
+    font-size: 1.6em;
+}
+
+.chooser-page details.format summary {
+    font-size: 1.3em;
+}
+
+.chooser-page summary:hover {
+    cursor: pointer;
+}
+
+.chooser-page summary::marker {
+    font-size: .8em;
+}
+
+.chooser-page details p {
+    padding: 0 1em;
+
+    font-size: 1em;
+}
+
+.chooser-page details.format footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+}
+
+.chooser-page details.format footer label {
+    margin-left: .2em;
+}
+
+.chooser-page details.format footer button {
+    padding: .5em 1em;
+
+    background: #324C7F;
+    color: white;
+    border-radius: 3px;
+    border: none;
+}
+
+.chooser-page details.format footer button:hover {
+    cursor: pointer;
+}
+
+.chooser-page .content {
+    grid-column: 3 / 10;
+}
+
+.chooser-page #help {
+    margin-top: 4em;
+ }
+
+ .chooser-page #help details {
+    margin-bottom: 1em;
+ }
+
+ .chooser-page #help ul {
+    font-size: 1em;
+    padding: 0 1em;
+ }
+
+ .chooser-page #help ul li {
+    padding-bottom: .5em;
+ }
+
+ .chooser-page #help dl {
+    padding: 0 1em;
+ }
+
+
+@media (max-width: 705px) {
+    .chooser-page .content {
+        display: block;
+    }
+}
+
+.chooser-page .panel {
+    display: none;
+}
+
+.chooser-page .panel.expand {
+    display: initial;
+}
