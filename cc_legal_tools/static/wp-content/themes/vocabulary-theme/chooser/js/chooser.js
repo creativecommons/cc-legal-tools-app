@@ -8,7 +8,7 @@ let rawStatePathRoutes = [
     'do-you-know-which-license-you-need/yes/which-license-do-you-need/cc-by-nc/(attribution-details)&tool=cc-by-nc',
     'do-you-know-which-license-you-need/yes/which-license-do-you-need/cc-by-nc-sa/(attribution-details)&tool=cc-by-nc-sa',
     'do-you-know-which-license-you-need/yes/which-license-do-you-need/cc-by-nc-nd/(attribution-details)&tool=cc-by-nc-nd',
-    
+
     'do-you-know-which-license-you-need/no/require-attribution/yes/allow-commercial-use/yes/allow-derivatives/yes/share-alike/no/confirmation+ownership+read+revocation/(attribution-details)&tool=cc-by',
     'do-you-know-which-license-you-need/no/require-attribution/yes/allow-commercial-use/yes/allow-derivatives/yes/share-alike/yes/confirmation+ownership+read+revocation/(attribution-details)&tool=cc-by-sa',
     'do-you-know-which-license-you-need/no/require-attribution/yes/allow-commercial-use/yes/allow-derivatives/no/confirmation+ownership+read+revocation/(attribution-details)&tool=cc-by-nd',
@@ -22,7 +22,7 @@ let rawStatePathRoutes = [
 let state = {};
 
 // all found fieldsets
-const fieldsets = document.querySelectorAll('fieldset'); 
+const fieldsets = document.querySelectorAll('fieldset');
 
 // all found toggles
 const toggles = document.querySelectorAll('#mark-your-work footer input');
@@ -67,13 +67,13 @@ function setStatePossibilities(state) {
         });
 
         fullPath = statePath[0].replace(/[{()}]/g, '') + '/';
-    
+
         if (state.possibilities[tool] == undefined) {
             state.possibilities[tool] = [];
         }
         state.possibilities[tool].push(fullPath);
         state.possibilities[tool].push(noOptionalsPath);
-        
+
     });
 }
 
@@ -91,10 +91,10 @@ function updateStateParts(element, index, event, state) {
     state.parts[index] = element.id + '/' + event.target.value + '/';
 
     // check if checkbox, with siblings
-    if (event.target.getAttribute('type') == 'checkbox') {        
+    if (event.target.getAttribute('type') == 'checkbox') {
         let checkboxElements = element.querySelectorAll('input[type="checkbox"]');
         let checkboxes = [];
-        checkboxElements.forEach((checkbox, index) => { 
+        checkboxElements.forEach((checkbox, index) => {
             if (checkbox.checked) {
                 checkboxes[index] = checkbox.value;
             }
@@ -114,15 +114,15 @@ function updateStateParts(element, index, event, state) {
     }
 }
 
-// function to combine current tracked 
+// function to combine current tracked
 // state.parts into state.current
 function setStateCurrent(element, index,  state) {
     state.parts.forEach((element, i) => {
         if (i > index) {
-            state.parts.splice(i);  
+            state.parts.splice(i);
         }
     });
-    
+
     state.current = state.parts.join('') //.slice(0, -1);
 }
 
@@ -149,7 +149,7 @@ function setStateProps(index, state) {
 
         // set shortName
         shortName = state.props.tool.replace(/cc-/, '');
-        state.props.toolURL = 'https://creativecommons.org/licenses/'+ shortName +'/4.0/'; 
+        state.props.toolURL = 'https://creativecommons.org/licenses/'+ shortName +'/4.0/';
     }
 
     if (state.props.tool != 'unknown' ) {
@@ -174,7 +174,7 @@ function setStateProps(index, state) {
     setStatePropsAttribution(state);
 }
 
-// function to just set the attribution 
+// function to just set the attribution
 // subset of state.props (for use other places)
 function setStatePropsAttribution(state) {
 
@@ -211,9 +211,9 @@ function setStatePropsAttribution(state) {
 
 // function to reset values beyond current fieldset
 // [T]: this could potentially do with a refactor
-// check for input type, and them perform 
+// check for input type, and them perform
 // contextual resets to universal defaults
-// unchecked for radio/checkbox, noselect for 
+// unchecked for radio/checkbox, noselect for
 // selection dropdown, etc.
 function clearStepsAfterCursor(fieldsets, state) {
     fieldsets.forEach((element, index) => {
@@ -374,21 +374,21 @@ function renderMarkingFormats(state) {
 }
 
 
-// function to replace placeholders with values 
+// function to replace placeholders with values
 // for mark format constriction
 // lots of TODOs here (just for testing)
 // can use this to build out string replacement when
 // swapping in html from a <template> element
 // this will enable, controlling the markup, in markup
 // and then JS is only having to do logic replacement
-// of the token placeholders, rather than storing strings 
+// of the token placeholders, rather than storing strings
 // within the JS unnecessarily.
 
 
 // function parseTokens(name, value, str){
 //     return str.replaceAll("{{"+name+"}}", value);
 // }
-  
+
 //   const mark = 'test {{title}} {{year}} by {{author}}';
 
 //   parsedMark = parseTokens("year", "2025", mark);
@@ -400,16 +400,16 @@ function renderMarkingFormats(state) {
 
 // function to render "empty area"
 // if no valid tool from state.parts and/or state/current
-function renderEmptyPlaceholder(state) { 
+function renderEmptyPlaceholder(state) {
 
     if (state.props.tool == 'unknown' ) {
         document.querySelector('#empty').classList.remove('disable');
     }
-    
+
     else if (state.props.tool != 'unknown') {
         document.querySelector('#empty').classList.add('disable');
     }
-    
+
 }
 
 // function to render "mark your work",
@@ -417,14 +417,14 @@ function renderEmptyPlaceholder(state) {
 // if attribution details input(s) filled out
 function renderMarkYourWork(state) {
     if (state.props.tool != 'unknown' ) {
-        // load attribution details template, 
+        // load attribution details template,
         // populate from attribution text values
         document.querySelector('#mark-your-work').classList.remove('disable');
-        
+
         renderMarkingFormats(state);
 
     }
-    
+
     else if (state.props.tool == 'unknown') {
         document.querySelector('#mark-your-work').classList.add('disable');
     }
@@ -451,8 +451,8 @@ function setDefaults(applyDefaults) {
     document.querySelector('#tool-rec-details').classList.add('hide');
 }
 
-// stepper logic here for what parts of form are 
-// displayed/hidden, as state.parts and state.current 
+// stepper logic here for what parts of form are
+// displayed/hidden, as state.parts and state.current
 // are updated
 function renderSteps(applyDefaults, state) {
 
@@ -464,7 +464,7 @@ function renderSteps(applyDefaults, state) {
         });
         document.querySelector('#which-license-do-you-need').classList.toggle('disable');
         document.querySelector('#waive-your-copyright').classList.add('disable');
-            
+
     }
 
     // if visitor doesn't need help
@@ -486,7 +486,7 @@ function renderSteps(applyDefaults, state) {
         });
 
         document.querySelector('#waive-your-copyright').classList.remove('disable');
-    
+
     } else {
         document.querySelector('#waive-your-copyright').classList.add('disable');
     }
@@ -507,12 +507,12 @@ function renderSteps(applyDefaults, state) {
     if (state.parts[4] == 'allow-derivatives/no/') {
         document.querySelector('#share-alike').classList.add('disable');
     }
-    
+
 }
 
 // [T]: function to handle error state
 
-// function to watch for fieldset changes 
+// function to watch for fieldset changes
 function watchFieldsets(fieldsets, state) {
     fieldsets.forEach((element, index) => {
 
@@ -567,7 +567,7 @@ function watchMarkToggles(toggles, state) {
 }
 
 function watchMarkCopiers(copiers, state) {
-    
+
     function copyToClipboard (text) {
         let temp = document.createElement("textarea");
         document.body.appendChild(temp);
@@ -592,7 +592,7 @@ function watchMarkCopiers(copiers, state) {
 }
 
 document.addEventListener("DOMContentLoaded", (event) => {
-    // full flow logic 
+    // full flow logic
     setStateParts(state);
 
     setStatePossibilities(state);
@@ -610,11 +610,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
 // rough panel expansion test
 // let expandButtons = document.querySelectorAll('button.expandPanel');
 
-// expandButtons.forEach((element, index) => { 
+// expandButtons.forEach((element, index) => {
 //     element.addEventListener("click", (event) => {
 
 //         parent = event.target.parentNode.parentNode;
 //         parent.querySelector('.panel').classList.toggle('expand');
-    
+
 //     });
 // });

@@ -176,7 +176,7 @@
 
 .chooser-page form#chooser #attribution-details div {
     margin-bottom: .5em;
-} 
+}
 
 .chooser-page form#chooser #waive-your-copyright div {
     margin-bottom: 1em;
@@ -263,7 +263,7 @@
     font-size: 1.2em;
 }
 
-.chooser-page details { 
+.chooser-page details {
     font-family: 'Source Sans Pro';
 
     border: 2px solid var(--vocabulary-neutral-color-lighter-gray);
@@ -277,7 +277,7 @@
 .chooser-page details.medium {
     margin-bottom: 1em;
 }
-  
+
 .chooser-page details summary {
     padding: .2em .5em;
 
@@ -292,7 +292,7 @@
 .chooser-page summary:hover {
     cursor: pointer;
 }
-  
+
 .chooser-page summary::marker {
     font-size: .8em;
 }
