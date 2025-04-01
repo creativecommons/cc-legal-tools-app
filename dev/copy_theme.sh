@@ -48,6 +48,7 @@ copy_vocabulary_theme_files() {
     print_var REPO_DIR
     print_var STATIC_THEME_DIR | sed -e"s#${REPO_DIR}#.#"
     {
+        cp -av "${THEME_DIR}/src/chooser" "${STATIC_THEME_DIR}/"
         cp -v "${THEME_DIR}/src/style.css" "${STATIC_THEME_DIR}/"
         cp -av "${THEME_DIR}/src/vocabulary" "${STATIC_THEME_DIR}/"
     } | sed \
