@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run Django publish mangement command via Docker
+# Run Django publish management command via Docker
 #
 #### SETUP ####################################################################
 
