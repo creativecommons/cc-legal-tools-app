@@ -410,6 +410,13 @@ Run as needed:
 Generate static files:
 - `./bin/publish.sh` - Run Django publish mangement command via Docker
 
+Django manage via Docker:
+- `./bin/manage.py` - Run Django management commands via Docker
+  - Example:
+    ```shell
+    ./bin/manage.py -h
+    ```
+
 Data management:
 - `./bin/dump_data.sh` - Dump Django application data
 - `./bin/init_data.sh` - :warning: Initialize Django application data
