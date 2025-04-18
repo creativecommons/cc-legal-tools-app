@@ -215,26 +215,52 @@ Repository](#data-repository), above).
 #### Static Files Process
 
 This process will write the HTML files in the cc-legal-tools-data clone
-directory under `docs/`. It will not commit the changes (`--nogit`) and will
-not push any commits (`--nopush` is implied by `--nogit`).
+directory under `docs/`. By default it doesn't commit any changes.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
-3. Delete the contents of the `docs/` directory and then recreate/copy the
-   static files it should contain:
+3. Run the helper script:
     ```shell
-    docker compose exec app ./manage.py publish -v2
+    ./bin/publish.sh
     ```
+    - Example output:
+        ```
+        # Django publish                                                       19:36:20
+        INFO 17:36:21 Checking legal code titles
+        INFO 17:36:23 Purging output_dir: /home/cc/cc-legal-tools-data/docs
+        INFO 17:36:31 Collecting static files
+        66 static files copied to '/home/cc/cc-legal-tools-app/tmp/public/static', 158 unmodified.
+        INFO 17:36:31 Writing robots.txt
+        INFO 17:36:31 Copying WordPress content files
+        INFO 17:36:31 Copying static cc-legal-tools files
+        INFO 17:36:31 Copying static RDF/XML files
+        INFO 17:36:31 Distilling index.rdf
+        INFO 17:36:33 Distilling images.rdf
+        INFO 17:36:33 Distilling ns.html
+        INFO 17:36:33 Copying plaintext legal code
+        INFO 17:36:33 Distilling dev index
+        INFO 17:36:34 Distilling lists
+        INFO 17:36:36 Distilling Licenses 4.0 deed HTML, legal code HTML, and RDF/XML
+        INFO 17:36:41 Distilling Licenses 3.0 deed HTML, legal code HTML, and RDF/XML
+        INFO 17:37:23 Distilling Licenses 2.5 deed HTML, legal code HTML, and RDF/XML
+        INFO 17:37:50 Distilling Licenses 2.1 deed HTML, legal code HTML, and RDF/XML
+        INFO 17:37:54 Distilling Licenses 2.0 deed HTML, legal code HTML, and RDF/XML
+        INFO 17:38:14 Distilling Licenses 1.0 deed HTML, legal code HTML, and RDF/XML
+        INFO 17:38:20 Distilling Public Domain all deed HTML, legal code HTML, and RDF/XML
+        INFO 17:38:21 Writing Apache2 redirects configuration
+        ```
+       - (note that the laptop environment and docker environment had different
+         timezones, CEST and UTC)
 
 
 #### Publishing Changes to Git Repo
 
-When the site is deployed, to enable pushing and pulling the licenses data repo
+~~When the site is deployed, to enable pushing and pulling the licenses data repo
 with GitHub, create an SSH deploy key for the cc-legal-tools-data repo with
 write permissions, and put the private key file (not password protected)
 somewhere safe (owned by `www-data` if on a server), and readable only by its
 owner (0o400). Then in settings, make `TRANSLATION_REPOSITORY_DEPLOY_KEY` be
-the full path to that deploy key file.
+the full path to that deploy key file.~~ (not active nor current)
 
 
 #### Publishing Dependency Documentation
@@ -381,10 +407,15 @@ Run as needed:
   - Run after each new release of
     [creativecommons/vocabulary-theme][vocab-theme]
 
+Generate static files:
+- `./bin/publish.sh` - Run Django publish mangement command via Docker
+
 Data management:
 - `./bin/dump_data.sh` - Dump Django application data
 - `./bin/init_data.sh` - :warning: Initialize Django application data
 - `./bin/load_data.sh` - Load Django application data
+
+
 
 Esoteric and dangerous:
 - `./bin/updatemessages.sh` - :warning: Run Django Management
