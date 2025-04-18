@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copy vocabulary-theme files from a normal checkout (not a releaes tag 
+# Copy vocabulary-theme files from a normal checkout (not a releaes tag
 # checkout, which has a different structure)
 #
 #### SETUP ####################################################################
