@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Run Django mangement command via Docker
+# Run Django management command via Docker
 #
 #### SETUP ####################################################################
 
