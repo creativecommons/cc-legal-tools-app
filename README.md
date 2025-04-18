@@ -129,7 +129,7 @@ repository (where `manage.py` is).
 6. Initialize data.
 Open a separate terminal tab, and in the same directory, run:
     ```shell
-    ./dev/init_data.sh
+    ./bin/init_data.sh
     ```
     1. Deletes database (which may not yet exist)
     2. Initializes database
@@ -372,22 +372,22 @@ These resources are available for developing this tooling:
 ### Helper Scripts
 
 Best run before every commit:
-- `./dev/coverage.sh` - Run coverage tests and report
-- `./dev/tools.sh` - Run Python code tools (isort, black, flake8)
+- `./bin/coverage.sh` - Run coverage tests and report
+- `./bin/tools.sh` - Run Python code tools (isort, black, flake8)
 
 Run as needed:
-- `./dev/copy_theme.sh` - Copy the portions of
+- `./bin/copy_theme.sh` - Copy the portions of
   [creativecommons/vocabulary-theme][vocab-theme] needed for local development
   - Run after each new release of
     [creativecommons/vocabulary-theme][vocab-theme]
 
 Data management:
-- `./dev/dump_data.sh` - Dump Django application data
-- `./dev/init_data.sh` - :warning: Initialize Django application data
-- `./dev/load_data.sh` - Load Django application data
+- `./bin/dump_data.sh` - Dump Django application data
+- `./bin/init_data.sh` - :warning: Initialize Django application data
+- `./bin/load_data.sh` - Load Django application data
 
 Esoteric and dangerous:
-- `./dev/updatemessages.sh` - :warning: Run Django Management
+- `./bin/updatemessages.sh` - :warning: Run Django Management
   nofuzzy_makemessages with helpful options (including excluding legalcode) and
   compilemessages
 
