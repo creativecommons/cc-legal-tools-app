@@ -419,8 +419,8 @@ Data management:
 
 Esoteric and dangerous:
 - `./bin/updatemessages.sh` - :warning: Run Django Management
-  nofuzzy_makemessages with helpful options (including excluding legalcode) and
-  compilemessages
+  `nofuzzy_makemessages` with helpful options (ex. excluding legalcode) and
+  `compilemessages`
 
 [vocab-theme]: https://github.com/creativecommons/vocabulary-theme
 
