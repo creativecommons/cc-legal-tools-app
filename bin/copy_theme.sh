@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
+# Copy vocabulary-theme files from a normal checkout (not a releaes tag
+# checkout, which has a different structure)
+#
+#### SETUP ####################################################################
+
 set -o errexit
 set -o errtrace
 set -o nounset
@@ -9,17 +15,17 @@ trap '_es=${?};
     printf " exited with a status of ${_es}\n";
     exit ${_es}' ERR
 
+DIR_REPO="$(cd -P -- "${0%/*}/.." && pwd -P)"
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 E0="$(printf "\e[0m")"        # reset
-E1="$(printf "\e[1m")"        # bold
 E9="$(printf "\e[9m")"        # strike (not supported in Terminal.app)
 E30="$(printf "\e[30m")"      # black foreground
 E31="$(printf "\e[31m")"      # red foreground
-E33="$(printf "\e[33m")"      # yellow foreground
 E90="$(printf "\e[90m")"      # bright black (gray) foreground
 E97="$(printf "\e[97m")"      # bright white foreground
 E100="$(printf "\e[100m")"    # bright black (gray) background
 E107="$(printf "\e[107m")"    # bright white background
+# shellcheck disable=SC2016
 README='# Dev theme files
 
 This directory is only used in the Django and GitHub development environments.
@@ -42,9 +48,8 @@ THEME_DIR=''
 
 #### FUNCTIONS ################################################################
 
-
 copy_vocabulary_theme_files() {
-    header 'Copying necessary files from vocabulary-themes'
+    print_header 'Copying necessary files from vocabulary-themes'
     print_var REPO_DIR
     print_var STATIC_THEME_DIR | sed -e"s#${REPO_DIR}#.#"
     {
@@ -56,9 +61,8 @@ copy_vocabulary_theme_files() {
     echo
 }
 
-
 create_static_theme_dirs() {
-    header 'Creating necessary static theme directories'
+    print_header 'Creating necessary static theme directories'
     print_var REPO_DIR
     print_var STATIC_DIR | sed -e"s#${REPO_DIR}#.#"
     {
@@ -67,9 +71,8 @@ create_static_theme_dirs() {
     echo
 }
 
-
 create_wp_content_readme() {
-    header 'Creating wp-content README.md'
+    print_header 'Creating wp-content README.md'
     print_var REPO_DIR
     print_var STATIC_DIR | sed -e"s#${REPO_DIR}#.#"
     echo "${README}" > "${STATIC_DIR}/wp-content/README.md"
@@ -77,16 +80,14 @@ create_wp_content_readme() {
     echo
 }
 
-
 error_exit() {
     # Echo error message and exit with error
     echo -e "${E31}ERROR:${E0} ${*}" 1>&2
     exit 1
 }
 
-
 get_vocabulary_theme_dir() {
-    header 'Getting vocabulary-theme dir'
+    print_header 'Getting vocabulary-theme dir'
     if ! THEME_DIR="$(cd -P -- \
         "${REPO_DIR}"/../vocabulary-theme 2> /dev/null \
         && pwd -P)" || ! [[ -d "${THEME_DIR}" ]]
@@ -100,30 +101,26 @@ get_vocabulary_theme_dir() {
     echo
 }
 
-
-header() {
+print_header() {
     # Print 80 character wide black on white heading with time
     printf "${E30}${E107} %-71s$(date '+%T') ${E0}\n" "${@}"
 }
-
 
 print_key_val() {
     printf "${E97}${E100}%18s${E0} %s\n" "${1}:" "${2}"
 }
 
-
 print_var() {
     print_key_val "${1}" "${!1}"
 }
 
-
 purge_static_theme_dir() {
-    header 'Purging existing static theme directories'
+    print_header 'Purging existing static theme directories'
     print_var REPO_DIR
     print_var STATIC_DIR | sed -e"s#${REPO_DIR}#.#"
     print_var STATIC_THEME_DIR | sed -e"s#${REPO_DIR}#.#"
     {
-        rm -f -r -v "${STATIC_THEME_DIR}/"*
+        rm -f -r -v "${STATIC_THEME_DIR:?}/"*
     } | sed \
         -e"s#${STATIC_THEME_DIR}#${E90}${E9}STATIC_THEME_DIR${E0}${E9}#" \
         -e"s#\$#${E0}#"
@@ -131,15 +128,16 @@ purge_static_theme_dir() {
     print_var STATIC_DIR | sed -e"s#${REPO_DIR}#.#"
     print_var STATIC_THEME_DIR | sed -e"s#${REPO_DIR}#.#"
     {
-        rm -f -r -v "${STATIC_DIR}/wp-content"
+        rm -f -r -v "${STATIC_DIR:?}/wp-content"
     } | sed \
         -e"s#${STATIC_DIR}#${E90}${E9}STATIC_DIR${E0}${E9}#" \
         -e"s#\$#${E0}#"
     echo
 }
 
-
 #### MAIN #####################################################################
+
+cd "${DIR_REPO}"
 
 get_vocabulary_theme_dir
 purge_static_theme_dir

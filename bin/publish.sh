@@ -1,7 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
-# Dump Django application data
+# Run Django publish management command via Docker
 #
+#### SETUP ####################################################################
+
 set -o errexit
 set -o errtrace
 set -o nounset
@@ -12,6 +14,7 @@ trap '_es=${?};
     printf " exited with a status of ${_es}\n";
     exit ${_es}' ERR
 
+DIR_REPO="$(cd -P -- "${0%/*}/.." && pwd -P)"
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 E0="$(printf "\e[0m")"        # reset
 E30="$(printf "\e[30m")"      # black foreground
@@ -19,7 +22,6 @@ E31="$(printf "\e[31m")"      # red foreground
 E107="$(printf "\e[107m")"    # bright white background
 
 #### FUNCTIONS ################################################################
-
 
 check_docker() {
     local _msg
@@ -30,29 +32,24 @@ check_docker() {
     fi
 }
 
-
 error_exit() {
     # Echo error message and exit with error
     echo -e "${E31}ERROR:${E0} ${*}" 1>&2
     exit 1
 }
 
-
 print_header() {
     # Print 80 character wide black on white heading with time
-    printf "${E30}${E107}# %-70s$(date '+%T') ${E0}\n" "${@}"
+    printf "${E30}${E107}# %-69s$(date '+%T') ${E0}\n" "${@}"
 }
-
 
 #### MAIN #####################################################################
 
+cd "${DIR_REPO}"
+
 check_docker
-print_header 'Export data (LegalCode and Tool models)'
-data_file='../cc-legal-tools-data/config/app_data.yaml'
-docker compose exec app ./manage.py dumpdata \
-    --format yaml \
-    --indent 2 \
-    --output "${data_file}" \
-    legal_tools.LegalCode legal_tools.Tool
-du -h "${data_file}"
+
+print_header 'Django publish'
+# shellcheck disable=SC2068
+docker compose exec app ./manage.py publish -v2 ${@}
 echo
