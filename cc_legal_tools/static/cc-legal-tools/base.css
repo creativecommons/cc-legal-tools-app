@@ -15,7 +15,6 @@
 }
 .bidi-left div.masthead > nav.ancillary-menu {
   left: auto;
-  right: calc( -1 * var(--vocabulary-page-edges-space));
 }
 .bidi-right div.masthead > nav.ancillary-menu {
   left: 0;
