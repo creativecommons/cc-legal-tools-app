@@ -120,11 +120,11 @@ repository (where `manage.py` is).
     ```shell
     docker compose up
     ```
-   1. **app** ([127.0.0.1:8005](http://127.0.0.1:8005/)): this Django
+   1. **app** ```127.0.0.1:8005```: this Django
       application
       - Any changes made to Python will be detected and rebuilt
         transparently as long as the development server is running.
-   2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
+   2. **static** ```127.0.0.1:8006```: a static web
       server serving [creativecommons/cc-legal-tools-data][repodata]:`docs/`
 6. Initialize data.
 Open a separate terminal tab, and in the same directory, run:
@@ -336,7 +336,7 @@ See [`CONTRIBUTING.md`][org-contrib].
     ```shell
     pipenv run pre-commit install
     ```
-3. Run development server ([127.0.0.1:8005](http://127.0.0.1:8005/))
+3. Run development server ```127.0.0.1:8005```
     ```shell
     pipenv run ./manage.py runserver
     ```
