@@ -73,7 +73,7 @@ function setStatePossibilities(state) {
         }
         state.possibilities[tool].push(fullPath);
         state.possibilities[tool].push(noOptionalsPath);
-
+    
     });
 }
 
@@ -91,7 +91,7 @@ function updateStateParts(element, index, event, state) {
     state.parts[index] = element.id + '/' + event.target.value + '/';
 
     // check if checkbox, with siblings
-    if (event.target.getAttribute('type') == 'checkbox') {
+    if (event.target.getAttribute('type') == 'checkbox') {    
         let checkboxElements = element.querySelectorAll('input[type="checkbox"]');
         let checkboxes = [];
         checkboxElements.forEach((checkbox, index) => {
@@ -420,7 +420,7 @@ function renderMarkYourWork(state) {
         // load attribution details template,
         // populate from attribution text values
         document.querySelector('#mark-your-work').classList.remove('disable');
-
+    
         renderMarkingFormats(state);
 
     }
@@ -464,7 +464,7 @@ function renderSteps(applyDefaults, state) {
         });
         document.querySelector('#which-license-do-you-need').classList.toggle('disable');
         document.querySelector('#waive-your-copyright').classList.add('disable');
-
+        
     }
 
     // if visitor doesn't need help

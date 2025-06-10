@@ -334,7 +334,7 @@ main > aside.sidebar nav.filter-menu ul li.current a {
 main > aside.sidebar nav ul {
     margin: 0;
     padding: 0;
-
+    
     text-indent: none;
     list-style: none;
     font-size: 1rem;
@@ -396,7 +396,7 @@ main h2 {
 
 main h3 {
     box-sizing: border-box;
-
+    
     font-family: 'Roboto Condensed';
     font-style: normal;
     font-weight: 700;
@@ -640,7 +640,7 @@ main article.posts.related .post header {
 
 main article.posts.related .post figure {
     display: none;
-    order: -1;
+    order: -1; 
 }
 
 main article.posts.related .post a {
@@ -666,7 +666,7 @@ main nav.pagination ol {
     width: 100%;
     margin: 0;
     padding: 0;
-
+    
     text-indent: none;
     font-size: 1em;
     list-style: none;
@@ -702,7 +702,7 @@ main .attribution-list {
     grid-column: 3 / span 7;
     box-sizing: border-box;
     position: relative;
-    padding: 4em;
+    padding: 4em; 
 
     background: var(--vocabulary-neutral-color-lighter-gray);
     text-align: left;
@@ -1525,7 +1525,7 @@ body > footer .license svg {
     order: initial;
 }
 
-.blog-index main .posts.featured ul {
+.blog-index main .posts.featured ul {    
     padding: 0 var(--vocabulary-page-edges-space);
 }
 
@@ -1747,14 +1747,14 @@ body > footer .license svg {
     top: 3.4em;
     left: 0;
     width: 30%;
+    max-height: 21.8rem;
+    overflow: hidden;
+    border: 16px solid white;
 }
 
 .person-page main > header figure img {
     box-sizing: border-box;
     width: 100%;
-    max-height: 21.8rem;
-
-    border: 16px solid white;
 }
 
 .person-page main > header .bio {
@@ -1957,7 +1957,7 @@ body > footer .license svg {
         padding: 0 var(--vocabulary-page-edges-space);
     }
 
-    main:has( > aside.sidebar) > aside.sidebar {
+    main:has( > aside.sidebar) > aside.sidebar { 
         padding: 0 var(--vocabulary-page-edges-space);
     }
 
@@ -1966,7 +1966,7 @@ body > footer .license svg {
     }
 
     main > .posts {
-        padding: 0 var(--vocabulary-page-edges-space);
+        padding: 0 var(--vocabulary-page-edges-space); 
     }
 
     .posts article figure {
@@ -1979,7 +1979,7 @@ body > footer .license svg {
         padding-right: var(--vocabulary-page-edges-space);
     }
 
-    .person-page main > header:before {
+    .person-page main > header:before { 
         left: 0;
     }
 
@@ -1988,10 +1988,10 @@ body > footer .license svg {
         padding-right: var(--vocabulary-page-edges-space);
     }
 
-    .search-index main > header:before {
+    .search-index main > header:before { 
         left: 0;
     }
-
+    
     .team-index main > header {
         padding: 0 var(--vocabulary-page-edges-space);
     }
