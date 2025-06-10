@@ -1747,14 +1747,14 @@ body > footer .license svg {
     top: 3.4em;
     left: 0;
     width: 30%;
+    max-height: 21.8rem;
+    overflow: hidden;
+    border: 16px solid white;
 }
 
 .person-page main > header figure img {
     box-sizing: border-box;
     width: 100%;
-    max-height: 21.8rem;
-
-    border: 16px solid white;
 }
 
 .person-page main > header .bio {
