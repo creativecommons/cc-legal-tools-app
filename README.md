@@ -288,9 +288,10 @@ See the [Code of Conduct](#code-of-conduct) above and the [Code of Conduct docum
 
 ### Contributing
 
-See [`CONTRIBUTING.md`][org-contrib].
+## Contributing
 
-[org-contrib]: https://github.com/creativecommons/.github/blob/main/CONTRIBUTING.md
+See [`CONTRIBUTING.md`](https://github.com/creativecommons/cc-legal-tools-app/blob/main/CONTRIBUTING.md)
+
 
 
 ### Manual Setup
