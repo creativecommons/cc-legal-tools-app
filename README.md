@@ -465,6 +465,17 @@ The following CC projects are used to achieve a consistent look and feel:
 
 [vocabulary-theme]: https://github.com/creativecommons/vocabulary-theme
 
+---
+## Translation: Including Legal Code Templates
+
+By default, Django’s `makemessages` command may **not detect** translatable strings inside the `templates/legalcode/` folder.
+
+To ensure strings from those files are included:
+
+```bash
+django-admin makemessages -l en --extension=html --template-dirs=templates/legalcode
+```
+ 
 
 ## Licenses
 
