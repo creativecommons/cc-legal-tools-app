@@ -43,7 +43,7 @@ pyvercompare() {
         PIPFILE_VER=${_ver}
     elif [[ "${_ver}" == "${PIPFILE_VER}" ]] \
         || [[ "${_ver}" == "python${PIPFILE_VER}" ]] \
-        || [[ "${_ver}" == "python:${PIPFILE_VER}-slim" ]] \
+        || [[ "${_ver}" == "python:${PIPFILE_VER}" ]] \
         || [[ "${_ver}" == "py${PIPFILE_VER//./}" ]]
     then
         _status="✅  ${E92}Python version matches Pipfile${E0}"
