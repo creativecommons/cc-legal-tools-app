@@ -1,10 +1,10 @@
 {% load i18n %}
 <li>
   <span class="locale icon-attach fa-globe">
-  <select id="languages-dropdown">
+  <label for="languages-dropdown" class="sr-only">{% trans "Select language" %}</label>
+  <select id="languages-dropdown" {% if languages_and_links|length <= 1 %}disabled{% endif %}>
     {% block lang-options %}
-    <option disabled>{% trans "Languages available" %}</option>
-
+    <option disabled {% if languages_and_links|length > 1 %}selected hidden{% endif %}>{% trans "Languages available" %}</option>
     {% for option in languages_and_links %}
       <option
         id="option-{{ option.cc_language_code }}"

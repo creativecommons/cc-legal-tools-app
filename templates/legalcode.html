@@ -82,8 +82,7 @@ the date of change
       <p class="has-text-black body-big padding-bottom-normal"><strong>{% trans "Unimplemented" %}</strong> &mdash; {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %} <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues · creativecommons/cc-legal-tools-app</a>.</p>
     </div>
   {% endif %}
-  {# NOTE: plaintext functionality disabled #}
-  {# {% include 'includes/view_legal_code_link_plain_text.html' %} #}
+  {% include 'includes/view_legal_code_link_plain_text.html' %}
 {% else %}
   {% include "includes/legalcode_crude_html.html" %}
 {% endif %}

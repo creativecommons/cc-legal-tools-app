@@ -63,6 +63,21 @@ JURISDICTION_CURRENCY_LOOKUP = {
     "es": "eu",
 }
 
+CURRENCY_ICON_MAP = {
+    "eu": "fa-euro-sign",   # FontAwesome or custom SVG icon name for Euro
+    "jp": "fa-yen-sign",    # FontAwesome or custom SVG icon name for Yen
+    # Add more as needed
+}
+
+def get_currency_icon_for_jurisdiction(jurisdiction_code):
+    """
+    Returns the icon name for the currency of the given jurisdiction, or None if not found.
+    """
+    currency_code = JURISDICTION_CURRENCY_LOOKUP.get(jurisdiction_code)
+    if not currency_code:
+        return None
+    return CURRENCY_ICON_MAP.get(currency_code)
+
 
 def get_translation_object(
     domain: str, language_code: str, language_default: str

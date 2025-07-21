@@ -225,17 +225,17 @@ class LegalCode(models.Model):
             "legalcode",
             self.language_code,
         )
-        # NOTE: plaintext functionality disabled
-        # unit = self.tool.unit
-        # if (
-        #     (unit in UNITS_LICENSES and float(self.tool.version) > 2.5)
-        #     or unit == "zero"
-        # ) and self.language_code == "en":
-        #     self.plain_text_url = build_path(
-        #         self.tool.base_url,
-        #         "legalcode.txt",
-        #         self.language_code,
-        #     )
+        # Enable plain text for all languages
+        unit = self.tool.unit
+        if (
+            (unit in UNITS_LICENSES and float(self.tool.version) > 2.5)
+            or unit == "zero"
+        ):
+            self.plain_text_url = build_path(
+                self.tool.base_url,
+                "legalcode.txt",
+                self.language_code,
+            )
         super().save(*args, **kwargs)
 
     def get_publish_files(self):

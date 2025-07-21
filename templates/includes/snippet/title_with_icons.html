@@ -9,6 +9,13 @@
       </svg>
     </span>
     {% endfor %}
+    {% if currency_icon %}
+    <span class="cc-icon">
+      <svg viewBox="0 0 30 30">
+        <use href="/wp-content/themes/vocabulary-theme/vocabulary/svg/font-awesome/icons/fa-icons.svg#{{ currency_icon }}"></use>
+      </svg>
+    </span>
+    {% endif %}
   </span>
   <span class="tool-identifier">{{ tool.identifier }}</span>
 </span>

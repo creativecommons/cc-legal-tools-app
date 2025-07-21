@@ -12,7 +12,7 @@ from bs4.formatter import HTMLFormatter
 from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.template.loader import render_to_string
 from django.utils import translation
 
@@ -24,6 +24,7 @@ from i18n.utils import (
     get_jurisdiction_name,
     load_deeds_ux_translations,
     map_django_to_transifex_language_code,
+    get_currency_icon_for_jurisdiction,
 )
 from legal_tools.models import (
     UNITS_LICENSES,
@@ -361,12 +362,7 @@ def view_dev_index(request):
         },
     )
 
-    html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(
-            formatter="html5ish"
-        ),
-        "utf-8",
-    )
+    # Remove prettify from dev index
     return html_response
 
 
@@ -455,8 +451,9 @@ def view_list(request, category, language_code=None):
         category_list = translation.gettext("Public Domain List")
         list_publicdomain = None
 
-    languages_and_links = get_languages_and_links_for_deeds_ux(
-        request_path=request.path,
+    languages_and_links = get_languages_and_links_for_legal_codes(
+        path_start=path_start,
+        legal_codes=legal_code_objects,
         selected_language_code=language_code,
     )
     canonical_url_html = os.path.join(
@@ -477,12 +474,8 @@ def view_list(request, category, language_code=None):
             "tools": tools,
         },
     )
-    html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(
-            formatter="html5ish"
-        ),
-        "utf-8",
-    )
+
+    # Remove prettify from list page
     return html_response
 
 
@@ -560,6 +553,8 @@ def view_deed(
         language_default,
     )
 
+    currency_icon = get_currency_icon_for_jurisdiction(jurisdiction)
+
     if tool.unit in UNITS_LICENSES:
         body_template = "includes/deed_body_licenses.html"
     elif tool.unit == "zero":
@@ -595,14 +590,11 @@ def view_deed(
             "replaced_title": replaced_title,
             "tool": tool,
             "tool_title": tool_title,
+            "currency_icon": currency_icon,
         },
     )
-    html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(
-            formatter="html5ish"
-        ),
-        "utf-8",
-    )
+
+    # Remove prettify from deed page
     return html_response
 
 
@@ -629,22 +621,40 @@ def view_legal_code(
 
     path_start = os.path.dirname(request.path)
 
-    # NOTE: plaintext functionality disabled
-    # if is_plain_text:
-    #     legal_code = get_object_or_404(
-    #         LegalCode,
-    #         plain_text_url=request.path,
-    #     )
-    # else:
-    #     legal_code = get_object_or_404(
-    #         LegalCode,
-    #         legal_code_url=request.path,
-    #     )
-
-    legal_code = get_object_or_404(
-        LegalCode,
-        legal_code_url=request.path,
-    )
+    # Improved fallback: try requested, then jurisdiction default, then English
+    legal_code = LegalCode.objects.valid().filter(
+        tool__unit=unit,
+        tool__version=version,
+        tool__category=category,
+        tool__jurisdiction_code=jurisdiction,
+        language_code=language_code,
+    ).first()
+    fallback_used = False
+    if not legal_code:
+        # Try jurisdiction default
+        legal_code = LegalCode.objects.valid().filter(
+            tool__unit=unit,
+            tool__version=version,
+            tool__category=category,
+            tool__jurisdiction_code=jurisdiction,
+            language_code=language_default,
+        ).first()
+        fallback_used = True if legal_code else False
+        if not legal_code:
+            # Try English
+            legal_code = LegalCode.objects.valid().filter(
+                tool__unit=unit,
+                tool__version=version,
+                tool__category=category,
+                tool__jurisdiction_code=jurisdiction,
+                language_code=settings.LANGUAGE_CODE,
+            ).first()
+            fallback_used = True if legal_code else False
+    if not legal_code:
+        raise Http404("Legal code not found in any language")
+    # If fallback was used, redirect to the correct URL
+    if fallback_used and request.path != legal_code.legal_code_url:
+        return redirect(legal_code.legal_code_url)
 
     # Use Deeds & UX translations for title instead of Legal Code
     if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
@@ -753,6 +763,7 @@ def view_legal_code(
             ),
             "utf-8",
         )
+        # Remove prettify from legal code page
         return html_response
 
 

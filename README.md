@@ -557,3 +557,105 @@ License][ccbysa40].
 
 [fontawesome]: https://fontawesome.com/
 [ccby40]: https://creativecommons.org/licenses/by/4.0/
+
+## Quickstart: Local Development
+
+### 1. Clone the Repositories
+
+Clone this repository and the required data repository as siblings:
+
+```sh
+git clone https://github.com/creativecommons/cc-legal-tools-app.git
+git clone https://github.com/creativecommons/cc-legal-tools-data.git
+```
+
+Your directory structure should look like:
+```
+parent-directory/
+  cc-legal-tools-app/
+  cc-legal-tools-data/
+```
+
+### 2. Install Python Dependencies
+
+Make sure you have Python 3.11 and [Pipenv](https://pipenv.pypa.io/en/latest/) installed.
+
+```sh
+cd cc-legal-tools-app
+pip install pipenv
+pipenv install --dev
+```
+
+### 3. Set Up Local Settings
+
+Copy the example local settings file:
+
+```sh
+cp cc_legal_tools/settings/local.example.py cc_legal_tools/settings/local.py
+```
+
+Edit `cc_legal_tools/settings/local.py` if you need to change any settings (optional).
+
+### 4. Initialize the Database and Data
+
+Run the provided script to set up the database and load data:
+
+```sh
+./bin/init_data.sh
+```
+
+If you see a message about Docker, you can instead run migrations and create a superuser manually:
+
+```sh
+pipenv run python manage.py migrate --settings=cc_legal_tools.settings.dev
+pipenv run python manage.py createsuperuser --settings=cc_legal_tools.settings.dev
+```
+
+### 5. Run the Development Server
+
+Start the server with the correct settings module:
+
+```sh
+pipenv run python manage.py runserver --settings=cc_legal_tools.settings.dev
+```
+
+If port 8000 is in use, try another port:
+
+```sh
+pipenv run python manage.py runserver 8001 --settings=cc_legal_tools.settings.dev
+```
+
+Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) (or your chosen port) in your browser.
+
+### 6. Run the Test Suite
+
+To verify everything is working:
+
+```sh
+pipenv run python manage.py test --settings=cc_legal_tools.settings.dev
+```
+
+You should see all tests pass with `OK`.
+
+---
+
+## Deployment
+
+- For production, use `cc_legal_tools.settings.local` or your own settings file.
+- Use standard Django deployment practices (WSGI/ASGI, static files, etc).
+
+---
+
+## Troubleshooting
+
+- If you see `ImproperlyConfigured: Requested setting ...`, make sure you are specifying the settings module with `--settings=cc_legal_tools.settings.dev`.
+- If you see `port is already in use`, stop the previous server or use a different port.
+- If you see missing data errors, ensure `cc-legal-tools-data` is present as a sibling directory.
+
+---
+
+## Contributing
+
+Pull requests are welcome! Please open an issue or discussion for major changes.
+
+---
