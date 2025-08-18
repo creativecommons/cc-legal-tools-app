@@ -312,12 +312,12 @@ function renderMarkingFormats(state) {
     document.querySelector('#mark-your-work .plain-text.mark').appendChild(templateContent);
 
     // set contents of rich text mark
-    let ccSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
-    let bySVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
-    let saSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
-    let ncSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
-    let ndSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/nd.svg" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
-    let zeroSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/zero.svg" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
+    let ccSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
+    let bySVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
+    let saSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
+    let ncSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
+    let ndSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/nd.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
+    let zeroSVG = '<img src="https://mirrors.creativecommons.org/presskit/icons/zero.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;">';
 
     const currentTool = state.props.tool;
     switch (currentTool) {
