@@ -1,7 +1,7 @@
 ## Helper Scripts
 
 Best run before every commit:
-- `./dev/20231009_concatenatemessages.sh` - Concatenate legacy ccEngine
+- `./bin/20231009_concatenatemessages.sh` - Concatenate legacy ccEngine
   translations into cc-legal-tools-app
 
 

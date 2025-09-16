@@ -9,19 +9,18 @@
 }
 
 
-/* Ancilliary menu */
-.ancilliary-menu {
+/* Ancillary menu */
+.ancillary-menu {
   font-size: min(.8em, 2.5vw);
 }
-.bidi-left div.masthead > nav.ancilliary-menu {
+.bidi-left div.masthead > nav.ancillary-menu {
   left: auto;
-  right: calc( -1 * var(--vocabulary-page-edges-space));
 }
-.bidi-right div.masthead > nav.ancilliary-menu {
+.bidi-right div.masthead > nav.ancillary-menu {
   left: 0;
   right: auto !important;
 }
-div.masthead > nav.ancilliary-menu span.locale {
+div.masthead > nav.ancillary-menu span.locale {
   display: inline-flex;
   align-items: center;
   margin-top: 5px;
@@ -31,20 +30,20 @@ div.masthead > nav.ancilliary-menu span.locale {
   border: none;
   border-radius: 3px;
 }
-div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
+div.masthead > nav.ancillary-menu span.locale.icon-attach:before {
   --icon-sprite: var(--fa-globe);
   --icon-sprite-size: .8em;
   opacity: .5;
 }
-.bidi-left div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
-.bidi-left div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
-.bidi-left div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
+.bidi-left div.masthead > nav.ancillary-menu a.donate.icon-attach:before,
+.bidi-left div.masthead > nav.ancillary-menu span.locale.icon-attach:before,
+.bidi-left div.masthead > nav.ancillary-menu a.search.icon-attach:before {
   margin-left: 0;
   margin-right: .8em;
 }
-.bidi-right div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
-.bidi-right div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
-.bidi-right div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
+.bidi-right div.masthead > nav.ancillary-menu a.donate.icon-attach:before,
+.bidi-right div.masthead > nav.ancillary-menu span.locale.icon-attach:before,
+.bidi-right div.masthead > nav.ancillary-menu a.search.icon-attach:before {
   margin-left: .8em;
   margin-right: 0;
 }
@@ -62,13 +61,13 @@ div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
   display: flex;
   padding: 3em 0;
 }
-.cc-legal-tools,.bidi-left main > header > span.alt-titles {
+.cc-legal-tools .bidi-left main > header > span.alt-titles {
   order: 1;
 }
-.cc-legal-tools,.bidi-left main > header > span.alt-titles > span.tool-icons {
+.cc-legal-tools .bidi-left main > header > span.alt-titles > span.tool-icons {
   padding-right: 1em;
 }
-.cc-legal-tools,.bidi-right main > header > span.alt-titles > span.tool-icons {
+.cc-legal-tools .bidi-right main > header > span.alt-titles > span.tool-icons {
   padding-left: 1em;
 }
 main > header > span.alt-titles > span.tool-icons > span.cc-icon > svg {
@@ -96,6 +95,7 @@ main > header > span.alt-titles > span.tool-icons > span.cc-icon > svg {
 /* right nav */
 .cc-legal-tools main > aside {
   background-color: var(--vocabulary-brand-color-soft-gold);
+  margin-left: 4.1rem;
   padding: 1em;
   height: fit-content;
 }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Run coverage tests and report
 #
@@ -6,6 +6,8 @@
 # called from the cc-legal-tools-app directory like so:
 #
 #     ./dev/coverage.sh --failfast
+#
+#### SETUP ####################################################################
 
 set -o errexit
 set -o errtrace
@@ -50,6 +52,7 @@ docker compose exec app coverage erase --debug=dataio
 echo
 
 print_header 'Coverage tests'
+# shellcheck disable=SC2068
 docker compose exec app coverage run --debug=pytest \
     manage.py test --noinput --parallel 4 ${@:-} \
     || exit

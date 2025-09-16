@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # TODO: stop expanding this bash script and move it to the publishing process
 #       so that the information is on an HTML page that is updated with each
 #       publish
 #
+#### SETUP ####################################################################
+
 set -o errexit
 set -o errtrace
 set -o nounset
@@ -14,6 +16,11 @@ trap '_es=${?};
     printf " exited with a status of ${_es}\n";
     exit ${_es}' ERR
 
+DIR_REPO="$(cd -P -- "${0%/*}/.." && pwd -P)"
+DIR_PUB_LICENSES="$(cd -P -- \
+    "${DIR_REPO}/../cc-legal-tools-data/docs/licenses" && pwd -P)"
+DIR_PUB_PUBLICDOMAIN="$(cd -P -- \
+    "${DIR_REPO}/../cc-legal-tools-data/docs/publicdomain" && pwd -P)"
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 E0="$(printf "\e[0m")"        # reset
 E1="$(printf "\e[1m")"        # bold
@@ -24,18 +31,12 @@ E33="$(printf "\e[33m")"      # yellow foreground
 E97="$(printf "\e[97m")"      # bright white foreground
 E100="$(printf "\e[100m")"    # bright black (gray) background
 E107="$(printf "\e[107m")"    # bright white background
-DIR_REPO="$(cd -P -- "${0%/*}/.." && pwd -P)"
-DIR_PUB_LICENSES="$(cd -P -- \
-    "${DIR_REPO}/../cc-legal-tools-data/docs/licenses" && pwd -P)"
-DIR_PUB_PUBLICDOMAIN="$(cd -P -- \
-    "${DIR_REPO}/../cc-legal-tools-data/docs/publicdomain" && pwd -P)"
 PORTED_NOTE="\
 Prior to the international 4.0 version, the licenses were adapted to specific
 legal jurisdictions (\"ported\"). This means there are more legal tools for
 these earlier versions than there are licenses."
 
 #### FUNCTIONS ################################################################
-
 
 check_prerequisites() {
     if ! command -v scc &>/dev/null
@@ -45,19 +46,16 @@ check_prerequisites() {
     fi
 }
 
-
 error_exit() {
     # Echo error message and exit with error
     echo -e "${E31}ERROR:${E0} ${*}" 1>&2
     exit 1
 }
 
-
 print_header() {
     # Print 80 character wide black on white heading with time
     printf "${E30}${E107}# %-69s$(date '+%T') ${E0}\n" "${@}"
 }
-
 
 print_key_val() {
     local _sep
@@ -70,11 +68,9 @@ print_key_val() {
     printf "${E97}${E100}%21s${E0}${_sep}%s\n" "${1}:" "${2}"
 }
 
-
 print_var() {
     print_key_val "${1}" "${!1}"
 }
-
 
 published_documents() {
     local _count _subtotal _ver
@@ -183,7 +179,6 @@ published_documents() {
     echo
 }
 
-
 source_code() {
     print_header 'Source code'
     print_var DIR_REPO
@@ -195,7 +190,6 @@ source_code() {
     echo
 }
 
-
 todo() {
     print_header 'Deeds & UX translation'
     echo "${E33}TODO${E0}"
@@ -205,8 +199,9 @@ todo() {
     echo
 }
 
-
 #### MAIN #####################################################################
+
+cd "${DIR_REPO}"
 
 check_prerequisites
 source_code

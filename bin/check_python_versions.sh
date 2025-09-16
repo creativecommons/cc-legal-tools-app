@@ -1,10 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Check if all specified Python versions match Pipfile
 #
+#### SETUP ####################################################################
+
+set -o errexit
 set -o errtrace
 set -o nounset
 
+# shellcheck disable=SC2154
+trap '_es=${?};
+    printf "${0}: line ${LINENO}: \"${BASH_COMMAND}\"";
+    printf " exited with a status of ${_es}\n";
+    exit ${_es}' ERR
+
+
+DIR_REPO="$(cd -P -- "${0%/*}/.." && pwd -P)"
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 E0="$(printf    "\e[0m")"   # reset
 E91="$(printf   "\e[91m")"  # bright red foreground
@@ -13,6 +24,7 @@ E97="$(printf   "\e[97m")"  # bright white foreground
 E100="$(printf  "\e[100m")" # bright black (gray) background
 EXIT_STATUS=0
 
+#### FUNCTIONS ################################################################
 
 pyvercompare() {
     local _path=${1}
@@ -27,11 +39,11 @@ pyvercompare() {
     # compare Python version
     if [[ "${_path}" == 'Pipfile' ]]
     then
-        _status="✅  ${E92}athoritative Python version${E0}"
+        _status="✅  ${E92}authoritative Python version${E0}"
         PIPFILE_VER=${_ver}
     elif [[ "${_ver}" == "${PIPFILE_VER}" ]] \
         || [[ "${_ver}" == "python${PIPFILE_VER}" ]] \
-        || [[ "${_ver}" == "python:${PIPFILE_VER}-slim" ]] \
+        || [[ "${_ver}" == "python:${PIPFILE_VER}" ]] \
         || [[ "${_ver}" == "py${PIPFILE_VER//./}" ]]
     then
         _status="✅  ${E92}Python version matches Pipfile${E0}"
@@ -46,11 +58,9 @@ pyvercompare() {
     echo
 }
 
+#### MAIN #####################################################################
 
-# Change directory to root directory of cc-legal-tools-app repository
-# (grandparent directory of this script)
-# shellcheck disable=SC2164
-cd "${0%/*}"/../
+cd "${DIR_REPO}"
 
 pyvercompare 'Pipfile' 'python_version =' '3'
 pyvercompare '.github/workflows/django-app-coverage.yml' 'python-version:' '2'

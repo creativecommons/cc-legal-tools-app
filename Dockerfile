@@ -1,7 +1,7 @@
 # https://docs.docker.com/engine/reference/builder/
 
 # https://hub.docker.com/_/python/
-FROM python:3.11-slim
+FROM python:3.11
 
 # Configure apt not to prompt during docker build
 ARG DEBIAN_FRONTEND=noninteractive
@@ -17,6 +17,10 @@ ENV PYTHONUNBUFFERED=1
 # Python: enable faulthandler to dump Python traceback on catastrophic cases
 # https://docs.python.org/3.11/library/faulthandler.html
 ENV PYTHONFAULTHANDLER=1
+
+# Python: force-enable pip's PEP 517 mode
+# https://github.com/pypa/pip/issues/6334
+ENV PIP_USE_PEP517=true
 
 WORKDIR /root
 
