@@ -102,6 +102,7 @@
   </p>
   <p>
     Primary GitHub repositories for this content:
+  </p>
     <ol>
       <li>
         <a href="https://github.com/creativecommons/cc-legal-tools-app/"
@@ -116,7 +117,6 @@
         </a>
       </li>
     </ol>
-  </p>
 
   {% if not distilling %}
   <h2 id="django">Django</h2>
@@ -192,9 +192,8 @@
       </a>
     </li>
 {% endcomment %}
-  </ul>
 
-  <h2 id="translation-deeds-ux">Deeds & UX Translation Status</h1>
+  <h2 id="translation-deeds-ux">Deeds & UX Translation Status</h2>
   <table>
   <thead>
   <tr>
@@ -245,7 +244,7 @@
     </th>
   </tr>
   </thead>
-  </tbody>
+  <tbody>
     {% for language_code, info in deed_ux.items %}
       {% if info.percent_translated == 0 %}
       <tr class="status-empty">
@@ -281,17 +280,16 @@
         <td class="datetime">{{ info.updated }}</td>
         {% if info.bidi %}
           <td style="font-weight:bold; text-align:right; white-space:nowrap;">
-            RTL &#x21E6 {# Leftwards White Arrow - Arrows #}
+            RTL &#x21E6; {# Leftwards White Arrow - Arrows #}
           </td>
         {% else %}
           <td style="text-align:left; white-space:nowrap;">
-            &#x21E8 {# Rightwards White Arrow - Arrows #} LTR
+            &#x21E8; {# Rightwards White Arrow - Arrows #} LTR
           </td>
         {% endif %}
-        </td>
         <td style="text-align:center; white-space:nowrap;">
           {% if info.legal_code %}
-            &#x2714 {# Heavy Check Mark - Dingbats #}
+            &#x2714; {# Heavy Check Mark - Dingbats #}
           {% endif %}
         </td>
         <td style="white-space:nowrap;">{{ info.name_local }}</td>
