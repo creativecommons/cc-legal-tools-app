@@ -6,7 +6,6 @@ from typing import Iterable
 
 # Third-party
 import yaml
-from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404, HttpResponse
@@ -34,7 +33,7 @@ from legal_tools.rdf_utils import (
     generate_legal_code_rdf,
     order_rdf_xml,
 )
-from legal_tools.utils import get_tool_title
+from legal_tools.utils import get_tool_title, pretty_html_bytes
 
 NUM_COMMITS = 3
 PLAIN_TEXT_TOOL_IDENTIFIERS = [
@@ -55,10 +54,6 @@ PLAIN_TEXT_TOOL_IDENTIFIERS = [
 
 # For removing the deed.foo section of a deed url
 REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
-
-
-def html_format_bytes(content):
-    return str(BeautifulSoup(content, features="lxml")).encode("utf-8")
 
 
 def get_category_and_category_title(category=None, tool=None):
@@ -353,7 +348,7 @@ def view_dev_index(request):
         },
     )
 
-    html_response.content = html_format_bytes(html_response.content)
+    html_response.content = pretty_html_bytes(html_response.content)
     return html_response
 
 
@@ -464,7 +459,7 @@ def view_list(request, category, language_code=None):
             "tools": tools,
         },
     )
-    html_response.content = html_format_bytes(html_response.content)
+    html_response.content = pretty_html_bytes(html_response.content)
     return html_response
 
 
@@ -579,7 +574,7 @@ def view_deed(
             "tool_title": tool_title,
         },
     )
-    html_response.content = html_format_bytes(html_response.content)
+    html_response.content = pretty_html_bytes(html_response.content)
     return html_response
 
 
@@ -724,7 +719,7 @@ def view_legal_code(
         #         return response
         #
         html_response = render(request, **kwargs)
-        html_response.content = html_format_bytes(html_response.content)
+        html_response.content = pretty_html_bytes(html_response.content)
         return html_response
 
 
@@ -834,7 +829,7 @@ def render_redirect(title, destination, language_code):
         "redirect.html",
         context={"title": title, "destination": destination},
     )
-    return html_format_bytes(html_content)
+    return pretty_html_bytes(html_content)
 
 
 def view_legal_tool_rdf(
