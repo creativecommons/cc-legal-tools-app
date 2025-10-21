@@ -275,8 +275,19 @@ function renderMarkingFormats(state) {
     // set contents of plain text mark
     // [T]: reverse use of <template> since it has limits on tokenization capacity, even if
     // it allows more dev readability.
-    let template = document.getElementById('plain-text');
-    let templateContent = template.content.cloneNode(true);
+
+    // determine if generic mark is toggled.
+    plainTextGenericMark = document.querySelector('#plain-text-generic-mark').checked;
+
+    if (plainTextGenericMark == true) {
+        template = document.getElementById('plain-text-generic');
+        console.log('plain text generic mark true');
+    } else {
+        template = document.getElementById('plain-text');
+        console.log('plain text generic mark false');
+    }
+
+    templateContent = template.content.cloneNode(true);
     document.querySelector('#mark-your-work .plain-text.mark').textContent = '';
 
     function parseTokens(name, value, str){
@@ -299,7 +310,6 @@ function renderMarkingFormats(state) {
 
     if (plainTextFullName == true) {
         markProps.toolName = state.props.toolLong;
-
     } else {
         markProps.toolName = state.props.toolShort;
     }
@@ -355,7 +365,17 @@ function renderMarkingFormats(state) {
         markProps.toolName = state.props.toolShort;
     }
 
-    let richTextMark = '<a href="' + attribution.workLink + '">' + attribution.title + '</a>' + copyright + ' by ' + '<a href="' + attribution.creatorLink + '">' + attribution.creator + '</a>' + ' is ' + typeAsVerb  + ' ' + '<a href="' + state.props.toolURL + '">' + markProps.toolName + '</a>' + ccIconSet;
+    // determine if generic mark is toggled.
+    richTextGenericMark = document.querySelector('#rich-text-generic-mark').checked;
+
+    if (richTextGenericMark == true) {
+        richTextMark = 'This work' + ' is ' + typeAsVerb  + ' ' + '<a href="' + state.props.toolURL + '">' + markProps.toolName + '</a>' + ccIconSet;
+        console.log('plain text generic mark true');
+    } else {
+        richTextMark = '<a href="' + attribution.workLink + '">' + attribution.title + '</a>' + copyright + ' by ' + '<a href="' + attribution.creatorLink + '">' + attribution.creator + '</a>' + ' is ' + typeAsVerb  + ' ' + '<a href="' + state.props.toolURL + '">' + markProps.toolName + '</a>' + ccIconSet;
+        console.log('plain text generic mark false');
+    }
+
     document.querySelector('#mark-your-work .rich-text.mark').innerHTML = richTextMark;
 
 
@@ -368,8 +388,19 @@ function renderMarkingFormats(state) {
     } else {
         markProps.toolName = state.props.toolShort;
     }
+
+    // determine if generic mark is toggled.
+    htmlGenericMark = document.querySelector('#html-generic-mark').checked;
+
+    if (htmlGenericMark == true) {
+        htmlMark = 'This work' + ' is ' + typeAsVerb  + ' ' + '<a href="' + state.props.toolURL + '">' + markProps.toolName + '</a>' + ccIconSet;
+        console.log('plain text generic mark true');
+    } else {
+        htmlMark = '<a href="' + attribution.workLink + '">' + attribution.title + '</a>' + copyright + ' by ' + '<a href="' + attribution.creatorLink + '">' + attribution.creator + '</a>' + ' is ' + typeAsVerb  + ' ' + '<a href="' + state.props.toolURL + '">' + markProps.toolName + '</a>' + ccIconSet;
+        console.log('plain text generic mark false');
+    }
+
     //defaultHTML = '<p xmlns:cc="http://creativecommons.org/ns#">This work is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="license noopener noreferrer">CC BY-SA 4.0<img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt=""><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt=""><img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt=""></a></p>';
-    let htmlMark = '<a href="' + attribution.workLink + '">' + attribution.title + '</a>' + copyright + ' by ' + '<a href="' + attribution.creatorLink + '">' + attribution.creator + '</a>' + ' is ' + typeAsVerb  + ' ' + '<a href="' + state.props.toolURL + '">' + markProps.toolName + '</a>' + ccIconSet;
     document.querySelector('#mark-your-work .html.mark').innerHTML = htmlMark;
 }
 
