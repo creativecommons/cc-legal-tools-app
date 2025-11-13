@@ -1,10 +1,12 @@
 # Standard library
 import logging
 import os
+import sys
 import posixpath
+import urllib.error
+import urllib.request
 
 # Third-party
-from bs4 import NavigableString
 from colorlog.escape_codes import escape_codes
 from django.conf import settings
 from django.core.cache import cache
@@ -211,10 +213,7 @@ def validate_list_is_all_text(list_):
     """
     newlist = []
     for i, value in enumerate(list_):
-        if isinstance(value, NavigableString):
-            newlist.append(str(value))
-            continue
-        elif not isinstance(value, (str, list, dict)):
+        if not isinstance(value, (str, list, dict)):
             raise ValueError(
                 f"Not a str, list, or dict: {type(value)}: {value}"
             )
@@ -562,3 +561,16 @@ def update_title(options):
         LOG.info(f"legal code object titles updated: {count}")
 
     return results
+
+
+def pretty_html_bytes(html_text):
+    if not isinstance(html_text, bytes):
+        html_text = html_text.encode("utf-8")
+    try:
+        with urllib.request.urlopen(
+            "http://localhost:3000", data=html_text
+        ) as f:
+            return f.read()
+    except urllib.error.HTTPError as e:
+        print(e.read().decode("utf-8"), file=sys.stderr)
+        return html_text

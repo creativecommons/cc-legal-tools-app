@@ -11,7 +11,7 @@ services:
 
   app:
     build: .
-    command: "./manage.py runserver 0.0.0.0:${PORT_APP}"
+    command: "bash -c 'node prettier-server.js & ./manage.py runserver 0.0.0.0:${PORT_APP}'"
     environment:
       - DJANGO_SETTINGS_MODULE=${DOCKER_DJANGO_SETTINGS_MODULE}
     ports:
