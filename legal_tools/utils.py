@@ -2,10 +2,12 @@
 import logging
 import os
 import posixpath
-import urllib.error
-import urllib.request
 
 # Third-party
+import requests
+from bs4 import BeautifulSoup
+from bs4.dammit import EntitySubstitution
+from bs4.formatter import HTMLFormatter
 from colorlog.escape_codes import escape_codes
 from django.conf import settings
 from django.core.cache import cache
@@ -23,6 +25,15 @@ from i18n.utils import (
     map_legacy_to_django_language_code,
 )
 
+HTMLFormatter.REGISTRY["html5ish"] = HTMLFormatter(
+    # The html5 formatter replaces accented characters with entities, which
+    # significantly alters translations and breaks tests. This custom
+    # formatter uses the same EntitySubstitution as the minimal formatter
+    # and the html5 values for the other parameters.
+    entity_substitution=EntitySubstitution.substitute_xml,
+    void_element_close_prefix=None,
+    empty_attributes_are_booleans=True,
+)
 LOG = logging.getLogger(__name__)
 
 
@@ -559,15 +570,29 @@ def update_title(options):
     return results
 
 
-def pretty_html_bytes(path, html_text):
-    if not isinstance(html_text, bytes):
-        html_text = html_text.encode("utf-8")
-    try:
-        with urllib.request.urlopen(
-            "http://prettier:3000", data=html_text
-        ) as f:
-            return f.read()
-    except urllib.error.HTTPError as e:
-        error_message = e.read().decode("utf-8")
-        LOG.warning(f"{path}: {error_message}")
-        return html_text
+def pretty_html_bytes(path, html_bytes):
+    """
+    1. Clean-up HTML using BeautifulSoup4
+    2. Format HTML using Prettier
+    """
+    if not isinstance(html_bytes, bytes):
+        html_bytes = html_bytes.encode("utf-8")
+    url = "http://prettier:3000"
+    data = BeautifulSoup(html_bytes, features="lxml").encode()
+    headers = {"Content-Type": "text/html"}
+    timeout = 5
+    response = requests.post(
+        url,
+        data=data,
+        headers=headers,
+        timeout=timeout,
+    )
+    response.raise_for_status()
+    return response.content
+    # This function is currently expected to complete without error. The
+    # primary downside is that HTML syntax errors are not currently exposed. A
+    # new function and command line should be created to test validity of HTML
+    # independent of publishing.
+    #
+    # except requests.HTTPError as e:
+    #     LOG.warning(f"{path}: {e.response.text}")
