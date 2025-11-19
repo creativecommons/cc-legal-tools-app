@@ -28,8 +28,8 @@ services:
       context: .
       dockerfile: Dockerfile.prettier
     command: bash -c 'node prettier-server.js'
-    #deploy:
-    #  replicas: 4
+    deploy:
+      replicas: 2
     ports:
       - "3000"
     restart: on-failure
