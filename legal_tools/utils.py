@@ -1,7 +1,6 @@
 # Standard library
 import logging
 import os
-import sys
 import posixpath
 import urllib.error
 import urllib.request
@@ -234,10 +233,7 @@ def validate_dictionary_is_all_text(d):
     newdict = dict()
     for key, value in d.items():
         assert isinstance(key, str)
-        if isinstance(value, NavigableString):
-            newdict[key] = str(value)
-            continue
-        elif not isinstance(value, (str, dict, list)):
+        if not isinstance(value, (str, dict, list)):
             raise ValueError(f"Not a str: key={key} {type(value)}: {value}")
         if isinstance(value, dict):
             newdict[key] = validate_dictionary_is_all_text(value)
@@ -563,7 +559,7 @@ def update_title(options):
     return results
 
 
-def pretty_html_bytes(html_text):
+def pretty_html_bytes(path, html_text):
     if not isinstance(html_text, bytes):
         html_text = html_text.encode("utf-8")
     try:
@@ -572,5 +568,6 @@ def pretty_html_bytes(html_text):
         ) as f:
             return f.read()
     except urllib.error.HTTPError as e:
-        LOG.warning(e.read().decode("utf-8"))
+        error_message = e.read().decode("utf-8")
+        LOG.warning(f"{path}: {error_message}")
         return html_text

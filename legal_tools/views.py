@@ -347,8 +347,9 @@ def view_dev_index(request):
             "count_zero": count_zero,
         },
     )
-
-    html_response.content = pretty_html_bytes(html_response.content)
+    html_response.content = pretty_html_bytes(
+        request.path, html_response.content
+    )
     return html_response
 
 
@@ -459,7 +460,9 @@ def view_list(request, category, language_code=None):
             "tools": tools,
         },
     )
-    html_response.content = pretty_html_bytes(html_response.content)
+    html_response.content = pretty_html_bytes(
+        request.path, html_response.content
+    )
     return html_response
 
 
@@ -574,7 +577,9 @@ def view_deed(
             "tool_title": tool_title,
         },
     )
-    html_response.content = pretty_html_bytes(html_response.content)
+    html_response.content = pretty_html_bytes(
+        request.path, html_response.content
+    )
     return html_response
 
 
@@ -719,7 +724,9 @@ def view_legal_code(
         #         return response
         #
         html_response = render(request, **kwargs)
-        html_response.content = pretty_html_bytes(html_response.content)
+        html_response.content = pretty_html_bytes(
+            request.path, html_response.content
+        )
         return html_response
 
 
@@ -829,7 +836,9 @@ def render_redirect(title, destination, language_code):
         "redirect.html",
         context={"title": title, "destination": destination},
     )
-    return pretty_html_bytes(html_content)
+    return pretty_html_bytes(
+        f"{title} redirect to {destination}", html_content
+    )
 
 
 def view_legal_tool_rdf(
