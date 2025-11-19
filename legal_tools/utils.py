@@ -572,5 +572,5 @@ def pretty_html_bytes(html_text):
         ) as f:
             return f.read()
     except urllib.error.HTTPError as e:
-        print(e.read().decode("utf-8"), file=sys.stderr)
+        LOG.warning(e.read().decode("utf-8"))
         return html_text
