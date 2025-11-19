@@ -1,0 +1,8 @@
+# https://docs.docker.com/engine/reference/builder/
+
+# https://hub.docker.com/_/node
+FROM node:bullseye-slim
+
+WORKDIR /opt
+RUN npm install express prettier
+COPY prettier-server.js .

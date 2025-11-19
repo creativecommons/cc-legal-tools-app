@@ -10,8 +10,10 @@
 services:
 
   app:
-    build: .
-    command: "bash -c 'node prettier-server.js & ./manage.py runserver 0.0.0.0:${PORT_APP}'"
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    command: "python manage.py runserver 0.0.0.0:${PORT_APP}"
     environment:
       - DJANGO_SETTINGS_MODULE=${DOCKER_DJANGO_SETTINGS_MODULE}
     ports:
@@ -20,6 +22,17 @@ services:
     volumes:
       - '.:/home/cc/cc-legal-tools-app'
       - "${RELPATH_DATA}:/home/cc/cc-legal-tools-data"
+
+  prettier:
+    build:
+      context: .
+      dockerfile: Dockerfile.prettier
+    command: bash -c 'node prettier-server.js'
+    #deploy:
+    #  replicas: 4
+    ports:
+      - "3000"
+    restart: on-failure
 
   # static
   #   the static service is loaded from ../cc-legal-tools-data if the .env
