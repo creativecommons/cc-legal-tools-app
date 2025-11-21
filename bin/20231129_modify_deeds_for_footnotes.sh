@@ -94,7 +94,7 @@ git restore locale
 
 header1 'Unwrap Deeds & UX portable object Gettext Files'
 cd "${REPO_DIR}"
-docker compose exec app ./manage.py format_pofile -w9999 locale \
+docker compose exec app python manage.py format_pofile -w9999 locale \
     >/dev/null
 echo 'message lines wrapped at 9999 characters'
 sleep 1
@@ -186,7 +186,7 @@ done
 
 header1 'Re-wrap Deeds & UX portable object Gettext Files'
 cd "${REPO_DIR}"
-docker compose exec app ./manage.py format_pofile locale \
+docker compose exec app python manage.py format_pofile locale \
     >/dev/null
 echo 'message lines wrapped at 78 characters'
 echo

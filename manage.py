@@ -1,4 +1,9 @@
-#!/usr/bin/env python
+# Generally, it is best to avoid calling this file directly. Examples in order
+# from best to worst:
+#   ./bin/manage.sh -h
+#   docker compose exec app python ./manage.py -h
+#   pipenv run python manage.py -h
+
 # Standard library
 import logging
 import sys

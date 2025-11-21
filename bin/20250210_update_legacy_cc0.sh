@@ -94,7 +94,7 @@ check_prerequisites() {
 
 compile_mofiles() {
     print_header 'Compile mo files'
-    docker compose exec app ./manage.py compilemessages \
+    docker compose exec app python manage.py compilemessages \
         | "${SED}" --unbuffered \
             -e'/^File.*is already compiled/d' \
             -e's|/home/cc/||'
@@ -183,7 +183,7 @@ error_exit() {
 
 format_pofiles() {
     print_header 'Django Management format_pofile'
-    docker compose exec app ./manage.py format_pofile locale \
+    docker compose exec app python manage.py format_pofile locale \
         | "${SED}" --unbuffered \
             -e's|^/home/cc/||'
     echo
@@ -193,7 +193,7 @@ format_pofiles() {
 make_messages() {
     print_header 'Django Management nofuzzy_makemessages'
     # shellcheck disable=SC2035
-    docker compose exec app ./manage.py \
+    docker compose exec app python manage.py \
         nofuzzy_makemessages \
             --all \
             --symlinks \

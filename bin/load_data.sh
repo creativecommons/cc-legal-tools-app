@@ -52,7 +52,7 @@ check_docker
 
 print_header 'Django loaddata - Import LegalCode and Tool model data'
 du -h "${DATA_FILE}"
-docker compose exec app ./manage.py loaddata \
+docker compose exec app python manage.py loaddata \
     --app legal_tools \
     --verbosity 3 \
     "${DATA_FILE}"

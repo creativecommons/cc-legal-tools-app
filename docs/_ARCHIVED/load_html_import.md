@@ -51,11 +51,11 @@ files in [creativecommons/cc-legal-tools-data][repodata].
    complete
 3. Clear data in the database
     ```shell
-    docker compose exec app ./manage.py clear_license_data
+    ./bin/manage.sh clear_license_data
     ```
 4. Load legacy HTML in the database
     ```shell
-    docker compose exec app ./manage.py load_html_files
+    ./bin/manage.sh load_html_files
     ```
 5. Optionally (and only as appropriate):
    1. Commit the `.po` portable object Gettext file changes in
