@@ -51,5 +51,5 @@ check_docker
 
 print_header 'Django publish'
 # shellcheck disable=SC2068
-docker compose exec app ./manage.py publish -v2 ${@}
+docker compose exec app python manage.py publish -v2 ${@}
 echo

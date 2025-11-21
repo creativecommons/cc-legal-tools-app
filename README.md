@@ -338,7 +338,7 @@ See [`CONTRIBUTING.md`][org-contrib].
     ```
 3. Run development server ([127.0.0.1:8005](http://127.0.0.1:8005/))
     ```shell
-    pipenv run ./manage.py runserver
+    pipenv run python manage.py runserver
     ```
    - Any changes made to Python will be detected and rebuilt transparently as
      long as the development server is running.
@@ -411,10 +411,10 @@ Generate static files:
 - `./bin/publish.sh` - Run Django publish mangement command via Docker
 
 Django manage via Docker:
-- `./bin/manage.py` - Run Django management commands via Docker
+- `./bin/manage.sh` - Run Django management commands via Docker
   - Example:
     ```shell
-    ./bin/manage.py -h
+    ./bin/manage.sh -h
     ```
 
 Data management:
