@@ -35,7 +35,7 @@ if ! command -v msgcat &>/dev/null; then
 fi 1>&2
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management nofuzzy_makemessages'
-docker compose exec app ./manage.py \
+docker compose exec app python manage.py \
     nofuzzy_makemessages \
         --all \
         --symlinks \
@@ -154,7 +154,7 @@ done
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management nofuzzy_makemessages'
-docker compose exec app ./manage.py \
+docker compose exec app python manage.py \
     nofuzzy_makemessages \
         --all \
         --symlinks \
@@ -200,7 +200,7 @@ popd >/dev/null
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Django Management format_pofile'
-docker compose exec app ./manage.py format_pofile locale
+docker compose exec app python manage.py format_pofile locale
 echo
 
 printf "\e[1m\e[7m %-80s\e[0m\n" 'Reminders'

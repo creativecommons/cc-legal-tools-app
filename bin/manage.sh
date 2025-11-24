@@ -51,5 +51,5 @@ check_docker
 
 print_header "Django manage.py ${*}"
 # shellcheck disable=SC2068
-docker compose exec app ./manage.py ${@}
+docker compose exec app python manage.py ${@}
 echo

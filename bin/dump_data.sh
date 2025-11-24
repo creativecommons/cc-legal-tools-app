@@ -50,7 +50,7 @@ cd "${DIR_REPO}"
 
 check_docker
 print_header 'Django dumpdata - Export LegalCode and Tool models'
-docker compose exec app ./manage.py dumpdata \
+docker compose exec app python manage.py dumpdata \
     --format yaml \
     --indent 2 \
     --output "${DATA_FILE}" \

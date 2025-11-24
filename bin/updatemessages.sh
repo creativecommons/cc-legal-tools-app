@@ -55,7 +55,7 @@ error_exit() {
 nofuzzy_makemessages () {
     print_header 'Django nofuzzy_makemessages'
     # shellcheck disable=SC2035
-    docker compose exec app ./manage.py nofuzzy_makemessages \
+    docker compose exec app python manage.py nofuzzy_makemessages \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
@@ -108,7 +108,7 @@ nofuzzy_makemessages
 restore_creation_date
 
 print_header 'Django format_pofile'
-docker compose exec app ./manage.py format_pofile locale
+docker compose exec app python manage.py format_pofile locale
 echo
 
 print_header 'Django compilemessages'

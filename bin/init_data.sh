@@ -86,17 +86,17 @@ docker compose exec app sqlite3 db.sqlite3 -echo 'VACUUM;'
 echo
 
 print_header 'Perform database migrations'
-docker compose exec app ./manage.py migrate
+docker compose exec app python manage.py migrate
 echo
 
 print_header 'Create superuser'
-docker compose exec app ./manage.py createsuperuser \
+docker compose exec app python manage.py createsuperuser \
     --username admin --email "$(git config --get user.email)"
 echo
 
 print_header 'Django loaddata - Import LegalCode and Tool model data'
 du -h "${DATA_FILE}"
-docker compose exec app ./manage.py loaddata \
+docker compose exec app python manage.py loaddata \
     --app legal_tools \
     --verbosity 3 \
     "${DATA_FILE}"
