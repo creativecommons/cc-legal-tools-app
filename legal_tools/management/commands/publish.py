@@ -10,7 +10,6 @@ from pprint import pprint
 from shutil import copyfile, copytree, rmtree
 
 # Third-party
-import git
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError, call_command
 from django.urls import reverse
@@ -21,8 +20,7 @@ from i18n.utils import (
     get_default_language_for_jurisdiction_deed,
     write_transstats_csv,
 )
-from legal_tools.git_utils import commit_and_push_changes, setup_local_branch
-from legal_tools.models import LegalCode, TranslationBranch, build_path
+from legal_tools.models import LegalCode, build_path
 from legal_tools.utils import (
     init_utils_logger,
     relative_symlink,
@@ -33,7 +31,6 @@ from legal_tools.utils import (
 )
 from legal_tools.views import render_redirect
 
-ALL_TRANSLATION_BRANCHES = "###all###"
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
     0: logging.ERROR,
@@ -46,17 +43,6 @@ LOG_LEVELS = {
 # CNAME
 # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
 DOCS_IGNORE = [".nojekyll", "CNAME"]
-
-
-def list_open_translation_branches():
-    """
-    Return list of names of open translation branches
-    """
-    return list(
-        TranslationBranch.objects.filter(complete=False).values_list(
-            "branch_name", flat=True
-        )
-    )
 
 
 def wrap_relative_symlink(output_dir, relpath, symlink):
@@ -152,81 +138,18 @@ class Command(BaseCommand):
         parser.description = self.__doc__
         parser._optionals.title = "Django optional arguments"
 
-        parser.set_defaults(action="dev")
-        action_group = parser.add_argument_group(
-            title="action optional arguments (mutually exclusive)"
+        filter_group = parser.add_argument_group(
+            title="Filter optional arguments (mutually exclusive)"
         )
-        action_args = action_group.add_mutually_exclusive_group()
-        action_args.add_argument(
-            "--list",
-            "--list-branches",
-            action="store_const",
-            const="list",
-            help="List active translation branches (implies at least"
-            " --verbosity 2)",
-            dest="action",
-        )
-        action_args.add_argument(
-            "--dev",
-            "--develop",
-            action="store_const",
-            const="dev",
-            help="Publish changes to existing data docs directory",
-            dest="action",
-        )
-        action_args.add_argument(
-            "--push",
-            action="store_const",
-            const="push",
-            help="Checkout branch(es), publish changes, commit changes to git,"
-            " and push changes to origin (GitHub)",
-            dest="action",
-        )
-
-        parser.set_defaults(branch="main")
-        branch_group = parser.add_argument_group(
-            title="branch optional arguments (mutually exclusive)"
-        )
-        branch_args = branch_group.add_mutually_exclusive_group()
-        branch_args.add_argument(
-            "--all",
-            "--all-branches",
-            action="store_const",
-            const=ALL_TRANSLATION_BRANCHES,
-            help="Manage all active translation branches",
-            dest="branch",
-        )
-        branch_args.add_argument(
-            "--branch",
-            default="main",
-            help="Manage specified translation branch",
-            dest="branch",
-        )
-        branch_args.add_argument(
-            "--main",
-            action="store_const",
-            const="main",
-            help="Manage main branch",
-            dest="branch",
-        )
-
-        parser.add_argument(
-            "--branches",
-            help=SUPPRESS,
-        )
-
-        branch_group = parser.add_argument_group(
-            title="filter optional arguments (mutually exclusive)"
-        )
-        branch_args = branch_group.add_mutually_exclusive_group()
-        branch_args.add_argument(
+        filter_args = filter_group.add_mutually_exclusive_group()
+        filter_args.add_argument(
             "--fa",
             "--filter-apache-redirects",
             action="store_true",
             help="Only distill the Apache2 language redirects configuration",
             dest="filter_apache_redirects",
         )
-        branch_args.add_argument(
+        filter_args.add_argument(
             "--fl",
             "--filter-license-html",
             action="store",
@@ -235,7 +158,7 @@ class Command(BaseCommand):
             help="Only distill HTML files for specified license version",
             dest="filter_license_html",
         )
-        branch_args.add_argument(
+        filter_args.add_argument(
             "--fr",
             "--filter-rdf-xml",
             action="store_true",
@@ -524,9 +447,9 @@ class Command(BaseCommand):
             ):
                 self.pool.starmap(save_rdf, rdf_arguments)
 
-            self.distill_language_redirects(
-                default_languages_deeds, redirect_pairs_data
-            )
+        self.distill_language_redirects(
+            default_languages_deeds, redirect_pairs_data
+        )
 
     def distill_language_redirects(
         self, default_languages_deeds, redirect_pairs_data
@@ -650,23 +573,6 @@ class Command(BaseCommand):
         include_filename = os.path.join(self.config_dir, "language-redirects")
         save_bytes_to_file(include_lines, include_filename)
 
-    def distill_translation_branch_statuses(self):
-        hostname = socket.gethostname()
-        output_dir = self.output_dir
-
-        LOG.debug(f"{hostname}:{output_dir}")
-
-        tbranches = TranslationBranch.objects.filter(complete=False)
-        for tbranch_id in tbranches.values_list("id", flat=True):
-            LOG.info(f"Distilling Translation branch status: {tbranch_id}")
-            relpath = f"dev/{tbranch_id}.html"
-            LOG.debug(f"    {relpath}")
-            save_url_as_static_file(
-                output_dir,
-                url=f"/dev/{tbranch_id}/",
-                relpath=relpath,
-            )
-
     def distill_transstats_csv(self):
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
@@ -716,65 +622,17 @@ class Command(BaseCommand):
         else:
             options["run"] = dict.fromkeys(options["run"], True)
 
-    def distill_and_copy(self):
-        self.check_titles()
-        self.purge_output_dir()
-        self.call_collectstatic()
-        self.write_robots_txt()
-        self.copy_static_wp_content_files()
-        self.copy_static_cc_legal_tools_files()
-        self.copy_static_rdf_files()
-        self.distill_and_symlink_rdf_meta()
-        self.copy_legal_code_plaintext()
-        self.distill_dev_index()
-        self.distill_lists()
-        self.distill_legal_tools()
-        # DISABLED # self.distill_translation_branch_statuses()
-        # DISABLED # self.distill_transstats_csv()
-        # DISABLED # self.distill_metadata_yaml()
-
-    def checkout_publish_and_push(self):
-        """Workflow for publishing and pushing active translation branches"""
-        branches = self.options["branches"]
-        LOG.info(
-            f"Checking and updating build dirs for {len(branches)}"
-            " translation branches."
-        )
-        for branch in branches:
-            LOG.debug(f"Publishing branch {branch}")
-            with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
-                setup_local_branch(repo, branch)
-                self.distill_and_copy()
-                if repo.is_dirty(untracked_files=True):
-                    # Add any changes and new files
-                    commit_and_push_changes(
-                        repo,
-                        "Update static files generated by cc-legal-tools-app",
-                        self.relpath,
-                        push=self.push,
-                    )
-                    if repo.is_dirty(untracked_files=True):
-                        raise git.exc.RepositoryDirtyError(
-                            settings.DATA_REPOSITORY_DIR,
-                            "Repository is dirty. We cannot continue.",
-                        )
-                else:
-                    LOG.debug(f"{branch} build dir is up to date.")
-
     def handle(self, *args, **options):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         init_utils_logger(LOG)
         self.options = options
         self.parse_filters()
-        action = options["action"]
-        branch = options["branch"]
-        branches = options["branches"]
-        self.pool = Pool()
-
         if options["list_args"]:
             # Hidden argparse troubleshooting option
             pprint(options)
             return
+
+        self.pool = Pool()
 
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.config_dir = os.path.abspath(
@@ -788,59 +646,19 @@ class Command(BaseCommand):
                 f" DATA_REPOSITORY_DIR, but DISTILL_DIR={self.output_dir} is"
                 f" outside DATA_REPOSITORY_DIR={git_dir}."
             )
-
         self.relpath = os.path.relpath(self.output_dir, git_dir)
-        active_branches = list_open_translation_branches()
 
-        # process branch options
-        if branch == ALL_TRANSLATION_BRANCHES:
-            branches = active_branches
-        else:
-            branches = [branch]
-
-        # process action options
-        if action == "list":
-            if options["verbosity"] < 2:
-                LOG.setLevel(LOG_LEVELS[2])
-                LOG.debug("verbosity increased to INFO to show list output")
-            if branch == ALL_TRANSLATION_BRANCHES:
-                if not active_branches:
-                    LOG.info("There are no active translation branches")
-                else:
-                    LOG.info("Active translation branches:")
-                    for branch in branches:
-                        LOG.info(branch)
-            else:
-                if branch in active_branches:
-                    status = "is"
-                    level = logging.INFO
-                else:
-                    status = "isn't"
-                    level = logging.WARNING
-                LOG.log(
-                    level,
-                    f"the '{branch}' branch {status} an active translation"
-                    " branch",
-                )
-        elif action == "dev":
-            self.distill_and_copy()
-        elif action == "push":
-            if branch == "main":
-                raise CommandError(
-                    "Pushing to the main branch is prohibited. Changes to the"
-                    " main branch should be done via a pull request."
-                )
-            elif branch == ALL_TRANSLATION_BRANCHES and not active_branches:
-                LOG.info("There are no active translation branches")
-            else:
-                for branch in branches:
-                    if branch not in active_branches:
-                        raise CommandError(
-                            f"the specified branch ('{branch}') is not an"
-                            " active translation branch"
-                        )
-                self.checkout_publish_and_push()
-        else:
-            raise CommandError(
-                "impossible action ('{action}')--please create a GitHub issue"
-            )
+        self.check_titles()
+        self.purge_output_dir()
+        self.call_collectstatic()
+        self.write_robots_txt()
+        self.copy_static_wp_content_files()
+        self.copy_static_cc_legal_tools_files()
+        self.copy_static_rdf_files()
+        self.distill_and_symlink_rdf_meta()
+        self.copy_legal_code_plaintext()
+        self.distill_dev_index()
+        self.distill_lists()
+        self.distill_legal_tools()
+        # DISABLED # self.distill_transstats_csv()
+        # DISABLED # self.distill_metadata_yaml()
