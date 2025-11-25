@@ -354,8 +354,8 @@ class Command(BaseCommand):
             relpath="index.html",
         )
 
-    def distill_lists(self):
-        if not self.options["run"]["distill_lists"]:
+    def pool_distill_lists(self):
+        if not self.options["run"]["pool_distill_lists"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -376,9 +376,9 @@ class Command(BaseCommand):
             symlink = "list.html"
             wrap_relative_symlink(output_dir, relpath, symlink)
 
-    def distill_legal_tools(self):
+    def pool_distill_legal_tools(self):
         options = self.options
-        if not options["run"]["distill_legal_tools"]:
+        if not options["run"]["pool_distill_legal_tools"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -603,21 +603,21 @@ class Command(BaseCommand):
             "distill_and_symlink_rdf_meta": False,
             "copy_legal_code_plaintext": False,
             "distill_dev_index": False,
-            "distill_lists": False,
-            "distill_legal_tools": False,
+            "pool_distill_lists": False,
+            "pool_distill_legal_tools": False,
             "distill_language_redirects": False,
         }
         # Filter Apache2 config
         if options["filter_apache_redirects"]:
-            options["run"]["distill_legal_tools"] = True
+            options["run"]["pool_distill_legal_tools"] = True
         # Filter licenses HTML
         elif options["filter_license_html"]:
-            options["run"]["distill_legal_tools"] = True
+            options["run"]["pool_distill_legal_tools"] = True
         # Filter RDF/XML
         elif options["filter_rdfxml"]:
             options["run"]["copy_static_rdf_files"] = True
             options["run"]["distill_and_symlink_rdf_meta"] = True
-            options["run"]["distill_legal_tools"] = True
+            options["run"]["pool_distill_legal_tools"] = True
         # Unfiltered/default
         else:
             options["run"] = dict.fromkeys(options["run"], True)
@@ -631,8 +631,6 @@ class Command(BaseCommand):
             # Hidden argparse troubleshooting option
             pprint(options)
             return
-
-        self.pool = Pool()
 
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.config_dir = os.path.abspath(
@@ -658,7 +656,8 @@ class Command(BaseCommand):
         self.distill_and_symlink_rdf_meta()
         self.copy_legal_code_plaintext()
         self.distill_dev_index()
-        self.distill_lists()
-        self.distill_legal_tools()
+        with Pool() as self.pool:
+            self.pool_distill_lists()
+            self.pool_distill_legal_tools()
         # DISABLED # self.distill_transstats_csv()
         # DISABLED # self.distill_metadata_yaml()
