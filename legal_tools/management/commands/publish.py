@@ -83,10 +83,10 @@ def save_list(output_dir, category, language_code):
     )
 
 
-def save_deed(output_dir, tool, language_code, opt_apache_only):
+def save_deed(output_dir, tool, language_code, opt_filter_apache_redirects):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
-    if not opt_apache_only:
+    if not opt_filter_apache_redirects:
         relpath, symlinks = tool.get_publish_files(language_code)
         save_url_as_static_file(
             output_dir,
@@ -98,10 +98,10 @@ def save_deed(output_dir, tool, language_code, opt_apache_only):
     return tool.get_redirect_pairs(language_code)
 
 
-def save_legal_code(output_dir, legal_code, opt_apache_only):
+def save_legal_code(output_dir, legal_code, opt_filter_apache_redirects):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
-    if not opt_apache_only:
+    if not opt_filter_apache_redirects:
         (
             relpath,
             symlinks,
@@ -215,30 +215,39 @@ class Command(BaseCommand):
             help=SUPPRESS,
         )
 
-        # Hidden argparse troubleshooting option
-        parser.add_argument(
-            "--list-args",
-            action="store_true",
-            help=SUPPRESS,
-        )
-
         branch_group = parser.add_argument_group(
             title="filter optional arguments (mutually exclusive)"
         )
         branch_args = branch_group.add_mutually_exclusive_group()
         branch_args.add_argument(
-            "--rdf",
-            "--rdf-xml-only",
-            action="store_true",
-            help="Only copy and distill RDF/XML files",
-            dest="rdf_only",
-        )
-        branch_args.add_argument(
-            "--apache",
-            "--apache-config-only",
+            "--fa",
+            "--filter-apache-redirects",
             action="store_true",
             help="Only distill the Apache2 language redirects configuration",
-            dest="apache_only",
+            dest="filter_apache_redirects",
+        )
+        branch_args.add_argument(
+            "--fl",
+            "--filter-license-html",
+            action="store",
+            type=float,
+            choices=[1.0, 2.0, 2.1, 2.5, 3.0, 4.0],
+            help="Only distill HTML files for specified license version",
+            dest="filter_license_html",
+        )
+        branch_args.add_argument(
+            "--fr",
+            "--filter-rdf-xml",
+            action="store_true",
+            help="Only copy and distill RDF/XML files",
+            dest="filter_rdfxml",
+        )
+
+        # Hidden argparse troubleshooting option
+        parser.add_argument(
+            "--list-args",
+            action="store_true",
+            help=SUPPRESS,
         )
 
     def check_titles(self):
@@ -254,7 +263,7 @@ class Command(BaseCommand):
             )
 
     def purge_output_dir(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["purge_output_dir"]:
             return
         output_dir = self.output_dir
         LOG.info(f"Purging output_dir: {output_dir}")
@@ -270,21 +279,21 @@ class Command(BaseCommand):
                 os.remove(item)
 
     def call_collectstatic(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["call_collectstatic"]:
             return
         LOG.info("Collecting static files")
         call_command("collectstatic", interactive=False)
 
     def write_robots_txt(self):
         """Create robots.txt to discourage indexing."""
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["write_robots_txt"]:
             return
         LOG.info("Writing robots.txt")
         robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
         save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
 
     def copy_static_wp_content_files(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["copy_static_wp_content_files"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -301,7 +310,7 @@ class Command(BaseCommand):
         copytree(source, destination)
 
     def copy_static_cc_legal_tools_files(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["copy_static_cc_legal_tools_files"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -318,7 +327,7 @@ class Command(BaseCommand):
         copytree(source, destination)
 
     def copy_static_rdf_files(self):
-        if self.options["apache_only"]:
+        if not self.options["run"]["copy_static_rdf_files"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -338,7 +347,7 @@ class Command(BaseCommand):
         """
         Generate the index.rdf, images.rdf and copies the rest.
         """
-        if self.options["apache_only"]:
+        if not self.options["run"]["distill_and_symlink_rdf_meta"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -376,7 +385,7 @@ class Command(BaseCommand):
             LOG.debug(f"   ^{symlink}")
 
     def copy_legal_code_plaintext(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["copy_legal_code_plaintext"]:
             return
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
@@ -409,7 +418,7 @@ class Command(BaseCommand):
             LOG.debug(f"    {relative_name}")
 
     def distill_dev_index(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["distill_dev_index"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -423,7 +432,7 @@ class Command(BaseCommand):
         )
 
     def distill_lists(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["distill_lists"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -445,6 +454,9 @@ class Command(BaseCommand):
             wrap_relative_symlink(output_dir, relpath, symlink)
 
     def distill_legal_tools(self):
+        options = self.options
+        if not options["run"]["distill_legal_tools"]:
+            return
         hostname = socket.gethostname()
         output_dir = self.output_dir
         legal_codes = LegalCode.objects.validgroups()
@@ -453,11 +465,15 @@ class Command(BaseCommand):
         for group in legal_codes.keys():
             tools = set()
             LOG.debug(f"{hostname}:{output_dir}")
-            if self.options["rdf_only"]:
-                LOG.info(f"Distilling {group} RDF/XML")
+            if options["filter_license_html"]:
+                if group != f"Licenses {options['filter_license_html']}":
+                    continue
+                LOG.info(f"Distilling {group} deed/legal code HTML")
+            elif options["filter_rdfxml"]:
+                LOG.info(f"Distilling {group} legal code RDF/XML")
             else:
                 LOG.info(
-                    f"Distilling {group} deed HTML, legal code HTML, and"
+                    f"Distilling {group} deed/legal code HTML and legal code"
                     " RDF/XML"
                 )
             legal_code_arguments = []
@@ -466,7 +482,11 @@ class Command(BaseCommand):
             for legal_code in legal_codes[group]:
                 tools.add(legal_code.tool)
                 legal_code_arguments.append(
-                    (output_dir, legal_code, self.options["apache_only"])
+                    (
+                        output_dir,
+                        legal_code,
+                        options["filter_apache_redirects"],
+                    )
                 )
             for tool in tools:
                 for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
@@ -475,7 +495,7 @@ class Command(BaseCommand):
                             output_dir,
                             tool,
                             language_code,
-                            self.options["apache_only"],
+                            options["filter_apache_redirects"],
                         )
                     )
                 rdf_arguments.append((output_dir, tool))
@@ -491,17 +511,27 @@ class Command(BaseCommand):
                         tool.jurisdiction_code,
                     )
 
-            if not self.options["rdf_only"]:
+            if not options["filter_rdfxml"]:
                 redirect_pairs_data += self.pool.starmap(
                     save_deed, deed_arguments
                 )
                 redirect_pairs_data += self.pool.starmap(
                     save_legal_code, legal_code_arguments
                 )
-            if not self.options["apache_only"]:
+            if (
+                not options["filter_apache_redirects"]
+                and not options["filter_license_html"]
+            ):
                 self.pool.starmap(save_rdf, rdf_arguments)
 
-        if self.options["rdf_only"]:
+            self.distill_language_redirects(
+                default_languages_deeds, redirect_pairs_data
+            )
+
+    def distill_language_redirects(
+        self, default_languages_deeds, redirect_pairs_data
+    ):
+        if not self.options["run"]["distill_language_redirects"]:
             return
         LOG.info("Writing Apache2 redirects configuration")
         include_lines = [
@@ -621,8 +651,6 @@ class Command(BaseCommand):
         save_bytes_to_file(include_lines, include_filename)
 
     def distill_translation_branch_statuses(self):
-        if self.options["rdf_only"]:
-            return
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
@@ -640,14 +668,10 @@ class Command(BaseCommand):
             )
 
     def distill_transstats_csv(self):
-        if self.options["rdf_only"]:
-            return
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
 
     def distill_metadata_yaml(self):
-        if self.options["rdf_only"]:
-            return
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
@@ -659,6 +683,38 @@ class Command(BaseCommand):
             url=reverse("metadata"),
             relpath="licenses/metadata.yaml",
         )
+
+    def parse_filters(self):
+        options = self.options
+        # Set default run values (all True)
+        options["run"] = {
+            "purge_output_dir": False,
+            "call_collectstatic": False,
+            "write_robots_txt": False,
+            "copy_static_wp_content_files": False,
+            "copy_static_cc_legal_tools_files": False,
+            "copy_static_rdf_files": False,
+            "distill_and_symlink_rdf_meta": False,
+            "copy_legal_code_plaintext": False,
+            "distill_dev_index": False,
+            "distill_lists": False,
+            "distill_legal_tools": False,
+            "distill_language_redirects": False,
+        }
+        # Filter Apache2 config
+        if options["filter_apache_redirects"]:
+            options["run"]["distill_legal_tools"] = True
+        # Filter licenses HTML
+        elif options["filter_license_html"]:
+            options["run"]["distill_legal_tools"] = True
+        # Filter RDF/XML
+        elif options["filter_rdfxml"]:
+            options["run"]["copy_static_rdf_files"] = True
+            options["run"]["distill_and_symlink_rdf_meta"] = True
+            options["run"]["distill_legal_tools"] = True
+        # Unfiltered/default
+        else:
+            options["run"] = dict.fromkeys(options["run"], True)
 
     def distill_and_copy(self):
         self.check_titles()
@@ -673,6 +729,7 @@ class Command(BaseCommand):
         self.distill_dev_index()
         self.distill_lists()
         self.distill_legal_tools()
+        # DISABLED # self.distill_translation_branch_statuses()
         # DISABLED # self.distill_transstats_csv()
         # DISABLED # self.distill_metadata_yaml()
 
@@ -708,6 +765,7 @@ class Command(BaseCommand):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         init_utils_logger(LOG)
         self.options = options
+        self.parse_filters()
         action = options["action"]
         branch = options["branch"]
         branches = options["branches"]
