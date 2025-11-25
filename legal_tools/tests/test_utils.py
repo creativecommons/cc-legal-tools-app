@@ -121,29 +121,106 @@ class SaveURLAsStaticFileTest(TestCase):
             file_content, "/output/licenses/metadata.yaml"
         )
 
-    def test_relative_symlink(self):
+    def test_relative_symlink_flat(self):
+        """
+        Write symlink in same directory
+        """
         try:
             tmpdir = tempfile.TemporaryDirectory()
-            # symlink link1 => source1 and verify by reading link1
-            contents1 = b"111"
-            source1 = os.path.join(tmpdir.name, "source1")
-            with open(source1, "wb") as f:
-                f.write(contents1)
-            utils.relative_symlink(tmpdir.name, source1, "link1")
-            with open(os.path.join(tmpdir.name, "link1"), "rb") as f:
+            # symlink link => source and verify by reading link
+            source_contents = b"test string 123"
+            source = os.path.join(tmpdir.name, "source")
+            with open(source, "wb") as f:
+                f.write(source_contents)
+            utils.relative_symlink(tmpdir.name, source, "link")
+            with open(os.path.join(tmpdir.name, "link"), "rb") as f:
                 contents = f.read()
-            self.assertEqual(contents1, contents)
-            # symlink link2 => xx/source2 and verify by reading link2
+            self.assertEqual(source_contents, contents)
+        finally:
+            tmpdir.cleanup()
+
+    def test_relative_symlink_subdir(self):
+        """
+        Write symlink in subdirectory
+        """
+        try:
+            tmpdir = tempfile.TemporaryDirectory()
+            # symlink link => xx/source and verify by reading link
             subdir = os.path.join(tmpdir.name, "xx")
             os.makedirs(subdir, mode=0o755)
-            contents2 = b"222"
-            source2 = os.path.join(subdir, "source1")
-            with open(source2, "wb") as f:
-                f.write(contents2)
-            utils.relative_symlink(tmpdir.name, source2, "../link2")
-            with open(os.path.join(tmpdir.name, "link2"), "rb") as f:
+            source_contents = b"test string 123"
+            source = os.path.join(subdir, "source")
+            with open(source, "wb") as f:
+                f.write(source_contents)
+            utils.relative_symlink(tmpdir.name, source, "../link")
+            with open(os.path.join(tmpdir.name, "link"), "rb") as f:
                 contents = f.read()
-            self.assertEqual(contents2, contents)
+            self.assertEqual(source_contents, contents)
+        finally:
+            tmpdir.cleanup()
+
+    def test_relative_symlink_overwrite_symlink(self):
+        """
+        Write symlink and the overwrite it with a new symlink
+        """
+        try:
+            utils.init_utils_logger()
+            tmpdir = tempfile.TemporaryDirectory()
+            # symlink link => source and verify by reading link
+            source_contents_1 = b"first test string 123"
+            source_1 = os.path.join(tmpdir.name, "source_1")
+            with open(source_1, "wb") as f:
+                f.write(source_contents_1)
+            with self.assertLogs(utils.LOG, level="DEBUG") as log_context:
+                utils.relative_symlink(tmpdir.name, source_1, "link")
+                self.assertRegex(log_context.output[0], "^DEBUG:.*link$")
+            with open(os.path.join(tmpdir.name, "link"), "rb") as f:
+                contents = f.read()
+            self.assertEqual(source_contents_1, contents)
+            # symlink link => source3b and verify by reading link
+            source_contents_2 = b"second test string 456"
+            source_2 = os.path.join(tmpdir.name, "source_2")
+            with open(source_2, "wb") as f:
+                f.write(source_contents_2)
+            with self.assertLogs(utils.LOG, level="DEBUG") as log_context:
+                utils.relative_symlink(tmpdir.name, source_2, "link")
+                self.assertEqual(
+                    log_context.output[0],
+                    "DEBUG:legal_tools.utils:overwriting symlink: link",
+                )
+            with open(os.path.join(tmpdir.name, "link"), "rb") as f:
+                contents = f.read()
+            self.assertEqual(source_contents_2, contents)
+        finally:
+            tmpdir.cleanup()
+
+    def test_relative_symlink_overwrite_file(self):
+        """
+        Attempt to write symlink over file
+        """
+        try:
+            tmpdir = tempfile.TemporaryDirectory()
+            # symlink file => source and verify by reading source and file
+            with self.assertRaisesMessage(
+                FileExistsError, "[Errno 17] File exists: 'source' -> 'file'"
+            ):
+                with self.assertLogs(utils.LOG, level="ERROR"):
+                    source_contents = b"first test string 123"
+                    source = os.path.join(tmpdir.name, "source")
+                    with open(source, "wb") as f:
+                        f.write(source_contents)
+                    file_contents = b"second test string 456"
+                    file = os.path.join(tmpdir.name, "file")
+                    with open(file, "wb") as f:
+                        f.write(file_contents)
+                    utils.relative_symlink(tmpdir.name, source, "file")
+                    with open(os.path.join(tmpdir.name, "source"), "rb") as f:
+                        contents = f.read()
+                    self.assertEqual(source_contents, contents)
+                    with open(os.path.join(tmpdir.name, "file"), "rb") as f:
+                        contents = f.read()
+                    self.assertEqual(file_contents, contents)
+
         finally:
             tmpdir.cleanup()
 
