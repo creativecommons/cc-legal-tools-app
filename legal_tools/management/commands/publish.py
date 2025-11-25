@@ -524,9 +524,9 @@ class Command(BaseCommand):
             ):
                 self.pool.starmap(save_rdf, rdf_arguments)
 
-            self.distill_language_redirects(
-                default_languages_deeds, redirect_pairs_data
-            )
+        self.distill_language_redirects(
+            default_languages_deeds, redirect_pairs_data
+        )
 
     def distill_language_redirects(
         self, default_languages_deeds, redirect_pairs_data
