@@ -97,6 +97,17 @@ def relative_symlink(src1, src2, dst):
     try:
         os.symlink(src_file, dst, dir_fd=dir_fd)
         LOG.debug(f"    {padding}^{dst}")
+    except FileExistsError:
+        # If symlink destination is a symlink, remove it and try again
+        dst_path = os.path.join(dir_path, dst)
+        small_path = os.path.relpath(dst_path, start=src1)
+        if os.path.islink(dst_path):
+            LOG.debug(f"overwriting symlink: {small_path}")
+            os.remove(dst, dir_fd=dir_fd)
+            relative_symlink(src1, src2, dst)
+        else:
+            LOG.error(f"unable to create symlink, file exists: {small_path}")
+            raise
     finally:
         os.close(dir_fd)
 
