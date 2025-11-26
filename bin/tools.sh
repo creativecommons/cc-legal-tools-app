@@ -51,15 +51,15 @@ check_docker
 
 print_header 'isort'
 # shellcheck disable=SC2068
-docker compose exec app isort ${@:-.}
+docker compose exec app isort ${@:-.} || error_exit "exit status: ${?}"
 echo
 
 print_header 'black'
 # shellcheck disable=SC2068
-docker compose exec app black ${@:-.}
+docker compose exec app black ${@:-.} || error_exit "exit status: ${?}"
 echo
 
 print_header 'flake8'
 # shellcheck disable=SC2068
-docker compose exec app flake8 ${@:-.}
+docker compose exec app flake8 ${@:-.} || error_exit "exit status: ${?}"
 echo
