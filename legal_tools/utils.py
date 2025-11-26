@@ -6,8 +6,6 @@ import posixpath
 # Third-party
 import requests
 from bs4 import BeautifulSoup
-from bs4.dammit import EntitySubstitution
-from bs4.formatter import HTMLFormatter
 from colorlog.escape_codes import escape_codes
 from django.conf import settings
 from django.core.cache import cache
@@ -25,15 +23,6 @@ from i18n.utils import (
     map_legacy_to_django_language_code,
 )
 
-HTMLFormatter.REGISTRY["html5ish"] = HTMLFormatter(
-    # The html5 formatter replaces accented characters with entities, which
-    # significantly alters translations and breaks tests. This custom
-    # formatter uses the same EntitySubstitution as the minimal formatter
-    # and the html5 values for the other parameters.
-    entity_substitution=EntitySubstitution.substitute_xml,
-    void_element_close_prefix=None,
-    empty_attributes_are_booleans=True,
-)
 LOG = logging.getLogger(__name__)
 
 
