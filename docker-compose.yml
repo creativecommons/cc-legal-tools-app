@@ -34,7 +34,9 @@ services:
         node prettier-server.js
       '
     deploy:
-      replicas: 2
+      # For benchmarking see:
+      #   https://github.com/creativecommons/cc-legal-tools-app/issues/551
+      replicas: 6
     ports:
       - "3000"
     restart: on-failure
