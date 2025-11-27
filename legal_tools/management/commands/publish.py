@@ -17,7 +17,7 @@ from django.urls import reverse
 # First-party/Local
 from i18n import DEFAULT_CSV_FILE
 from i18n.utils import (
-    get_default_language_for_jurisdiction_deed,
+    get_default_language_for_jurisdiction_deed_ux,
     write_transstats_csv,
 )
 from legal_tools.models import LegalCode, build_path
@@ -365,7 +365,7 @@ class Command(BaseCommand):
 
         arguments = []
         for category in ["licenses", "publicdomain"]:
-            for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+            for language_code in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
                 arguments.append((output_dir, category, language_code))
         self.pool.starmap(save_list, arguments)
 
@@ -412,7 +412,7 @@ class Command(BaseCommand):
                     )
                 )
             for tool in tools:
-                for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+                for language_code in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
                     deed_arguments.append(
                         (
                             output_dir,
@@ -430,7 +430,7 @@ class Command(BaseCommand):
                         default_languages_deeds[tool.version] = {}
                     default_languages_deeds[tool.version][
                         tool.jurisdiction_code
-                    ] = get_default_language_for_jurisdiction_deed(
+                    ] = get_default_language_for_jurisdiction_deed_ux(
                         tool.jurisdiction_code,
                     )
 

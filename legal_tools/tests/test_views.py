@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.utils.translation.trans_real import DjangoTranslation
 
 # First-party/Local
-from i18n.utils import get_default_language_for_jurisdiction_deed
+from i18n.utils import get_default_language_for_jurisdiction_deed_ux
 from legal_tools.models import UNITS_LICENSES, LegalCode, Tool, build_path
 from legal_tools.rdf_utils import (
     convert_https_to_http,
@@ -417,7 +417,7 @@ class ViewHelperFunctionsTest(ToolsTestsMixin, TestCase):
         self.assertEqual(category, "publicdomain")
         self.assertEqual(category_title, "Public Domain")
 
-    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
+    @override_settings(LANGUAGES_AVAILABLE_DEEDS_UX=["x1", "x2"])
     def test_get_deed_rel_path_mostly_translated_language_code(self):
         expected_deed_rel_path = "deed.x1"
         deed_rel_path = get_deed_rel_path(
@@ -428,7 +428,7 @@ class ViewHelperFunctionsTest(ToolsTestsMixin, TestCase):
         )
         self.assertEqual(expected_deed_rel_path, deed_rel_path)
 
-    @override_settings(LANGUAGES_MOSTLY_TRANSLATED=["x1", "x2"])
+    @override_settings(LANGUAGES_AVAILABLE_DEEDS_UX=["x1", "x2"])
     def test_get_deed_rel_path_less_translated_language_code(self):
         expected_deed_rel_path = "deed.x2"
         deed_rel_path = get_deed_rel_path(
@@ -441,7 +441,7 @@ class ViewHelperFunctionsTest(ToolsTestsMixin, TestCase):
 
     @override_settings(
         LANGUAGE_CODE="x1",
-        LANGUAGES_MOSTLY_TRANSLATED=[],
+        LANGUAGES_AVAILABLE_DEEDS_UX=[],
     )
     def test_get_deed_rel_path_less_translated_language_default(self):
         expected_deed_rel_path = "deed.x1"
@@ -461,7 +461,7 @@ class ViewHelperFunctionsTest(ToolsTestsMixin, TestCase):
         )
         path_start = "/licenses/by/3.0"
         language_code = "en"
-        language_default = get_default_language_for_jurisdiction_deed(None)
+        language_default = get_default_language_for_jurisdiction_deed_ux(None)
 
         cache.clear()
         self.assertFalse(cache.has_key("by-4.0--en-replaced_deed_str"))
@@ -909,7 +909,7 @@ class ViewLegalCodeTest(TestCase):
         self.assertEqual(lc, context["legal_code"])
 
     @override_settings(
-        LANGUAGES_MOSTLY_TRANSLATED=["ar", settings.LANGUAGE_CODE],
+        LANGUAGES_AVAILABLE_DEEDS_UX=["ar", settings.LANGUAGE_CODE],
     )
     def test_view_legal_code_40(self):
         tool = ToolFactory(
@@ -949,7 +949,7 @@ class ViewLegalCodeTest(TestCase):
                 self.assertContains(rsp, 'dir="rtl"')
 
     @override_settings(
-        LANGUAGES_MOSTLY_TRANSLATED=["es", settings.LANGUAGE_CODE],
+        LANGUAGES_AVAILABLE_DEEDS_UX=["es", settings.LANGUAGE_CODE],
     )
     def test_view_legal_code_30_default_translated(self):
         language_code = "ast"
@@ -973,7 +973,7 @@ class ViewLegalCodeTest(TestCase):
         self.assertContains(rsp, 'dir="ltr"')
 
     @override_settings(
-        LANGUAGES_MOSTLY_TRANSLATED=[settings.LANGUAGE_CODE],
+        LANGUAGES_AVAILABLE_DEEDS_UX=[settings.LANGUAGE_CODE],
     )
     def test_view_legal_code_30_default_untranslated(self):
         language_code = "ast"
