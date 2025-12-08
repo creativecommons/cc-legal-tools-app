@@ -19,8 +19,8 @@ from django.utils import translation
 # First-party/Local
 from i18n.utils import (
     active_translation,
-    get_default_language_for_jurisdiction_deed,
-    get_default_language_for_jurisdiction_naive,
+    get_default_language_for_jurisdiction_deed_ux,
+    get_default_language_for_jurisdiction_legal_code,
     get_jurisdiction_name,
     load_deeds_ux_translations,
     map_django_to_transifex_language_code,
@@ -87,7 +87,7 @@ def get_category_and_category_title(category=None, tool=None):
 def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
     languages_and_links = []
 
-    for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    for language_code in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         language_info = translation.get_language_info(language_code)
         link = request_path.replace(
             f".{selected_language_code}",
@@ -147,8 +147,8 @@ def get_deed_rel_path(
     language_default,
 ):
     deed_rel_path = os.path.relpath(deed_url, path_start)
-    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
-        if language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if language_code not in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
+        if language_default in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
             # Translation incomplete, use region default language
             deed_rel_path = deed_rel_path.replace(
                 f"deed.{language_code}", f"deed.{language_default}"
@@ -167,8 +167,8 @@ def get_list_paths(language_code, language_default):
         f"/publicdomain/list.{language_code}",
     ]
     for index, path in enumerate(paths):
-        if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
-            if language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+        if language_code not in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
+            if language_default in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
                 # Translation incomplete, use region default language
                 paths[index] = path.replace(
                     f"/list.{language_code}", f"/list.{language_default}"
@@ -258,11 +258,11 @@ def name_local(legal_code):
 def normalize_path_and_lang(request_path, jurisdiction, language_code):
     if not language_code:
         if "legalcode" in request_path:
-            language_code = get_default_language_for_jurisdiction_naive(
+            language_code = get_default_language_for_jurisdiction_legal_code(
                 jurisdiction
             )
         else:
-            language_code = get_default_language_for_jurisdiction_deed(
+            language_code = get_default_language_for_jurisdiction_legal_code(
                 jurisdiction
             )
     if not request_path.endswith(f".{language_code}"):
@@ -377,7 +377,7 @@ def view_list(request, category, language_code=None):
     request.path, language_code = normalize_path_and_lang(
         request.path, None, language_code
     )
-    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if language_code not in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         raise Http404(f"invalid language: {language_code}")
 
     translation.activate(language_code)
@@ -403,7 +403,7 @@ def view_list(request, category, language_code=None):
         lc_unit = lc.tool.unit
         lc_version = lc.tool.version
         lc_identifier = lc.tool.identifier()
-        lc_language_default = get_default_language_for_jurisdiction_naive(
+        lc_language_default = get_default_language_for_jurisdiction_legal_code(
             lc.tool.jurisdiction_code,
         )
         lc_lang_code = lc.language_code
@@ -497,13 +497,13 @@ def view_deed(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if language_code not in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         return view_page_not_found(
             request, Http404(f"invalid language: {language_code}")
         )
 
     path_start = os.path.dirname(request.path)
-    language_default = get_default_language_for_jurisdiction_deed(jurisdiction)
+    language_default = get_default_language_for_jurisdiction_deed_ux(jurisdiction)
 
     try:
         tool = Tool.objects.get(
@@ -521,7 +521,7 @@ def view_deed(
             # Next, try to load legal code with default language for the
             # jurisdiction
             legal_code = tool.get_legal_code_for_language_code(
-                get_default_language_for_jurisdiction_naive(jurisdiction)
+                get_default_language_for_jurisdiction_legal_code(jurisdiction)
             )
         except LegalCode.DoesNotExist:
             # Last, load legal code with global default language (English)
@@ -619,7 +619,7 @@ def view_legal_code(
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
-    language_default = get_default_language_for_jurisdiction_naive(
+    language_default = get_default_language_for_jurisdiction_legal_code(
         jurisdiction
     )
 
@@ -647,9 +647,9 @@ def view_legal_code(
     )
 
     # Use Deeds & UX translations for title instead of Legal Code
-    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if language_code in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         translation.activate(language_code)
-    elif language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    elif language_default in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         translation.activate(language_default)
     else:
         translation.activate(settings.LANGUAGE_CODE)

@@ -13,8 +13,8 @@ from django.test import TestCase, override_settings
 # First-party/Local
 from i18n.utils import (
     active_translation,
-    get_default_language_for_jurisdiction_deed,
-    get_default_language_for_jurisdiction_naive,
+    get_default_language_for_jurisdiction_deed_ux,
+    get_default_language_for_jurisdiction_legal_code,
     get_jurisdiction_name,
     get_pofile_creation_date,
     get_pofile_path,
@@ -164,35 +164,35 @@ class I18NTest(TestCase):
     def test_get_language_for_jurisdiction_deed(self):
         # "be" jurisdiction default is "fr"
         self.assertEqual(
-            "fr", get_default_language_for_jurisdiction_deed("be")
+            "fr", get_default_language_for_jurisdiction_deed_ux("be")
         )
         # "am" jurisdiction default is "hy"
         # the "hy" translation is incomplete so we return the global default
         # https://github.com/creativecommons/cc-legal-tools-app/issues/444
         self.assertEqual(
-            "en", get_default_language_for_jurisdiction_deed("am")
+            "en", get_default_language_for_jurisdiction_deed_ux("am")
         )
         # "xx" is an invalid jurisdiction
         # return global default ("en")
         self.assertEqual(
-            "en", get_default_language_for_jurisdiction_deed("xx")
+            "en", get_default_language_for_jurisdiction_deed_ux("xx")
         )
 
     def test_get_language_for_jurisdiction_legal_code(self):
         # "be" jurisdiction default is "fr"
         self.assertEqual(
-            "fr", get_default_language_for_jurisdiction_naive("be")
+            "fr", get_default_language_for_jurisdiction_legal_code("be")
         )
         # "xx" is an invalid jurisdiction
         # return global default ("en")
         self.assertEqual(
-            "en", get_default_language_for_jurisdiction_naive("xx")
+            "en", get_default_language_for_jurisdiction_legal_code("xx")
         )
 
 
 class TranslationTest(TestCase):
     @override_settings(
-        LANGUAGES_MOSTLY_TRANSLATED=["LANGUAGE_CODE"],
+        LANGUAGES_AVAILABLE_DEEDS_UX=["LANGUAGE_CODE"],
         LEGAL_CODE_LOCALE_PATH="LOCALE_DIRS",
     )
     def test_get_translation_object_specified_translated(self):
@@ -219,7 +219,7 @@ class TranslationTest(TestCase):
         self.assertEqual(translation_object, result)
 
     @override_settings(
-        LANGUAGES_MOSTLY_TRANSLATED=["LANGUAGE_DEFAULT"],
+        LANGUAGES_AVAILABLE_DEEDS_UX=["LANGUAGE_DEFAULT"],
         LEGAL_CODE_LOCALE_PATH="LOCALE_DIRS",
     )
     def test_get_translation_object_default_translated(self):
@@ -246,7 +246,7 @@ class TranslationTest(TestCase):
         self.assertEqual(translation_object, result)
 
     @override_settings(
-        LANGUAGES_MOSTLY_TRANSLATED=[],
+        LANGUAGES_AVAILABLE_DEEDS_UX=[],
         LEGAL_CODE_LOCALE_PATH="LOCALE_DIRS",
     )
     def test_get_translation_object_untranslated(self):

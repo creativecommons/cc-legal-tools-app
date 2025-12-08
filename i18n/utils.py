@@ -89,11 +89,11 @@ def get_translation_object(
 
     # Add a fallback to the standard Django translation for this language. This
     # gets us the non-legal-code parts of the pages.
-    if language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if language_code in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         tool_translation_object.add_fallback(
             translation.trans_real.translation(language_code)
         )
-    elif language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    elif language_default in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         tool_translation_object.add_fallback(
             translation.trans_real.translation(language_default)
         )
@@ -253,21 +253,68 @@ def map_legacy_to_django_language_code(legacy_language_code: str) -> str:
     return django_language_code
 
 
-def get_default_language_for_jurisdiction_deed(jurisdiction_code):
+def get_default_language_for_jurisdiction_deed_ux(jurisdiction_code):
     default_language = DEFAULT_JURISDICTION_LANGUAGES.get(
         jurisdiction_code, settings.LANGUAGE_CODE
     )
-    if default_language in settings.LANGUAGES_MOSTLY_TRANSLATED:
+    if default_language in settings.LANGUAGES_AVAILABLE_DEEDS_UX:
         return default_language
     else:
         return settings.LANGUAGE_CODE
 
-
-def get_default_language_for_jurisdiction_naive(jurisdiction_code):
-    return DEFAULT_JURISDICTION_LANGUAGES.get(
+def get_default_language_for_jurisdiction_legal_code(jurisdiction_code):
+    default_language = DEFAULT_JURISDICTION_LANGUAGES.get(
         jurisdiction_code, settings.LANGUAGE_CODE
     )
+    if default_language in settings.LANGUAGES_AVAILABLE_LEGAL_CODE:
+        return default_language
+    else:
+        return settings.LANGUAGE_CODE
 
+def get_legal_code_pofiles():
+    legal_code_pofiles = []
+    for locale_name in os.listdir(settings.LEGAL_CODE_LOCALE_PATH):
+        language_code = translation.to_language(locale_name)
+        pofile_path = get_pofile_path(
+            locale_or_legalcode="locale",
+            language_code=language_code,
+            translation_domain="django",
+        )
+        if not os.path.isfile(pofile_path):  # pragma: no cover
+            continue
+        legal_code_pofiles.append([language_code, pofile_path])
+    legal_code_pofiles.sort(key=lambda x: x[0])
+    return legal_code_pofiles
+
+def load_legal_code_translations():
+    """
+    Process Deed & UX translations (store information on all and track those
+    that meet or exceed the TRANSLATION_THRESHOLD).
+    """
+    legal_code_po_file_info = {}
+    languages_available_legal_code = []
+    for language_code, pofile_path in get_legal_code_pofiles():
+        pofile_obj = polib.pofile(pofile_path)
+        percent_translated = pofile_obj.percent_translated()
+        legal_code_po_file_info[language_code] = {
+            "percent_translated": percent_translated,
+            "creation_date": get_pofile_creation_date(pofile_obj),
+            "revision_date": get_pofile_revision_date(pofile_obj),
+            "metadata": pofile_obj.metadata,
+        }
+        update_lang_info(language_code)
+        if (
+            percent_translated < settings.TRANSLATION_THRESHOLD
+            and language_code != settings.LANGUAGE_CODE
+        ):
+            continue
+        languages_available_legal_code.append(language_code)
+    legal_code_po_file_info = dict(sorted(legal_code_po_file_info.items()))
+    # Add global settings
+    settings.DEEDS_UX_PO_FILE_INFO = legal_code_po_file_info
+    settings.LANGUAGES_AVAILABLE_LEGAL_CODE = sorted(
+        list(set(languages_available_legal_code))
+    )
 
 def get_jurisdiction_name(category, unit, version, jurisdiction_code):
     # For details on nomenclature for unported licenses, see:
@@ -310,7 +357,7 @@ def load_deeds_ux_translations():
     that meet or exceed the TRANSLATION_THRESHOLD).
     """
     deeds_ux_po_file_info = {}
-    languages_mostly_translated = []
+    languages_available_deeds_ux = []
     for language_code, pofile_path in get_deeds_ux_pofiles():
         pofile_obj = polib.pofile(pofile_path)
         percent_translated = pofile_obj.percent_translated()
@@ -326,12 +373,12 @@ def load_deeds_ux_translations():
             and language_code != settings.LANGUAGE_CODE
         ):
             continue
-        languages_mostly_translated.append(language_code)
+        languages_available_deeds_ux.append(language_code)
     deeds_ux_po_file_info = dict(sorted(deeds_ux_po_file_info.items()))
     # Add global settings
     settings.DEEDS_UX_PO_FILE_INFO = deeds_ux_po_file_info
-    settings.LANGUAGES_MOSTLY_TRANSLATED = sorted(
-        list(set(languages_mostly_translated))
+    settings.LANGUAGES_AVAILABLE_DEEDS_UX = sorted(
+        list(set(languages_available_deeds_ux))
     )
 
 
