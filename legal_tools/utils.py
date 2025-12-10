@@ -4,8 +4,6 @@ import os
 import posixpath
 
 # Third-party
-import requests
-from bs4 import BeautifulSoup
 from colorlog.escape_codes import escape_codes
 from django.conf import settings
 from django.core.cache import cache
@@ -568,31 +566,3 @@ def update_title(options):
         LOG.info(f"legal code object titles updated: {count}")
 
     return results
-
-
-def pretty_html_bytes(path, html_bytes):
-    """
-    1. Clean-up HTML using BeautifulSoup4
-    2. Format HTML using Prettier
-    """
-    if not isinstance(html_bytes, bytes):
-        html_bytes = html_bytes.encode("utf-8")
-    url = "http://prettier:3000"
-    data = BeautifulSoup(html_bytes, features="lxml").encode()
-    headers = {"Content-Type": "text/html"}
-    timeout = 5
-    response = requests.post(
-        url,
-        data=data,
-        headers=headers,
-        timeout=timeout,
-    )
-    response.raise_for_status()
-    return response.content
-    # This function is currently expected to complete without error. The
-    # primary downside is that HTML syntax errors are not currently exposed. A
-    # new function and command line should be created to test validity of HTML
-    # independent of publishing.
-    #
-    # except requests.HTTPError as e:
-    #     LOG.warning(f"{path}: {e.response.text}")
