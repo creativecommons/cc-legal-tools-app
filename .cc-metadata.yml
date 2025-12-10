@@ -6,5 +6,3 @@ english_name: CC Legal Tools Application
 technologies: Django, Python
 # Whether this repository should be featured on the CC Open Source site
 featured: true
-# Slack channel name
-slack: "cc-dev-legal-tools"
