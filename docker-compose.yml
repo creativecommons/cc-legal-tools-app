@@ -18,6 +18,7 @@ services:
       - prettier
     environment:
       - DJANGO_SETTINGS_MODULE=${DOCKER_DJANGO_SETTINGS_MODULE}
+      - PRETTIER_SLOW  # set in .env
     ports:
       - "127.0.0.1:${PORT_APP}:${PORT_APP}"
     restart: on-failure

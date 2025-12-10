@@ -1,5 +1,6 @@
 # Standard library
 import os
+import subprocess
 from operator import itemgetter
 from typing import Iterable
 
@@ -220,25 +221,32 @@ def normalize_path_and_lang(request_path, jurisdiction, language_code):
     return request_path, language_code
 
 
-def pretty_html_bytes(path, html_bytes):
+def pretty_html_bytes(path, html_bytes):  # pragma: no cover
     """
     1. Clean-up HTML using BeautifulSoup4
     2. Format HTML using Prettier
     """
     if not isinstance(html_bytes, bytes):
         html_bytes = html_bytes.encode("utf-8")
-    url = "http://prettier:3000"
     data = BeautifulSoup(html_bytes, features="lxml").encode()
-    headers = {"Content-Type": "text/html"}
-    timeout = 5
-    response = requests.post(
-        url,
-        data=data,
-        headers=headers,
-        timeout=timeout,
-    )
-    response.raise_for_status()
-    return response.content
+    if settings.PRETTIER_SLOW:
+        # This logic path should only used by GitHub Actions
+        # (The multiple Prettier container model, below, is about 25% faster)
+        cmd = "prettier --parser html".split()
+        completed = subprocess.run(cmd, input=data, capture_output=True)
+        return completed.stdout
+    else:
+        url = "http://prettier:3000"
+        headers = {"Content-Type": "text/html"}
+        timeout = 5
+        response = requests.post(
+            url,
+            data=data,
+            headers=headers,
+            timeout=timeout,
+        )
+        response.raise_for_status()
+        return response.content
     # This function is currently expected to complete without error. The
     # primary downside is that HTML syntax errors are not currently exposed. A
     # new function and command line should be created to test validity of HTML
