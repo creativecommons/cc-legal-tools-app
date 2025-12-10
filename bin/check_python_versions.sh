@@ -66,7 +66,7 @@ pyvercompare 'Pipfile' 'python_version =' '3'
 pyvercompare '.github/workflows/django-app-coverage.yml' 'python-version:' '2'
 pyvercompare '.github/workflows/static-analysis.yml' 'python-version:' '2'
 pyvercompare '.pre-commit-config.yaml' 'python: python' '2'
-pyvercompare 'Dockerfile' 'FROM python:' '2'
+pyvercompare 'Dockerfile.app' 'FROM python:' '2'
 pyvercompare 'pyproject.toml' 'target-version =' '3'
 
 exit ${EXIT_STATUS}
