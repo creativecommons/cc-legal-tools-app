@@ -4,7 +4,6 @@ import os
 import posixpath
 
 # Third-party
-from bs4 import NavigableString
 from colorlog.escape_codes import escape_codes
 from django.conf import settings
 from django.core.cache import cache
@@ -222,10 +221,7 @@ def validate_list_is_all_text(list_):
     """
     newlist = []
     for i, value in enumerate(list_):
-        if isinstance(value, NavigableString):
-            newlist.append(str(value))
-            continue
-        elif not isinstance(value, (str, list, dict)):
+        if not isinstance(value, (str, list, dict)):
             raise ValueError(
                 f"Not a str, list, or dict: {type(value)}: {value}"
             )
@@ -246,10 +242,7 @@ def validate_dictionary_is_all_text(d):
     newdict = dict()
     for key, value in d.items():
         assert isinstance(key, str)
-        if isinstance(value, NavigableString):
-            newdict[key] = str(value)
-            continue
-        elif not isinstance(value, (str, dict, list)):
+        if not isinstance(value, (str, dict, list)):
             raise ValueError(f"Not a str: key={key} {type(value)}: {value}")
         if isinstance(value, dict):
             newdict[key] = validate_dictionary_is_all_text(value)

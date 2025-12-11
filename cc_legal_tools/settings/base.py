@@ -361,3 +361,6 @@ OFFICIAL_GIT_BRANCH = "main"
 TRANSLATION_REPOSITORY_DEPLOY_KEY = os.getenv(
     "TRANSLATION_REPOSITORY_DEPLOY_KEY", ""
 )
+
+# This value may be overidden in dev settings
+PRETTIER_SLOW = False

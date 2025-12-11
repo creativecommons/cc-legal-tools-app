@@ -1,16 +1,9 @@
 # Standard library
 import os
-import re
-from operator import itemgetter
-from typing import Iterable
 
 # Third-party
 import yaml
-from bs4 import BeautifulSoup
-from bs4.dammit import EntitySubstitution
-from bs4.formatter import HTMLFormatter
 from django.conf import settings
-from django.core.cache import cache
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
@@ -37,6 +30,16 @@ from legal_tools.rdf_utils import (
     order_rdf_xml,
 )
 from legal_tools.utils import get_tool_title
+from legal_tools.view_utils import (
+    get_category_and_category_title,
+    get_deed_rel_path,
+    get_languages_and_links_for_deeds_ux,
+    get_languages_and_links_for_legal_codes,
+    get_legal_code_replaced_rel_path,
+    get_list_paths,
+    normalize_path_and_lang,
+    pretty_html_bytes,
+)
 
 NUM_COMMITS = 3
 PLAIN_TEXT_TOOL_IDENTIFIERS = [
@@ -54,220 +57,6 @@ PLAIN_TEXT_TOOL_IDENTIFIERS = [
     "CC BY-SA 4.0",
     "CC0 1.0",
 ]
-
-# For removing the deed.foo section of a deed url
-REMOVE_DEED_URL_RE = re.compile(r"^(.*?/)(?:deed)?(?:\..*)?$")
-# Register a custom BeatifulSoup HTML Formatter
-HTMLFormatter.REGISTRY["html5ish"] = HTMLFormatter(
-    # The html5 formatter replaces accented characters with entities, which
-    # significantly alters translations and breaks tests. This custom
-    # formatter uses the same EntitySubstitution as the minimal formatter
-    # and the html5 values for the other parameters.
-    entity_substitution=EntitySubstitution.substitute_xml,
-    void_element_close_prefix=None,
-    empty_attributes_are_booleans=True,
-)
-
-
-def get_category_and_category_title(category=None, tool=None):
-    # category
-    if not category:
-        if tool:
-            category = tool.category
-        else:
-            category = "licenses"
-    # category_title
-    if category == "publicdomain":
-        category_title = translation.gettext("Public Domain")
-    else:
-        category_title = translation.gettext("Licenses")
-    return category, category_title
-
-
-def get_languages_and_links_for_deeds_ux(request_path, selected_language_code):
-    languages_and_links = []
-
-    for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
-        language_info = translation.get_language_info(language_code)
-        link = request_path.replace(
-            f".{selected_language_code}",
-            f".{language_code}",
-        )
-        languages_and_links.append(
-            {
-                "cc_language_code": language_code,
-                "name_local": language_info["name_local"],
-                "name_for_sorting": language_info["name_local"].lower(),
-                "link": link,
-                "selected": selected_language_code == language_code,
-            }
-        )
-    languages_and_links.sort(key=itemgetter("name_for_sorting"))
-    return languages_and_links
-
-
-def get_languages_and_links_for_legal_codes(
-    path_start,
-    legal_codes: Iterable[LegalCode],
-    selected_language_code: str,
-):
-    """
-    legal_code_or_deed should be "deed" or "legal code", controlling which kind
-    of page we link to.
-
-    selected_language_code is a Django language code (lowercase IETF language
-    tag)
-    """
-    languages_and_links = [
-        {
-            "cc_language_code": legal_code.language_code,
-            # name_local: name of language in its own language
-            "name_local": name_local(legal_code),
-            "name_for_sorting": name_local(legal_code).lower(),
-            "link": os.path.relpath(
-                legal_code.legal_code_url, start=path_start
-            ),
-            "selected": selected_language_code == legal_code.language_code,
-        }
-        for legal_code in legal_codes
-    ]
-    languages_and_links.sort(key=itemgetter("name_for_sorting"))
-    if len(languages_and_links) < 2:
-        # Return an empty list if there are not multiple languages available
-        # (this will result in the language dropdown not being shown with a
-        # single currently active language)
-        languages_and_links = None
-    return languages_and_links
-
-
-def get_deed_rel_path(
-    deed_url,
-    path_start,
-    language_code,
-    language_default,
-):
-    deed_rel_path = os.path.relpath(deed_url, path_start)
-    if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
-        if language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
-            # Translation incomplete, use region default language
-            deed_rel_path = deed_rel_path.replace(
-                f"deed.{language_code}", f"deed.{language_default}"
-            )
-        else:
-            # Translation incomplete, use app default language (English)
-            deed_rel_path = deed_rel_path.replace(
-                f"deed.{language_code}", f"deed.{settings.LANGUAGE_CODE}"
-            )
-    return deed_rel_path
-
-
-def get_list_paths(language_code, language_default):
-    paths = [
-        f"/licenses/list.{language_code}",
-        f"/publicdomain/list.{language_code}",
-    ]
-    for index, path in enumerate(paths):
-        if language_code not in settings.LANGUAGES_MOSTLY_TRANSLATED:
-            if language_default in settings.LANGUAGES_MOSTLY_TRANSLATED:
-                # Translation incomplete, use region default language
-                paths[index] = path.replace(
-                    f"/list.{language_code}", f"/list.{language_default}"
-                )
-            else:
-                # Translation incomplete, use app default language (English)
-                paths[index] = path.replace(
-                    f"/list.{language_code}", f"/list.{settings.LANGUAGE_CODE}"
-                )
-    return paths
-
-
-def get_legal_code_replaced_rel_path(
-    tool,
-    path_start,
-    language_code,
-    language_default,
-):
-    if not tool:
-        return None, None, None, None
-    try:
-        # Same language
-        legal_code = LegalCode.objects.valid().get(
-            tool=tool, language_code=language_code
-        )
-    except LegalCode.DoesNotExist:
-        try:
-            # Jurisdiction default language
-            legal_code = LegalCode.objects.valid().get(
-                tool=tool, language_code=language_default
-            )
-        except LegalCode.DoesNotExist:
-            # Global default language
-            legal_code = LegalCode.objects.valid().get(
-                tool=tool, language_code=settings.LANGUAGE_CODE
-            )
-    title = get_tool_title(
-        tool.unit,
-        tool.version,
-        tool.category,
-        tool.jurisdiction_code,
-        legal_code.language_code,
-    )
-    prefix = (
-        f"{tool.unit}-{tool.version}-"
-        f"{tool.jurisdiction_code}-{legal_code.language_code}-"
-    )
-    replaced_deed_title = cache.get(f"{prefix}replaced_deed_title", "")
-    if not replaced_deed_title:
-        with translation.override(legal_code.language_code):
-            deed_str = translation.gettext("Deed")
-        replaced_deed_title = f"{deed_str} - {title}"
-        cache.add(f"{prefix}replaced_deed_title", replaced_deed_title)
-    replaced_deed_path = get_deed_rel_path(
-        legal_code.deed_url,
-        path_start,
-        language_code,
-        language_default,
-    )
-    replaced_legal_code_title = cache.get(
-        f"{prefix}replaced_legal_code_title", ""
-    )
-    if not replaced_legal_code_title:
-        with translation.override(legal_code.language_code):
-            legal_code_str = translation.gettext("Legal Code")
-        replaced_legal_code_title = f"{legal_code_str} - {title}"
-        cache.add(
-            f"{prefix}replaced_legal_code_title", replaced_legal_code_title
-        )
-    replaced_legal_code_path = os.path.relpath(
-        legal_code.legal_code_url, path_start
-    )
-    return (
-        replaced_deed_title,
-        replaced_deed_path,
-        replaced_legal_code_title,
-        replaced_legal_code_path,
-    )
-
-
-def name_local(legal_code):
-    return translation.get_language_info(legal_code.language_code)[
-        "name_local"
-    ]
-
-
-def normalize_path_and_lang(request_path, jurisdiction, language_code):
-    if not language_code:
-        if "legalcode" in request_path:
-            language_code = get_default_language_for_jurisdiction_naive(
-                jurisdiction
-            )
-        else:
-            language_code = get_default_language_for_jurisdiction_deed(
-                jurisdiction
-            )
-    if not request_path.endswith(f".{language_code}"):
-        request_path = f"{request_path}.{language_code}"
-    return request_path, language_code
 
 
 def view_dev_index(request):
@@ -360,12 +149,8 @@ def view_dev_index(request):
             "count_zero": count_zero,
         },
     )
-
-    html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(
-            formatter="html5ish"
-        ),
-        "utf-8",
+    html_response.content = pretty_html_bytes(
+        request.path, html_response.content
     )
     return html_response
 
@@ -477,11 +262,8 @@ def view_list(request, category, language_code=None):
             "tools": tools,
         },
     )
-    html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(
-            formatter="html5ish"
-        ),
-        "utf-8",
+    html_response.content = pretty_html_bytes(
+        request.path, html_response.content
     )
     return html_response
 
@@ -597,11 +379,8 @@ def view_deed(
             "tool_title": tool_title,
         },
     )
-    html_response.content = bytes(
-        BeautifulSoup(html_response.content, features="lxml").prettify(
-            formatter="html5ish"
-        ),
-        "utf-8",
+    html_response.content = pretty_html_bytes(
+        request.path, html_response.content
     )
     return html_response
 
@@ -747,11 +526,8 @@ def view_legal_code(
         #         return response
         #
         html_response = render(request, **kwargs)
-        html_response.content = bytes(
-            BeautifulSoup(html_response.content, features="lxml").prettify(
-                formatter="html5ish"
-            ),
-            "utf-8",
+        html_response.content = pretty_html_bytes(
+            request.path, html_response.content
         )
         return html_response
 
@@ -862,11 +638,9 @@ def render_redirect(title, destination, language_code):
         "redirect.html",
         context={"title": title, "destination": destination},
     )
-    html_content = bytes(
-        BeautifulSoup(html_content, features="lxml").prettify(),
-        "utf-8",
+    return pretty_html_bytes(
+        f"{title} redirect to {destination}", html_content
     )
-    return html_content
 
 
 def view_legal_tool_rdf(
@@ -904,8 +678,9 @@ def view_legacy_plaintext(
     category=None,
 ):
     """
-    Display plain text file, if it exists (this view is only used in
-    development).
+    Display plain text file, if it exists.
+
+    (This view is only used in development.)
     """
     published_docs_path = os.path.abspath(
         os.path.realpath(os.path.join("..", "cc-legal-tools-data", "docs"))

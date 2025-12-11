@@ -36,6 +36,10 @@ RUN apt-get update && apt-get install -y \
         gcc \
         gettext \
         git \
+        # nodejs and npm are only used to test GitHub Actions workflow
+        # compatibility (PRETTIER_SLOW=1)
+        nodejs \
+        npm \
         sqlite3 \
         ssh \
     && rm -rf /var/lib/apt/lists/*
@@ -49,6 +53,10 @@ RUN pip install --upgrade \
 # Install python dependencies
 COPY Pipfile Pipfile.lock .
 RUN pipenv sync --dev --system
+
+# Command line prettier is only used to test GitHub Actions workflow
+# compatibility (PRETTIER_SLOW=1)
+RUN npm install --global prettier
 
 # Create and switch to a new "cc" user
 RUN useradd --create-home cc

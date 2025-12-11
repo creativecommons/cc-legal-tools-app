@@ -632,6 +632,11 @@ class Command(BaseCommand):
             pprint(options)
             return
 
+        if settings.PRETTIER_SLOW:
+            raise CommandError(
+                "PRETTIER_SLOW mustn't be enabled during publish"
+            )
+
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.config_dir = os.path.abspath(
             os.path.join(self.output_dir, "..", "config")

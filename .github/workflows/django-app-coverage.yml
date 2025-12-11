@@ -14,6 +14,7 @@ jobs:
 
     env:
       DJANGO_SETTINGS_MODULE: cc_legal_tools.settings.dev
+      PRETTIER_SLOW: 1
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONFAULTHANDLER: 1
 
@@ -51,6 +52,9 @@ jobs:
     - name: Install Python dependencies
       run: pipenv sync --dev --system
       working-directory: ./cc-legal-tools-app
+
+    - name: Install Prettier
+      run: npm install --global prettier
 
     - name: Check for missing Django migrations
       run: python manage.py makemigrations --check
