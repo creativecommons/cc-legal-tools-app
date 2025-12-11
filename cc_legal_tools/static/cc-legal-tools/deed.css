@@ -27,7 +27,7 @@
 .cc-legal-tools div#deed-body ol > li:before {
   background-repeat: no-repeat;
   background-size: contain;
-  content: '';
+  content: "";
   height: 2em;
   width: 2em;
 }
@@ -40,28 +40,28 @@
   margin-right: -2.5em;
 }
 .cc-legal-tools div#deed-body ol > li.cc-by:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-by');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-by");
 }
 .cc-legal-tools div#deed-body ol > li.cc-mark:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-pdm');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-pdm");
 }
 .cc-legal-tools div#deed-body ol > li.cc-nc:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nc');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nc");
 }
 .cc-legal-tools div#deed-body ol > li.cc-nd:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nd');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nd");
 }
 .cc-legal-tools div#deed-body ol > li.cc-sa:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sa');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sa");
 }
 .cc-legal-tools div#deed-body ol > li.cc-sampling:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sampling');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sampling");
 }
 .cc-legal-tools div#deed-body ol > li.cc-sampling-plus:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sampling-plus');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-sampling-plus");
 }
 .cc-legal-tools div#deed-body ol > li.cc-zero:before {
-  background-image: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-zero');
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-zero");
 }
 
 /* FOOTNOTES */
