@@ -1,4 +1,6 @@
 # Standard library
+import csv
+import io
 import os.path
 from unittest import mock
 
@@ -1200,18 +1202,19 @@ class ViewBranchStatusTest(TestCase):
 
 class ViewMetadataTest(TestCase):
     def test_view_metadata(self):
-        ToolFactory(category="licenses", unit="by", version="1.1")
-        ToolFactory(category="publicdomain", unit="zero", version="1.1")
-        with mock.patch.object(Tool, "get_metadata") as mock_get_metadata:
-            mock_get_metadata.return_value = {"foo": "bar"}
-            rsp = self.client.get(reverse("metadata"))
-        self.assertEqual(200, rsp.status_code)
-        mock_get_metadata.assert_called_with()
-        self.assertEqual(
-            b"licenses:\n- by_11: &id001\n    foo: bar\n"
-            b"publicdomain:\n- zero_11: *id001\n",
-            rsp.content,
+        tool0 = ToolFactory(category="licenses", unit="by", version="2.0")
+        tool1 = ToolFactory(
+            category="publicdomain", unit="zero", version="1.0"
         )
+        rsp = self.client.get(reverse("metadata_csv"))
+        self.assertEqual(200, rsp.status_code)
+        rows = list(csv.DictReader(io.StringIO(rsp.content.decode())))
+        self.assertEqual(tool0.category, rows[0]["CATEGORY"])
+        self.assertEqual(tool0.unit, rows[0]["UNIT"])
+        self.assertEqual(tool0.version, rows[0]["VERSION"])
+        self.assertEqual(tool1.category, rows[1]["CATEGORY"])
+        self.assertEqual(tool1.unit, rows[1]["UNIT"])
+        self.assertEqual(tool1.version, rows[1]["VERSION"])
 
 
 class ViewNsHtmlTest(TestCase):
