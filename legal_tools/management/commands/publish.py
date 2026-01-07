@@ -577,17 +577,17 @@ class Command(BaseCommand):
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
 
-    def distill_metadata_yaml(self):
+    def distill_metadata_csv(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
         LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Distilling metadata.yaml")
+        LOG.info("Distilling cc-legal-tools.csv")
 
         save_url_as_static_file(
             output_dir,
-            url=reverse("metadata"),
-            relpath="licenses/metadata.yaml",
+            url=reverse("metadata_csv"),
+            relpath="../config/cc-legal-tools.csv",
         )
 
     def parse_filters(self):
@@ -664,5 +664,5 @@ class Command(BaseCommand):
         with Pool() as self.pool:
             self.pool_distill_lists()
             self.pool_distill_legal_tools()
+        self.distill_metadata_csv()
         # DISABLED # self.distill_transstats_csv()
-        # DISABLED # self.distill_metadata_yaml()

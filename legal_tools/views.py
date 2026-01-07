@@ -1,8 +1,10 @@
 # Standard library
+import csv
+import io
 import os
+from operator import itemgetter
 
 # Third-party
-import yaml
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, render
@@ -602,17 +604,41 @@ def view_branch_status(request, id):  # pragma: no cover
     pass
 
 
-def view_metadata(request):
-    data = {"licenses": [], "publicdomain": []}
+def view_metadata_csv(request):
+    csv_obj = io.StringIO()
+    rows = []
     for tool in Tool.objects.all():
-        category = tool.category
-        data[category].append({f"{tool.resource_slug}": tool.get_metadata()})
-    yaml_bytes = yaml.dump(
-        data, default_flow_style=False, encoding="utf-8", allow_unicode=True
-    )
+        data = tool.get_metadata()
+        rows.append(
+            {
+                "CATEGORY": data["category"],
+                "VERSION": data["version"],
+                "UNIT": data["unit"],
+                "JURISDICTION": data["jurisdiction_code"],
+                "CANONICAL_URL": data["base_url"],
+                "IDENTIFIER": data["identifier"],
+                "TITLE": data["title"],
+                "LANGUAGE_DEFAULT": data["language_default"],
+            }
+        )
+    rows.sort(key=itemgetter("CATEGORY", "VERSION", "UNIT", "JURISDICTION"))
+    fieldnames = [
+        "CATEGORY",
+        "VERSION",
+        "UNIT",
+        "JURISDICTION",
+        "CANONICAL_URL",
+        "IDENTIFIER",
+        "TITLE",
+        "LANGUAGE_DEFAULT",
+    ]
+    writer = csv.DictWriter(csv_obj, fieldnames=fieldnames, dialect="unix")
+    writer.writeheader()
+    for row in rows:
+        writer.writerow(row)
     return HttpResponse(
-        yaml_bytes,
-        content_type="text/yaml; charset=utf-8",
+        csv_obj.getvalue(),
+        content_type="text/plain; charset=utf-8",
     )
 
 

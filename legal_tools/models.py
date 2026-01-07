@@ -19,6 +19,7 @@ from i18n.utils import (
     get_translation_object,
 )
 from legal_tools.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
+from legal_tools.utils import get_tool_title
 
 # For context of "freedom levels" see:
 # https://creativecommons.org/share-your-work/public-domain/freeworks/
@@ -558,13 +559,21 @@ class Tool(models.Model):
             self.jurisdiction_code
         )
         data = {}
-        default_lc = self.legal_codes.filter(language_code=language_default)[0]
+        try:
+            default_lc = self.legal_codes.filter(
+                language_code=language_default
+            )[0]
+        except IndexError:
+            default_lc = False
         data["base_url"] = self.base_url
+        data["category"] = self.category
         data["deed_only"] = self.deed_only
         if self.deprecated_on:
             data["deprecated_on"] = self.deprecated_on
         if self.jurisdiction_code:
             data["jurisdiction_code"] = self.jurisdiction_code
+        else:
+            data["jurisdiction_code"] = ""
         data["jurisdiction_name"] = get_jurisdiction_name(
             self.category,
             self.unit,
@@ -572,6 +581,7 @@ class Tool(models.Model):
             self.jurisdiction_code,
         )
         data["identifier"] = self.identifier()
+        data["language_default"] = language_default
         if not self.deed_only:
             data["legal_code_languages"] = {}
             for lc in self.legal_codes.order_by("language_code"):
@@ -589,7 +599,16 @@ class Tool(models.Model):
         data["requires_attribution"] = self.requires_attribution
         data["requires_notice"] = self.requires_notice
         data["requires_share_alike"] = self.requires_share_alike
-        data["title"] = default_lc.title
+        if default_lc:
+            data["title"] = default_lc.title
+        else:
+            data["title"] = get_tool_title(
+                self.unit,
+                self.version,
+                self.category,
+                self.jurisdiction_code,
+                language_default,
+            )
         data["unit"] = self.unit
         data["version"] = self.version
         return data
