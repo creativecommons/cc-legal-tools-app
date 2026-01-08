@@ -43,6 +43,7 @@ class LegalCodeAdmin(admin.ModelAdmin):
     ]
     list_filter = [
         "tool__unit",
+        "tool__version",
         "language_code",
     ]
     raw_id_fields = [
@@ -65,6 +66,7 @@ class ToolAdmin(admin.ModelAdmin):
         "base_url",
         "unit",
         "version",
+        "spdx_identifier",
         "creator_url",
         "category",
         "jurisdiction_code",
