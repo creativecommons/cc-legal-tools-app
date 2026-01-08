@@ -617,6 +617,7 @@ def view_metadata_csv(request):
                 "JURISDICTION": data["jurisdiction_code"],
                 "CANONICAL_URL": data["base_url"],
                 "IDENTIFIER": data["identifier"],
+                "SPDX_IDENTIFIER": data["spdx_identifier"],
                 "TITLE": data["title"],
                 "LANGUAGE_DEFAULT": data["language_default"],
             }
@@ -629,6 +630,7 @@ def view_metadata_csv(request):
         "JURISDICTION",
         "CANONICAL_URL",
         "IDENTIFIER",
+        "SPDX_IDENTIFIER",
         "TITLE",
         "LANGUAGE_DEFAULT",
     ]

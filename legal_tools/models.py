@@ -595,6 +595,7 @@ class Tool(models.Model):
             self.jurisdiction_code,
         )
         data["identifier"] = self.identifier()
+        data["spdx_identifier"] = self.spdx_identifier
         data["language_default"] = language_default
         if not self.deed_only:
             data["legal_code_languages"] = {}
