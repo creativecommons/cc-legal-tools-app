@@ -199,8 +199,10 @@ class LegalCode(models.Model):
         default="",
     )
     html = models.TextField("HTML", blank=True, default="")
-    legal_code_url = models.URLField("Legal Code URL", blank=True, default="")
-    deed_url = models.URLField("Deed URL", unique=True)
+    legal_code_url = models.CharField(
+        "Legal Code URL Path", max_length=100, blank=True, default=""
+    )
+    deed_url = models.CharField("Deed URL Path", max_length=100, unique=True)
     plain_text_url = models.URLField(
         "Plain text URL",
         blank=True,
@@ -404,6 +406,18 @@ class Tool(models.Model):
         help_text="Ex. '4.0'. Not required.",
         blank=True,
         default="",
+    )
+    spdx_identifier = models.CharField(
+        "SPDX Identifier",
+        blank=True,
+        null=True,
+        default=None,
+        max_length=20,
+        help_text="short identifier used by SPDX to identify a match to"
+        " licenses or exceptions. See also"
+        " <a href='https://spdx.org/licenses/'"
+        " target='_blank'>https://spdx.org/licenses/</a>.",
+        unique=True,
     )
     jurisdiction_code = models.CharField(
         max_length=9,
