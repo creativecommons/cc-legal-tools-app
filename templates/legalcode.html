@@ -8,7 +8,7 @@
 
 
 {% block head_extra %}
-<link href="/cc-legal-tools/legalcode.css" rel="stylesheet"/>
+<link href="/cc-legal-tools/legalcode.css" rel="stylesheet" />
 {% endblock %}
 
 
@@ -26,67 +26,69 @@
 {% block content %}
 <div class="tool-meta">
 
-<div class="meta-box">
-<article class="canonical-url">
-<h2>{% trans "Canonical URL" %}</h2>
-<a {% if lang.bidi %}dir="ltr"{% endif %} href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
-</article>
+  <div class="meta-box">
+    <article class="canonical-url">
+      <h2>{% trans "Canonical URL" %}</h2>
+      <a {% if lang.bidi %}dir="ltr" {% endif %} href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
+    </article>
 
-<article class="formats">
-<h2>{% trans "Other formats" %}</h2>
-<ul>
-{% if plain_text_url %}
-<li><a href="{{ plain_text_url }}">{% trans "Plain Text" %}</a></li>
-{% endif %}
-<li><a href="rdf">RDF/XML</a></li>
-</ul>
-</article>
-</div>
+    <article class="formats">
+      <h2>{% trans "Other formats" %}</h2>
+      <ul>
+        {% if plain_text_url %}
+        <li><a href="{{ plain_text_url }}">{% trans "Plain Text" %}</a></li>
+        {% endif %}
+        <li><a href="rdf">RDF/XML</a></li>
+      </ul>
+    </article>
+  </div>
 
-<div class="alt-view">
-<a href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
-</div>
+  <div class="alt-view">
+    <a href="{{ deed_rel_path }}">{% trans "See the deed" %}</a>
+  </div>
 
 </div>
 
 <p>
-{% trans "Version" %} {{ legal_code.tool.version }} &#8226;
-{% blocktrans trimmed %}
-See the <a href="/legal-code-errata/">errata page</a> for any corrections and
-the date of change
-{% endblocktrans %}
-{% if legal_code.translation_last_update %}
+  {% trans "Version" %} {{ legal_code.tool.version }} &#8226;
+  {% blocktrans trimmed %}
+  See the <a href="/legal-code-errata/">errata page</a> for any corrections and
+  the date of change
+  {% endblocktrans %}
+  {% if legal_code.translation_last_update %}
   &#8226; Translation published {{ legal_code.translation_last_update|date:'Y/m/d' }}
-{% endif %}
+  {% endif %}
 </p>
 
 {% if tool.deprecated_on %}
-  {# Retired legal tool notice #}
-  {% include 'includes/notice_deprecated.html' %}
+{# Retired legal tool notice #}
+{% include 'includes/notice_deprecated.html' %}
 {% endif %}
 {% if replaced_path %}
-  {# Newer license notice #}
-  {% include 'includes/notice_newer_license.html' %}
+{# Newer license notice #}
+{% include 'includes/notice_newer_license.html' %}
 {% endif %}
-{% if not legal_code.html %}
-  {% include 'includes/notice_about_licenses_and_cc.html' %} {# CC IS NOT A LAW FIRM #}
-  {% include 'includes/use_of_licenses.html' %} {# Considerations... #}
-  {% if tool.category == "publicdomain" and tool.unit == "zero" %}
-    {% include 'includes/legalcode_zero.html' %} {# <<< THE ACTUAL CC0 LICENSE TEXT #}
-  {% elif tool.category == "licenses" and tool.version == "4.0" %}
-    {% include 'includes/legalcode_licenses_4.0.html' %} {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
-  {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
-    {% include 'includes/legalcode_licenses_3.0_unported.html' %} {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
-  {% else %}
-    <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black    ">
-      <p class="has-text-black body-big padding-bottom-normal"><strong>{% trans "Unimplemented" %}</strong> &mdash; {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %} <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues · creativecommons/cc-legal-tools-app</a>.</p>
-    </div>
-  {% endif %}
-  {# NOTE: plaintext functionality disabled #}
-  {# {% include 'includes/view_legal_code_link_plain_text.html' %} #}
+{% if legal_code.markdown %}
+<div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
+  {{ legal_code.markdown_as_html|safe }}
+</div>
+
+{% elif not legal_code.html %}
+{% include 'includes/notice_about_licenses_and_cc.html' %}
+{% include 'includes/use_of_licenses.html' %}
+{% if tool.category == "publicdomain" and tool.unit == "zero" %}
+{% include 'includes/legalcode_zero.html' %}
+{% elif tool.category == "licenses" and tool.version == "4.0" %}
+{% include 'includes/legalcode_licenses_4.0.html' %}
+{% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
+{% include 'includes/legalcode_licenses_3.0_unported.html' %}
 {% else %}
-  {% include "includes/legalcode_crude_html.html" %}
+{# whatever your existing final fallback is #}
 {% endif %}
+{% else %}
+{% include "includes/legalcode_crude_html.html" %}
+{% endif %}
+
 {% include 'includes/notice_about_cc_and_trademark.html' %}
 {% include 'includes/related_links.html' %}
 
