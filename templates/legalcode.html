@@ -69,6 +69,8 @@
 {% include 'includes/notice_newer_license.html' %}
 {% endif %}
 {% if legal_code.markdown %}
+{% include 'includes/notice_about_licenses_and_cc.html' %}
+{% include 'includes/use_of_licenses.html' %}
 <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
   {{ legal_code.markdown_as_html|safe }}
 </div>
