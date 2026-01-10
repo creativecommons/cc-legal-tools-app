@@ -8,7 +8,7 @@
 
 
 {% block head_extra %}
-<link href="/cc-legal-tools/legalcode.css" rel="stylesheet"/>
+<link href="/cc-legal-tools/legalcode.css" rel="stylesheet" />
 {% endblock %}
 
 
@@ -68,6 +68,7 @@
 {# Newer license notice #}
 {% include 'includes/notice_newer_license.html' %}
 {% endif %}
+
 {% if legal_code.markdown %}
 {% include 'includes/notice_about_licenses_and_cc.html' %}
 {% include 'includes/use_of_licenses.html' %}
@@ -85,14 +86,24 @@
 {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
 {% include 'includes/legalcode_licenses_3.0_unported.html' %}
 {% else %}
-{# whatever your existing final fallback is #}
+<div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
+  <p class="has-text-black body-big padding-bottom-normal">
+    <strong>{% trans "Unimplemented" %}</strong> &mdash;
+    {% blocktrans %}
+    this legal tool does not have a valid template. Please report this issue:
+    {% endblocktrans %}
+    <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">
+      Issues · creativecommons/cc-legal-tools-app
+    </a>.
+  </p>
+</div>
 {% endif %}
 {% else %}
 {% include "includes/legalcode_crude_html.html" %}
 {% endif %}
-
 {% include 'includes/notice_about_cc_and_trademark.html' %}
 {% include 'includes/related_links.html' %}
+
 
 {# These four strings were removed from UX. Maintaining here to preserve #}
 {# translations until new UX is decided. #}
