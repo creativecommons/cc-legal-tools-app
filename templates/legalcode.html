@@ -8,7 +8,7 @@
 
 
 {% block head_extra %}
-<link href="/cc-legal-tools/legalcode.css" rel="stylesheet" />
+<link href="/cc-legal-tools/legalcode.css" rel="stylesheet"/>
 {% endblock %}
 
 
@@ -98,6 +98,8 @@
   </p>
 </div>
 {% endif %}
+{# NOTE: plaintext functionality disabled #}
+{# {% include 'includes/view_legal_code_link_plain_text.html' %} #}
 {% else %}
 {% include "includes/legalcode_crude_html.html" %}
 {% endif %}
