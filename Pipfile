@@ -20,6 +20,7 @@ rdflib = "*"
 transifex-python = "*"
 urllib3 = ">=2.2.2"  # Ensure dependency is secure
 whitenoise = "*"
+markdown = "*"
 
 [dev-packages]
 black = ">=24.3.0"  # Sync version with [static-analysis], below
@@ -32,7 +33,6 @@ pre-commit = "*"    # Sync version with [static-analysis], below
 tblib = "*"  # Dependency of coverage (with --parallel)
 
 [static-analysis]
-# Also see: .github/workflows/static-analysis.yml
 black = ">=24.3.0"  # Sync version with [dev-packages], above
 flake8 = "*"        # Sync version with [dev-packages], above
 isort = "*"         # Sync version with [dev-packages], above

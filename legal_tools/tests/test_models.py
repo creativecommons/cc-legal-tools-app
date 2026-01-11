@@ -128,6 +128,12 @@ class LegalCodeModelTest(TestCase):
             f"LegalCode<{legal_code.language_code},"
             f" {str(legal_code.tool)}>",
         )
+    
+    def test_markdown_as_html(self):
+        legal_code = LegalCodeFactory(markdown="# foo")
+        self.assertHTMLEqual(legal_code.markdown_as_html, "<h1>foo</h1>")
+        legal_code_empty = LegalCodeFactory(markdown="")
+        self.assertHTMLEqual(legal_code_empty.markdown_as_html, "")
 
     def test_translation_domain(self):
         data = [

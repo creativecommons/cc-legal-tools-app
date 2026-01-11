@@ -3,6 +3,7 @@ import os
 import posixpath
 
 # Third-party
+import markdown as markdown_lib
 import polib
 from django.conf import settings
 from django.db import models
@@ -199,6 +200,7 @@ class LegalCode(models.Model):
         default="",
     )
     html = models.TextField("HTML", blank=True, default="")
+    markdown = models.TextField("Markdown", blank=True, default="")
     legal_code_url = models.CharField(
         "Legal Code URL Path", max_length=100, blank=True, default=""
     )
@@ -216,6 +218,12 @@ class LegalCode(models.Model):
 
     def __str__(self):
         return f"LegalCode<{self.language_code}, {self.tool}>"
+
+    @property
+    def markdown_as_html(self):
+        if self.markdown:
+            return markdown_lib.markdown(self.markdown)
+        return ""
 
     def save(self, *args, **kwargs):
         self.deed_url = build_path(

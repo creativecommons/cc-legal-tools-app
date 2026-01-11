@@ -36,6 +36,7 @@ class LegalCodeAdmin(admin.ModelAdmin):
         "translation_last_update",
         "html_file",
         "html",
+        "markdown",
     ]
     list_display = [
         "language_code",
