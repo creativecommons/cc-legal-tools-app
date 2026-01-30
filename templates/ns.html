@@ -1,27 +1,18 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
-<html
-    xml:lang="en"
-    xmlns:cc="http://creativecommons.org/ns#"
-    xmlns:dcterms="http://purl.org/dc/terms/"
-    xmlns:owl="http://www.w3.org/2002/07/owl#"
-    xmlns:rddl="http://www.rddl.org/"
-    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    xmlns="http://www.w3.org/1999/xhtml">
- <head profile="http://www.w3.org/1999/xhtml/vocab">
-  <meta content="text/html; charset=utf-8" http-equiv="Content-type"/>
-  <title>
-   Describing Copyright in RDF - Creative Commons Rights Expression Language
-  </title>
- </head>
- <body>
-  <div class="container">
-   <h1>
+{% extends 'base.html' %}
+{% block title %}
+Describing Copyright in RDF -
+Creative Commons Rights Expression Language
+{% endblock %}
+
+{% block title_header %}
+    <h1>
     <a href="/">
-     <img alt="Creative Commons" id="cc-title" src="/cc-legal-tools/logo_trademark_250.png"/>
+     <img alt="Creative Commons" id="cc-title" src="/cc-legal-tools/logo_trademark_250.png">
     </a>
    </h1>
+{% endblock %}
+
+{% block content %}
    <div id="content">
     <div id="main-content">
      <div class="block" id="title">
@@ -87,8 +78,7 @@
        <span property="rdfs:comment">
         an action that may or may not be allowed or desired
        </span>
-       <span resource="http://web.resource.org/cc/Permission" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/Permission" rev="owl:equivalentClass"></span>
       </div>
       <div about="#Requirement" id="Requirement" typeof="rdfs:Class">
        <h4 property="rdfs:label">
@@ -97,8 +87,7 @@
        <span property="rdfs:comment">
         an action that may or may not be requested of you
        </span>
-       <span resource="http://web.resource.org/cc/Requirement" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/Requirement" rev="owl:equivalentClass"></span>
       </div>
       <div about="#Prohibition" id="Prohibition" typeof="rdfs:Class">
        <h4 property="rdfs:label">
@@ -107,8 +96,7 @@
        <span property="rdfs:comment">
         something you may be asked not to do
        </span>
-       <span resource="http://web.resource.org/cc/Prohibition" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/Prohibition" rev="owl:equivalentClass"></span>
       </div>
       <h2>
        Permissions
@@ -120,8 +108,7 @@
        <span property="rdfs:comment">
         making multiple copies
        </span>
-       <span resource="http://web.resource.org/cc/Reproduction" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/Reproduction" rev="owl:equivalentClass"></span>
       </div>
       <div about="#Distribution" id="Distribution" typeof="cc:Permission">
        <h4 property="rdfs:label">
@@ -130,8 +117,7 @@
        <span property="rdfs:comment">
         distribution, public display, and publicly performance
        </span>
-       <span resource="http://web.resource.org/cc/Distribution" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/Distribution" rev="owl:equivalentClass"></span>
       </div>
       <div about="#DerivativeWorks" id="DerivativeWorks" typeof="cc:Permission">
        <h4 property="rdfs:label">
@@ -140,8 +126,7 @@
        <span property="rdfs:comment">
         distribution of derivative works
        </span>
-       <span resource="http://web.resource.org/cc/DerivativeWorks" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/DerivativeWorks" rev="owl:equivalentClass"></span>
       </div>
       <div about="#Sharing" id="Sharing" typeof="cc:Permission">
        <h4 property="rdfs:label">
@@ -161,8 +146,7 @@
        <span property="rdfs:comment">
         copyright and license notices be kept intact
        </span>
-       <span resource="http://web.resource.org/cc/Notice" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/Notice" rev="owl:equivalentClass"></span>
       </div>
       <div about="#Attribution" id="Attribution" typeof="cc:Requirement">
        <h4 property="rdfs:label">
@@ -171,8 +155,7 @@
        <span property="rdfs:comment">
         credit be given to copyright holder and/or author
        </span>
-       <span resource="http://web.resource.org/cc/Attribution" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/Attribution" rev="owl:equivalentClass"></span>
       </div>
       <div about="#ShareAlike" id="ShareAlike" typeof="cc:Requirement">
        <h4 property="rdfs:label">
@@ -182,8 +165,7 @@
         derivative works be licensed under the same terms or compatible terms
         as the original work
        </span>
-       <span resource="http://web.resource.org/cc/ShareAlike" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/ShareAlike" rev="owl:equivalentClass"></span>
       </div>
       <div about="#SourceCode" id="SourceCode" typeof="cc:Requirement">
        <h4 property="rdfs:label">
@@ -193,8 +175,7 @@
         source code (the preferred form for making modifications) must be
         provided when exercising some rights granted by the license.
        </span>
-       <span resource="http://web.resource.org/cc/SourceCode" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/SourceCode" rev="owl:equivalentClass"></span>
       </div>
       <div about="#Copyleft" id="Copyleft" typeof="cc:Requirement">
        <h4 property="rdfs:label">
@@ -225,8 +206,7 @@
        <span property="rdfs:comment">
         exercising rights for commercial purposes
        </span>
-       <span resource="http://web.resource.org/cc/CommercialUse" rev="owl:equivalentClass">
-       </span>
+       <span resource="http://web.resource.org/cc/CommercialUse" rev="owl:equivalentClass"></span>
       </div>
       <div about="#HighIncomeNationUse" id="HighIncomeNationUse" typeof="cc:Prohibition">
        <h4 property="rdfs:label">
@@ -255,8 +235,7 @@
         Permission
        </a>
        .
-       <span resource="http://web.resource.org/cc/permits" rev="owl:equivalentProperty">
-       </span>
+       <span resource="http://web.resource.org/cc/permits" rev="owl:equivalentProperty"></span>
       </div>
       <div about="#requires" id="requires" typeof="rdf:Property">
        <h4>
@@ -274,8 +253,7 @@
         Requirement
        </a>
        .
-       <span resource="http://web.resource.org/cc/requires" rev="owl:equivalentProperty">
-       </span>
+       <span resource="http://web.resource.org/cc/requires" rev="owl:equivalentProperty"></span>
       </div>
       <div about="#prohibits" id="prohibits" typeof="rdf:Property">
        <h4>
@@ -293,8 +271,7 @@
         Prohibition
        </a>
        .
-       <span resource="http://web.resource.org/cc/prohibits" rev="owl:equivalentProperty">
-       </span>
+       <span resource="http://web.resource.org/cc/prohibits" rev="owl:equivalentProperty"></span>
       </div>
       <div about="#jurisdiction" id="jurisdiction" typeof="rdf:Property">
        <h4>
@@ -364,7 +341,7 @@
         License
        </a>
        .
-       <br/>
+       <br>
        (a
        <a href="http://purl.org/dc/terms/license" rel="rdfs:subPropertyOf">
         subproperty of dcterms:license
@@ -374,8 +351,7 @@
         the same as xhtml:license
        </a>
        )
-       <span resource="http://web.resource.org/cc/license" rev="owl:equivalentProperty">
-       </span>
+       <span resource="http://web.resource.org/cc/license" rev="owl:equivalentProperty"></span>
       </div>
       <div about="#morePermissions" id="morePermissions" typeof="rdf:Property">
        <h4>
@@ -439,17 +415,16 @@
        </a>
        .
       </div>
-      <br/>
-      <br/>
-      <rddl:resource xlink:href="http://web.resource.org/cc/schema.rdf" xlink:role="http://www.w3.org/2000/01/rdf-schema#" xlink:title="Creative Commons RDF Metadata Schema">
-       <p>
-        RDF users might be interested in our machine-readable
-        <a href="schema.rdf">
-         RDF Schema
-        </a>
-        . A copy is also embedded in this document.
-       </p>
-      </rddl:resource>
+      <br>
+      <br>
+      <section>
+        <p>
+            <a href="schema.rdf" title="Creative Commons RDF Metadata Schema" data-role="http://www.w3.org/2000/01/rdf-schema#">
+                RDF Schema
+            </a>
+            . A copy is also embedded in this document.
+        </p>
+      </section>
       <ul>
        <li>
         <a href="//wiki.creativecommons.org/Developers">
@@ -457,22 +432,7 @@
         </a>
        </li>
       </ul>
-      <p class="box">
-       <a href="/licenses/by/4.0/" rel="license">
-        <img alt="Creative Commons License" height="31" src="https://licensebuttons.net/l/by/4.0/88x31.png" width="88"/>
-       </a>
-       Except where otherwise
-       <a class="subfoot" href="/policies#license">
-        noted
-       </a>
-       , content on this site is licensed under a
-       <a class="subfoot" href="/licenses/by/4.0/" rel="license">
-        Creative Commons Attribution 4.0 International license
-       </a>
-      </p>
      </div>
     </div>
    </div>
-  </div>
- </body>
-</html>
+{% endblock %}
