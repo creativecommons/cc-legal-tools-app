@@ -74,9 +74,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         default="",
                         max_length=100,
-                        verbose_name="Legal Code URL Path",
-                    ),
-                ),
+                        verbose_name="Legal Code URL docker compose up
                 (
                     "deed_url",
                     models.CharField(
