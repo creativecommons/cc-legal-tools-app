@@ -1024,8 +1024,58 @@ class ToolModelTest(TestCase):
             ).logos(),
         )
         self.assertEqual(
-            ["cc-logo", "cc-nc", "cc-sampling-plus"],
-            ToolFactory(unit="nc-sampling+", version="1.0").logos(),
+            ["cc-logo", "cc-by", "cc-nc-eu"],
+            ToolFactory(
+                unit="by-nc",
+                version="3.0",
+                jurisdiction_code="fr",
+                prohibits_commercial_use=True,
+                requires_share_alike=False,
+                permits_derivative_works=True,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-by", "cc-nc-jp"],
+            ToolFactory(
+                unit="by-nc",
+                version="2.1",
+                jurisdiction_code="jp",
+                prohibits_commercial_use=True,
+                requires_share_alike=False,
+                permits_derivative_works=True,
+            ).logos(),
+        )
+        self.assertEqual(
+            ["cc-logo", "cc-nc-eu", "cc-sampling-plus"],
+            ToolFactory(
+                unit="nc-sampling+",
+                version="1.0",
+                jurisdiction_code="de",
+            ).logos(),
+        )
+        self.assertEqual(
+            "cc-nc-eu",
+            ToolFactory(unit="by-nc", jurisdiction_code="es").nc_symbol,
+        )
+        self.assertEqual(
+            "cc-nc-jp",
+            ToolFactory(unit="by-nc", jurisdiction_code="jp").nc_symbol,
+        )
+        self.assertEqual(
+            "cc-nc",
+            ToolFactory(unit="by-nc", jurisdiction_code="us").nc_symbol,
+        )
+        self.assertEqual(
+            "cc-nc",
+            ToolFactory.build(
+                unit="by-nc", jurisdiction_code=""
+            ).nc_symbol,
+        )
+        self.assertEqual(
+            "cc-nc",
+            ToolFactory.build(
+                unit="by-nc", jurisdiction_code="unknown_xyz"
+            ).nc_symbol,
         )
         self.assertEqual(
             ["cc-logo", "cc-nd"],

@@ -1,5 +1,4 @@
 # Standard library
-import os
 import posixpath
 
 # Third-party
@@ -12,6 +11,7 @@ from django.utils import translation
 # First-party/Local
 from i18n import LANGMAP_DJANGO_TO_PCRE
 from i18n.utils import (
+    JURISDICTION_CURRENCY_LOOKUP,
     get_default_language_for_jurisdiction_deed,
     get_default_language_for_jurisdiction_naive,
     get_jurisdiction_name,
@@ -261,7 +261,7 @@ class LegalCode(models.Model):
         if self.tool.deed_only:
             relpath = None
         else:
-            relpath = os.path.join(tool._get_save_path(), filename)
+            relpath = posixpath.join(tool._get_save_path(), filename)
 
         # Symlinks
         symlinks = []
@@ -275,7 +275,7 @@ class LegalCode(models.Model):
         if self.tool.deed_only:
             redirects_data.append(
                 {
-                    "redirect_file": os.path.join(
+                    "redirect_file": posixpath.join(
                         tool._get_save_path(),
                         f"legalcode.{language_code}.html",
                     ),
@@ -286,7 +286,7 @@ class LegalCode(models.Model):
             )
             redirects_data.append(
                 {
-                    "redirect_file": os.path.join(
+                    "redirect_file": posixpath.join(
                         tool._get_save_path(), "legalcode.html"
                     ),
                     "title": self.title,
@@ -301,10 +301,10 @@ class LegalCode(models.Model):
         language_code = self.language_code
         tool = self.tool
         filename = f"legalcode.{language_code}"
-        dest_path = os.path.join("/", tool._get_save_path(), filename)
+        dest_path = posixpath.join("/", tool._get_save_path(), filename)
         pairs = []
         for pcre in LANGMAP_DJANGO_TO_PCRE.get(language_code, []):
-            pcre_match = os.path.join(
+            pcre_match = posixpath.join(
                 "/",
                 tool._get_save_path().replace(".", "[.]"),
                 f"legalcode[.]{pcre}(?:[.]html)?",
@@ -532,7 +532,7 @@ class Tool(models.Model):
         unit = self.unit.lower()
         if self.jurisdiction_code:
             # ported Licenses 3.0 and earlier
-            return os.path.join(
+            return posixpath.join(
                 self.category,  # licenses or publicdomain
                 unit,  # ex. by, by-nc-nd
                 self.version,  # ex. 1.0, 2.0
@@ -540,7 +540,7 @@ class Tool(models.Model):
             )
         else:
             # unported Licenses 3.0, Licenses 4.0, and Public Domain:
-            return os.path.join(
+            return posixpath.join(
                 self.category,  # licenses or publicdomain
                 unit,  # ex. by, by-nc-nd, zero
                 self.version,  # ex. 1.0, 4.0
@@ -641,7 +641,7 @@ class Tool(models.Model):
         filename = f"deed.{language_code}.html"
 
         # Relative path
-        relpath = os.path.join(self._get_save_path(), filename)
+        relpath = posixpath.join(self._get_save_path(), filename)
 
         # Symlinks
         symlinks = []
@@ -654,16 +654,27 @@ class Tool(models.Model):
 
     def get_redirect_pairs(self, language_code):
         filename = f"deed.{language_code}"
-        dest_path = os.path.join("/", self._get_save_path(), filename)
+        dest_path = posixpath.join("/", self._get_save_path(), filename)
         pairs = []
         for pcre in LANGMAP_DJANGO_TO_PCRE.get(language_code, []):
-            pcre_match = os.path.join(
+            pcre_match = posixpath.join(
                 "/",
                 self._get_save_path().replace(".", "[.]"),
                 f"deed[.]{pcre}(?:[.]html)?",
             )
             pairs.append([pcre_match, dest_path])
         return pairs
+
+    @property
+    def nc_symbol(self):
+        """
+        Return the non-commercial symbol variant for this tool based
+        on jurisdiction. Returns 'cc-nc-eu', 'cc-nc-jp', or 'cc-nc'.
+        """
+        currency = JURISDICTION_CURRENCY_LOOKUP.get(self.jurisdiction_code)
+        if currency:
+            return f"cc-nc-{currency}"
+        return "cc-nc"
 
     def logos(self):
         """
@@ -679,14 +690,17 @@ class Tool(models.Model):
         elif self.unit == "sampling+":
             result.append("cc-sampling-plus")
         elif self.unit == "nc-sampling+":
-            result.append("cc-nc")
+            result.append(self.nc_symbol)
             result.append("cc-sampling-plus")
         elif self.unit == "zero":
             result.append("cc-zero")
         else:
             for unit_part in self.unit.split("-"):
                 if unit_part in ["by", "nc", "nd", "sa"]:
-                    result.append(f"cc-{unit_part}")
+                    if unit_part == "nc":
+                        result.append(self.nc_symbol)
+                    else:
+                        result.append(f"cc-{unit_part}")
         return result
 
     @property
