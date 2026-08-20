@@ -1,0 +1,21 @@
+{% load i18n %}
+{% if not legal_code.html %}
+  {% if tool.category == "publicdomain" and tool.unit == "zero" %}
+    {% include 'includes/legalcode_zero.html' %}
+  {% elif tool.category == "licenses" and tool.version == "4.0" %}
+    {% include 'includes/legalcode_licenses_4.0.html' %}
+  {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
+    {% include 'includes/legalcode_licenses_3.0_unported.html' %}
+  {% else %}
+    <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
+      <p class="has-text-black body-big padding-bottom-normal">
+        <strong>{% trans "Unimplemented" %}</strong> &mdash;
+        {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %}
+        <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues - creativecommons/cc-legal-tools-app</a>.
+      </p>
+    </div>
+  {% endif %}
+{% else %}
+  {% include "includes/legalcode_crude_html.html" %}
+{% endif %}
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

@@ -322,7 +322,7 @@ def get_tool_title(unit, version, category, jurisdiction, language_code):
         )
     except legal_tools.models.LegalCode.DoesNotExist:
         legal_code = False
-    if legal_code:
+    if legal_code and not legal_code.html:
         tool_title_db = clean_string(legal_code.title)
         if tool_title_db and tool_title_db != tool_title_en:
             tool_title = tool_title_db

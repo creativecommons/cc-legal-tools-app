@@ -40,6 +40,9 @@
 {% if plain_text_url %}
 <li><a href="{{ plain_text_url }}">{% trans "Plain Text" %}</a></li>
 {% endif %}
+{% if markdown_url %}
+<li><a href="{{ markdown_url }}">{% trans "Markdown" %}</a></li>
+{% endif %}
 <li><a href="rdf">RDF/XML</a></li>
 </ul>
 </article>
@@ -73,22 +76,8 @@ the date of change
 {% if not legal_code.html %}
   {% include 'includes/notice_about_licenses_and_cc.html' %} {# CC IS NOT A LAW FIRM #}
   {% include 'includes/use_of_licenses.html' %} {# Considerations... #}
-  {% if tool.category == "publicdomain" and tool.unit == "zero" %}
-    {% include 'includes/legalcode_zero.html' %} {# <<< THE ACTUAL CC0 LICENSE TEXT #}
-  {% elif tool.category == "licenses" and tool.version == "4.0" %}
-    {% include 'includes/legalcode_licenses_4.0.html' %} {# <<< THE ACTUAL 4.0 LICENSE TEXT #}
-  {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
-    {% include 'includes/legalcode_licenses_3.0_unported.html' %} {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
-  {% else %}
-    <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black    ">
-      <p class="has-text-black body-big padding-bottom-normal"><strong>{% trans "Unimplemented" %}</strong> &mdash; {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %} <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues · creativecommons/cc-legal-tools-app</a>.</p>
-    </div>
-  {% endif %}
-  {# NOTE: plaintext functionality disabled #}
-  {# {% include 'includes/view_legal_code_link_plain_text.html' %} #}
-{% else %}
-  {% include "includes/legalcode_crude_html.html" %}
 {% endif %}
+{% include "legalcode_body.html" %}
 {% include 'includes/notice_about_cc_and_trademark.html' %}
 {% include 'includes/related_links.html' %}
 

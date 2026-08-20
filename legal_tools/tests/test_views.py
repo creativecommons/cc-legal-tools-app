@@ -845,10 +845,121 @@ class ViewLegalCodeTest(TestCase):
             context = rsp.context
             self.assertEqual(lc, context["legal_code"])
             self.assertContains(rsp, f'lang="{language_code}"')
+            self.assertContains(
+                rsp, f'href="legalcode.{language_code}.md"'
+            )
+            self.assertContains(
+                rsp, f'href="legalcode.{language_code}.txt"'
+            )
+            self.assertNotContains(rsp, 'href="legalcode.txt"')
             if language_code == "es":
                 self.assertContains(rsp, 'dir="ltr"')
             elif language_code == "ar":
                 self.assertContains(rsp, 'dir="rtl"')
+
+    def test_view_legal_code_markdown_40_language_specified(self):
+        tool = ToolFactory(
+            category="licenses",
+            base_url="https://creativecommons.org/licenses/by/4.0/",
+            unit="by",
+            version="4.0",
+        )
+        legal_code = LegalCodeFactory(
+            tool=tool,
+            language_code=settings.LANGUAGE_CODE,
+        )
+        url = f"{legal_code.legal_code_url}.md"
+
+        rsp = self.client.get(url)
+        content = rsp.content.decode("utf-8")
+
+        self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
+        self.assertEqual(
+            rsp.headers["Content-Type"], "text/markdown; charset=utf-8"
+        )
+        lines = content.splitlines()
+        self.assertEqual("# Attribution 4.0 International", lines[0])
+        self.assertEqual(1, lines.count("# Attribution 4.0 International"))
+        self.assertEqual(1, lines.count("## Attribution 4.0 International"))
+        self.assertIn("### Section 1", content)
+        self.assertIn("<u>Adapted Material</u> means", content)
+        self.assertNotIn("1. (a)", content)
+        self.assertNotIn("<html", content)
+        self.assertIn("## About the license and Creative Commons", content)
+        self.assertIn("## Using Creative Commons Public Licenses", content)
+        self.assertIn("### Considerations for licensors", content)
+        self.assertIn("### Considerations for the public", content)
+        self.assertIn("## About Creative Commons", content)
+        self.assertNotIn("Learn more about our work", content)
+
+    def test_view_legal_code_markdown_40_default_language(self):
+        tool = ToolFactory(
+            category="licenses",
+            base_url="https://creativecommons.org/licenses/by/4.0/",
+            unit="by",
+            version="4.0",
+        )
+        LegalCodeFactory(
+            tool=tool,
+            language_code=settings.LANGUAGE_CODE,
+        )
+        url = "/licenses/by/4.0/legalcode.md"
+
+        rsp = self.client.get(url)
+        content = rsp.content.decode("utf-8")
+
+        self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
+        lines = content.splitlines()
+        self.assertEqual("# Attribution 4.0 International", lines[0])
+        self.assertEqual(1, lines.count("# Attribution 4.0 International"))
+        self.assertEqual(1, lines.count("## Attribution 4.0 International"))
+
+    def test_view_legal_code_markdown_legacy_raw_html(self):
+        legal_code = LegalCodeFactory(
+            html="<p><strong>Legacy</strong> body</p>",
+            language_code="de",
+            title="Legacy Title",
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org"
+            "/licenses/by/3.0/de/",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__jurisdiction_code="de",
+        )
+        url = f"{legal_code.legal_code_url}.md"
+
+        rsp = self.client.get(url)
+        content = rsp.content.decode("utf-8")
+
+        self.assertEqual(f"{rsp.status_code} {url}", f"200 {url}")
+        self.assertEqual(
+            rsp.headers["Content-Type"], "text/markdown; charset=utf-8"
+        )
+        lines = content.splitlines()
+        self.assertEqual("# Namensnennung 3.0 Deutschland", lines[0])
+        self.assertEqual(1, lines.count("# Namensnennung 3.0 Deutschland"))
+        self.assertEqual(0, lines.count("# Legacy Title"))
+        self.assertEqual(1, lines.count("## Legacy Title"))
+        self.assertIn("**Legacy** body", content)
+        self.assertIn("## About Creative Commons", content)
+        self.assertNotIn("About the license and Creative Commons", content)
+        self.assertNotIn("Using Creative Commons Public Licenses", content)
+
+    def test_view_legal_code_markdown_deed_only_404(self):
+        legal_code = LegalCodeFactory(
+            language_code="en",
+            tool__category="publicdomain",
+            tool__base_url="https://creativecommons.org"
+            "/publicdomain/mark/1.0/",
+            tool__deed_only=True,
+            tool__unit="mark",
+            tool__version="1.0",
+        )
+        url = f"{legal_code.legal_code_url}.md"
+
+        rsp = self.client.get(url)
+
+        self.assertEqual(f"{rsp.status_code} {url}", f"404 {url}")
 
     @override_settings(
         LANGUAGES_MOSTLY_TRANSLATED=["es", settings.LANGUAGE_CODE],
@@ -897,39 +1008,6 @@ class ViewLegalCodeTest(TestCase):
         self.assertEqual(lc, context["legal_code"])
         self.assertContains(rsp, f'lang="{language_code}"')
         self.assertContains(rsp, 'dir="ltr"')
-
-    # NOTE: plaintext functionality disabled
-    # def test_view_legal_code_plain_text(self):
-    #     tool = ToolFactory(
-    #         base_url="https://creativecommons.org/licenses/by/4.0/",
-    #         version="4.0",
-    #     )
-    #     for language_code in [settings.LANGUAGE_CODE]:
-    #         lc = LegalCodeFactory(
-    #             tool=tool,
-    #             language_code=language_code,
-    #         )
-    #         url = lc.plain_text_url
-    #         rsp = self.client.get(url)
-    #         self.assertEqual(
-    #             'text/plain; charset="utf-8"',
-    #             rsp._headers["content-type"][1]
-    #         )
-    #         self.assertEqual(200, rsp.status_code)
-    #         self.assertGreater(len(rsp.content.decode()), 0)
-    #     lc = LegalCodeFactory(
-    #         tool__version="3.0",
-    #         language_code="fr",
-    #         tool__unit="by",
-    #         tool__jurisdiction_code="ch",
-    #     )
-    #     url = lc.plain_text_url
-    #     rsp = self.client.get(url)
-    #     self.assertEqual(
-    #         'text/plain; charset="utf-8"', rsp._headers["content-type"][1]
-    #     )
-    #     self.assertEqual(200, rsp.status_code)
-    #     self.assertGreater(len(rsp.content.decode()), 0)
 
     def test_legal_code_translation_by_40_es(self):
         language_code = "es"
@@ -1380,20 +1458,93 @@ class ViewLegalToolRdf(ToolsTestsMixin, TestCase):
                 )
 
 
-class ViewLegacyPlaintext(ToolsTestsMixin, TestCase):
-    def test_view_legacy_plaintext_file_exists(self):
+class ViewLegalCodePlaintext(ToolsTestsMixin, TestCase):
+    def test_view_plaintext_file_exists_for_language(self):
+        tool = Tool.objects.get(unit="by", version="4.0")
+        url = build_path(base_url=tool.base_url, document="legalcode")
+        url = f"{url}.{settings.LANGUAGE_CODE}.txt"
+        response = self.client.get(url)
+        content = response.content.decode()
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        self.assertEqual(
+            response.headers["Content-Type"], "text/plain; charset=utf-8"
+        )
+        lines = content.splitlines()
+        self.assertEqual("Attribution 4.0 International", lines[0])
+        self.assertEqual(3, lines.count("=" * 71))
+        self.assertEqual(2, lines.count("Attribution 4.0 International"))
+        self.assertNotIn("About the license and Creative Commons", content)
+        self.assertNotIn("About Creative Commons", content)
+        self.assertIn("Using Creative Commons Public Licenses", content)
+        self.assertIn(
+            'Creative Commons Corporation ("Creative Commons") is not a law',
+            content,
+        )
+        self.assertIn(
+            "Creative Commons public licenses provide a standard set of terms",
+            content,
+        )
+        self.assertIn("  a. Adapted Material means", content)
+
+    def test_view_plaintext_translated_file_exists(self):
+        tool = Tool.objects.get(unit="by", version="4.0")
+        legal_code, _ = LegalCode.objects.update_or_create(
+            tool=tool,
+            language_code="zh-hant",
+            defaults={"title": "姓名標示 4.0 國際"},
+        )
+        url = f"{legal_code.legal_code_url}.txt"
+
+        response = self.client.get(url)
+        content = response.content.decode()
+
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        self.assertEqual(
+            response.headers["Content-Type"], "text/plain; charset=utf-8"
+        )
+        self.assertIn("姓名標示 4.0 國際", content)
+
+    def test_view_plaintext_ported_file_exists(self):
+        legal_code = LegalCodeFactory(
+            html="<p><strong>Legacy</strong> body</p>",
+            language_code="de",
+            title="Legacy Title",
+            tool__category="licenses",
+            tool__base_url="https://creativecommons.org"
+            "/licenses/by/3.0/de/",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__jurisdiction_code="de",
+        )
+        url = f"{legal_code.legal_code_url}.txt"
+
+        response = self.client.get(url)
+        content = response.content.decode()
+
+        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
+        self.assertEqual(
+            response.headers["Content-Type"], "text/plain; charset=utf-8"
+        )
+        self.assertIn("Namensnennung 3.0 Deutschland", content)
+        self.assertIn("Legacy body", content)
+
+    def test_view_plaintext_unsuffixed_file_does_not_exist(self):
         tool = Tool.objects.get(unit="by", version="4.0")
         url = build_path(base_url=tool.base_url, document="legalcode")
         url = f"{url}.txt"
         response = self.client.get(url)
-        content = response.content.decode()
-        self.assertEqual(f"{response.status_code} {url}", f"200 {url}")
-        self.assertEqual(response.headers["Content-Type"], "text/plain")
-        self.assertIn("Attribution 4.0 International", content)
+        self.assertEqual(f"{response.status_code} {url}", f"404 {url}")
 
-    def test_view_legacy_plaintext_file_does_not_exist(self):
-        tool = Tool.objects.get(unit="by", version="2.0")
-        url = build_path(base_url=tool.base_url, document="legalcode")
-        url = f"{url}.txt"
+    def test_view_plaintext_deed_only_file_does_not_exist(self):
+        legal_code = LegalCodeFactory(
+            language_code=settings.LANGUAGE_CODE,
+            tool__category="publicdomain",
+            tool__base_url="https://creativecommons.org"
+            "/publicdomain/mark/1.0/",
+            tool__deed_only=True,
+            tool__unit="mark",
+            tool__version="1.0",
+        )
+        url = f"{legal_code.legal_code_url}.txt"
         response = self.client.get(url)
         self.assertEqual(f"{response.status_code} {url}", f"404 {url}")

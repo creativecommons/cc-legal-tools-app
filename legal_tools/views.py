@@ -20,12 +20,14 @@ from i18n.utils import (
     load_deeds_ux_translations,
     map_django_to_transifex_language_code,
 )
+from legal_tools.markdown_utils import legal_code_html_to_markdown
 from legal_tools.models import (
     UNITS_LICENSES,
     LegalCode,
     Tool,
     TranslationBranch,
 )
+from legal_tools.plaintext_utils import legal_code_html_to_plain_text
 from legal_tools.rdf_utils import (
     generate_images_rdf,
     generate_legal_code_rdf,
@@ -44,21 +46,6 @@ from legal_tools.view_utils import (
 )
 
 NUM_COMMITS = 3
-PLAIN_TEXT_TOOL_IDENTIFIERS = [
-    "CC BY 3.0",
-    "CC BY-NC 3.0",
-    "CC BY-NC-ND 3.0",
-    "CC BY-NC-SA 3.0",
-    "CC BY-ND 3.0",
-    "CC BY-SA 3.0",
-    "CC BY 4.0",
-    "CC BY-NC 4.0",
-    "CC BY-NC-ND 4.0",
-    "CC BY-NC-SA 4.0",
-    "CC BY-ND 4.0",
-    "CC BY-SA 4.0",
-    "CC0 1.0",
-]
 
 
 def view_dev_index(request):
@@ -395,8 +382,13 @@ def view_legal_code(
     jurisdiction=None,
     language_code=None,
     is_plain_text=False,
+    is_markdown=False,
 ):
     plain_text_url = None
+    if is_plain_text and request.path.endswith(".txt"):
+        request.path = request.path[:-4]
+    if is_markdown and request.path.endswith(".md"):
+        request.path = request.path[:-3]
     request.path, language_code = normalize_path_and_lang(
         request.path, jurisdiction, language_code
     )
@@ -409,18 +401,6 @@ def view_legal_code(
     )
 
     path_start = os.path.dirname(request.path)
-
-    # NOTE: plaintext functionality disabled
-    # if is_plain_text:
-    #     legal_code = get_object_or_404(
-    #         LegalCode,
-    #         plain_text_url=request.path,
-    #     )
-    # else:
-    #     legal_code = get_object_or_404(
-    #         LegalCode,
-    #         legal_code_url=request.path,
-    #     )
 
     legal_code = get_object_or_404(
         LegalCode,
@@ -435,6 +415,10 @@ def view_legal_code(
     else:
         translation.activate(settings.LANGUAGE_CODE)
     tool = legal_code.tool
+    if is_plain_text and not legal_code.get_plaintext_publish_file():
+        raise Http404("Plain text legalcode does not exist for this tool")
+    if is_markdown and tool.deed_only:
+        raise Http404("Markdown legalcode does not exist for deed-only tools")
 
     # get_tool_title manipulates the translation domain and, therefore, MUST
     # be called before we Activate Legal Code translation
@@ -470,8 +454,12 @@ def view_legal_code(
             language_default,
         )
 
-        if tool.identifier() in PLAIN_TEXT_TOOL_IDENTIFIERS:
-            plain_text_url = "legalcode.txt"
+        if tool.deed_only:
+            markdown_url = None
+            plain_text_url = None
+        else:
+            markdown_url = f"legalcode.{language_code}.md"
+            plain_text_url = f"legalcode.{language_code}.txt"
 
         canonical_url_html = os.path.join(
             settings.CANONICAL_SITE, request.path.lstrip(os.sep)
@@ -493,6 +481,7 @@ def view_legal_code(
                 "legal_code": legal_code,
                 "list_licenses": list_licenses,
                 "list_publicdomain": list_publicdomain,
+                "markdown_url": markdown_url,
                 "plain_text_url": plain_text_url,
                 "replaced_path": replaced_path,
                 "replaced_title": replaced_title,
@@ -501,32 +490,30 @@ def view_legal_code(
             },
         )
 
-        # NOTE: plaintext functionality disabled
-        # if is_plain_text:
-        #     response = HttpResponse(
-        #         content_type='text/plain; charset="utf-8"'
-        #     )
-        #     html = render_to_string(**kwargs)
-        #     soup = BeautifulSoup(html, "lxml")
-        #     plain_text_soup = soup.find(id="plain-text-marker")
-        #     # FIXME: prune the "img" tags from this before saving again.
-        #     with tempfile.NamedTemporaryFile(mode="w+b") as temp:
-        #         temp.write(plain_text_soup.encode("utf-8"))
-        #         output = subprocess.run(
-        #             [
-        #                 "pandoc",
-        #                 "-f",
-        #                 "html",
-        #                 temp.name,
-        #                 "-t",
-        #                 "plain",
-        #             ],
-        #             encoding="utf-8",
-        #             capture_output=True,
-        #         )
-        #         response.write(output.stdout)
-        #         return response
-        #
+        if is_plain_text:
+            html_content = render_to_string(
+                template_name="legalcode_document.html",
+                context=kwargs["context"],
+                request=request,
+            )
+            plaintext_content = legal_code_html_to_plain_text(html_content)
+            return HttpResponse(
+                plaintext_content,
+                content_type="text/plain; charset=utf-8",
+            )
+
+        if is_markdown:
+            html_content = render_to_string(
+                template_name="legalcode_document.html",
+                context=kwargs["context"],
+                request=request,
+            )
+            markdown_content = legal_code_html_to_markdown(html_content)
+            return HttpResponse(
+                markdown_content,
+                content_type="text/markdown; charset=utf-8",
+            )
+
         html_response = render(request, **kwargs)
         html_response.content = pretty_html_bytes(
             request.path, html_response.content
@@ -696,31 +683,4 @@ def view_image_rdf(request):
     response = HttpResponse(
         serialized_rdf_content, content_type="application/rdf+xml"
     )
-    return response
-
-
-def view_legacy_plaintext(
-    request,
-    unit,
-    version,
-    category=None,
-):
-    """
-    Display plain text file, if it exists.
-
-    (This view is only used in development.)
-    """
-    published_docs_path = os.path.abspath(
-        os.path.realpath(os.path.join("..", "cc-legal-tools-data", "docs"))
-    )
-    plain_text_path = os.path.join(
-        published_docs_path, request.path.lstrip(os.sep)
-    )
-    if os.path.isfile(plain_text_path):
-        with open(plain_text_path, "rt") as file_obj:
-            content = file_obj.read()
-        response = HttpResponse(content, content_type="text/plain")
-    else:
-        raise Http404("plain text file does not exist")
-
     return response

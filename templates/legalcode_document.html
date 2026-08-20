@@ -1,0 +1,10 @@
+<div id="legal-code-document">
+<h1>{{ tool_title }}</h1>
+{% if not legal_code.html %}
+  {% include 'includes/notice_about_licenses_and_cc.html' %}
+  {% include 'includes/use_of_licenses.html' %}
+{% endif %}
+{% include "legalcode_body.html" %}
+{% include 'includes/notice_about_cc_and_trademark.html' %}
+</div>
+{# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

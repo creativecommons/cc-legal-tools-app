@@ -7,7 +7,7 @@ from copy import copy
 from multiprocessing import Pool
 from pathlib import Path
 from pprint import pprint
-from shutil import copyfile, copytree, rmtree
+from shutil import copytree, rmtree
 
 # Third-party
 from django.conf import settings
@@ -43,6 +43,7 @@ LOG_LEVELS = {
 # CNAME
 # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
 DOCS_IGNORE = [".nojekyll", "CNAME"]
+FILTER_LICENSE_VERSION_CHOICES = (1.0, 2.0, 2.1, 2.5, 3.0, 4.0)
 
 
 def wrap_relative_symlink(output_dir, relpath, symlink):
@@ -114,6 +115,31 @@ def save_legal_code(output_dir, legal_code, opt_filter_apache_redirects):
     return legal_code.get_redirect_pairs()
 
 
+def save_legal_code_markdown(output_dir, legal_code):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    relpath = legal_code.get_markdown_publish_files()
+    if relpath:
+        # Deed-only tools will not return a legal code Markdown relpath
+        save_url_as_static_file(
+            output_dir,
+            url=f"{legal_code.legal_code_url}.md",
+            relpath=relpath,
+        )
+
+
+def save_legal_code_plaintext(output_dir, legal_code):
+    # Function is at top level of module so that it can be pickled by
+    # multiprocessing.
+    relpath = legal_code.get_plaintext_publish_file()
+    if relpath:
+        save_url_as_static_file(
+            output_dir,
+            url=f"{legal_code.legal_code_url}.txt",
+            relpath=relpath,
+        )
+
+
 def save_rdf(output_dir, tool):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
@@ -154,9 +180,27 @@ class Command(BaseCommand):
             "--filter-license-html",
             action="store",
             type=float,
-            choices=[1.0, 2.0, 2.1, 2.5, 3.0, 4.0],
+            choices=FILTER_LICENSE_VERSION_CHOICES,
             help="Only distill HTML files for specified license version",
             dest="filter_license_html",
+        )
+        filter_args.add_argument(
+            "--fm",
+            "--filter-license-markdown",
+            action="store",
+            type=float,
+            choices=FILTER_LICENSE_VERSION_CHOICES,
+            help="Only distill Markdown files for specified license version",
+            dest="filter_license_markdown",
+        )
+        filter_args.add_argument(
+            "--ft",
+            "--filter-license-text",
+            action="store",
+            type=float,
+            choices=FILTER_LICENSE_VERSION_CHOICES,
+            help="Only distill plain text files for specified license version",
+            dest="filter_license_text",
         )
         filter_args.add_argument(
             "--fr",
@@ -307,39 +351,6 @@ class Command(BaseCommand):
             Path(symlink_path).symlink_to(Path(symlink_dest))
             LOG.debug(f"   ^{symlink}")
 
-    def copy_legal_code_plaintext(self):
-        if not self.options["run"]["copy_legal_code_plaintext"]:
-            return
-        hostname = socket.gethostname()
-        legacy_dir = self.legacy_dir
-        output_dir = self.output_dir
-        plaintext_dir = os.path.join(legacy_dir, "legalcode")
-        plaintext_files = [
-            text_file
-            for text_file in os.listdir(plaintext_dir)
-            if (
-                os.path.isfile(os.path.join(plaintext_dir, text_file))
-                and text_file.endswith(".txt")
-            )
-        ]
-        LOG.info("Copying plaintext legal code")
-        LOG.debug(f"{hostname}:{output_dir}")
-        for text in plaintext_files:
-            if text.startswith("by"):
-                context = "licenses"
-            else:
-                context = "publicdomain"
-            name = text[:-4]
-            relative_name = os.path.join(
-                context,
-                *name.split("_"),
-                "legalcode.txt",
-            )
-            dest_file = os.path.join(output_dir, relative_name)
-            os.makedirs(os.path.dirname(dest_file), exist_ok=True)
-            copyfile(os.path.join(plaintext_dir, text), dest_file)
-            LOG.debug(f"    {relative_name}")
-
     def distill_dev_index(self):
         if not self.options["run"]["distill_dev_index"]:
             return
@@ -392,14 +403,24 @@ class Command(BaseCommand):
                 if group != f"Licenses {options['filter_license_html']}":
                     continue
                 LOG.info(f"Distilling {group} deed/legal code HTML")
+            elif options["filter_license_markdown"]:
+                if group != f"Licenses {options['filter_license_markdown']}":
+                    continue
+                LOG.info(f"Distilling {group} legal code Markdown")
+            elif options["filter_license_text"]:
+                if group != f"Licenses {options['filter_license_text']}":
+                    continue
+                LOG.info(f"Distilling {group} legal code plain text")
             elif options["filter_rdfxml"]:
                 LOG.info(f"Distilling {group} legal code RDF/XML")
             else:
                 LOG.info(
                     f"Distilling {group} deed/legal code HTML and legal code"
-                    " RDF/XML"
+                    " Markdown/plain text/RDF/XML"
                 )
             legal_code_arguments = []
+            markdown_arguments = []
+            plaintext_arguments = []
             deed_arguments = []
             rdf_arguments = []
             for legal_code in legal_codes[group]:
@@ -411,6 +432,8 @@ class Command(BaseCommand):
                         options["filter_apache_redirects"],
                     )
                 )
+                markdown_arguments.append((output_dir, legal_code))
+                plaintext_arguments.append((output_dir, legal_code))
             for tool in tools:
                 for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
                     deed_arguments.append(
@@ -435,15 +458,37 @@ class Command(BaseCommand):
                     )
 
             if not options["filter_rdfxml"]:
-                redirect_pairs_data += self.pool.starmap(
-                    save_deed, deed_arguments
-                )
-                redirect_pairs_data += self.pool.starmap(
-                    save_legal_code, legal_code_arguments
-                )
+                if not (
+                    options["filter_license_markdown"]
+                    or options["filter_license_text"]
+                ):
+                    redirect_pairs_data += self.pool.starmap(
+                        save_deed, deed_arguments
+                    )
+                    redirect_pairs_data += self.pool.starmap(
+                        save_legal_code, legal_code_arguments
+                    )
+                if not (
+                    options["filter_apache_redirects"]
+                    or options["filter_license_html"]
+                    or options["filter_license_text"]
+                ):
+                    self.pool.starmap(
+                        save_legal_code_markdown, markdown_arguments
+                    )
+                if not (
+                    options["filter_apache_redirects"]
+                    or options["filter_license_html"]
+                    or options["filter_license_markdown"]
+                ):
+                    self.pool.starmap(
+                        save_legal_code_plaintext, plaintext_arguments
+                    )
             if (
                 not options["filter_apache_redirects"]
                 and not options["filter_license_html"]
+                and not options["filter_license_markdown"]
+                and not options["filter_license_text"]
             ):
                 self.pool.starmap(save_rdf, rdf_arguments)
 
@@ -601,7 +646,6 @@ class Command(BaseCommand):
             "copy_static_cc_legal_tools_files": False,
             "copy_static_rdf_files": False,
             "distill_and_symlink_rdf_meta": False,
-            "copy_legal_code_plaintext": False,
             "distill_dev_index": False,
             "pool_distill_lists": False,
             "pool_distill_legal_tools": False,
@@ -612,6 +656,12 @@ class Command(BaseCommand):
             options["run"]["pool_distill_legal_tools"] = True
         # Filter licenses HTML
         elif options["filter_license_html"]:
+            options["run"]["pool_distill_legal_tools"] = True
+        # Filter licenses Markdown
+        elif options["filter_license_markdown"]:
+            options["run"]["pool_distill_legal_tools"] = True
+        # Filter licenses plain text
+        elif options["filter_license_text"]:
             options["run"]["pool_distill_legal_tools"] = True
         # Filter RDF/XML
         elif options["filter_rdfxml"]:
@@ -641,7 +691,6 @@ class Command(BaseCommand):
         self.config_dir = os.path.abspath(
             os.path.join(self.output_dir, "..", "config")
         )
-        self.legacy_dir = os.path.abspath(settings.LEGACY_DIR)
         git_dir = os.path.abspath(settings.DATA_REPOSITORY_DIR)
         if not self.output_dir.startswith(git_dir):
             raise CommandError(
@@ -659,7 +708,6 @@ class Command(BaseCommand):
         self.copy_static_cc_legal_tools_files()
         self.copy_static_rdf_files()
         self.distill_and_symlink_rdf_meta()
-        self.copy_legal_code_plaintext()
         self.distill_dev_index()
         with Pool() as self.pool:
             self.pool_distill_lists()

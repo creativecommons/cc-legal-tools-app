@@ -228,18 +228,17 @@ class LegalCode(models.Model):
             "legalcode",
             self.language_code,
         )
-        # NOTE: plaintext functionality disabled
-        # unit = self.tool.unit
-        # if (
-        #     (unit in UNITS_LICENSES and float(self.tool.version) > 2.5)
-        #     or unit == "zero"
-        # ) and self.language_code == "en":
-        #     self.plain_text_url = build_path(
-        #         self.tool.base_url,
-        #         "legalcode.txt",
-        #         self.language_code,
-        #     )
         super().save(*args, **kwargs)
+
+    def get_plaintext_publish_file(self):
+        """
+        Generate relative path for generated legal code plain text files.
+        """
+        tool = self.tool
+        if tool.deed_only:
+            return None
+        filename = f"legalcode.{self.language_code}.txt"
+        return os.path.join(tool._get_save_path(), filename)
 
     def get_publish_files(self):
         """
@@ -296,6 +295,21 @@ class LegalCode(models.Model):
             )
 
         return [relpath, symlinks, redirects_data]
+
+    def get_markdown_publish_files(self):
+        """
+        Generate relative path for legal code Markdown files.
+        """
+        language_code = self.language_code
+        tool = self.tool
+        filename = f"legalcode.{language_code}.md"
+
+        if tool.deed_only:
+            relpath = None
+        else:
+            relpath = os.path.join(tool._get_save_path(), filename)
+
+        return relpath
 
     def get_redirect_pairs(self):
         language_code = self.language_code
@@ -798,7 +812,7 @@ class TranslationBranch(models.Model):
 
 def build_path(base_url, document, language_code=None):
     path = base_url.replace(settings.CANONICAL_SITE, "")
-    if document == "legalcode.txt" or not language_code:
+    if not language_code:
         path = posixpath.join(path, document)
     else:
         path = posixpath.join(path, f"{document}.{language_code}")

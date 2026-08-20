@@ -180,33 +180,6 @@ class LegalCodeModelTest(TestCase):
                     ).translation_filename(),
                 )
 
-    # NOTE: plaintext functionality disabled
-    # def test_plain_text_url(self):
-    #     lc0 = LegalCodeFactory(
-    #         tool__unit="by",
-    #         tool__version="4.0",
-    #         tool__jurisdiction_code="",
-    #         language_code="en",
-    #     )
-    #     lc1 = LegalCodeFactory(
-    #         tool__unit="by",
-    #         tool__version="4.0",
-    #         tool__jurisdiction_code="",
-    #         language_code="fr",
-    #     )
-    #     lc2 = LegalCodeFactory(
-    #         tool__unit="by",
-    #         tool__version="4.0",
-    #         tool__jurisdiction_code="",
-    #         language_code="ar",
-    #     )
-    #     self.assertEqual(
-    #         lc0.plain_text_url,
-    #         f"{lc0.legal_code_url.replace('legalcode.en', 'legalcode.txt')}",
-    #     )
-    #     self.assertEqual(lc1.plain_text_url, "")
-    #     self.assertEqual(lc2.plain_text_url, "")
-
     def test_get_pofile(self):
         legal_code = LegalCodeFactory()
         test_pofile = polib.POFile()
@@ -437,6 +410,38 @@ class LegalCodeModelTest(TestCase):
             returned_list,
         )
 
+    # get_markdown_publish_files legal code ##################################
+
+    def test_get_markdown_publish_files_by_nc_nd4_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by-nc-nd",
+            tool__version="4.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_markdown_publish_files()
+
+        self.assertEqual(
+            "licenses/by-nc-nd/4.0/legalcode.en.md",
+            returned_list,
+        )
+
+    def test_get_markdown_publish_files_by_nc_nd4_legal_code_zh_hant(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by-nc-nd",
+            tool__version="4.0",
+            language_code="zh-hant",
+        )
+
+        returned_list = legal_code.get_markdown_publish_files()
+
+        self.assertEqual(
+            "licenses/by-nc-nd/4.0/legalcode.zh-hant.md",
+            returned_list,
+        )
+
     # get_publish_files Mark 1.0 legal code ##################################
     # Mark 1.0 is a universal (unported) deed-only declaration
 
@@ -479,6 +484,101 @@ class LegalCodeModelTest(TestCase):
             ],
             returned_list,
         )
+
+    def test_get_markdown_publish_files_mark_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__deed_only=True,
+            tool__unit="mark",
+            tool__version="1.0",
+            language_code="en",
+        )
+
+        returned_list = legal_code.get_markdown_publish_files()
+
+        self.assertIsNone(returned_list)
+
+    # get_plaintext_publish_file legal code ##################################
+
+    def test_get_plaintext_publish_file_by4_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by",
+            tool__version="4.0",
+            language_code="en",
+        )
+
+        returned_path = legal_code.get_plaintext_publish_file()
+
+        self.assertEqual("licenses/by/4.0/legalcode.en.txt", returned_path)
+
+    def test_get_plaintext_publish_file_by4_legal_code_zh_hant(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by",
+            tool__version="4.0",
+            language_code="zh-hant",
+        )
+
+        returned_path = legal_code.get_plaintext_publish_file()
+
+        self.assertEqual(
+            "licenses/by/4.0/legalcode.zh-hant.txt",
+            returned_path,
+        )
+
+    def test_get_plaintext_publish_file_by3_ported_legal_code_de(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by",
+            tool__version="3.0",
+            tool__jurisdiction_code="de",
+            language_code="de",
+        )
+
+        returned_path = legal_code.get_plaintext_publish_file()
+
+        self.assertEqual("licenses/by/3.0/de/legalcode.de.txt", returned_path)
+
+    def test_get_plaintext_publish_file_by2_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="licenses",
+            tool__unit="by",
+            tool__version="2.0",
+            language_code="en",
+        )
+
+        returned_path = legal_code.get_plaintext_publish_file()
+
+        self.assertEqual("licenses/by/2.0/legalcode.en.txt", returned_path)
+
+    def test_get_plaintext_publish_file_zero_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__unit="zero",
+            tool__version="1.0",
+            language_code="en",
+        )
+
+        returned_path = legal_code.get_plaintext_publish_file()
+
+        self.assertEqual(
+            "publicdomain/zero/1.0/legalcode.en.txt",
+            returned_path,
+        )
+
+    def test_get_plaintext_publish_file_mark_legal_code_en(self):
+        legal_code = LegalCodeFactory(
+            tool__category="publicdomain",
+            tool__deed_only=True,
+            tool__unit="mark",
+            tool__version="1.0",
+            language_code="en",
+        )
+
+        returned_path = legal_code.get_plaintext_publish_file()
+
+        self.assertIsNone(returned_path)
 
     # get_redirect_pairs #####################################################
 

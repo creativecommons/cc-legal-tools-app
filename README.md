@@ -42,9 +42,9 @@ application manages over 30,000 documents.
 ### Not the live site
 
 This project is not intended to serve the legal tools directly. Instead, a
-command line tool can be used to save all the rendered HTML and RDF/XML pages
-as files. Then those files are used as part of the CreativeCommons.org
-site (served as static files).
+command line tool can be used to save all the rendered HTML, Markdown, plain
+text, and RDF/XML pages as files. Then those files are used as part of the
+CreativeCommons.org site (served as static files).
 
 
 ## Setup and Usage
@@ -214,8 +214,9 @@ Repository](#data-repository), above).
 
 #### Static Files Process
 
-This process will write the HTML files in the cc-legal-tools-data clone
-directory under `docs/`. By default it doesn't commit any changes.
+This process will write the generated HTML, Markdown, plain text, and RDF/XML
+files in the cc-legal-tools-data clone directory under `docs/`. By default it
+doesn't commit any changes.
 
 1. Ensure the [Data Repository](#data-repository), above, is in place
 2. Ensure [Docker Compose Setup](#docker-compose-setup), above, is complete
@@ -237,20 +238,41 @@ directory under `docs/`. By default it doesn't commit any changes.
         INFO 17:36:31 Distilling index.rdf
         INFO 17:36:33 Distilling images.rdf
         INFO 17:36:33 Distilling ns.html
-        INFO 17:36:33 Copying plaintext legal code
         INFO 17:36:33 Distilling dev index
         INFO 17:36:34 Distilling lists
-        INFO 17:36:36 Distilling Licenses 4.0 deed HTML, legal code HTML, and RDF/XML
-        INFO 17:36:41 Distilling Licenses 3.0 deed HTML, legal code HTML, and RDF/XML
-        INFO 17:37:23 Distilling Licenses 2.5 deed HTML, legal code HTML, and RDF/XML
-        INFO 17:37:50 Distilling Licenses 2.1 deed HTML, legal code HTML, and RDF/XML
-        INFO 17:37:54 Distilling Licenses 2.0 deed HTML, legal code HTML, and RDF/XML
-        INFO 17:38:14 Distilling Licenses 1.0 deed HTML, legal code HTML, and RDF/XML
-        INFO 17:38:20 Distilling Public Domain all deed HTML, legal code HTML, and RDF/XML
+        INFO 17:36:36 Distilling Licenses 4.0 deed/legal code HTML and legal code Markdown/plain text/RDF/XML
+        INFO 17:36:41 Distilling Licenses 3.0 deed/legal code HTML and legal code Markdown/plain text/RDF/XML
+        INFO 17:37:23 Distilling Licenses 2.5 deed/legal code HTML and legal code Markdown/plain text/RDF/XML
+        INFO 17:37:50 Distilling Licenses 2.1 deed/legal code HTML and legal code Markdown/plain text/RDF/XML
+        INFO 17:37:54 Distilling Licenses 2.0 deed/legal code HTML and legal code Markdown/plain text/RDF/XML
+        INFO 17:38:14 Distilling Licenses 1.0 deed/legal code HTML and legal code Markdown/plain text/RDF/XML
+        INFO 17:38:20 Distilling Public Domain all deed/legal code HTML and legal code Markdown/plain text/RDF/XML
         INFO 17:38:21 Writing Apache2 redirects configuration
         ```
        - (note that the laptop environment and docker environment had different
          timezones, CEST and UTC)
+
+`./bin/publish.sh` publishes all supported static output by default. The
+following mutually exclusive filter options can be used while developing or
+publishing a specific subset:
+
+```shell
+./bin/publish.sh --filter-apache-redirects
+./bin/publish.sh --filter-license-html 4.0
+./bin/publish.sh --filter-license-markdown 4.0
+./bin/publish.sh --filter-license-text 4.0
+./bin/publish.sh --filter-rdf-xml
+```
+
+The same filters are available as short options:
+
+```shell
+./bin/publish.sh --fa
+./bin/publish.sh --fl 4.0
+./bin/publish.sh --fm 4.0
+./bin/publish.sh --ft 4.0
+./bin/publish.sh --fr
+```
 
 
 #### Publishing Changes to Git Repo
