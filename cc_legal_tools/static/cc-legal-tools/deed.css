@@ -91,3 +91,26 @@
   display: inline-block;
   text-indent: -3000px;
 }
+
+@media (max-width: 578px) {
+
+    .legal-tools .tool-meta {
+      padding: 1em;
+    }
+
+    .cc-legal-tools .tool-meta {
+      word-break: break-word;
+    }
+
+    .cc-legal-tools .tool-meta div.meta-box {
+      width: 90%;
+    }
+
+    .legal-tools div.content div#deed-body {
+      padding: 1em;
+    }
+
+    .cc-legal-tools.bidi-left div#deed-body ol > li {
+      padding-left: 0;
+    }
+}
