@@ -5,24 +5,26 @@ name = "pypi"
 
 [packages]
 Babel = "*"
-Django = ">=4.2.17,<4.3"
-GitPython = ">=3.1.41"
-PyYAML = "*"
 beautifulsoup4 = "*"
 certifi = ">=2023.7.22"  # Ensure dependency is secure
 colorlog = "*"
 dealer = "*"
+Django = ">=4.2.30,<4.3"
 gitpython = ">=3.1.37"  # Ensure dependency is secure
-lxml = "*"  # Dependency of beautifulsoup4 and RDF/XML processing
+GitPython = ">=3.1.58"
+lxml = ">=6.1.0"  # Dependency of beautifulsoup4 and RDF/XML processing
 polib = "*"
 python-dateutil = "*"
+PyYAML = "*"
 rdflib = "*"
+soupsieve = ">=2.8.4"  # Ensure dependency is secure
+sqlparse = ">=0.6.0"  # Ensure dependency is secure
 transifex-python = "*"
-urllib3 = ">=2.2.2"  # Ensure dependency is secure
+urllib3 = ">=2.7.0"  # Ensure dependency is secure
 whitenoise = "*"
 
 [dev-packages]
-black = ">=24.3.0"  # Sync version with [static-analysis], below
+black = ">=26.3.1"  # Sync version with [static-analysis], below
 coverage = "*"
 django-debug-toolbar = "*"
 factory-boy = "*"
@@ -33,7 +35,7 @@ tblib = "*"  # Dependency of coverage (with --parallel)
 
 [static-analysis]
 # Also see: .github/workflows/static-analysis.yml
-black = ">=24.3.0"  # Sync version with [dev-packages], above
+black = ">=26.3.1"  # Sync version with [dev-packages], above
 flake8 = "*"        # Sync version with [dev-packages], above
 isort = "*"         # Sync version with [dev-packages], above
 pre-commit = "*"    # Sync version with [dev-packages], above
