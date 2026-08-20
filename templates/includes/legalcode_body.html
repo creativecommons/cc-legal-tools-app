@@ -7,6 +7,7 @@
   {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
     {% include 'includes/legalcode_licenses_3.0_unported.html' %}
   {% else %}
+    <!-- INVALID_TEMPLATE -->
     <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black">
       <p class="has-text-black body-big padding-bottom-normal">
         <strong>{% trans "Unimplemented" %}</strong> &mdash;
