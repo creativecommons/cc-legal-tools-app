@@ -1,4 +1,5 @@
 # Standard library
+import os
 import posixpath
 
 # Third-party
@@ -261,7 +262,7 @@ class LegalCode(models.Model):
         if self.tool.deed_only:
             relpath = None
         else:
-            relpath = posixpath.join(tool._get_save_path(), filename)
+            relpath = os.path.join(tool._get_save_path(), filename)
 
         # Symlinks
         symlinks = []
@@ -275,7 +276,7 @@ class LegalCode(models.Model):
         if self.tool.deed_only:
             redirects_data.append(
                 {
-                    "redirect_file": posixpath.join(
+                    "redirect_file": os.path.join(
                         tool._get_save_path(),
                         f"legalcode.{language_code}.html",
                     ),
@@ -286,7 +287,7 @@ class LegalCode(models.Model):
             )
             redirects_data.append(
                 {
-                    "redirect_file": posixpath.join(
+                    "redirect_file": os.path.join(
                         tool._get_save_path(), "legalcode.html"
                     ),
                     "title": self.title,
@@ -301,10 +302,10 @@ class LegalCode(models.Model):
         language_code = self.language_code
         tool = self.tool
         filename = f"legalcode.{language_code}"
-        dest_path = posixpath.join("/", tool._get_save_path(), filename)
+        dest_path = os.path.join("/", tool._get_save_path(), filename)
         pairs = []
         for pcre in LANGMAP_DJANGO_TO_PCRE.get(language_code, []):
-            pcre_match = posixpath.join(
+            pcre_match = os.path.join(
                 "/",
                 tool._get_save_path().replace(".", "[.]"),
                 f"legalcode[.]{pcre}(?:[.]html)?",
@@ -532,7 +533,7 @@ class Tool(models.Model):
         unit = self.unit.lower()
         if self.jurisdiction_code:
             # ported Licenses 3.0 and earlier
-            return posixpath.join(
+            return os.path.join(
                 self.category,  # licenses or publicdomain
                 unit,  # ex. by, by-nc-nd
                 self.version,  # ex. 1.0, 2.0
@@ -540,7 +541,7 @@ class Tool(models.Model):
             )
         else:
             # unported Licenses 3.0, Licenses 4.0, and Public Domain:
-            return posixpath.join(
+            return os.path.join(
                 self.category,  # licenses or publicdomain
                 unit,  # ex. by, by-nc-nd, zero
                 self.version,  # ex. 1.0, 4.0
@@ -641,7 +642,7 @@ class Tool(models.Model):
         filename = f"deed.{language_code}.html"
 
         # Relative path
-        relpath = posixpath.join(self._get_save_path(), filename)
+        relpath = os.path.join(self._get_save_path(), filename)
 
         # Symlinks
         symlinks = []
@@ -654,10 +655,10 @@ class Tool(models.Model):
 
     def get_redirect_pairs(self, language_code):
         filename = f"deed.{language_code}"
-        dest_path = posixpath.join("/", self._get_save_path(), filename)
+        dest_path = os.path.join("/", self._get_save_path(), filename)
         pairs = []
         for pcre in LANGMAP_DJANGO_TO_PCRE.get(language_code, []):
-            pcre_match = posixpath.join(
+            pcre_match = os.path.join(
                 "/",
                 self._get_save_path().replace(".", "[.]"),
                 f"deed[.]{pcre}(?:[.]html)?",
@@ -696,11 +697,10 @@ class Tool(models.Model):
             result.append("cc-zero")
         else:
             for unit_part in self.unit.split("-"):
-                if unit_part in ["by", "nc", "nd", "sa"]:
-                    if unit_part == "nc":
-                        result.append(self.nc_symbol)
-                    else:
-                        result.append(f"cc-{unit_part}")
+                if unit_part == "nc":
+                    result.append(self.nc_symbol)
+                elif unit_part in ["by", "nd", "sa"]:
+                    result.append(f"cc-{unit_part}")
         return result
 
     @property
