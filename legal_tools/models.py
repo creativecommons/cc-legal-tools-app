@@ -12,6 +12,7 @@ from django.utils import translation
 # First-party/Local
 from i18n import LANGMAP_DJANGO_TO_PCRE
 from i18n.utils import (
+    JURISDICTION_CURRENCY_LOOKUP,
     get_default_language_for_jurisdiction_deed,
     get_default_language_for_jurisdiction_naive,
     get_jurisdiction_name,
@@ -665,6 +666,17 @@ class Tool(models.Model):
             pairs.append([pcre_match, dest_path])
         return pairs
 
+    @property
+    def nc_symbol(self):
+        """
+        Return the non-commercial symbol variant for this tool based
+        on jurisdiction. Returns 'cc-nc-eu', 'cc-nc-jp', or 'cc-nc'.
+        """
+        currency = JURISDICTION_CURRENCY_LOOKUP.get(self.jurisdiction_code)
+        if currency:
+            return f"cc-nc-{currency}"
+        return "cc-nc"
+
     def logos(self):
         """
         Return an iterable of the codes for the logos that should be
@@ -679,13 +691,15 @@ class Tool(models.Model):
         elif self.unit == "sampling+":
             result.append("cc-sampling-plus")
         elif self.unit == "nc-sampling+":
-            result.append("cc-nc")
+            result.append(self.nc_symbol)
             result.append("cc-sampling-plus")
         elif self.unit == "zero":
             result.append("cc-zero")
         else:
             for unit_part in self.unit.split("-"):
-                if unit_part in ["by", "nc", "nd", "sa"]:
+                if unit_part == "nc":
+                    result.append(self.nc_symbol)
+                elif unit_part in ["by", "nd", "sa"]:
                     result.append(f"cc-{unit_part}")
         return result
 
