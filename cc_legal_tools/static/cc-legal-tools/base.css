@@ -200,6 +200,17 @@ main > aside > nav ul > li {
 .cc-legal-tools article.canonical-url a {
   font-family: monospace;
 }
+.cc-legal-tools article.canonical-url button.copy-canonical-url {
+  margin-left: 0.6em;
+  padding: 0.15em 0.7em;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85em;
+  color: #232323;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
 .cc-legal-tools .tool-meta .formats ul {
   list-style: none;
   display: inline-flex;
