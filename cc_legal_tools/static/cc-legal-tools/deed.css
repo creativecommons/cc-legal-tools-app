@@ -52,6 +52,12 @@
 .cc-legal-tools div#deed-body ol > li.cc-nc:before {
   background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nc");
 }
+.cc-legal-tools div#deed-body ol > li.cc-nc-eu:before {
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nc-eu");
+}
+.cc-legal-tools div#deed-body ol > li.cc-nc-jp:before {
+  background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nc-jp");
+}
 .cc-legal-tools div#deed-body ol > li.cc-nd:before {
   background-image: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/cc/icons/cc-icons.svg#cc-nd");
 }
