@@ -1067,9 +1067,7 @@ class ToolModelTest(TestCase):
         )
         self.assertEqual(
             "cc-nc",
-            ToolFactory.build(
-                unit="by-nc", jurisdiction_code=""
-            ).nc_symbol,
+            ToolFactory.build(unit="by-nc", jurisdiction_code="").nc_symbol,
         )
         self.assertEqual(
             "cc-nc",
