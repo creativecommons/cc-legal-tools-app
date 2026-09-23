@@ -2,53 +2,49 @@
 
 /* brand typsetting */
 @font-face {
-    font-family:'Roboto Condensed';
+    font-family:'DM Sans';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src:  url('../fonts/RobotoCondensed-Regular.woff2') format('woff2'),
-        url('../fonts/RobotoCondensed-Regular.woff') format('woff'),
-        url('../fonts/RobotoCondensed-Regular.otf') format('opentype');
+    src:  url('../fonts/dm-fonts/Sans/fonts/webfonts/DMSans-Regular.woff2') format('woff2'),
+        url('../fonts/dm-fonts/Sans/fonts/otf/DMSans-Regular.otf') format('opentype'),
+        url('../fonts/dm-fonts/Sans/fonts/ttf/DMSans-Regular.ttf') format('truetype');
 }
 
 @font-face {
-    font-family:'Roboto Condensed';
+    font-family:'DM Sans';
     font-style: normal;
-    font-weight: 700;
+    font-weight: 500;
     font-display: swap;
-    src:  url('../fonts/RobotoCondensed-Bold.woff2') format('woff2'),
-        url('../fonts/RobotoCondensed-Bold.woff') format('woff'),
-        url('../fonts/RobotoCondensed-Bold.otf') format('opentype');
+    src:  url('../fonts/dm-fonts/Sans/fonts/webfonts/DMSans-Medium.woff2') format('woff2'),
+        url('../fonts/dm-fonts/Sans/fonts/otf/DMSans-Medium.otf') format('opentype'),
+        url('../fonts/dm-fonts/Sans/fonts/ttf/DMSans-Medium.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('../fonts/SourceSansPro-Regular.woff2') format('woff2'),
-        url('../fonts/SourceSansPro-Regular.woff') format('woff'),
-        url('../fonts/SourceSansPro-Regular.otf') format('opentype');
- }
-
-@font-face {
-    font-family: 'Source Sans Pro';
+    font-family:'DM Sans';
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    src: url('../fonts/SourceSansPro-SemiBold.woff2') format('woff2'),
-        url('../fonts/SourceSansPro-SemiBold.woff') format('woff'),
-        url('../fonts/SourceSansPro-SemiBold.otf') format('opentype');
+    src:  url('../fonts/dm-fonts/Sans/fonts/webfonts/DMSans-SemiBold.woff2') format('woff2'),
+        url('../fonts/dm-fonts/Sans/fonts/otf/DMSans-SemiBold.otf') format('opentype'),
+        url('../fonts/dm-fonts/Sans/fonts/ttf/DMSans-SemiBold.ttf') format('truetype');
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
+    font-family:'DM Mono';
     font-style: normal;
-    font-weight: 700;
+    font-weight: 400;
     font-display: swap;
-    src: url('../fonts/SourceSansPro-Bold.woff2') format('woff2'),
-        url('../fonts/SourceSansPro-Bold.woff') format('woff'),
-            url('../fonts/SourceSansPro-Bold.otf') format('opentype');
+    src: url('../fonts/dm-mono/exports/DMMono-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family:'DM Mono';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('../fonts/dm-mono/exports/DMMono-Medium.ttf') format('truetype');
 }
 
 @font-face {
@@ -88,6 +84,15 @@
 
     /* whitespace */
     --vocabulary-page-edges-space: 5%;
+
+    /* cc icons */
+    --cc-by: url('../src/svg/cc/icons/cc-icons.svg#cc-by');
+    --cc-nc: url('../src/svg/cc/icons/cc-icons.svg#cc-nc');
+    --cc-nd: url('../src/svg/cc/icons/cc-icons.svg#cc-nd');
+    --cc-pd: url('../src/svg/cc/icons/cc-icons.svg#cc-pd');
+    --cc-pdm: url('../src/svg/cc/icons/cc-icons.svg#cc-pdm');
+    --cc-sa: url('../src/svg/cc/icons/cc-icons.svg#cc-sa');
+    --cc-zero: url('../src/svg/cc/icons/cc-icons.svg#cc-zero');
 
 
 
@@ -259,6 +264,55 @@ leaving room for semantic and accessible implementation choices  */
     --icon-sprite: var(--fa-close);
 }
 
+.icon-replace.fa-search {
+    --icon-sprite: var(--fa-search);
+}
+
+.icon-replace.fa-angle-down:before {
+    --icon-sprite: var(--fa-angle-down);
+}
+
+.icon-attach.cc-by:before {
+    --icon-sprite: var(--cc-by);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.icon-attach.cc-nc:before {
+    --icon-sprite: var(--cc-nc);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.icon-attach.cc-nd:before {
+    --icon-sprite: var(--cc-nd);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.icon-attach.cc-pd:before {
+    --icon-sprite: var(--cc-pd);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.icon-attach.cc-pdm:before {
+    --icon-sprite: var(--cc-pdm);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.icon-attach.cc-sa:before {
+    --icon-sprite: var(--cc-sa);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
+
+.icon-attach.cc-zero:before {
+    --icon-sprite: var(--cc-zero);
+    margin-right: .2em;
+    margin-bottom: -.125em;
+}
 
 /* attach an icon to an existing element with a :before */
 .icon-attach:before {
@@ -284,7 +338,7 @@ leaving room for semantic and accessible implementation choices  */
 
 .icon-replace {
     display: inline-block;
-    text-indent: -1000px;
+    text-indent: -5000px;
     height: 2em;
     width: 2em;
     position: relative;
