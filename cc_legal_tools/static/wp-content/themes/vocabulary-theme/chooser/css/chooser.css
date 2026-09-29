@@ -84,6 +84,19 @@
     display: none;
 }
 
+.chooser-page > header p {
+  text-align: left;
+  margin-bottom: 0;
+}
+
+.chooser-page header p:nth-child(2) {
+  font-size: 1.3em;
+}
+
+.chooser-page > footer  {
+  margin-top: 8em;
+}
+
 .chooser-page .tool header {
     display: flex;
     flex-wrap: wrap;
@@ -96,6 +109,10 @@
 .chooser-page .tool header > .tool-icons {
     order: -1;
     margin: 0 1em 0 0;
+}
+
+.chooser-page main h3 {
+  font-family: "DM Sans";
 }
 
 .chooser-page .tool .tool-icons svg {
@@ -159,6 +176,7 @@
 
 .chooser-page form#chooser fieldset {
     margin-bottom: 1em;
+    border-radius: 12px;
 }
 
 .chooser-page form#chooser label {
@@ -202,6 +220,7 @@
 
     background: var(--vocabulary-brand-color-soft-turquoise);
     background: var(--vocabulary-neutral-color-lighter-gray);
+    border-radius: 16px;
 }
 
 .chooser-page aside #empty p {
@@ -217,24 +236,27 @@
 .chooser-page #tool-recommendation .tool {
     padding: 2em;
 
-    background: var(--vocabulary-brand-color-soft-turquoise);
+    background:#FFD9CC;
+    border-radius: 16px;
 }
 
 .chooser-page #tool-recommendation .tool a {
-    --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+    --underline-background-color: #FFD9CC;
+
+    font-family: "DM Sans";
 }
 
 .chooser-page #tool-recommendation h3 {
     margin: 0;
 
-    font-family: 'Source Sans Pro';
+    font-family: 'DM Sans';
     font-size: 1.4em;
 }
 
 .chooser-page #tool-recommendation h4 {
     margin: .2em;
 
-    font-family: 'Source Sans Pro';
+    font-family: "DM Sans";
     font-size: 1.4em;
 }
 
@@ -249,7 +271,7 @@
 .chooser-page #tool-recommendation .conditions-definitions {
     margin-bottom: 2em;
 
-    font-family: 'Source Sans Pro';
+    font-family: "DM Mono";
 }
 
 .chooser-page #tool-recommendation .conditions-definitions dt {
@@ -286,6 +308,7 @@
     padding: .2em .5em;
 
     background: var(--vocabulary-neutral-color-lighter-gray);
+    font-family: "DM Sans";
     font-size: 1.6em;
 }
 
