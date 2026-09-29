@@ -1,6 +1,4 @@
-@import "/wp-content/themes/vocabulary-theme/pidgin/css/pidgin.css" layer(vocabulary);
 @import "/wp-content/themes/vocabulary-theme/style.css" layer(vocabulary);
-
 
 
 body .locale {
@@ -68,42 +66,28 @@ div.masthead > nav.ancillary-menu span.locale.icon-attach:before {
 }
 
 /* header title */
-/* TODO: resolve with vocabulary-theme */
 .cc-legal-tools main > header {
-  align-items: center;
-  /* (upstream vocabulary default-page class uses display: box) */
+  /* (upstream vocabulary default-page class uses display: grid) */
   display: flex;
-  padding: 3em 0;
 }
-.cc-legal-tools .bidi-left main > header > span.alt-titles {
+.cc-legal-tools main > header > div {
+  align-items: center;
+  width: 100%;
+}
+
+.cc-legal-tools .bidi-left main > header > div > span.alt-titles {
   order: 1;
 }
-.cc-legal-tools .bidi-left main > header > span.alt-titles > span.tool-icons {
-  padding-right: 1em;
-}
-.cc-legal-tools .bidi-right main > header > span.alt-titles > span.tool-icons {
-  padding-left: 1em;
-}
-main > header > span.alt-titles > span.tool-icons > span.cc-icon > svg {
+main > header > div > span.alt-titles > span.tool-icons > span.cc-icon > svg {
   display: inline;
-  height: 2em;
-  width: 2em;
-  vertical-align: text-bottom;
 }
-.cc-legal-tools main > header > span.alt-titles > span.tool-identifier {
-  font-family: "Roboto Condensed";
-  font-size: 2.1em;
-  font-style: normal;
-  font-weight: 700;
-}
-.cc-legal-tools main > header > h1 {
-  margin: 0.2em 0;
+.cc-legal-tools main > header > div > h1 {
   order: 2;
   text-align: center;
 }
-.cc-legal-tools main > header > h2 {
-  margin: 0;
+.cc-legal-tools main > header > div > h2 {
   order: 3;
+  text-align: center;
 }
 
 /* right nav */

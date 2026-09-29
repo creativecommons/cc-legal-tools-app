@@ -58,7 +58,9 @@
 <main>
 
 <header>
+<div>
 {% block title_header %}{% endblock %}
+</div>
 </header>
 
 {% block contextual_menu %}{% endblock %}
@@ -72,7 +74,6 @@
 {% include 'includes/footer.html' %}
 
 <script src="/wp-content/themes/vocabulary-theme/vocabulary/js/vocabulary.js"></script>
-<script src="/wp-content/themes/vocabulary-theme/pidgin/js/pidgin.js"></script>
 <script>
   document.querySelector('.legalcode aside.sidebar ul.hide').classList.toggle('hide');
 </script>
