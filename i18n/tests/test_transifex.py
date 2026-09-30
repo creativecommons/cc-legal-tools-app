@@ -150,11 +150,11 @@ class TestTransifex(TestCase):
         api.Organization.get.assert_called_once()
         organization.fetch.assert_called_once()
         api.I18nFormat.filter.assert_called_once()
-        self.assertEquals(self.helper.api_i18n_format.id, "PO")
+        self.assertEqual(self.helper.api_i18n_format.id, "PO")
 
     def test__empty_branch_object(self):
         empty = _empty_branch_object()
-        self.assertEquals(empty, {LEGALCODES_KEY: []})
+        self.assertEqual(empty, {LEGALCODES_KEY: []})
 
     def test_resource_stats(self):
         resources = [
@@ -440,7 +440,7 @@ class TestTransifex(TestCase):
                 resource_slug, transifex_code
             )
 
-        api.ResourceStringsAsyncDownload.download.not_called()
+        api.ResourceStringsAsyncDownload.download.assert_not_called()
         api.ResourceTranslationsAsyncDownload.download.assert_called_once()
         self.assertEqual(result, b"yyyyyy")
 
