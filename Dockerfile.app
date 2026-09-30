@@ -1,48 +1,49 @@
 # https://docs.docker.com/engine/reference/builder/
 
 # https://hub.docker.com/_/python/
-FROM python:3.11
+FROM python:3.13
 
 # Configure apt not to prompt during docker build
 ARG DEBIAN_FRONTEND=noninteractive
 
 # Python: disable bytecode (.pyc) files
-# https://docs.python.org/3.11/using/cmdline.html
+# https://docs.python.org/3.13/using/cmdline.html
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Python: force the stdout and stderr streams to be unbuffered
-# https://docs.python.org/3.11/using/cmdline.html
+# https://docs.python.org/3.13/using/cmdline.html
 ENV PYTHONUNBUFFERED=1
 
 # Python: enable faulthandler to dump Python traceback on catastrophic cases
-# https://docs.python.org/3.11/library/faulthandler.html
+# https://docs.python.org/3.13/library/faulthandler.html
 ENV PYTHONFAULTHANDLER=1
 
 # Python: force-enable pip's PEP 517 mode
 # https://github.com/pypa/pip/issues/6334
-ENV PIP_USE_PEP517=true
+#ENV PIP_USE_PEP517=true
 
 WORKDIR /root
 
-# Configure apt to avoid installing recommended and suggested packages
-RUN apt-config dump \
-    | grep -E '^APT::Install-(Recommends|Suggests)' \
-    | sed -e's/1/0/' \
-    | tee /etc/apt/apt.conf.d/99no-recommends-no-suggests
-
-# Resynchronize the package index and install packages
 # https://docs.docker.com/build/building/best-practices/#apt-get
-RUN apt-get update && apt-get install -y \
+# - Resynchronize the package index, update packages, install packages, and
+#   clean-up
+# - nodejs and npm are only used to test GitHub Actions workflow
+#   compatibility (PRETTIER_SLOW=1)
+RUN DEBIAN_FRONTEND=noninteractive apt-get update \
+        --no-allow-insecure-repositories --quiet \
+    && DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade \
+        --no-install-recommends --no-install-suggests --quiet --yes \
+    && DEBIAN_FRONTEND=noninteractive apt-get install \
+        --no-install-recommends --no-install-suggests --quiet --yes \
         gcc \
         gettext \
         git \
-        # nodejs and npm are only used to test GitHub Actions workflow
-        # compatibility (PRETTIER_SLOW=1)
         nodejs \
         npm \
         sqlite3 \
         ssh \
-    && rm -rf /var/lib/apt/lists/*
+    && DEBIAN_FRONTEND=noninteractive apt-get clean --quiet \
+    && rm --recursive --force /var/lib/apt/lists/*
 
 ## Install pipenv
 RUN pip install --upgrade \
@@ -73,3 +74,5 @@ RUN git config --global user.email 'app@docker-container' \
 RUN mkdir cc-legal-tools-app \
     && mkdir cc-legal-tools-data
 WORKDIR /home/cc/cc-legal-tools-app
+
+# vim: ft=dockerfile

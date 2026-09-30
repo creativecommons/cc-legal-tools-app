@@ -326,14 +326,14 @@ See [`CONTRIBUTING.md`][org-contrib].
    1. Install dependencies
       - Linux:
         ```shell
-        sudo apt-get install python3.11 python3.11-dev python3-pip
+        sudo apt-get install python3.13 python3.13-dev python3-pip
         ```
         ```shell
         pip3 install pipenv
         ```
       - macOS: via [Homebrew](https://brew.sh/):
         ```shell
-        brew install pipenv python@3.11
+        brew install pipenv python@3.13
         ```
       - Windows: [install Python][python-windows] and then use `pip` to install
         `pipenv`:
@@ -344,11 +344,11 @@ See [`CONTRIBUTING.md`][org-contrib].
       virtualenv
       - Linux:
         ```shell
-        pipenv install --dev --python /usr/bin/python3.11
+        pipenv install --dev --python /usr/bin/python3.13
         ```
       - macOS: via [Homebrew](https://brew.sh/):
         ```shell
-        pipenv install --dev --python /usr/local/opt/python@3.11/libexec/bin/python
+        pipenv install --dev --python /usr/local/opt/python@3.13/libexec/bin/python
         ```
       - Windows:
         ```shell
@@ -371,20 +371,20 @@ See [`CONTRIBUTING.md`][org-contrib].
 ### Software Versions
 
 These are the currently designated versions of the various dependencies:
-- [Python 3.11][python311] specified in:
+- [Python 3.13][python313] specified in:
   - [`.github/workflows/django-app-coverage.yml`][django-app-coverage]
   - [`.github/workflows/static-analysis.yml`][static-analysis]
   - [`.pre-commit-config.yaml`](.pre-commit-config.yaml)
   - [`Dockerfile`](Dockerfile)
   - [`Pipfile`](Pipfile)
   - [`pyproject.toml`](pyproject.toml)
-- [Django 4.2 (LTS)][django42]
+- [Django 5.2 (LTS)][django52]
   - [`Pipfile`](Pipfile)
 
 [django-app-coverage]: .github/workflows/django-app-coverage.yml
 [static-analysis]: .github/workflows/static-analysis.yml
-[python311]: https://docs.python.org/3.11/
-[django42]: https://docs.djangoproject.com/en/4.2/
+[python313]: https://docs.python.org/3.13/
+[django52]: https://docs.djangoproject.com/en/5.2/
 
 
 ### Developer Resources
