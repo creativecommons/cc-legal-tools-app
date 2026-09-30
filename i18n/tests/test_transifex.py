@@ -440,7 +440,7 @@ class TestTransifex(TestCase):
                 resource_slug, transifex_code
             )
 
-        api.ResourceStringsAsyncDownload.download.not_called()
+        api.ResourceStringsAsyncDownload.download.assert_not_called()
         api.ResourceTranslationsAsyncDownload.download.assert_called_once()
         self.assertEqual(result, b"yyyyyy")
 
