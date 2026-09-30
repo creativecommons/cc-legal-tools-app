@@ -30,7 +30,7 @@ compare_ver() {
     local _path=${1}
     local _match=${2}
     local _field=${3}
-    local _unwanted="\"',["
+    local _unwanted="\"',\[\]"
     local _status
     printf "${E97}${E100} %9s${E0} %s\n" 'File:' "${E97}${_path}${E0}"
     # extract Python version
