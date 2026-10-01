@@ -10,429 +10,407 @@ Describing Copyright in RDF - Creative Commons Rights Expression Language
 {% endblock %}
 
 {% block content %}
-  <h2>
-   Creative Commons Rights Expression Language
-  </h2>
+  <h2>Creative Commons Rights Expression Language</h2>
   <p>
-   The Creative Commons Rights Expression Language (ccREL) lets you
-   describe copyright licenses in RDF. For more information on describing
-   licenses in RDF and attaching those descriptions to digital works, see
-   <a href="https://wiki.creativecommons.org/CC_REL">
-    ccREL
-   </a>
-   in the
-   <a href="https://wiki.creativecommons.org/">
-    Creative Commons wiki
-   </a>
-   .
+    The Creative Commons Rights Expression Language (ccREL) lets you
+    describe copyright licenses in RDF. For more information on describing
+    licenses in RDF and attaching those descriptions to digital works, see
+    <a href="https://wiki.creativecommons.org/CC_REL"> ccREL </a>
+    in the
+    <a href="https://wiki.creativecommons.org/">
+      Creative Commons wiki
+    </a>
+    .
   </p>
-  <h2>
-   Classes
-  </h2>
+  <h2>Classes</h2>
   <div about="#Work" id="Work" typeof="rdfs:Class">
-   <h3 property="rdfs:label">
-    Work
-   </h3>
-   <span property="rdfs:comment">
-    a potentially copyrightable work
-   </span>
-   <span resource="http://web.resource.org/cc/Work" rev="owl:equivalentClass">
-   </span>
+    <h3 property="rdfs:label">Work</h3>
+    <span property="rdfs:comment">
+      a potentially copyrightable work
+    </span>
+    <span
+      resource="http://web.resource.org/cc/Work"
+      rev="owl:equivalentClass"
+    >
+    </span>
   </div>
   <div about="#License" id="License" typeof="rdfs:Class">
-   <h3 property="rdfs:label">
-    License
-   </h3>
-   <span property="rdfs:comment">
-    a set of requests/permissions to users of a Work, e.g. a copyright
-    license, the public domain, information for distributors
-   </span>
-   <span rel="rdfs:subClassOf" resource="http://purl.org/dc/terms/LicenseDocument">
-   </span>
-   <span resource="http://web.resource.org/cc/License" rev="owl:equivalentClass">
-   </span>
+    <h3 property="rdfs:label">License</h3>
+    <span property="rdfs:comment">
+      a set of requests/permissions to users of a Work, e.g. a copyright
+      license, the public domain, information for distributors
+    </span>
+    <span
+      rel="rdfs:subClassOf"
+      resource="http://purl.org/dc/terms/LicenseDocument"
+    >
+    </span>
+    <span
+      resource="http://web.resource.org/cc/License"
+      rev="owl:equivalentClass"
+    >
+    </span>
   </div>
   <div about="#Jurisdiction" id="Jurisdiction" typeof="rdfs:Class">
-   <h3 property="rdfs:label">
-    Jurisdiction
-   </h3>
-   <span property="rdfs:comment">
-    the legal jurisdiction of a license
-   </span>
+    <h3 property="rdfs:label">Jurisdiction</h3>
+    <span property="rdfs:comment">
+      the legal jurisdiction of a license
+    </span>
   </div>
   <div about="#Permission" id="Permission" typeof="rdfs:Class">
-   <h3 property="rdfs:label">
-    Permission
-   </h3>
-   <span property="rdfs:comment">
-    an action that may or may not be allowed or desired
-   </span>
-   <span resource="http://web.resource.org/cc/Permission" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Permission</h3>
+    <span property="rdfs:comment">
+      an action that may or may not be allowed or desired
+    </span>
+    <span
+      resource="http://web.resource.org/cc/Permission"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#Requirement" id="Requirement" typeof="rdfs:Class">
-   <h3 property="rdfs:label">
-    Requirement
-   </h3>
-   <span property="rdfs:comment">
-    an action that may or may not be requested of you
-   </span>
-   <span resource="http://web.resource.org/cc/Requirement" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Requirement</h3>
+    <span property="rdfs:comment">
+      an action that may or may not be requested of you
+    </span>
+    <span
+      resource="http://web.resource.org/cc/Requirement"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#Prohibition" id="Prohibition" typeof="rdfs:Class">
-   <h3 property="rdfs:label">
-    Prohibition
-   </h3>
-   <span property="rdfs:comment">
-    something you may be asked not to do
-   </span>
-   <span resource="http://web.resource.org/cc/Prohibition" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Prohibition</h3>
+    <span property="rdfs:comment">
+      something you may be asked not to do
+    </span>
+    <span
+      resource="http://web.resource.org/cc/Prohibition"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
-  <h2>
-   Permissions
-  </h2>
+  <h2>Permissions</h2>
   <div about="#Reproduction" id="Reproduction" typeof="cc:Permission">
-   <h3 property="rdfs:label">
-    Reproduction
-   </h3>
-   <span property="rdfs:comment">
-    making multiple copies
-   </span>
-   <span resource="http://web.resource.org/cc/Reproduction" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Reproduction</h3>
+    <span property="rdfs:comment"> making multiple copies </span>
+    <span
+      resource="http://web.resource.org/cc/Reproduction"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#Distribution" id="Distribution" typeof="cc:Permission">
-   <h3 property="rdfs:label">
-    Distribution
-   </h3>
-   <span property="rdfs:comment">
-    distribution, public display, and publicly performance
-   </span>
-   <span resource="http://web.resource.org/cc/Distribution" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Distribution</h3>
+    <span property="rdfs:comment">
+      distribution, public display, and publicly performance
+    </span>
+    <span
+      resource="http://web.resource.org/cc/Distribution"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
-  <div about="#DerivativeWorks" id="DerivativeWorks" typeof="cc:Permission">
-   <h3 property="rdfs:label">
-    Derivative Works
-   </h3>
-   <span property="rdfs:comment">
-    distribution of derivative works
-   </span>
-   <span resource="http://web.resource.org/cc/DerivativeWorks" rev="owl:equivalentClass"></span>
+  <div
+    about="#DerivativeWorks"
+    id="DerivativeWorks"
+    typeof="cc:Permission"
+  >
+    <h3 property="rdfs:label">Derivative Works</h3>
+    <span property="rdfs:comment">
+      distribution of derivative works
+    </span>
+    <span
+      resource="http://web.resource.org/cc/DerivativeWorks"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#Sharing" id="Sharing" typeof="cc:Permission">
-   <h3 property="rdfs:label">
-    Sharing
-   </h3>
-   <span property="rdfs:comment">
-    permits commercial derivatives, but only non-commercial distribution
-   </span>
+    <h3 property="rdfs:label">Sharing</h3>
+    <span property="rdfs:comment">
+      permits commercial derivatives, but only non-commercial distribution
+    </span>
   </div>
-  <h2>
-   Requirements
-  </h2>
+  <h2>Requirements</h2>
   <div about="#Notice" id="Notice" typeof="cc:Requirement">
-   <h3 property="rdfs:label">
-    Notice
-   </h3>
-   <span property="rdfs:comment">
-    copyright and license notices be kept intact
-   </span>
-   <span resource="http://web.resource.org/cc/Notice" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Notice</h3>
+    <span property="rdfs:comment">
+      copyright and license notices be kept intact
+    </span>
+    <span
+      resource="http://web.resource.org/cc/Notice"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#Attribution" id="Attribution" typeof="cc:Requirement">
-   <h3 property="rdfs:label">
-    Attribution
-   </h3>
-   <span property="rdfs:comment">
-    credit be given to copyright holder and/or author
-   </span>
-   <span resource="http://web.resource.org/cc/Attribution" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Attribution</h3>
+    <span property="rdfs:comment">
+      credit be given to copyright holder and/or author
+    </span>
+    <span
+      resource="http://web.resource.org/cc/Attribution"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#ShareAlike" id="ShareAlike" typeof="cc:Requirement">
-   <h3 property="rdfs:label">
-    Share Alike
-   </h3>
-   <span property="rdfs:comment">
-    derivative works be licensed under the same terms or compatible terms
-    as the original work
-   </span>
-   <span resource="http://web.resource.org/cc/ShareAlike" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Share Alike</h3>
+    <span property="rdfs:comment">
+      derivative works be licensed under the same terms or compatible
+      terms as the original work
+    </span>
+    <span
+      resource="http://web.resource.org/cc/ShareAlike"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#SourceCode" id="SourceCode" typeof="cc:Requirement">
-   <h3 property="rdfs:label">
-    Source Code
-   </h3>
-   <span property="rdfs:comment">
-    source code (the preferred form for making modifications) must be
-    provided when exercising some rights granted by the license.
-   </span>
-   <span resource="http://web.resource.org/cc/SourceCode" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Source Code</h3>
+    <span property="rdfs:comment">
+      source code (the preferred form for making modifications) must be
+      provided when exercising some rights granted by the license.
+    </span>
+    <span
+      resource="http://web.resource.org/cc/SourceCode"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
   <div about="#Copyleft" id="Copyleft" typeof="cc:Requirement">
-   <h3 property="rdfs:label">
-    Copyleft
-   </h3>
-   <span property="rdfs:comment">
-    derivative and combined works must be licensed under specified terms,
-    similar to those on the original work
-   </span>
+    <h3 property="rdfs:label">Copyleft</h3>
+    <span property="rdfs:comment">
+      derivative and combined works must be licensed under specified
+      terms, similar to those on the original work
+    </span>
   </div>
-  <div about="#LesserCopyleft" id="LesserCopyleft" typeof="cc:Requirement">
-   <h3 property="rdfs:label">
-    Lesser Copyleft
-   </h3>
-   <span property="rdfs:comment">
-    derivative works must be licensed under specified terms, with at least
-    the same conditions as the original work; combinations with the work
-    may be licensed under different terms
-   </span>
+  <div
+    about="#LesserCopyleft"
+    id="LesserCopyleft"
+    typeof="cc:Requirement"
+  >
+    <h3 property="rdfs:label">Lesser Copyleft</h3>
+    <span property="rdfs:comment">
+      derivative works must be licensed under specified terms, with at
+      least the same conditions as the original work; combinations with
+      the work may be licensed under different terms
+    </span>
   </div>
-  <h2>
-   Prohibitions
-  </h2>
+  <h2>Prohibitions</h2>
   <div about="#CommercialUse" id="CommercialUse" typeof="cc:Prohibition">
-   <h3 property="rdfs:label">
-    Commercial Use
-   </h3>
-   <span property="rdfs:comment">
-    exercising rights for commercial purposes
-   </span>
-   <span resource="http://web.resource.org/cc/CommercialUse" rev="owl:equivalentClass"></span>
+    <h3 property="rdfs:label">Commercial Use</h3>
+    <span property="rdfs:comment">
+      exercising rights for commercial purposes
+    </span>
+    <span
+      resource="http://web.resource.org/cc/CommercialUse"
+      rev="owl:equivalentClass"
+    ></span>
   </div>
-  <div about="#HighIncomeNationUse" id="HighIncomeNationUse" typeof="cc:Prohibition">
-   <h3 property="rdfs:label">
-    High Income Nation Use
-   </h3>
-   <span property="rdfs:comment">
-    use in a non-developing country
-   </span>
+  <div
+    about="#HighIncomeNationUse"
+    id="HighIncomeNationUse"
+    typeof="cc:Prohibition"
+  >
+    <h3 property="rdfs:label">High Income Nation Use</h3>
+    <span property="rdfs:comment"> use in a non-developing country </span>
   </div>
-  <h2>
-   License Properties
-  </h2>
+  <h2>License Properties</h2>
   <div about="#permits" id="permits" typeof="rdf:Property">
-   <h3>
-    cc:permits
-   </h3>
-   A
-   <a href="#License" rel="rdfs:domain">
-    License
-   </a>
-   <span property="rdfs:label">
-    permits
-   </span>
-   a
-   <a href="#Permission" rel="rdfs:range">
-    Permission
-   </a>
-   .
-   <span resource="http://web.resource.org/cc/permits" rev="owl:equivalentProperty"></span>
+    <h3>cc:permits</h3>
+    A
+    <a href="#License" rel="rdfs:domain"> License </a>
+    <span property="rdfs:label"> permits </span>
+    a
+    <a href="#Permission" rel="rdfs:range"> Permission </a>
+    .
+    <span
+      resource="http://web.resource.org/cc/permits"
+      rev="owl:equivalentProperty"
+    ></span>
   </div>
   <div about="#requires" id="requires" typeof="rdf:Property">
-   <h3>
-    cc:requires
-   </h3>
-   A
-   <a href="#License" rel="rdfs:domain">
-    License
-   </a>
-   <span property="rdfs:label">
-    requires
-   </span>
-   a
-   <a href="#Requirement" rel="rdfs:range">
-    Requirement
-   </a>
-   .
-   <span resource="http://web.resource.org/cc/requires" rev="owl:equivalentProperty"></span>
+    <h3>cc:requires</h3>
+    A
+    <a href="#License" rel="rdfs:domain"> License </a>
+    <span property="rdfs:label"> requires </span>
+    a
+    <a href="#Requirement" rel="rdfs:range"> Requirement </a>
+    .
+    <span
+      resource="http://web.resource.org/cc/requires"
+      rev="owl:equivalentProperty"
+    ></span>
   </div>
   <div about="#prohibits" id="prohibits" typeof="rdf:Property">
-   <h3>
-    cc:prohibits
-   </h3>
-   A
-   <a href="#License" rel="rdfs:domain">
-    License
-   </a>
-   <span property="rdfs:label">
-    prohibits
-   </span>
-   a
-   <a href="#Prohibition" rel="rdfs:range">
-    Prohibition
-   </a>
-   .
-   <span resource="http://web.resource.org/cc/prohibits" rev="owl:equivalentProperty"></span>
+    <h3>cc:prohibits</h3>
+    A
+    <a href="#License" rel="rdfs:domain"> License </a>
+    <span property="rdfs:label"> prohibits </span>
+    a
+    <a href="#Prohibition" rel="rdfs:range"> Prohibition </a>
+    .
+    <span
+      resource="http://web.resource.org/cc/prohibits"
+      rev="owl:equivalentProperty"
+    ></span>
   </div>
   <div about="#jurisdiction" id="jurisdiction" typeof="rdf:Property">
-   <h3>
-    cc:jurisdiction
-   </h3>
-   A
-   <a href="#License" rel="rdfs:domain">
-    License
-   </a>
-   may have a
-   <span property="rdfs:label">
-    jurisdiction
-   </span>
-   , as defined by
-   <a href="#Jurisdiction" rel="rdfs:range">
-    Jurisdictions
-   </a>
-   .
+    <h3>cc:jurisdiction</h3>
+    A
+    <a href="#License" rel="rdfs:domain"> License </a>
+    may have a
+    <span property="rdfs:label"> jurisdiction </span>
+    , as defined by
+    <a href="#Jurisdiction" rel="rdfs:range"> Jurisdictions </a>
+    .
   </div>
   <div about="#legalcode" id="legalcode" typeof="rdf:Property">
-   <h3>
-    cc:legalcode
-   </h3>
-   The
-   <a href="http://www.w3.org/2000/01/rdf-schema#Resource" rel="rdfs:range">
-    URL
-   </a>
-   of the legal text of a
-   <a href="#License" rel="rdfs:domain">
-    License
-   </a>
-   .
+    <h3>cc:legalcode</h3>
+    The
+    <a
+      href="http://www.w3.org/2000/01/rdf-schema#Resource"
+      rel="rdfs:range"
+    >
+      URL
+    </a>
+    of the legal text of a
+    <a href="#License" rel="rdfs:domain"> License </a>
+    .
   </div>
   <div about="#deprecatedOn" id="deprecatedOn" typeof="rdf:Property">
-   <h3>
-    cc:deprecatedOn
-   </h3>
-   A
-   <a href="#License" rel="rdfs:domain">
-    License
-   </a>
-   may be deprecated; provides the
-   <a href="http://www.w3.org/2001/XMLSchema-datatypes#date" rel="rdfs:range">
-    date
-   </a>
-   <span property="rdfs:label">
-    deprecated on
-   </span>
-   .
+    <h3>cc:deprecatedOn</h3>
+    A
+    <a href="#License" rel="rdfs:domain"> License </a>
+    may be deprecated; provides the
+    <a
+      href="http://www.w3.org/2001/XMLSchema-datatypes#date"
+      rel="rdfs:range"
+    >
+      date
+    </a>
+    <span property="rdfs:label"> deprecated on </span>
+    .
   </div>
-  <h2>
-   Work Properties
-  </h2>
+  <h2>Work Properties</h2>
   <div about="#license" id="license" typeof="rdf:Property">
-   <h3>
-    cc:license
-   </h3>
-   A
-   <a href="#Work" rel="rdfs:domain">
-    Work
-   </a>
-   <span property="rdfs:label">
-    has license
-   </span>
-   a
-   <a href="#License" rel="rdfs:range">
-    License
-   </a>
-   .
-   <br>
-   (a
-   <a href="http://purl.org/dc/terms/license" rel="rdfs:subPropertyOf">
-    subproperty of dcterms:license
-   </a>
-   ,
-   <a href="http://www.w3.org/1999/xhtml/vocab#license" rel="owl:sameAs">
-    the same as xhtml:license
-   </a>
-   )
-   <span resource="http://web.resource.org/cc/license" rev="owl:equivalentProperty"></span>
+    <h3>cc:license</h3>
+    A
+    <a href="#Work" rel="rdfs:domain"> Work </a>
+    <span property="rdfs:label"> has license </span>
+    a
+    <a href="#License" rel="rdfs:range"> License </a>
+    .
+    <br />
+    (a
+    <a href="http://purl.org/dc/terms/license" rel="rdfs:subPropertyOf">
+      subproperty of dcterms:license
+    </a>
+    ,
+    <a href="http://www.w3.org/1999/xhtml/vocab#license" rel="owl:sameAs">
+      the same as xhtml:license
+    </a>
+    )
+    <span
+      resource="http://web.resource.org/cc/license"
+      rev="owl:equivalentProperty"
+    ></span>
   </div>
-  <div about="#morePermissions" id="morePermissions" typeof="rdf:Property">
-   <h3>
-    cc:morePermissions
-   </h3>
-   A
-   <span rel="rdfs:subPropertyOf" resource="http://purl.org/dc/terms/relation">
-    related
-   </span>
-   <span rel="rdfs:range" resource="http://www.w3.org/2000/01/rdf-schema#Resource">
-    resource
-   </span>
-   which describes additional permissions or alternative licenses for a
-   <a href="#Work" rel="rdfs:domain">
-    Work
-   </a>
-   which may be available.
+  <div
+    about="#morePermissions"
+    id="morePermissions"
+    typeof="rdf:Property"
+  >
+    <h3>cc:morePermissions</h3>
+    A
+    <span
+      rel="rdfs:subPropertyOf"
+      resource="http://purl.org/dc/terms/relation"
+    >
+      related
+    </span>
+    <span
+      rel="rdfs:range"
+      resource="http://www.w3.org/2000/01/rdf-schema#Resource"
+    >
+      resource
+    </span>
+    which describes additional permissions or alternative licenses for a
+    <a href="#Work" rel="rdfs:domain"> Work </a>
+    which may be available.
   </div>
-  <div about="#attributionName" id="attributionName" typeof="rdf:Property">
-   <h3>
-    cc:attributionName
-   </h3>
-   The
-   <span rel="rdfs:range" resource="http://www.w3.org/2000/01/rdf-schema#Literal">
-    name the creator
-   </span>
-   of a
-   <a href="#Work" rel="rdfs:domain">
-    Work
-   </a>
-   would like used when attributing re-use.
+  <div
+    about="#attributionName"
+    id="attributionName"
+    typeof="rdf:Property"
+  >
+    <h3>cc:attributionName</h3>
+    The
+    <span
+      rel="rdfs:range"
+      resource="http://www.w3.org/2000/01/rdf-schema#Literal"
+    >
+      name the creator
+    </span>
+    of a
+    <a href="#Work" rel="rdfs:domain"> Work </a>
+    would like used when attributing re-use.
   </div>
   <div about="#attributionURL" id="attributionURL" typeof="rdf:Property">
-   <h3>
-    cc:attributionURL
-   </h3>
-   The
-   <a href="http://www.w3.org/2000/01/rdf-schema#Resource" rel="rdfs:range">
-    URL
-   </a>
-   the creator of a
-   <a href="#Work" rel="rdfs:domain">
-    Work
-   </a>
-   would like used when attributing re-use.
+    <h3>cc:attributionURL</h3>
+    The
+    <a
+      href="http://www.w3.org/2000/01/rdf-schema#Resource"
+      rel="rdfs:range"
+    >
+      URL
+    </a>
+    the creator of a
+    <a href="#Work" rel="rdfs:domain"> Work </a>
+    would like used when attributing re-use.
   </div>
   <div about="#useGuidelines" id="useGuidelines" typeof="rdf:Property">
-   <h3>
-    cc:useGuidelines
-   </h3>
-   A
-   <span rel="rdfs:subPropertyOf" resource="http://purl.org/dc/terms/relation">
-    related
-   </span>
-   <span rel="rdfs:range" resource="http://www.w3.org/2000/01/rdf-schema#Resource">
-    resource
-   </span>
-   which defines non-binding use guidelines for the
-   <a href="#Work" rel="rdfs:domain">
-    work
-   </a>
-   .
+    <h3>cc:useGuidelines</h3>
+    A
+    <span
+      rel="rdfs:subPropertyOf"
+      resource="http://purl.org/dc/terms/relation"
+    >
+      related
+    </span>
+    <span
+      rel="rdfs:range"
+      resource="http://www.w3.org/2000/01/rdf-schema#Resource"
+    >
+      resource
+    </span>
+    which defines non-binding use guidelines for the
+    <a href="#Work" rel="rdfs:domain"> work </a>
+    .
   </div>
-  <h2>
-    Development
-  </h2>
+  <h2>Development</h2>
   <ul>
-   <li>
-     <a href="schema.rdf" title="Creative Commons RDF Metadata Schema" data-role="http://www.w3.org/2000/01/rdf-schema#">
+    <li>
+      <a
+        data-role="http://www.w3.org/2000/01/rdf-schema#"
+        href="schema.rdf"
+        title="Creative Commons RDF Metadata Schema"
+      >
         ccREL RDF Schema
-    </a>
-    . A copy is also embedded in this document.
-   </li>
-   <li>
-    <a href="https://opensource.creativecommons.org/">
-     Creative Commons Open Source
-    </a>
-   </li>
-   <li>
-    <a href="https://opensource.creativecommons.org/ccrel/">
-      ccREL: The Creative Commons Rights Expression Language
-    </a>
-   </li>
-   <li>
-    <a href="https://opensource.creativecommons.org/ccrel-guide/">
-      CC REL by Example
-    </a>
-   </li>
-   <li>
-    <a href="https://wiki.creativecommons.org/wiki/CC_REL">
-      CC REL - CC Public Wiki
-    </a>
-   </li>
+      </a>
+      . A copy is also embedded in this document.
+    </li>
+    <li>
+      <a href="https://opensource.creativecommons.org/">
+        Creative Commons Open Source
+      </a>
+    </li>
+    <li>
+      <a href="https://opensource.creativecommons.org/ccrel/">
+        ccREL: The Creative Commons Rights Expression Language
+      </a>
+    </li>
+    <li>
+      <a href="https://opensource.creativecommons.org/ccrel-guide/">
+        CC REL by Example
+      </a>
+    </li>
+    <li>
+      <a href="https://wiki.creativecommons.org/wiki/CC_REL">
+        CC REL - CC Public Wiki
+      </a>
+    </li>
   </ul>
 {% endblock %}
