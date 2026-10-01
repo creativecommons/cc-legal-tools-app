@@ -1,115 +1,120 @@
-@import '/wp-content/themes/vocabulary-theme/style.css' layer(vocabulary-theme);
+@import "/wp-content/themes/vocabulary-theme/style.css" layer(vocabulary);
+
+
+body .locale {
+  display: flex;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+body.legal-tools main {
+  margin-bottom: 8em;
+}
 
 /* html */
-.bidi-left main ul, .bidi-left main ol {
+.bidi-left main ul,
+.bidi-left main ol {
   margin: 0 0 2em 2em;
 }
-.bidi-right main ul, .bidi-right main ol {
+.bidi-right main ul,
+.bidi-right main ol {
   margin: 0 2em 2em 0;
 }
 
-
-/* Ancilliary menu */
-.ancilliary-menu {
-  font-size: min(.8em, 2.5vw);
+/* Ancillary menu */
+.ancillary-menu {
+  font-size: min(0.8em, 2.5vw);
 }
-.bidi-left div.masthead > nav.ancilliary-menu {
+.bidi-left div.masthead > nav.ancillary-menu {
   left: auto;
-  right: calc( -1 * var(--vocabulary-page-edges-space));
 }
-.bidi-right div.masthead > nav.ancilliary-menu {
+.bidi-right div.masthead > nav.ancillary-menu {
   left: 0;
   right: auto !important;
 }
-div.masthead > nav.ancilliary-menu span.locale {
+div.masthead > nav.ancillary-menu span.locale {
   display: inline-flex;
   align-items: center;
   margin-top: 5px;
   padding: 6px 10px;
 
-  background:  var(--vocabulary-brand-color-soft-turquoise);
+  background: var(--vocabulary-brand-color-soft-turquoise);
   border: none;
   border-radius: 3px;
 }
-div.masthead > nav.ancilliary-menu span.locale.icon-attach:before {
+div.masthead > nav.ancillary-menu span.locale.icon-attach:before {
   --icon-sprite: var(--fa-globe);
-  --icon-sprite-size: .8em;
-  opacity: .5;
+  --icon-sprite-size: 0.8em;
+  opacity: 0.5;
 }
-.bidi-left div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
-.bidi-left div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
-.bidi-left div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
+.bidi-left div.masthead > nav.ancillary-menu a.donate.icon-attach:before,
+.bidi-left div.masthead > nav.ancillary-menu span.locale.icon-attach:before,
+.bidi-left div.masthead > nav.ancillary-menu a.search.icon-attach:before {
   margin-left: 0;
-  margin-right: .8em;
+  margin-right: 0.8em;
 }
-.bidi-right div.masthead > nav.ancilliary-menu a.donate.icon-attach:before,
-.bidi-right div.masthead > nav.ancilliary-menu span.locale.icon-attach:before,
-.bidi-right div.masthead > nav.ancilliary-menu a.search.icon-attach:before {
-  margin-left: .8em;
+.bidi-right div.masthead > nav.ancillary-menu a.donate.icon-attach:before,
+.bidi-right div.masthead > nav.ancillary-menu span.locale.icon-attach:before,
+.bidi-right div.masthead > nav.ancillary-menu a.search.icon-attach:before {
+  margin-left: 0.8em;
   margin-right: 0;
 }
-.icon.fa-info, .icon-attach.fa-info:before {
-  --icon-sprite: url('/wp-content/themes/vocabulary-theme/vocabulary/svg/font-awesome/icons/fa-icons.svg');
-  --icon-sprite-size: .75em;
+.icon.fa-info,
+.icon-attach.fa-info:before {
+  --icon-sprite: url("/wp-content/themes/vocabulary-theme/vocabulary/svg/font-awesome/icons/fa-icons.svg");
+  --icon-sprite-size: 0.75em;
 }
-
 
 /* header title */
-/* TODO: resolve with vocabulary-theme */
 .cc-legal-tools main > header {
-  align-items: center;
-  /* (upstream vocabulary default-page class uses display: box) */
+  /* (upstream vocabulary default-page class uses display: grid) */
   display: flex;
-  padding: 3em 0;
 }
-.cc-legal-tools,.bidi-left main > header > span.alt-titles {
-  order: 1;
-}
-.cc-legal-tools,.bidi-left main > header > span.alt-titles > span.tool-icons {
-  padding-right: 1em;
-}
-.cc-legal-tools,.bidi-right main > header > span.alt-titles > span.tool-icons {
-  padding-left: 1em;
-}
-main > header > span.alt-titles > span.tool-icons > span.cc-icon > svg {
-  display: inline;
-  height: 2em;
-  width: 2em;
-  vertical-align: text-bottom;
-}
-.cc-legal-tools main > header > span.alt-titles > span.tool-identifier {
-  font-family: 'Roboto Condensed';
-  font-size: 2.1em;
-  font-style: normal;
-  font-weight: 700;
-}
-.cc-legal-tools main > header > h1 {
-  margin: 0.2em 0;
-  order: 2;
-}
-.cc-legal-tools main > header > h2 {
-  margin: 0;
-  order: 3;
+.cc-legal-tools main > header > div {
+  align-items: center;
+  width: 100%;
 }
 
+.cc-legal-tools .bidi-left main > header > div > span.alt-titles {
+  order: 1;
+}
+main > header > div > span.alt-titles > span.tool-icons > span.cc-icon > svg {
+  display: inline;
+}
+.cc-legal-tools main > header > div > h1 {
+  order: 2;
+  text-align: center;
+}
+.cc-legal-tools main > header > div > h2 {
+  order: 3;
+  text-align: center;
+}
 
 /* right nav */
 .cc-legal-tools main > aside {
-  background-color: var(--vocabulary-brand-color-soft-gold);
-  padding: 1em;
+  margin-left: 4.1rem;
   height: fit-content;
+
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  hyphens: auto;
 }
 .cc-legal-tools main > aside a {
   --underline-background-color: var(--vocabulary-brand-color-soft-gold);
 }
-main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
+main > aside > nav ul > li {
+  /* TODO: resolve with vocabulary-theme */
   font-size: 1rem;
+  padding-right: 1em;
 }
-
 
 /* content */
 .cc-legal-tools main > div.content > h2:first-child {
-  margin-top:0;
+  margin-top: 0;
 }
 
 .cc-legal-tools table {
@@ -139,9 +144,8 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
 .cc-legal-tools table tr > th {
 }
 .cc-legal-tools table > tbody > tr:nth-child(3n) {
-    background-color: var(--vocabulary-neutral-color-lighter-gray);
+  background-color: var(--vocabulary-neutral-color-lighter-gray);
 }
-
 
 /*.tool-meta */
 .cc-legal-tools .tool-meta {
@@ -151,25 +155,25 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
 }
 .cc-legal-tools .tool-meta div.meta-box {
   list-style: none;
-  background-color: var(--vocabulary-brand-color-soft-turquoise);
+  /* background-color: var(--vocabulary-brand-color-soft-turquoise); */
   border-radius: 5px;
   padding: 0.8em;
   padding-top: 1em;
   padding-right: 1.4em;
 }
 .cc-legal-tools .tool-meta div.meta-box a {
-  --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
-  font-family: 'Source Sans Pro';
+  /* --underline-background-color: var(--vocabulary-brand-color-soft-turquoise); */
+  font-family: "Source Sans Pro";
 }
 .cc-legal-tools .tool-meta h2 {
   font-size: 1em;
   margin: 0;
-  font-family: 'Source Sans Pro';
+  font-family: "Source Sans Pro";
   margin-left: 0.6em;
   display: inline;
 }
 .cc-legal-tools .tool-meta h2:after {
-  content: ':';
+  content: ":";
 }
 .cc-legal-tools article.canonical-url {
   margin-bottom: 0.5em;
@@ -197,16 +201,16 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
   margin-left: auto;
 }
 .cc-legal-tools .alt-view a {
-  font-family: 'Source Sans Pro';
+  font-family: "Source Sans Pro";
   font-size: 1.5em;
   font-style: normal;
   font-weight: 700;
   line-height: 150%;
 }
 
-
 /* Notices */
-.cc-legal-tools div.notice-bottom, .cc-legal-tools div.notice-top {
+.cc-legal-tools div.notice-bottom,
+.cc-legal-tools div.notice-top {
   padding: 1em;
   margin-bottom: 2em;
   margin-top: 2em;
@@ -220,16 +224,22 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
   margin-bottom: 0;
 }
 .cc-legal-tools div.notice-bottom {
-  background-color: var(--vocabulary-brand-color-soft-turquoise);
+  /* background-color: var(--vocabulary-brand-color-soft-turquoise); */
+  background: #F4FFA6;
 }
 .cc-legal-tools div.notice-bottom a {
-  --underline-background-color: var(--vocabulary-brand-color-soft-turquoise);
+  /* --underline-background-color: var(--vocabulary-brand-color-soft-turquoise); */
+  --underline-background-color: #F4FFA6;
+
 }
 .cc-legal-tools div.notice-top {
-  background-color: var(--vocabulary-brand-color-soft-tomato);
+  /* background-color: var(--vocabulary-brand-color-soft-tomato); */
+  background: #F4FFA6;
+
 }
 .cc-legal-tools div.notice-top a {
-  --underline-background-color: var(--vocabulary-brand-color-soft-tomato);
+  /* --underline-background-color: var(--vocabulary-brand-color-soft-tomato); */
+  --underline-background-color: #F4FFA6;
 }
 
 .cc-legal-tools p.document-link {
@@ -252,10 +262,10 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
 /* footer */
 .bidi-left footer > div.donate > a.donate.icon-attach.cc-heart-filled:before {
   margin-left: 0;
-  margin-right: .3em;
+  margin-right: 0.3em;
 }
 .bidi-right footer > div.donate > a.donate.icon-attach.cc-heart-filled:before {
-  margin-left: .3em;
+  margin-left: 0.3em;
   margin-right: 0;
 }
 
@@ -274,3 +284,13 @@ main > aside > nav ul > li { /* TODO: resolve with vocabulary-theme */
     display: none;
   }
 }
+
+@media (max-width: 1028px) {
+    main {
+      display: block;
+      width: 100%;
+      overflow: hidden;
+      padding: 0 var(--vocabulary-page-edges-space);
+      box-sizing: border-box;
+    }
+  }

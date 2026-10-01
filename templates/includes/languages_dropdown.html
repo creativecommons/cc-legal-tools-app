@@ -1,6 +1,5 @@
 {% load i18n %}
-<li>
-  <span class="locale icon-attach fa-globe">
+<div class="locale icon-attach fa-globe">
   <select id="languages-dropdown">
     {% block lang-options %}
     <option disabled>{% trans "Languages available" %}</option>
@@ -17,7 +16,6 @@
     {% endfor %}
     {% endblock lang-options %}
   </select>
-  </span>
-</li>
+</div>
 <script src="/cc-legal-tools/language-dropdown.js"></script>
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

@@ -12,6 +12,7 @@ from django.utils import translation
 # First-party/Local
 from i18n import LANGMAP_DJANGO_TO_PCRE
 from i18n.utils import (
+    JURISDICTION_CURRENCY_LOOKUP,
     get_default_language_for_jurisdiction_deed,
     get_default_language_for_jurisdiction_naive,
     get_jurisdiction_name,
@@ -19,6 +20,7 @@ from i18n.utils import (
     get_translation_object,
 )
 from legal_tools.constants import EXCLUDED_LANGUAGE_IDENTIFIERS
+from legal_tools.utils import get_tool_title
 
 # For context of "freedom levels" see:
 # https://creativecommons.org/share-your-work/public-domain/freeworks/
@@ -198,8 +200,10 @@ class LegalCode(models.Model):
         default="",
     )
     html = models.TextField("HTML", blank=True, default="")
-    legal_code_url = models.URLField("Legal Code URL", blank=True, default="")
-    deed_url = models.URLField("Deed URL", unique=True)
+    legal_code_url = models.CharField(
+        "Legal Code URL Path", max_length=100, blank=True, default=""
+    )
+    deed_url = models.CharField("Deed URL Path", max_length=100, unique=True)
     plain_text_url = models.URLField(
         "Plain text URL",
         blank=True,
@@ -404,6 +408,18 @@ class Tool(models.Model):
         blank=True,
         default="",
     )
+    spdx_identifier = models.CharField(
+        "SPDX Identifier",
+        blank=True,
+        null=True,
+        default=None,
+        max_length=20,
+        help_text="short identifier used by SPDX to identify a match to"
+        " licenses or exceptions. See also"
+        " <a href='https://spdx.org/licenses/'"
+        " target='_blank'>https://spdx.org/licenses/</a>.",
+        unique=True,
+    )
     jurisdiction_code = models.CharField(
         max_length=9,
         blank=True,
@@ -558,13 +574,21 @@ class Tool(models.Model):
             self.jurisdiction_code
         )
         data = {}
-        default_lc = self.legal_codes.filter(language_code=language_default)[0]
+        try:
+            default_lc = self.legal_codes.filter(
+                language_code=language_default
+            )[0]
+        except IndexError:
+            default_lc = False
         data["base_url"] = self.base_url
+        data["category"] = self.category
         data["deed_only"] = self.deed_only
         if self.deprecated_on:
             data["deprecated_on"] = self.deprecated_on
         if self.jurisdiction_code:
             data["jurisdiction_code"] = self.jurisdiction_code
+        else:
+            data["jurisdiction_code"] = ""
         data["jurisdiction_name"] = get_jurisdiction_name(
             self.category,
             self.unit,
@@ -572,6 +596,8 @@ class Tool(models.Model):
             self.jurisdiction_code,
         )
         data["identifier"] = self.identifier()
+        data["spdx_identifier"] = self.spdx_identifier
+        data["language_default"] = language_default
         if not self.deed_only:
             data["legal_code_languages"] = {}
             for lc in self.legal_codes.order_by("language_code"):
@@ -589,7 +615,16 @@ class Tool(models.Model):
         data["requires_attribution"] = self.requires_attribution
         data["requires_notice"] = self.requires_notice
         data["requires_share_alike"] = self.requires_share_alike
-        data["title"] = default_lc.title
+        if default_lc:
+            data["title"] = default_lc.title
+        else:
+            data["title"] = get_tool_title(
+                self.unit,
+                self.version,
+                self.category,
+                self.jurisdiction_code,
+                language_default,
+            )
         data["unit"] = self.unit
         data["version"] = self.version
         return data
@@ -631,6 +666,17 @@ class Tool(models.Model):
             pairs.append([pcre_match, dest_path])
         return pairs
 
+    @property
+    def nc_symbol(self):
+        """
+        Return the non-commercial symbol variant for this tool based
+        on jurisdiction. Returns 'cc-nc-eu', 'cc-nc-jp', or 'cc-nc'.
+        """
+        currency = JURISDICTION_CURRENCY_LOOKUP.get(self.jurisdiction_code)
+        if currency:
+            return f"cc-nc-{currency}"
+        return "cc-nc"
+
     def logos(self):
         """
         Return an iterable of the codes for the logos that should be
@@ -645,13 +691,15 @@ class Tool(models.Model):
         elif self.unit == "sampling+":
             result.append("cc-sampling-plus")
         elif self.unit == "nc-sampling+":
-            result.append("cc-nc")
+            result.append(self.nc_symbol)
             result.append("cc-sampling-plus")
         elif self.unit == "zero":
             result.append("cc-zero")
         else:
             for unit_part in self.unit.split("-"):
-                if unit_part in ["by", "nc", "nd", "sa"]:
+                if unit_part == "nc":
+                    result.append(self.nc_symbol)
+                elif unit_part in ["by", "nd", "sa"]:
                     result.append(f"cc-{unit_part}")
         return result
 

@@ -16,4 +16,4 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run script to check Python versions
-      run: ./dev/check_python_versions.sh
+      run: ./bin/check_python_versions.sh

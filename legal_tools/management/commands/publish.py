@@ -10,7 +10,6 @@ from pprint import pprint
 from shutil import copyfile, copytree, rmtree
 
 # Third-party
-import git
 from django.conf import settings
 from django.core.management import BaseCommand, CommandError, call_command
 from django.urls import reverse
@@ -21,8 +20,7 @@ from i18n.utils import (
     get_default_language_for_jurisdiction_deed,
     write_transstats_csv,
 )
-from legal_tools.git_utils import commit_and_push_changes, setup_local_branch
-from legal_tools.models import LegalCode, TranslationBranch, build_path
+from legal_tools.models import LegalCode, build_path
 from legal_tools.utils import (
     init_utils_logger,
     relative_symlink,
@@ -33,7 +31,6 @@ from legal_tools.utils import (
 )
 from legal_tools.views import render_redirect
 
-ALL_TRANSLATION_BRANCHES = "###all###"
 LOG = logging.getLogger(__name__)
 LOG_LEVELS = {
     0: logging.ERROR,
@@ -46,17 +43,6 @@ LOG_LEVELS = {
 # CNAME
 # https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site
 DOCS_IGNORE = [".nojekyll", "CNAME"]
-
-
-def list_open_translation_branches():
-    """
-    Return list of names of open translation branches
-    """
-    return list(
-        TranslationBranch.objects.filter(complete=False).values_list(
-            "branch_name", flat=True
-        )
-    )
 
 
 def wrap_relative_symlink(output_dir, relpath, symlink):
@@ -83,10 +69,10 @@ def save_list(output_dir, category, language_code):
     )
 
 
-def save_deed(output_dir, tool, language_code, opt_apache_only):
+def save_deed(output_dir, tool, language_code, opt_filter_apache_redirects):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
-    if not opt_apache_only:
+    if not opt_filter_apache_redirects:
         relpath, symlinks = tool.get_publish_files(language_code)
         save_url_as_static_file(
             output_dir,
@@ -98,10 +84,10 @@ def save_deed(output_dir, tool, language_code, opt_apache_only):
     return tool.get_redirect_pairs(language_code)
 
 
-def save_legal_code(output_dir, legal_code, opt_apache_only):
+def save_legal_code(output_dir, legal_code, opt_filter_apache_redirects):
     # Function is at top level of module so that it can be pickled by
     # multiprocessing.
-    if not opt_apache_only:
+    if not opt_filter_apache_redirects:
         (
             relpath,
             symlinks,
@@ -152,67 +138,32 @@ class Command(BaseCommand):
         parser.description = self.__doc__
         parser._optionals.title = "Django optional arguments"
 
-        parser.set_defaults(action="dev")
-        action_group = parser.add_argument_group(
-            title="action optional arguments (mutually exclusive)"
+        filter_group = parser.add_argument_group(
+            title="Filter optional arguments (mutually exclusive)"
         )
-        action_args = action_group.add_mutually_exclusive_group()
-        action_args.add_argument(
-            "--list",
-            "--list-branches",
-            action="store_const",
-            const="list",
-            help="List active translation branches (implies at least"
-            " --verbosity 2)",
-            dest="action",
+        filter_args = filter_group.add_mutually_exclusive_group()
+        filter_args.add_argument(
+            "--fa",
+            "--filter-apache-redirects",
+            action="store_true",
+            help="Only distill the Apache2 language redirects configuration",
+            dest="filter_apache_redirects",
         )
-        action_args.add_argument(
-            "--dev",
-            "--develop",
-            action="store_const",
-            const="dev",
-            help="Publish changes to existing data docs directory",
-            dest="action",
+        filter_args.add_argument(
+            "--fl",
+            "--filter-license-html",
+            action="store",
+            type=float,
+            choices=[1.0, 2.0, 2.1, 2.5, 3.0, 4.0],
+            help="Only distill HTML files for specified license version",
+            dest="filter_license_html",
         )
-        action_args.add_argument(
-            "--push",
-            action="store_const",
-            const="push",
-            help="Checkout branch(es), publish changes, commit changes to git,"
-            " and push changes to origin (GitHub)",
-            dest="action",
-        )
-
-        parser.set_defaults(branch="main")
-        branch_group = parser.add_argument_group(
-            title="branch optional arguments (mutually exclusive)"
-        )
-        branch_args = branch_group.add_mutually_exclusive_group()
-        branch_args.add_argument(
-            "--all",
-            "--all-branches",
-            action="store_const",
-            const=ALL_TRANSLATION_BRANCHES,
-            help="Manage all active translation branches",
-            dest="branch",
-        )
-        branch_args.add_argument(
-            "--branch",
-            default="main",
-            help="Manage specified translation branch",
-            dest="branch",
-        )
-        branch_args.add_argument(
-            "--main",
-            action="store_const",
-            const="main",
-            help="Manage main branch",
-            dest="branch",
-        )
-
-        parser.add_argument(
-            "--branches",
-            help=SUPPRESS,
+        filter_args.add_argument(
+            "--fr",
+            "--filter-rdf-xml",
+            action="store_true",
+            help="Only copy and distill RDF/XML files",
+            dest="filter_rdfxml",
         )
 
         # Hidden argparse troubleshooting option
@@ -220,25 +171,6 @@ class Command(BaseCommand):
             "--list-args",
             action="store_true",
             help=SUPPRESS,
-        )
-
-        branch_group = parser.add_argument_group(
-            title="filter optional arguments (mutually exclusive)"
-        )
-        branch_args = branch_group.add_mutually_exclusive_group()
-        branch_args.add_argument(
-            "--rdf",
-            "--rdf-xml-only",
-            action="store_true",
-            help="Only copy and distill RDF/XML files",
-            dest="rdf_only",
-        )
-        branch_args.add_argument(
-            "--apache",
-            "--apache-config-only",
-            action="store_true",
-            help="Only distill the Apache2 language redirects configuration",
-            dest="apache_only",
         )
 
     def check_titles(self):
@@ -254,7 +186,7 @@ class Command(BaseCommand):
             )
 
     def purge_output_dir(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["purge_output_dir"]:
             return
         output_dir = self.output_dir
         LOG.info(f"Purging output_dir: {output_dir}")
@@ -270,21 +202,21 @@ class Command(BaseCommand):
                 os.remove(item)
 
     def call_collectstatic(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["call_collectstatic"]:
             return
         LOG.info("Collecting static files")
         call_command("collectstatic", interactive=False)
 
     def write_robots_txt(self):
         """Create robots.txt to discourage indexing."""
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["write_robots_txt"]:
             return
         LOG.info("Writing robots.txt")
         robots = "User-agent: *\nDisallow: /\n".encode("utf-8")
         save_bytes_to_file(robots, os.path.join(self.output_dir, "robots.txt"))
 
     def copy_static_wp_content_files(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["copy_static_wp_content_files"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -301,7 +233,7 @@ class Command(BaseCommand):
         copytree(source, destination)
 
     def copy_static_cc_legal_tools_files(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["copy_static_cc_legal_tools_files"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -318,7 +250,7 @@ class Command(BaseCommand):
         copytree(source, destination)
 
     def copy_static_rdf_files(self):
-        if self.options["apache_only"]:
+        if not self.options["run"]["copy_static_rdf_files"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -338,7 +270,7 @@ class Command(BaseCommand):
         """
         Generate the index.rdf, images.rdf and copies the rest.
         """
-        if self.options["apache_only"]:
+        if not self.options["run"]["distill_and_symlink_rdf_meta"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -376,7 +308,7 @@ class Command(BaseCommand):
             LOG.debug(f"   ^{symlink}")
 
     def copy_legal_code_plaintext(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["copy_legal_code_plaintext"]:
             return
         hostname = socket.gethostname()
         legacy_dir = self.legacy_dir
@@ -409,7 +341,7 @@ class Command(BaseCommand):
             LOG.debug(f"    {relative_name}")
 
     def distill_dev_index(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+        if not self.options["run"]["distill_dev_index"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -422,8 +354,8 @@ class Command(BaseCommand):
             relpath="index.html",
         )
 
-    def distill_lists(self):
-        if self.options["apache_only"] or self.options["rdf_only"]:
+    def pool_distill_lists(self):
+        if not self.options["run"]["pool_distill_lists"]:
             return
         hostname = socket.gethostname()
         output_dir = self.output_dir
@@ -444,7 +376,10 @@ class Command(BaseCommand):
             symlink = "list.html"
             wrap_relative_symlink(output_dir, relpath, symlink)
 
-    def distill_legal_tools(self):
+    def pool_distill_legal_tools(self):
+        options = self.options
+        if not options["run"]["pool_distill_legal_tools"]:
+            return
         hostname = socket.gethostname()
         output_dir = self.output_dir
         legal_codes = LegalCode.objects.validgroups()
@@ -453,11 +388,15 @@ class Command(BaseCommand):
         for group in legal_codes.keys():
             tools = set()
             LOG.debug(f"{hostname}:{output_dir}")
-            if self.options["rdf_only"]:
-                LOG.info(f"Distilling {group} RDF/XML")
+            if options["filter_license_html"]:
+                if group != f"Licenses {options['filter_license_html']}":
+                    continue
+                LOG.info(f"Distilling {group} deed/legal code HTML")
+            elif options["filter_rdfxml"]:
+                LOG.info(f"Distilling {group} legal code RDF/XML")
             else:
                 LOG.info(
-                    f"Distilling {group} deed HTML, legal code HTML, and"
+                    f"Distilling {group} deed/legal code HTML and legal code"
                     " RDF/XML"
                 )
             legal_code_arguments = []
@@ -466,7 +405,11 @@ class Command(BaseCommand):
             for legal_code in legal_codes[group]:
                 tools.add(legal_code.tool)
                 legal_code_arguments.append(
-                    (output_dir, legal_code, self.options["apache_only"])
+                    (
+                        output_dir,
+                        legal_code,
+                        options["filter_apache_redirects"],
+                    )
                 )
             for tool in tools:
                 for language_code in settings.LANGUAGES_MOSTLY_TRANSLATED:
@@ -475,7 +418,7 @@ class Command(BaseCommand):
                             output_dir,
                             tool,
                             language_code,
-                            self.options["apache_only"],
+                            options["filter_apache_redirects"],
                         )
                     )
                 rdf_arguments.append((output_dir, tool))
@@ -491,17 +434,27 @@ class Command(BaseCommand):
                         tool.jurisdiction_code,
                     )
 
-            if not self.options["rdf_only"]:
+            if not options["filter_rdfxml"]:
                 redirect_pairs_data += self.pool.starmap(
                     save_deed, deed_arguments
                 )
                 redirect_pairs_data += self.pool.starmap(
                     save_legal_code, legal_code_arguments
                 )
-            if not self.options["apache_only"]:
+            if (
+                not options["filter_apache_redirects"]
+                and not options["filter_license_html"]
+            ):
                 self.pool.starmap(save_rdf, rdf_arguments)
 
-        if self.options["rdf_only"]:
+        self.distill_language_redirects(
+            default_languages_deeds, redirect_pairs_data
+        )
+
+    def distill_language_redirects(
+        self, default_languages_deeds, redirect_pairs_data
+    ):
+        if not self.options["run"]["distill_language_redirects"]:
             return
         LOG.info("Writing Apache2 redirects configuration")
         include_lines = [
@@ -620,103 +573,69 @@ class Command(BaseCommand):
         include_filename = os.path.join(self.config_dir, "language-redirects")
         save_bytes_to_file(include_lines, include_filename)
 
-    def distill_translation_branch_statuses(self):
-        if self.options["rdf_only"]:
-            return
-        hostname = socket.gethostname()
-        output_dir = self.output_dir
-
-        LOG.debug(f"{hostname}:{output_dir}")
-
-        tbranches = TranslationBranch.objects.filter(complete=False)
-        for tbranch_id in tbranches.values_list("id", flat=True):
-            LOG.info(f"Distilling Translation branch status: {tbranch_id}")
-            relpath = f"dev/{tbranch_id}.html"
-            LOG.debug(f"    {relpath}")
-            save_url_as_static_file(
-                output_dir,
-                url=f"/dev/{tbranch_id}/",
-                relpath=relpath,
-            )
-
     def distill_transstats_csv(self):
-        if self.options["rdf_only"]:
-            return
         LOG.info("Generating translations statistics CSV")
         write_transstats_csv(DEFAULT_CSV_FILE)
 
-    def distill_metadata_yaml(self):
-        if self.options["rdf_only"]:
-            return
+    def distill_metadata_csv(self):
         hostname = socket.gethostname()
         output_dir = self.output_dir
 
         LOG.debug(f"{hostname}:{output_dir}")
-        LOG.info("Distilling metadata.yaml")
+        LOG.info("Distilling cc-legal-tools.csv")
 
         save_url_as_static_file(
             output_dir,
-            url=reverse("metadata"),
-            relpath="licenses/metadata.yaml",
+            url=reverse("metadata_csv"),
+            relpath="../config/cc-legal-tools.csv",
         )
 
-    def distill_and_copy(self):
-        self.check_titles()
-        self.purge_output_dir()
-        self.call_collectstatic()
-        self.write_robots_txt()
-        self.copy_static_wp_content_files()
-        self.copy_static_cc_legal_tools_files()
-        self.copy_static_rdf_files()
-        self.distill_and_symlink_rdf_meta()
-        self.copy_legal_code_plaintext()
-        self.distill_dev_index()
-        self.distill_lists()
-        self.distill_legal_tools()
-        # DISABLED # self.distill_transstats_csv()
-        # DISABLED # self.distill_metadata_yaml()
-
-    def checkout_publish_and_push(self):
-        """Workflow for publishing and pushing active translation branches"""
-        branches = self.options["branches"]
-        LOG.info(
-            f"Checking and updating build dirs for {len(branches)}"
-            " translation branches."
-        )
-        for branch in branches:
-            LOG.debug(f"Publishing branch {branch}")
-            with git.Repo(settings.DATA_REPOSITORY_DIR) as repo:
-                setup_local_branch(repo, branch)
-                self.distill_and_copy()
-                if repo.is_dirty(untracked_files=True):
-                    # Add any changes and new files
-                    commit_and_push_changes(
-                        repo,
-                        "Update static files generated by cc-legal-tools-app",
-                        self.relpath,
-                        push=self.push,
-                    )
-                    if repo.is_dirty(untracked_files=True):
-                        raise git.exc.RepositoryDirtyError(
-                            settings.DATA_REPOSITORY_DIR,
-                            "Repository is dirty. We cannot continue.",
-                        )
-                else:
-                    LOG.debug(f"{branch} build dir is up to date.")
+    def parse_filters(self):
+        options = self.options
+        # Set default run values (all True)
+        options["run"] = {
+            "purge_output_dir": False,
+            "call_collectstatic": False,
+            "write_robots_txt": False,
+            "copy_static_wp_content_files": False,
+            "copy_static_cc_legal_tools_files": False,
+            "copy_static_rdf_files": False,
+            "distill_and_symlink_rdf_meta": False,
+            "copy_legal_code_plaintext": False,
+            "distill_dev_index": False,
+            "pool_distill_lists": False,
+            "pool_distill_legal_tools": False,
+            "distill_language_redirects": False,
+        }
+        # Filter Apache2 config
+        if options["filter_apache_redirects"]:
+            options["run"]["pool_distill_legal_tools"] = True
+        # Filter licenses HTML
+        elif options["filter_license_html"]:
+            options["run"]["pool_distill_legal_tools"] = True
+        # Filter RDF/XML
+        elif options["filter_rdfxml"]:
+            options["run"]["copy_static_rdf_files"] = True
+            options["run"]["distill_and_symlink_rdf_meta"] = True
+            options["run"]["pool_distill_legal_tools"] = True
+        # Unfiltered/default
+        else:
+            options["run"] = dict.fromkeys(options["run"], True)
 
     def handle(self, *args, **options):
         LOG.setLevel(LOG_LEVELS[int(options["verbosity"])])
         init_utils_logger(LOG)
         self.options = options
-        action = options["action"]
-        branch = options["branch"]
-        branches = options["branches"]
-        self.pool = Pool()
-
+        self.parse_filters()
         if options["list_args"]:
             # Hidden argparse troubleshooting option
             pprint(options)
             return
+
+        if settings.PRETTIER_SLOW:
+            raise CommandError(
+                "PRETTIER_SLOW mustn't be enabled during publish"
+            )
 
         self.output_dir = os.path.abspath(settings.DISTILL_DIR)
         self.config_dir = os.path.abspath(
@@ -730,59 +649,20 @@ class Command(BaseCommand):
                 f" DATA_REPOSITORY_DIR, but DISTILL_DIR={self.output_dir} is"
                 f" outside DATA_REPOSITORY_DIR={git_dir}."
             )
-
         self.relpath = os.path.relpath(self.output_dir, git_dir)
-        active_branches = list_open_translation_branches()
 
-        # process branch options
-        if branch == ALL_TRANSLATION_BRANCHES:
-            branches = active_branches
-        else:
-            branches = [branch]
-
-        # process action options
-        if action == "list":
-            if options["verbosity"] < 2:
-                LOG.setLevel(LOG_LEVELS[2])
-                LOG.debug("verbosity increased to INFO to show list output")
-            if branch == ALL_TRANSLATION_BRANCHES:
-                if not active_branches:
-                    LOG.info("There are no active translation branches")
-                else:
-                    LOG.info("Active translation branches:")
-                    for branch in branches:
-                        LOG.info(branch)
-            else:
-                if branch in active_branches:
-                    status = "is"
-                    level = logging.INFO
-                else:
-                    status = "isn't"
-                    level = logging.WARNING
-                LOG.log(
-                    level,
-                    f"the '{branch}' branch {status} an active translation"
-                    " branch",
-                )
-        elif action == "dev":
-            self.distill_and_copy()
-        elif action == "push":
-            if branch == "main":
-                raise CommandError(
-                    "Pushing to the main branch is prohibited. Changes to the"
-                    " main branch should be done via a pull request."
-                )
-            elif branch == ALL_TRANSLATION_BRANCHES and not active_branches:
-                LOG.info("There are no active translation branches")
-            else:
-                for branch in branches:
-                    if branch not in active_branches:
-                        raise CommandError(
-                            f"the specified branch ('{branch}') is not an"
-                            " active translation branch"
-                        )
-                self.checkout_publish_and_push()
-        else:
-            raise CommandError(
-                "impossible action ('{action}')--please create a GitHub issue"
-            )
+        self.check_titles()
+        self.purge_output_dir()
+        self.call_collectstatic()
+        self.write_robots_txt()
+        self.copy_static_wp_content_files()
+        self.copy_static_cc_legal_tools_files()
+        self.copy_static_rdf_files()
+        self.distill_and_symlink_rdf_meta()
+        self.copy_legal_code_plaintext()
+        self.distill_dev_index()
+        with Pool() as self.pool:
+            self.pool_distill_lists()
+            self.pool_distill_legal_tools()
+        self.distill_metadata_csv()
+        # DISABLED # self.distill_transstats_csv()

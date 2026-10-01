@@ -2,6 +2,8 @@
 {% load i18n license_tags static %}
 
 
+{% block body_class%}legalcode walkthrough-page legal-tools{% endblock %}
+
 {% block title %}
 {% trans "Legal Code" %} - {{ tool_title }}
 {% endblock %}
@@ -24,7 +26,6 @@
 
 
 {% block content %}
-
 <div class="tool-meta">
 
 <div class="meta-box">
@@ -79,6 +80,7 @@ the date of change
   {% elif tool.category == "licenses" and tool.version == "3.0" and not tool.jurisdiction_code %}
     {% include 'includes/legalcode_licenses_3.0_unported.html' %} {# <<< THE ACTUAL 3.0 unported LICENSE TEXT #}
   {% else %}
+    <!-- INVALID_TEMPLATE -->
     <div id="legal-code-body" class="padding-larger margin-top-bigger has-text-black    ">
       <p class="has-text-black body-big padding-bottom-normal"><strong>{% trans "Unimplemented" %}</strong> &mdash; {% blocktrans %}this legal tool does not have a valid template. Please report this issue:{% endblocktrans %} <a href="https://github.com/creativecommons/cc-legal-tools-app/issues">Issues · creativecommons/cc-legal-tools-app</a>.</p>
     </div>
@@ -90,6 +92,13 @@ the date of change
 {% endif %}
 {% include 'includes/notice_about_cc_and_trademark.html' %}
 {% include 'includes/related_links.html' %}
+
+{# These four strings were removed from UX. Maintaining here to preserve #}
+{# translations until new UX is decided. #}
+{% trans "Hide Considerations for Licensors" as _ %}
+{% trans "Show Considerations for Licensors" as _ %}
+{% trans "Hide Considerations for the Public" as _ %}
+{% trans "Show Considerations for the Public" as _ %}
 {% endblock %}
 
 {# vim: ft=jinja.html ts=2 sw=2 sts=2 sr et #}

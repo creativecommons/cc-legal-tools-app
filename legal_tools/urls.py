@@ -23,7 +23,7 @@ from legal_tools.views import (
     view_legal_code,
     view_legal_tool_rdf,
     view_list,
-    view_metadata,
+    view_metadata_csv,
     view_ns_html,
 )
 
@@ -177,9 +177,9 @@ urlpatterns = [
     ),
     # METADATA ################################################################
     path(
-        "licenses/metadata.yaml",
-        view_metadata,
-        name="metadata",
+        "cc-legal-tools.csv",
+        view_metadata_csv,
+        name="metadata_csv",
     ),
     # LIST PAGES ##############################################################
     # List: with language

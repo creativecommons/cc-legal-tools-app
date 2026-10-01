@@ -43,24 +43,28 @@ CACHED_WELL_TRANSLATED_LANGS = {}
 
 LANGUAGE_JURISDICTION_MAPPING = {}
 JURISDICTION_CURRENCY_LOOKUP = {
-    "jp": "jp",
     "at": "eu",
     "be": "eu",
+    "bg": "eu",
     "cy": "eu",
+    "de": "eu",
     "ee": "eu",
+    "es": "eu",
     "fi": "eu",
     "fr": "eu",
-    "de": "eu",
     "gr": "eu",
+    "hr": "eu",
     "ie": "eu",
     "it": "eu",
+    "jp": "jp",
+    "lt": "eu",
     "lu": "eu",
+    "lv": "eu",
     "mt": "eu",
     "nl": "eu",
     "pt": "eu",
-    "sk": "eu",
     "si": "eu",
-    "es": "eu",
+    "sk": "eu",
 }
 
 

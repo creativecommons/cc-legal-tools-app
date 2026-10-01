@@ -65,15 +65,15 @@ Documentation:
    command.
    - Examples:
         ```shell
-        docker compose exec app ./manage.py add_translation -v2 --licenses -l tlh
+        ./bin/manage.sh add_translation -v2 --licenses -l tlh
         ```
         ```shell
-        docker compose exec app ./manage.py add_translation -v2 --zero -l tlh
+        ./bin/manage.sh add_translation -v2 --zero -l tlh
         ```
 4. Synchronize repository Gettext files with Transifex
 5. Compile `.mo` machine object Gettext files:
     ```shell
-    docker compose exec app ./manage.py compilemessages
+    ./bin/manage.sh compilemessages
     ```
 
 Documentation:

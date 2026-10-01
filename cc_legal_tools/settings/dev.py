@@ -6,6 +6,7 @@
 # Actions).
 
 # Standard library
+import os
 import sys
 
 # Third-party
@@ -61,3 +62,16 @@ if (
     MIDDLEWARE += [  # noqa: F405
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     ]
+
+PRETTIER_SLOW = os.getenv("PRETTIER_SLOW", False)
+if PRETTIER_SLOW and PRETTIER_SLOW.lower() in (
+    "1",
+    "enabled",
+    "on",
+    "true",
+    "y",
+    "yes",
+):
+    PRETTIER_SLOW = True
+else:
+    PRETTIER_SLOW = False
