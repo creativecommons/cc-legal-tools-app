@@ -4,7 +4,12 @@
 {# View will have set current language #}
 {% get_current_language as LANGUAGE_CODE %}
 {% get_language_info for LANGUAGE_CODE as lang %}
-<html lang="{{ lang.code }}" dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}">
+<html
+  lang="{{ lang.code }}"
+  dir="{% if lang.bidi %}rtl{% else %}ltr{% endif %}"
+{% block html_attributes %}
+{% endblock %}
+>
 <head about="{% block head_about %}{% endblock %}">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
