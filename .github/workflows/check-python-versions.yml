@@ -13,7 +13,7 @@ jobs:
 
     # https://github.com/actions/checkout
     - name: Checkout cc-legal-tools-app
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Run script to check Python versions
       run: ./bin/check_python_versions.sh
