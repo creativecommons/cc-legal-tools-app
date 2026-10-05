@@ -41,7 +41,9 @@
 <div class="meta-box">
 <article class="canonical-url">
 <h2>{% trans "Canonical URL" %}</h2>
-<a {% if lang.bidi %}dir="ltr"{% endif %} href="{{ canonical_url_cc}}">{{ canonical_url_cc }}</a>
+<a {% if lang.bidi %}dir="ltr"{% endif %} href="{{ canonical_url_cc }}">{{ canonical_url_cc }}</a>
+<button type="button" class="copy-canonical-url" data-url="{{ canonical_url_cc }}">{% trans "Copy" %}</button>
+<script src="{% static 'cc-legal-tools/copy-canonical-url.js' %}"></script>
 </article>
 </div>
 
@@ -360,6 +362,8 @@ else endorses your use of a work may be unlawful.
 </article>
 </li>
 {% endif %}
+
+
 
 </ul>
 </article>
