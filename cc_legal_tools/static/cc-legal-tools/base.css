@@ -163,7 +163,7 @@ main > aside > nav ul > li {
 }
 .cc-legal-tools .tool-meta div.meta-box a {
   /* --underline-background-color: var(--vocabulary-brand-color-soft-turquoise); */
-  font-family: "DM Mono";
+  font-family: "DM Sans";
 }
 .cc-legal-tools .tool-meta h2 {
   font-size: 1em;
@@ -201,8 +201,8 @@ main > aside > nav ul > li {
   margin-left: auto;
 }
 .cc-legal-tools .alt-view a {
-  font-family: "DM Mono";
-  font-size: 1.5em;
+  font-family: "DM Sans";
+  font-size: 1.1em;
   font-style: normal;
   font-weight: 700;
   line-height: 150%;
