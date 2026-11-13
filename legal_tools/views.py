@@ -645,7 +645,11 @@ def view_metadata_csv(request):
 
 
 def view_ns_html(request):
-    return render(request, template_name="ns.html")
+    html_response = render(request, template_name="ns.html")
+    html_response.content = pretty_html_bytes(
+        request.path, html_response.content
+    )
+    return html_response
 
 
 def view_page_not_found(request, exception, template_name="dev/404.html"):
