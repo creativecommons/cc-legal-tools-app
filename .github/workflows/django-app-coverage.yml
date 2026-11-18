@@ -27,7 +27,7 @@ jobs:
 
     # https://github.com/actions/setup-python
     - name: Install Python 3.13
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v7
       with:
         python-version: "3.13"
 
@@ -38,13 +38,13 @@ jobs:
 
     # https://github.com/actions/checkout
     - name: Checkout cc-legal-tools-app
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         path: cc-legal-tools-app
 
     # https://github.com/actions/checkout
     - name: Checkout cc-legal-tools-data
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: creativecommons/cc-legal-tools-data
         path: cc-legal-tools-data

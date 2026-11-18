@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-# Rsync vocabulary-theme files from a normal checkout (not a releaes tag
-# checkout, which has a different structure)
+# Rsync vocabulary-theme files from a release tag checkout
 #
 #### SETUP ####################################################################
 
@@ -97,6 +96,9 @@ get_vocabulary_theme_dir() {
         error_exit \
             'creativecommons/vocabulary-theme is not a sibling directory'
     fi
+    [[ -d "${THEME_DIR}/vocabulary" ]] || error_exit \
+        '../vocabulary-theme/vocabulary directory not present. Please ensure' \
+        'that a\n       releaes tag is checked out.'
     print_var THEME_DIR
     pushd "${THEME_DIR}" >/dev/null
     git log --decorate=no -1
@@ -136,7 +138,7 @@ rsync_vocabulary_theme_files() {
         --exclude '*.php' \
         --stats \
         --human-readable \
-        "${THEME_DIR}/src/" \
+        "${THEME_DIR}/vocabulary" \
         "${STATIC_THEME_DIR}/"
     echo
 }
@@ -153,7 +155,7 @@ run_pre-commit() {
 
 #### MAIN #####################################################################
 
-cd "${DIR_REPO}"
+cd "${DIR_REPO}" || exit
 
 check_pipenv
 get_vocabulary_theme_dir
