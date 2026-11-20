@@ -2,6 +2,7 @@
 
 # https://github.com/creativecommons/containers/pkgs/container/trixie
 FROM ghcr.io/creativecommons/trixie:latest
+# Trixie includes Python 3.13
 
 # Python: disable bytecode (.pyc) files
 # https://docs.python.org/3.13/using/cmdline.html
