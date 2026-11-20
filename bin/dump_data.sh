@@ -26,7 +26,7 @@ E107="$(printf "\e[107m")"    # bright white background
 
 check_docker() {
     local _msg
-    if ! docker compose exec app true 2>/dev/null; then
+    if ! docker compose exec --user=cc app true 2>/dev/null; then
         _msg='The app container/services is not avaialable.'
         _msg="${_msg}\n       First run \`docker compose up\`."
         error_exit "${_msg}"
@@ -50,7 +50,7 @@ cd "${DIR_REPO}"
 
 check_docker
 print_header 'Django dumpdata - Export LegalCode and Tool models'
-docker compose exec app python manage.py dumpdata \
+docker compose exec --user=cc app python manage.py dumpdata \
     --format yaml \
     --indent 2 \
     --output "${DATA_FILE}" \

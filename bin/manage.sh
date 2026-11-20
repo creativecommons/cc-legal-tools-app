@@ -25,7 +25,7 @@ E107="$(printf "\e[107m")"    # bright white background
 
 check_docker() {
     local _msg
-    if ! docker compose exec app true 2>/dev/null; then
+    if ! docker compose exec --user=cc app true 2>/dev/null; then
         _msg='The app container/services is not avaialable.'
         _msg="${_msg}\n       First run \`docker compose up\`."
         error_exit "${_msg}"
@@ -51,5 +51,5 @@ check_docker
 
 print_header "Django manage.py ${*}"
 # shellcheck disable=SC2068
-docker compose exec app python manage.py ${@}
+docker compose exec --user=cc app python manage.py ${@}
 echo
