@@ -26,7 +26,7 @@ E107="$(printf "\e[107m")"    # bright white background
 
 check_docker() {
     local _msg
-    if ! docker compose exec app true 2>/dev/null; then
+    if ! docker compose exec --user=cc app true 2>/dev/null; then
         _msg='The app container/services is not avaialable.'
         _msg="${_msg}\n       First run \`docker compose up\`."
         error_exit "${_msg}"
@@ -55,7 +55,7 @@ error_exit() {
 nofuzzy_makemessages () {
     print_header 'Django nofuzzy_makemessages'
     # shellcheck disable=SC2035
-    docker compose exec app python manage.py nofuzzy_makemessages \
+    docker compose exec --user=cc app python manage.py nofuzzy_makemessages \
         --all \
         --symlinks \
         --ignore **/includes/legalcode_licenses_4.0.html \
@@ -108,10 +108,10 @@ nofuzzy_makemessages
 restore_creation_date
 
 print_header 'Django format_pofile'
-docker compose exec app python manage.py format_pofile locale
+docker compose exec --user=cc app python manage.py format_pofile locale
 echo
 
 print_header 'Django compilemessages'
-docker compose exec app coverage run manage.py \
+docker compose exec --user=cc app coverage run manage.py \
     compilemessages
 echo

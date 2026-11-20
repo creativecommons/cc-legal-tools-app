@@ -1,0 +1,8 @@
+#!/bin/sh
+set -o errexit
+sv start socklog-unix >/dev/null \
+    && sv check socklog-unix >/dev/null \
+    || exit 170
+exec 2>&1
+exec /usr/bin/chpst -u cc:cc -C /home/cc/cc-legal-tools-app -- \
+    python3 manage.py runserver 0.0.0.0:${DJANGO_PORT}

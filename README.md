@@ -73,7 +73,8 @@ creative-commons/
 
 To achieve this, we recommend the following procedure:
 
-1. Create and change to a container directory, such as `creative-commons` or `cc`.
+1. Create and change to a container directory, such as `creative-commons` or
+   `cc`.
     ```shell
     mkdir creative-commons
     cd creative-commons
@@ -102,7 +103,7 @@ Compose.
 
 1. Ensure all prerequisites and repositories are in place.
 2. Ensure you are at the top level of the directory where you cloned this
-repository (where `manage.py` is).
+   repository (where `manage.py` is).
     ```shell
     cd cc-legal-tools-app
     ```
@@ -127,7 +128,7 @@ repository (where `manage.py` is).
    2. **static** ([127.0.0.1:8006](http://127.0.0.1:8006/)): a static web
       server serving [creativecommons/cc-legal-tools-data][repodata]:`docs/`
 6. Initialize data.
-Open a separate terminal tab, and in the same directory, run:
+   Open a separate terminal tab, and in the same directory, run:
     ```shell
     ./bin/init_data.sh
     ```

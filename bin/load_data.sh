@@ -26,7 +26,7 @@ E107="$(printf "\e[107m")"    # bright white background
 
 check_docker() {
     local _msg
-    if ! docker compose exec app true 2>/dev/null; then
+    if ! docker compose exec --user=cc app true 2>/dev/null; then
         _msg='The app container/services is not avaialable.'
         _msg="${_msg}\n       First run \`docker compose up\`."
         error_exit "${_msg}"
@@ -52,7 +52,7 @@ check_docker
 
 print_header 'Django loaddata - Import LegalCode and Tool model data'
 du -h "${DATA_FILE}"
-docker compose exec app python manage.py loaddata \
+docker compose exec --user=cc app python manage.py loaddata \
     --app legal_tools \
     --verbosity 3 \
     "${DATA_FILE}"

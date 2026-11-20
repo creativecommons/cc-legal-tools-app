@@ -28,7 +28,7 @@ E107="$(printf "\e[107m")"    # bright white background
 
 check_docker() {
     local _msg
-    if ! docker compose exec app true 2>/dev/null; then
+    if ! docker compose exec --user=cc app true 2>/dev/null; then
         _msg='The app container/services is not avaialable.'
         _msg="${_msg}\n       First run \`docker compose up\`."
         error_exit "${_msg}"
@@ -77,26 +77,26 @@ check_docker
 danger_confirm
 
 print_header 'Delete database'
-docker compose exec app rm -fv db.sqlite3
+docker compose exec --user=cc app rm -fv db.sqlite3
 echo
 
 print_header 'Initialize database'
-docker compose exec app sqlite3 db.sqlite3 -version
-docker compose exec app sqlite3 db.sqlite3 -echo 'VACUUM;'
+docker compose exec --user=cc app sqlite3 db.sqlite3 -version
+docker compose exec --user=cc app sqlite3 db.sqlite3 -echo 'VACUUM;'
 echo
 
 print_header 'Perform database migrations'
-docker compose exec app python manage.py migrate
+docker compose exec --user=cc app python manage.py migrate
 echo
 
 print_header 'Create superuser'
-docker compose exec app python manage.py createsuperuser \
+docker compose exec --user=cc app python manage.py createsuperuser \
     --username admin --email "$(git config --get user.email)"
 echo
 
 print_header 'Django loaddata - Import LegalCode and Tool model data'
 du -h "${DATA_FILE}"
-docker compose exec app python manage.py loaddata \
+docker compose exec --user=cc app python manage.py loaddata \
     --app legal_tools \
     --verbosity 3 \
     "${DATA_FILE}"
