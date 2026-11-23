@@ -70,7 +70,7 @@ compare_ver 'Pipfile' 'python_version =' '3'
 compare_ver '.github/workflows/django-app-coverage.yml' 'python-version:' '2'
 compare_ver '.github/workflows/static-analysis.yml' 'python-version:' '2'
 compare_ver '.pre-commit-config.yaml' 'python: python' '2'
-compare_ver 'Dockerfile.app' 'FROM python:' '2'
+compare_ver 'app/Dockerfile' '# Trixie includes Python' '5'
 compare_ver 'pyproject.toml' 'target-version =' '3'
 
 exit ${EXIT_STATUS}

@@ -25,7 +25,7 @@ E107="$(printf "\e[107m")"    # bright white background
 
 check_docker() {
     local _msg
-    if ! docker compose exec app true 2>/dev/null; then
+    if ! docker compose exec --user=cc app true 2>/dev/null; then
         _msg='The app container/services is not avaialable.'
         _msg="${_msg}\n       First run \`docker compose up\`."
         error_exit "${_msg}"
@@ -51,15 +51,18 @@ check_docker
 
 print_header 'isort'
 # shellcheck disable=SC2068
-docker compose exec app isort ${@:-.} || error_exit "exit status: ${?}"
+docker compose exec --user=cc app isort ${@:-.} \
+    || error_exit "exit status: ${?}"
 echo
 
 print_header 'black'
 # shellcheck disable=SC2068
-docker compose exec app black ${@:-.} || error_exit "exit status: ${?}"
+docker compose exec --user=cc app black ${@:-.} \
+    || error_exit "exit status: ${?}"
 echo
 
 print_header 'flake8'
 # shellcheck disable=SC2068
-docker compose exec app flake8 ${@:-.} || error_exit "exit status: ${?}"
+docker compose exec --user=cc app flake8 ${@:-.} \
+    || error_exit "exit status: ${?}"
 echo

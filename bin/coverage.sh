@@ -43,29 +43,29 @@ print_header() {
 
 cd "${DIR_REPO}"
 
-docker compose exec app true 2>/dev/null \
+docker compose exec --user=cc app true 2>/dev/null \
     || error_exit \
         'The Docker app container/service is not avaialable. See README.md'
 
 print_header 'Coverage erase'
-docker compose exec app coverage erase --debug=dataio
+docker compose exec --user=cc app coverage erase --debug=dataio
 echo
 
 print_header 'Coverage tests'
 # shellcheck disable=SC2068
-docker compose exec app coverage run --debug=pytest \
+docker compose exec --user=cc app coverage run --debug=pytest \
     manage.py test --noinput --parallel 4 ${@:-} \
     || exit
 echo
 
 print_header 'Coverage combine'
-docker compose exec app coverage combine
+docker compose exec --user=cc app coverage combine
 echo
 
 print_header 'Coverage html'
-docker compose exec app coverage html
+docker compose exec --user=cc app coverage html
 echo
 
 print_header 'Coverage report'
-docker compose exec app coverage report
+docker compose exec --user=cc app coverage report
 echo
